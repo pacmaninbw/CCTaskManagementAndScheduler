@@ -31,8 +31,6 @@ set(PROJECT_SOURCES
         taskTodoListModel.cpp
         taskTodoListUI.h
         taskTodoListUI.cpp
-        pacswBaseDialog.h
-        pacswBaseDialog.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
