@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `Effort` (
         FOREIGN KEY (`TaskID`)
         REFERENCES `Tasks` (`idTasks`)
         ON DELETE RESTRICT
-        ON UPDATE RESTRICT,
+        ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
