@@ -8,38 +8,27 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
---
--- Database: `PlannerTaskScheduleDB`
---
 CREATE DATABASE IF NOT EXISTS `PlannerTaskScheduleDB` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 USE `PlannerTaskScheduleDB`;
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `UserProfile`
---
-
 CREATE TABLE IF NOT EXISTS `UserProfile` (
     `idUserProfile` int UNSIGNED NOT NULL AUTO_INCREMENT,
-    `LastName` varchar(45) NOT NULL,
-    `FirstName` tinytext NOT NULL,
-    `MiddleInitial` tinytext,
+    `LastName` VARCHAR(45) NOT NULL,
+    `FirstName` TINYTEXT NOT NULL,
+    `MiddleInitial` TINYTEXT,
     PRIMARY KEY (`idUserProfile`, `LastName`),
     UNIQUE INDEX `idUserProfile_UNIQUE` (`idUserProfile`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `Tasks`
---
-
 CREATE TABLE IF NOT EXISTS `Tasks` (
     `idTasks` int UNSIGNED NOT NULL AUTO_INCREMENT,
     `CreatedBy` int UNSIGNED NOT NULL,
     `AsignedTo` int UNSIGNED NOT NULL,
-    `Description` tinytext NOT NULL,
+    `Description` TINYTEXT NOT NULL,
     `ParentTask` int UNSIGNED DEFAULT NULL,
     `Status` int UNSIGNED DEFAULT NULL,
     `PercentageComplete` double NOT NULL,
@@ -52,10 +41,6 @@ CREATE TABLE IF NOT EXISTS `Tasks` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
-
---
--- Table structure for table `Dates`
---
 
 CREATE TABLE IF NOT EXISTS `Dates` (
     `idDates` int UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -74,10 +59,6 @@ CREATE TABLE IF NOT EXISTS `Dates` (
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `Effort`
---
-
 CREATE TABLE IF NOT EXISTS `Effort` (
     `idEffort` int UNSIGNED NOT NULL AUTO_INCREMENT,
     `TaskID` int UNSIGNED NOT NULL,
@@ -91,14 +72,10 @@ CREATE TABLE IF NOT EXISTS `Effort` (
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `Goals`
---
-
 CREATE TABLE IF NOT EXISTS `Goals` (
     `idGoals` int UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserID` int UNSIGNED NOT NULL,
-    `Description` tinytext NOT NULL,
+    `Description` TINYTEXT NOT NULL,
     `Priority` int NOT NULL,
     `ParentGoal` int UNSIGNED DEFAULT NULL,
     PRIMARY KEY (`idGoals`, `UserID`),
@@ -109,15 +86,11 @@ CREATE TABLE IF NOT EXISTS `Goals` (
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `UserLogin`
---
-
 CREATE TABLE IF NOT EXISTS `LoginAndPassword` (
     `idLoginAndPassword` int UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserID` int UNSIGNED NOT NULL,
-    `LoginName` varchar(45) NOT NULL,
-    `HashedPassWord` tinytext,
+    `LoginName` VARCHAR(45) NOT NULL,
+    `HashedPassWord` TINYTEXT,
     PRIMARY KEY (`idLoginAndPassword`, `UserID`, `LoginName`),
     UNIQUE INDEX `idLoginAndPassword_UNIQUE` (`idLoginAndPassword` ASC),
     UNIQUE INDEX `UserID_UNIQUE` (`UserID` ASC),
@@ -126,10 +99,6 @@ CREATE TABLE IF NOT EXISTS `LoginAndPassword` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
-
---
--- Table structure for table `Priority`
---
 
 CREATE TABLE IF NOT EXISTS `Priority` (
     `idPriority` int UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -143,6 +112,7 @@ CREATE TABLE IF NOT EXISTS `Priority` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS `UserTaskGoals` (
     `idUserTaskGoals` int UNSIGNED NOT NULL AUTO_INCREMENT,
     `AssignedTo` int UNSIGNED NOT NULL,
@@ -156,6 +126,35 @@ CREATE TABLE IF NOT EXISTS `UserTaskGoals` (
     CONSTRAINT `fk_UserTaskGoals_TaskID` FOREIGN KEY (`TaskID`) REFERENCES `Tasks` (`idTasks`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- --------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `TaskStatus` (
+    `idTaskStatus` int UNSIGNED NOT NULL AUTO_INCREMENT,
+    `StatusStr` VARCHAR(45) NOT NULL,
+    PRIMARY KEY (`idTaskStatus`),
+    UNIQUE INDEX `idTaskStatus_UNIQUE` (`idTaskStatus` ASC),
+    UNIQUE INDEX `StatusStr_UNIQUE` (`StatusStr` ASC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO TaskStatus
+    (StatusStr)
+    VALUES
+        ('Not Started'),
+        ('On Hold'),
+        ('Waiting for Dependency'),
+        ('Work in Progress'),
+        ('Complete');
+
+-- --------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `Dependecies` (
+    `idDependecies` int UNSIGNED NOT NULL AUTO_INCREMENT,
+    `TaskID`  int UNSIGNED NOT NULL,
+    `Dependency`  int UNSIGNED NOT NULL,
+    PRIMARY KEY (`idDependecies`, `TaskID`),
+    UNIQUE INDEX `idDependecies_UNIQUE` (`idDependecies` ASC),
+    CONSTRAINT `fk_Dependecies_TaskID` FOREIGN KEY (`TaskID`) REFERENCES `Tasks` (`idTasks`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 COMMIT;
 
