@@ -204,6 +204,8 @@ CREATE TABLE IF NOT EXISTS `PlatformIndependentPreferences` (
     `UserID` INT UNSIGNED NOT NULL,
     `UseLettersForPriorityLevel` BOOLEAN NOT NULL,
     `SeparatePriorityWithDoc` BOOLEAN NOT NULL,
+    `ScheduleDayStart` TINYINT DEFAULT 8,
+    `ScheduleDayEnd` TINYINT DEFAULT 17,
     PRIMARY KEY (`idPlatformIndependentPreferences`),
     UNIQUE INDEX `idPlatformIndependentPreferences_UNIQUE` (`idPlatformIndependentPreferences` ASC),
     UNIQUE INDEX `UserID_UNIQUE` (`UserID` ASC),
@@ -213,6 +215,7 @@ CREATE TABLE IF NOT EXISTS `PlatformIndependentPreferences` (
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
