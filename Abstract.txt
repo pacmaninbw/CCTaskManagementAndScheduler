@@ -1,0 +1,6 @@
+Provide  a Cloud based platform independent and multi-platform personal time and task management system that can integrate with Product Lifecycle Management systems. The system should also be able to integrate with project planning software such as Microsoft Project and email systems so that tasks can be delegated and meetings can be scheduled. 
+
+The target audience will be engineers, product managers, project managers as well as students and the public.
+
+Users should be able to edit tasks, goals and priorities on multiple platforms including desktops, laptops, tablets and phones.
+The planner portion of the system will be based loosely on the Franklin Covey paper planning system currently available. 
