@@ -66,6 +66,9 @@ TestTableMap
 *Out.txt
 *.jpg
 
+# Non-sql database files and models.
+*.mwb
+
 # Stackexchange Code Review Questions
 quest*.txt
 CodeReview
