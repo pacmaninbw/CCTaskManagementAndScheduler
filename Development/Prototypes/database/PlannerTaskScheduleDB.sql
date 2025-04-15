@@ -216,6 +216,67 @@ CREATE TABLE IF NOT EXISTS `PlatformIndependentPreferences` (
         ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- --------------------------------------------------------
+
+DROP TABLE IF EXISTS `ScheduleItemType`;
+CREATE TABLE IF NOT EXISTS `ScheduleItemType` (
+    `idScheduleItemType` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `ScheduleItemTypeStr` VARCHAR(45) NOT NULL,
+    PRIMARY KEY (`idScheduleItemType`),
+    UNIQUE INDEX `idScheduleItemType_UNIQUE` (`idScheduleItemType` ASC),
+    UNIQUE INDEX `ScheduleItemTypeStr_UNIQUE` (`ScheduleItemTypeStr` ASC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO ScheduleItemType
+    (ScheduleItemTypeStr)
+    VALUES
+        ('Meeting'),
+        ('Phone Call'),
+        ('Task Execution'),
+        ('Personal Appointment'),
+        ('Personal Other');
+
+
+-- --------------------------------------------------------
+
+CREATE TABLE `PlannerTaskScheduleDB`.`DaySchedule` (
+    `idDaySchedule` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `UserID` INT UNSIGNED NOT NULL,
+    `DateOfSchedule` DATE NOT NULL,
+    `StartOfDay` TIME NOT NULL,
+    `EndOfDay` TIME NOT NULL,
+    `DailyGoals` VARCHAR(45) NULL,
+    PRIMARY KEY (`idDaySchedule`),
+    UNIQUE INDEX `idDaySchedule_UNIQUE` (`idDaySchedule` ASC) VISIBLE,
+    INDEX `fk_DaySchedule_UserID_idx` (`UserID` ASC) VISIBLE,
+    CONSTRAINT `fk_DaySchedule_UserID`
+      FOREIGN KEY (`UserID`)
+      REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`idUserProfile`)
+      ON DELETE RESTRICT
+      ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+CREATE TABLE `PlannerTaskScheduleDB`.`ScheduleItem` (
+    `idScheduleItem` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `UserID` INT UNSIGNED NOT NULL,
+    `StartDateTime` DATETIME NOT NULL,
+    `EndDateTime` DATETIME NOT NULL,
+    `ItemType` TINYINT NOT NULL,
+    `PriorityMajor` TINYINT NOT NULL,
+    `PriorityMinor` TINYINT NOT NULL,
+    `Location` VARCHAR(45) NULL,
+    PRIMARY KEY (`idScheduleItem`),
+    UNIQUE INDEX `idScheduleItem_UNIQUE` (`idScheduleItem` ASC) VISIBLE,
+    INDEX `fk_ScheduleItem_UserID_idx` (`UserID` ASC) VISIBLE,
+    CONSTRAINT `fk_ScheduleItem_UserID`
+      FOREIGN KEY (`UserID`)
+      REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`idUserProfile`)
+      ON DELETE RESTRICT
+      ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+    
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
