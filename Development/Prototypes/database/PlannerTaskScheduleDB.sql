@@ -1,30 +1,24 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
-SET time_zone = "+00:00";
 
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
-CREATE DATABASE IF NOT EXISTS `PlannerTaskScheduleDB` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
-USE `PlannerTaskScheduleDB`;
+CREATE DATABASE IF NOT EXISTS `PlannerTaskScheduleDB`;
 
 -- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `UserProfile` (
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserProfile`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserProfile` (
     `idUserProfile` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `LastName` VARCHAR(45) NOT NULL,
     `FirstName` TINYTEXT NOT NULL,
     `MiddleInitial` TINYTEXT,
     PRIMARY KEY (`idUserProfile`, `LastName`),
     UNIQUE INDEX `idUserProfile_UNIQUE` (`idUserProfile`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 -- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `Tasks` (
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Tasks`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Tasks` (
     `idTasks` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `CreatedBy` INT UNSIGNED NOT NULL,
     `AsignedTo` INT UNSIGNED NOT NULL,
@@ -46,11 +40,12 @@ CREATE TABLE IF NOT EXISTS `Tasks` (
         REFERENCES `UserProfile` (`idUserProfile`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 -- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `Dates` (
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Dates`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Dates` (
     `idDates` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `TaskID` INT UNSIGNED NOT NULL,
     `CreatedOn` date NOT NULL,
@@ -67,11 +62,12 @@ CREATE TABLE IF NOT EXISTS `Dates` (
         REFERENCES `Tasks` (`idTasks`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 -- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `Effort` (
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Effort`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Effort` (
     `idEffort` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `TaskID` INT UNSIGNED NOT NULL,
     `EstimatedEffortHours` INT UNSIGNED NOT NULL,
@@ -84,11 +80,12 @@ CREATE TABLE IF NOT EXISTS `Effort` (
         REFERENCES `Tasks` (`idTasks`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 -- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `Goals` (
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Goals`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Goals` (
     `idGoals` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserID` INT UNSIGNED NOT NULL,
     `Description` TINYTEXT NOT NULL,
@@ -102,11 +99,12 @@ CREATE TABLE IF NOT EXISTS `Goals` (
         ON DELETE RESTRICT
         ON UPDATE RESTRICT,
     INDEX `fk_Goals_UserID_idx` (`UserID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 -- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `LoginAndPassword` (
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`LoginAndPassword`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`LoginAndPassword` (
     `idLoginAndPassword` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserID` INT UNSIGNED NOT NULL,
     `LoginName` VARCHAR(45) NOT NULL,
@@ -120,11 +118,12 @@ CREATE TABLE IF NOT EXISTS `LoginAndPassword` (
         REFERENCES `UserProfile` (`idUserProfile`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 -- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `Priority` (
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Priority`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Priority` (
     `idPriority` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `TaskID` INT UNSIGNED NOT NULL,
     `Level` INT UNSIGNED NOT NULL,
@@ -137,11 +136,12 @@ CREATE TABLE IF NOT EXISTS `Priority` (
         REFERENCES `Tasks` (`idTasks`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 -- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `UserTaskGoals` (
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserTaskGoals`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskGoals` (
     `idUserTaskGoals` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `AssignedTo` INT UNSIGNED NOT NULL,
     `TaskID`  INT UNSIGNED NOT NULL,
@@ -160,19 +160,20 @@ CREATE TABLE IF NOT EXISTS `UserTaskGoals` (
         REFERENCES `Tasks` (`idTasks`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 -- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `TaskStatus` (
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`TaskStatus`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`TaskStatus` (
     `idTaskStatus` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `StatusStr` VARCHAR(45) NOT NULL,
     PRIMARY KEY (`idTaskStatus`),
     UNIQUE INDEX `idTaskStatus_UNIQUE` (`idTaskStatus` ASC),
     UNIQUE INDEX `StatusStr_UNIQUE` (`StatusStr` ASC)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
-INSERT INTO TaskStatus
+INSERT INTO PlannerTaskScheduleDB.TaskStatus
     (StatusStr)
     VALUES
         ('Not Started'),
@@ -183,7 +184,8 @@ INSERT INTO TaskStatus
 
 -- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `Dependecies` (
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Dependecies`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Dependecies` (
     `idDependecies` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `TaskID`  INT UNSIGNED NOT NULL,
     `Dependency`  INT UNSIGNED NOT NULL,
@@ -194,12 +196,12 @@ CREATE TABLE IF NOT EXISTS `Dependecies` (
         REFERENCES `Tasks` (`idTasks`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `PlatformIndependentPreferences`;
-CREATE TABLE IF NOT EXISTS `PlatformIndependentPreferences` (
+DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`PlatformIndependentPreferences`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`PlatformIndependentPreferences` (
     `idPlatformIndependentPreferences` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserID` INT UNSIGNED NOT NULL,
     `UseLettersForPriorityLevel` BOOLEAN NOT NULL,
@@ -214,20 +216,20 @@ CREATE TABLE IF NOT EXISTS `PlatformIndependentPreferences` (
         REFERENCES `UserProfile` (`idUserProfile`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `ScheduleItemType`;
-CREATE TABLE IF NOT EXISTS `ScheduleItemType` (
+DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`ScheduleItemType`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`ScheduleItemType` (
     `idScheduleItemType` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `ScheduleItemTypeStr` VARCHAR(45) NOT NULL,
     PRIMARY KEY (`idScheduleItemType`),
     UNIQUE INDEX `idScheduleItemType_UNIQUE` (`idScheduleItemType` ASC),
     UNIQUE INDEX `ScheduleItemTypeStr_UNIQUE` (`ScheduleItemTypeStr` ASC)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
-INSERT INTO ScheduleItemType
+INSERT INTO PlannerTaskScheduleDB.ScheduleItemType
     (ScheduleItemTypeStr)
     VALUES
         ('Meeting'),
@@ -239,7 +241,8 @@ INSERT INTO ScheduleItemType
 
 -- --------------------------------------------------------
 
-CREATE TABLE `PlannerTaskScheduleDB`.`DaySchedule` (
+DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`DaySchedule`;
+CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`DaySchedule` (
     `idDaySchedule` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserID` INT UNSIGNED NOT NULL,
     `DateOfSchedule` DATE NOT NULL,
@@ -254,11 +257,12 @@ CREATE TABLE `PlannerTaskScheduleDB`.`DaySchedule` (
       REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`idUserProfile`)
       ON DELETE RESTRICT
       ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 -- --------------------------------------------------------
 
-CREATE TABLE `PlannerTaskScheduleDB`.`ScheduleItem` (
+DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`ScheduleItem`;
+CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`ScheduleItem` (
     `idScheduleItem` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserID` INT UNSIGNED NOT NULL,
     `StartDateTime` DATETIME NOT NULL,
@@ -275,10 +279,24 @@ CREATE TABLE `PlannerTaskScheduleDB`.`ScheduleItem` (
       REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`idUserProfile`)
       ON DELETE RESTRICT
       ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
+
+-- --------------------------------------------------------
+
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Notes`;
+CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`Notes` (
+    `idNotes` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `UserID` INT UNSIGNED NOT NULL,
+    `NotationDateTime` DATETIME NOT NULL,
+    `Content` VARCHAR(1024) NOT NULL,
+    PRIMARY KEY (`idNotes`),
+    UNIQUE INDEX `idNotes_UNIQUE` (`idNotes` ASC) VISIBLE,
+    INDEX `fk_Notes_UserID_idx` (`UserID` ASC) VISIBLE,
+    CONSTRAINT `fk_Notes_UserID`
+      FOREIGN KEY (`UserID`)
+      REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`idUserProfile`)
+      ON DELETE RESTRICT
+      ON UPDATE RESTRICT
+);
     
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
