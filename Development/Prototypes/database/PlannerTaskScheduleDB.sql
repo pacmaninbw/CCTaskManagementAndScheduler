@@ -184,14 +184,14 @@ INSERT INTO PlannerTaskScheduleDB.TaskStatus
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Dependecies`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Dependecies` (
-    `idDependecies` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Dependencies`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Dependencies` (
+    `idDependencies` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `TaskID`  INT UNSIGNED NOT NULL,
     `Dependency`  INT UNSIGNED NOT NULL,
-    PRIMARY KEY (`idDependecies`, `TaskID`),
-    UNIQUE INDEX `idDependecies_UNIQUE` (`idDependecies` ASC),
-    CONSTRAINT `fk_Dependecies_TaskID`
+    PRIMARY KEY (`idDependencies`, `TaskID`),
+    UNIQUE INDEX `idDependencies_UNIQUE` (`idDependencies` ASC),
+    CONSTRAINT `fk_Dependencies_TaskID`
         FOREIGN KEY (`TaskID`)
         REFERENCES `Tasks` (`idTasks`)
         ON DELETE RESTRICT
