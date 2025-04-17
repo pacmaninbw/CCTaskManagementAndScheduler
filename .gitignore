@@ -68,6 +68,7 @@ TestTableMap
 
 # Non-sql database files and models.
 *.mwb
+Models
 
 # Stackexchange Code Review Questions
 quest*.txt
