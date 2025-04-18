@@ -121,3 +121,104 @@ END$$
 DELIMITER ;
 
 
+-- -----------------------------------------------------
+-- function findUserIDKeyByLoginName
+-- -----------------------------------------------------
+
+USE `PlannerTaskScheduleDB`;
+DROP function IF EXISTS `PlannerTaskScheduleDB`.`findUserIDKeyByLoginName`;
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`$$
+CREATE FUNCTION `findUserIDKeyByLoginName`(
+    LoginName VARCHAR(45)
+) RETURNS INT
+DETERMINISTIC
+BEGIN
+
+    SET @UserIDKey = 0;
+
+    SELECT LoginAndPassword.UserID INTO @UserIDKey
+        FROM LoginAndPassword
+        WHERE LoginAndPassword.LoginName = LoginName;
+    IF @UserIDKey IS NULL THEN
+        SET @UserIDKey = 0;
+    END IF;
+
+    RETURN @UserIDKey;
+    
+END$$
+
+DELIMITER;
+
+-- -----------------------------------------------------
+-- function findUserIDKeyByFullName
+-- -----------------------------------------------------
+
+USE `PlannerTaskScheduleDB`;
+DROP function IF EXISTS `PlannerTaskScheduleDB`.`findUserIDKeyByFullName`;
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`$$
+CREATE FUNCTION `findUserIDKeyByFullName`(
+    LastName VARCHAR(45),
+    FirstName TINYTEXT,
+    MiddleInitial TINYTEXT
+) RETURNS INT
+DETERMINISTIC
+BEGIN
+
+    SET @UserIDKey = 0;
+
+    SELECT UserProfile.idUserProfile INTO @UserIDKey
+        FROM UserProfile
+        WHERE UserProfile.LastName = LastName AND
+            UserProfile.FirstName = FirstName AND
+            UserProfile.MiddleInitial = MiddleInitial;
+    IF @UserIDKey IS NULL THEN
+        SET @UserIDKey = 0;
+    END IF;
+
+    RETURN @UserIDKey;
+    
+END$$
+
+DELIMITER;
+
+-- -----------------------------------------------------
+-- function isValidLoginAndPassword
+-- -----------------------------------------------------
+
+USE `PlannerTaskScheduleDB`;
+DROP function IF EXISTS `isValidLoginAndPassword`;
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`$$
+CREATE FUNCTION `isValidLoginAndPassword`
+(
+    LoginName VARCHAR(45),
+    HashedPassWord TINYTEXT
+)
+RETURNS TINYINT
+DETERMINISTIC
+BEGIN
+
+    SET @UserIDKey = 0;
+    SET @isValid = 1;
+
+    SELECT LoginAndPassword.UserID INTO @UserIDKey
+        FROM LoginAndPassword
+        WHERE LoginAndPassword.LoginName = LoginName AND
+            LoginAndPassword.HashedPassWord = HashedPassWord;
+
+    IF @UserIDKey IS NULL THEN
+        SET @isValid = 0;
+    END IF;
+
+    RETURN @isValid;
+
+END$$
+
+DELIMITER ;
+
+
