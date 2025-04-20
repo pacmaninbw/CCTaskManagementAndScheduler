@@ -83,3 +83,118 @@ END$$
 
 DELIMITER ;
 
+USE `PlannerTaskScheduleDB`;
+DROP procedure IF EXISTS `CreateTaskDates`;
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`$$
+CREATE PROCEDURE `CreateTaskDates`
+(
+	TaskID INT UNSIGNED,
+    RequiredDelivery DATE,
+    ScheduledStart DATE
+)
+BEGIN
+	SET @CreationDate := curdate();
+    
+    INSERT INTO Dates
+		(
+			Dates.TaskID,
+            Dates.CreatedOn,
+            Dates.RequiredDelivery,
+            Dates.ScheduledStart
+		)
+		VALUES (
+			TaskID,
+            @CreationDate,
+            RequiredDelivery,
+            ScheduledStart
+		);
+END$$
+
+DELIMITER ;
+
+USE `PlannerTaskScheduleDB`;
+DROP procedure IF EXISTS `CreateTaskEffort`;
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`$$
+CREATE PROCEDURE `CreateTaskEffort`
+(
+	TaskID INT UNSIGNED,
+    EstimatedEffortHours INT UNSIGNED
+)
+BEGIN
+
+	INSERT INTO Effort
+		(
+			Effort.TaskID,
+            Effort.EstimatedEffortHours,
+            Effort.ActualEffortHours
+		)
+        VALUES
+        (
+			TaskID,
+            EstimatedEffortHours,
+            0.0
+        );
+    
+END$$
+
+DELIMITER ;
+
+USE `PlannerTaskScheduleDB`;
+DROP procedure IF EXISTS `CreateTask`;
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`$$
+CREATE PROCEDURE `CreateTask`
+(
+	IN CreatedBy INT UNSIGNED,
+    IN Description TINYTEXT,
+    IN ParentTask INT UNSIGNED,
+    IN EstimatedEffortHours INT UNSIGNED,
+    IN PriorityInAllTasks INT UNSIGNED,
+    IN RequiredDelivery DATE,
+    IN ScheduledStart DATE
+)
+BEGIN
+
+	SET @TaskStatusValue = findTaskStatusValueByLabel('Not Started');
+    
+	INSERT INTO Tasks
+		(
+			Tasks.CreatedBy,
+            Tasks.AsignedTo,
+            Tasks.Description,
+            Tasks.PriorityInAllTasks,
+            Tasks.Status
+        )
+		VALUES
+		(
+			CreatedBy,
+            CreatedBy,
+            Description,
+            PriorityInAllTasks,
+            @TaskStatusValue
+		);
+        
+		SET @NewTaskID := LAST_INSERT_ID();
+        
+        CALL CreateTaskDates(
+			@NewTaskID,
+            RequiredDelivery,
+            ScheduledStart
+		);
+        
+        CALL CreateTaskEffort
+        (
+			@NewTaskID,
+            EstimatedEffortHours
+        );
+
+END$$
+
+DELIMITER ;
+
+
