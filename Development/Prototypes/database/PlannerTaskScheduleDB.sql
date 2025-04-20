@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Tasks` (
     `CreatedBy` INT UNSIGNED NOT NULL,
     `AsignedTo` INT UNSIGNED NOT NULL,
     `Description` TINYTEXT NOT NULL,
+    `PriorityInAllTasks` INT UNSIGNED NOT NULL,
     `ParentTask` INT UNSIGNED DEFAULT NULL,
     `Status` INT UNSIGNED DEFAULT NULL,
     `PercentageComplete` double NOT NULL,
@@ -122,10 +123,11 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`LoginAndPassword` (
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Priority`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Priority` (
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserPriority`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserPriority` (
     `idPriority` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `TaskID` INT UNSIGNED NOT NULL,
+    `UserID` INT UNSIGNED NOT NULL,
     `Level` INT UNSIGNED NOT NULL,
     `PriorityInLevel` INT UNSIGNED NOT NULL,
     PRIMARY KEY (`idPriority`, `TaskID`),
@@ -134,6 +136,11 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Priority` (
     CONSTRAINT `fk_Priority_TaskID`
         FOREIGN KEY (`TaskID`)
         REFERENCES `Tasks` (`idTasks`)
+        ON DELETE RESTRICT
+        ON UPDATE RESTRICT,
+    CONSTRAINT `fk_Priority_UserID`
+        FOREIGN KEY (`UserID`)
+        REFERENCES `UserProfile` (`idUserProfile`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
 );
