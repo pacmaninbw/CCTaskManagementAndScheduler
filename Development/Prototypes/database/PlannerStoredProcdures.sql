@@ -121,8 +121,8 @@ DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
 CREATE PROCEDURE `CreateTaskEffort`
 (
-	TaskID INT UNSIGNED,
-    EstimatedEffortHours INT UNSIGNED
+	IN TaskID INT UNSIGNED,
+    IN EstimatedEffortHours INT UNSIGNED
 )
 BEGIN
 
@@ -193,8 +193,115 @@ BEGIN
             EstimatedEffortHours
         );
 
+    IF ParentTask IS NOT NULL AND ParentTask > 0 THEN
+        UPDATE Tasks 
+            SET Tasks.ParentTask = ParentTask
+            WHERE Tasks.idTasks = @NewTaskID;
+    END IF;
+
 END$$
 
 DELIMITER ;
 
+
+USE `PlannerTaskScheduleDB`;
+DROP procedure IF EXISTS `CreatNote`;
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`$$
+CREATE PROCEDURE `CreatNote`
+(
+	IN UserID INT UNSIGNED,
+    IN Content VARCHAR(1024)
+)
+BEGIN
+
+	SET @NotationDateTime := now();
+    
+    INSERT INTO Notes
+		(
+			Notes.UserID,
+            Notes.NotationDateTime,
+            Notes.Content
+		)
+		VALUES
+		(
+			UserID,
+            @NotationDateTime,
+            Content
+        );
+
+END$$
+
+DELIMITER ;
+
+SE `PlannerTaskScheduleDB`;
+DROP procedure IF EXISTS `CreateGoal`;
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`$$
+CREATE PROCEDURE `CreateGoal`
+(
+	IN UserID INT UNSIGNED,
+    IN Description TINYTEXT,
+    IN Priority INT,
+    IN ParentGoal INT UNSIGNED
+)
+BEGIN
+
+	INSERT INTO Goals
+		(
+			Goals.UserID,
+            Goals.Description
+        )
+        VALUES
+        (
+			UserID,
+            Description
+        );
+        
+	SET @idGoals  := LAST_INSERT_ID();
+    
+	IF Priority IS NOT NULL AND Priority > 0 THEN
+        UPDATE Goals 
+            SET Goals.Priority = Priority
+            WHERE Goals.idTasks = @idGoals;
+    END IF;
+
+	IF ParentGoal IS NOT NULL AND ParentGoal > 0 THEN
+        UPDATE Goals 
+            SET Goals.ParentGoal = ParentGoal
+            WHERE Goals.idTasks = @idGoals;
+    END IF;
+
+END$$
+
+DELIMITER ;
+
+USE `PlannerTaskScheduleDB`;
+DROP procedure IF EXISTS `AccumulateTaskEffort`;
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`$$
+CREATE PROCEDURE `AccumulateTaskEffort`
+(
+	IN TaskID INT UNSIGNED,
+    IN ActualEffortHours FLOAT
+)
+BEGIN
+
+	SELECT ActualEffortHours
+		INTO @AccumlatedEffort
+        FROM Effort
+        WHERE Effort.TaskID = TaskID;
+        
+	SET @AccumlatedEffort = @AccumlatedEffort + ActualEffortHours;
+    
+    UPDATE Effort 
+		SET Effort.ActualEffortHours = @AccumlatedEffort
+        WHERE Effort.TaskID = TaskID;
+        
+END$$
+
+DELIMITER ;
 
