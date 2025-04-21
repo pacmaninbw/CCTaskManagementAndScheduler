@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Goals` (
     `idGoals` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserID` INT UNSIGNED NOT NULL,
     `Description` TINYTEXT NOT NULL,
-    `Priority` INT NOT NULL,
+    `Priority` INT DEFAULT NULL,
     `ParentGoal` INT UNSIGNED DEFAULT NULL,
     PRIMARY KEY (`idGoals`, `UserID`),
     UNIQUE INDEX `idGoals_UNIQUE` (`idGoals`),
