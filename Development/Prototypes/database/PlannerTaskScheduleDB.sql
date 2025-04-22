@@ -45,9 +45,9 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Tasks` (
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Dates`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Dates` (
-    `idDates` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`TaskDates`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`TaskDates` (
+    `idTaskDates` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `TaskID` INT UNSIGNED NOT NULL,
     `CreatedOn` date NOT NULL,
     `RequiredDelivery` date NOT NULL,
@@ -55,10 +55,10 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Dates` (
     `ActualStart` date DEFAULT NULL,
     `EstimatedCompletion` date DEFAULT NULL,
     `Comleted` date DEFAULT NULL,
-    PRIMARY KEY (`idDates`, `TaskID`),
-    UNIQUE INDEX `idDates_UNIQUE` (`idDates` ASC),
-    INDEX `fk_Dates_TaskID_idx` (`TaskID` ASC),
-    CONSTRAINT `fk_Dates_TaskID`
+    PRIMARY KEY (`idTaskDates`, `TaskID`),
+    UNIQUE INDEX `idTaskDates_UNIQUE` (`idTaskDates` ASC),
+    INDEX `fk_TaskDates_TaskID_idx` (`TaskID` ASC),
+    CONSTRAINT `fk_TaskDates_TaskID`
         FOREIGN KEY (`TaskID`)
         REFERENCES `Tasks` (`idTasks`)
         ON DELETE RESTRICT
@@ -67,16 +67,16 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Dates` (
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Effort`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Effort` (
-    `idEffort` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`TaskEffort`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`TaskEffort` (
+    `idTaskEffort` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `TaskID` INT UNSIGNED NOT NULL,
     `EstimatedEffortHours` INT UNSIGNED NOT NULL,
     `ActualEffortHours` float NOT NULL,
-    PRIMARY KEY (`idEffort`, `TaskID`),
-    UNIQUE INDEX `idEffort_UNIQUE` (`idEffort`),
+    PRIMARY KEY (`idTaskEffort`, `TaskID`),
+    UNIQUE INDEX `idTaskEffort_UNIQUE` (`idTaskEffort`),
     UNIQUE INDEX `TaskID_UNIQUE` (`TaskID`),
-    CONSTRAINT `fk_Effort_TaskID`
+    CONSTRAINT `fk_TaskEffort_TaskID`
         FOREIGN KEY (`TaskID`)
         REFERENCES `Tasks` (`idTasks`)
         ON DELETE RESTRICT
@@ -123,15 +123,15 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`LoginAndPassword` (
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserPriority`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserPriority` (
-    `idPriority` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserTaskPriority`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskPriority` (
+    `idUserTaskPriority` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `TaskID` INT UNSIGNED NOT NULL,
     `UserID` INT UNSIGNED NOT NULL,
-    `Level` INT UNSIGNED NOT NULL,
-    `PriorityInLevel` INT UNSIGNED NOT NULL,
-    PRIMARY KEY (`idPriority`, `TaskID`),
-    UNIQUE INDEX `idPriority_UNIQUE` (`idPriority` ASC),
+    `SchedulePriorityGroup` INT UNSIGNED NOT NULL,
+    `PriorityInGroup` INT UNSIGNED NOT NULL,
+    PRIMARY KEY (`idUserTaskPriority`, `TaskID`),
+    UNIQUE INDEX `idUserTaskPriority_UNIQUE` (`idUserTaskPriority` ASC),
     UNIQUE INDEX `TaskID_UNIQUE` (`TaskID` ASC),
     CONSTRAINT `fk_Priority_TaskID`
         FOREIGN KEY (`TaskID`)
@@ -191,14 +191,14 @@ INSERT INTO PlannerTaskScheduleDB.TaskStatus
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Dependencies`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Dependencies` (
-    `idDependencies` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`TaskDependencies`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`TaskDependencies` (
+    `idTaskDependencies` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `TaskID`  INT UNSIGNED NOT NULL,
     `Dependency`  INT UNSIGNED NOT NULL,
-    PRIMARY KEY (`idDependencies`, `TaskID`),
-    UNIQUE INDEX `idDependencies_UNIQUE` (`idDependencies` ASC),
-    CONSTRAINT `fk_Dependencies_TaskID`
+    PRIMARY KEY (`idTaskDependencies`, `TaskID`),
+    UNIQUE INDEX `idTaskDependencies_UNIQUE` (`idTaskDependencies` ASC),
+    CONSTRAINT `fk_TaskDependencies_TaskID`
         FOREIGN KEY (`TaskID`)
         REFERENCES `Tasks` (`idTasks`)
         ON DELETE RESTRICT
@@ -632,12 +632,12 @@ CREATE PROCEDURE `createTaskDates`
 BEGIN
 	SET @CreationDate := curdate();
     
-    INSERT INTO Dates
+    INSERT INTO TaskDates
 		(
-			Dates.TaskID,
-            Dates.CreatedOn,
-            Dates.RequiredDelivery,
-            Dates.ScheduledStart
+			TaskDates.TaskID,
+            TaskDates.CreatedOn,
+            TaskDates.RequiredDelivery,
+            TaskDates.ScheduledStart
 		)
 		VALUES (
 			TaskID,
@@ -661,11 +661,11 @@ CREATE PROCEDURE `createTaskEffort`
 )
 BEGIN
 
-	INSERT INTO Effort
+	INSERT INTO TaskEffort
 		(
-			Effort.TaskID,
-            Effort.EstimatedEffortHours,
-            Effort.ActualEffortHours
+			TaskEffort.TaskID,
+            TaskEffort.EstimatedEffortHours,
+            TaskEffort.ActualEffortHours
 		)
         VALUES
         (
@@ -753,12 +753,12 @@ CREATE PROCEDURE `createUserTaskPriority`
 )
 BEGIN
 
-	INSERT INTO UserPriority
+	INSERT INTO UserTaskPriority
 		(
-			UserPriority.TaskID,
-            UserPriority.UserID,
-            UserPriority.Level,
-            UserPriority.PriorityInLevel
+			UserTaskPriority.TaskID,
+            UserTaskPriority.UserID,
+            UserTaskPriority.SchedulePriorityGroup,
+            UserTaskPriority.PriorityInGroup
 		)
         VALUES
         (
@@ -860,14 +860,14 @@ BEGIN
 
 	SELECT ActualEffortHours
 		INTO @AccumlatedEffort
-        FROM Effort
-        WHERE Effort.TaskID = TaskID;
+        FROM TaskEffort
+        WHERE TaskEffort.TaskID = TaskID;
         
 	SET @AccumlatedEffort = @AccumlatedEffort + ActualEffortHours;
     
     UPDATE Effort 
-		SET Effort.ActualEffortHours = @AccumlatedEffort
-        WHERE Effort.TaskID = TaskID;
+		SET TaskEffort.ActualEffortHours = @AccumlatedEffort
+        WHERE TaskEffort.TaskID = TaskID;
         
 END$$
 
@@ -885,10 +885,10 @@ CREATE PROCEDURE `addTaskDependency`
 )
 BEGIN
 
-	INSERT INTO Dependencies
+	INSERT INTO TaskDependencies
 		(
-			Dependencies.TaskID,
-            Dependencies.Dependency
+			TaskDependencies.TaskID,
+            TaskDependencies.Dependency
         )
         VALUES
         (
