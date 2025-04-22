@@ -13,13 +13,11 @@ BEGIN
 
 	INSERT INTO PlatformIndepenentPreferences (
 		PlatformIndepenentPreferences.UserID,
-        PlatformIndepenentPreferences.UseLettersForPriorityLevel,
-        PlatformIndepenentPreferences.SeparatePriorityWithDot,
         PlatformIndepenentPreferences.ScheduleDayStart,
         PlatformIndepenentPreferences.ScheduleDayEnd
     )
     
-    VALUES (UserID, 1, 0, '8:30:00', '17:00:00');
+    VALUES (UserID, '8:30:00', '17:00:00');
     
 END$$
 
@@ -235,7 +233,7 @@ END$$
 
 DELIMITER ;
 
-SE `PlannerTaskScheduleDB`;
+USE `PlannerTaskScheduleDB`;
 DROP procedure IF EXISTS `CreateGoal`;
 
 DELIMITER $$
@@ -301,6 +299,32 @@ BEGIN
 		SET Effort.ActualEffortHours = @AccumlatedEffort
         WHERE Effort.TaskID = TaskID;
         
+END$$
+
+DELIMITER ;
+
+USE `PlannerTaskScheduleDB`;
+DROP procedure IF EXISTS `addTaskDependency`;
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`$$
+CREATE PROCEDURE `addTaskDependency`
+(
+	IN TaskID INT UNSIGNED,
+    IN Dependency INT UNSIGNED
+)
+BEGIN
+
+	INSERT INTO Dependencies
+		(
+			Dependencies.TaskID,
+            Dependencies.Dependency
+        )
+        VALUES
+        (
+			TaskID,
+            Dependency
+        );
 END$$
 
 DELIMITER ;
