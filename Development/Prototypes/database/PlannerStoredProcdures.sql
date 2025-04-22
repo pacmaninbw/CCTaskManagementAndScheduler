@@ -1,5 +1,10 @@
 USE `PlannerTaskScheduleDB`;
 
+-- -----------------------------------------------------
+-- Stored Procedures
+-- -----------------------------------------------------
+
+
 USE `PlannerTaskScheduleDB`;
 DROP procedure IF EXISTS `addNewUserPreferences`;
 
