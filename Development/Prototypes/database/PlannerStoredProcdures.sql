@@ -1,11 +1,11 @@
 USE `PlannerTaskScheduleDB`;
 
 USE `PlannerTaskScheduleDB`;
-DROP procedure IF EXISTS `AddNewUserPreferences`;
+DROP procedure IF EXISTS `addNewUserPreferences`;
 
 DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
-CREATE PROCEDURE `AddNewUserPreferences`
+CREATE PROCEDURE `addNewUserPreferences`
 (
 	IN UserID INT UNSIGNED
 )
@@ -25,11 +25,11 @@ DELIMITER ;
 
 
 USE `PlannerTaskScheduleDB`;
-DROP procedure IF EXISTS `AddNewUserLoginAndPassword`;
+DROP procedure IF EXISTS `addNewUserLoginAndPassword`;
 
 DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
-CREATE PROCEDURE `AddNewUserLoginAndPassword`
+CREATE PROCEDURE `addNewUserLoginAndPassword`
 (
 	IN UserID INT UNSIGNED,
     IN LoginName VARCHAR(45),
@@ -49,11 +49,11 @@ END$$
 DELIMITER ;
 
 USE `PlannerTaskScheduleDB`;
-DROP procedure IF EXISTS `AddNewUser`;
+DROP procedure IF EXISTS `addNewUser`;
 
 DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
-CREATE PROCEDURE `AddNewUser`
+CREATE PROCEDURE `addNewUser`
 	(
         IN LastName VARCHAR(45),
 		IN FirstName TINYTEXT,
@@ -73,20 +73,20 @@ BEGIN
         
         SET @NewUserID := LAST_INSERT_ID();
         
-        CALL AddNewUserLoginAndPassword(@NewUserID, LoginName, HashedPassWord);
+        CALL addNewUserLoginAndPassword(@NewUserID, LoginName, HashedPassWord);
         
-        CALL AddNewUserPreferences(@NewUserID);
+        CALL addNewUserPreferences(@NewUserID);
 
 END$$
 
 DELIMITER ;
 
 USE `PlannerTaskScheduleDB`;
-DROP procedure IF EXISTS `CreateTaskDates`;
+DROP procedure IF EXISTS `createTaskDates`;
 
 DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
-CREATE PROCEDURE `CreateTaskDates`
+CREATE PROCEDURE `createTaskDates`
 (
 	TaskID INT UNSIGNED,
     RequiredDelivery DATE,
@@ -113,11 +113,11 @@ END$$
 DELIMITER ;
 
 USE `PlannerTaskScheduleDB`;
-DROP procedure IF EXISTS `CreateTaskEffort`;
+DROP procedure IF EXISTS `createTaskEffort`;
 
 DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
-CREATE PROCEDURE `CreateTaskEffort`
+CREATE PROCEDURE `createTaskEffort`
 (
 	IN TaskID INT UNSIGNED,
     IN EstimatedEffortHours INT UNSIGNED
@@ -142,11 +142,11 @@ END$$
 DELIMITER ;
 
 USE `PlannerTaskScheduleDB`;
-DROP procedure IF EXISTS `CreateTask`;
+DROP procedure IF EXISTS `createTask`;
 
 DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
-CREATE PROCEDURE `CreateTask`
+CREATE PROCEDURE `createTask`
 (
 	IN CreatedBy INT UNSIGNED,
     IN Description TINYTEXT,
@@ -179,13 +179,13 @@ BEGIN
         
 		SET @NewTaskID := LAST_INSERT_ID();
         
-        CALL CreateTaskDates(
+        CALL createTaskDates(
 			@NewTaskID,
             RequiredDelivery,
             ScheduledStart
 		);
         
-        CALL CreateTaskEffort
+        CALL createTaskEffort
         (
 			@NewTaskID,
             EstimatedEffortHours
@@ -203,11 +203,44 @@ DELIMITER ;
 
 
 USE `PlannerTaskScheduleDB`;
-DROP procedure IF EXISTS `CreatNote`;
+DROP procedure IF EXISTS `createUserTaskPriority`;
 
 DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
-CREATE PROCEDURE `CreatNote`
+CREATE PROCEDURE `createUserTaskPriority`
+(
+	IN UserID INT UNSIGNED,
+    IN TaskID INT UNSIGNED,
+    IN SchedulePriorityGroup INT UNSIGNED,
+    IN PriorityInGroup INT UNSIGNED
+)
+BEGIN
+
+	INSERT INTO UserPriority
+		(
+			UserPriority.TaskID,
+            UserPriority.UserID,
+            UserPriority.Level,
+            UserPriority.PriorityInLevel
+		)
+        VALUES
+        (
+			TaskID,
+            UserID,
+            SchedulePriorityGroup,
+            PriorityInGroup
+        );
+END$$
+
+DELIMITER ;
+
+
+USE `PlannerTaskScheduleDB`;
+DROP procedure IF EXISTS `creatNote`;
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`$$
+CREATE PROCEDURE `creatNote`
 (
 	IN UserID INT UNSIGNED,
     IN Content VARCHAR(1024)
@@ -234,11 +267,11 @@ END$$
 DELIMITER ;
 
 USE `PlannerTaskScheduleDB`;
-DROP procedure IF EXISTS `CreateGoal`;
+DROP procedure IF EXISTS `createGoal`;
 
 DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
-CREATE PROCEDURE `CreateGoal`
+CREATE PROCEDURE `createGoal`
 (
 	IN UserID INT UNSIGNED,
     IN Description TINYTEXT,
@@ -277,11 +310,11 @@ END$$
 DELIMITER ;
 
 USE `PlannerTaskScheduleDB`;
-DROP procedure IF EXISTS `AccumulateTaskEffort`;
+DROP procedure IF EXISTS `accumulateTaskEffort`;
 
 DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
-CREATE PROCEDURE `AccumulateTaskEffort`
+CREATE PROCEDURE `accumulateTaskEffort`
 (
 	IN TaskID INT UNSIGNED,
     IN ActualEffortHours FLOAT
