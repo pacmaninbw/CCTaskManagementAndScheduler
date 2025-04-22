@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Tasks` (
     `ParentTask` INT UNSIGNED DEFAULT NULL,
     `Status` INT UNSIGNED DEFAULT NULL,
     `PercentageComplete` double NOT NULL,
-    PRIMARY KEY (`idTasks`),
+    PRIMARY KEY (`idTasks`, `CreatedBy`),
     UNIQUE INDEX `idTasks_UNIQUE` (`idTasks` ASC),
     INDEX `fk_Tasks_CreatedBy_idx` (`CreatedBy` ASC),
     INDEX `fk_Tasks_AsignedTo_idx` (`AsignedTo` ASC),
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskPriority` (
     `UserID` INT UNSIGNED NOT NULL,
     `SchedulePriorityGroup` INT UNSIGNED NOT NULL,
     `PriorityInGroup` INT UNSIGNED NOT NULL,
-    PRIMARY KEY (`idUserTaskPriority`, `TaskID`),
+    PRIMARY KEY (`idUserTaskPriority`, `TaskID`, `UserID`),
     UNIQUE INDEX `idUserTaskPriority_UNIQUE` (`idUserTaskPriority` ASC),
     UNIQUE INDEX `TaskID_UNIQUE` (`TaskID` ASC),
     CONSTRAINT `fk_Priority_TaskID`
@@ -217,7 +217,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`PlatformIndependentPreferen
     `IncludeMinorPriorityInSchedule` BOOLEAN DEFAULT TRUE,
     `UseLettersForMajorPriority` BOOLEAN DEFAULT TRUE,
     `SeparatePriorityWithDot` BOOLEAN DEFAULT FALSE,
-    PRIMARY KEY (`idPlatformIndependentPreferences`),
+    PRIMARY KEY (`idPlatformIndependentPreferences`, `UserID`),
     UNIQUE INDEX `idPlatformIndependentPreferences_UNIQUE` (`idPlatformIndependentPreferences` ASC),
     UNIQUE INDEX `UserID_UNIQUE` (`UserID` ASC),
     CONSTRAINT `fk_PlatformIndependentPrefs_UserID`
@@ -258,7 +258,7 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`DaySchedule` (
     `StartOfDay` TIME NOT NULL,
     `EndOfDay` TIME NOT NULL,
     `DailyGoals` VARCHAR(45) NULL,
-    PRIMARY KEY (`idDaySchedule`),
+    PRIMARY KEY (`idDaySchedule`, `UserID`),
     UNIQUE INDEX `idDaySchedule_UNIQUE` (`idDaySchedule` ASC) VISIBLE,
     INDEX `fk_DaySchedule_UserID_idx` (`UserID` ASC) VISIBLE,
     CONSTRAINT `fk_DaySchedule_UserID`
@@ -279,7 +279,7 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`ScheduleItem` (
     `ItemType` TINYINT NOT NULL,
     `Location` VARCHAR(45) DEFAULT NULL,
     `TaskID` INT UNSIGNED DEFAULT NULL,
-    PRIMARY KEY (`idScheduleItem`),
+    PRIMARY KEY (`idScheduleItem`, `UserID`),
     UNIQUE INDEX `idScheduleItem_UNIQUE` (`idScheduleItem` ASC) VISIBLE,
     INDEX `fk_ScheduleItem_UserID_idx` (`UserID` ASC) VISIBLE,
     CONSTRAINT `fk_ScheduleItem_UserID`
@@ -297,7 +297,7 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`Notes` (
     `UserID` INT UNSIGNED NOT NULL,
     `NotationDateTime` DATETIME NOT NULL,
     `Content` VARCHAR(1024) NOT NULL,
-    PRIMARY KEY (`idNotes`),
+    PRIMARY KEY (`idNotes`, `UserID`),
     UNIQUE INDEX `idNotes_UNIQUE` (`idNotes` ASC) VISIBLE,
     INDEX `fk_Notes_UserID_idx` (`UserID` ASC) VISIBLE,
     CONSTRAINT `fk_Notes_UserID`
