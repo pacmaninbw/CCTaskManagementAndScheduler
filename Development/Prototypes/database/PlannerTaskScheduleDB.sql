@@ -17,6 +17,100 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserProfile` (
 
 -- --------------------------------------------------------
 
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserLoginAndPassword`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserLoginAndPassword` (
+    `UserID` INT UNSIGNED NOT NULL,
+    `LoginName` VARCHAR(45) NOT NULL,
+    `HashedPassWord` TINYTEXT,
+    PRIMARY KEY (`UserID`, `LoginName`),
+    UNIQUE INDEX `UserID_UNIQUE` (`UserID` ASC),
+    UNIQUE INDEX `LoginName_UNIQUE` (`LoginName` ASC),
+    CONSTRAINT `fk_PassWord_UserID`
+        FOREIGN KEY (`UserID`)
+        REFERENCES `UserProfile` (`idUserProfile`)
+        ON DELETE RESTRICT
+        ON UPDATE RESTRICT
+);
+
+-- --------------------------------------------------------
+
+DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`UserPlatformIndependentPreferences`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserPlatformIndependentPreferences` (
+    `UserID` INT UNSIGNED NOT NULL,
+    `ScheduleDayStart` TIME NOT NULL,
+    `ScheduleDayEnd` TIME NOT NULL,
+    `IncludePriorityInSchedule` BOOLEAN DEFAULT TRUE,
+    `IncludeMinorPriorityInSchedule` BOOLEAN DEFAULT TRUE,
+    `UseLettersForMajorPriority` BOOLEAN DEFAULT TRUE,
+    `SeparatePriorityWithDot` BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (`UserID`),
+    UNIQUE INDEX `UserID_UNIQUE` (`UserID` ASC),
+    CONSTRAINT `fk_PlatformIndependentPrefs_UserID`
+        FOREIGN KEY (`UserID`)
+        REFERENCES `UserProfile` (`idUserProfile`)
+        ON DELETE RESTRICT
+        ON UPDATE RESTRICT
+);
+
+-- --------------------------------------------------------
+
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserGoals`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserGoals` (
+    `idUserGoals` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `UserID` INT UNSIGNED NOT NULL,
+    `Description` TINYTEXT NOT NULL,
+    `Priority` INT DEFAULT NULL,
+    `ParentGoal` INT UNSIGNED DEFAULT NULL,
+    PRIMARY KEY (`idUserGoals`, `UserID`),
+    UNIQUE INDEX `idUserGoals_UNIQUE` (`idUserGoals`),
+    CONSTRAINT `fk_UserGoals_UserID`
+        FOREIGN KEY (`UserID`)
+        REFERENCES `UserProfile` (`idUserProfile`)
+        ON DELETE RESTRICT
+        ON UPDATE RESTRICT,
+    INDEX `fk_UserGoals_UserID_idx` (`UserID`)
+);
+
+-- --------------------------------------------------------
+
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserNotes`;
+CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserNotes` (
+    `idUserNotes` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `UserID` INT UNSIGNED NOT NULL,
+    `NotationDateTime` DATETIME NOT NULL,
+    `Content` VARCHAR(1024) NOT NULL,
+    PRIMARY KEY (`idUserNotes`, `UserID`),
+    UNIQUE INDEX `idUserNotes_UNIQUE` (`idUserNotes` ASC) VISIBLE,
+    INDEX `fk_UserNotes_UserID_idx` (`UserID` ASC) VISIBLE,
+    CONSTRAINT `fk_UserNotes_UserID`
+      FOREIGN KEY (`UserID`)
+      REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`idUserProfile`)
+      ON DELETE RESTRICT
+      ON UPDATE RESTRICT
+);
+    
+-- --------------------------------------------------------
+
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`TaskStatusEnum`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`TaskStatusEnum` (
+    `idTaskStatusEnum` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `TaskStatusEnumLable` VARCHAR(45) NOT NULL,
+    PRIMARY KEY (`idTaskStatusEnum`),
+    UNIQUE INDEX `idTaskStatusEnum_UNIQUE` (`idTaskStatusEnum` ASC),
+    UNIQUE INDEX `TaskStatusEnumLable_UNIQUE` (`TaskStatusEnumLable` ASC)
+);
+
+INSERT INTO PlannerTaskScheduleDB.TaskStatusEnum
+    (TaskStatusEnumLable)
+    VALUES
+        ('Not Started'),
+        ('On Hold'),
+        ('Waiting for Dependency'),
+        ('Work in Progress'),
+        ('Complete');
+
+-- --------------------------------------------------------
+
 DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Tasks`;
 CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Tasks` (
     `idTasks` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -69,12 +163,10 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`TaskDates` (
 
 DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`TaskEffort`;
 CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`TaskEffort` (
-    `idTaskEffort` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `TaskID` INT UNSIGNED NOT NULL,
     `EstimatedEffortHours` INT UNSIGNED NOT NULL,
     `ActualEffortHours` float NOT NULL,
-    PRIMARY KEY (`idTaskEffort`, `TaskID`),
-    UNIQUE INDEX `idTaskEffort_UNIQUE` (`idTaskEffort`),
+    PRIMARY KEY (`TaskID`),
     UNIQUE INDEX `TaskID_UNIQUE` (`TaskID`),
     CONSTRAINT `fk_TaskEffort_TaskID`
         FOREIGN KEY (`TaskID`)
@@ -85,53 +177,13 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`TaskEffort` (
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Goals`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Goals` (
-    `idGoals` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `UserID` INT UNSIGNED NOT NULL,
-    `Description` TINYTEXT NOT NULL,
-    `Priority` INT DEFAULT NULL,
-    `ParentGoal` INT UNSIGNED DEFAULT NULL,
-    PRIMARY KEY (`idGoals`, `UserID`),
-    UNIQUE INDEX `idGoals_UNIQUE` (`idGoals`),
-    CONSTRAINT `fk_Goals_UserID`
-        FOREIGN KEY (`UserID`)
-        REFERENCES `UserProfile` (`idUserProfile`)
-        ON DELETE RESTRICT
-        ON UPDATE RESTRICT,
-    INDEX `fk_Goals_UserID_idx` (`UserID`)
-);
-
--- --------------------------------------------------------
-
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`LoginAndPassword`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`LoginAndPassword` (
-    `idLoginAndPassword` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `UserID` INT UNSIGNED NOT NULL,
-    `LoginName` VARCHAR(45) NOT NULL,
-    `HashedPassWord` TINYTEXT,
-    PRIMARY KEY (`idLoginAndPassword`, `UserID`, `LoginName`),
-    UNIQUE INDEX `idLoginAndPassword_UNIQUE` (`idLoginAndPassword` ASC),
-    UNIQUE INDEX `UserID_UNIQUE` (`UserID` ASC),
-    UNIQUE INDEX `LoginName_UNIQUE` (`LoginName` ASC),
-    CONSTRAINT `fk_PassWord_UserID`
-        FOREIGN KEY (`UserID`)
-        REFERENCES `UserProfile` (`idUserProfile`)
-        ON DELETE RESTRICT
-        ON UPDATE RESTRICT
-);
-
--- --------------------------------------------------------
-
 DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserTaskPriority`;
 CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskPriority` (
-    `idUserTaskPriority` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `TaskID` INT UNSIGNED NOT NULL,
     `UserID` INT UNSIGNED NOT NULL,
     `SchedulePriorityGroup` INT UNSIGNED NOT NULL,
     `PriorityInGroup` INT UNSIGNED NOT NULL,
-    PRIMARY KEY (`idUserTaskPriority`, `TaskID`, `UserID`),
-    UNIQUE INDEX `idUserTaskPriority_UNIQUE` (`idUserTaskPriority` ASC),
+    PRIMARY KEY (`TaskID`, `UserID`),
     UNIQUE INDEX `TaskID_UNIQUE` (`TaskID` ASC),
     CONSTRAINT `fk_Priority_TaskID`
         FOREIGN KEY (`TaskID`)
@@ -150,15 +202,15 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskPriority` (
 DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserTaskGoals`;
 CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskGoals` (
     `idUserTaskGoals` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `AssignedTo` INT UNSIGNED NOT NULL,
+    `UserID` INT UNSIGNED NOT NULL,
     `TaskID`  INT UNSIGNED NOT NULL,
     `Goal1` INT UNSIGNED NOT NULL,
     `Goal2` INT UNSIGNED DEFAULT NULL,
     `Goal3` INT UNSIGNED DEFAULT NULL,
     `Goal4` INT UNSIGNED DEFAULT NULL,
-    PRIMARY KEY (`idUserTaskGoals`,`AssignedTo`,`TaskID`),
+    PRIMARY KEY (`idUserTaskGoals`,`UserID`,`TaskID`),
     CONSTRAINT `fk_UserTaskGoals_AsignedTo`
-        FOREIGN KEY (`AssignedTo`)
+        FOREIGN KEY (`UserID`)
         REFERENCES `UserProfile` (`idUserProfile`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT,
@@ -168,26 +220,6 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskGoals` (
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
 );
-
--- --------------------------------------------------------
-
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`TaskStatus`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`TaskStatus` (
-    `idTaskStatus` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `StatusStr` VARCHAR(45) NOT NULL,
-    PRIMARY KEY (`idTaskStatus`),
-    UNIQUE INDEX `idTaskStatus_UNIQUE` (`idTaskStatus` ASC),
-    UNIQUE INDEX `StatusStr_UNIQUE` (`StatusStr` ASC)
-);
-
-INSERT INTO PlannerTaskScheduleDB.TaskStatus
-    (StatusStr)
-    VALUES
-        ('Not Started'),
-        ('On Hold'),
-        ('Waiting for Dependency'),
-        ('Work in Progress'),
-        ('Complete');
 
 -- --------------------------------------------------------
 
@@ -207,39 +239,17 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`TaskDependencies` (
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`PlatformIndependentPreferences`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`PlatformIndependentPreferences` (
-    `idPlatformIndependentPreferences` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `UserID` INT UNSIGNED NOT NULL,
-    `ScheduleDayStart` TIME NOT NULL,
-    `ScheduleDayEnd` TIME NOT NULL,
-    `IncludePriorityInSchedule` BOOLEAN DEFAULT TRUE,
-    `IncludeMinorPriorityInSchedule` BOOLEAN DEFAULT TRUE,
-    `UseLettersForMajorPriority` BOOLEAN DEFAULT TRUE,
-    `SeparatePriorityWithDot` BOOLEAN DEFAULT FALSE,
-    PRIMARY KEY (`idPlatformIndependentPreferences`, `UserID`),
-    UNIQUE INDEX `idPlatformIndependentPreferences_UNIQUE` (`idPlatformIndependentPreferences` ASC),
-    UNIQUE INDEX `UserID_UNIQUE` (`UserID` ASC),
-    CONSTRAINT `fk_PlatformIndependentPrefs_UserID`
-        FOREIGN KEY (`UserID`)
-        REFERENCES `UserProfile` (`idUserProfile`)
-        ON DELETE RESTRICT
-        ON UPDATE RESTRICT
+DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`UserScheduleItemTypeEnum`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserScheduleItemTypeEnum` (
+    `idUserScheduleItemTypeEnum` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `UserScheduleItemTypeEnumLabel` VARCHAR(45) NOT NULL,
+    PRIMARY KEY (`idUserScheduleItemTypeEnum`),
+    UNIQUE INDEX `idUserScheduleItemTypeEnum_UNIQUE` (`idUserScheduleItemTypeEnum` ASC),
+    UNIQUE INDEX `UserScheduleItemTypeEnumLabel_UNIQUE` (`UserScheduleItemTypeEnumLabel` ASC)
 );
 
--- --------------------------------------------------------
-
-DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`ScheduleItemType`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`ScheduleItemType` (
-    `idScheduleItemType` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `ScheduleItemTypeStr` VARCHAR(45) NOT NULL,
-    PRIMARY KEY (`idScheduleItemType`),
-    UNIQUE INDEX `idScheduleItemType_UNIQUE` (`idScheduleItemType` ASC),
-    UNIQUE INDEX `ScheduleItemTypeStr_UNIQUE` (`ScheduleItemTypeStr` ASC)
-);
-
-INSERT INTO PlannerTaskScheduleDB.ScheduleItemType
-    (ScheduleItemTypeStr)
+INSERT INTO PlannerTaskScheduleDB.UserScheduleItemTypeEnum
+    (UserScheduleItemTypeEnumLabel)
     VALUES
         ('Meeting'),
         ('Phone Call'),
@@ -250,18 +260,18 @@ INSERT INTO PlannerTaskScheduleDB.ScheduleItemType
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`DaySchedule`;
-CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`DaySchedule` (
-    `idDaySchedule` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`UserDaySchedule`;
+CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserDaySchedule` (
+    `idUserDaySchedule` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserID` INT UNSIGNED NOT NULL,
     `DateOfSchedule` DATE NOT NULL,
     `StartOfDay` TIME NOT NULL,
     `EndOfDay` TIME NOT NULL,
     `DailyGoals` VARCHAR(45) NULL,
-    PRIMARY KEY (`idDaySchedule`, `UserID`),
-    UNIQUE INDEX `idDaySchedule_UNIQUE` (`idDaySchedule` ASC) VISIBLE,
-    INDEX `fk_DaySchedule_UserID_idx` (`UserID` ASC) VISIBLE,
-    CONSTRAINT `fk_DaySchedule_UserID`
+    PRIMARY KEY (`idUserDaySchedule`, `UserID`),
+    UNIQUE INDEX `idUserDaySchedule_UNIQUE` (`idUserDaySchedule` ASC) VISIBLE,
+    INDEX `fk_UserDaySchedule_UserID_idx` (`UserID` ASC) VISIBLE,
+    CONSTRAINT `fk_UserDaySchedule_UserID`
       FOREIGN KEY (`UserID`)
       REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`idUserProfile`)
       ON DELETE RESTRICT
@@ -270,162 +280,144 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`DaySchedule` (
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`ScheduleItem`;
-CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`ScheduleItem` (
-    `idScheduleItem` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`UserScheduleItem`;
+CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserScheduleItem` (
+    `idUserScheduleItem` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserID` INT UNSIGNED NOT NULL,
     `StartDateTime` DATETIME NOT NULL,
     `EndDateTime` DATETIME NOT NULL,
     `ItemType` TINYINT NOT NULL,
     `Location` VARCHAR(45) DEFAULT NULL,
     `TaskID` INT UNSIGNED DEFAULT NULL,
-    PRIMARY KEY (`idScheduleItem`, `UserID`),
-    UNIQUE INDEX `idScheduleItem_UNIQUE` (`idScheduleItem` ASC) VISIBLE,
-    INDEX `fk_ScheduleItem_UserID_idx` (`UserID` ASC) VISIBLE,
-    CONSTRAINT `fk_ScheduleItem_UserID`
+    PRIMARY KEY (`idUserScheduleItem`, `UserID`),
+    UNIQUE INDEX `idUserScheduleItem_UNIQUE` (`idUserScheduleItem` ASC) VISIBLE,
+    INDEX `fk_UserScheduleItem_UserID_idx` (`UserID` ASC) VISIBLE,
+    CONSTRAINT `fk_UserScheduleItem_UserID`
       FOREIGN KEY (`UserID`)
       REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`idUserProfile`)
       ON DELETE RESTRICT
       ON UPDATE RESTRICT
 );
 
--- --------------------------------------------------------
-
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Notes`;
-CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`Notes` (
-    `idNotes` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `UserID` INT UNSIGNED NOT NULL,
-    `NotationDateTime` DATETIME NOT NULL,
-    `Content` VARCHAR(1024) NOT NULL,
-    PRIMARY KEY (`idNotes`, `UserID`),
-    UNIQUE INDEX `idNotes_UNIQUE` (`idNotes` ASC) VISIBLE,
-    INDEX `fk_Notes_UserID_idx` (`UserID` ASC) VISIBLE,
-    CONSTRAINT `fk_Notes_UserID`
-      FOREIGN KEY (`UserID`)
-      REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`idUserProfile`)
-      ON DELETE RESTRICT
-      ON UPDATE RESTRICT
-);
-    
 -- -----------------------------------------------------
 -- Stored Functions
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- function findTaskStatusValueByLabel
+-- function findTaskStatusEnumValueByLabel
 -- -----------------------------------------------------
 
 USE `PlannerTaskScheduleDB`;
-DROP function IF EXISTS `PlannerTaskScheduleDB`.`findTaskStatusValueByLabel`;
+DROP function IF EXISTS `PlannerTaskScheduleDB`.`findTaskStatusEnumValueByLabel`;
 
 DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
-CREATE FUNCTION `findTaskStatusValueByLabel`(
-    StatusStr VARCHAR(20)
+CREATE FUNCTION `findTaskStatusEnumValueByLabel`(
+    TaskStatusEnumLable VARCHAR(20)
 ) RETURNS INT
 DETERMINISTIC
 BEGIN
     
-    SET @TaskStatusKey = 0;
+    SET @TaskStatusEnumKey = 0;
     
-    SELECT TaskStatus.idTaskStatus INTO @TaskStatusKey
-        FROM TaskStatus
-        WHERE TaskStatus.StatusStr = StatusStr;
-    IF @TaskStatusKey IS NULL THEN
-        SET @TaskStatusKey = 0;
+    SELECT TaskStatusEnum.idTaskStatusEnum INTO @TaskStatusEnumKey
+        FROM TaskStatusEnum
+        WHERE TaskStatusEnum.TaskStatusEnumLable = TaskStatusEnumLable;
+    IF @TaskStatusEnumKey IS NULL THEN
+        SET @TaskStatusEnumKey = 0;
     END IF;
 
-    RETURN @TaskStatusKey;
+    RETURN @TaskStatusEnumKey;
     
 END$$
 
 DELIMITER ;
 
 -- -----------------------------------------------------
--- function findTaskStatusLabelByValue
+-- function findTaskStatusEnumLabelByValue
 -- -----------------------------------------------------
 
 USE `PlannerTaskScheduleDB`;
-DROP function IF EXISTS `PlannerTaskScheduleDB`.`findTaskStatusLabelByValue`;
+DROP function IF EXISTS `PlannerTaskScheduleDB`.`findTaskStatusEnumLabelByValue`;
 
 DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
-CREATE FUNCTION `findTaskStatusLabelByValue`(
+CREATE FUNCTION `findTaskStatusEnumLabelByValue`(
     StatusKey INT
 ) RETURNS VARCHAR(20)
 DETERMINISTIC
 BEGIN
     
-    SET @TaskStatusLabel = ``;
+    SET @TaskStatusEnumLabel = ``;
     
-    SELECT TaskStatus.StatusStr INTO @TaskStatusLabel
-        FROM TaskStatus
-        WHERE TaskStatus.idTaskStatus = StatusStr;
-    IF @TasTaskStatusLabelkStatusKey IS NULL THEN
-        SET @TaskStatusLabel = 'Not Started';
+    SELECT TaskStatusEnum.TaskStatusEnumLable INTO @TaskStatusEnumLabel
+        FROM TaskStatusEnum
+        WHERE TaskStatusEnum.idTaskStatusEnum = TaskStatusEnumLable;
+    IF @TasTaskStatusEnumLabelkStatusKey IS NULL THEN
+        SET @TaskStatusEnumLabel = 'Not Started';
     END IF;
 
-    RETURN @TaskStatusLabel;
+    RETURN @TaskStatusEnumLabel;
     
 END$$
 
 DELIMITER ;
 
 -- -----------------------------------------------------
--- function findScheduleItemTypeLabelByValue
+-- function findUserScheduleItemTypeEnumLabelByValue
 -- -----------------------------------------------------
 
 USE `PlannerTaskScheduleDB`;
-DROP function IF EXISTS `PlannerTaskScheduleDB`.`findScheduleItemTypeLabelByValue`;
+DROP function IF EXISTS `PlannerTaskScheduleDB`.`findUserScheduleItemTypeEnumLabelByValue`;
 
 DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
-CREATE FUNCTION `findScheduleItemTypeLabelByValue`(
+CREATE FUNCTION `findUserScheduleItemTypeEnumLabelByValue`(
     StatusKey INT
 ) RETURNS VARCHAR(20)
 DETERMINISTIC
 BEGIN
     
-    SET @ScheduleItemTypeLabel = ``;
+    SET @UserScheduleItemTypeEnumLabel = ``;
     
-    SELECT ScheduleItemType.StatusStr INTO @ScheduleItemTypeLabel
-        FROM ScheduleItemType
-        WHERE ScheduleItemType.idScheduleItemType = StatusStr;
-    IF @TasScheduleItemTypeLabelkStatusKey IS NULL THEN
-        SET @ScheduleItemTypeLabel = 'Not Started';
+    SELECT UserScheduleItemTypeEnum.TaskStatusEnumLable INTO @UserScheduleItemTypeEnumLabel
+        FROM UserScheduleItemTypeEnum
+        WHERE UserScheduleItemTypeEnum.idUserScheduleItemTypeEnum = TaskStatusEnumLable;
+    IF @TasUserScheduleItemTypeEnumLabelkStatusKey IS NULL THEN
+        SET @UserScheduleItemTypeEnumLabel = 'Not Started';
     END IF;
 
-    RETURN @ScheduleItemTypeLabel;
+    RETURN @UserScheduleItemTypeEnumLabel;
     
 END$$
 
 DELIMITER ;
 
 -- -----------------------------------------------------
--- function findScheduleItemTypeValueByLabel
+-- function findUserScheduleItemTypeEnumValueByLabel
 -- -----------------------------------------------------
 
 USE `PlannerTaskScheduleDB`;
-DROP function IF EXISTS `PlannerTaskScheduleDB`.`findScheduleItemTypeValueByLabel`;
+DROP function IF EXISTS `PlannerTaskScheduleDB`.`findUserScheduleItemTypeEnumValueByLabel`;
 
 DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
-CREATE FUNCTION `findScheduleItemTypeValueByLabel`(
-    StatusStr VARCHAR(20)
+CREATE FUNCTION `findUserScheduleItemTypeEnumValueByLabel`(
+    TaskStatusEnumLable VARCHAR(20)
 ) RETURNS INT
 DETERMINISTIC
 BEGIN
     
-    SET @ScheduleItemTypeKey = 0;
+    SET @UserScheduleItemTypeEnumKey = 0;
     
-    SELECT ScheduleItemType.idScheduleItemType INTO @ScheduleItemTypeKey
-        FROM ScheduleItemType
-        WHERE ScheduleItemType.StatusStr = StatusStr;
-    IF @ScheduleItemTypeKey IS NULL THEN
-        SET @ScheduleItemTypeKey = 0;
+    SELECT UserScheduleItemTypeEnum.idUserScheduleItemTypeEnum INTO @UserScheduleItemTypeEnumKey
+        FROM UserScheduleItemTypeEnum
+        WHERE UserScheduleItemTypeEnum.TaskStatusEnumLable = TaskStatusEnumLable;
+    IF @UserScheduleItemTypeEnumKey IS NULL THEN
+        SET @UserScheduleItemTypeEnumKey = 0;
     END IF;
 
-    RETURN @ScheduleItemTypeKey;
+    RETURN @UserScheduleItemTypeEnumKey;
     
 END$$
 
@@ -449,9 +441,9 @@ BEGIN
 
     SET @UserIDKey = 0;
 
-    SELECT LoginAndPassword.UserID INTO @UserIDKey
-        FROM LoginAndPassword
-        WHERE LoginAndPassword.LoginName = LoginName;
+    SELECT UserLoginAndPassword.UserID INTO @UserIDKey
+        FROM UserLoginAndPassword
+        WHERE UserLoginAndPassword.LoginName = LoginName;
     IF @UserIDKey IS NULL THEN
         SET @UserIDKey = 0;
     END IF;
@@ -497,15 +489,15 @@ END$$
 DELIMITER;
 
 -- -----------------------------------------------------
--- function isValidLoginAndPassword
+-- function isValidUserLoginAndPassword
 -- -----------------------------------------------------
 
 USE `PlannerTaskScheduleDB`;
-DROP function IF EXISTS `isValidLoginAndPassword`;
+DROP function IF EXISTS `isValidUserLoginAndPassword`;
 
 DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
-CREATE FUNCTION `isValidLoginAndPassword`
+CREATE FUNCTION `isValidUserLoginAndPassword`
 (
     LoginName VARCHAR(45),
     HashedPassWord TINYTEXT
@@ -517,10 +509,10 @@ BEGIN
     SET @UserIDKey = 0;
     SET @isValid = 1;
 
-    SELECT LoginAndPassword.UserID INTO @UserIDKey
-        FROM LoginAndPassword
-        WHERE LoginAndPassword.LoginName = LoginName AND
-            LoginAndPassword.HashedPassWord = HashedPassWord;
+    SELECT UserLoginAndPassword.UserID INTO @UserIDKey
+        FROM UserLoginAndPassword
+        WHERE UserLoginAndPassword.LoginName = LoginName AND
+            UserLoginAndPassword.HashedPassWord = HashedPassWord;
 
     IF @UserIDKey IS NULL THEN
         SET @isValid = 0;
@@ -562,11 +554,11 @@ DELIMITER ;
 
 
 USE `PlannerTaskScheduleDB`;
-DROP procedure IF EXISTS `addNewUserLoginAndPassword`;
+DROP procedure IF EXISTS `addNewUserUserLoginAndPassword`;
 
 DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
-CREATE PROCEDURE `addNewUserLoginAndPassword`
+CREATE PROCEDURE `addNewUserUserLoginAndPassword`
 (
 	IN UserID INT UNSIGNED,
     IN LoginName VARCHAR(45),
@@ -574,11 +566,11 @@ CREATE PROCEDURE `addNewUserLoginAndPassword`
 )
 BEGIN
 
-	INSERT INTO LoginAndPassword
+	INSERT INTO UserLoginAndPassword
 		(
-			LoginAndPassword.UserID,
-            LoginAndPassword.LoginName,
-            LoginAndPassword.HashedPassWord
+			UserLoginAndPassword.UserID,
+            UserLoginAndPassword.LoginName,
+            UserLoginAndPassword.HashedPassWord
 		)
 		VALUES (UserID, LoginName, HashedPassWord);
 END$$
@@ -610,7 +602,7 @@ BEGIN
         
         SET @NewUserID := LAST_INSERT_ID();
         
-        CALL addNewUserLoginAndPassword(@NewUserID, LoginName, HashedPassWord);
+        CALL addNewUserUserLoginAndPassword(@NewUserID, LoginName, HashedPassWord);
         
         CALL addNewUserPreferences(@NewUserID);
 
@@ -695,7 +687,7 @@ CREATE PROCEDURE `createTask`
 )
 BEGIN
 
-	SET @TaskStatusValue = findTaskStatusValueByLabel('Not Started');
+	SET @TaskStatusEnumValue = findTaskStatusEnumValueByLabel('Not Started');
     
 	INSERT INTO Tasks
 		(
@@ -711,7 +703,7 @@ BEGIN
             CreatedBy,
             Description,
             PriorityInAllTasks,
-            @TaskStatusValue
+            @TaskStatusEnumValue
 		);
         
 		SET @NewTaskID := LAST_INSERT_ID();
@@ -786,11 +778,11 @@ BEGIN
 
 	SET @NotationDateTime := now();
     
-    INSERT INTO Notes
+    INSERT INTO UserNotes
 		(
-			Notes.UserID,
-            Notes.NotationDateTime,
-            Notes.Content
+			UserNotes.UserID,
+            UserNotes.NotationDateTime,
+            UserNotes.Content
 		)
 		VALUES
 		(
@@ -817,10 +809,10 @@ CREATE PROCEDURE `createGoal`
 )
 BEGIN
 
-	INSERT INTO Goals
+	INSERT INTO UserGoals
 		(
-			Goals.UserID,
-            Goals.Description
+			UserGoals.UserID,
+            UserGoals.Description
         )
         VALUES
         (
@@ -828,18 +820,18 @@ BEGIN
             Description
         );
         
-	SET @idGoals  := LAST_INSERT_ID();
+	SET @idUserGoals  := LAST_INSERT_ID();
     
 	IF Priority IS NOT NULL AND Priority > 0 THEN
-        UPDATE Goals 
-            SET Goals.Priority = Priority
-            WHERE Goals.idTasks = @idGoals;
+        UPDATE UserGoals 
+            SET UserGoals.Priority = Priority
+            WHERE UserGoals.idTasks = @idUserGoals;
     END IF;
 
 	IF ParentGoal IS NOT NULL AND ParentGoal > 0 THEN
-        UPDATE Goals 
-            SET Goals.ParentGoal = ParentGoal
-            WHERE Goals.idTasks = @idGoals;
+        UPDATE UserGoals 
+            SET UserGoals.ParentGoal = ParentGoal
+            WHERE UserGoals.idTasks = @idUserGoals;
     END IF;
 
 END$$
