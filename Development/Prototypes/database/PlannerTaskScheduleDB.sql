@@ -287,8 +287,8 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserScheduleItem` (
     `StartDateTime` DATETIME NOT NULL,
     `EndDateTime` DATETIME NOT NULL,
     `ItemType` TINYINT NOT NULL,
+    `Title` VARCHAR(128) NOT NULL,
     `Location` VARCHAR(45) DEFAULT NULL,
-    `TaskID` INT UNSIGNED DEFAULT NULL,
     PRIMARY KEY (`idUserScheduleItem`, `UserID`),
     UNIQUE INDEX `idUserScheduleItem_UNIQUE` (`idUserScheduleItem` ASC) VISIBLE,
     INDEX `fk_UserScheduleItem_UserID_idx` (`UserID` ASC) VISIBLE,
@@ -894,3 +894,113 @@ DELIMITER ;
 
 
 COMMIT;
+
+USE `PlannerTaskScheduleDB`;
+DROP procedure IF EXISTS `addUserScheduleItem`;
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`$$
+CREATE PROCEDURE `addUserScheduleItem`
+(
+	IN UserID INT UNSIGNED,
+    IN StartTime DATETIME,
+    IN EndTime DATETIME,
+    IN ItemType VARCHAR(45),
+    IN Title VARCHAR(45),
+    IN Location VARCHAR(45)
+)
+BEGIN
+	SET @ScheduleItemTypeID =
+		findUserScheduleItemTypeEnumValueByLabel(ItemType);
+    
+	INSERT INTO UserScheduleItem
+		(
+			UserScheduleItem.UserID,
+            UserScheduleItem.StartDateTime,
+            UserScheduleItem.EndDateTime,
+            UserScheduleItem.ItemType,
+            UserScheduleItem.Title,
+            UserScheduleItem.Location
+		)
+		VALUES
+		(
+			UserID,
+            StartTime,
+            EndTime,
+            @ScheduleItemTypeID,
+            Title,
+            Location
+		);
+END$$
+
+DELIMITER ;
+
+USE `PlannerTaskScheduleDB`;
+DROP procedure IF EXISTS `addUserDaySchedule`;
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`$$
+CREATE PROCEDURE `addUserDaySchedule`
+(
+	IN UserID INT UNSIGNED,
+    IN DateOfSchedule DATE,
+    IN StartOfDay TIME,
+    IN EndOfDay TIME,
+    IN DailyGoals VARCHAR(45)
+)
+BEGIN
+	
+	IF DateOfSchedule IS NULL THEN
+		SET DateOfSchedule = current_date();
+    END IF;
+    
+    INSERT INTO UserDaySchedule
+		(
+			UserDaySchedule.UserID,
+            UserDaySchedule.DateOfSchedule,
+            UserDaySchedule.StartOfDay,
+            UserDaySchedule.EndOfDay,
+            UserDaySchedule.DailyGoals
+        )
+        VALUES
+        (
+			UserID,
+            DateOfSchedule,
+            StartOfDay,
+            EndOfDay,
+            DailyGoals
+        );
+    
+END$$
+
+DELIMITER ;
+
+USE `PlannerTaskScheduleDB`;
+DROP procedure IF EXISTS `todaysTaskList`;
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`$$
+CREATE PROCEDURE `todaysTaskList`
+(
+	IN UserID INT UNSIGNED
+)
+BEGIN
+
+	SET @TaskListDate = current_date();
+    
+	SELECT
+		UserTaskPriority.SchedulePriorityGroup,
+		UserTaskPriority.PriorityInGroup,
+        Tasks.Description
+	FROM 
+		Tasks, UserTaskPriority, TaskDates
+	WHERE
+		Tasks.AsignedTo = UserID AND
+		Tasks.TaskID = UserTaskPriority.TaskID AND
+        Tasks.TaskId = TaskDates.TaskID AND
+        TaskDates.Comleted IS NULL AND
+        TaskDates.RequiredDelivery >= @TaskListDate
+    ;
+END$$
+
+DELIMITER ;
