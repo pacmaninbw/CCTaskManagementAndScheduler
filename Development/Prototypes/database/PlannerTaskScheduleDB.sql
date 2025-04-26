@@ -93,10 +93,10 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserNotes` (
 
 DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`TaskStatusEnum`;
 CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`TaskStatusEnum` (
-    `idTaskStatusEnum` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `TaskIDtatusEnum` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `TaskStatusEnumLable` VARCHAR(45) NOT NULL,
-    PRIMARY KEY (`idTaskStatusEnum`),
-    UNIQUE INDEX `idTaskStatusEnum_UNIQUE` (`idTaskStatusEnum` ASC),
+    PRIMARY KEY (`TaskIDtatusEnum`),
+    UNIQUE INDEX `TaskIDtatusEnum_UNIQUE` (`TaskIDtatusEnum` ASC),
     UNIQUE INDEX `TaskStatusEnumLable_UNIQUE` (`TaskStatusEnumLable` ASC)
 );
 
@@ -113,18 +113,19 @@ INSERT INTO PlannerTaskScheduleDB.TaskStatusEnum
 
 DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Tasks`;
 CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Tasks` (
-    `idTasks` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `TaskID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `CreatedBy` INT UNSIGNED NOT NULL,
     `AsignedTo` INT UNSIGNED NOT NULL,
-    `Description` TINYTEXT NOT NULL,
+    `Description` VARCHAR(256) NOT NULL,
     `PriorityInAllTasks` INT UNSIGNED NOT NULL,
     `ParentTask` INT UNSIGNED DEFAULT NULL,
     `Status` INT UNSIGNED DEFAULT NULL,
     `PercentageComplete` double NOT NULL,
-    PRIMARY KEY (`idTasks`, `CreatedBy`),
-    UNIQUE INDEX `idTasks_UNIQUE` (`idTasks` ASC),
-    INDEX `fk_Tasks_CreatedBy_idx` (`CreatedBy` ASC),
-    INDEX `fk_Tasks_AsignedTo_idx` (`AsignedTo` ASC),
+    PRIMARY KEY (`TaskID`, `CreatedBy`),
+    UNIQUE INDEX `TaskID_UNIQUE` (`TaskID` ASC) VISIBLE,
+    INDEX `fk_Tasks_CreatedBy_idx` (`CreatedBy` ASC) VISIBLE,
+    INDEX `fk_Tasks_AsignedTo_idx` (`AsignedTo` ASC) VISIBLE,
+    INDEX `Description_idx` (`Description` ASC) VISIBLE,
     CONSTRAINT `fk_Tasks_CreatedBy`
         FOREIGN KEY (`CreatedBy`)
         REFERENCES `UserProfile` (`idUserProfile`)
@@ -137,11 +138,11 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Tasks` (
         ON UPDATE RESTRICT
 );
 
+
 -- --------------------------------------------------------
 
 DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`TaskDates`;
 CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`TaskDates` (
-    `idTaskDates` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `TaskID` INT UNSIGNED NOT NULL,
     `CreatedOn` date NOT NULL,
     `RequiredDelivery` date NOT NULL,
@@ -149,12 +150,11 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`TaskDates` (
     `ActualStart` date DEFAULT NULL,
     `EstimatedCompletion` date DEFAULT NULL,
     `Comleted` date DEFAULT NULL,
-    PRIMARY KEY (`idTaskDates`, `TaskID`),
-    UNIQUE INDEX `idTaskDates_UNIQUE` (`idTaskDates` ASC),
-    INDEX `fk_TaskDates_TaskID_idx` (`TaskID` ASC),
+    PRIMARY KEY (`TaskID`),
+    UNIQUE INDEX `TaskID_UNIQUE` (`TaskID` ASC),
     CONSTRAINT `fk_TaskDates_TaskID`
         FOREIGN KEY (`TaskID`)
-        REFERENCES `Tasks` (`idTasks`)
+        REFERENCES `Tasks` (`TaskID`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
 );
@@ -170,7 +170,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`TaskEffort` (
     UNIQUE INDEX `TaskID_UNIQUE` (`TaskID`),
     CONSTRAINT `fk_TaskEffort_TaskID`
         FOREIGN KEY (`TaskID`)
-        REFERENCES `Tasks` (`idTasks`)
+        REFERENCES `Tasks` (`TaskID`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
 );
@@ -187,7 +187,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskPriority` (
     UNIQUE INDEX `TaskID_UNIQUE` (`TaskID` ASC),
     CONSTRAINT `fk_Priority_TaskID`
         FOREIGN KEY (`TaskID`)
-        REFERENCES `Tasks` (`idTasks`)
+        REFERENCES `Tasks` (`TaskID`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT,
     CONSTRAINT `fk_Priority_UserID`
@@ -216,7 +216,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskGoals` (
         ON UPDATE RESTRICT,
     CONSTRAINT `fk_UserTaskGoals_TaskID`
         FOREIGN KEY (`TaskID`)
-        REFERENCES `Tasks` (`idTasks`)
+        REFERENCES `Tasks` (`TaskID`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
 );
@@ -232,7 +232,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`TaskDependencies` (
     UNIQUE INDEX `idTaskDependencies_UNIQUE` (`idTaskDependencies` ASC),
     CONSTRAINT `fk_TaskDependencies_TaskID`
         FOREIGN KEY (`TaskID`)
-        REFERENCES `Tasks` (`idTasks`)
+        REFERENCES `Tasks` (`TaskID`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
 );
@@ -320,7 +320,7 @@ BEGIN
     
     SET @TaskStatusEnumKey = 0;
     
-    SELECT TaskStatusEnum.idTaskStatusEnum INTO @TaskStatusEnumKey
+    SELECT TaskStatusEnum.TaskIDtatusEnum INTO @TaskStatusEnumKey
         FROM TaskStatusEnum
         WHERE TaskStatusEnum.TaskStatusEnumLable = TaskStatusEnumLable;
     IF @TaskStatusEnumKey IS NULL THEN
@@ -352,7 +352,7 @@ BEGIN
     
     SELECT TaskStatusEnum.TaskStatusEnumLable INTO @TaskStatusEnumLabel
         FROM TaskStatusEnum
-        WHERE TaskStatusEnum.idTaskStatusEnum = TaskStatusEnumLable;
+        WHERE TaskStatusEnum.TaskIDtatusEnum = TaskStatusEnumLable;
     IF @TasTaskStatusEnumLabelkStatusKey IS NULL THEN
         SET @TaskStatusEnumLabel = 'Not Started';
     END IF;
@@ -723,7 +723,7 @@ BEGIN
     IF ParentTask IS NOT NULL AND ParentTask > 0 THEN
         UPDATE Tasks 
             SET Tasks.ParentTask = ParentTask
-            WHERE Tasks.idTasks = @NewTaskID;
+            WHERE Tasks.TaskID = @NewTaskID;
     END IF;
 
 END$$
@@ -825,13 +825,13 @@ BEGIN
 	IF Priority IS NOT NULL AND Priority > 0 THEN
         UPDATE UserGoals 
             SET UserGoals.Priority = Priority
-            WHERE UserGoals.idTasks = @idUserGoals;
+            WHERE UserGoals.TaskID = @idUserGoals;
     END IF;
 
 	IF ParentGoal IS NOT NULL AND ParentGoal > 0 THEN
         UPDATE UserGoals 
             SET UserGoals.ParentGoal = ParentGoal
-            WHERE UserGoals.idTasks = @idUserGoals;
+            WHERE UserGoals.TaskID = @idUserGoals;
     END IF;
 
 END$$
@@ -890,10 +890,6 @@ BEGIN
 END$$
 
 DELIMITER ;
-
-
-
-COMMIT;
 
 USE `PlannerTaskScheduleDB`;
 DROP procedure IF EXISTS `addUserScheduleItem`;
@@ -989,18 +985,26 @@ BEGIN
 	SET @TaskListDate = current_date();
     
 	SELECT
-		UserTaskPriority.SchedulePriorityGroup,
-		UserTaskPriority.PriorityInGroup,
-        Tasks.Description
+		UTP.SchedulePriorityGroup,
+		UTP.PriorityInGroup,
+        t.Description
 	FROM 
-		Tasks, UserTaskPriority, TaskDates
+        Tasks as t
+        LEFT JOIN UserTaskPriority as UTP ON t.TaskID = UTP.TaskID
+        LEFT JOIN TaskDates as TD ON t.TaskID = TD.TaskID
 	WHERE
-		Tasks.AsignedTo = UserID AND
-		Tasks.TaskID = UserTaskPriority.TaskID AND
-        Tasks.TaskId = TaskDates.TaskID AND
-        TaskDates.Comleted IS NULL AND
-        TaskDates.RequiredDelivery >= @TaskListDate
+		t.AsignedTo = UserID AND
+        UTP.UserID = UserID AND
+        TD.Comleted IS NULL AND
+        TD.RequiredDelivery <= @TaskListDate
+    ORDER BY 
+        UTP.SchedulePriorityGroup ASC,
+        UTP.PriorityInGroup ASC,
+        TD.RequiredDelivery ASC
     ;
 END$$
 
 DELIMITER ;
+
+COMMIT;
+
