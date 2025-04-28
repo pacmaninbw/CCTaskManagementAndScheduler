@@ -7,12 +7,12 @@ CREATE DATABASE IF NOT EXISTS `PlannerTaskScheduleDB`;
 
 DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserProfile`;
 CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserProfile` (
-    `idUserProfile` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `UserID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `LastName` VARCHAR(45) NOT NULL,
     `FirstName` TINYTEXT NOT NULL,
     `MiddleInitial` TINYTEXT,
-    PRIMARY KEY (`idUserProfile`, `LastName`),
-    UNIQUE INDEX `idUserProfile_UNIQUE` (`idUserProfile`)
+    PRIMARY KEY (`UserID`, `LastName`),
+    UNIQUE INDEX `UserID_UNIQUE` (`UserID`)
 );
 
 -- --------------------------------------------------------
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserLoginAndPassword` (
     UNIQUE INDEX `LoginName_UNIQUE` (`LoginName` ASC),
     CONSTRAINT `fk_PassWord_UserID`
         FOREIGN KEY (`UserID`)
-        REFERENCES `UserProfile` (`idUserProfile`)
+        REFERENCES `UserProfile` (`UserID`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
 );
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserPlatformIndependentPref
     UNIQUE INDEX `UserID_UNIQUE` (`UserID` ASC),
     CONSTRAINT `fk_PlatformIndependentPrefs_UserID`
         FOREIGN KEY (`UserID`)
-        REFERENCES `UserProfile` (`idUserProfile`)
+        REFERENCES `UserProfile` (`UserID`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
 );
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserGoals` (
     UNIQUE INDEX `idUserGoals_UNIQUE` (`idUserGoals`),
     CONSTRAINT `fk_UserGoals_UserID`
         FOREIGN KEY (`UserID`)
-        REFERENCES `UserProfile` (`idUserProfile`)
+        REFERENCES `UserProfile` (`UserID`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT,
     INDEX `fk_UserGoals_UserID_idx` (`UserID`)
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserNotes` (
     INDEX `fk_UserNotes_UserID_idx` (`UserID` ASC) VISIBLE,
     CONSTRAINT `fk_UserNotes_UserID`
       FOREIGN KEY (`UserID`)
-      REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`idUserProfile`)
+      REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`UserID`)
       ON DELETE RESTRICT
       ON UPDATE RESTRICT
 );
@@ -128,12 +128,12 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Tasks` (
     INDEX `Description_idx` (`Description` ASC) VISIBLE,
     CONSTRAINT `fk_Tasks_CreatedBy`
         FOREIGN KEY (`CreatedBy`)
-        REFERENCES `UserProfile` (`idUserProfile`)
+        REFERENCES `UserProfile` (`UserID`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT,
     CONSTRAINT `fk_Tasks_AsignedTo`
         FOREIGN KEY (`AsignedTo`)
-        REFERENCES `UserProfile` (`idUserProfile`)
+        REFERENCES `UserProfile` (`UserID`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
 );
@@ -192,7 +192,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskPriority` (
         ON UPDATE RESTRICT,
     CONSTRAINT `fk_Priority_UserID`
         FOREIGN KEY (`UserID`)
-        REFERENCES `UserProfile` (`idUserProfile`)
+        REFERENCES `UserProfile` (`UserID`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
 );
@@ -201,17 +201,13 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskPriority` (
 
 DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserTaskGoals`;
 CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskGoals` (
-    `idUserTaskGoals` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserID` INT UNSIGNED NOT NULL,
     `TaskID`  INT UNSIGNED NOT NULL,
-    `Goal1` INT UNSIGNED NOT NULL,
-    `Goal2` INT UNSIGNED DEFAULT NULL,
-    `Goal3` INT UNSIGNED DEFAULT NULL,
-    `Goal4` INT UNSIGNED DEFAULT NULL,
-    PRIMARY KEY (`idUserTaskGoals`,`UserID`,`TaskID`),
+    `TaskGoalList` VARCHAR(45) NOT NULL,
+    PRIMARY KEY (`UserID`,`TaskID`),
     CONSTRAINT `fk_UserTaskGoals_AsignedTo`
         FOREIGN KEY (`UserID`)
-        REFERENCES `UserProfile` (`idUserProfile`)
+        REFERENCES `UserProfile` (`UserID`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT,
     CONSTRAINT `fk_UserTaskGoals_TaskID`
@@ -273,7 +269,7 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserDaySchedule` (
     INDEX `fk_UserDaySchedule_UserID_idx` (`UserID` ASC) VISIBLE,
     CONSTRAINT `fk_UserDaySchedule_UserID`
       FOREIGN KEY (`UserID`)
-      REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`idUserProfile`)
+      REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`UserID`)
       ON DELETE RESTRICT
       ON UPDATE RESTRICT
 );
@@ -294,7 +290,7 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserScheduleItem` (
     INDEX `fk_UserScheduleItem_UserID_idx` (`UserID` ASC) VISIBLE,
     CONSTRAINT `fk_UserScheduleItem_UserID`
       FOREIGN KEY (`UserID`)
-      REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`idUserProfile`)
+      REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`UserID`)
       ON DELETE RESTRICT
       ON UPDATE RESTRICT
 );
@@ -473,7 +469,7 @@ BEGIN
 
     SET @UserIDKey = 0;
 
-    SELECT UserProfile.idUserProfile INTO @UserIDKey
+    SELECT UserProfile.UserID INTO @UserIDKey
         FROM UserProfile
         WHERE UserProfile.LastName = LastName AND
             UserProfile.FirstName = FirstName AND
@@ -540,13 +536,13 @@ CREATE PROCEDURE `addNewUserPreferences`
 )
 BEGIN
 
-	INSERT INTO PlatformIndepenentPreferences (
-		PlatformIndepenentPreferences.UserID,
-        PlatformIndepenentPreferences.ScheduleDayStart,
-        PlatformIndepenentPreferences.ScheduleDayEnd
+	INSERT INTO UserPlatformIndependentPreferences (
+		UserPlatformIndependentPreferences.UserID,
+        UserPlatformIndependentPreferences.ScheduleDayStart,
+        UserPlatformIndependentPreferences.ScheduleDayEnd
     )
     
-    VALUES (UserID, '8:30:00', '17:00:00');
+    VALUES (UserID, '08:30:00', '17:00:00');
     
 END$$
 
@@ -678,7 +674,7 @@ USE `PlannerTaskScheduleDB`$$
 CREATE PROCEDURE `createTask`
 (
 	IN CreatedBy INT UNSIGNED,
-    IN Description TINYTEXT,
+    IN Description VARCHAR(256),
     IN ParentTask INT UNSIGNED,
     IN EstimatedEffortHours INT UNSIGNED,
     IN PriorityInAllTasks INT UNSIGNED,
@@ -1002,6 +998,38 @@ BEGIN
         UTP.PriorityInGroup ASC,
         TD.RequiredDelivery ASC
     ;
+END$$
+
+DELIMITER ;
+
+USE `PlannerTaskScheduleDB`;
+DROP procedure IF EXISTS `addUserTaskByLoginName`;
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`$$
+CREATE PROCEDURE `addUserTaskByLoginName`
+(
+	IN LoginName VARCHAR(45),
+	IN Description VARCHAR(256),
+    IN ParentTask INT UNSIGNED,
+    IN EstimatedEffortHours INT UNSIGNED,
+    IN PriorityInAllTasks INT UNSIGNED,
+    IN RequiredDelivery DATE,
+    IN ScheduledStart DATE
+)
+BEGIN
+
+	SET @CreatedBy = findUserIDKeyByLoginName(LoginName);
+    
+    CALL createTask(
+		@CreatedBy,
+        Description,
+        ParentTask,
+        EstimatedEffortHours,
+        PriorityInAllTasks,
+        RequiredDelivery,
+        ScheduledStart
+	);
 END$$
 
 DELIMITER ;
