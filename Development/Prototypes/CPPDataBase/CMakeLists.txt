@@ -11,13 +11,15 @@ if(POLICY CMP0167)
   cmake_policy(SET CMP0167 NEW)
 endif()
 
-find_package(Boost 1.87.0 REQUIRED COMPONENTS system)
+find_package(Boost 1.87.0 REQUIRED COMPONENTS system charconv)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 
 
 add_executable(protoTaskPlanner
     main.cpp
+    UserProfileTestData.h
+    UserTaskTestData.h
 )
 
-target_link_libraries(protoTaskPlanner  ${Boost_LIBRARIES} crypto)
+target_link_libraries(protoTaskPlanner  ${Boost_LIBRARIES} ssl crypto)
