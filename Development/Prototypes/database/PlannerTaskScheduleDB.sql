@@ -588,6 +588,8 @@ CREATE PROCEDURE `addNewUser`
     )
 BEGIN
 
+    START TRANSACTION;
+
 	INSERT INTO UserProfile
 		(
 			UserProfile.LastName,
@@ -596,12 +598,13 @@ BEGIN
         )
 		VALUES (LastName, FirstName, MiddleInitial);
         
-        SET @NewUserID := LAST_INSERT_ID();
-        
-        CALL addNewUserUserLoginAndPassword(@NewUserID, LoginName, HashedPassWord);
-        
-        CALL addNewUserPreferences(@NewUserID);
+    SET @NewUserID := LAST_INSERT_ID();
+    
+    CALL addNewUserUserLoginAndPassword(@NewUserID, LoginName, HashedPassWord);
+    
+    CALL addNewUserPreferences(@NewUserID);
 
+    COMMIT;
 END$$
 
 DELIMITER ;
@@ -683,6 +686,8 @@ CREATE PROCEDURE `createTask`
 )
 BEGIN
 
+    START TRANSACTION;
+
 	SET @TaskStatusEnumValue = findTaskStatusEnumValueByLabel('Not Started');
     
 	INSERT INTO Tasks
@@ -702,25 +707,27 @@ BEGIN
             @TaskStatusEnumValue
 		);
         
-		SET @NewTaskID := LAST_INSERT_ID();
-        
-        CALL createTaskDates(
-			@NewTaskID,
-            RequiredDelivery,
-            ScheduledStart
-		);
-        
-        CALL createTaskEffort
-        (
-			@NewTaskID,
-            EstimatedEffortHours
-        );
+    SET @NewTaskID := LAST_INSERT_ID();
+    
+    CALL createTaskDates(
+        @NewTaskID,
+        RequiredDelivery,
+        ScheduledStart
+    );
+    
+    CALL createTaskEffort
+    (
+        @NewTaskID,
+        EstimatedEffortHours
+    );
 
     IF ParentTask IS NOT NULL AND ParentTask > 0 THEN
         UPDATE Tasks 
             SET Tasks.ParentTask = ParentTask
             WHERE Tasks.TaskID = @NewTaskID;
     END IF;
+
+    COMMIT;
 
 END$$
 
@@ -741,6 +748,8 @@ CREATE PROCEDURE `createUserTaskPriority`
 )
 BEGIN
 
+    START TRANSACTION;
+
 	INSERT INTO UserTaskPriority
 		(
 			UserTaskPriority.TaskID,
@@ -755,6 +764,9 @@ BEGIN
             SchedulePriorityGroup,
             PriorityInGroup
         );
+
+    COMMIT;
+
 END$$
 
 DELIMITER ;
@@ -772,6 +784,8 @@ CREATE PROCEDURE `creatNote`
 )
 BEGIN
 
+    START TRANSACTION;
+
 	SET @NotationDateTime := now();
     
     INSERT INTO UserNotes
@@ -786,6 +800,8 @@ BEGIN
             @NotationDateTime,
             Content
         );
+
+    COMMIT;
 
 END$$
 
@@ -804,6 +820,8 @@ CREATE PROCEDURE `createGoal`
     IN ParentGoal INT UNSIGNED
 )
 BEGIN
+
+    START TRANSACTION;
 
 	INSERT INTO UserGoals
 		(
@@ -830,6 +848,8 @@ BEGIN
             WHERE UserGoals.TaskID = @idUserGoals;
     END IF;
 
+    COMMIT;
+
 END$$
 
 DELIMITER ;
@@ -846,6 +866,8 @@ CREATE PROCEDURE `accumulateTaskEffort`
 )
 BEGIN
 
+    START TRANSACTION;
+
 	SELECT ActualEffortHours
 		INTO @AccumlatedEffort
         FROM TaskEffort
@@ -856,7 +878,9 @@ BEGIN
     UPDATE Effort 
 		SET TaskEffort.ActualEffortHours = @AccumlatedEffort
         WHERE TaskEffort.TaskID = TaskID;
-        
+    
+    COMMIT;
+
 END$$
 
 DELIMITER ;
@@ -902,6 +926,9 @@ CREATE PROCEDURE `addUserScheduleItem`
     IN Location VARCHAR(45)
 )
 BEGIN
+
+    START TRANSACTION;
+
 	SET @ScheduleItemTypeID =
 		findUserScheduleItemTypeEnumValueByLabel(ItemType);
     
@@ -923,6 +950,9 @@ BEGIN
             Title,
             Location
 		);
+
+    COMMIT;
+
 END$$
 
 DELIMITER ;
@@ -978,6 +1008,8 @@ CREATE PROCEDURE `todaysTaskList`
 )
 BEGIN
 
+    START TRANSACTION;
+
 	SET @TaskListDate = current_date();
     
 	SELECT
@@ -998,6 +1030,9 @@ BEGIN
         UTP.PriorityInGroup ASC,
         TD.RequiredDelivery ASC
     ;
+
+    COMMIT;
+
 END$$
 
 DELIMITER ;
@@ -1019,6 +1054,8 @@ CREATE PROCEDURE `addUserTaskByLoginName`
 )
 BEGIN
 
+    START TRANSACTION;
+
 	SET @CreatedBy = findUserIDKeyByLoginName(LoginName);
     
     CALL createTask(
@@ -1030,6 +1067,9 @@ BEGIN
         RequiredDelivery,
         ScheduledStart
 	);
+
+    COMMIT;
+    
 END$$
 
 DELIMITER ;
