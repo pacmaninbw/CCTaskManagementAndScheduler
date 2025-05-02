@@ -1,6 +1,5 @@
-#include <boost/asio.hpp>
-#include <boost/mysql.hpp>
 #include "DBInterface.h"
+#include <exception>
 #include <iostream>
 #include "UserProfileTestData.h"
 #include "UserTaskTestData.h"
@@ -12,7 +11,7 @@ int main()
     try {
         loadUserProfileTestDataIntoDatabase(dbInterface);
         loadUserTaskestDataIntoDatabase(dbInterface);
-    } catch (const boost::mysql::error_with_diagnostics& err) {
+    } catch (const std::exception& err) {
         std::cerr << "Error: " << err.what() << "\n";
         return EXIT_FAILURE;
     }
