@@ -1,6 +1,7 @@
 #ifndef USERPROFILETESTDATA_H_
 #define USERPROFILETESTDATA_H_
 
+#include "DBInterface.h"
 #include <string_view>
 
 struct UserProfileTestData
@@ -11,5 +12,7 @@ struct UserProfileTestData
     std::string_view loginName;
     std::string_view hashedPassword;
 };
+
+extern void loadUserProfileTestDataIntoDatabase(DBInterface& dbInterface);
 
 #endif // USERPROFILETESTDATA_H_

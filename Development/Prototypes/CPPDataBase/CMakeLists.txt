@@ -18,8 +18,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 
 add_executable(protoTaskPlanner
     main.cpp
+    DBInterface.h
+    DBInterface.cpp
     UserProfileTestData.h
+    UserProfileTestData.cpp
     UserTaskTestData.h
+    UserTaskTestData.cpp
 )
 
 target_link_libraries(protoTaskPlanner  ${Boost_LIBRARIES} ssl crypto)
