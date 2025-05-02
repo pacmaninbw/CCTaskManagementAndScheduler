@@ -532,12 +532,12 @@ DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
 CREATE PROCEDURE `addNewUserPreferences`
 (
-	IN UserID INT UNSIGNED
+    IN UserID INT UNSIGNED
 )
 BEGIN
 
-	INSERT INTO UserPlatformIndependentPreferences (
-		UserPlatformIndependentPreferences.UserID,
+    INSERT INTO UserPlatformIndependentPreferences (
+        UserPlatformIndependentPreferences.UserID,
         UserPlatformIndependentPreferences.ScheduleDayStart,
         UserPlatformIndependentPreferences.ScheduleDayEnd
     )
@@ -556,19 +556,19 @@ DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
 CREATE PROCEDURE `addNewUserUserLoginAndPassword`
 (
-	IN UserID INT UNSIGNED,
+    IN UserID INT UNSIGNED,
     IN LoginName VARCHAR(45),
     IN HashedPassWord TINYTEXT
 )
 BEGIN
 
-	INSERT INTO UserLoginAndPassword
-		(
-			UserLoginAndPassword.UserID,
+    INSERT INTO UserLoginAndPassword
+        (
+            UserLoginAndPassword.UserID,
             UserLoginAndPassword.LoginName,
             UserLoginAndPassword.HashedPassWord
-		)
-		VALUES (UserID, LoginName, HashedPassWord);
+        )
+        VALUES (UserID, LoginName, HashedPassWord);
 END$$
 
 DELIMITER ;
@@ -579,24 +579,24 @@ DROP procedure IF EXISTS `addNewUser`;
 DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
 CREATE PROCEDURE `addNewUser`
-	(
+    (
         IN LastName VARCHAR(45),
-		IN FirstName TINYTEXT,
-		IN MiddleInitial TINYTEXT,
-	    IN LoginName VARCHAR(45),
-		IN HashedPassWord TINYTEXT
+        IN FirstName TINYTEXT,
+        IN MiddleInitial TINYTEXT,
+        IN LoginName VARCHAR(45),
+        IN HashedPassWord TINYTEXT
     )
 BEGIN
 
     START TRANSACTION;
 
-	INSERT INTO UserProfile
-		(
-			UserProfile.LastName,
+    INSERT INTO UserProfile
+        (
+            UserProfile.LastName,
             UserProfile.FirstName,
             UserProfile.MiddleInitial
         )
-		VALUES (LastName, FirstName, MiddleInitial);
+        VALUES (LastName, FirstName, MiddleInitial);
         
     SET @NewUserID := LAST_INSERT_ID();
     
@@ -616,26 +616,26 @@ DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
 CREATE PROCEDURE `createTaskDates`
 (
-	TaskID INT UNSIGNED,
+    TaskID INT UNSIGNED,
     RequiredDelivery DATE,
     ScheduledStart DATE
 )
 BEGIN
-	SET @CreationDate := curdate();
+    SET @CreationDate := curdate();
     
     INSERT INTO TaskDates
-		(
-			TaskDates.TaskID,
+        (
+            TaskDates.TaskID,
             TaskDates.CreatedOn,
             TaskDates.RequiredDelivery,
             TaskDates.ScheduledStart
-		)
-		VALUES (
-			TaskID,
+        )
+        VALUES (
+            TaskID,
             @CreationDate,
             RequiredDelivery,
             ScheduledStart
-		);
+        );
 END$$
 
 DELIMITER ;
@@ -647,20 +647,20 @@ DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
 CREATE PROCEDURE `createTaskEffort`
 (
-	IN TaskID INT UNSIGNED,
+    IN TaskID INT UNSIGNED,
     IN EstimatedEffortHours INT UNSIGNED
 )
 BEGIN
 
-	INSERT INTO TaskEffort
-		(
-			TaskEffort.TaskID,
+    INSERT INTO TaskEffort
+        (
+            TaskEffort.TaskID,
             TaskEffort.EstimatedEffortHours,
             TaskEffort.ActualEffortHours
-		)
+        )
         VALUES
         (
-			TaskID,
+            TaskID,
             EstimatedEffortHours,
             0.0
         );
@@ -676,7 +676,7 @@ DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
 CREATE PROCEDURE `createTask`
 (
-	IN CreatedBy INT UNSIGNED,
+    IN CreatedBy INT UNSIGNED,
     IN Description VARCHAR(256),
     IN ParentTask INT UNSIGNED,
     IN EstimatedEffortHours INT UNSIGNED,
@@ -688,24 +688,24 @@ BEGIN
 
     START TRANSACTION;
 
-	SET @TaskStatusEnumValue = findTaskStatusEnumValueByLabel('Not Started');
+    SET @TaskStatusEnumValue = findTaskStatusEnumValueByLabel('Not Started');
     
-	INSERT INTO Tasks
-		(
-			Tasks.CreatedBy,
+    INSERT INTO Tasks
+        (
+            Tasks.CreatedBy,
             Tasks.AsignedTo,
             Tasks.Description,
             Tasks.PriorityInAllTasks,
             Tasks.Status
         )
-		VALUES
-		(
-			CreatedBy,
+        VALUES
+        (
+            CreatedBy,
             CreatedBy,
             Description,
             PriorityInAllTasks,
             @TaskStatusEnumValue
-		);
+        );
         
     SET @NewTaskID := LAST_INSERT_ID();
     
@@ -741,7 +741,7 @@ DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
 CREATE PROCEDURE `createUserTaskPriority`
 (
-	IN UserID INT UNSIGNED,
+    IN UserID INT UNSIGNED,
     IN TaskID INT UNSIGNED,
     IN SchedulePriorityGroup INT UNSIGNED,
     IN PriorityInGroup INT UNSIGNED
@@ -750,16 +750,16 @@ BEGIN
 
     START TRANSACTION;
 
-	INSERT INTO UserTaskPriority
-		(
-			UserTaskPriority.TaskID,
+    INSERT INTO UserTaskPriority
+        (
+            UserTaskPriority.TaskID,
             UserTaskPriority.UserID,
             UserTaskPriority.SchedulePriorityGroup,
             UserTaskPriority.PriorityInGroup
-		)
+        )
         VALUES
         (
-			TaskID,
+            TaskID,
             UserID,
             SchedulePriorityGroup,
             PriorityInGroup
@@ -779,24 +779,24 @@ DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
 CREATE PROCEDURE `creatNote`
 (
-	IN UserID INT UNSIGNED,
+    IN UserID INT UNSIGNED,
     IN Content VARCHAR(1024)
 )
 BEGIN
 
     START TRANSACTION;
 
-	SET @NotationDateTime := now();
+    SET @NotationDateTime := now();
     
     INSERT INTO UserNotes
-		(
-			UserNotes.UserID,
+        (
+            UserNotes.UserID,
             UserNotes.NotationDateTime,
             UserNotes.Content
-		)
-		VALUES
-		(
-			UserID,
+        )
+        VALUES
+        (
+            UserID,
             @NotationDateTime,
             Content
         );
@@ -814,7 +814,7 @@ DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
 CREATE PROCEDURE `createGoal`
 (
-	IN UserID INT UNSIGNED,
+    IN UserID INT UNSIGNED,
     IN Description TINYTEXT,
     IN Priority INT,
     IN ParentGoal INT UNSIGNED
@@ -823,26 +823,26 @@ BEGIN
 
     START TRANSACTION;
 
-	INSERT INTO UserGoals
-		(
-			UserGoals.UserID,
+    INSERT INTO UserGoals
+        (
+            UserGoals.UserID,
             UserGoals.Description
         )
         VALUES
         (
-			UserID,
+            UserID,
             Description
         );
         
-	SET @idUserGoals  := LAST_INSERT_ID();
+    SET @idUserGoals  := LAST_INSERT_ID();
     
-	IF Priority IS NOT NULL AND Priority > 0 THEN
+    IF Priority IS NOT NULL AND Priority > 0 THEN
         UPDATE UserGoals 
             SET UserGoals.Priority = Priority
             WHERE UserGoals.TaskID = @idUserGoals;
     END IF;
 
-	IF ParentGoal IS NOT NULL AND ParentGoal > 0 THEN
+    IF ParentGoal IS NOT NULL AND ParentGoal > 0 THEN
         UPDATE UserGoals 
             SET UserGoals.ParentGoal = ParentGoal
             WHERE UserGoals.TaskID = @idUserGoals;
@@ -861,22 +861,22 @@ DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
 CREATE PROCEDURE `accumulateTaskEffort`
 (
-	IN TaskID INT UNSIGNED,
+    IN TaskID INT UNSIGNED,
     IN ActualEffortHours FLOAT
 )
 BEGIN
 
     START TRANSACTION;
 
-	SELECT ActualEffortHours
-		INTO @AccumlatedEffort
+    SELECT ActualEffortHours
+        INTO @AccumlatedEffort
         FROM TaskEffort
         WHERE TaskEffort.TaskID = TaskID;
         
-	SET @AccumlatedEffort = @AccumlatedEffort + ActualEffortHours;
+    SET @AccumlatedEffort = @AccumlatedEffort + ActualEffortHours;
     
     UPDATE Effort 
-		SET TaskEffort.ActualEffortHours = @AccumlatedEffort
+        SET TaskEffort.ActualEffortHours = @AccumlatedEffort
         WHERE TaskEffort.TaskID = TaskID;
     
     COMMIT;
@@ -892,19 +892,19 @@ DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
 CREATE PROCEDURE `addTaskDependency`
 (
-	IN TaskID INT UNSIGNED,
+    IN TaskID INT UNSIGNED,
     IN Dependency INT UNSIGNED
 )
 BEGIN
 
-	INSERT INTO TaskDependencies
-		(
-			TaskDependencies.TaskID,
+    INSERT INTO TaskDependencies
+        (
+            TaskDependencies.TaskID,
             TaskDependencies.Dependency
         )
         VALUES
         (
-			TaskID,
+            TaskID,
             Dependency
         );
 END$$
@@ -918,7 +918,7 @@ DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
 CREATE PROCEDURE `addUserScheduleItem`
 (
-	IN UserID INT UNSIGNED,
+    IN UserID INT UNSIGNED,
     IN StartTime DATETIME,
     IN EndTime DATETIME,
     IN ItemType VARCHAR(45),
@@ -929,27 +929,27 @@ BEGIN
 
     START TRANSACTION;
 
-	SET @ScheduleItemTypeID =
-		findUserScheduleItemTypeEnumValueByLabel(ItemType);
+    SET @ScheduleItemTypeID =
+        findUserScheduleItemTypeEnumValueByLabel(ItemType);
     
-	INSERT INTO UserScheduleItem
-		(
-			UserScheduleItem.UserID,
+    INSERT INTO UserScheduleItem
+        (
+            UserScheduleItem.UserID,
             UserScheduleItem.StartDateTime,
             UserScheduleItem.EndDateTime,
             UserScheduleItem.ItemType,
             UserScheduleItem.Title,
             UserScheduleItem.Location
-		)
-		VALUES
-		(
-			UserID,
+        )
+        VALUES
+        (
+            UserID,
             StartTime,
             EndTime,
             @ScheduleItemTypeID,
             Title,
             Location
-		);
+        );
 
     COMMIT;
 
@@ -964,21 +964,21 @@ DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
 CREATE PROCEDURE `addUserDaySchedule`
 (
-	IN UserID INT UNSIGNED,
+    IN UserID INT UNSIGNED,
     IN DateOfSchedule DATE,
     IN StartOfDay TIME,
     IN EndOfDay TIME,
     IN DailyGoals VARCHAR(45)
 )
 BEGIN
-	
-	IF DateOfSchedule IS NULL THEN
-		SET DateOfSchedule = current_date();
+    
+    IF DateOfSchedule IS NULL THEN
+        SET DateOfSchedule = current_date();
     END IF;
     
     INSERT INTO UserDaySchedule
-		(
-			UserDaySchedule.UserID,
+        (
+            UserDaySchedule.UserID,
             UserDaySchedule.DateOfSchedule,
             UserDaySchedule.StartOfDay,
             UserDaySchedule.EndOfDay,
@@ -986,7 +986,7 @@ BEGIN
         )
         VALUES
         (
-			UserID,
+            UserID,
             DateOfSchedule,
             StartOfDay,
             EndOfDay,
@@ -1004,24 +1004,24 @@ DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
 CREATE PROCEDURE `todaysTaskList`
 (
-	IN UserID INT UNSIGNED
+    IN UserID INT UNSIGNED
 )
 BEGIN
 
     START TRANSACTION;
 
-	SET @TaskListDate = current_date();
+    SET @TaskListDate = current_date();
     
-	SELECT
-		UTP.SchedulePriorityGroup,
-		UTP.PriorityInGroup,
+    SELECT
+        UTP.SchedulePriorityGroup,
+        UTP.PriorityInGroup,
         t.Description
-	FROM 
+    FROM 
         Tasks as t
         LEFT JOIN UserTaskPriority as UTP ON t.TaskID = UTP.TaskID
         LEFT JOIN TaskDates as TD ON t.TaskID = TD.TaskID
-	WHERE
-		t.AsignedTo = UserID AND
+    WHERE
+        t.AsignedTo = UserID AND
         UTP.UserID = UserID AND
         TD.Comleted IS NULL AND
         TD.RequiredDelivery <= @TaskListDate
@@ -1044,8 +1044,8 @@ DELIMITER $$
 USE `PlannerTaskScheduleDB`$$
 CREATE PROCEDURE `addUserTaskByLoginName`
 (
-	IN LoginName VARCHAR(45),
-	IN Description VARCHAR(256),
+    IN LoginName VARCHAR(45),
+    IN Description VARCHAR(256),
     IN ParentTask INT UNSIGNED,
     IN EstimatedEffortHours INT UNSIGNED,
     IN PriorityInAllTasks INT UNSIGNED,
@@ -1056,17 +1056,17 @@ BEGIN
 
     START TRANSACTION;
 
-	SET @CreatedBy = findUserIDKeyByLoginName(LoginName);
+    SET @CreatedBy = findUserIDKeyByLoginName(LoginName);
     
     CALL createTask(
-		@CreatedBy,
+        @CreatedBy,
         Description,
         ParentTask,
         EstimatedEffortHours,
         PriorityInAllTasks,
         RequiredDelivery,
         ScheduledStart
-	);
+    );
 
     COMMIT;
     
