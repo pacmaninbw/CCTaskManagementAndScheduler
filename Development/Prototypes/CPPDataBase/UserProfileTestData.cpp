@@ -4,6 +4,15 @@
 #include <vector>
 #include "UserProfileTestData.h"
 
+struct UserProfileTestData
+{
+    std::string_view lastName;
+    std::string_view firstName;
+    std::string_view middleInitial;
+    std::string_view loginName;
+    std::string_view hashedPassword;
+};
+
 static std::vector<struct UserProfileTestData> userProfileTestData = 
 {
     {"Chernick", "Paul", "A", "ChernickPaulA", "WhereforeWhyFore1234"},
