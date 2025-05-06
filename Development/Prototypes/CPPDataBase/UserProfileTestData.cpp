@@ -1,11 +1,11 @@
 #include "DBInterface.h"
-#include "InMemUser.h"
+#include "UserModel.h"
 #include <iostream>
 #include <string_view>
 #include <vector>
 #include "UserProfileTestData.h"
 
-static std::vector<InMemUser> userProfileTestData = 
+static std::vector<UserModel> userProfileTestData = 
 {
     {"Chernick", "Paul", "A", "paul.chernick@chernicksw.com"},
     {"Chernick", "Nina", "L", "ChernickNinaL@gmail.com"},

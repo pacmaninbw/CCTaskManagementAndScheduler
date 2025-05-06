@@ -1,8 +1,8 @@
 #ifndef DBINTERFACE_H_
 #define DBINTERFACE_H_
 
-#include "InMemUser.h"
-#include "InMemUserTask.h"
+#include "UserModel.h"
+#include "TaskModel.h"
 #include <string>
 
 class DBInterface
@@ -10,8 +10,8 @@ class DBInterface
 public:
     DBInterface();
     ~DBInterface() = default;
-    void addUser(InMemUser &user);
-    void addTask(InMemUserTask &task);
+    void addUser(UserModel &user);
+    void addTask(TaskModel &task);
 
 private:
     void appendStringConstantToSqlStmt(std::string &sqlStmt, std::string strConstant, bool addComma);

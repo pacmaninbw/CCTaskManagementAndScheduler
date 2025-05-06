@@ -1,28 +1,25 @@
-#ifndef INMEMUSER_H_
-#define INMEMUSER_H_
+#ifndef USERMODEL_H_
+#define USERMODEL_H_
 
 #include <iostream>
 #include <string>
 
-/*
- * In Memory User
- */
-class InMemUser
+class UserModel
 {
 public:
-    InMemUser();
+    UserModel();
     /*
      * Add new user from GUI
      */
-    InMemUser(const char* lastIn, const char* firstIn, const char* middleIIn, const char* email="");
+    UserModel(const char* lastIn, const char* firstIn, const char* middleIIn, const char* email="");
     /*
      * Create user from database storeage, used on login for existing user.
      */
-    InMemUser(std::size_t userId, const char* dbLoginName, const char* dbPassWord, const char* dbLastName,
+    UserModel(std::size_t userId, const char* dbLoginName, const char* dbPassWord, const char* dbLastName,
         const char* dbFirstName, const char* dbMiddleInit, const char* dbEmail, const char* dbDayStart,
         const char* dbDayEnd, int dbPriorityinSched, int dbMinorPriorityInSched, int dbLettersForMajorP,
         int dbUseDot);
-    ~InMemUser();
+    ~UserModel();
     std::string getLastName() const { return lastName; };
     std::string getFirstName() const { return firstName; };
     std::string getMiddleInitial() const { return middleInitial; };
@@ -41,7 +38,7 @@ public:
     void dbSetUserId(std::size_t uID) { userID = uID; };
 
 
-    friend std::ostream& operator<<(std::ostream& os, const InMemUser& obj)
+    friend std::ostream& operator<<(std::ostream& os, const UserModel& obj)
     {
         os << "User Name:\n" << "\tLast Name:\t" << obj.lastName << "\n\tFirst Name\t" << obj.firstName <<
             "\n\tMiddle Initial:\t" << obj.middleInitial << "\n";
@@ -81,4 +78,4 @@ private:
     bool separatePriorityWithDot;
 };
 
-#endif // INMEMUSER_H_
+#endif // USERMODEL_H_

@@ -1,15 +1,15 @@
 #include <exception>
-#include "InMemUser.h"
+#include "UserModel.h"
 #include <stdexcept>
 #include <string>
 
 
-InMemUser::InMemUser()
+UserModel::UserModel()
 {
 
 }
 
-InMemUser::InMemUser(const char *lastIn, const char *firstIn, const char *middleIIn, const char *email)
+UserModel::UserModel(const char *lastIn, const char *firstIn, const char *middleIIn, const char *email)
     : lastName{lastIn},
     firstName{firstIn},
     middleInitial{middleIIn},
@@ -25,7 +25,7 @@ InMemUser::InMemUser(const char *lastIn, const char *firstIn, const char *middle
     createLoginBasedOnUserName(lastIn, firstIn, middleIIn);
 }
 
-InMemUser::InMemUser(std::size_t dbUserId, const char *dbLoginName, const char *dbPassWord, const char *dbLastName,
+UserModel::UserModel(std::size_t dbUserId, const char *dbLoginName, const char *dbPassWord, const char *dbLastName,
     const char *dbFirstName, const char *dbMiddleInit, const char *dbEmail, const char *dbDayStart,
     const char *dbDayEnd, int dbPriorityinSched, int dbMinorPriorityInSched, int dbLettersForMajorP,
     int dbUseDot)
@@ -45,26 +45,26 @@ InMemUser::InMemUser(std::size_t dbUserId, const char *dbLoginName, const char *
     separatePriorityWithDot = dbUseDot != 0;
 }
 
-InMemUser::~InMemUser()
+UserModel::~UserModel()
 {
 
 }
 
-std::string InMemUser::convertTo24hours(std::string sechduledTime)
+std::string UserModel::convertTo24hours(std::string sechduledTime)
 {
     std::string original(sechduledTime);
 
     std::size_t colonIdx = original.find(':');
     if (colonIdx == std::string::npos) {
 
-        std::runtime_error noColon("Colon not found between hours and minutes in InMemUser::convertTo24hours()");
+        std::runtime_error noColon("Colon not found between hours and minutes in UserModel::convertTo24hours()");
         throw noColon;
     }
 
     std::size_t spaceIdx = original.find(' ');
     if (spaceIdx == std::string::npos) {
 
-        std::runtime_error noSpace("Space not found after minutes in InMemUser::convertTo24hours()");
+        std::runtime_error noSpace("Space not found after minutes in UserModel::convertTo24hours()");
         throw noSpace;
     }
 
@@ -89,7 +89,7 @@ std::string InMemUser::convertTo24hours(std::string sechduledTime)
     return static_cast<std::string>(newTime);
 }
 
-void InMemUser::createLoginBasedOnUserName(std::string lastName, std::string firstName, std::string middleInitial)
+void UserModel::createLoginBasedOnUserName(std::string lastName, std::string firstName, std::string middleInitial)
 {
     std::string tempLoginName(lastName);
     tempLoginName += firstName;

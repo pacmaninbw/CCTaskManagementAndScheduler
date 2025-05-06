@@ -69,12 +69,12 @@ Task ID", "Priority Major", "Priority Minor", "Description", "Due Date", "Estima
 
 void loadUserTaskestDataIntoDatabase(DBInterface& dbInterface)
 {
-    InMemUser testUser("Chernick", "Paul", "A", "paul.chernick@chernicksw.com");
+    UserModel testUser("Chernick", "Paul", "A", "paul.chernick@chernicksw.com");
     testUser.dbSetUserId(1);
 
     for (auto taskTestData: userTaskTestData)
     {
-        InMemUserTask testTask(testUser, taskTestData.description, taskTestData.estimatedEffortHours,
+        TaskModel testTask(testUser, taskTestData.description, taskTestData.estimatedEffortHours,
             taskTestData.dueDate, taskTestData.scheduledStartDate);
 
         dbInterface.addTask(testTask);

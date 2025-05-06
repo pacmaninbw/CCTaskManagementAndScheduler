@@ -2,8 +2,8 @@
 #include <boost/mysql.hpp>
 #include "dbConnectionParameters.h"
 #include "DBInterface.h"
-#include "InMemUser.h"
-#include "InMemUserTask.h"
+#include "UserModel.h"
+#include "TaskModel.h"
 #include <iostream>
 #include <exception>
 #include <string>
@@ -43,7 +43,7 @@ static boost::asio::awaitable<void> coro_addUser(const char* sql)
     co_await conn.async_close();
 }
 
-void DBInterface::addUser(InMemUser &user)
+void DBInterface::addUser(UserModel &user)
 {
     std::string sqlStatmentPrep("CALL addNewUser(");
     appendStringConstantToSqlStmt(sqlStatmentPrep, user.getLastName(), true);
@@ -97,7 +97,7 @@ static boost::asio::awaitable<void> coro_addUserTask(
     co_await conn.async_close();
 }
 
-void DBInterface::addTask(InMemUserTask &task)
+void DBInterface::addTask(TaskModel &task)
 {
     std::size_t userID = task.getCreatorID();
     std::string description{""};

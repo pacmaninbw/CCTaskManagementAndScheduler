@@ -1,10 +1,10 @@
 #include <ctime>
-#include "InMemUser.h"
-#include "InMemUserTask.h"
+#include "UserModel.h"
+#include "TaskModel.h"
 #include <iostream>
 #include <string>
 
-InMemUserTask::InMemUserTask()
+TaskModel::TaskModel()
 :   taskID{0},
     createdByUid{0},
     assignedToUid{0},
@@ -26,9 +26,9 @@ InMemUserTask::InMemUserTask()
 
 }
 
-InMemUserTask::InMemUserTask(
-    InMemUser &creator, std::string &descriptionIn, unsigned int estimatedHoursEffort, std::string dueDate, std::string startDate,
-    InMemUserTask *parentTaskp, TaskStatus statusIn, unsigned int majorPriority, unsigned int minorPriority)
+TaskModel::TaskModel(
+    UserModel &creator, std::string &descriptionIn, unsigned int estimatedHoursEffort, std::string dueDate, std::string startDate,
+    TaskModel *parentTaskp, TaskStatus statusIn, unsigned int majorPriority, unsigned int minorPriority)
     : taskID{0},
     createdByUid{creator.getUserID()},
     assignedToUid{creator.getUserID()},
@@ -55,7 +55,7 @@ InMemUserTask::InMemUserTask(
     }
 }
 
-InMemUserTask::InMemUserTask(
+TaskModel::TaskModel(
     std::size_t taskIDfromDB, std::size_t createdByUidfromDb, std::size_t assignedToUidfromDb, std::string descriptionfromDb,
     std::size_t parentTaskIDfromDb, unsigned int statusfromDb, double percentageCompletefromDb, std::string createdOnDatefromDb,
     std::string requiredDeliveryDatefromDb, std::string scheduledStartDatefromDb, std::string actualStartDatefromDb,
@@ -81,12 +81,12 @@ InMemUserTask::InMemUserTask(
 {
 }
 
-InMemUserTask::~InMemUserTask()
+TaskModel::~TaskModel()
 {
 
 }
 
-std::string InMemUserTask::taskStatusString() const
+std::string TaskModel::taskStatusString() const
 {
     switch (status)
     {
@@ -105,7 +105,7 @@ std::string InMemUserTask::taskStatusString() const
     }
 }
 
-void InMemUserTask::setCreationDate()
+void TaskModel::setCreationDate()
 {
     std::time_t currentTime = std::time(0);
     std::tm* now = std::localtime(&currentTime);
@@ -117,7 +117,7 @@ void InMemUserTask::setCreationDate()
     createdOnDate = createDateString(month, day, year);
 }
 
-std::string InMemUserTask::createDateString(int month, int day, int year)
+std::string TaskModel::createDateString(int month, int day, int year)
 {
     std::string dateString = std::to_string(year) + "-" + std::to_string(month) + "-" + std::to_string(day);
 
