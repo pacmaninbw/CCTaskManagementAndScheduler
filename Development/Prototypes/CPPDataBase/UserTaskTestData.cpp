@@ -1,6 +1,6 @@
 #include "DBInterface.h"
 #include <iostream>
-#include <string_view>
+#include <string>
 #include <vector>
 #include "UserTaskTestData.h"
 
@@ -9,19 +9,19 @@ struct UserTaskTestData
     unsigned int priorityInAllTasks;
     char majorPriority;
     unsigned int minorPriority;
-    std::string_view description;
-    std::string_view dueDate;
+    std::string description;
+    std::string dueDate;
     unsigned int estimatedEffortHours;
     double actualEffortHours;
-    KeyType parentTask;
-    std::string_view dependencies;
-    std::string_view status;
-    std::string_view relatedGoals;
-    std::string_view scheduledStartDate;
-    std::string_view actualStartDate;
-    std::string_view createdDate;
-    std::string_view dueDate2;
-    std::string_view estimatedCompletionDate;
+    std::size_t parentTask;
+    std::string dependencies;
+    std::string status;
+    std::string relatedGoals;
+    std::string scheduledStartDate;
+    std::string actualStartDate;
+    std::string createdDate;
+    std::string dueDate2;
+    std::string estimatedCompletionDate;
 };
 
 /*
@@ -69,13 +69,15 @@ Task ID", "Priority Major", "Priority Minor", "Description", "Due Date", "Estima
 
 void loadUserTaskestDataIntoDatabase(DBInterface& dbInterface)
 {
-    KeyType userID = 1;
+    InMemUser testUser("Chernick", "Paul", "A", "paul.chernick@chernicksw.com");
+    testUser.dbSetUserId(1);
 
     for (auto taskTestData: userTaskTestData)
     {
-        dbInterface.addUserTaskWithUserID(userID, taskTestData.description, taskTestData.parentTask,
-            taskTestData.estimatedEffortHours, taskTestData.priorityInAllTasks, taskTestData.dueDate,
-            taskTestData.scheduledStartDate);
+        InMemUserTask testTask(testUser, taskTestData.description, taskTestData.estimatedEffortHours,
+            taskTestData.dueDate, taskTestData.scheduledStartDate);
+
+        dbInterface.addTask(testTask);
     
     }
 }
