@@ -20,6 +20,10 @@ add_executable(protoTaskPlanner
     main.cpp
     DBInterface.h
     DBInterface.cpp
+    InMemUser.h
+    InMemUser.cpp
+    InMemUserTask.h
+    InMemUserTask.cpp
     UserProfileTestData.h
     UserProfileTestData.cpp
     UserTaskTestData.h
