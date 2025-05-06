@@ -28,6 +28,23 @@ public:
         unsigned int priorityGroupfromDb, unsigned int priorityfromDb      
     );
     ~InMemUserTask();
+    void dbSetTaskID(std::size_t dbTaskID) { taskID = dbTaskID; };
+    std::size_t getCreatorID() const { return createdByUid; };
+    std::size_t getAssignToID() const { return assignedToUid; };
+    std::string getDescription() const { return description; };
+    InMemUserTask::TaskStatus getStatus() const { return status; };
+    std::size_t getParentTaskID() const { return parentTaskID; };
+    double getPercentageComplete() const { return percentageComplete; };
+    std::string getCreationDate() const { return createdOnDate; };
+    std::string getDueDate() const { return requiredDeliveryDate; };
+    std::string getScheduledStart() const { return scheduledStartDate; };
+    std::string getactualStartDate() const { return actualStartDate; };
+    std::string getEstimatedCompletion() const { return estimatedCompletionDate; };
+    std::string getCompletionDate() const { return completedDate; };
+    unsigned int getEstimatedEffort() const { return estimatedEffortHours; };
+    double getactualEffortToDate() const { return actualEffortHours; };
+    unsigned int getPriorityGoup() const { return priorityGroup; };
+    unsigned int getPriority() const { return priority; };
     std::string taskStatusString() const;
 
     friend std::ostream& operator<<(std::ostream& os, const InMemUserTask& obj)
@@ -56,6 +73,7 @@ public:
 
 private:
     void setCreationDate();
+    std::string createDateString(int month, int day, int year);
     TaskStatus statusFromInt(unsigned int statusI) const { return static_cast<InMemUserTask::TaskStatus>(statusI); };
 
 /*

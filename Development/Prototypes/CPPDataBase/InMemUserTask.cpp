@@ -114,6 +114,12 @@ void InMemUserTask::setCreationDate()
     int month = now->tm_mon + 1;
     int day = now->tm_mday;
 
-    createdOnDate = std::to_string(year) + "-" + std::to_string(month) + "-" + std::to_string(day);
+    createdOnDate = createDateString(month, day, year);
 }
 
+std::string InMemUserTask::createDateString(int month, int day, int year)
+{
+    std::string dateString = std::to_string(year) + "-" + std::to_string(month) + "-" + std::to_string(day);
+
+    return dateString;
+}
