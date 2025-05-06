@@ -38,6 +38,7 @@ public:
     bool isMinorPriorityInSchedule() const { return includeMinorPriorityInSchedule; };
     bool isUsingLettersForMaorPriority() const { return useLettersForMajorPriority; };
     bool isSeparatingPriorityWithDot() const { return separatePriorityWithDot; };
+    void dbSetUserId(std::size_t uID) { userID = uID; };
 
 
     friend std::ostream& operator<<(std::ostream& os, const InMemUser& obj)
