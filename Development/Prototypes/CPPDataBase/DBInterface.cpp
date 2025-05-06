@@ -10,9 +10,11 @@
 #include <boost/mysql/results.hpp>
 #include <boost/mysql/row_view.hpp>
 #include <boost/mysql/with_params.hpp>
-#include <cstdint>
+//#include <cstdint>
 #include "dbConnectionParameters.h"
 #include "DBInterface.h"
+#include "InMemUser.h"
+#include <iostream>
 #include <exception>
 #include <string>
 #include <string_view>
@@ -36,43 +38,39 @@ DBInterface::DBInterface()
  * all co-routines are static functions. The boost mysql and asio header files
  * are very large and incur major build times.
  */
-static boost::asio::awaitable<void> coro_addUser(
-    std::string_view lastName,
-    std::string_view firstName,
-    std::string_view middleInitial,
-    std::string_view loginName,
-    std::string_view hashedPassword
-)
+static boost::asio::awaitable<void> coro_addUser(const char* sql)
 {
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
     boost::mysql::results result;
-    co_await conn.async_execute(
-        boost::mysql::with_params("CALL addNewUser({}, {}, {}, {}, {})", 
-            lastName, firstName, middleInitial, loginName, hashedPassword),
-        result
-    );
+
+    std::cout << "Attempted SQL statement:\t" << sql << "\n";
+
+    co_await conn.async_execute(sql, result);
 
     co_await conn.async_close();
 }
 
-void DBInterface::addUser(
-    std::string_view& lastName,
-    std::string_view& firstName,
-    std::string_view& middleInitial,
-    std::string_view& loginName,
-    std::string_view& hashedPassword
-)
+void DBInterface::addUser(InMemUser &user)
 {
-    throwExceptionIfNotValidAddUser(lastName, firstName, loginName, hashedPassword);
+    throwExceptionIfNotValidAddUser(user);
+
+    std::string sqlStatmentPrep("CALL addNewUser(");
+    appendStringConstantToSqlStmt(sqlStatmentPrep, user.getLastName(), true);
+    appendStringConstantToSqlStmt(sqlStatmentPrep, user.getFirstName(), true);
+    appendStringConstantToSqlStmt(sqlStatmentPrep, user.getMiddleInitial(), true);
+    appendStringConstantToSqlStmt(sqlStatmentPrep, user.getLoginName(), true);
+    appendStringConstantToSqlStmt(sqlStatmentPrep, user.getPassword(), false);
+    sqlStatmentPrep += ")";
+
+    const char* sqlStmt = sqlStatmentPrep.c_str();
 
     boost::asio::io_context ctx;
 
     boost::asio::co_spawn(ctx,
-        [lastName, firstName, middleInitial, loginName, hashedPassword] {
-            return coro_addUser(lastName, firstName, middleInitial, loginName, hashedPassword); },
+        [sqlStmt] { return coro_addUser(sqlStmt); },
         [](std::exception_ptr ptr) {
             if (ptr)
             {
@@ -86,9 +84,9 @@ void DBInterface::addUser(
 
 
 static boost::asio::awaitable<void> coro_addUserTask(
-    KeyType userID,
+    std::size_t userID,
     std::string_view description,
-    KeyType parentTask,
+    std::size_t parentTask,
     unsigned int estimatedEffortHours,
     unsigned int priorityInAllTasks,
     std::string_view requiredDelivery,
@@ -112,9 +110,9 @@ static boost::asio::awaitable<void> coro_addUserTask(
 }
 
 void DBInterface::addUserTaskWithUserID(
-    KeyType userID,
+    std::size_t userID,
     std::string_view description,
-    KeyType parentTask,
+    std::size_t parentTask,
     unsigned int estimatedEffortHours,
     unsigned int priorityInAllTasks,
     std::string_view requiredDelivery,
@@ -142,7 +140,7 @@ void DBInterface::addUserTaskWithLoginName()
 }
 
 void DBInterface::stringViewValidationOrErrorMsg(
-    std::string_view& contents,
+    std::string_view contents,
     std::string_view& strName,
     std::string& eMsg,
     unsigned int& errorCount
@@ -160,28 +158,23 @@ void DBInterface::stringViewValidationOrErrorMsg(
     }
 }
 
-void DBInterface::throwExceptionIfNotValidAddUser(
-    std::string_view &lastName,
-    std::string_view &firstName,
-    std::string_view &loginName,
-    std::string_view &hashedPassword
-)
+void DBInterface::throwExceptionIfNotValidAddUser(InMemUser &user)
 {
     unsigned int errorCount = 0;
     std::string addUserErrorMessage("Error(s) in DBInterface::addUser() ");
     std::string_view strName;
 
     strName = "Last Name";
-    stringViewValidationOrErrorMsg(lastName, strName, addUserErrorMessage, errorCount);
+    stringViewValidationOrErrorMsg(user.getLastName(), strName, addUserErrorMessage, errorCount);
 
     strName = "First Name";
-    stringViewValidationOrErrorMsg(firstName, strName, addUserErrorMessage, errorCount);
+    stringViewValidationOrErrorMsg(user.getFirstName(), strName, addUserErrorMessage, errorCount);
 
     strName = "User Login";
-    stringViewValidationOrErrorMsg(loginName, strName, addUserErrorMessage, errorCount);
+    stringViewValidationOrErrorMsg(user.getLoginName(), strName, addUserErrorMessage, errorCount);
 
     strName = "Password";
-    stringViewValidationOrErrorMsg(hashedPassword, strName, addUserErrorMessage, errorCount);
+    stringViewValidationOrErrorMsg(user.getPassword(), strName, addUserErrorMessage, errorCount);
 
     if (errorCount)
     {
@@ -195,5 +188,14 @@ void DBInterface::throwExceptionIfNotValidAddUser(
         }
         std::runtime_error addUserException(addUserErrorMessage);
         throw addUserException;
+    }
+}
+
+void DBInterface::appendStringConstantToSqlStmt(std::string &sqlStmt, std::string strConstant, bool addComma)
+{
+    sqlStmt += "'" + strConstant + "'";
+    if (addComma)
+    {
+        sqlStmt += ", ";
     }
 }
