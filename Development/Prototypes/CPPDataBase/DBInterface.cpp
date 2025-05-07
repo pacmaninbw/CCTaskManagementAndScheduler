@@ -70,48 +70,38 @@ void DBInterface::addUser(UserModel &user)
     ctx.run();
 }
 
-
-static boost::asio::awaitable<void> coro_addUserTask(
-    std::size_t userID,
-    std::string_view description,
-    std::size_t parentTask,
-    unsigned int estimatedEffortHours,
-    unsigned int priorityInAllTasks,
-    std::string_view requiredDelivery,
-    std::string_view scheduledStart
-)
-{
-
-    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-    boost::mysql::results result;
-    co_await conn.async_execute(
-        boost::mysql::with_params("CALL createTask({}, {}, {}, {}, {}, {}. {})", 
-            userID, description, parentTask, estimatedEffortHours, priorityInAllTasks,
-            requiredDelivery, scheduledStart),
-        result
-    );
-
-    co_await conn.async_close();
-}
-
 void DBInterface::addTask(TaskModel &task)
 {
-    std::size_t userID = task.getCreatorID();
-    std::string description{""};
-    std::size_t parentTask{0};
-    unsigned int estimatedEffortHours{0};
-    unsigned int priorityInAllTasks{1};
-    std::string requiredDelivery("");
-    std::string scheduledStart("");
+    std::size_t priorityInAllTasks{1};
+
+    std::string sqlStatmentPrep("CALL createTask(");
+    std::string conversion = std::to_string(task.getCreatorID());
+    appendStringConstantToSqlStmt(sqlStatmentPrep, conversion, true);
+
+    appendStringConstantToSqlStmt(sqlStatmentPrep, task.getDescription(), true);
+
+    conversion = std::to_string(task.getParentTaskID());
+    appendStringConstantToSqlStmt(sqlStatmentPrep, conversion, true);
+
+    conversion = std::to_string(task.getEstimatedEffort());
+    appendStringConstantToSqlStmt(sqlStatmentPrep, conversion, true);
+
+    conversion = std::to_string(priorityInAllTasks);
+    appendStringConstantToSqlStmt(sqlStatmentPrep, conversion, true);
+
+    appendStringConstantToSqlStmt(sqlStatmentPrep, task.getDueDate(), true);
+
+    appendStringConstantToSqlStmt(sqlStatmentPrep, task.getScheduledStart(), false);
+
+    sqlStatmentPrep += ")";
+
+
+    const char* sqlStmt = sqlStatmentPrep.c_str();
 
     boost::asio::io_context ctx;
 
     boost::asio::co_spawn(ctx,
-        [userID, description, parentTask, estimatedEffortHours, priorityInAllTasks, requiredDelivery, scheduledStart] {
-            return coro_addUserTask(userID, description, parentTask, estimatedEffortHours, priorityInAllTasks, requiredDelivery, scheduledStart); },
+        [sqlStmt] { return coro_addUser(sqlStmt); },
         [](std::exception_ptr ptr) {
             if (ptr)
             {
