@@ -1,7 +1,9 @@
-#include "DBInterface.h"
 #include <iostream>
 #include <string>
 #include <vector>
+#include "TaskModel.h"
+#include "TaskModelToDBInterface.h"
+#include "UserModel.h"
 #include "UserTaskTestData.h"
 
 struct UserTaskTestData
@@ -67,8 +69,10 @@ Task ID", "Priority Major", "Priority Minor", "Description", "Due Date", "Estima
 }
  ;
 
-void loadUserTaskestDataIntoDatabase(DBInterface& dbInterface)
+void loadUserTaskestDataIntoDatabase()
 {
+    TaskModelToDBInterface TaskDBInterface;
+
     UserModel testUser("Chernick", "Paul", "A", "paul.chernick@chernicksw.com");
     testUser.dbSetUserId(1);
 
@@ -77,7 +81,7 @@ void loadUserTaskestDataIntoDatabase(DBInterface& dbInterface)
         TaskModel testTask(testUser, taskTestData.description, taskTestData.estimatedEffortHours,
             taskTestData.dueDate, taskTestData.scheduledStartDate);
 
-        dbInterface.addTask(testTask);
+        TaskDBInterface.addTaskToDatabase(testTask);
     
     }
 }

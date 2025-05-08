@@ -1,8 +1,6 @@
 #ifndef USERTASKTESTDATA_H_
 #define USERTASKTESTDATA_H_
 
-#include "DBInterface.h"
-
-extern void loadUserTaskestDataIntoDatabase(DBInterface& dbInterface);
+extern void loadUserTaskestDataIntoDatabase();
 
 #endif // USERTASKTESTDATA_H_

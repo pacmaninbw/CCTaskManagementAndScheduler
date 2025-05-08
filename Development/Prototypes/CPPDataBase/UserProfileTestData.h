@@ -3,6 +3,6 @@
 
 #include "DBInterface.h"
 
-extern void loadUserProfileTestDataIntoDatabase(DBInterface& dbInterface);
+extern void loadUserProfileTestDataIntoDatabase();
 
 #endif // USERPROFILETESTDATA_H_

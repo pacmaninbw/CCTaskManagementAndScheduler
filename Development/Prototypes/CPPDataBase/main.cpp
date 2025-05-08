@@ -1,4 +1,3 @@
-#include "DBInterface.h"
 #include <exception>
 #include <iostream>
 #include "UserProfileTestData.h"
@@ -6,11 +5,11 @@
 
 int main()
 {
-    DBInterface dbInterface;
+    DBInterface dbInterface("");
 
     try {
-        loadUserProfileTestDataIntoDatabase(dbInterface);
-        loadUserTaskestDataIntoDatabase(dbInterface);
+        loadUserProfileTestDataIntoDatabase();
+        loadUserTaskestDataIntoDatabase();
     } catch (const std::exception& err) {
         std::cerr << "Error: " << err.what() << "\n";
         return EXIT_FAILURE;

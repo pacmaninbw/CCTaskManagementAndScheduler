@@ -1,8 +1,8 @@
-#include "DBInterface.h"
-#include "UserModel.h"
 #include <iostream>
 #include <string_view>
 #include <vector>
+#include "UserModel.h"
+#include "UserModelToDBInterface.h"
 #include "UserProfileTestData.h"
 
 static std::vector<UserModel> userProfileTestData = 
@@ -16,11 +16,13 @@ static std::vector<UserModel> userProfileTestData =
 };
 
 
-void loadUserProfileTestDataIntoDatabase(DBInterface& dbInterface)
+void loadUserProfileTestDataIntoDatabase()
 {
+    UserModelToDBInterface userDBInterface;
+
     for (auto user: userProfileTestData)
     {
         std::cout << user << "\n\n";
-        dbInterface.addUser(user);
+        userDBInterface.addUserToDB(user);
     }
 }
