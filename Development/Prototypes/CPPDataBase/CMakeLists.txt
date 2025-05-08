@@ -22,8 +22,11 @@ add_executable(protoTaskPlanner
     DBInterface.cpp
     UserModel.h
     UserModel.cpp
+    UserModelToDBInterface.h
+    UserModelToDBInterface.cpp
     TaskModel.h
     TaskModel.cpp
+    TaskModelToDBInterface.h TaskModelToDBInterface.cpp
     UserProfileTestData.h
     UserProfileTestData.cpp
     UserTaskTestData.h
