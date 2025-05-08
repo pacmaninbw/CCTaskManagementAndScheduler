@@ -2,8 +2,6 @@
 #include <boost/mysql.hpp>
 #include "dbConnectionParameters.h"
 #include "DBInterface.h"
-#include "UserModel.h"
-#include "TaskModel.h"
 #include <iostream>
 #include <exception>
 #include <string>
@@ -43,41 +41,6 @@ static boost::asio::awaitable<void> coroutine_sqlstatement(std::string sql)
     co_await conn.async_execute(sql, result);
 
     co_await conn.async_close();
-}
-
-void DBInterface::addUser(UserModel &user)
-{
-    startAddStmt();
-
-    appendArgToSqlStmt(user.getLastName(), true);
-    appendArgToSqlStmt(user.getFirstName(), true);
-    appendArgToSqlStmt(user.getMiddleInitial(), true);
-    appendArgToSqlStmt(user.getLoginName(), true);
-    appendArgToSqlStmt(user.getPassword());
-    
-    sqlStatement += ")";
-
-    asyncExecutionSqlStatment(sqlStatement.c_str());
-}
-
-void DBInterface::addTask(TaskModel &task)
-{
-    std::size_t priorityInAllTasks{1};
-
-    startAddStmt();
-
-    appendArgToSqlStmt(task.getCreatorID(), true);
-    appendArgToSqlStmt(task.getDescription(), true);
-    appendArgToSqlStmt(task.getParentTaskID(), true);
-    appendArgToSqlStmt(task.getEstimatedEffort(), true);
-    appendArgToSqlStmt(priorityInAllTasks, true);
-    appendArgToSqlStmt(task.getDueDate(), true);
-    appendArgToSqlStmt(task.getScheduledStart());
-
-    sqlStatement += ")";
-
-    asyncExecutionSqlStatment(sqlStatement.c_str());
-
 }
 
 void DBInterface::asyncExecutionSqlStatment(std::string sqlStmt)

@@ -1,8 +1,6 @@
 #ifndef DBINTERFACE_H_
 #define DBINTERFACE_H_
 
-#include "UserModel.h"
-#include "TaskModel.h"
 #include <string>
 #include <string_view>
 
@@ -11,8 +9,6 @@ class DBInterface
 public:
     DBInterface(std::string table, std::string addStoredProcedure="");
     ~DBInterface() = default;
-    void addUser(UserModel &user);
-    void addTask(TaskModel &task);
 
 protected:
     void asyncExecutionSqlStatment(std::string sqlStmt);
