@@ -32,6 +32,7 @@ protected:
     void appendArgToSqlStmt(std::string_view arg, bool addComma=false)
         {appendArgToSqlStmt(std::string(arg), addComma); };
     bool requiredFieldHaseData(std::string arg) const { return (!arg.empty() && arg.size() > 0); };
+    bool requiredKeyHasValue(std::size_t key) const { return key != 0; };
 
 /*
  * Protected variables.

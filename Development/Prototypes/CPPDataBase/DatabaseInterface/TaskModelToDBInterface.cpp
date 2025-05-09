@@ -41,7 +41,7 @@ bool TaskModelToDBInterface::isValidDataForAddToDatabase(TaskModel &task)
 {
     bool isValid = true;
 
-    if (task.getCreatorID() == 0)
+    if (!requiredKeyHasValue(task.getCreatorID()))
     {
         std::cerr << "Creator ID not set\n";
         isValid = false;

@@ -1,11 +1,14 @@
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
-#include "dbConnectionParameters.h"
 #include "DBInterface.h"
 #include <iostream>
 #include <exception>
 #include <string>
 #include <string_view>
+
+static const std::string MySQLAdminUser{"REDACTEDD"};
+static const std::string MySQLAdminPassword{"REDACTED"};
+static const std::string PlannerDB{"PlannerTaskScheduleDB"};
 
 /*
  * The database connection information will not change during the entire
@@ -23,8 +26,8 @@ DBInterface::DBInterface(std::string table, std::string addStoredProcedure)
 : tableName{table}, storedProcedureToAddToTable{addStoredProcedure}
 {
     dbConnectionParameters.server_address.emplace_host_and_port("127.0.0.1", 3306);
-    dbConnectionParameters.username = MySQLRootUser;
-    dbConnectionParameters.password = MySQLRootPassword;
+    dbConnectionParameters.username = MySQLAdminUser;
+    dbConnectionParameters.password = MySQLAdminPassword;
     dbConnectionParameters.database = PlannerDB;
 }
 
@@ -68,6 +71,6 @@ void DBInterface::startAddStmt()
     }
     else
     {
-        sqlStatement = "INSERT INTO " + std::string(PlannerDB) + "." + tableName + " (";
+        sqlStatement = "INSERT INTO " + PlannerDB + "." + tableName + " (";
     }
 }
