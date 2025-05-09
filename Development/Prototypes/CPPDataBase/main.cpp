@@ -5,7 +5,6 @@
 
 int main()
 {
-    DBInterface dbInterface("");
 
     try {
         loadUserProfileTestDataIntoDatabase();
