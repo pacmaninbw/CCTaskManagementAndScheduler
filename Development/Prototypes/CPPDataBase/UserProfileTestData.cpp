@@ -22,7 +22,6 @@ void loadUserProfileTestDataIntoDatabase()
 
     for (auto user: userProfileTestData)
     {
-        std::cout << user << "\n\n";
         userDBInterface.addUserToDB(user);
     }
 }
