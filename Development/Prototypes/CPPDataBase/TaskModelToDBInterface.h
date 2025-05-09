@@ -13,6 +13,7 @@ public:
     void addTaskToDatabase(TaskModel& task);
 
 private:
+    bool isValidDataForAddToDatabase(TaskModel& task);
 
 };
 
