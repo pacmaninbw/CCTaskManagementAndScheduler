@@ -18,19 +18,13 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 
 add_executable(protoTaskPlanner
     main.cpp
-    DBInterface.h
-    DBInterface.cpp
-    UserModel.h
-    UserModel.cpp
-    UserModelToDBInterface.h
-    UserModelToDBInterface.cpp
-    TaskModel.h
-    TaskModel.cpp
+    DBInterface.h DBInterface.cpp
+    UserModel.h UserModel.cpp
+    UserModelToDBInterface.h UserModelToDBInterface.cpp
+    TaskModel.h TaskModel.cpp
     TaskModelToDBInterface.h TaskModelToDBInterface.cpp
-    UserProfileTestData.h
-    UserProfileTestData.cpp
-    UserTaskTestData.h
-    UserTaskTestData.cpp
+    UserProfileTestData.h UserProfileTestData.cpp
+    UserTaskTestData.h UserTaskTestData.cpp
 )
 
 target_link_libraries(protoTaskPlanner  ${Boost_LIBRARIES} ssl crypto)
