@@ -24,8 +24,8 @@ add_executable(protoTaskPlanner
     UserModelToDBInterface.h UserModelToDBInterface.cpp
     DBInterface.h DBInterface.cpp
     TaskModelToDBInterface.h TaskModelToDBInterface.cpp
-    Tests/UserProfileTestData.h Tests/UserProfileTestData.cpp
-    Tests/UserTaskTestData.h Tests/UserTaskTestData.cpp
+    UserProfileTestData.h UserProfileTestData.cpp
+    UserTaskTestData.h UserTaskTestData.cpp
 )
 
 target_link_libraries(protoTaskPlanner  ${Boost_LIBRARIES} ssl crypto)
