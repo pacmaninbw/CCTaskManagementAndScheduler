@@ -40,6 +40,7 @@ bool DBInterface::addToDatabaseTable(ModelBase* modelObject)
 
     startAddStmt();
 
+    addDataToSqlStatement(modelObject);
     
     sqlStatement += ")";
 

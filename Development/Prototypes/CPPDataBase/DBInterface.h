@@ -14,6 +14,7 @@ public:
 
 protected:
     virtual bool ModelObjectHasAllRequiredFields(ModelBase* modelObject) = 0;
+    virtual void addDataToSqlStatement(ModelBase* modelObject) = 0;
     virtual void asyncExecutionSqlStatment(std::string sqlStmt);
     void startAddStmt();
     void appendArgToSqlStmt(std::string arg, bool addComma)
