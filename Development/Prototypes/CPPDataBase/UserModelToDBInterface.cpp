@@ -1,3 +1,5 @@
+#include <exception>
+#include <stdexcept>
 #include "UserModelToDBInterface.h"
 
 UserModelToDBInterface::UserModelToDBInterface()
@@ -9,21 +11,6 @@ UserModelToDBInterface::UserModelToDBInterface()
 UserModelToDBInterface::~UserModelToDBInterface()
 {
 
-}
-
-void UserModelToDBInterface::addUserToDB(UserModel &user)
-{
-    startAddStmt();
-
-    appendArgToSqlStmt(user.getLastName(), true);
-    appendArgToSqlStmt(user.getFirstName(), true);
-    appendArgToSqlStmt(user.getMiddleInitial(), true);
-    appendArgToSqlStmt(user.getLoginName(), true);
-    appendArgToSqlStmt(user.getPassword());
-    
-    sqlStatement += ")";
-
-    asyncExecutionSqlStatment(sqlStatement);
 }
 
 bool UserModelToDBInterface::ModelObjectHasAllRequiredFields(ModelBase* modelObject)
@@ -62,4 +49,21 @@ bool UserModelToDBInterface::ModelObjectHasAllRequiredFields(ModelBase* modelObj
     }
 
     return isValid;
+}
+
+void UserModelToDBInterface::addDataToSqlStatement(ModelBase *modelObject)
+{
+    UserModel* user = dynamic_cast<UserModel*>(modelObject);
+    if (!user)
+    {
+        std::runtime_error badObject(
+            "PROGRAMMER ERROR: In UserModelToDBInterface::addDataToSqlStatement model object is not user model!");
+        throw badObject;
+    }
+
+    appendArgToSqlStmt(user->getLastName(), true);
+    appendArgToSqlStmt(user->getFirstName(), true);
+    appendArgToSqlStmt(user->getMiddleInitial(), true);
+    appendArgToSqlStmt(user->getLoginName(), true);
+    appendArgToSqlStmt(user->getPassword());
 }

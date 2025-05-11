@@ -10,10 +10,10 @@ class UserModelToDBInterface :
 public:
     UserModelToDBInterface();
     ~UserModelToDBInterface();
-    void addUserToDB(UserModel& user);
 
 protected:
     bool ModelObjectHasAllRequiredFields(ModelBase* modelObject) override;
+    void addDataToSqlStatement(ModelBase* modelObject) override;
 
 private:
 

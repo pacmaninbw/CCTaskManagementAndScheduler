@@ -1,4 +1,6 @@
+#include <exception>
 #include <iostream>
+#include <stdexcept>
 #include "TaskModelToDBInterface.h"
 
 TaskModelToDBInterface::TaskModelToDBInterface()
@@ -12,35 +14,9 @@ TaskModelToDBInterface::~TaskModelToDBInterface()
 
 }
 
-void TaskModelToDBInterface::addTaskToDatabase(TaskModel &task)
-{
-    // Prevent bad data from throwing an exception.
-    if (!ModelObjectHasAllRequiredFields(&task))
-    {
-        return;
-    }
-
-    std::size_t priorityInAllTasks{1};
-
-    startAddStmt();
-
-    appendArgToSqlStmt(task.getCreatorID(), true);
-    appendArgToSqlStmt(task.getDescription(), true);
-    appendArgToSqlStmt(task.getParentTaskID(), true);
-    appendArgToSqlStmt(task.getEstimatedEffort(), true);
-    appendArgToSqlStmt(priorityInAllTasks, true);
-    appendArgToSqlStmt(task.getDueDate(), true);
-    appendArgToSqlStmt(task.getScheduledStart());
-
-    sqlStatement += ")";
-
-    asyncExecutionSqlStatment(sqlStatement.c_str());
-}
-
 bool TaskModelToDBInterface::ModelObjectHasAllRequiredFields(ModelBase *modelObject)
 {
     TaskModel* task = dynamic_cast<TaskModel*>(modelObject);
-
     if (!task)
     {
         return false;
@@ -86,3 +62,23 @@ bool TaskModelToDBInterface::ModelObjectHasAllRequiredFields(ModelBase *modelObj
     return isValid;
 }
 
+void TaskModelToDBInterface::addDataToSqlStatement(ModelBase* modelObject)
+{
+    TaskModel* task = dynamic_cast<TaskModel*>(modelObject);
+    if (!task)
+    {
+        std::runtime_error badObject(
+            "PROGRAMMER ERROR: In TaskModelToDBInterface::addDataToSqlStatement model object is not task model!");
+        throw badObject;
+    }
+
+    std::size_t priorityInAllTasks{1};
+
+    appendArgToSqlStmt(task->getCreatorID(), true);
+    appendArgToSqlStmt(task->getDescription(), true);
+    appendArgToSqlStmt(task->getParentTaskID(), true);
+    appendArgToSqlStmt(task->getEstimatedEffort(), true);
+    appendArgToSqlStmt(priorityInAllTasks, true);
+    appendArgToSqlStmt(task->getDueDate(), true);
+    appendArgToSqlStmt(task->getScheduledStart());
+}

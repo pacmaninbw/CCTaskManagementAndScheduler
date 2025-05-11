@@ -10,10 +10,10 @@ class TaskModelToDBInterface :
 public:
     TaskModelToDBInterface();
     ~TaskModelToDBInterface();
-    void addTaskToDatabase(TaskModel& task);
 
 protected:
     bool ModelObjectHasAllRequiredFields(ModelBase* modelObject) override;
+    void addDataToSqlStatement(ModelBase* modelObject) override;
 
 private:
 
