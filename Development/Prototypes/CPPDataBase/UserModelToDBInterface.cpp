@@ -51,5 +51,15 @@ bool UserModelToDBInterface::ModelObjectHasAllRequiredFields(ModelBase* modelObj
         isValid = false;
     }
 
+    if (!requiredFieldHaseData(user->getLoginName()))
+    {
+        isValid = false;
+    }
+
+    if (!requiredFieldHaseData(user->getPassword()))
+    {
+        isValid = false;
+    }
+
     return isValid;
 }
