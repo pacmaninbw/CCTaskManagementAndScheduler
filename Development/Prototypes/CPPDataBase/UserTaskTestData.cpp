@@ -81,7 +81,7 @@ void loadUserTaskestDataIntoDatabase()
         TaskModel testTask(testUser, taskTestData.description, taskTestData.estimatedEffortHours,
             taskTestData.dueDate, taskTestData.scheduledStartDate);
 
-        TaskDBInterface.addTaskToDatabase(testTask);
+        TaskDBInterface.addToDatabaseTable(&testTask);
     
     }
 }

@@ -5,14 +5,14 @@
 #include "UserModelToDBInterface.h"
 #include "UserProfileTestData.h"
 
-static std::vector<UserModel> userProfileTestData = 
+static std::vector<UserModel*> userProfileTestData = 
 {
-    {"Chernick", "Paul", "A", "paul.chernick@chernicksw.com"},
-    {"Chernick", "Nina", "L", "ChernickNinaL@gmail.com"},
-    {"Chernick", "Dina", "B", "ChernickDinaB@gmail.com"},
-    {"Shiminovics", "Eitan", "I", "ShimonvicsEitanI@gmail.com"},
-    {"PacMan", "IN", "BW", "pacmaninbw@gmail.com"},
-    {"Black", "Patrick", "A", "BlackPatrickA@gmail.com"}
+    {new UserModel("Chernick", "Paul", "A", "paul.chernick@chernicksw.com")},
+    {new UserModel("Chernick", "Nina", "L", "ChernickNinaL@gmail.com")},
+    {new UserModel("Chernick", "Dina", "B", "ChernickDinaB@gmail.com")},
+    {new UserModel("Shiminovics", "Eitan", "I", "ShimonvicsEitanI@gmail.com")},
+    {new UserModel("PacMan", "IN", "BW", "pacmaninbw@gmail.com")},
+    {new UserModel("Black", "Patrick", "A", "BlackPatrickA@gmail.com")}
 };
 
 
@@ -22,6 +22,6 @@ void loadUserProfileTestDataIntoDatabase()
 
     for (auto user: userProfileTestData)
     {
-        userDBInterface.addUserToDB(user);
+        userDBInterface.addToDatabaseTable(user);
     }
 }
