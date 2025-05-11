@@ -9,11 +9,12 @@ class DBInterface
 {
 public:
     DBInterface(std::string table, std::string addStoredProcedure="");
-    ~DBInterface() = default;
-    bool addToDatabaseTable(ModelBase& modelObject);
+    virtual ~DBInterface() = default;
+    virtual bool addToDatabaseTable(ModelBase* modelObject);
 
 protected:
-    void asyncExecutionSqlStatment(std::string sqlStmt);
+    virtual bool ModelObjectHasAllRequiredFields(ModelBase* modelObject) = 0;
+    virtual void asyncExecutionSqlStatment(std::string sqlStmt);
     void startAddStmt();
     void appendArgToSqlStmt(std::string arg, bool addComma)
     {
@@ -35,7 +36,6 @@ protected:
         {appendArgToSqlStmt(std::string(arg), addComma); };
     bool requiredFieldHaseData(std::string arg) const { return (!arg.empty() && arg.size() > 0); };
     bool requiredKeyHasValue(std::size_t key) const { return key != 0; };
-    bool ModelObjectHasAllRequiredFields(ModelBase& modelObject);
 
 /*
  * Protected variables.

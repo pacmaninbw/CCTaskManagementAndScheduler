@@ -31,7 +31,7 @@ DBInterface::DBInterface(std::string table, std::string addStoredProcedure)
     dbConnectionParameters.database = PlannerDB;
 }
 
-bool DBInterface::addToDatabaseTable(ModelBase& modelObject)
+bool DBInterface::addToDatabaseTable(ModelBase* modelObject)
 {
     if (!ModelObjectHasAllRequiredFields(modelObject))
     {
@@ -93,12 +93,3 @@ void DBInterface::startAddStmt()
     }
 }
 
-bool DBInterface::ModelObjectHasAllRequiredFields(ModelBase &modelObject)
-{
-    if (requiredKeyHasValue(modelObject.getPrimaryKey()))
-    {
-        return false;   // It is alreay in the database.
-    }
-
-    return true;
-}
