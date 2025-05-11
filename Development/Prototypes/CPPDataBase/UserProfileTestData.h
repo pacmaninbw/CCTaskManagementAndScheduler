@@ -6,3 +6,4 @@
 extern void loadUserProfileTestDataIntoDatabase();
 
 #endif // USERPROFILETESTDATA_H_
+

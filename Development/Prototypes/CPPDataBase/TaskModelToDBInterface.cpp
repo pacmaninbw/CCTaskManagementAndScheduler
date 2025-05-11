@@ -82,3 +82,5 @@ void TaskModelToDBInterface::addDataToSqlStatement(ModelBase* modelObject)
     appendArgToSqlStmt(task->getDueDate(), true);
     appendArgToSqlStmt(task->getScheduledStart());
 }
+
+

@@ -25,3 +25,5 @@ void loadUserProfileTestDataIntoDatabase()
         userDBInterface.addToDatabaseTable(user);
     }
 }
+
+

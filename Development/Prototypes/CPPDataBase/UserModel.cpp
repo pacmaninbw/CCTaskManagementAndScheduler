@@ -110,3 +110,5 @@ void UserModel::createLoginBasedOnUserName(std::string lastName, std::string fir
     loginName = tempLoginName;
     hashedPassWord = tempLoginName;
 }
+
+

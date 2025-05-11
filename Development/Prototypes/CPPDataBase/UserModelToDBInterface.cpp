@@ -67,3 +67,5 @@ void UserModelToDBInterface::addDataToSqlStatement(ModelBase *modelObject)
     appendArgToSqlStmt(user->getLoginName(), true);
     appendArgToSqlStmt(user->getPassword());
 }
+
+
