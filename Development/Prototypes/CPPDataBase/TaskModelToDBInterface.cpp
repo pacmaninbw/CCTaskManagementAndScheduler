@@ -15,7 +15,7 @@ TaskModelToDBInterface::~TaskModelToDBInterface()
 void TaskModelToDBInterface::addTaskToDatabase(TaskModel &task)
 {
     // Prevent bad data from throwing an exception.
-    if (!isValidDataForAddToDatabase(task))
+    if (!ModelObjectHasAllRequiredFields(&task))
     {
         return;
     }
@@ -37,35 +37,42 @@ void TaskModelToDBInterface::addTaskToDatabase(TaskModel &task)
     asyncExecutionSqlStatment(sqlStatement.c_str());
 }
 
-bool TaskModelToDBInterface::isValidDataForAddToDatabase(TaskModel &task)
+bool TaskModelToDBInterface::ModelObjectHasAllRequiredFields(ModelBase *modelObject)
 {
+    TaskModel* task = dynamic_cast<TaskModel*>(modelObject);
+
+    if (!task)
+    {
+        return false;
+    }
+
     bool isValid = true;
 
-    if (!requiredKeyHasValue(task.getCreatorID()))
+    if (!requiredKeyHasValue(task->getCreatorID()))
     {
         std::cerr << "Creator ID not set\n";
         isValid = false;
     }
 
-    if (!requiredFieldHaseData(task.getDescription()))
+    if (!requiredFieldHaseData(task->getDescription()))
     {
         std::cerr << "Missing Task Description\n";
         isValid = false;
     }
 
-    if (task.getEstimatedEffort() == 0)
+    if (task->getEstimatedEffort() == 0)
     {
         std::cerr << "Estimated effor in hours not set\n";
         isValid = false;
     }
 
-    if (!requiredFieldHaseData(task.getDueDate()))
+    if (!requiredFieldHaseData(task->getDueDate()))
     {
         std::cerr << "The due date has not been set\n";
         isValid = false;
     }
 
-    if (!requiredFieldHaseData(task.getScheduledStart()))
+    if (!requiredFieldHaseData(task->getScheduledStart()))
     {
         std::cerr << "The scheduled start date has not been set\n";
         isValid = false;
@@ -78,3 +85,4 @@ bool TaskModelToDBInterface::isValidDataForAddToDatabase(TaskModel &task)
 
     return isValid;
 }
+

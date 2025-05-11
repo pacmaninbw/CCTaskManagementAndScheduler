@@ -12,8 +12,10 @@ public:
     ~TaskModelToDBInterface();
     void addTaskToDatabase(TaskModel& task);
 
+protected:
+    bool ModelObjectHasAllRequiredFields(ModelBase* modelObject) override;
+
 private:
-    bool isValidDataForAddToDatabase(TaskModel& task);
 
 };
 

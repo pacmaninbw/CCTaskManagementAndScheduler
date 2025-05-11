@@ -25,3 +25,31 @@ void UserModelToDBInterface::addUserToDB(UserModel &user)
 
     asyncExecutionSqlStatment(sqlStatement);
 }
+
+bool UserModelToDBInterface::ModelObjectHasAllRequiredFields(ModelBase* modelObject)
+{
+    UserModel* user = dynamic_cast<UserModel*>(modelObject);
+    if (!user)
+    {
+        return false;
+    }
+
+    bool isValid = true;
+
+    if (requiredKeyHasValue(user->getUserID()))
+    {
+        isValid = false;    // Can't add the data because it is alreay in the database
+    }
+
+    if (!requiredFieldHaseData(user->getLastName()))
+    {
+        isValid = false;
+    }
+
+    if (!requiredFieldHaseData(user->getFirstName()))
+    {
+        isValid = false;
+    }
+
+    return isValid;
+}
