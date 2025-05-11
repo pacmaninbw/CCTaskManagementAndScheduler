@@ -81,8 +81,10 @@ void loadUserTaskestDataIntoDatabase()
         TaskModel testTask(testUser, taskTestData.description, taskTestData.estimatedEffortHours,
             taskTestData.dueDate, taskTestData.scheduledStartDate);
 
-        TaskDBInterface.addToDatabaseTable(&testTask);
-    
+        if (!TaskDBInterface.addToDatabaseTable(&testTask))
+        {
+            std::cerr << testTask << "\n";
+        }
     }
 }
 

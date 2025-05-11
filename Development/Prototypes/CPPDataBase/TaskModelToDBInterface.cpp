@@ -24,6 +24,11 @@ bool TaskModelToDBInterface::ModelObjectHasAllRequiredFields(ModelBase *modelObj
 
     bool isValid = true;
 
+    if (requiredKeyHasValue(task->getTaskID()))
+    {
+        std::cerr << "Task ID alreay has a value, the task is in the database\n";
+    }
+
     if (!requiredKeyHasValue(task->getCreatorID()))
     {
         std::cerr << "Creator ID not set\n";
@@ -52,11 +57,6 @@ bool TaskModelToDBInterface::ModelObjectHasAllRequiredFields(ModelBase *modelObj
     {
         std::cerr << "The scheduled start date has not been set\n";
         isValid = false;
-    }
-
-    if (!isValid)
-    {
-        std::cerr << task;
     }
 
     return isValid;
