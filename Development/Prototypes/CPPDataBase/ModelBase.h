@@ -7,9 +7,9 @@ class ModelBase
 {
 public:
     ModelBase(std::size_t fieldCount, std::size_t primaryKeyIn=0);
-    ~ModelBase();
-    void setPrimaryKey(std::size_t keyValue) { primaryKey = keyValue; };
-    std::size_t getPrimaryKey() const { return primaryKey; };
+    virtual ~ModelBase();
+    virtual void setPrimaryKey(std::size_t keyValue) { primaryKey = keyValue; };
+    virtual std::size_t getPrimaryKey() const { return primaryKey; };
 
 protected:
     std::size_t numberOfFields;
