@@ -19,57 +19,29 @@ bool TaskModelToDBInterface::ModelObjectHasAllRequiredFields(ModelBase *modelObj
     TaskModel* task = dynamic_cast<TaskModel*>(modelObject);
     if (!task)
     {
+        appendErrorMessage("PROGRAMMER ERROR: In TaskModelToDBInterface::addDataToSqlStatement model object is not task model!");
         return false;
     }
 
     bool isValid = true;
 
-    if (requiredKeyHasValue(task->getTaskID()))
-    {
-        std::cerr << "Task ID alreay has a value, the task is in the database\n";
-    }
-
-    if (!requiredKeyHasValue(task->getCreatorID()))
-    {
-        std::cerr << "Creator ID not set\n";
-        isValid = false;
-    }
-
-    if (!requiredFieldHaseData(task->getDescription()))
-    {
-        std::cerr << "Missing Task Description\n";
-        isValid = false;
-    }
-
-    if (task->getEstimatedEffort() == 0)
-    {
-        std::cerr << "Estimated effor in hours not set\n";
-        isValid = false;
-    }
-
-    if (!requiredFieldHaseData(task->getDueDate()))
-    {
-        std::cerr << "The due date has not been set\n";
-        isValid = false;
-    }
-
-    if (!requiredFieldHaseData(task->getScheduledStart()))
-    {
-        std::cerr << "The scheduled start date has not been set\n";
-        isValid = false;
-    }
+    reportIfError(requiredKeyHasValue(task->getTaskID()), "Task ID alreay has a value, the task is in the database\n", isValid);
+    reportIfError(!requiredKeyHasValue(task->getCreatorID()), "Creator ID not set\n", isValid);
+    reportIfError(!requiredFieldHaseData(task->getDescription()), "Missing Task Description\n", isValid);
+    reportIfError((task->getEstimatedEffort() == 0), "Estimated effor in hours not set\n", isValid);
+    reportIfError(!requiredFieldHaseData(task->getDueDate()), "The due date has not been set\n", isValid);
+    reportIfError(!requiredFieldHaseData(task->getScheduledStart()), "The scheduled start date has not been set\n", isValid);
 
     return isValid;
 }
 
-void TaskModelToDBInterface::addDataToSqlStatement(ModelBase* modelObject)
+bool TaskModelToDBInterface::addDataToSqlStatement(ModelBase* modelObject)
 {
     TaskModel* task = dynamic_cast<TaskModel*>(modelObject);
     if (!task)
     {
-        std::runtime_error badObject(
-            "PROGRAMMER ERROR: In TaskModelToDBInterface::addDataToSqlStatement model object is not task model!");
-        throw badObject;
+        appendErrorMessage("PROGRAMMER ERROR: In TaskModelToDBInterface::addDataToSqlStatement model object is not task model!");
+        return false;
     }
 
     std::size_t priorityInAllTasks{1};
@@ -81,6 +53,8 @@ void TaskModelToDBInterface::addDataToSqlStatement(ModelBase* modelObject)
     appendArgToSqlStmt(priorityInAllTasks, true);
     appendArgToSqlStmt(task->getDueDate(), true);
     appendArgToSqlStmt(task->getScheduledStart());
+
+    return true;
 }
 
 
