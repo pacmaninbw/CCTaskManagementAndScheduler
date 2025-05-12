@@ -6,7 +6,7 @@
 #include <string>
 #include <string_view>
 
-static const std::string MySQLAdminUser{"REDACTEDD"};
+static const std::string MySQLAdminUser{"REDACTED"};
 static const std::string MySQLAdminPassword{"REDACTED"};
 static const std::string PlannerDB{"PlannerTaskScheduleDB"};
 
@@ -23,7 +23,7 @@ static const std::string PlannerDB{"PlannerTaskScheduleDB"};
 static boost::mysql::connect_params dbConnectionParameters;
 
 DBInterface::DBInterface(std::string table, std::string addStoredProcedure)
-: tableName{table}, storedProcedureToAddToTable{addStoredProcedure}
+: errorMessages{""}, tableName{table}, storedProcedureToAddToTable{addStoredProcedure}
 {
     dbConnectionParameters.server_address.emplace_host_and_port("127.0.0.1", 3306);
     dbConnectionParameters.username = MySQLAdminUser;
@@ -33,6 +33,8 @@ DBInterface::DBInterface(std::string table, std::string addStoredProcedure)
 
 bool DBInterface::addToDatabaseTable(ModelBase* modelObject)
 {
+    clearPreviousErrors();
+
     if (!ModelObjectHasAllRequiredFields(modelObject))
     {
         return false;
@@ -40,12 +42,15 @@ bool DBInterface::addToDatabaseTable(ModelBase* modelObject)
 
     startAddStmt();
 
-    addDataToSqlStatement(modelObject);
+    if (!addDataToSqlStatement(modelObject))
+    {
+        clearSqlStmt();
+        return false;
+    }
     
     sqlStatement += ")";
 
     asyncExecutionSqlStatment(sqlStatement);
-
 
     return true;
 }
