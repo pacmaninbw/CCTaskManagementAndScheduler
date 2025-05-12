@@ -13,7 +13,7 @@ public:
 
 protected:
     bool ModelObjectHasAllRequiredFields(ModelBase* modelObject) override;
-    void addDataToSqlStatement(ModelBase* modelObject) override;
+    bool addDataToSqlStatement(ModelBase* modelObject) override;
 
 private:
 
