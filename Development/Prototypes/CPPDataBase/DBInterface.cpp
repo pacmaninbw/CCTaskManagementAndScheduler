@@ -23,7 +23,9 @@ static const std::string PlannerDB{"PlannerTaskScheduleDB"};
 static boost::mysql::connect_params dbConnectionParameters;
 
 DBInterface::DBInterface(std::string table, std::string addStoredProcedure)
-: errorMessages{""}, tableName{table}, storedProcedureToAddToTable{addStoredProcedure}
+:   errorMessages{""},
+    tableName{table},
+    storedProcedureToAddToTable{addStoredProcedure}
 {
     dbConnectionParameters.server_address.emplace_host_and_port("127.0.0.1", 3306);
     dbConnectionParameters.username = MySQLAdminUser;
