@@ -83,7 +83,7 @@ void loadUserTaskestDataIntoDatabase()
 
         if (!TaskDBInterface.addToDatabaseTable(&testTask))
         {
-            std::cerr << testTask << "\n";
+            std::cerr << TaskDBInterface.getAllErrorMessages() << testTask << "\n";
         }
     }
 }
