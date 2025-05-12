@@ -37,8 +37,15 @@ public:
     std::string getAllErrorMessages() const { return errorMessages; };
 
 protected:
+/*
+ * Over ride functions required for the followin functions.
+ */
     virtual bool ModelObjectHasAllRequiredFields(ModelBase* modelObject) = 0;
     virtual bool addDataToSqlStatement(ModelBase* modelObject) = 0;
+/*
+ * Over ride functions optional.
+ */
+    virtual void addRequiredFieldNames(); // Provide override if no stored procedure
     virtual void asyncExecutionSqlStatment(std::string sqlStmt);
     void reportIfError(bool condition, std::string errorMessage, bool &isValid)
     {

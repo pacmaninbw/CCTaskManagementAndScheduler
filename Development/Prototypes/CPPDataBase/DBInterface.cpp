@@ -72,6 +72,19 @@ static boost::asio::awaitable<void> coroutine_sqlstatement(std::string sql)
     co_await conn.async_close();
 }
 
+/*
+ * If the stored procedure to add the model to the database does not exist
+ * override this function to provide the necessary field names
+ */
+void DBInterface::addRequiredFieldNames()
+{
+    if (storedProcedureToAddToTable.empty() || storedProcedureToAddToTable.size() == 0)
+    {
+        std::cerr << "???ModelToDBInterface::addRequiredFieldNames() not implemented !!!\n";
+    }
+    sqlStatement.append("No_Field_Name");
+}
+
 void DBInterface::asyncExecutionSqlStatment(std::string sqlStmt)
 {
     boost::asio::io_context ctx;
@@ -98,6 +111,8 @@ void DBInterface::startAddStmt()
     else
     {
         sqlStatement = "INSERT INTO " + PlannerDB + "." + tableName + " (";
+        addRequiredFieldNames();
+        sqlStatement += ") VALUES (";
     }
 }
 
