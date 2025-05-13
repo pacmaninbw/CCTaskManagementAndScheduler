@@ -17,6 +17,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 
 add_executable(protoTaskPlanner
     main.cpp 
+    DateData.h DateData.cpp
     UserModel.h UserModel.cpp TaskModel.h TaskModel.cpp ModelBase.h ModelBase.cpp
     UserModelToDBInterface.h UserModelToDBInterface.cpp
     DBInterface.h DBInterface.cpp
