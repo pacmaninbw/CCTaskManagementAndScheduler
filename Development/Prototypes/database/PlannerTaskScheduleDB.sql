@@ -448,7 +448,7 @@ BEGIN
     
 END$$
 
-DELIMITER;
+DELIMITER ;
 
 -- -----------------------------------------------------
 -- function findUserIDKeyByFullName
@@ -482,7 +482,7 @@ BEGIN
     
 END$$
 
-DELIMITER;
+DELIMITER ;
 
 -- -----------------------------------------------------
 -- function isValidUserLoginAndPassword
