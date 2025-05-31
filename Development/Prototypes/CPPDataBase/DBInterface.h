@@ -83,8 +83,6 @@ protected:
     bool requiredFieldHaseData(std::string arg) const { return (!arg.empty() && arg.size() > 0); };
     bool requiredKeyHasValue(std::size_t key) const { return key != 0; };
 
-    void clearSqlStmt() { sqlStatement = ""; };
-
 /*
  * Protected variables.
  */

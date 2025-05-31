@@ -6,9 +6,7 @@
 #include <string>
 #include <string_view>
 
-static const std::string MySQLAdminUser{"REDACTED"};
-static const std::string MySQLAdminPassword{"REDACTED"};
-static const std::string PlannerDB{"PlannerTaskScheduleDB"};
+#include "./PrivateData/dbadmindata.h"
 
 /*
  * The database connection information will not change during the entire
@@ -46,7 +44,7 @@ bool DBInterface::addToDatabaseTable(ModelBase* modelObject)
 
     if (!addDataToSqlStatement(modelObject))
     {
-        clearSqlStmt();
+        sqlStatement.clear();
         return false;
     }
     
