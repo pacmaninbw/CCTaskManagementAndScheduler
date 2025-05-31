@@ -18,6 +18,7 @@ cmake.db
 v17
 CMake Overview
 FileContentIndex
+PrivateData
 
 # Old files that shouldn't be used
 ZOldNotUsed
