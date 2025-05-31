@@ -1,6 +1,7 @@
 #ifndef TASKMODEL_H_
 #define TASKMODEL_H_
 
+#include <chrono>
 #include <iostream>
 #include <string>
 #include "ModelBase.h"
@@ -37,12 +38,12 @@ public:
     TaskModel::TaskStatus getStatus() const { return status; };
     std::size_t getParentTaskID() const { return parentTaskID; };
     double getPercentageComplete() const { return percentageComplete; };
-    std::string getCreationDate() const { return createdOnDate; };
-    std::string getDueDate() const { return requiredDeliveryDate; };
-    std::string getScheduledStart() const { return scheduledStartDate; };
-    std::string getactualStartDate() const { return actualStartDate; };
-    std::string getEstimatedCompletion() const { return estimatedCompletionDate; };
-    std::string getCompletionDate() const { return completedDate; };
+    std::string getCreationDate() { return dateToString(createdOnDate) ; };
+    std::string getDueDate() { return dateToString(requiredDeliveryDate); };
+    std::string getScheduledStart() { return dateToString(scheduledStartDate); };
+    std::string getactualStartDate() { return dateToString(actualStartDate); };
+    std::string getEstimatedCompletion() { return dateToString(estimatedCompletionDate); };
+    std::string getCompletionDate() { return dateToString(completedDate); };
     unsigned int getEstimatedEffort() const { return estimatedEffortHours; };
     double getactualEffortToDate() const { return actualEffortHours; };
     unsigned int getPriorityGoup() const { return priorityGroup; };
@@ -77,6 +78,9 @@ private:
     void setCreationDate();
     std::string createDateString(int month, int day, int year);
     TaskStatus statusFromInt(unsigned int statusI) const { return static_cast<TaskModel::TaskStatus>(statusI); };
+    std::string dateToString(std::chrono::year_month_day taskDate);
+    std::chrono::year_month_day stringToDate(std::string dateString);
+    std::chrono::year_month_day getTodaysDate();
 
 /*
  * Member variables.
@@ -88,12 +92,12 @@ private:
     std::size_t parentTaskID;
     TaskStatus status;
     double percentageComplete;
-    std::string createdOnDate;
-    std::string requiredDeliveryDate;
-    std::string scheduledStartDate;
-    std::string actualStartDate;
-    std::string estimatedCompletionDate;
-    std::string completedDate;
+    std::chrono::year_month_day createdOnDate;
+    std::chrono::year_month_day requiredDeliveryDate;
+    std::chrono::year_month_day scheduledStartDate;
+    std::chrono::year_month_day actualStartDate;
+    std::chrono::year_month_day estimatedCompletionDate;
+    std::chrono::year_month_day completedDate;
     unsigned int estimatedEffortHours;
     double actualEffortHours;
     unsigned int priorityGroup;

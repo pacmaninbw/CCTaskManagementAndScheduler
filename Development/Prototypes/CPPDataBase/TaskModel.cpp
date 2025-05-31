@@ -1,6 +1,12 @@
+#include <chrono>
 #include <ctime>
+#include <format>
+#include <iomanip>
 #include <iostream>
+#include <locale>
+#include <sstream>
 #include <string>
+#include <vector>
 #include "ModelBase.h"
 #include "TaskModel.h"
 #include "UserModel.h"
@@ -15,12 +21,12 @@ TaskModel::TaskModel()
     parentTaskID{0},
     status{TaskStatus::Not_Started},
     percentageComplete{0.0},
-    createdOnDate{""},
-    requiredDeliveryDate{""},
-    scheduledStartDate{""},
-    actualStartDate{""},
-    estimatedCompletionDate{""},
-    completedDate{""},
+    createdOnDate{getTodaysDate()},
+    requiredDeliveryDate{getTodaysDate()},
+    scheduledStartDate{getTodaysDate()},
+    actualStartDate{getTodaysDate()},
+    estimatedCompletionDate{getTodaysDate()},
+    completedDate{getTodaysDate()},
     estimatedEffortHours{0},
     actualEffortHours{0.0},
     priorityGroup{1},
@@ -39,12 +45,9 @@ TaskModel::TaskModel(
     parentTaskID{0},
     status{statusIn},
     percentageComplete{0.0},
-    createdOnDate{""},
-    requiredDeliveryDate{dueDate},
-    scheduledStartDate{startDate},
-    actualStartDate{""},
-    estimatedCompletionDate{""},
-    completedDate{""},
+    createdOnDate{getTodaysDate()},
+    requiredDeliveryDate{stringToDate(dueDate)},
+    scheduledStartDate{stringToDate(startDate)},
     estimatedEffortHours{estimatedHoursEffort},
     actualEffortHours{0.0},
     priorityGroup{majorPriority},
@@ -71,12 +74,12 @@ TaskModel::TaskModel(
     parentTaskID{parentTaskIDfromDb},
     status{statusFromInt(statusfromDb)},
     percentageComplete{percentageCompletefromDb},
-    createdOnDate{createdOnDatefromDb},
-    requiredDeliveryDate{requiredDeliveryDatefromDb},
-    scheduledStartDate{scheduledStartDatefromDb},
-    actualStartDate{actualStartDatefromDb},
-    estimatedCompletionDate{estimatedCompletionDatefromDb},
-    completedDate{completedDatefromDb},
+    createdOnDate{stringToDate(createdOnDatefromDb)},
+    requiredDeliveryDate{stringToDate(requiredDeliveryDatefromDb)},
+    scheduledStartDate{stringToDate(scheduledStartDatefromDb)},
+    actualStartDate{stringToDate(actualStartDatefromDb)},
+    estimatedCompletionDate{stringToDate(estimatedCompletionDatefromDb)},
+    completedDate{stringToDate(completedDatefromDb)},
     estimatedEffortHours{estimatedEffortHoursfromDb},
     actualEffortHours{actualEffortHoursfromDb},
     priorityGroup{priorityGroupfromDb},
@@ -110,14 +113,7 @@ std::string TaskModel::taskStatusString() const
 
 void TaskModel::setCreationDate()
 {
-    std::time_t currentTime = std::time(0);
-    std::tm* now = std::localtime(&currentTime);
-
-    int year = now->tm_year + 1900;
-    int month = now->tm_mon + 1;
-    int day = now->tm_mday;
-
-    createdOnDate = createDateString(month, day, year);
+    createdOnDate = getTodaysDate();
 }
 
 std::string TaskModel::createDateString(int month, int day, int year)
@@ -127,4 +123,48 @@ std::string TaskModel::createDateString(int month, int day, int year)
     return dateString;
 }
 
+std::string TaskModel::dateToString(std::chrono::year_month_day taskDate)
+{
+    std::stringstream ss;
+    ss << taskDate;
+    return ss.str();
+}
 
+std::chrono::year_month_day TaskModel::stringToDate(std::string dateString)
+{
+    std::chrono::year_month_day dateValue = getTodaysDate();
+
+    // First try the ISO standard date.
+    std::istringstream ss(dateString);
+    ss >> std::chrono::parse("%Y-%m-%d", dateValue);
+    if (!ss.fail())
+    {
+        return dateValue;
+    }
+
+    // The ISO standard didn't work, try some local dates
+    std::locale usEnglish("en_US.UTF-8");
+    std::vector<std::string> legalFormats = {
+        {"%B %d, %Y"},
+        {"%m/%d/%Y"},
+        {"%m-%d-%Y"}
+    };
+
+    ss.imbue(usEnglish);
+    for (auto legalFormat: legalFormats)
+    {
+        ss >> std::chrono::parse(legalFormat, dateValue);
+        if (!ss.fail())
+        {
+            return dateValue;
+        }
+    }
+
+    return dateValue;
+}
+
+std::chrono::year_month_day TaskModel::getTodaysDate()
+{
+    std::chrono::time_point<std::chrono::system_clock> today = std::chrono::system_clock::now();
+    return std::chrono::floor<std::chrono::days>(today);
+}
