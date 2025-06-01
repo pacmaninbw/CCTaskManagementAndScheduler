@@ -25,7 +25,7 @@ DBInterface::DBInterface(std::string table, std::string addStoredProcedure)
     tableName{table},
     storedProcedureToAddToTable{addStoredProcedure}
 {
-    dbConnectionParameters.server_address.emplace_host_and_port("127.0.0.1", 3306);
+    dbConnectionParameters.server_address.emplace_host_and_port(HostURL, MySQLPort);
     dbConnectionParameters.username = MySQLAdminUser;
     dbConnectionParameters.password = MySQLAdminPassword;
     dbConnectionParameters.database = PlannerDB;
