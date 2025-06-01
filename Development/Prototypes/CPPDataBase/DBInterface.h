@@ -56,8 +56,9 @@ protected:
         }
     }
     void startAddStmt();
-    void clearPreviousErrors() { errorMessages = ""; };
+    void clearPreviousErrors() { errorMessages.clear(); };
     void appendErrorMessage(std::string newError) { errorMessages.append(newError); };
+    std::string booleanToString(bool boolArg) const { return boolArg? "TRUE" : "FALSE"; };
 /*
  * To prevent SQL injection attacks all data input will be embedded between
  * single quotes.
@@ -80,6 +81,8 @@ protected:
         {appendArgToSqlStmt(std::to_string(arg), addComma); };
     void appendArgToSqlStmt(std::string_view arg, bool addComma=false)
         {appendArgToSqlStmt(std::string(arg), addComma); };
+    void appendArgToSqlStmt(bool arg, bool addComma=false)
+        {appendArgToSqlStmt(booleanToString(arg), addComma); };
     bool requiredFieldHaseData(std::string arg) const { return (!arg.empty() && arg.size() > 0); };
     bool requiredKeyHasValue(std::size_t key) const { return key != 0; };
 
