@@ -6,7 +6,11 @@
 #include <string>
 #include <string_view>
 
-#include "./PrivateData/dbadmindata.h"
+#ifdef USINGPRIVATECONNECTIONDATA
+    #include "./PrivateData/dbadmindata.h"
+#else
+    #include "dbadmindata.h"
+#endif
 
 /*
  * The database connection information will not change during the entire

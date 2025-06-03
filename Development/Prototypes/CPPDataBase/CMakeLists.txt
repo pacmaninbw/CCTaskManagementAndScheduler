@@ -15,6 +15,10 @@ find_package(Boost 1.87.0 REQUIRED COMPONENTS system charconv)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/PrivateData/dbadmindata.h")
+  add_compile_definitions(USINGPRIVATECONNECTIONDATA=1)
+endif()
+
 add_executable(protoTaskPlanner
     main.cpp 
     UserModel.h UserModel.cpp TaskModel.h TaskModel.cpp ModelBase.h ModelBase.cpp
