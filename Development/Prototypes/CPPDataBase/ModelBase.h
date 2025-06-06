@@ -2,6 +2,7 @@
 #define MODELBASE_H_
 
 #include <cstddef>
+#include "PTS_DataField.h"
 
 class ModelBase
 {
