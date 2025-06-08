@@ -53,23 +53,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const TaskModel& obj)
     {
         os << "TaskModel:\n";
-        os << "\tDatabase Task ID:\t" << obj.primaryKey << "\n";
-        os << "\tCreated By User ID:\t" << obj.createdByUid << "\n";
-        os << "\tAssign to User ID:\t" << obj.assignedToUid << "\n";
-        os << "\tDescription:\t" << obj.description << "\n";
-        os << "\tStatus integer value:\t" << static_cast<int>(obj.status) << "\n";
-        os << "\tParent Task ID:\t" << obj.parentTaskID << "\n";
-        os << "\tPercentage Complete:\t" << obj.percentageComplete << "%\n";
-        os << "\tCreated on date:\t" << obj.createdOnDate << "\n";
-        os << "\tRequired Deliverly date:\t" << obj.requiredDeliveryDate << "\n";
-        os << "\tScheduled Start date:\t" << obj.scheduledStartDate << "\n";
-        os << "\tActual Start date:\t" << obj.actualStartDate << "\n";
-        os << "\tEstimated Completion date:\t" << obj.estimatedCompletionDate << "\n";
-        os << "\tCompleted date:\t" << obj.completedDate << "\n";
-        os << "\tEstimated Effort in hours:\t" << obj.estimatedEffortHours << "\n";
-        os << "\tActual Effort Hours to date:\t" << obj.actualEffortHours << "\n";
-        os << "\tPriority Group:\t" << obj.priorityGroup << "\n";
-        os << "\tPriority:\t" << obj.priority << "%\n";
+        os << obj.primaryKeyFieldName;
         return os;
     };
 

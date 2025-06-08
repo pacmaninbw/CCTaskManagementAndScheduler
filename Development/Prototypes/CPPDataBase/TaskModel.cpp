@@ -14,7 +14,7 @@
 const std::size_t fieldCount = 16;
 
 TaskModel::TaskModel()
-    :  ModelBase(fieldCount),
+    :  ModelBase("TaskID"),
     createdByUid{0},
     assignedToUid{0},
     description{"descriptionIn"},
@@ -38,7 +38,7 @@ TaskModel::TaskModel()
 TaskModel::TaskModel(
     UserModel &creator, std::string &descriptionIn, unsigned int estimatedHoursEffort, std::string dueDate, std::string startDate,
     TaskModel *parentTaskp, TaskStatus statusIn, unsigned int majorPriority, unsigned int minorPriority)
-    :  ModelBase(fieldCount),
+    :  ModelBase("TaskID"),
     createdByUid{creator.getUserID()},
     assignedToUid{creator.getUserID()},
     description{descriptionIn},
@@ -67,7 +67,7 @@ TaskModel::TaskModel(
     std::string requiredDeliveryDatefromDb, std::string scheduledStartDatefromDb, std::string actualStartDatefromDb,
     std::string estimatedCompletionDatefromDb, std::string completedDatefromDb, unsigned int estimatedEffortHoursfromDb,
     double actualEffortHoursfromDb, unsigned int priorityGroupfromDb, unsigned int priorityfromDb)
-    :  ModelBase(fieldCount, taskIDfromDB),
+    :  ModelBase("TaskID", taskIDfromDB),
     createdByUid{createdByUidfromDb},
     assignedToUid{assignedToUidfromDb},
     description{descriptionfromDb},
