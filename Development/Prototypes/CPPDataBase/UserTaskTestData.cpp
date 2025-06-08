@@ -66,8 +66,7 @@ Task ID", "Priority Major", "Priority Minor", "Description", "Due Date", "Estima
     {12, 3, 1, "Grocery Shopping", "2025-04-12", 2, 2, 0, "", "Not Started", "", "2025-04-11", "", "2025-04-11", "2025-04-11", ""},
     {13, 3, 2, "Daily 30 minute walk", "2025-04-11", 1, 0.0, 0, "", "Not Started", "", "2025-04-11", "", "2025-04-11", "2056-07-07", "2056-07-07"},
     {14, 3, 3, "Clean apartment", "2025-04-12", 2, 0.0, 0, "", "Not Started", "", "2025-04-12", "", "2025-04-11", "2025-04-12", ""}
-}
- ;
+};
 
 void loadUserTaskestDataIntoDatabase()
 {
