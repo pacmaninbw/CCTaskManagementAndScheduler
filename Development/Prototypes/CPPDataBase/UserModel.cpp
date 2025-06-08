@@ -3,10 +3,8 @@
 #include <stdexcept>
 #include <string>
 
-const std::size_t fieldCount = 11;
-
 UserModel::UserModel()
-    : ModelBase(fieldCount),
+    : ModelBase("UserID"),
     lastName{""},
     firstName{""},
     middleInitial{""},
@@ -22,7 +20,7 @@ UserModel::UserModel()
 }
 
 UserModel::UserModel(const char *lastIn, const char *firstIn, const char *middleIIn, const char *email)
-    : ModelBase(fieldCount),
+    : ModelBase("UserID"),
     lastName{lastIn},
     firstName{firstIn},
     middleInitial{middleIIn},
@@ -41,7 +39,7 @@ UserModel::UserModel(std::size_t dbUserId, const char *dbLoginName, const char *
     const char *dbFirstName, const char *dbMiddleInit, const char *dbEmail, const char *dbDayStart,
     const char *dbDayEnd, int dbPriorityinSched, int dbMinorPriorityInSched, int dbLettersForMajorP,
     int dbUseDot)
-    : ModelBase(fieldCount, dbUserId),
+    : ModelBase("UserID", dbUserId),
     lastName{dbLastName},
     firstName{dbFirstName},
     middleInitial{dbMiddleInit},
