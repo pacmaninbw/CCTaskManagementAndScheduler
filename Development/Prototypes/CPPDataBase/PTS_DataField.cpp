@@ -1,4 +1,8 @@
+#include <chrono>
+#include <iostream>
 #include "PTS_DataField.h"
+#include <string>
+#include <variant>
 
 std::string PTS_DataField::toString()
 {
@@ -36,14 +40,9 @@ std::string PTS_DataField::toString()
         returnValue = std::get<std::string>(dataValue);
         break;
     
-/*    enum class PTS_DB_FieldType {Key, Date, DateTime, TimeStamp, VarChar45, VarChar1024, TinyText, Text, TinyBlob, Blob,
-        Boolean, UnsignedInt, Int, Size_T, Double, Float
-    };*/
-
     case PTS_DataField::PTS_DB_FieldType::Int :
         returnValue = std::to_string(std::get<int>(dataValue));
         break;
-
 
     case PTS_DataField::PTS_DB_FieldType::Key :
     case PTS_DataField::PTS_DB_FieldType::Size_T :
@@ -75,4 +74,77 @@ void PTS_DataField::setValue(DataValueType inValue)
 bool PTS_DataField::hasValue()
 {
     return !std::holds_alternative<std::monostate>(dataValue);
+}
+
+std::string PTS_DataField::fieldInfo()
+{
+    std::string info("Column Name: ");
+    info += dbColumnName + "\tColumn Type: ";
+    info += typeToName() + "\tRequired: ";
+    info += required? "True" : "False";
+    info += "\tModified: ";
+    info += modified? "True" : "False";
+    info += "\tHas value: ";
+    info += hasValue()? "True" : "False";
+
+    if (hasValue())
+    {
+        info += "\t" + toString();
+    }
+
+    return info;
+}
+
+std::string PTS_DataField::typeToName()
+{
+    switch (columnType)
+    {
+    default:
+        return "Unknown column type";
+
+    case PTS_DataField::PTS_DB_FieldType::Date :
+        return "Date";
+
+    case PTS_DataField::PTS_DB_FieldType::DateTime :
+        return "DateTime";
+
+    case PTS_DataField::PTS_DB_FieldType::TimeStamp :
+        return "TimeStamp";
+
+    case PTS_DataField::PTS_DB_FieldType::VarChar45 :
+        return "VarChar45";
+
+    case PTS_DataField::PTS_DB_FieldType::VarChar1024 :
+        return "VarChar1024";
+
+    case PTS_DataField::PTS_DB_FieldType::TinyText :
+        return "TinyText";
+
+    case PTS_DataField::PTS_DB_FieldType::Text :
+        return "Text";
+
+    case PTS_DataField::PTS_DB_FieldType::TinyBlob :
+        return "TinyBlob";
+
+    case PTS_DataField::PTS_DB_FieldType::Blob :
+        return "Blob";
+    
+    case PTS_DataField::PTS_DB_FieldType::Int :
+        return "Int";
+
+    case PTS_DataField::PTS_DB_FieldType::Key :
+        return "Key";
+
+    case PTS_DataField::PTS_DB_FieldType::Size_T :
+        return "Size_T";
+
+    case PTS_DataField::PTS_DB_FieldType::UnsignedInt :
+        return "UnsignedInt";
+
+    case PTS_DataField::PTS_DB_FieldType::Double :
+        return "Double";
+
+    case PTS_DataField::PTS_DB_FieldType::Float :
+        return "Float";
+    }
 }

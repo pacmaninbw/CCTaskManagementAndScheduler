@@ -35,10 +35,21 @@ public:
         : columnType{cType}, dbColumnName{cName}, dataValue{inValue}, required{isRequired}, modified{false}
         {};
     ~PTS_DataField() = default;
+/*
+ * Data access methods.
+ */
     std::string toString();
     void setValue(DataValueType inValue);
+    DataValueType getValue() { return dataValue; };
     bool hasValue();
     bool wasModified() const { return modified; };
+/*
+ * Field information methods.
+ */
+    std::string getColumnName() const { return dbColumnName; };
+    PTS_DataField::PTS_DB_FieldType getFieldType() const { return columnType; };
+    std::string fieldInfo();
+    std::string typeToName();
 
 private:
     PTS_DB_FieldType columnType;
