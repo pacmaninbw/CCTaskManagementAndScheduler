@@ -1,7 +1,14 @@
+#include <chrono>
+#include <exception>
+#include <iostream>
 #include "ModelBase.h"
+#include "PTS_DataField.h"
+#include <string>
+#include <unordered_map>
 
-ModelBase::ModelBase(std::string primaryKeyName, std::size_t primaryKeyIn)
-: primaryKeyFieldName{primaryKeyName}
+
+ModelBase::ModelBase(const std::string modelName, std::string primaryKeyName, std::size_t primaryKeyIn)
+: modelClassName{modelName}, primaryKeyFieldName{primaryKeyName}
 {
     PTS_DataField* primaryKey = new PTS_DataField(PTS_DataField::PTS_DB_FieldType::Key, primaryKeyName, true);
     if (primaryKeyIn)
@@ -16,108 +23,210 @@ ModelBase::~ModelBase()
 
 }
 
-void ModelBase::addDataField(std::string& fieldName, PTS_DataField::PTS_DB_FieldType fieldType, bool required)
+void ModelBase::addDataField(const std::string& fieldName, PTS_DataField::PTS_DB_FieldType fieldType, bool required)
 {
     PTS_DataField* dataField = new PTS_DataField(fieldType, fieldName, required);
     dataFields.insert({fieldName, dataField});
 }
 
-bool ModelBase::setFieldValue(std::string fieldName, DataValueType dataValue)
+bool ModelBase::setFieldValue(const std::string& fieldName, DataValueType dataValue)
 {
-    auto fieldToUpdate = dataFields.find(fieldName);
-    if (fieldToUpdate != dataFields.end())
+    PTS_DataField* fieldToUpdate = findFieldInDataFields(fieldName);
+    if (fieldToUpdate)
     {
-        fieldToUpdate->second->setValue(dataValue);
+        fieldToUpdate->setValue(dataValue);
         return true;
     }
-    else
+
+    return false;
+}
+
+/*
+ * Does not set the modified flag.
+ */
+void ModelBase::dbSetFieldValue(const std::string &fieldName, DataValueType dataValue)
+{
+    PTS_DataField* fieldToUpdate = findFieldInDataFields(fieldName);
+    if (fieldToUpdate)
     {
-        std::cerr << "Field not found in dataFields: " << fieldName << "\n";
-        return false;
+        fieldToUpdate->dbSetValue(dataValue);
     }
 }
 
-std::string ModelBase::getFieldValueString(std::string fieldName)
+std::string ModelBase::getFieldValueString(const std::string& fieldName)
 {
     std::string valueString("No Value Set");
 
-    auto fieldToFind = dataFields.find(fieldName);
-    if (fieldToFind != dataFields.end())
+    PTS_DataField* fieldToFind = findFieldInDataFields(fieldName);
+    if (fieldToFind)
     {
-        if (fieldToFind->second->hasValue())
-        {
-            valueString = fieldToFind->second->toString();
-        }
-    }
-    else
-    {
-        std::cerr << "Field not found in dataFields: " << fieldName << "\n";
+        valueString = fieldToFind->toString();
     }
 
     return valueString;
 }
 
+DataValueType ModelBase::getFieldValue(const std::string& fieldName) const
+{
+    DataValueType dataValue;
+
+    PTS_DataField* fieldToFind = findFieldInDataFields(fieldName);
+    if (fieldToFind)
+    {
+        if (fieldToFind->hasValue())
+        {
+            return fieldToFind->getValue();
+        }
+    }
+
+    return dataValue;
+}
+
+bool ModelBase::fieldHasValue(const std::string& fieldName) const
+{
+    PTS_DataField* fieldToFind = findFieldInDataFields(fieldName);
+    if (fieldToFind)
+    {
+        return fieldToFind->hasValue();
+    }
+
+    return false;
+}
+
+bool ModelBase::fieldWasModified(const std::string &fieldName) const
+{
+    PTS_DataField* fieldToFind = findFieldInDataFields(fieldName);
+    if (fieldToFind)
+    {
+        return fieldToFind->wasModified();
+    }
+
+    return false;
+}
+
 void ModelBase::setPrimaryKey(std::size_t keyValue)
 {
-    if (!setFieldValue(primaryKeyFieldName, keyValue))
-    {
-        std::cerr << "Internal Error, primary key not found in dataFields\n";
-    }
+    dbSetFieldValue(primaryKeyFieldName, keyValue);
 }
 
 std::size_t ModelBase::getPrimaryKey() const
 {
     std::size_t primaryKey = 0;
 
-    auto primaryKeyField = dataFields.find(primaryKeyFieldName);
-    if (primaryKeyField != dataFields.end())
+    PTS_DataField*  primaryKeyField = findFieldInDataFields(primaryKeyFieldName);
+    if (primaryKeyField)
     {
-        if (primaryKeyField->second->hasValue())
+        if (primaryKeyField->hasValue())
         {
-            DataValueType dataValue = primaryKeyField->second->getValue();
+            DataValueType dataValue = primaryKeyField->getValue();
             primaryKey = std::get<std::size_t>(dataValue);
         }
-    }
-    else
-    {
-        std::cerr << "Internal Error, primary key not found in dataFields\n";
     }
 
     return primaryKey;
 }
 
-DataValueType ModelBase::getFieldValue(std::string fieldName)
+bool ModelBase::atleastOneFieldModified() const
 {
-    DataValueType dataValue;
-    auto fieldToFind = dataFields.find(fieldName);
-    if (fieldToFind != dataFields.end())
+    for (const auto& [key, value] : dataFields)
     {
-        if (fieldToFind->second->hasValue())
+        if (value->wasModified())
         {
-            dataValue = fieldToFind->second->getValue();
+            return true;
         }
     }
-    else
-    {
-        std::cerr << "Field not found in dataFields: " << fieldName << "\n";
-    }
 
-    return dataValue;
+    return false;
 }
 
-bool ModelBase::fieldHasValue(std::string fieldName)
+bool ModelBase::allRequiredFieldsHaveData() const
 {
-    bool hasValue = false;
+    for (const auto& [key, value] : dataFields)
+    {
+        /*
+         * If this is a new object that hasn't been entered into the database yet
+         * then the primary key won't have a value. Whether to insert a new record
+         * or update an existing record is determined in the database interface. 
+         */
+        if (value->isRequired() && key != primaryKeyFieldName)
+        {
+            if (!value->hasValue())
+            {
+                return false;
+            }
+        }
+    }
 
+    return true;
+}
+
+std::string ModelBase::createDateString(int month, int day, int year)
+{
+    std::string dateString = std::to_string(year) + "-" + std::to_string(month) + "-" + std::to_string(day);
+
+    return dateString;
+}
+
+std::string ModelBase::dateToString(std::chrono::year_month_day taskDate)
+{
+    std::stringstream ss;
+    ss << taskDate;
+    return ss.str();
+}
+
+std::chrono::year_month_day ModelBase::stringToDate(std::string dateString)
+{
+    std::chrono::year_month_day dateValue = getTodaysDate();
+
+    // First try the ISO standard date.
+    std::istringstream ss(dateString);
+    ss >> std::chrono::parse("%Y-%m-%d", dateValue);
+    if (!ss.fail())
+    {
+        return dateValue;
+    }
+
+    // The ISO standard didn't work, try some local dates
+    std::locale usEnglish("en_US.UTF-8");
+    std::vector<std::string> legalFormats = {
+        {"%B %d, %Y"},
+        {"%m/%d/%Y"},
+        {"%m-%d-%Y"}
+    };
+
+    ss.imbue(usEnglish);
+    for (auto legalFormat: legalFormats)
+    {
+        ss >> std::chrono::parse(legalFormat, dateValue);
+        if (!ss.fail())
+        {
+            return dateValue;
+        }
+    }
+
+    return dateValue;
+}
+
+std::chrono::year_month_day ModelBase::getTodaysDate()
+{
+    std::chrono::time_point<std::chrono::system_clock> today = std::chrono::system_clock::now();
+    return std::chrono::floor<std::chrono::days>(today);
+}
+
+PTS_DataField *ModelBase::findFieldInDataFields(const std::string &fieldName) const
+{
     auto fieldToFind = dataFields.find(fieldName);
     if (fieldToFind != dataFields.end())
     {
-        hasValue = fieldToFind->second->hasValue();
+        return fieldToFind->second;
     }
     else
     {
-        std::cerr << "Field not found in dataFields: " << fieldName << "\n";
+        std::string eMessage("Interal Error in " + modelClassName + ": ");
+        eMessage += "Field not found in dataFields: " + fieldName;
+        std::out_of_range oor(eMessage);
+        throw oor;
     }
 
-    return hasValue;
+    return nullptr;
 }
