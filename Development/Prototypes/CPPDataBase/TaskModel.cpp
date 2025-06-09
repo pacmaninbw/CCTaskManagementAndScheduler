@@ -11,53 +11,47 @@
 #include "TaskModel.h"
 #include "UserModel.h"
 
-const std::size_t fieldCount = 16;
-
 TaskModel::TaskModel()
-    :  ModelBase("TaskID"),
-    createdByUid{0},
-    assignedToUid{0},
-    description{"descriptionIn"},
-    parentTaskID{0},
-    status{TaskStatus::Not_Started},
-    percentageComplete{0.0},
-    createdOnDate{getTodaysDate()},
-    requiredDeliveryDate{getTodaysDate()},
-    scheduledStartDate{getTodaysDate()},
-    actualStartDate{getTodaysDate()},
-    estimatedCompletionDate{getTodaysDate()},
-    completedDate{getTodaysDate()},
-    estimatedEffortHours{0},
-    actualEffortHours{0.0},
-    priorityGroup{1},
-    priority{1}
+    : ModelBase("TaskModel", "TaskID")
 {
-
+    addDataField("CreatedBy", PTS_DataField::PTS_DB_FieldType::Key, true);
+    addDataField("AsignedTo", PTS_DataField::PTS_DB_FieldType::Key, true);
+    addDataField("Description", PTS_DataField::PTS_DB_FieldType::VarChar256, true);
+    addDataField("ParentTask", PTS_DataField::PTS_DB_FieldType::Key);
+    addDataField("Status", PTS_DataField::PTS_DB_FieldType::Int);
+    addDataField("PercentageComplete", PTS_DataField::PTS_DB_FieldType::Double, true);
+    addDataField("CreatedOn", PTS_DataField::PTS_DB_FieldType::Date, true);
+    addDataField("RequiredDelivery", PTS_DataField::PTS_DB_FieldType::Date, true);
+    addDataField("ScheduledStart", PTS_DataField::PTS_DB_FieldType::Date, true);
+    addDataField("ActualStart", PTS_DataField::PTS_DB_FieldType::Date);
+    addDataField("EstimatedCompletion", PTS_DataField::PTS_DB_FieldType::Date);
+    addDataField("Comleted", PTS_DataField::PTS_DB_FieldType::Date);
+    addDataField("EstimatedEffortHours", PTS_DataField::PTS_DB_FieldType::UnsignedInt, true);
+    addDataField("ActualEffortHours", PTS_DataField::PTS_DB_FieldType::Float, true);
+    addDataField("SchedulePriorityGroup", PTS_DataField::PTS_DB_FieldType::UnsignedInt, true);
+    addDataField("PriorityInGroup", PTS_DataField::PTS_DB_FieldType::UnsignedInt, true);
 }
 
 TaskModel::TaskModel(
     UserModel &creator, std::string &descriptionIn, unsigned int estimatedHoursEffort, std::string dueDate, std::string startDate,
     TaskModel *parentTaskp, TaskStatus statusIn, unsigned int majorPriority, unsigned int minorPriority)
-    :  ModelBase("TaskID"),
-    createdByUid{creator.getUserID()},
-    assignedToUid{creator.getUserID()},
-    description{descriptionIn},
-    parentTaskID{0},
-    status{statusIn},
-    percentageComplete{0.0},
-    createdOnDate{getTodaysDate()},
-    requiredDeliveryDate{stringToDate(dueDate)},
-    scheduledStartDate{stringToDate(startDate)},
-    estimatedEffortHours{estimatedHoursEffort},
-    actualEffortHours{0.0},
-    priorityGroup{majorPriority},
-    priority{minorPriority}
+    : TaskModel()
 {
-    setCreationDate();
+    setFieldValue("CreatedBy", creator.getUserID());
+    setFieldValue("Description", descriptionIn);
+    setFieldValue("EstimatedEffortHours", estimatedHoursEffort);
+    setFieldValue("RequiredDelivery", dueDate);
+    setFieldValue("ScheduledStart", startDate);
+    setFieldValue("Status", static_cast<unsigned int>(statusIn));
+    setFieldValue("SchedulePriorityGroup", majorPriority);
+    setFieldValue("PriorityInGroup", minorPriority);
+   
+    std::chrono::year_month_day today = getTodaysDate();
+    setFieldValue("CreatedOn", today);
 
     if (parentTaskp)
     {
-        parentTaskID = parentTaskp->parentTaskID;
+        setFieldValue("ParentTask", parentTaskp->getTaskID());
     }
 }
 
@@ -67,24 +61,25 @@ TaskModel::TaskModel(
     std::string requiredDeliveryDatefromDb, std::string scheduledStartDatefromDb, std::string actualStartDatefromDb,
     std::string estimatedCompletionDatefromDb, std::string completedDatefromDb, unsigned int estimatedEffortHoursfromDb,
     double actualEffortHoursfromDb, unsigned int priorityGroupfromDb, unsigned int priorityfromDb)
-    :  ModelBase("TaskID", taskIDfromDB),
-    createdByUid{createdByUidfromDb},
-    assignedToUid{assignedToUidfromDb},
-    description{descriptionfromDb},
-    parentTaskID{parentTaskIDfromDb},
-    status{statusFromInt(statusfromDb)},
-    percentageComplete{percentageCompletefromDb},
-    createdOnDate{stringToDate(createdOnDatefromDb)},
-    requiredDeliveryDate{stringToDate(requiredDeliveryDatefromDb)},
-    scheduledStartDate{stringToDate(scheduledStartDatefromDb)},
-    actualStartDate{stringToDate(actualStartDatefromDb)},
-    estimatedCompletionDate{stringToDate(estimatedCompletionDatefromDb)},
-    completedDate{stringToDate(completedDatefromDb)},
-    estimatedEffortHours{estimatedEffortHoursfromDb},
-    actualEffortHours{actualEffortHoursfromDb},
-    priorityGroup{priorityGroupfromDb},
-    priority{priorityfromDb}
+    : TaskModel()
 {
+    setPrimaryKey(taskIDfromDB);
+    dbSetFieldValue("CreatedBy", createdByUidfromDb);
+    dbSetFieldValue("AsignedTo", assignedToUidfromDb);
+    dbSetFieldValue("Description", descriptionfromDb);
+    dbSetFieldValue("ParentTask", parentTaskIDfromDb);
+    dbSetFieldValue("Status", statusfromDb);
+    dbSetFieldValue("PercentageComplete", percentageCompletefromDb);
+    dbSetFieldValue("CreatedOn", stringToDate(createdOnDatefromDb));
+    dbSetFieldValue("RequiredDelivery", stringToDate(requiredDeliveryDatefromDb));
+    dbSetFieldValue("ScheduledStart", stringToDate(scheduledStartDatefromDb));
+    dbSetFieldValue("ActualStart", stringToDate(actualStartDatefromDb));
+    dbSetFieldValue("EstimatedCompletion", stringToDate(estimatedCompletionDatefromDb));
+    dbSetFieldValue("Comleted", stringToDate(completedDatefromDb));
+    dbSetFieldValue("EstimatedEffortHours", estimatedEffortHoursfromDb);
+    dbSetFieldValue("ActualEffortHours", actualEffortHoursfromDb);
+    dbSetFieldValue("SchedulePriorityGroup", priorityGroupfromDb);
+    dbSetFieldValue("PriorityInGroup", priorityfromDb);
 }
 
 TaskModel::~TaskModel()
@@ -111,60 +106,3 @@ std::string TaskModel::taskStatusString() const
     }
 }
 
-void TaskModel::setCreationDate()
-{
-    createdOnDate = getTodaysDate();
-}
-
-std::string TaskModel::createDateString(int month, int day, int year)
-{
-    std::string dateString = std::to_string(year) + "-" + std::to_string(month) + "-" + std::to_string(day);
-
-    return dateString;
-}
-
-std::string TaskModel::dateToString(std::chrono::year_month_day taskDate)
-{
-    std::stringstream ss;
-    ss << taskDate;
-    return ss.str();
-}
-
-std::chrono::year_month_day TaskModel::stringToDate(std::string dateString)
-{
-    std::chrono::year_month_day dateValue = getTodaysDate();
-
-    // First try the ISO standard date.
-    std::istringstream ss(dateString);
-    ss >> std::chrono::parse("%Y-%m-%d", dateValue);
-    if (!ss.fail())
-    {
-        return dateValue;
-    }
-
-    // The ISO standard didn't work, try some local dates
-    std::locale usEnglish("en_US.UTF-8");
-    std::vector<std::string> legalFormats = {
-        {"%B %d, %Y"},
-        {"%m/%d/%Y"},
-        {"%m-%d-%Y"}
-    };
-
-    ss.imbue(usEnglish);
-    for (auto legalFormat: legalFormats)
-    {
-        ss >> std::chrono::parse(legalFormat, dateValue);
-        if (!ss.fail())
-        {
-            return dateValue;
-        }
-    }
-
-    return dateValue;
-}
-
-std::chrono::year_month_day TaskModel::getTodaysDate()
-{
-    std::chrono::time_point<std::chrono::system_clock> today = std::chrono::system_clock::now();
-    return std::chrono::floor<std::chrono::days>(today);
-}
