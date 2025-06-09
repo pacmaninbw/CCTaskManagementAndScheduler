@@ -18,12 +18,12 @@ using DataValueType = std::variant<std::monostate, std::size_t, std::chrono::tim
 class PTS_DataField
 {
 public:
-    enum class PTS_DB_FieldType {Key, Date, DateTime, TimeStamp, VarChar45, VarChar1024, TinyText, Text, TinyBlob, Blob,
+    enum class PTS_DB_FieldType {Key, Date, DateTime, TimeStamp, VarChar45, VarChar256, VarChar1024, TinyText, Text, TinyBlob, Blob,
         Boolean, UnsignedInt, Int, Size_T, Double, Float
     };
 
     /*
-     * Currently the closes we can get to a default constructor. Field type and column
+     * Currently the closest we can get to a default constructor. Field type and column
      * name must be set. 
      */
     PTS_DataField(PTS_DataField::PTS_DB_FieldType cType, std::string cName, bool isRequired=false)
@@ -40,16 +40,18 @@ public:
  */
     std::string toString();
     void setValue(DataValueType inValue);
+    void dbSetValue(DataValueType inValue) { dataValue = inValue; };    // Don't set modified.
     DataValueType getValue() { return dataValue; };
-    bool hasValue();
+    bool hasValue() const;
     bool wasModified() const { return modified; };
+    bool isRequired() const { return required; };
 /*
  * Field information methods.
  */
     std::string getColumnName() const { return dbColumnName; };
     PTS_DataField::PTS_DB_FieldType getFieldType() const { return columnType; };
     std::string fieldInfo();
-    std::string typeToName();
+    const std::string typeToName() const;
 
 private:
     PTS_DB_FieldType columnType;

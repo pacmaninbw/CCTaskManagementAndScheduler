@@ -32,6 +32,7 @@ std::string PTS_DataField::toString()
         break;
 
     case PTS_DataField::PTS_DB_FieldType::VarChar45 :
+    case PTS_DataField::PTS_DB_FieldType::VarChar256 :
     case PTS_DataField::PTS_DB_FieldType::VarChar1024 :
     case PTS_DataField::PTS_DB_FieldType::TinyText :
     case PTS_DataField::PTS_DB_FieldType::Text :
@@ -71,7 +72,7 @@ void PTS_DataField::setValue(DataValueType inValue)
     modified = true;
 }
 
-bool PTS_DataField::hasValue()
+bool PTS_DataField::hasValue() const
 {
     return !std::holds_alternative<std::monostate>(dataValue);
 }
@@ -95,7 +96,7 @@ std::string PTS_DataField::fieldInfo()
     return info;
 }
 
-std::string PTS_DataField::typeToName()
+const std::string PTS_DataField::typeToName() const
 {
     switch (columnType)
     {
@@ -113,6 +114,9 @@ std::string PTS_DataField::typeToName()
 
     case PTS_DataField::PTS_DB_FieldType::VarChar45 :
         return "VarChar45";
+
+    case PTS_DataField::PTS_DB_FieldType::VarChar256 :
+        return "VarChar256";
 
     case PTS_DataField::PTS_DB_FieldType::VarChar1024 :
         return "VarChar1024";
