@@ -4,7 +4,7 @@
 #include <string>
 
 UserModel::UserModel()
-    : ModelBase("UserID"),
+    : ModelBase("UserModel", "UserID"),
     lastName{""},
     firstName{""},
     middleInitial{""},
@@ -20,7 +20,7 @@ UserModel::UserModel()
 }
 
 UserModel::UserModel(const char *lastIn, const char *firstIn, const char *middleIIn, const char *email)
-    : ModelBase("UserID"),
+    : ModelBase("UserModel", "UserID"),
     lastName{lastIn},
     firstName{firstIn},
     middleInitial{middleIIn},
@@ -39,7 +39,7 @@ UserModel::UserModel(std::size_t dbUserId, const char *dbLoginName, const char *
     const char *dbFirstName, const char *dbMiddleInit, const char *dbEmail, const char *dbDayStart,
     const char *dbDayEnd, int dbPriorityinSched, int dbMinorPriorityInSched, int dbLettersForMajorP,
     int dbUseDot)
-    : ModelBase("UserID", dbUserId),
+    : ModelBase("UserModel", "UserID", dbUserId),
     lastName{dbLastName},
     firstName{dbFirstName},
     middleInitial{dbMiddleInit},
