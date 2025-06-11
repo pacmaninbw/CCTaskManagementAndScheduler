@@ -45,6 +45,17 @@ public:
     bool hasValue() const;
     bool wasModified() const { return modified; };
     bool isRequired() const { return required; };
+    int getIntValue() const;
+    std::size_t getSize_tValue() const;
+    std::size_t getKeyValue() const { return getSize_tValue(); };
+    double getDoubleValue() const;
+    float getFloatValue() const;
+    std::chrono::year_month_day getDateValue() const;
+    std::chrono::time_point<std::chrono::system_clock> getTimeValue() const;
+    std::string getStringValue() const;
+    bool getBoolValue() const;
+    unsigned int getUnsignedIntValue() const;
+
 /*
  * Field information methods.
  */

@@ -90,7 +90,15 @@ std::string PTS_DataField::fieldInfo()
 
     if (hasValue())
     {
-        info += "\t" + toString();
+        try
+        {
+            info += "\t" + toString();
+        }
+        catch(const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+        
     }
 
     return info;
@@ -151,4 +159,108 @@ const std::string PTS_DataField::typeToName() const
     case PTS_DataField::PTS_DB_FieldType::Float :
         return "Float";
     }
+}
+
+int PTS_DataField::getIntValue() const
+{
+    if (hasValue() &&
+        columnType == PTS_DataField::PTS_DB_FieldType::Int)
+    {
+        return std::get<int>(dataValue);
+    }
+
+    return 0;
+}
+
+std::size_t PTS_DataField::getSize_tValue() const
+{
+    if (hasValue() && (columnType == PTS_DataField::PTS_DB_FieldType::Key
+        || columnType == PTS_DataField::PTS_DB_FieldType::Size_T))
+    {
+        return std::get<std::size_t>(dataValue);
+    }
+
+    return 0;
+}
+
+double PTS_DataField::getDoubleValue() const
+{
+    if (hasValue() && columnType == PTS_DataField::PTS_DB_FieldType::Double)
+    {
+        return std::get<double>(dataValue);
+    }
+
+    return 0.0;
+}
+
+float PTS_DataField::getFloatValue() const
+{
+    if (hasValue() && columnType == PTS_DataField::PTS_DB_FieldType::Float)
+    {
+        return std::get<float>(dataValue);
+    }
+
+    return 0.0f;
+}
+
+std::chrono::year_month_day PTS_DataField::getDateValue() const
+{
+    if (hasValue() && columnType == PTS_DataField::PTS_DB_FieldType::Date)
+    {
+        return std::get<std::chrono::year_month_day>(dataValue);
+    }
+
+    return std::chrono::year_month_day();
+}
+
+std::chrono::time_point<std::chrono::system_clock> PTS_DataField::getTimeValue() const
+{
+    if (hasValue() && (columnType == PTS_DataField::PTS_DB_FieldType::DateTime
+        || columnType == PTS_DataField::PTS_DB_FieldType::TimeStamp))
+    {
+        return std::get<std::chrono::time_point<std::chrono::system_clock>>(dataValue);
+    }
+
+    return std::chrono::time_point<std::chrono::system_clock>();
+}
+
+std::string PTS_DataField::getStringValue() const
+{
+    if (hasValue())
+    {
+        switch (columnType)
+        {
+            default:
+                break;
+            case PTS_DataField::PTS_DB_FieldType::VarChar45 :
+            case PTS_DataField::PTS_DB_FieldType::VarChar256 :
+            case PTS_DataField::PTS_DB_FieldType::VarChar1024 :
+            case PTS_DataField::PTS_DB_FieldType::TinyText :
+            case PTS_DataField::PTS_DB_FieldType::Text :
+            case PTS_DataField::PTS_DB_FieldType::TinyBlob :
+            case PTS_DataField::PTS_DB_FieldType::Blob :
+                return std::get<std::string>(dataValue);
+        }
+    }
+    return std::string();
+}
+
+bool PTS_DataField::getBoolValue() const
+{
+    if (hasValue() && columnType == PTS_DataField::PTS_DB_FieldType::Boolean)
+    {
+        return std::get<bool>(dataValue);
+    }
+
+    return false;
+}
+
+unsigned int PTS_DataField::getUnsignedIntValue() const
+{
+    if (hasValue() && columnType == PTS_DataField::PTS_DB_FieldType::UnsignedInt)
+    {
+        return std::get<unsigned int>(dataValue);
+    }
+
+    return 0;
 }
