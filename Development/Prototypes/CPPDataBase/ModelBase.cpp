@@ -23,6 +23,46 @@ ModelBase::~ModelBase()
 
 }
 
+std::string ModelBase::dateToString(std::chrono::year_month_day taskDate)
+{
+    std::stringstream ss;
+    ss << taskDate;
+    return ss.str();
+}
+
+std::chrono::year_month_day ModelBase::stringToDate(std::string dateString)
+{
+    std::chrono::year_month_day dateValue = getTodaysDate();
+
+    // First try the ISO standard date.
+    std::istringstream ss(dateString);
+    ss >> std::chrono::parse("%Y-%m-%d", dateValue);
+    if (!ss.fail())
+    {
+        return dateValue;
+    }
+
+    // The ISO standard didn't work, try some local dates
+    std::locale usEnglish("en_US.UTF-8");
+    std::vector<std::string> legalFormats = {
+        {"%B %d, %Y"},
+        {"%m/%d/%Y"},
+        {"%m-%d-%Y"}
+    };
+
+    ss.imbue(usEnglish);
+    for (auto legalFormat: legalFormats)
+    {
+        ss >> std::chrono::parse(legalFormat, dateValue);
+        if (!ss.fail())
+        {
+            return dateValue;
+        }
+    }
+
+    return dateValue;
+}
+
 void ModelBase::addDataField(const std::string& fieldName, PTS_DataField::PTS_DB_FieldType fieldType, bool required)
 {
     PTS_DataField* dataField = new PTS_DataField(fieldType, fieldName, required);
@@ -160,51 +200,33 @@ bool ModelBase::allRequiredFieldsHaveData() const
     return true;
 }
 
+std::string ModelBase::reportMissingRequiredFields() const
+{
+    std::string agregateErrorMessage;
+
+    for (const auto& [key, value] : dataFields)
+    {
+        if (value->isRequired() && key != primaryKeyFieldName)
+        {
+            if (!value->hasValue())
+            {
+                agregateErrorMessage += "The required field " + value->getColumnName() +
+                    " has not been set!\n";
+            }
+        }
+    }
+
+    return agregateErrorMessage;
+}
+
+/*
+ * Protected methods.
+ */
 std::string ModelBase::createDateString(int month, int day, int year)
 {
     std::string dateString = std::to_string(year) + "-" + std::to_string(month) + "-" + std::to_string(day);
 
     return dateString;
-}
-
-std::string ModelBase::dateToString(std::chrono::year_month_day taskDate)
-{
-    std::stringstream ss;
-    ss << taskDate;
-    return ss.str();
-}
-
-std::chrono::year_month_day ModelBase::stringToDate(std::string dateString)
-{
-    std::chrono::year_month_day dateValue = getTodaysDate();
-
-    // First try the ISO standard date.
-    std::istringstream ss(dateString);
-    ss >> std::chrono::parse("%Y-%m-%d", dateValue);
-    if (!ss.fail())
-    {
-        return dateValue;
-    }
-
-    // The ISO standard didn't work, try some local dates
-    std::locale usEnglish("en_US.UTF-8");
-    std::vector<std::string> legalFormats = {
-        {"%B %d, %Y"},
-        {"%m/%d/%Y"},
-        {"%m-%d-%Y"}
-    };
-
-    ss.imbue(usEnglish);
-    for (auto legalFormat: legalFormats)
-    {
-        ss >> std::chrono::parse(legalFormat, dateValue);
-        if (!ss.fail())
-        {
-            return dateValue;
-        }
-    }
-
-    return dateValue;
 }
 
 std::chrono::year_month_day ModelBase::getTodaysDate()
@@ -230,3 +252,4 @@ PTS_DataField *ModelBase::findFieldInDataFields(const std::string &fieldName) co
 
     return nullptr;
 }
+
