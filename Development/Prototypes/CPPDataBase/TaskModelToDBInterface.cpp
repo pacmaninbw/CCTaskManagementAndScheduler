@@ -23,14 +23,11 @@ bool TaskModelToDBInterface::ModelObjectHasAllRequiredFields(ModelBase *modelObj
         return false;
     }
 
-    bool isValid = true;
-
-    reportIfError(requiredKeyHasValue(task->getTaskID()), "Task ID alreay has a value, the task is in the database\n", isValid);
-    reportIfError(!requiredKeyHasValue(task->getCreatorID()), "Creator ID not set\n", isValid);
-    reportIfError(!requiredFieldHaseData(task->getDescription()), "Missing Task Description\n", isValid);
-    reportIfError((task->getEstimatedEffort() == 0), "Estimated effor in hours not set\n", isValid);
-    reportIfError(!requiredFieldHaseData(task->getDueDate()), "The due date has not been set\n", isValid);
-    reportIfError(!requiredFieldHaseData(task->getScheduledStart()), "The scheduled start date has not been set\n", isValid);
+    bool isValid = task->allRequiredFieldsHaveData();
+    if (!isValid)
+    {
+        appendErrorMessage(task->reportMissingRequiredFields());
+    }
 
     return isValid;
 }
@@ -51,8 +48,8 @@ bool TaskModelToDBInterface::addDataToSqlStatement(ModelBase* modelObject)
     appendArgToSqlStmt(task->getParentTaskID(), true);
     appendArgToSqlStmt(task->getEstimatedEffort(), true);
     appendArgToSqlStmt(priorityInAllTasks, true);
-    appendArgToSqlStmt(task->getDueDate(), true);
-    appendArgToSqlStmt(task->getScheduledStart());
+    appendArgToSqlStmt(task->dateToString(task->getDueDate()), true);
+    appendArgToSqlStmt(task->dateToString(task->getScheduledStart()));
 
     return true;
 }
