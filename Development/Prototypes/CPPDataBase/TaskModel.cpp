@@ -31,13 +31,16 @@ TaskModel::TaskModel(
     : TaskModel()
 {
     setFieldValue("CreatedBy", creator.getUserID());
+    setFieldValue("AsignedTo", creator.getUserID());
     setFieldValue("Description", descriptionIn);
     setFieldValue("EstimatedEffortHours", estimatedHoursEffort);
-    setFieldValue("RequiredDelivery", dueDate);
-    setFieldValue("ScheduledStart", startDate);
-    setFieldValue("Status", static_cast<unsigned int>(statusIn));
+    setFieldValue("RequiredDelivery", stringToDate(dueDate));
+    setFieldValue("ScheduledStart", stringToDate(startDate));
+    setFieldValue("Status", static_cast<int>(statusIn));
     setFieldValue("SchedulePriorityGroup", majorPriority);
     setFieldValue("PriorityInGroup", minorPriority);
+    setFieldValue("ActualEffortHours", static_cast<float>(0.0));
+    setFieldValue("PercentageComplete", 0.0);
    
     std::chrono::year_month_day today = getTodaysDate();
     setFieldValue("CreatedOn", today);

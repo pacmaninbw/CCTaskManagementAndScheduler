@@ -1,6 +1,7 @@
 #ifndef TASKMODEL_H_
 #define TASKMODEL_H_
 
+#include <chrono>
 #include <iostream>
 #include <string>
 #include "ModelBase.h"
@@ -31,28 +32,41 @@ public:
     ~TaskModel();
     void dbSetTaskID(std::size_t dbTaskID) { setPrimaryKey(dbTaskID); };
     std::size_t getTaskID() const { return getPrimaryKey(); };
-    std::size_t getCreatorID();
-    std::size_t getAssignToID();
-    std::string getDescription();
-    TaskModel::TaskStatus getStatus();
-    std::size_t getParentTaskID();
-    double getPercentageComplete();
-    std::string getCreationDate();
-    std::string getDueDate();
-    std::string getScheduledStart();
-    std::string getactualStartDate();
-    std::string getEstimatedCompletion();
-    std::string getCompletionDate();
-    unsigned int getEstimatedEffort();
-    double getactualEffortToDate();
-    unsigned int getPriorityGoup();
-    unsigned int getPriority();
+    std::size_t getCreatorID() const { return getKeyFieldValue("CreatedBy"); };
+    std::size_t getAssignToID() const { return getKeyFieldValue("AsignedTo"); };
+    std::string getDescription() const { return getStringFieldValue("Description") ; };
+    TaskModel::TaskStatus getStatus() const { return statusFromInt(getIntFieldValue("Status")); };
+    std::size_t getParentTaskID() const { return getKeyFieldValue("ParentTask"); };
+    double getPercentageComplete() const { return getDoubleFieldValue("PercentageComplete"); };
+    std::chrono::year_month_day getCreationDate() const { return getDateFieldValue("CreatedOn"); };
+    std::chrono::year_month_day getDueDate() const { return getDateFieldValue("RequiredDelivery"); };
+    std::chrono::year_month_day getScheduledStart() const { return getDateFieldValue("ScheduledStart"); };
+    std::chrono::year_month_day getactualStartDate() const { return getDateFieldValue("ActualStart"); };
+    std::chrono::year_month_day getEstimatedCompletion() const { return getDateFieldValue("EstimatedCompletion"); };
+    std::chrono::year_month_day getCompletionDate() const { return getDateFieldValue("Comleted"); };
+    unsigned int getEstimatedEffort() const { return getUnsignedIntFieldValue("EstimatedEffortHours"); };
+    float getactualEffortToDate() const { return getFloatFieldValue("ActualEffortHours"); };
+    unsigned int getPriorityGoup() const { return getUnsignedIntFieldValue("SchedulePriorityGroup"); };
+    unsigned int getPriority() const { return getUnsignedIntFieldValue("PriorityInGroup"); };
     std::string taskStatusString() const;
 
     friend std::ostream& operator<<(std::ostream& os, const TaskModel& obj)
     {
         os << "TaskModel:\n";
         os << obj.primaryKeyFieldName;
+        os << "Column Names: ";
+        for (const auto& [key, value] : obj.dataFields)
+        {
+            os << key;
+            os << ", ";
+        }
+        os << "\n";
+        for (const auto& [key, value] : obj.dataFields)
+        {
+            PTS_DataField* currentField = value;
+            os << currentField->fieldInfo();
+            os << "\n";
+        }
         return os;
     };
 
