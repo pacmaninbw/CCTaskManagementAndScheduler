@@ -5,19 +5,20 @@
 #include "UserModelToDBInterface.h"
 #include "UserProfileTestData.h"
 
-static std::vector<UserModel*> userProfileTestData = 
-{
-    {new UserModel("Chernick", "Paul", "A", "paul.chernick@chernicksw.com")},
-    {new UserModel("Chernick", "Nina", "L", "ChernickNinaL@gmail.com")},
-    {new UserModel("Chernick", "Dina", "B", "ChernickDinaB@gmail.com")},
-    {new UserModel("Shiminovics", "Eitan", "I", "ShimonvicsEitanI@gmail.com")},
-    {new UserModel("PacMan", "IN", "BW", "pacmaninbw@gmail.com")},
-    {new UserModel("Black", "Patrick", "A", "BlackPatrickA@gmail.com")}
-};
-
 
 void loadUserProfileTestDataIntoDatabase()
 {
+
+    std::vector<UserModel*> userProfileTestData = 
+    {
+        {new UserModel("Chernick", "Paul", "A", "paul.chernick@chernicksw.com")},
+        {new UserModel("Chernick", "Nina", "L", "ChernickNinaL@gmail.com")},
+        {new UserModel("Chernick", "Dina", "B", "ChernickDinaB@gmail.com")},
+        {new UserModel("Shiminovics", "Eitan", "I", "ShimonvicsEitanI@gmail.com")},
+        {new UserModel("PacMan", "IN", "BW", "pacmaninbw@gmail.com")},
+        {new UserModel("Black", "Patrick", "A", "BlackPatrickA@gmail.com")}
+    };
+
     UserModelToDBInterface userDBInterface;
 
     for (auto user: userProfileTestData)
@@ -27,6 +28,12 @@ void loadUserProfileTestDataIntoDatabase()
             std::cerr << userDBInterface.getAllErrorMessages() << "\n" << *user << "\n";
         }
     }
+
+    for (UserModel* user: userProfileTestData)
+    {
+        delete user;
+    }
+    userProfileTestData.clear();
 }
 
 
