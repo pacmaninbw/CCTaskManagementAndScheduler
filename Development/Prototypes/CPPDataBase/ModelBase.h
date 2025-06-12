@@ -14,6 +14,7 @@ public:
     virtual ~ModelBase();
     std::string dateToString(std::chrono::year_month_day taskDate);
     std::chrono::year_month_day stringToDate(std::string dateString);
+    bool isInDataBase() const;
 /*
  * Field access methods. 
  */

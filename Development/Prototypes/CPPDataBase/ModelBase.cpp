@@ -72,6 +72,12 @@ void ModelBase::addDataField(const std::string& fieldName, PTS_DataField::PTS_DB
     dataFields.insert({fieldName, dataField});
 }
 
+bool ModelBase::isInDataBase() const
+{
+    PTS_DataField* pkField = findFieldInDataFields(primaryKeyFieldName);
+    return pkField? pkField->hasValue() : false;
+}
+
 bool ModelBase::setFieldValue(const std::string& fieldName, DataValueType dataValue)
 {
     PTS_DataField* fieldToUpdate = findFieldInDataFields(fieldName);
@@ -255,4 +261,3 @@ PTS_DataField *ModelBase::findFieldInDataFields(const std::string &fieldName) co
 
     return nullptr;
 }
-
