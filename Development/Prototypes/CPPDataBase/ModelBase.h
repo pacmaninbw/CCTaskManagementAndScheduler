@@ -82,6 +82,7 @@ public:
     std::string reportMissingRequiredFields() const;
     friend std::ostream& operator<<(std::ostream& os, const ModelBase& obj)
     {
+        os << "Model Class:\t" << obj.modelClassName << "\n";
         os << "Primary Key field name :" << obj.primaryKeyFieldName << "\n";
         for (const auto& [key, value] : obj.dataFields)
         {
