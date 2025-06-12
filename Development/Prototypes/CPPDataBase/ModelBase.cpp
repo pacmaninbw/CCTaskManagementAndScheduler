@@ -87,7 +87,7 @@ bool ModelBase::setFieldValue(const std::string& fieldName, DataValueType dataVa
 /*
  * Does not set the modified flag.
  */
-void ModelBase::dbSetFieldValue(const std::string &fieldName, DataValueType dataValue)
+void ModelBase::initFieldValueNotChanged(const std::string &fieldName, DataValueType dataValue)
 {
     PTS_DataField* fieldToUpdate = findFieldInDataFields(fieldName);
     if (fieldToUpdate)
@@ -149,7 +149,7 @@ bool ModelBase::fieldWasModified(const std::string &fieldName) const
 
 void ModelBase::setPrimaryKey(std::size_t keyValue)
 {
-    dbSetFieldValue(primaryKeyFieldName, keyValue);
+    initFieldValueNotChanged(primaryKeyFieldName, keyValue);
 }
 
 std::size_t ModelBase::getPrimaryKey() const

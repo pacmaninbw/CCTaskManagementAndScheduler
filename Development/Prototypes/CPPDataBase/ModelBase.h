@@ -21,7 +21,7 @@ public:
     std::size_t getPrimaryKey() const;
     void addDataField(const std::string& fieldName, PTS_DataField::PTS_DB_FieldType fieldType, bool required=false);
     bool setFieldValue(const std::string& fieldName, DataValueType dataValue);
-    void dbSetFieldValue(const std::string& fieldName, DataValueType dataValue);
+    void initFieldValueNotChanged(const std::string& fieldName, DataValueType dataValue);
     std::string getFieldValueString(const std::string& fieldName);
     DataValueType getFieldValue(const std::string& fieldName) const;
     bool fieldHasValue(const std::string& fieldName) const;

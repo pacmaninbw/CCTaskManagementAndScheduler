@@ -60,22 +60,22 @@ TaskModel::TaskModel(
     : TaskModel()
 {
     setPrimaryKey(taskIDfromDB);
-    dbSetFieldValue("CreatedBy", createdByUidfromDb);
-    dbSetFieldValue("AsignedTo", assignedToUidfromDb);
-    dbSetFieldValue("Description", descriptionfromDb);
-    dbSetFieldValue("ParentTask", parentTaskIDfromDb);
-    dbSetFieldValue("Status", statusfromDb);
-    dbSetFieldValue("PercentageComplete", percentageCompletefromDb);
-    dbSetFieldValue("CreatedOn", stringToDate(createdOnDatefromDb));
-    dbSetFieldValue("RequiredDelivery", stringToDate(requiredDeliveryDatefromDb));
-    dbSetFieldValue("ScheduledStart", stringToDate(scheduledStartDatefromDb));
-    dbSetFieldValue("ActualStart", stringToDate(actualStartDatefromDb));
-    dbSetFieldValue("EstimatedCompletion", stringToDate(estimatedCompletionDatefromDb));
-    dbSetFieldValue("Comleted", stringToDate(completedDatefromDb));
-    dbSetFieldValue("EstimatedEffortHours", estimatedEffortHoursfromDb);
-    dbSetFieldValue("ActualEffortHours", actualEffortHoursfromDb);
-    dbSetFieldValue("SchedulePriorityGroup", priorityGroupfromDb);
-    dbSetFieldValue("PriorityInGroup", priorityfromDb);
+    initFieldValueNotChanged("CreatedBy", createdByUidfromDb);
+    initFieldValueNotChanged("AsignedTo", assignedToUidfromDb);
+    initFieldValueNotChanged("Description", descriptionfromDb);
+    initFieldValueNotChanged("ParentTask", parentTaskIDfromDb);
+    initFieldValueNotChanged("Status", statusfromDb);
+    initFieldValueNotChanged("PercentageComplete", percentageCompletefromDb);
+    initFieldValueNotChanged("CreatedOn", stringToDate(createdOnDatefromDb));
+    initFieldValueNotChanged("RequiredDelivery", stringToDate(requiredDeliveryDatefromDb));
+    initFieldValueNotChanged("ScheduledStart", stringToDate(scheduledStartDatefromDb));
+    initFieldValueNotChanged("ActualStart", stringToDate(actualStartDatefromDb));
+    initFieldValueNotChanged("EstimatedCompletion", stringToDate(estimatedCompletionDatefromDb));
+    initFieldValueNotChanged("Comleted", stringToDate(completedDatefromDb));
+    initFieldValueNotChanged("EstimatedEffortHours", estimatedEffortHoursfromDb);
+    initFieldValueNotChanged("ActualEffortHours", actualEffortHoursfromDb);
+    initFieldValueNotChanged("SchedulePriorityGroup", priorityGroupfromDb);
+    initFieldValueNotChanged("PriorityInGroup", priorityfromDb);
 }
 
 TaskModel::~TaskModel()
