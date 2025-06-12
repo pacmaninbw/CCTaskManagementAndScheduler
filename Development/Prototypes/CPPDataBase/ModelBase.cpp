@@ -20,7 +20,10 @@ ModelBase::ModelBase(const std::string modelName, std::string primaryKeyName, st
 
 ModelBase::~ModelBase()
 {
-
+        for (const auto& [key, value] : dataFields)
+        {
+            delete value;
+        }
 }
 
 std::string ModelBase::dateToString(std::chrono::year_month_day taskDate)
