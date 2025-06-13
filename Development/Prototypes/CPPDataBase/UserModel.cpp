@@ -4,55 +4,59 @@
 #include <string>
 
 UserModel::UserModel()
-    : ModelBase("UserModel", "UserID"),
-    lastName{""},
-    firstName{""},
-    middleInitial{""},
-    eMail{""},
-    scheduleDayStart{"8:30 AM"},
-    scheduleDayEnd{"5:00 PM"},
-    includePriorityInSchedule{true},
-    includeMinorPriorityInSchedule{true},
-    useLettersForMajorPriority{true},
-    separatePriorityWithDot{false}
+    : ModelBase("UserModel", "UserID")
 {
-
+    addDataField("LastName", PTS_DataField::PTS_DB_FieldType::VarChar45, true);
+    addDataField("FirstName", PTS_DataField::PTS_DB_FieldType::TinyText, true);
+    addDataField("MiddleInitial", PTS_DataField::PTS_DB_FieldType::TinyText);
+    addDataField("LoginName",  PTS_DataField::PTS_DB_FieldType::VarChar45, true);
+    addDataField("HashedPassWord", PTS_DataField::PTS_DB_FieldType::TinyText, true);
+    addDataField("emailAddress", PTS_DataField::PTS_DB_FieldType::VarChar256, true);
+    addDataField("ScheduleDayStart", PTS_DataField::PTS_DB_FieldType::DateTime, true);
+    addDataField("ScheduleDayEnd", PTS_DataField::PTS_DB_FieldType::DateTime, true);
+    addDataField("IncludePriorityInSchedule", PTS_DataField::PTS_DB_FieldType::Boolean);
+    addDataField("IncludeMinorPriorityInSchedule", PTS_DataField::PTS_DB_FieldType::Boolean);
+    addDataField("UseLettersForMajorPriority", PTS_DataField::PTS_DB_FieldType::Boolean);
+    addDataField("SeparatePriorityWithDot", PTS_DataField::PTS_DB_FieldType::Boolean);
 }
 
 UserModel::UserModel(const char *lastIn, const char *firstIn, const char *middleIIn, const char *email)
-    : ModelBase("UserModel", "UserID"),
-    lastName{lastIn},
-    firstName{firstIn},
-    middleInitial{middleIIn},
-    eMail{email},
+    : UserModel()
+    /*,
     scheduleDayStart{"8:30 AM"},
     scheduleDayEnd{"5:00 PM"},
-    includePriorityInSchedule{true},
-    includeMinorPriorityInSchedule{true},
-    useLettersForMajorPriority{true},
-    separatePriorityWithDot{false}
+    */
 {
+    setFieldValue("LastName", lastIn);
+    setFieldValue("FirstName", firstIn);
+    setFieldValue("MiddleInitial", middleIIn);
+    setFieldValue("emailAddress", email);
     createLoginBasedOnUserName(lastIn, firstIn, middleIIn);
+    initFieldValueNotChanged("IncludePriorityInSchedule", true);
+    initFieldValueNotChanged("IncludeMinorPriorityInSchedule", true);
+    initFieldValueNotChanged("UseLettersForMajorPriority", true);
+    initFieldValueNotChanged("SeparatePriorityWithDot", false);
 }
 
 UserModel::UserModel(std::size_t dbUserId, const char *dbLoginName, const char *dbPassWord, const char *dbLastName,
     const char *dbFirstName, const char *dbMiddleInit, const char *dbEmail, const char *dbDayStart,
     const char *dbDayEnd, int dbPriorityinSched, int dbMinorPriorityInSched, int dbLettersForMajorP,
     int dbUseDot)
-    : ModelBase("UserModel", "UserID", dbUserId),
-    lastName{dbLastName},
-    firstName{dbFirstName},
-    middleInitial{dbMiddleInit},
-    eMail{dbEmail},
-    loginName{dbLoginName},
-    hashedPassWord{dbPassWord},
-    scheduleDayStart{dbDayStart},
-    scheduleDayEnd{dbDayEnd}
+    : UserModel()
 {
-    includePriorityInSchedule = dbPriorityinSched != 0;
-    includeMinorPriorityInSchedule = dbMinorPriorityInSched != 0;
-    useLettersForMajorPriority = dbLettersForMajorP != 0;
-    separatePriorityWithDot = dbUseDot != 0;
+    setPrimaryKey(dbUserId);
+    initFieldValueNotChanged("LastName", dbLastName);
+    initFieldValueNotChanged("FirstName", dbFirstName);
+    initFieldValueNotChanged("MiddleInitial", dbMiddleInit);
+    initFieldValueNotChanged("emailAddress", dbEmail);
+    initFieldValueNotChanged("LoginName", dbLoginName);
+    initFieldValueNotChanged("HashedPassWord", dbPassWord);
+    initFieldValueNotChanged("IncludePriorityInSchedule", dbPriorityinSched != 0);
+    initFieldValueNotChanged("IncludeMinorPriorityInSchedule", dbMinorPriorityInSched != 0);
+    initFieldValueNotChanged("UseLettersForMajorPriority", dbLettersForMajorP != 0);
+    initFieldValueNotChanged("SeparatePriorityWithDot", dbUseDot != 0);
+    std::cout << "Start Day" << dbDayStart << "\n";
+    std::cout << "End Day" << dbDayEnd << "\n";
 }
 
 UserModel::~UserModel()
@@ -105,8 +109,8 @@ void UserModel::createLoginBasedOnUserName(std::string lastName, std::string fir
     tempLoginName += firstName;
     tempLoginName += middleInitial[0];
 
-    loginName = tempLoginName;
-    hashedPassWord = tempLoginName;
+    setFieldValue("LoginName", tempLoginName);
+    setFieldValue("HashedPassWord", tempLoginName);
 }
 
 
