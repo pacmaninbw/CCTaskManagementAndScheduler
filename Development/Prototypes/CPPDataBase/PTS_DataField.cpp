@@ -61,6 +61,10 @@ std::string PTS_DataField::toString()
     case PTS_DataField::PTS_DB_FieldType::Float :
         returnValue = std::to_string(std::get<float>(dataValue));
         break;
+
+    case PTS_DataField::PTS_DB_FieldType::Boolean :
+        returnValue = (std::get<bool>(dataValue)) ? "TRUE" : "FALSE";
+        break;
     }
 
     return returnValue;
@@ -158,6 +162,9 @@ const std::string PTS_DataField::typeToName() const
 
     case PTS_DataField::PTS_DB_FieldType::Float :
         return "Float";
+
+    case PTS_DataField::PTS_DB_FieldType::Boolean :
+        return "Boolean";
     }
 }
 
