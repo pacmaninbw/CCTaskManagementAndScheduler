@@ -49,7 +49,7 @@ void loadUserTaskestDataIntoDatabase()
     TaskModelToDBInterface TaskDBInterface;
 
     UserModel testUser("Chernick", "Paul", "A", "paul.chernick@chernicksw.com");
-    testUser.dbSetUserId(1);
+    testUser.setPrimaryKey(1);
 
     for (auto taskTestData: userTaskTestData)
     {
