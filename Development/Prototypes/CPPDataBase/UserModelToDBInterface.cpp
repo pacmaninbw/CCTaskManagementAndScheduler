@@ -21,13 +21,12 @@ bool UserModelToDBInterface::ModelObjectHasAllRequiredFields(ModelBase* modelObj
         return false;
     }
 
-    bool isValid = true;
+    bool isValid = user->allRequiredFieldsHaveData();
 
-    reportIfError(requiredKeyHasValue(user->getUserID()), "User ID alreay has a value, the user is in the database\n", isValid);
-    reportIfError(!requiredFieldHaseData(user->getLastName()), "Missing required last name value.\n", isValid);
-    reportIfError(!requiredFieldHaseData(user->getFirstName()), "Missing required first name value.\n", isValid);
-    reportIfError(!requiredFieldHaseData(user->getLoginName()), "Missing required login name value.\n", isValid);
-    reportIfError(!requiredFieldHaseData(user->getPassword()), "Missing required password value.\n", isValid);
+    if (!isValid)
+    {
+        appendErrorMessage(user->reportMissingRequiredFields());
+    }
 
     return isValid;
 }
