@@ -31,6 +31,14 @@ std::string PTS_DataField::toString()
         }
         break;
 
+    case PTS_DataField::PTS_DB_FieldType::Time :
+        {
+            std::stringstream ss;
+            ss << std::format("%T", std::get<std::chrono::time_point<std::chrono::system_clock>>(dataValue));
+            returnValue = ss.str();
+        }
+        break;
+
     case PTS_DataField::PTS_DB_FieldType::VarChar45 :
     case PTS_DataField::PTS_DB_FieldType::VarChar256 :
     case PTS_DataField::PTS_DB_FieldType::VarChar1024 :
@@ -123,6 +131,9 @@ const std::string PTS_DataField::typeToName() const
 
     case PTS_DataField::PTS_DB_FieldType::TimeStamp :
         return "TimeStamp";
+
+    case PTS_DataField::PTS_DB_FieldType::Time :
+        return "Time";
 
     case PTS_DataField::PTS_DB_FieldType::VarChar45 :
         return "VarChar45";
@@ -223,7 +234,8 @@ std::chrono::year_month_day PTS_DataField::getDateValue() const
 std::chrono::time_point<std::chrono::system_clock> PTS_DataField::getTimeValue() const
 {
     if (hasValue() && (columnType == PTS_DataField::PTS_DB_FieldType::DateTime
-        || columnType == PTS_DataField::PTS_DB_FieldType::TimeStamp))
+        || columnType == PTS_DataField::PTS_DB_FieldType::TimeStamp
+        || columnType == PTS_DataField::PTS_DB_FieldType::Time))
     {
         return std::get<std::chrono::time_point<std::chrono::system_clock>>(dataValue);
     }
