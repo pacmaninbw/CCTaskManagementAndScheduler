@@ -71,7 +71,7 @@ std::string PTS_DataField::toString()
         break;
 
     case PTS_DataField::PTS_DB_FieldType::Boolean :
-        returnValue = (std::get<bool>(dataValue)) ? "TRUE" : "FALSE";
+        returnValue = (std::get<bool>(dataValue)) ? "1" : "0";
         break;
     }
 
