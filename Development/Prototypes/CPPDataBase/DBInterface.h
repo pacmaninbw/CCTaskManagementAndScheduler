@@ -32,15 +32,14 @@ public:
 
 private:
     bool ModelHasAllRequiredFields(ModelBase* modelObject);
-    std::string generateInsertStatement(ModelBase* modelObject);
-    std::string generateUpdateStatement(ModelBase* modelObject);
+    std::string generateSQLInsertStatement(ModelBase* modelObject);
+    std::string generateSQLUpdateStatement(ModelBase* modelObject);
     void asyncExecutionSqlStatment(std::string sqlStmt);
     void clearPreviousErrors() { errorMessages.clear(); };
     void appendErrorMessage(std::string newError) { errorMessages.append(newError); };
     std::string booleanToString(bool boolArg) const { return boolArg? "TRUE" : "FALSE"; };
     std::string tableNameBasedonModelType(ModelBase *modelObject);
 
-    std::string sqlStatement;
     std::string errorMessages;
     std::string tableName;
 };

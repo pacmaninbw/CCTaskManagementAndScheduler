@@ -44,21 +44,26 @@ bool DBInterface::updateDatabaseTables(ModelBase* modelObject)
         return false;
     }
 
-    sqlStatement += "START TRANSACTION;\n";
+    std::string sqlStatement("START TRANSACTION;\n");
     if (modelObject->isInDataBase())
     {
-        sqlStatement += generateUpdateStatement(modelObject);
+        sqlStatement += generateSQLUpdateStatement(modelObject);
     }
     else
     {
-        sqlStatement += generateInsertStatement(modelObject);
+        sqlStatement += generateSQLInsertStatement(modelObject);
     }
-    
     sqlStatement += "\nCOMMIT;\n";
 
-//    std::cout << "The model object \n" << *modelObject << "\n\n";
-    std::cout << "Should call " << sqlStatement << "\n";
-//    asyncExecutionSqlStatment(sqlStatement);
+    try {
+        asyncExecutionSqlStatment(sqlStatement);
+    }
+    catch (const std::exception& err) {
+//        std::cout << "Attempted:\n" << sqlStatement << "\n";
+        std::cerr << "Error: " << err.what() << "\n";
+//        std::cout << "The model object \n" << *modelObject << "\n\n";
+        return false;
+    }
 
     return true;
 }
@@ -95,16 +100,17 @@ void DBInterface::asyncExecutionSqlStatment(std::string sqlStmt)
     ctx.run();
 }
 
-std::string DBInterface::generateInsertStatement(ModelBase *modelObject)
+std::string DBInterface::generateSQLInsertStatement(ModelBase *modelObject)
 {
     std::string fieldNames;
     std::string values;
-    PTS_DataField_vector dataFieldsWithValue = modelObject->getFields();\
+    PTS_DataField_vector dataFieldsWithValue = modelObject->getAllFieldsWithValue();\
     bool firstLoopIteration = true;
 
 
     for (auto currentField: dataFieldsWithValue)
     {
+        // If there are already field names or data in te string add the necessary comma operator.
         if (!firstLoopIteration)
         {
             fieldNames += ", ";
@@ -114,7 +120,8 @@ std::string DBInterface::generateInsertStatement(ModelBase *modelObject)
 /*
  * To prevent SQL injection attacks all data input will be embedded between
  * single quotes.
- */        values += "'" + currentField->toString() + "'";
+ */
+        values += "'" + currentField->toString() + "'";
         firstLoopIteration = false;
     }
 
@@ -140,11 +147,11 @@ bool DBInterface::ModelHasAllRequiredFields(ModelBase *modelObject)
     return isValid;
 }
 
-std::string DBInterface::generateUpdateStatement(ModelBase *modelObject)
+std::string DBInterface::generateSQLUpdateStatement(ModelBase *modelObject)
 {
     std::string updateStatement;
 
-    PTS_DataField_vector updatedFields = modelObject->getFields();
+    PTS_DataField_vector updatedFields = modelObject->getAllFieldsWithValue();
 
     if (updatedFields.size())
     {
@@ -167,10 +174,8 @@ std::string DBInterface::tableNameBasedonModelType(ModelBase *modelObject)
     {
         return "UserProfile";
     }
-    std::string eMsg("Unknown Model Type in DBInterface code generation");
 
+    std::string eMsg("Unknown Model Type: " + modelObject->getModelName() + "in DBInterface code generation");
     std::runtime_error UnknownModelType(eMsg);
     throw UnknownModelType;
-
-//    return std::string();
 }
