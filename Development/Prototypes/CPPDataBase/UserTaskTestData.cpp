@@ -1,8 +1,8 @@
+#include "DBInterface.h"
 #include <iostream>
 #include <string>
 #include <vector>
 #include "TaskModel.h"
-#include "TaskModelToDBInterface.h"
 #include "UserModel.h"
 #include "UserTaskTestData.h"
 
@@ -46,7 +46,7 @@ void loadUserTaskestDataIntoDatabase()
         {14, 3, 3, "Clean apartment", "2025-04-12", 2, 0.0, 0, "", "Not Started", "", "2025-04-12", "", "2025-04-11", "2025-04-12", ""}
     };
 
-    TaskModelToDBInterface TaskDBInterface;
+    DBInterface TaskDBInterface;
 
     UserModel testUser("Chernick", "Paul", "A", "paul.chernick@chernicksw.com");
     testUser.setPrimaryKey(1);
@@ -58,7 +58,7 @@ void loadUserTaskestDataIntoDatabase()
             taskTestData.dueDate, taskTestData.scheduledStartDate);
 
 
-        if (!TaskDBInterface.addToDatabaseTable(&testTask))
+        if (!TaskDBInterface.updateDatabaseTables(&testTask))
         {
             std::cerr << TaskDBInterface.getAllErrorMessages() << testTask << "\n";
         }

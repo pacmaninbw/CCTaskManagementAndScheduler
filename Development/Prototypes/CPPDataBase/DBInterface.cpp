@@ -1,8 +1,8 @@
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
 #include "DBInterface.h"
-#include <iostream>
 #include <exception>
+#include <iostream>
 #include <string>
 #include <string_view>
 
@@ -24,10 +24,8 @@
 
 static boost::mysql::connect_params dbConnectionParameters;
 
-DBInterface::DBInterface(std::string table, std::string addStoredProcedure)
-:   errorMessages{""},
-    tableName{table},
-    storedProcedureToAddToTable{addStoredProcedure}
+DBInterface::DBInterface()
+:   errorMessages{""}
 {
     dbConnectionParameters.server_address.emplace_host_and_port(HostURL, MySQLPort);
     dbConnectionParameters.username = MySQLAdminUser;
@@ -35,26 +33,32 @@ DBInterface::DBInterface(std::string table, std::string addStoredProcedure)
     dbConnectionParameters.database = PlannerDB;
 }
 
-bool DBInterface::addToDatabaseTable(ModelBase* modelObject)
+bool DBInterface::updateDatabaseTables(ModelBase* modelObject)
 {
     clearPreviousErrors();
 
-    if (!ModelObjectHasAllRequiredFields(modelObject))
+    tableName = tableNameBasedonModelType(modelObject);
+
+    if (!ModelHasAllRequiredFields(modelObject))
     {
         return false;
     }
 
-    startAddStmt();
-
-    if (!addDataToSqlStatement(modelObject))
+    sqlStatement += "START TRANSACTION;\n";
+    if (modelObject->isInDataBase())
     {
-        sqlStatement.clear();
-        return false;
+        sqlStatement += generateUpdateStatement(modelObject);
+    }
+    else
+    {
+        sqlStatement += generateInsertStatement(modelObject);
     }
     
-    sqlStatement += ")";
+    sqlStatement += "\nCOMMIT;\n";
 
-    asyncExecutionSqlStatment(sqlStatement);
+//    std::cout << "The model object \n" << *modelObject << "\n\n";
+    std::cout << "Should call " << sqlStatement << "\n";
+//    asyncExecutionSqlStatment(sqlStatement);
 
     return true;
 }
@@ -74,19 +78,6 @@ static boost::asio::awaitable<void> coroutine_sqlstatement(std::string sql)
     co_await conn.async_close();
 }
 
-/*
- * If the stored procedure to add the model to the database does not exist
- * override this function to provide the necessary field names
- */
-void DBInterface::addRequiredFieldNames()
-{
-    if (storedProcedureToAddToTable.empty() || storedProcedureToAddToTable.size() == 0)
-    {
-        std::cerr << "???ModelToDBInterface::addRequiredFieldNames() not implemented !!!\n";
-    }
-    sqlStatement.append("No_Field_Name");
-}
-
 void DBInterface::asyncExecutionSqlStatment(std::string sqlStmt)
 {
     boost::asio::io_context ctx;
@@ -104,17 +95,82 @@ void DBInterface::asyncExecutionSqlStatment(std::string sqlStmt)
     ctx.run();
 }
 
-void DBInterface::startAddStmt()
+std::string DBInterface::generateInsertStatement(ModelBase *modelObject)
 {
-    if (!storedProcedureToAddToTable.empty())
+    std::string fieldNames;
+    std::string values;
+    PTS_DataField_vector dataFieldsWithValue = modelObject->getFields();\
+    bool firstLoopIteration = true;
+
+
+    for (auto currentField: dataFieldsWithValue)
     {
-        sqlStatement = "CALL " + storedProcedureToAddToTable + "(";
+        if (!firstLoopIteration)
+        {
+            fieldNames += ", ";
+            values += ", ";
+        }
+        fieldNames += tableName + "." + currentField->getColumnName();
+/*
+ * To prevent SQL injection attacks all data input will be embedded between
+ * single quotes.
+ */        values += "'" + currentField->toString() + "'";
+        firstLoopIteration = false;
     }
-    else
-    {
-        sqlStatement = "INSERT INTO " + PlannerDB + "." + tableName + " (";
-        addRequiredFieldNames();
-        sqlStatement += ") VALUES (";
-    }
+
+    std::string insertStatement;
+        insertStatement = "INSERT INTO " + PlannerDB + "." + tableName + " (";
+        insertStatement += fieldNames;
+        insertStatement += ") VALUES (";
+        insertStatement += values;
+        insertStatement += ");";
+
+        return insertStatement;
 }
 
+bool DBInterface::ModelHasAllRequiredFields(ModelBase *modelObject)
+{
+    bool isValid = modelObject->allRequiredFieldsHaveData();
+
+    if (!isValid)
+    {
+        appendErrorMessage(modelObject->reportMissingRequiredFields());
+    }
+
+    return isValid;
+}
+
+std::string DBInterface::generateUpdateStatement(ModelBase *modelObject)
+{
+    std::string updateStatement;
+
+    PTS_DataField_vector updatedFields = modelObject->getFields();
+
+    if (updatedFields.size())
+    {
+        updateStatement = "UPDATE TABLE;";
+    }
+
+    return updateStatement;
+}
+
+std::string DBInterface::tableNameBasedonModelType(ModelBase *modelObject)
+{
+    TaskModel* task = dynamic_cast<TaskModel*>(modelObject);
+    if (task)
+    {
+        return "Tasks";
+    }
+    
+    UserModel* user = dynamic_cast<UserModel*>(modelObject);
+    if (user)
+    {
+        return "UserProfile";
+    }
+    std::string eMsg("Unknown Model Type in DBInterface code generation");
+
+    std::runtime_error UnknownModelType(eMsg);
+    throw UnknownModelType;
+
+//    return std::string();
+}

@@ -63,7 +63,7 @@ public:
         os << "\n";
         for (const auto& [key, value] : obj.dataFields)
         {
-            PTS_DataField* currentField = value;
+            PTS_DataField_shp currentField = value;
             os << currentField->fieldInfo();
             os << "\n";
         }

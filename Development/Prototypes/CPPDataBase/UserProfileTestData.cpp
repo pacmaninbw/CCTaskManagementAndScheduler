@@ -1,8 +1,8 @@
+#include "DBInterface.h"
 #include <iostream>
 #include <string_view>
 #include <vector>
 #include "UserModel.h"
-#include "UserModelToDBInterface.h"
 #include "UserProfileTestData.h"
 
 
@@ -19,11 +19,11 @@ void loadUserProfileTestDataIntoDatabase()
         {new UserModel("Black", "Patrick", "A", "BlackPatrickA@gmail.com")}
     };
 
-    UserModelToDBInterface userDBInterface;
+    DBInterface userDBInterface;
 
     for (auto user: userProfileTestData)
     {
-        if (!userDBInterface.addToDatabaseTable(user))
+        if (!userDBInterface.updateDatabaseTables(user))
         {
             std::cerr << userDBInterface.getAllErrorMessages() << "\n" << *user << "\n";
         }

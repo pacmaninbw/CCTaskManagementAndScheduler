@@ -23,9 +23,7 @@ add_executable(protoTaskPlanner
     main.cpp 
     PTS_DataField.h PTS_DataField.cpp 
     UserModel.h UserModel.cpp TaskModel.h TaskModel.cpp ModelBase.h ModelBase.cpp
-    UserModelToDBInterface.h UserModelToDBInterface.cpp
     DBInterface.h DBInterface.cpp
-    TaskModelToDBInterface.h TaskModelToDBInterface.cpp
     UserProfileTestData.h UserProfileTestData.cpp
     UserTaskTestData.h UserTaskTestData.cpp
 )

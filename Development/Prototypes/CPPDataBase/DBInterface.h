@@ -1,14 +1,8 @@
 #ifndef DBINTERFACE_H_
 #define DBINTERFACE_H_
 
-/*
- * The model base header file is included to allow as generic a database
- * interface as possible. All SQL statements will be created and executed by
- * functions in this file. The derived model to database interface classes
- * are responsible for providing data verification and appending the data to
- * the SQL statements generated here.
- */
-#include "ModelBase.h"
+#include "TaskModel.h"
+#include "UserModel.h"
 #include <string>
 #include <string_view>
 
@@ -31,71 +25,24 @@
 class DBInterface
 {
 public:
-    DBInterface(std::string table, std::string addStoredProcedure="");
+    DBInterface();
     virtual ~DBInterface() = default;
-    virtual bool addToDatabaseTable(ModelBase* modelObject);
+    bool updateDatabaseTables(ModelBase* modelObject);
     std::string getAllErrorMessages() const { return errorMessages; };
 
-protected:
-/*
- * Over ride functions required for the followin functions.
- */
-    virtual bool ModelObjectHasAllRequiredFields(ModelBase* modelObject) = 0;
-    virtual bool addDataToSqlStatement(ModelBase* modelObject) = 0;
-/*
- * Over ride functions optional.
- */
-    virtual void addRequiredFieldNames(); // Provide override if no stored procedure
-    virtual void asyncExecutionSqlStatment(std::string sqlStmt);
-    void reportIfError(bool condition, std::string errorMessage, bool &isValid)
-    {
-        if (condition)
-        {
-            appendErrorMessage(errorMessage);
-            isValid = false;
-        }
-    }
-    void startAddStmt();
+private:
+    bool ModelHasAllRequiredFields(ModelBase* modelObject);
+    std::string generateInsertStatement(ModelBase* modelObject);
+    std::string generateUpdateStatement(ModelBase* modelObject);
+    void asyncExecutionSqlStatment(std::string sqlStmt);
     void clearPreviousErrors() { errorMessages.clear(); };
     void appendErrorMessage(std::string newError) { errorMessages.append(newError); };
     std::string booleanToString(bool boolArg) const { return boolArg? "TRUE" : "FALSE"; };
-/*
- * To prevent SQL injection attacks all data input will be embedded between
- * single quotes.
- */
-    void appendArgToSqlStmt(std::string arg, bool addComma)
-    {
-        sqlStatement += "'" + arg + "'";
-        if (addComma)
-        {
-            sqlStatement += ", ";
-        }
-    };
-    void appendArgToSqlStmt(int arg, bool addComma=false)
-        {appendArgToSqlStmt(std::to_string(arg), addComma); };
-    void appendArgToSqlStmt(unsigned int arg, bool addComma=false)
-        {appendArgToSqlStmt(std::to_string(arg), addComma); };
-    void appendArgToSqlStmt(double arg, bool addComma=false)
-        {appendArgToSqlStmt(std::to_string(arg), addComma); };
-    void appendArgToSqlStmt(std::size_t arg, bool addComma=false)
-        {appendArgToSqlStmt(std::to_string(arg), addComma); };
-    void appendArgToSqlStmt(std::string_view arg, bool addComma=false)
-        {appendArgToSqlStmt(std::string(arg), addComma); };
-    void appendArgToSqlStmt(bool arg, bool addComma=false)
-        {appendArgToSqlStmt(booleanToString(arg), addComma); };
-    bool requiredFieldHaseData(std::string arg) const { return (!arg.empty() && arg.size() > 0); };
-    bool requiredKeyHasValue(std::size_t key) const { return key != 0; };
+    std::string tableNameBasedonModelType(ModelBase *modelObject);
 
-/*
- * Protected variables.
- */
     std::string sqlStatement;
     std::string errorMessages;
-
-
-private:
     std::string tableName;
-    std::string storedProcedureToAddToTable;
 };
 
 #endif // DBINTERFACE_H_

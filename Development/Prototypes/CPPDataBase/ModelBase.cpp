@@ -1,29 +1,23 @@
 #include <chrono>
 #include <exception>
 #include <iostream>
+#include <memory>
 #include "ModelBase.h"
 #include "PTS_DataField.h"
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 
 ModelBase::ModelBase(const std::string modelName, std::string primaryKeyName, std::size_t primaryKeyIn)
 : modelClassName{modelName}, primaryKeyFieldName{primaryKeyName}
 {
-    PTS_DataField* primaryKey = new PTS_DataField(PTS_DataField::PTS_DB_FieldType::Key, primaryKeyName, true);
+    PTS_DataField_shp primaryKey = std::make_shared<PTS_DataField>(PTS_DataField(PTS_DataField::PTS_DB_FieldType::Key, primaryKeyName, true));
     if (primaryKeyIn)
     {
         primaryKey->setValue(primaryKeyIn);
     }
     dataFields.insert({primaryKeyName, primaryKey});
-}
-
-ModelBase::~ModelBase()
-{
-        for (const auto& [key, value] : dataFields)
-        {
-            delete value;
-        }
 }
 
 std::string ModelBase::dateToString(std::chrono::year_month_day taskDate)
@@ -68,19 +62,19 @@ std::chrono::year_month_day ModelBase::stringToDate(std::string dateString)
 
 void ModelBase::addDataField(const std::string& fieldName, PTS_DataField::PTS_DB_FieldType fieldType, bool required)
 {
-    PTS_DataField* dataField = new PTS_DataField(fieldType, fieldName, required);
+    PTS_DataField_shp dataField = std::make_shared<PTS_DataField>(PTS_DataField(fieldType, fieldName, required));
     dataFields.insert({fieldName, dataField});
 }
 
 bool ModelBase::isInDataBase() const
 {
-    PTS_DataField* pkField = findFieldInDataFields(primaryKeyFieldName);
+    PTS_DataField_shp pkField = findFieldInDataFields(primaryKeyFieldName);
     return pkField? pkField->hasValue() : false;
 }
 
 bool ModelBase::setFieldValue(const std::string& fieldName, DataValueType dataValue)
 {
-    PTS_DataField* fieldToUpdate = findFieldInDataFields(fieldName);
+    PTS_DataField_shp fieldToUpdate = findFieldInDataFields(fieldName);
     if (fieldToUpdate)
     {
         fieldToUpdate->setValue(dataValue);
@@ -95,7 +89,7 @@ bool ModelBase::setFieldValue(const std::string& fieldName, DataValueType dataVa
  */
 void ModelBase::initFieldValueNotChanged(const std::string &fieldName, DataValueType dataValue)
 {
-    PTS_DataField* fieldToUpdate = findFieldInDataFields(fieldName);
+    PTS_DataField_shp fieldToUpdate = findFieldInDataFields(fieldName);
     if (fieldToUpdate)
     {
         fieldToUpdate->dbSetValue(dataValue);
@@ -106,7 +100,7 @@ std::string ModelBase::getFieldValueString(const std::string& fieldName)
 {
     std::string valueString("No Value Set");
 
-    PTS_DataField* fieldToFind = findFieldInDataFields(fieldName);
+    PTS_DataField_shp fieldToFind = findFieldInDataFields(fieldName);
     if (fieldToFind)
     {
         valueString = fieldToFind->toString();
@@ -119,7 +113,7 @@ DataValueType ModelBase::getFieldValue(const std::string& fieldName) const
 {
     DataValueType dataValue;
 
-    PTS_DataField* fieldToFind = findFieldInDataFields(fieldName);
+    PTS_DataField_shp fieldToFind = findFieldInDataFields(fieldName);
     if (fieldToFind)
     {
         if (fieldToFind->hasValue())
@@ -133,7 +127,7 @@ DataValueType ModelBase::getFieldValue(const std::string& fieldName) const
 
 bool ModelBase::fieldHasValue(const std::string& fieldName) const
 {
-    PTS_DataField* fieldToFind = findFieldInDataFields(fieldName);
+    PTS_DataField_shp fieldToFind = findFieldInDataFields(fieldName);
     if (fieldToFind)
     {
         return fieldToFind->hasValue();
@@ -144,7 +138,7 @@ bool ModelBase::fieldHasValue(const std::string& fieldName) const
 
 bool ModelBase::fieldWasModified(const std::string &fieldName) const
 {
-    PTS_DataField* fieldToFind = findFieldInDataFields(fieldName);
+    PTS_DataField_shp fieldToFind = findFieldInDataFields(fieldName);
     if (fieldToFind)
     {
         return fieldToFind->wasModified();
@@ -162,7 +156,7 @@ std::size_t ModelBase::getPrimaryKey() const
 {
     std::size_t primaryKey = 0;
 
-    PTS_DataField*  primaryKeyField = findFieldInDataFields(primaryKeyFieldName);
+    PTS_DataField_shp  primaryKeyField = findFieldInDataFields(primaryKeyFieldName);
     if (primaryKeyField)
     {
         if (primaryKeyField->hasValue())
@@ -244,7 +238,7 @@ std::chrono::year_month_day ModelBase::getTodaysDate()
     return std::chrono::floor<std::chrono::days>(today);
 }
 
-PTS_DataField *ModelBase::findFieldInDataFields(const std::string &fieldName) const
+PTS_DataField_shp ModelBase::findFieldInDataFields(const std::string &fieldName) const
 {
     auto fieldToFind = dataFields.find(fieldName);
     if (fieldToFind != dataFields.end())
@@ -260,4 +254,21 @@ PTS_DataField *ModelBase::findFieldInDataFields(const std::string &fieldName) co
     }
 
     return nullptr;
+}
+
+
+PTS_DataField_vector ModelBase::getFields()
+{
+    std::vector<PTS_DataField_shp> fields;
+
+    for (const auto& [key, value] : dataFields)
+    {
+        PTS_DataField_shp currentField = value;
+        if (currentField->hasValue())
+        {
+            fields.push_back(currentField);
+        }
+    }
+
+    return fields;
 }

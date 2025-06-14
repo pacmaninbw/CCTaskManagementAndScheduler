@@ -34,7 +34,6 @@ public:
     bool isMinorPriorityInSchedule() const { return getBoolFieldValue("IncludeMinorPriorityInSchedule"); };
     bool isUsingLettersForMaorPriority() const { return getBoolFieldValue("UseLettersForMajorPriority"); };
     bool isSeparatingPriorityWithDot() const { return getBoolFieldValue("SeparatePriorityWithDot"); };
-//    void dbSetUserId(std::size_t uID) { userID = uID; };
 
     friend std::ostream& operator<<(std::ostream& os, const UserModel& obj)
     {
@@ -48,7 +47,7 @@ public:
         os << "\n";
         for (const auto& [key, value] : obj.dataFields)
         {
-            PTS_DataField* currentField = value;
+            PTS_DataField_shp currentField = value;
             os << currentField->fieldInfo();
             os << "\n";
         }
@@ -57,7 +56,6 @@ public:
     };
 
 private:
-    std::string convertTo24hours(std::string sechduledTime);
     void createLoginBasedOnUserName(std::string lastName, std::string firstName, std::string middleInitial);
 };
 
