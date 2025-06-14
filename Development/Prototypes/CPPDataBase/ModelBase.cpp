@@ -256,8 +256,7 @@ PTS_DataField_shp ModelBase::findFieldInDataFields(const std::string &fieldName)
     return nullptr;
 }
 
-
-PTS_DataField_vector ModelBase::getFields()
+PTS_DataField_vector ModelBase::getAllFieldsWithValue()
 {
     std::vector<PTS_DataField_shp> fields;
 

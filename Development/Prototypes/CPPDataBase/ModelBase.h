@@ -85,8 +85,9 @@ public:
  */
     bool atleastOneFieldModified() const;
     bool allRequiredFieldsHaveData() const;
-    PTS_DataField_vector getFields();
+    PTS_DataField_vector getAllFieldsWithValue();
     std::string reportMissingRequiredFields() const;
+    const std::string getModelName() { return modelClassName; };
     friend std::ostream& operator<<(std::ostream& os, const ModelBase& obj)
     {
         os << "Model Class:\t" << obj.modelClassName << "\n";
