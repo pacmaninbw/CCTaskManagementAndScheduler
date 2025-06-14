@@ -43,7 +43,7 @@ public:
     std::chrono::year_month_day getScheduledStart() const { return getDateFieldValue("ScheduledStart"); };
     std::chrono::year_month_day getactualStartDate() const { return getDateFieldValue("ActualStart"); };
     std::chrono::year_month_day getEstimatedCompletion() const { return getDateFieldValue("EstimatedCompletion"); };
-    std::chrono::year_month_day getCompletionDate() const { return getDateFieldValue("Comleted"); };
+    std::chrono::year_month_day getCompletionDate() const { return getDateFieldValue("Completed"); };
     unsigned int getEstimatedEffort() const { return getUnsignedIntFieldValue("EstimatedEffortHours"); };
     float getactualEffortToDate() const { return getFloatFieldValue("ActualEffortHours"); };
     unsigned int getPriorityGoup() const { return getUnsignedIntFieldValue("SchedulePriorityGroup"); };

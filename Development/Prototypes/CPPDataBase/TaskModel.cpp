@@ -18,7 +18,7 @@ TaskModel::TaskModel()
     addDataField("ScheduledStart", PTS_DataField::PTS_DB_FieldType::Date, true);
     addDataField("ActualStart", PTS_DataField::PTS_DB_FieldType::Date);
     addDataField("EstimatedCompletion", PTS_DataField::PTS_DB_FieldType::Date);
-    addDataField("Comleted", PTS_DataField::PTS_DB_FieldType::Date);
+    addDataField("Completed", PTS_DataField::PTS_DB_FieldType::Date);
     addDataField("EstimatedEffortHours", PTS_DataField::PTS_DB_FieldType::UnsignedInt, true);
     addDataField("ActualEffortHours", PTS_DataField::PTS_DB_FieldType::Float, true);
     addDataField("SchedulePriorityGroup", PTS_DataField::PTS_DB_FieldType::UnsignedInt, true);
@@ -71,7 +71,7 @@ TaskModel::TaskModel(
     initFieldValueNotChanged("ScheduledStart", stringToDate(scheduledStartDatefromDb));
     initFieldValueNotChanged("ActualStart", stringToDate(actualStartDatefromDb));
     initFieldValueNotChanged("EstimatedCompletion", stringToDate(estimatedCompletionDatefromDb));
-    initFieldValueNotChanged("Comleted", stringToDate(completedDatefromDb));
+    initFieldValueNotChanged("Completed", stringToDate(completedDatefromDb));
     initFieldValueNotChanged("EstimatedEffortHours", estimatedEffortHoursfromDb);
     initFieldValueNotChanged("ActualEffortHours", actualEffortHoursfromDb);
     initFieldValueNotChanged("SchedulePriorityGroup", priorityGroupfromDb);
