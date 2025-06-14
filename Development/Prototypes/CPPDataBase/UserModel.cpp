@@ -11,7 +11,7 @@ UserModel::UserModel()
     addDataField("MiddleInitial", PTS_DataField::PTS_DB_FieldType::TinyText);
     addDataField("LoginName",  PTS_DataField::PTS_DB_FieldType::VarChar45, true);
     addDataField("HashedPassWord", PTS_DataField::PTS_DB_FieldType::TinyText, true);
-    addDataField("emailAddress", PTS_DataField::PTS_DB_FieldType::VarChar256, true);
+    addDataField("EmailAddress", PTS_DataField::PTS_DB_FieldType::VarChar256, true);
     addDataField("ScheduleDayStart", PTS_DataField::PTS_DB_FieldType::VarChar45, true);
     addDataField("ScheduleDayEnd", PTS_DataField::PTS_DB_FieldType::VarChar45, true);
     addDataField("IncludePriorityInSchedule", PTS_DataField::PTS_DB_FieldType::Boolean);
@@ -26,7 +26,7 @@ UserModel::UserModel(const char *lastIn, const char *firstIn, const char *middle
     setFieldValue("LastName", lastIn);
     setFieldValue("FirstName", firstIn);
     setFieldValue("MiddleInitial", middleIIn);
-    setFieldValue("emailAddress", email);
+    setFieldValue("EmailAddress", email);
     createLoginBasedOnUserName(lastIn, firstIn, middleIIn);
     initFieldValueNotChanged("IncludePriorityInSchedule", true);
     initFieldValueNotChanged("IncludeMinorPriorityInSchedule", true);
@@ -46,7 +46,7 @@ UserModel::UserModel(std::size_t dbUserId, const char *dbLoginName, const char *
     initFieldValueNotChanged("LastName", dbLastName);
     initFieldValueNotChanged("FirstName", dbFirstName);
     initFieldValueNotChanged("MiddleInitial", dbMiddleInit);
-    initFieldValueNotChanged("emailAddress", dbEmail);
+    initFieldValueNotChanged("EmailAddress", dbEmail);
     initFieldValueNotChanged("LoginName", dbLoginName);
     initFieldValueNotChanged("HashedPassWord", dbPassWord);
     initFieldValueNotChanged("IncludePriorityInSchedule", dbPriorityinSched != 0);

@@ -24,7 +24,7 @@ public:
     std::string getLastName() const { return getStringFieldValue("LastName"); };
     std::string getFirstName() const { return getStringFieldValue("FirstName");  };
     std::string getMiddleInitial() const { return getStringFieldValue("MiddleInitial"); };
-    std::string getEmail() const { return getStringFieldValue("emailAddress"); };
+    std::string getEmail() const { return getStringFieldValue("EmailAddress"); };
     std::string getLoginName() const {return getStringFieldValue("LoginName"); };
     std::string getPassword() const { return getStringFieldValue("HashedPassWord");  };
     std::string getStartTime() const { return "scheduleDayStart"; };
