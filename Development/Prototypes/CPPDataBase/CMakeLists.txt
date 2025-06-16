@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
 
 if(POLICY CMP0167)
-  cmake_policy(SET CMP0167 NEW)
+    cmake_policy(SET CMP0167 NEW)
 endif()
 
 find_package(Boost 1.87.0 REQUIRED COMPONENTS system charconv)
@@ -16,7 +16,7 @@ find_package(Boost 1.87.0 REQUIRED COMPONENTS system charconv)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/PrivateData/dbadmindata.h")
-  add_compile_definitions(USINGPRIVATECONNECTIONDATA=1)
+    add_compile_definitions(USINGPRIVATECONNECTIONDATA=1)
 endif()
 
 add_executable(protoTaskPlanner
