@@ -27,8 +27,8 @@ public:
     std::string getEmail() const { return getStringFieldValue("EmailAddress"); };
     std::string getLoginName() const {return getStringFieldValue("LoginName"); };
     std::string getPassword() const { return getStringFieldValue("HashedPassWord");  };
-    std::string getStartTime() const { return "scheduleDayStart"; };
-    std::string getEndTime() const { return "scheduleDayEnd"; };
+    std::string getStartTime() const { return getStringFieldValue("ScheduleDayStart"); };
+    std::string getEndTime() const { return getStringFieldValue("ScheduleDayEnd"); };
     std::size_t getUserID() const { return getPrimaryKey(); };
     bool isPriorityInSchedule() const { return getBoolFieldValue("IncludePriorityInSchedule"); };
     bool isMinorPriorityInSchedule() const { return getBoolFieldValue("IncludeMinorPriorityInSchedule"); };
