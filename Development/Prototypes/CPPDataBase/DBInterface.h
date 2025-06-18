@@ -27,21 +27,16 @@ class DBInterface
 public:
     DBInterface();
     virtual ~DBInterface() = default;
-    bool updateDatabaseTables(ModelBase* modelObject);
     std::string getAllErrorMessages() const { return errorMessages; };
+    bool insertIntoDataBase(TaskModel &task);
+    bool insertIntoDataBase(UserModel &user);
 
 private:
-    bool ModelHasAllRequiredFields(ModelBase* modelObject);
-    std::string generateSQLInsertStatement(ModelBase* modelObject);
-    std::string generateSQLUpdateStatement(ModelBase* modelObject);
     void asyncExecutionSqlStatment(std::string sqlStmt);
     void clearPreviousErrors() { errorMessages.clear(); };
     void appendErrorMessage(std::string newError) { errorMessages.append(newError); };
-    std::string booleanToString(bool boolArg) const { return boolArg? "TRUE" : "FALSE"; };
-    std::string tableNameBasedonModelType(ModelBase *modelObject);
 
     std::string errorMessages;
-    std::string tableName;
 };
 
 #endif // DBINTERFACE_H_
