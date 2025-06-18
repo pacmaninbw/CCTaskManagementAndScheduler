@@ -1,8 +1,10 @@
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
+#include <chrono>
 #include "DBInterface.h"
 #include <exception>
 #include <iostream>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -23,6 +25,7 @@
  */
 
 static boost::mysql::connect_params dbConnectionParameters;
+static std::size_t lastInsertValue = 0;
 
 DBInterface::DBInterface()
 :   errorMessages{""}
@@ -31,41 +34,6 @@ DBInterface::DBInterface()
     dbConnectionParameters.username = MySQLAdminUser;
     dbConnectionParameters.password = MySQLAdminPassword;
     dbConnectionParameters.database = PlannerDB;
-}
-
-bool DBInterface::updateDatabaseTables(ModelBase* modelObject)
-{
-    clearPreviousErrors();
-
-    tableName = tableNameBasedonModelType(modelObject);
-
-    if (!ModelHasAllRequiredFields(modelObject))
-    {
-        return false;
-    }
-
-    std::string sqlStatement("START TRANSACTION;\n");
-    if (modelObject->isInDataBase())
-    {
-        sqlStatement += generateSQLUpdateStatement(modelObject);
-    }
-    else
-    {
-        sqlStatement += generateSQLInsertStatement(modelObject);
-    }
-    sqlStatement += "\nCOMMIT;\n";
-
-    try {
-        asyncExecutionSqlStatment(sqlStatement);
-    }
-    catch (const std::exception& err) {
-//        std::cout << "Attempted:\n" << sqlStatement << "\n";
-        std::cerr << "Error: " << err.what() << "\n";
-//        std::cout << "The model object \n" << *modelObject << "\n\n";
-        return false;
-    }
-
-    return true;
 }
 
 static boost::asio::awaitable<void> coroutine_sqlstatement(std::string sql)
@@ -100,82 +68,204 @@ void DBInterface::asyncExecutionSqlStatment(std::string sqlStmt)
     ctx.run();
 }
 
-std::string DBInterface::generateSQLInsertStatement(ModelBase *modelObject)
+static boost::mysql::date convertChronoDateToBoostMySQLDate(std::chrono::year_month_day source)
 {
-    std::string fieldNames;
-    std::string values;
-    PTS_DataField_vector dataFieldsWithValue = modelObject->getAllFieldsWithValue();\
-    bool firstLoopIteration = true;
+    std::chrono::sys_days tp = source;
+    boost::mysql::date boostDate(tp);
+    return boostDate;
+}
+#if 0
+static std::string dateToString(std::chrono::year_month_day taskDate)
+{
+    std::stringstream ss;
+    ss << taskDate;
+    return "'" + ss.str() + "'";
+}
+#endif
 
 
-    for (auto currentField: dataFieldsWithValue)
+static boost::asio::awaitable<void> coro_insert_task(TaskModel task)
+{
+    std::optional<std::size_t> parentTaskID = task.getParentTaskID();
+    std::optional<unsigned int> status = static_cast<unsigned int>(task.getStatus());
+    std::optional<boost::mysql::date> actualStart;
+    std::optional<boost::mysql::date> estimatedCompleteDate;
+    std::optional<boost::mysql::date> completeDate;
+    boost::mysql::date createdOn = convertChronoDateToBoostMySQLDate(task.getCreationDate());
+    boost::mysql::date dueDate = convertChronoDateToBoostMySQLDate(task.getDueDate());
+    boost::mysql::date scheduledStart = convertChronoDateToBoostMySQLDate(task.getScheduledStart());
+
+    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+
+    co_await conn.async_connect(dbConnectionParameters);
+
+    std::string sqlStatement = boost::mysql::format_sql(
+    conn.format_opts().value(),
+    R"sql(INSERT INTO PlannerTaskScheduleDB.Tasks (
+        CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, 
+        ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup
+        ) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}))sql",
+        task.getCreatorID(), task.getAssignToID(), task.getDescription(), parentTaskID, status,
+        task.getPercentageComplete(), createdOn, dueDate, scheduledStart, actualStart, estimatedCompleteDate,
+        completeDate, task.getEstimatedEffort(), task.getactualEffortToDate(), task.getPriorityGoup(),
+        task.getPriority());
+
+    std::cout << sqlStatement << "\n";
+
+    boost::mysql::results result;
+#if 0
+    co_await conn.async_execute(
+        boost::mysql::with_params(
+            "INSERT INTO PlannerTaskScheduleDB.Tasks ("
+                "CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, "
+                "ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup"
+                ") VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15})",
+            task.getCreatorID(),
+            task.getAssignToID(),
+            task.getDescription(),
+            parentTaskID,
+            status,
+            task.getPercentageComplete(),
+            createdOn,
+            dueDate,
+            scheduledStart,
+            actualStart,
+            estimatedCompleteDate,
+            completeDate,
+            task.getEstimatedEffort(),
+            task.getactualEffortToDate(),
+            task.getPriorityGoup(),
+            task.getPriority()
+        ),
+        result
+    );
+#endif 
+    co_await conn.async_execute(sqlStatement, result);
+
+    std::cout << "Successfully created task with ID: " << result.last_insert_id() << std::endl;
+
+    co_await conn.async_close();
+}
+
+bool DBInterface::insertIntoDataBase(TaskModel& task)
+{
+    clearPreviousErrors();
+
+    if (task.isInDataBase())
     {
-        // If there are already field names or data in te string add the necessary comma operator.
-        if (!firstLoopIteration)
-        {
-            fieldNames += ", ";
-            values += ", ";
+        appendErrorMessage("The task is already in the database.\n");
+        return false;
+    }
+    if (!task.allRequiredFieldsHaveData())
+    {
+        appendErrorMessage(task.reportMissingRequiredFields());
+        return false;
+    }
+
+    boost::asio::io_context ctx;
+
+    // Launch our coroutine
+    boost::asio::co_spawn(
+        ctx,
+        [=] { return coro_insert_task(task); },
+        // If any exception is thrown in the coroutine body, rethrow it.
+        [](std::exception_ptr ptr) {
+            if (ptr)
+            {
+                std::rethrow_exception(ptr);
+            }
         }
-        fieldNames += tableName + "." + currentField->getColumnName();
-/*
- * To prevent SQL injection attacks all data input will be embedded between
- * single quotes.
- */
-        values += "'" + currentField->toString() + "'";
-        firstLoopIteration = false;
+    );
+
+    try
+    {
+        ctx.run();
+    }
+    catch (const std::exception& e)
+    {
+        std::string eMsg("MySQL Server Error: ");
+        eMsg += e.what();
+        appendErrorMessage(eMsg);
+        return false;
     }
 
-    std::string insertStatement;
-        insertStatement = "INSERT INTO " + PlannerDB + "." + tableName + " (";
-        insertStatement += fieldNames;
-        insertStatement += ") VALUES (";
-        insertStatement += values;
-        insertStatement += ");";
+    return true;
+}
+static boost::asio::awaitable<void> coro_insert_user(UserModel user)
+{
+    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
-        return insertStatement;
+    co_await conn.async_connect(dbConnectionParameters);
+
+    boost::mysql::results result;
+    co_await conn.async_execute(
+        boost::mysql::with_params(
+            "INSERT INTO PlannerTaskScheduleDB.UserProfile ("
+            "LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, ScheduleDayStart, ScheduleDayEnd"
+            ") VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})",
+            user.getLastName(),
+            user.getFirstName(),
+            user.getMiddleInitial(),
+            user.getEmail(),
+            user.getLoginName(),
+            user.getPassword(),
+            user.getStartTime(),
+            user.getEndTime()
+        ),
+        result
+    );
+
+    std::cout << "Successfully created task with ID: " << result.last_insert_id() << std::endl;
+    lastInsertValue = result.last_insert_id();
+
+    co_await conn.async_close();
 }
 
-bool DBInterface::ModelHasAllRequiredFields(ModelBase *modelObject)
+bool DBInterface::insertIntoDataBase(UserModel &user)
 {
-    bool isValid = modelObject->allRequiredFieldsHaveData();
-
-    if (!isValid)
-    {
-        appendErrorMessage(modelObject->reportMissingRequiredFields());
-    }
-
-    return isValid;
-}
-
-std::string DBInterface::generateSQLUpdateStatement(ModelBase *modelObject)
-{
-    std::string updateStatement;
-
-    PTS_DataField_vector updatedFields = modelObject->getAllFieldsWithValue();
-
-    if (updatedFields.size())
-    {
-        updateStatement = "UPDATE TABLE;";
-    }
-
-    return updateStatement;
-}
-
-std::string DBInterface::tableNameBasedonModelType(ModelBase *modelObject)
-{
-    TaskModel* task = dynamic_cast<TaskModel*>(modelObject);
-    if (task)
-    {
-        return "Tasks";
-    }
+    clearPreviousErrors();
     
-    UserModel* user = dynamic_cast<UserModel*>(modelObject);
-    if (user)
+    lastInsertValue = 0;
+
+    if (user.isInDataBase())
     {
-        return "UserProfile";
+        appendErrorMessage("The task is already in the database.\n");
+        return false;
+    }
+    if (!user.allRequiredFieldsHaveData())
+    {
+        appendErrorMessage(user.reportMissingRequiredFields());
+        return false;
     }
 
-    std::string eMsg("Unknown Model Type: " + modelObject->getModelName() + "in DBInterface code generation");
-    std::runtime_error UnknownModelType(eMsg);
-    throw UnknownModelType;
+    boost::asio::io_context ctx;
+
+    // Launch our coroutine
+    boost::asio::co_spawn(
+        ctx,
+        [=] { return coro_insert_user(user); },
+        // If any exception is thrown in the coroutine body, rethrow it.
+        [](std::exception_ptr ptr) {
+            if (ptr)
+            {
+                std::rethrow_exception(ptr);
+            }
+        }
+    );
+
+    try
+    {
+        ctx.run();
+    }
+    catch (const std::exception& e)
+    {
+        std::string eMsg("MySQL Server Error: ");
+        eMsg += e.what();
+        appendErrorMessage(eMsg);
+        return false;
+    }
+
+    user.setPrimaryKey(lastInsertValue);
+
+    return true;
 }
