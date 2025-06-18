@@ -74,15 +74,6 @@ static boost::mysql::date convertChronoDateToBoostMySQLDate(std::chrono::year_mo
     boost::mysql::date boostDate(tp);
     return boostDate;
 }
-#if 0
-static std::string dateToString(std::chrono::year_month_day taskDate)
-{
-    std::stringstream ss;
-    ss << taskDate;
-    return "'" + ss.str() + "'";
-}
-#endif
-
 
 static boost::asio::awaitable<void> coro_insert_task(TaskModel task)
 {
@@ -113,33 +104,6 @@ static boost::asio::awaitable<void> coro_insert_task(TaskModel task)
     std::cout << sqlStatement << "\n";
 
     boost::mysql::results result;
-#if 0
-    co_await conn.async_execute(
-        boost::mysql::with_params(
-            "INSERT INTO PlannerTaskScheduleDB.Tasks ("
-                "CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, "
-                "ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup"
-                ") VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15})",
-            task.getCreatorID(),
-            task.getAssignToID(),
-            task.getDescription(),
-            parentTaskID,
-            status,
-            task.getPercentageComplete(),
-            createdOn,
-            dueDate,
-            scheduledStart,
-            actualStart,
-            estimatedCompleteDate,
-            completeDate,
-            task.getEstimatedEffort(),
-            task.getactualEffortToDate(),
-            task.getPriorityGoup(),
-            task.getPriority()
-        ),
-        result
-    );
-#endif 
     co_await conn.async_execute(sqlStatement, result);
 
     std::cout << "Successfully created task with ID: " << result.last_insert_id() << std::endl;
