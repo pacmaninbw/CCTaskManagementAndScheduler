@@ -58,7 +58,7 @@ void loadUserTaskestDataIntoDatabase()
             taskTestData.dueDate, taskTestData.scheduledStartDate);
 
 
-        if (!TaskDBInterface.updateDatabaseTables(&testTask))
+        if (!TaskDBInterface.insertIntoDataBase(testTask))
         {
             std::cerr << TaskDBInterface.getAllErrorMessages() << testTask << "\n";
         }

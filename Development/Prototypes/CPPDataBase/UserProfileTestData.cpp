@@ -23,7 +23,7 @@ void loadUserProfileTestDataIntoDatabase()
 
     for (auto user: userProfileTestData)
     {
-        if (!userDBInterface.updateDatabaseTables(user))
+        if (!userDBInterface.insertIntoDataBase(*user))
         {
             std::cerr << userDBInterface.getAllErrorMessages() << "\n" << *user << "\n";
         }
