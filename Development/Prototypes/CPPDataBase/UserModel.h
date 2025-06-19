@@ -21,19 +21,19 @@ public:
         const char* dbDayEnd, int dbPriorityinSched, int dbMinorPriorityInSched, int dbLettersForMajorP,
         int dbUseDot);
     ~UserModel();
-    std::string getLastName() const { return getStringFieldValue("LastName"); };
-    std::string getFirstName() const { return getStringFieldValue("FirstName");  };
-    std::string getMiddleInitial() const { return getStringFieldValue("MiddleInitial"); };
-    std::string getEmail() const { return getStringFieldValue("EmailAddress"); };
-    std::string getLoginName() const {return getStringFieldValue("LoginName"); };
-    std::string getPassword() const { return getStringFieldValue("HashedPassWord");  };
-    std::string getStartTime() const { return getStringFieldValue("ScheduleDayStart"); };
-    std::string getEndTime() const { return getStringFieldValue("ScheduleDayEnd"); };
-    std::size_t getUserID() const { return getPrimaryKey(); };
-    bool isPriorityInSchedule() const { return getBoolFieldValue("IncludePriorityInSchedule"); };
-    bool isMinorPriorityInSchedule() const { return getBoolFieldValue("IncludeMinorPriorityInSchedule"); };
-    bool isUsingLettersForMaorPriority() const { return getBoolFieldValue("UseLettersForMajorPriority"); };
-    bool isSeparatingPriorityWithDot() const { return getBoolFieldValue("SeparatePriorityWithDot"); };
+    std::string getLastName() const;
+    std::string getFirstName() const;
+    std::string getMiddleInitial() const;
+    std::string getEmail() const;
+    std::string getLoginName() const;
+    std::string getPassword() const;
+    std::string getStartTime() const;
+    std::string getEndTime() const;
+    std::size_t getUserID() const;
+    bool isPriorityInSchedule() const;
+    bool isMinorPriorityInSchedule() const;
+    bool isUsingLettersForMaorPriority() const;
+    bool isSeparatingPriorityWithDot() const;
 
     friend std::ostream& operator<<(std::ostream& os, const UserModel& obj)
     {

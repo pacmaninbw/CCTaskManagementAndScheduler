@@ -72,4 +72,17 @@ void UserModel::createLoginBasedOnUserName(std::string lastName, std::string fir
     setFieldValue("HashedPassWord", tempLoginName);
 }
 
+std::string UserModel::getLastName() const { return getStringFieldValue("LastName"); };
+std::string UserModel::getFirstName() const { return getStringFieldValue("FirstName");  };
+std::string UserModel::getMiddleInitial() const { return getStringFieldValue("MiddleInitial"); };
+std::string UserModel::getEmail() const { return getStringFieldValue("EmailAddress"); };
+std::string UserModel::getLoginName() const {return getStringFieldValue("LoginName"); };
+std::string UserModel::getPassword() const { return getStringFieldValue("HashedPassWord");  };
+std::string UserModel::getStartTime() const { return getStringFieldValue("ScheduleDayStart"); };
+std::string UserModel::getEndTime() const { return getStringFieldValue("ScheduleDayEnd"); };
+std::size_t UserModel::getUserID() const { return getPrimaryKey(); };
+bool UserModel::isPriorityInSchedule() const { return getBoolFieldValue("IncludePriorityInSchedule"); };
+bool UserModel::isMinorPriorityInSchedule() const { return getBoolFieldValue("IncludeMinorPriorityInSchedule"); };
+bool UserModel::isUsingLettersForMaorPriority() const { return getBoolFieldValue("UseLettersForMajorPriority"); };
+bool UserModel::isSeparatingPriorityWithDot() const { return getBoolFieldValue("SeparatePriorityWithDot"); };
 
