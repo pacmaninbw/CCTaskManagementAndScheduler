@@ -25,7 +25,6 @@
  */
 
 static boost::mysql::connect_params dbConnectionParameters;
-static std::size_t lastInsertValue = 0;
 
 DBInterface::DBInterface()
 :   errorMessages{""}
@@ -34,36 +33,6 @@ DBInterface::DBInterface()
     dbConnectionParameters.username = MySQLAdminUser;
     dbConnectionParameters.password = MySQLAdminPassword;
     dbConnectionParameters.database = PlannerDB;
-}
-
-static boost::asio::awaitable<void> coroutine_sqlstatement(std::string sql)
-{
-    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-    boost::mysql::results result;
-
-    co_await conn.async_execute(sql, result);
-
-    co_await conn.async_close();
-}
-
-void DBInterface::asyncExecutionSqlStatment(std::string sqlStmt)
-{
-    boost::asio::io_context ctx;
-
-    boost::asio::co_spawn(ctx,
-        [sqlStmt] { return coroutine_sqlstatement(sqlStmt); },
-        [](std::exception_ptr ptr) {
-            if (ptr)
-            {
-                std::rethrow_exception(ptr);
-            }
-        }
-    );
-
-    ctx.run();
 }
 
 static boost::mysql::date convertChronoDateToBoostMySQLDate(std::chrono::year_month_day source)
@@ -104,7 +73,7 @@ static void getOptionalTaskFields(TaskModel& task,
     }
 }
 
-static boost::asio::awaitable<void> coro_insert_task(TaskModel task)
+static boost::asio::awaitable<void> coro_insert_task(TaskModel& task)
 {
     boost::mysql::date createdOn = convertChronoDateToBoostMySQLDate(task.getCreationDate());
     boost::mysql::date dueDate = convertChronoDateToBoostMySQLDate(task.getDueDate());
@@ -148,7 +117,7 @@ static boost::asio::awaitable<void> coro_insert_task(TaskModel task)
     boost::mysql::results result;
     co_await conn.async_execute(sqlStatement, result);
 
-    std::cout << "Successfully created task with ID: " << result.last_insert_id() << std::endl;
+    task.setPrimaryKey(result.last_insert_id());
 
     co_await conn.async_close();
 }
@@ -173,7 +142,7 @@ bool DBInterface::insertIntoDataBase(TaskModel& task)
     // Launch our coroutine
     boost::asio::co_spawn(
         ctx,
-        [=] { return coro_insert_task(task); },
+        [&task] { return coro_insert_task(task); },
         // If any exception is thrown in the coroutine body, rethrow it.
         [](std::exception_ptr ptr) {
             if (ptr)
@@ -197,7 +166,7 @@ bool DBInterface::insertIntoDataBase(TaskModel& task)
 
     return true;
 }
-static boost::asio::awaitable<void> coro_insert_user(UserModel user)
+static boost::asio::awaitable<void> coro_insert_user(UserModel& user)
 {
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
@@ -221,8 +190,7 @@ static boost::asio::awaitable<void> coro_insert_user(UserModel user)
         result
     );
 
-    std::cout << "Successfully created task with ID: " << result.last_insert_id() << std::endl;
-    lastInsertValue = result.last_insert_id();
+    user.setPrimaryKey(result.last_insert_id());
 
     co_await conn.async_close();
 }
@@ -231,11 +199,9 @@ bool DBInterface::insertIntoDataBase(UserModel &user)
 {
     clearPreviousErrors();
     
-    lastInsertValue = 0;
-
     if (user.isInDataBase())
     {
-        appendErrorMessage("The task is already in the database.\n");
+        appendErrorMessage("The user is already in the database.\n");
         return false;
     }
     if (!user.allRequiredFieldsHaveData())
@@ -249,7 +215,7 @@ bool DBInterface::insertIntoDataBase(UserModel &user)
     // Launch our coroutine
     boost::asio::co_spawn(
         ctx,
-        [=] { return coro_insert_user(user); },
+        [&user] { return coro_insert_user(user); },
         // If any exception is thrown in the coroutine body, rethrow it.
         [](std::exception_ptr ptr) {
             if (ptr)
@@ -270,8 +236,6 @@ bool DBInterface::insertIntoDataBase(UserModel &user)
         appendErrorMessage(eMsg);
         return false;
     }
-
-    user.setPrimaryKey(lastInsertValue);
 
     return true;
 }

@@ -32,7 +32,6 @@ public:
     bool insertIntoDataBase(UserModel &user);
 
 private:
-    void asyncExecutionSqlStatment(std::string sqlStmt);
     void clearPreviousErrors() { errorMessages.clear(); };
     void appendErrorMessage(std::string newError) { errorMessages.append(newError); };
 
