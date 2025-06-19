@@ -48,6 +48,11 @@ public:
     float getactualEffortToDate() const;
     unsigned int getPriorityGoup() const;
     unsigned int getPriority() const;
+    bool hasOptionalFieldStatus() const;
+    bool hasOptionalFieldParentTaskID() const;
+    bool hasOptionalFieldActualStartDate() const;
+    bool hasOptionalFieldEstimatedCompletion() const;
+    bool hasOptionalFieldCompletionDate() const;
     std::string taskStatusString() const;
 
     friend std::ostream& operator<<(std::ostream& os, const TaskModel& obj)

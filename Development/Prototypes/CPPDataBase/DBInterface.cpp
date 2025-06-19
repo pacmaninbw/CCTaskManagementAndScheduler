@@ -77,14 +77,39 @@ static boost::mysql::date convertChronoDateToBoostMySQLDate(std::chrono::year_mo
 
 static boost::asio::awaitable<void> coro_insert_task(TaskModel task)
 {
-    std::optional<std::size_t> parentTaskID = task.getParentTaskID();
-    std::optional<unsigned int> status = static_cast<unsigned int>(task.getStatus());
-    std::optional<boost::mysql::date> actualStart;
-    std::optional<boost::mysql::date> estimatedCompleteDate;
-    std::optional<boost::mysql::date> completeDate;
     boost::mysql::date createdOn = convertChronoDateToBoostMySQLDate(task.getCreationDate());
     boost::mysql::date dueDate = convertChronoDateToBoostMySQLDate(task.getDueDate());
     boost::mysql::date scheduledStart = convertChronoDateToBoostMySQLDate(task.getScheduledStart());
+    std::optional<std::size_t> parentTaskID;
+    std::optional<unsigned int> status;
+    std::optional<boost::mysql::date> actualStart;
+    std::optional<boost::mysql::date> estimatedCompleteDate;
+    std::optional<boost::mysql::date> completeDate;
+
+    if (task.hasOptionalFieldStatus())
+    {
+        parentTaskID = task.getParentTaskID();
+    }
+
+    if (task.hasOptionalFieldStatus())
+    {
+        status = static_cast<unsigned int>(task.getStatus());
+    }
+
+    if (task.hasOptionalFieldActualStartDate())
+    {
+        actualStart = convertChronoDateToBoostMySQLDate(task.getactualStartDate());
+    }
+
+    if (task.hasOptionalFieldEstimatedCompletion())
+    {
+        actualStart = convertChronoDateToBoostMySQLDate(task.getEstimatedCompletion());
+    }
+
+    if (task.hasOptionalFieldCompletionDate())
+    {
+        actualStart = convertChronoDateToBoostMySQLDate(task.getCompletionDate());
+    }
 
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
@@ -96,12 +121,23 @@ static boost::asio::awaitable<void> coro_insert_task(TaskModel task)
         CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, 
         ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup
         ) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}))sql",
-        task.getCreatorID(), task.getAssignToID(), task.getDescription(), parentTaskID, status,
-        task.getPercentageComplete(), createdOn, dueDate, scheduledStart, actualStart, estimatedCompleteDate,
-        completeDate, task.getEstimatedEffort(), task.getactualEffortToDate(), task.getPriorityGoup(),
-        task.getPriority());
-
-    std::cout << sqlStatement << "\n";
+        task.getCreatorID(),
+        task.getAssignToID(),
+        task.getDescription(),
+        parentTaskID,
+        status,
+        task.getPercentageComplete(),
+        createdOn,
+        dueDate,
+        scheduledStart,
+        actualStart,
+        estimatedCompleteDate,
+        completeDate,
+        task.getEstimatedEffort(),
+        task.getactualEffortToDate(),
+        task.getPriorityGoup(),
+        task.getPriority()
+    );
 
     boost::mysql::results result;
     co_await conn.async_execute(sqlStatement, result);
