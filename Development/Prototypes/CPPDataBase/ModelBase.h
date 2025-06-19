@@ -92,6 +92,15 @@ public:
     {
         os << "Model Class:\t" << obj.modelClassName << "\n";
         os << "Primary Key field name :" << obj.primaryKeyFieldName << "\n";
+        
+        os << "Column Names: ";
+        for (const auto& [key, value] : obj.dataFields)
+        {
+            os << key;
+            os << ", ";
+        }
+        os << "\n";
+
         for (const auto& [key, value] : obj.dataFields)
         {
             PTS_DataField_shp currentField = value;
