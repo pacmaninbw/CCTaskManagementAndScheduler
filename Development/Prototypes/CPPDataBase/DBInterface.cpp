@@ -44,8 +44,6 @@ static boost::asio::awaitable<void> coroutine_sqlstatement(std::string sql)
 
     boost::mysql::results result;
 
-    std::cout << "Attempted SQL statement:\t" << sql << "\n";
-
     co_await conn.async_execute(sql, result);
 
     co_await conn.async_close();
@@ -75,17 +73,11 @@ static boost::mysql::date convertChronoDateToBoostMySQLDate(std::chrono::year_mo
     return boostDate;
 }
 
-static boost::asio::awaitable<void> coro_insert_task(TaskModel task)
+static void getOptionalTaskFields(TaskModel& task,
+    std::optional<std::size_t>& parentTaskID, std::optional<unsigned int>& status, std::optional<boost::mysql::date>& actualStart,
+    std::optional<boost::mysql::date>& estimatedCompleteDate, std::optional<boost::mysql::date>& completeDate
+)
 {
-    boost::mysql::date createdOn = convertChronoDateToBoostMySQLDate(task.getCreationDate());
-    boost::mysql::date dueDate = convertChronoDateToBoostMySQLDate(task.getDueDate());
-    boost::mysql::date scheduledStart = convertChronoDateToBoostMySQLDate(task.getScheduledStart());
-    std::optional<std::size_t> parentTaskID;
-    std::optional<unsigned int> status;
-    std::optional<boost::mysql::date> actualStart;
-    std::optional<boost::mysql::date> estimatedCompleteDate;
-    std::optional<boost::mysql::date> completeDate;
-
     if (task.hasOptionalFieldStatus())
     {
         parentTaskID = task.getParentTaskID();
@@ -103,13 +95,27 @@ static boost::asio::awaitable<void> coro_insert_task(TaskModel task)
 
     if (task.hasOptionalFieldEstimatedCompletion())
     {
-        actualStart = convertChronoDateToBoostMySQLDate(task.getEstimatedCompletion());
+        estimatedCompleteDate = convertChronoDateToBoostMySQLDate(task.getEstimatedCompletion());
     }
 
     if (task.hasOptionalFieldCompletionDate())
     {
-        actualStart = convertChronoDateToBoostMySQLDate(task.getCompletionDate());
+        completeDate = convertChronoDateToBoostMySQLDate(task.getCompletionDate());
     }
+}
+
+static boost::asio::awaitable<void> coro_insert_task(TaskModel task)
+{
+    boost::mysql::date createdOn = convertChronoDateToBoostMySQLDate(task.getCreationDate());
+    boost::mysql::date dueDate = convertChronoDateToBoostMySQLDate(task.getDueDate());
+    boost::mysql::date scheduledStart = convertChronoDateToBoostMySQLDate(task.getScheduledStart());
+    std::optional<std::size_t> parentTaskID;
+    std::optional<unsigned int> status;
+    std::optional<boost::mysql::date> actualStart;
+    std::optional<boost::mysql::date> estimatedCompleteDate;
+    std::optional<boost::mysql::date> completeDate;
+
+    getOptionalTaskFields(task, parentTaskID, status, actualStart, estimatedCompleteDate, completeDate);
 
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
