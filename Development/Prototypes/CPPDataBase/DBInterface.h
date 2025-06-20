@@ -1,10 +1,12 @@
 #ifndef DBINTERFACE_H_
 #define DBINTERFACE_H_
 
-#include "TaskModel.h"
-#include "UserModel.h"
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
 #include <string>
 #include <string_view>
+#include "TaskModel.h"
+#include "UserModel.h"
 
 /*
  * Error Handling: 
@@ -34,7 +36,21 @@ public:
 private:
     void clearPreviousErrors() { errorMessages.clear(); };
     void appendErrorMessage(std::string newError) { errorMessages.append(newError); };
+    boost::mysql::date convertChronoDateToBoostMySQLDate(std::chrono::year_month_day source);
+    void getOptionalTaskFields(TaskModel& task,std::optional<std::size_t>& parentTaskID, 
+        std::optional<unsigned int>& status, std::optional<boost::mysql::date>& actualStart,
+        std::optional<boost::mysql::date>& estimatedCompleteDate,
+        std::optional<boost::mysql::date>& completeDate);
+    boost::asio::awaitable<void> coro_insert_task(TaskModel& task);
+    boost::asio::awaitable<void> coro_insert_user(UserModel& user);
+    std::string formatInsertTask(TaskModel& task);
+    boost::asio::awaitable<void> getFormatOptionsFromDB();
+    boost::mysql::format_options getDBFormatOptions();
+    bool firstFormattedSqlStatement();
 
+    boost::mysql::connect_params dbConnectionParameters;
+    boost::mysql::format_options dbFormatOptions;
+    bool dbFormatOptionsAreSet = false;
     std::string errorMessages;
 };
 
