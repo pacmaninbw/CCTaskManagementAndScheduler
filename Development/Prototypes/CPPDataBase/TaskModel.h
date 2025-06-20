@@ -30,7 +30,6 @@ public:
         unsigned int priorityGroupfromDb, unsigned int priorityfromDb      
     );
     ~TaskModel();
-    void dbSetTaskID(std::size_t dbTaskID) { setPrimaryKey(dbTaskID); };
     std::size_t getTaskID() const;
     std::size_t getCreatorID() const;
     std::size_t getAssignToID() const;
