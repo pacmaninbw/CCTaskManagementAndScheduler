@@ -25,106 +25,40 @@ DBInterface::DBInterface()
 
 bool DBInterface::insertIntoDataBase(TaskModel& task)
 {
-    clearPreviousErrors();
-    if (!dbFormatOptionsAreSet)
+    if (!validateObjectAndSetUp(task))
     {
-        if (!firstFormattedSqlStatement())
-        {
-            return false;
-        }
-    }
-
-    if (task.isInDataBase())
-    {
-        appendErrorMessage("The task is already in the database.\n");
-        return false;
-    }
-    if (!task.allRequiredFieldsHaveData())
-    {
-        appendErrorMessage(task.reportMissingRequiredFields());
         return false;
     }
 
-    boost::asio::io_context ctx;
+    std::string sqlStatement = formatInsert(task);
+    std::size_t taskID = 0;
 
-    // Launch our coroutine
-    boost::asio::co_spawn(
-        ctx,
-        [&task, this] { return coro_insert_task(task); },
-        // If any exception is thrown in the coroutine body, rethrow it.
-        [](std::exception_ptr ptr) {
-            if (ptr)
-            {
-                std::rethrow_exception(ptr);
-            }
-        }
-    );
-
-    try
+    if (runAsyncSQLInsertion(sqlStatement, taskID))
     {
-        ctx.run();
-    }
-    catch (const std::exception& e)
-    {
-        std::string eMsg("MySQL Server Error: ");
-        eMsg += e.what();
-        appendErrorMessage(eMsg);
-        return false;
+        task.setPrimaryKey(taskID);
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 bool DBInterface::insertIntoDataBase(UserModel &user)
 {
-    clearPreviousErrors();
-    if (!dbFormatOptionsAreSet)
+    if (!validateObjectAndSetUp(user))
     {
-        if (!firstFormattedSqlStatement())
-        {
-            return false;
-        }
-    }
-    
-    if (user.isInDataBase())
-    {
-        appendErrorMessage("The user is already in the database.\n");
-        return false;
-    }
-    if (!user.allRequiredFieldsHaveData())
-    {
-        appendErrorMessage(user.reportMissingRequiredFields());
         return false;
     }
 
-    boost::asio::io_context ctx;
+    std::string sqlStatement = formatInsert(user);
+    std::size_t userID = 0;
 
-    // Launch our coroutine
-    boost::asio::co_spawn(
-        ctx,
-        [&user, this] { return coro_insert_user(user); },
-        // If any exception is thrown in the coroutine body, rethrow it.
-        [](std::exception_ptr ptr) {
-            if (ptr)
-            {
-                std::rethrow_exception(ptr);
-            }
-        }
-    );
-
-    try
+    if (runAsyncSQLInsertion(sqlStatement, userID))
     {
-        ctx.run();
-    }
-    catch (const std::exception& e)
-    {
-        std::string eMsg("MySQL Server Error: ");
-        eMsg += e.what();
-        appendErrorMessage(eMsg);
-        return false;
+        user.setPrimaryKey(userID);
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 boost::mysql::date DBInterface::convertChronoDateToBoostMySQLDate(std::chrono::year_month_day source)
@@ -170,10 +104,9 @@ void DBInterface::getOptionalTaskFields(
     }
 }
 
-boost::asio::awaitable<void> DBInterface::coro_insert_task(TaskModel &task)
+boost::asio::awaitable<std::size_t> DBInterface::genericInsertCoRoutine(std::string& sqlStatement)
 {
-    std::string sqlStatement = formatInsertTask(task);
-    std::cout << "Attempting to execute formatted statement " << sqlStatement << "\n";
+//    std::cout << "Attempting to execute formatted statement " << sqlStatement << "\n";
 
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
@@ -182,41 +115,12 @@ boost::asio::awaitable<void> DBInterface::coro_insert_task(TaskModel &task)
     boost::mysql::results result;
     co_await conn.async_execute(sqlStatement, result);
 
-    task.setPrimaryKey(result.last_insert_id());
-
     co_await conn.async_close();
+
+    co_return static_cast<std::size_t>(result.last_insert_id());
 }
 
-boost::asio::awaitable<void> DBInterface::coro_insert_user(UserModel &user)
-{
-    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-    boost::mysql::results result;
-    co_await conn.async_execute(
-        boost::mysql::with_params(
-            "INSERT INTO PlannerTaskScheduleDB.UserProfile ("
-            "LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, ScheduleDayStart, ScheduleDayEnd"
-            ") VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})",
-            user.getLastName(),
-            user.getFirstName(),
-            user.getMiddleInitial(),
-            user.getEmail(),
-            user.getLoginName(),
-            user.getPassword(),
-            user.getStartTime(),
-            user.getEndTime()
-        ),
-        result
-    );
-
-    user.setPrimaryKey(result.last_insert_id());
-
-    co_await conn.async_close();
-}
-
-std::string DBInterface::formatInsertTask(TaskModel &task)
+std::string DBInterface::formatInsert(TaskModel &task)
 {
     boost::mysql::date createdOn = convertChronoDateToBoostMySQLDate(task.getCreationDate());
     boost::mysql::date dueDate = convertChronoDateToBoostMySQLDate(task.getDueDate());
@@ -256,6 +160,30 @@ std::string DBInterface::formatInsertTask(TaskModel &task)
     return sqlStatement;
 }
 
+std::string DBInterface::formatInsert(UserModel &user)
+{
+    std::string sqlStatement = boost::mysql::format_sql(
+    dbFormatOptions,
+    R"sql(INSERT INTO PlannerTaskScheduleDB.UserProfile (
+            LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, ScheduleDayStart, ScheduleDayEnd
+            ) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}))sql",
+            user.getLastName(),
+            user.getFirstName(),
+            user.getMiddleInitial(),
+            user.getEmail(),
+            user.getLoginName(),
+            user.getPassword(),
+            user.getStartTime(),
+            user.getEndTime()
+    );
+
+    return sqlStatement;
+}
+
+/*
+ * retrieve the format options from the connection. Should only be called
+ * once per instantiation of the class, but it can't be called from the constructor.
+ */
 boost::asio::awaitable<void> DBInterface::getFormatOptionsFromDB()
 {
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
@@ -268,8 +196,17 @@ boost::asio::awaitable<void> DBInterface::getFormatOptionsFromDB()
     co_await conn.async_close();
 }
 
+/*
+ * Co-routines can't be called from constructors, so the first formatted
+ * statement need to retrieve the connection details. 
+ */
 bool DBInterface::firstFormattedSqlStatement()
 {
+    if (dbFormatOptionsAreSet)
+    {
+        return true;
+    }
+
     boost::asio::io_context ctx;
 
     // Launch our coroutine
@@ -282,6 +219,64 @@ bool DBInterface::firstFormattedSqlStatement()
             {
                 std::rethrow_exception(ptr);
             }
+        }
+    );
+
+    try
+    {
+        ctx.run();
+    }
+    catch (const std::exception& e)
+    {
+        std::string eMsg("MySQL Server Error: ");
+        eMsg += e.what();
+        appendErrorMessage(eMsg);
+        return false;
+    }
+
+    return true;
+}
+
+bool DBInterface::validateObjectAndSetUp(ModelBase &model)
+{
+    clearPreviousErrors();
+    if (!dbFormatOptionsAreSet)
+    {
+        if (!firstFormattedSqlStatement())
+        {
+            return false;
+        }
+    }
+    
+    if (model.isInDataBase())
+    {
+        appendErrorMessage("The model object is already in the database.\n");
+        return false;
+    }
+
+    if (!model.allRequiredFieldsHaveData())
+    {
+        appendErrorMessage(model.reportMissingRequiredFields());
+        return false;
+    }
+
+    return true;
+}
+
+bool DBInterface::runAsyncSQLInsertion(std::string &sqlStatement, std::size_t &newEntryID)
+{
+    boost::asio::io_context ctx;
+
+    boost::asio::co_spawn(
+        ctx,
+        genericInsertCoRoutine(sqlStatement),
+        [&newEntryID](std::exception_ptr ptr, std::size_t newId)
+        {
+            if (ptr)
+            {
+                std::rethrow_exception(ptr);
+            }
+            newEntryID = newId;
         }
     );
 

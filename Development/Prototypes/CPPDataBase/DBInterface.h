@@ -41,12 +41,13 @@ private:
         std::optional<unsigned int>& status, std::optional<boost::mysql::date>& actualStart,
         std::optional<boost::mysql::date>& estimatedCompleteDate,
         std::optional<boost::mysql::date>& completeDate);
-    boost::asio::awaitable<void> coro_insert_task(TaskModel& task);
-    boost::asio::awaitable<void> coro_insert_user(UserModel& user);
-    std::string formatInsertTask(TaskModel& task);
+    boost::asio::awaitable<std::size_t> genericInsertCoRoutine(std::string& sqlStatement);
+    std::string formatInsert(TaskModel& task);
+    std::string formatInsert(UserModel& user);
     boost::asio::awaitable<void> getFormatOptionsFromDB();
-    boost::mysql::format_options getDBFormatOptions();
     bool firstFormattedSqlStatement();
+    bool validateObjectAndSetUp(ModelBase& model);
+    bool runAsyncSQLInsertion(std::string& sqlStatement, std::size_t& newEntryID);
 
     boost::mysql::connect_params dbConnectionParameters;
     boost::mysql::format_options dbFormatOptions;
