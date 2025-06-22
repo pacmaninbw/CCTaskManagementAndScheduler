@@ -3,6 +3,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
+#include "ModelBase.h"
 #include <string>
 #include <string_view>
 #include "TaskModel.h"
