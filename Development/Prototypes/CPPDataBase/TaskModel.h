@@ -3,9 +3,11 @@
 
 #include <chrono>
 #include <iostream>
-#include <string>
+#include <memory>
 #include "ModelBase.h"
+#include <string>
 #include "UserModel.h"
+#include <vector>
 
 class TaskModel : public ModelBase
 {
@@ -84,6 +86,9 @@ private:
     // std::size_t taskID; // Using primaryKey as TaskID
     TaskStatus status;
 };
+
+using TaskModel_shp = std::shared_ptr<TaskModel>;
+using TaskList = std::vector<TaskModel_shp>;
 
 #endif // TASKMODEL_H_
 
