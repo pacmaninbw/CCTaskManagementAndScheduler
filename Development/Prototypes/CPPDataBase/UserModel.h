@@ -59,6 +59,9 @@ private:
     void createLoginBasedOnUserName(std::string lastName, std::string firstName, std::string middleInitial);
 };
 
+using UserModel_shp = std::shared_ptr<UserModel>;
+using UserList = std::vector<UserModel_shp>;
+
 #endif // USERMODEL_H_
 
 
