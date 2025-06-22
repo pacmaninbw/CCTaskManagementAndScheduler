@@ -120,6 +120,9 @@ protected:
     PTS_DataField_map dataFields;
 };
 
+using Modelshp = std::shared_ptr<ModelBase>;
+using ModelList = std::vector<Modelshp>;
+
 #endif  // MODELBASE_H_
 
 
