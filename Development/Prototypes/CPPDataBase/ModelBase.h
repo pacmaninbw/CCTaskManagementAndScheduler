@@ -85,9 +85,35 @@ public:
  */
     bool atleastOneFieldModified() const;
     bool allRequiredFieldsHaveData() const;
+    bool diffAllFields(ModelBase other);
     PTS_DataField_vector getAllFieldsWithValue();
     std::string reportMissingRequiredFields() const;
     const std::string getModelName() { return modelClassName; };
+
+/*
+ * Operators
+ */
+    bool operator==(ModelBase other)
+    {
+        bool areTheSame = true;
+
+        if (modelClassName != other.modelClassName)
+        {
+            areTheSame = false;
+            std::cout << "Model names differ: " << modelClassName << " " << other.modelClassName << "\n";
+        }
+
+        if (primaryKeyFieldName != other.primaryKeyFieldName)
+        {
+            areTheSame = false;
+            std::cout << "Primary key names differ: " << primaryKeyFieldName << " " << other.primaryKeyFieldName << "\n";
+        }
+
+        // using == of dataFields doesn't seem to reflect the realality.
+        areTheSame = diffAllFields(other);
+
+        return areTheSame;
+    };
     friend std::ostream& operator<<(std::ostream& os, const ModelBase& obj)
     {
         os << "Model Class:\t" << obj.modelClassName << "\n";
@@ -104,7 +130,7 @@ public:
         for (const auto& [key, value] : obj.dataFields)
         {
             PTS_DataField_shp currentField = value;
-            os << currentField->fieldInfo();
+            os << currentField;
             os << "\n";
         }
         return os;

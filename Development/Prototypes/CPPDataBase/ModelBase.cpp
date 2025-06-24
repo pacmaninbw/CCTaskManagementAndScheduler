@@ -271,3 +271,20 @@ PTS_DataField_vector ModelBase::getAllFieldsWithValue()
 
     return fields;
 }
+
+bool ModelBase::diffAllFields(ModelBase other)
+{
+    bool areTheSame = true;
+
+    for (const auto& [key, value] : dataFields)
+    {
+        const PTS_DataField_shp otherValue = other.findFieldInDataFields(key);
+        if (*value != *otherValue)
+        {
+            areTheSame = false;
+            std::cout << "Fields differ: " << key << "\n\t" << *value << "\n\t" << *otherValue << "\n";
+        }
+    }
+
+    return areTheSame;
+}
