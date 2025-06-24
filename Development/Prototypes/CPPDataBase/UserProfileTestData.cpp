@@ -29,11 +29,27 @@ void loadUserProfileTestDataIntoDatabase()
         }
         else
         {
-            std::string login = user->getLoginName();
-            UserModel_shp testInDB = userDBInterface.getUserByLogin(login);
-            if (testInDB)
+            if (user->isInDataBase())
             {
-                std::cout << *testInDB << "\n";
+                UserModel_shp testInDB = userDBInterface.getUserByLogin(user->getLoginName());
+                if (testInDB)
+                {
+                    if (*testInDB == *user)
+                    {
+                        std::cout << "User:" << user->getLastName() << ", " << user->getFirstName() <<
+                            "Successfully iserted and retrieved from database\n";
+                    }
+                    else
+                    {
+                        std::cout << "Insertion and retrieval of User Failed\nInserted User:\n" <<
+                        *user << "\n" "Retreived User:\n" << *testInDB << "\n";
+                    }
+                }
+            }
+            else
+            {
+                std::cout << "Primary key for user: " << user->getLastName() << ", " << user->getFirstName() <<
+                " not set!\n";
             }
         }
     }
