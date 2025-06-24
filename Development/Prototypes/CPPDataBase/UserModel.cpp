@@ -36,30 +36,40 @@ UserModel::UserModel(const char *lastIn, const char *firstIn, const char *middle
     initFieldValueNotChanged("ScheduleDayEnd", "5:00 PM");
 }
 
-UserModel::UserModel(std::size_t dbUserId, const char *dbLoginName, const char *dbPassWord, const char *dbLastName,
-    const char *dbFirstName, const char *dbMiddleInit, const char *dbEmail, const char *dbDayStart,
-    const char *dbDayEnd, int dbPriorityinSched, int dbMinorPriorityInSched, int dbLettersForMajorP,
-    int dbUseDot)
+UserModel::UserModel(const UserModel &original)
     : UserModel()
 {
-    setPrimaryKey(dbUserId);
-    initFieldValueNotChanged("LastName", dbLastName);
-    initFieldValueNotChanged("FirstName", dbFirstName);
-    initFieldValueNotChanged("MiddleInitial", dbMiddleInit);
-    initFieldValueNotChanged("EmailAddress", dbEmail);
-    initFieldValueNotChanged("LoginName", dbLoginName);
-    initFieldValueNotChanged("HashedPassWord", dbPassWord);
-    initFieldValueNotChanged("IncludePriorityInSchedule", dbPriorityinSched != 0);
-    initFieldValueNotChanged("IncludeMinorPriorityInSchedule", dbMinorPriorityInSched != 0);
-    initFieldValueNotChanged("UseLettersForMajorPriority", dbLettersForMajorP != 0);
-    initFieldValueNotChanged("SeparatePriorityWithDot", dbUseDot != 0);
-    initFieldValueNotChanged("ScheduleDayStart", dbDayStart);
-    initFieldValueNotChanged("ScheduleDayEnd", dbDayEnd);
+    setPrimaryKey(original.getPrimaryKey());
+    initFieldValueNotChanged("LastName", original.getLastName());
+    initFieldValueNotChanged("FirstName", original.getFirstName());
+    initFieldValueNotChanged("MiddleInitial", original.getMiddleInitial());
+    initFieldValueNotChanged("EmailAddress", original.getEmail());
+    initFieldValueNotChanged("LoginName", original.getLoginName());
+    initFieldValueNotChanged("HashedPassWord", original.getPassword());
+    initFieldValueNotChanged("IncludePriorityInSchedule", original.isPriorityInSchedule());
+    initFieldValueNotChanged("IncludeMinorPriorityInSchedule", original.isMinorPriorityInSchedule());
+    initFieldValueNotChanged("UseLettersForMajorPriority", original.isUsingLettersForMaorPriority());
+    initFieldValueNotChanged("SeparatePriorityWithDot", original.isSeparatingPriorityWithDot());
+    initFieldValueNotChanged("ScheduleDayStart", original.getStartTime());
+    initFieldValueNotChanged("ScheduleDayEnd", original.getEndTime());
 }
 
-UserModel::~UserModel()
+UserModel::UserModel(UserSqlData sqlData)
+    : UserModel()
 {
-
+    setPrimaryKey(sqlData.UserID);
+    initFieldValueNotChanged("LastName", sqlData.LastName);
+    initFieldValueNotChanged("FirstName", sqlData.FirstName);
+    initFieldValueNotChanged("MiddleInitial", sqlData.MiddleInitial);
+    initFieldValueNotChanged("EmailAddress", sqlData.EmailAddress);
+    initFieldValueNotChanged("LoginName", sqlData.LoginName);
+    initFieldValueNotChanged("HashedPassWord", sqlData.HashedPassWord);
+    initFieldValueNotChanged("IncludePriorityInSchedule", sqlData.IncludePriorityInSchedule);
+    initFieldValueNotChanged("IncludeMinorPriorityInSchedule", sqlData.IncludeMinorPriorityInSchedule);
+    initFieldValueNotChanged("UseLettersForMajorPriority", sqlData.UseLettersForMajorPriority);
+    initFieldValueNotChanged("SeparatePriorityWithDot", sqlData.SeparatePriorityWithDot);
+    initFieldValueNotChanged("ScheduleDayStart", sqlData.ScheduleDayStart);
+    initFieldValueNotChanged("ScheduleDayEnd", sqlData.ScheduleDayEnd);
 }
 
 void UserModel::createLoginBasedOnUserName(std::string lastName, std::string firstName, std::string middleInitial)

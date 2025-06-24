@@ -27,6 +27,15 @@ void loadUserProfileTestDataIntoDatabase()
         {
             std::cerr << userDBInterface.getAllErrorMessages() << "\n" << *user << "\n";
         }
+        else
+        {
+            std::string login = user->getLoginName();
+            UserModel_shp testInDB = userDBInterface.getUserByLogin(login);
+            if (testInDB)
+            {
+                std::cout << *testInDB << "\n";
+            }
+        }
     }
 
     for (UserModel* user: userProfileTestData)

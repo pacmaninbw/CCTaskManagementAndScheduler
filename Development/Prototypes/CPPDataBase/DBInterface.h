@@ -33,6 +33,11 @@ public:
     std::string getAllErrorMessages() const { return errorMessages; };
     bool insertIntoDataBase(TaskModel &task);
     bool insertIntoDataBase(UserModel &user);
+    UserModel_shp getUserByLogin(std::string loginName);
+    UserModel_shp getUserByFullName(std::string LastName, std::string firstName, std::string middleInitial);
+    UserList getAllUsers();
+    TaskList getAllTasksForUser(UserModel_shp user);
+    TaskList getAllTasksForUser(UserModel& user);
 
 private:
     void clearPreviousErrors() { errorMessages.clear(); };
@@ -49,6 +54,9 @@ private:
     bool firstFormattedSqlStatement();
     bool validateObjectAndSetUp(ModelBase& model);
     bool runAsyncSQLInsertion(std::string& sqlStatement, std::size_t& newEntryID);
+    boost::asio::awaitable<boost::mysql::results> getUserFromDBCoRoutine(std::string selectSqlStatement);
+    UserSqlData runAsyncUserSqlQuery(std::string selectSqlStatement);
+    UserSqlData convertRowViewToUserSqlData(boost::mysql::row_view& queryRestultData);
 
     boost::mysql::connect_params dbConnectionParameters;
     boost::mysql::format_options dbFormatOptions;

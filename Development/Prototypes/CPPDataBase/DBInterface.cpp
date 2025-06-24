@@ -294,3 +294,132 @@ bool DBInterface::runAsyncSQLInsertion(std::string &sqlStatement, std::size_t &n
 
     return true;
 }
+
+UserModel_shp DBInterface::getUserByLogin(std::string loginName)
+{
+    if (!firstFormattedSqlStatement())
+    {
+        return nullptr;
+    }
+
+    std::string sqlStatement = boost::mysql::format_sql(
+    dbFormatOptions,
+    R"sql(SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, ScheduleDayStart, ScheduleDayEnd
+        IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, UseLettersForMajorPriority, SeparatePriorityWithDot
+        FROM PlannerTaskScheduleDB.UserProfile WHERE LoginName = {})sql", loginName);
+
+    try
+    {
+        return std::make_shared<UserModel>(UserModel(runAsyncUserSqlQuery(sqlStatement)));
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "In DBInterface::getUserByLogin " << e.what() << '\n';
+        return nullptr;
+    }
+}
+
+boost::asio::awaitable<boost::mysql::results> DBInterface::getUserFromDBCoRoutine(std::string selectSqlStatement)
+{
+    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+
+    co_await conn.async_connect(dbConnectionParameters);
+
+    std::cout << "Executing " << selectSqlStatement << "\n"; 
+    boost::mysql::results result;
+    co_await conn.async_execute(selectSqlStatement, result);
+
+    co_await conn.async_close();
+
+    co_return result;
+}
+
+UserSqlData DBInterface::runAsyncUserSqlQuery(std::string selectSqlStatement)
+{
+    boost::asio::io_context ctx;
+    UserSqlData localUser ={0, "", "", "", "", "", "", "", "", true, true, true, false};
+
+    boost::asio::co_spawn(
+        ctx,
+        getUserFromDBCoRoutine(selectSqlStatement),
+        [&localUser, this](std::exception_ptr ptr, boost::mysql::results result)
+        {
+            if (ptr)
+            {
+                std::rethrow_exception(ptr);
+            }
+            if (result.rows().empty())
+            {
+                std::domain_error noData("User not found!");
+                throw noData;
+            }
+            else
+            {
+                boost::mysql::row_view foundUser = result.rows().at(0);
+                localUser = convertRowViewToUserSqlData(foundUser);
+            }
+        }
+    );
+
+    ctx.run();
+
+    return localUser;
+}
+
+UserSqlData DBInterface::convertRowViewToUserSqlData(boost::mysql::row_view& queryRestultData)
+{
+    UserSqlData localUser = {0, "", "", "", "", "", "", "", "", true, true, true, false};
+
+    for (std::size_t i = 0; i < queryRestultData.size(); ++i)
+    {
+        switch (i)
+        {
+            case 0:
+                localUser.UserID = queryRestultData.at(i).as_uint64();
+                break;
+            case 1:
+                localUser.LastName = queryRestultData.at(i).as_string();
+                break;
+            case 2:
+                localUser.FirstName = queryRestultData.at(i).as_string();
+                break;
+            case 3:
+                localUser.MiddleInitial = queryRestultData.at(i).as_string();
+                break;
+            case 4:
+                localUser.EmailAddress = queryRestultData.at(i).as_string();
+                break;
+            case 5: 
+                localUser.LoginName = queryRestultData.at(i).as_string();
+                break;
+            case 6: 
+                localUser.HashedPassWord = queryRestultData.at(i).as_string();
+                break;
+            case 7: 
+                localUser.ScheduleDayStart = queryRestultData.at(i).as_string();
+                break;
+            case 8: 
+                localUser.ScheduleDayEnd = queryRestultData.at(i).as_string();
+                break;
+            case 9: 
+                localUser.IncludePriorityInSchedule = static_cast<bool>(queryRestultData.at(i).as_int64());
+                break;
+            case 10: 
+                localUser.IncludeMinorPriorityInSchedule = static_cast<bool>(queryRestultData.at(i).as_int64());
+                break;
+            case 11: 
+                localUser.UseLettersForMajorPriority = static_cast<bool>(queryRestultData.at(i).as_int64());
+                break;
+            case 12:
+                localUser.SeparatePriorityWithDot = static_cast<bool>(queryRestultData.at(i).as_int64());
+                break;
+            default: 
+                std::string ooEMsg("convertRowViewToUserSqlData i out of range for UserSqlData");
+                std::out_of_range oor(ooEMsg);
+                throw oor;
+                break;
+        }
+    }
+
+    return localUser;
+}
