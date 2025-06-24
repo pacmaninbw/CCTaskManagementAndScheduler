@@ -64,6 +64,50 @@ public:
     std::string fieldInfo();
     const std::string typeToName() const;
 
+/*
+ * Operators
+ */
+    bool operator==(const PTS_DataField& other) const
+    {
+        bool areTheSame = (columnType == other.columnType &&
+            dbColumnName == other.dbColumnName &&
+            dataValue == other.dataValue);
+
+        if (!areTheSame)
+        {
+            std::cout << "Fields differ: " << dbColumnName << "\n";// << other;
+        }
+
+        return areTheSame;
+    };
+    friend std::ostream& operator<<(std::ostream& os, PTS_DataField& field)
+    {
+        os << field.fieldInfo() << "\n";
+        os << "Column Name: ";
+        os << field.dbColumnName << "\tColumn Type: ";
+        os << field.typeToName() + "\tRequired: ";
+        os << (field.required? "True" : "False");
+        os << "\tModified: ";
+        os << (field.modified? "True" : "False");
+        os << "\tHas value: ";
+        os << (field.hasValue()? "True" : "False");
+
+        if (field.hasValue())
+        {
+            try
+            {
+                os <<"\t" + field.toString();
+            }
+            catch(const std::exception& e)
+            {
+                std::cerr << e.what() << '\n';
+            }
+        }
+
+        return os;
+    };
+
+
 private:
     PTS_DB_FieldType columnType;
     std::string dbColumnName;
