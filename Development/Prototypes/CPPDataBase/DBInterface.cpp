@@ -304,7 +304,7 @@ UserModel_shp DBInterface::getUserByLogin(std::string loginName)
 
     std::string sqlStatement = boost::mysql::format_sql(
     dbFormatOptions,
-    R"sql(SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, ScheduleDayStart, ScheduleDayEnd
+    R"sql(SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, ScheduleDayStart, ScheduleDayEnd,
         IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, UseLettersForMajorPriority, SeparatePriorityWithDot
         FROM PlannerTaskScheduleDB.UserProfile WHERE LoginName = {})sql", loginName);
 
@@ -325,7 +325,7 @@ boost::asio::awaitable<boost::mysql::results> DBInterface::getUserFromDBCoRoutin
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    std::cout << "Executing " << selectSqlStatement << "\n"; 
+//    std::cout << "Executing " << selectSqlStatement << "\n"; 
     boost::mysql::results result;
     co_await conn.async_execute(selectSqlStatement, result);
 
