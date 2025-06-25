@@ -24,8 +24,6 @@ add_executable(protoTaskPlanner
     PTS_DataField.h PTS_DataField.cpp 
     UserModel.h UserModel.cpp TaskModel.h TaskModel.cpp ModelBase.h ModelBase.cpp
     DBInterface.h DBInterface.cpp
-    UserProfileTestData.h UserProfileTestData.cpp
-    UserTaskTestData.h UserTaskTestData.cpp
 )
 
 target_link_libraries(protoTaskPlanner  ${Boost_LIBRARIES} ssl crypto)
