@@ -25,49 +25,120 @@ DBInterface::DBInterface()
 
 bool DBInterface::insertIntoDataBase(TaskModel& task)
 {
-    if (!validateObjectAndSetUp(task))
+    try
     {
-        return false;
-    }
+        if (!validateObjectAndSetUp(task))
+        {
+            return false;
+        }
 
-    std::string sqlStatement = formatInsert(task);
-    std::size_t taskID = 0;
+        boost::mysql::results results = runAnyMySQLstatementsAsynchronously(formatInsert(task));
+        task.setPrimaryKey(results.last_insert_id());
 
-    if (runAsyncSQLInsertion(sqlStatement, taskID))
-    {
-        task.setPrimaryKey(taskID);
         return true;
     }
-
-    return false;
+    catch(const std::exception& e)
+    {
+        std::string eMsg("In DBInterface::insertIntoDataBase(TaskModel &task) ");
+        eMsg += e.what();
+        appendErrorMessage(eMsg);
+        return false;
+    }
 }
 
 bool DBInterface::insertIntoDataBase(UserModel &user)
 {
-    if (!validateObjectAndSetUp(user))
+    try
     {
-        return false;
-    }
+        if (!validateObjectAndSetUp(user))
+        {
+            return false;
+        }
 
-    std::string sqlStatement = formatInsert(user);
-    std::size_t userID = 0;
+        boost::mysql::results results = runAnyMySQLstatementsAsynchronously(formatInsert(user));
+        user.setPrimaryKey(results.last_insert_id());
 
-    if (runAsyncSQLInsertion(sqlStatement, userID))
-    {
-        user.setPrimaryKey(userID);
         return true;
     }
+    catch(const std::exception& e)
+    {
+        std::string eMsg("In DBInterface::insertIntoDataBase(UserModel &user) ");
+        eMsg += e.what();
+        appendErrorMessage(eMsg);
+        return false;
+    }
+}
 
-    return false;
+UserModel_shp DBInterface::getUserByLogin(std::string loginName)
+{
+    try
+    {
+        if (!firstFormattedSqlStatement())
+        {
+            return nullptr;
+        }
+
+        std::string sqlStatement = boost::mysql::format_sql(
+        dbFormatOptions,
+        R"sql(SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, ScheduleDayStart, ScheduleDayEnd,
+            IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, UseLettersForMajorPriority, SeparatePriorityWithDot
+            FROM PlannerTaskScheduleDB.UserProfile WHERE LoginName = {})sql", loginName);
+
+        boost::mysql::results results = runAnyMySQLstatementsAsynchronously(sqlStatement);
+        return std::make_shared<UserModel>(UserModel(convertResultsToUserSqlData(results)));
+    }
+    catch(const std::exception& e)
+    {
+        std::string eMsg("In DBInterface::getUserByLogin ");
+        eMsg += e.what();
+        appendErrorMessage(eMsg);
+        return nullptr;
+    }
 }
 
 boost::mysql::date DBInterface::convertChronoDateToBoostMySQLDate(std::chrono::year_month_day source)
 {
-{
     std::chrono::sys_days tp = source;
     boost::mysql::date boostDate(tp);
     return boostDate;
-}}
+}
+
+/*
+ * retrieve the format options from the connection. Should only be called
+ * once per instantiation of the class, but it can't be called from the constructor.
+ * No SQL is executed.
+ */
+boost::asio::awaitable<void> DBInterface::getFormatOptionsFromDB()
+{
+    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+
+    co_await conn.async_connect(dbConnectionParameters);
+
+    dbFormatOptions = conn.format_opts().value();
+    dbFormatOptionsAreSet = true;
+
+    co_await conn.async_close();
+}
+
+/*
+ * All boost::mysql executions return results. The results are processed at a higher
+ * level as necessary where the knowlege about the results exists. This method only
+ * executes the SQL statement(s) and returns all results.
+ */
+boost::asio::awaitable<boost::mysql::results> DBInterface::executeSqlStatementsCoRoutine(std::string selectSqlStatement)
+{
+    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+
+    co_await conn.async_connect(dbConnectionParameters);
+
+//    std::cout << "Executing " << selectSqlStatement << "\n"; 
+    boost::mysql::results result;
+    co_await conn.async_execute(selectSqlStatement, result);
+
+    co_await conn.async_close();
+
+    co_return result;
+}
 
 void DBInterface::getOptionalTaskFields(
     TaskModel &task,
@@ -76,8 +147,7 @@ void DBInterface::getOptionalTaskFields(
     std::optional<boost::mysql::date> &actualStart,
     std::optional<boost::mysql::date> &estimatedCompleteDate,
     std::optional<boost::mysql::date> &completeDate
-)
-{
+) {
     if (task.hasOptionalFieldStatus())
     {
         parentTaskID = task.getParentTaskID();
@@ -102,22 +172,6 @@ void DBInterface::getOptionalTaskFields(
     {
         completeDate = convertChronoDateToBoostMySQLDate(task.getCompletionDate());
     }
-}
-
-boost::asio::awaitable<std::size_t> DBInterface::genericInsertCoRoutine(std::string& sqlStatement)
-{
-//    std::cout << "Attempting to execute formatted statement " << sqlStatement << "\n";
-
-    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-    boost::mysql::results result;
-    co_await conn.async_execute(sqlStatement, result);
-
-    co_await conn.async_close();
-
-    co_return static_cast<std::size_t>(result.last_insert_id());
 }
 
 std::string DBInterface::formatInsert(TaskModel &task)
@@ -181,22 +235,6 @@ std::string DBInterface::formatInsert(UserModel &user)
 }
 
 /*
- * retrieve the format options from the connection. Should only be called
- * once per instantiation of the class, but it can't be called from the constructor.
- */
-boost::asio::awaitable<void> DBInterface::getFormatOptionsFromDB()
-{
-    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-    dbFormatOptions = conn.format_opts().value();
-    dbFormatOptionsAreSet = true;
-
-    co_await conn.async_close();
-}
-
-/*
  * Co-routines can't be called from constructors, so the first formatted
  * statement need to retrieve the connection details. 
  */
@@ -209,11 +247,9 @@ bool DBInterface::firstFormattedSqlStatement()
 
     boost::asio::io_context ctx;
 
-    // Launch our coroutine
     boost::asio::co_spawn(
         ctx,
         [this] { return getFormatOptionsFromDB(); },
-        // If any exception is thrown in the coroutine body, rethrow it.
         [](std::exception_ptr ptr) {
             if (ptr)
             {
@@ -225,29 +261,24 @@ bool DBInterface::firstFormattedSqlStatement()
     try
     {
         ctx.run();
+        return true;
     }
+/*
+ * Handle any errors here since this function is called by most methods that send
+ * or receive data from the database.
+ */
     catch (const std::exception& e)
     {
-        std::string eMsg("MySQL Server Error: ");
+        std::string eMsg("Failed to connect to database to get formatting options. MySQL Server Error: ");
         eMsg += e.what();
         appendErrorMessage(eMsg);
         return false;
     }
-
-    return true;
 }
 
 bool DBInterface::validateObjectAndSetUp(ModelBase &model)
 {
     clearPreviousErrors();
-    if (!dbFormatOptionsAreSet)
-    {
-        if (!firstFormattedSqlStatement())
-        {
-            return false;
-        }
-    }
-    
     if (model.isInDataBase())
     {
         appendErrorMessage("The model object is already in the database.\n");
@@ -260,115 +291,49 @@ bool DBInterface::validateObjectAndSetUp(ModelBase &model)
         return false;
     }
 
-    return true;
-}
-
-bool DBInterface::runAsyncSQLInsertion(std::string &sqlStatement, std::size_t &newEntryID)
-{
-    boost::asio::io_context ctx;
-
-    boost::asio::co_spawn(
-        ctx,
-        genericInsertCoRoutine(sqlStatement),
-        [&newEntryID](std::exception_ptr ptr, std::size_t newId)
+    if (!dbFormatOptionsAreSet)
+    {
+        if (!firstFormattedSqlStatement())
         {
-            if (ptr)
-            {
-                std::rethrow_exception(ptr);
-            }
-            newEntryID = newId;
+            return false;
         }
-    );
-
-    try
-    {
-        ctx.run();
     }
-    catch (const std::exception& e)
-    {
-        std::string eMsg("MySQL Server Error: ");
-        eMsg += e.what();
-        appendErrorMessage(eMsg);
-        return false;
-    }
-
+    
     return true;
 }
 
-UserModel_shp DBInterface::getUserByLogin(std::string loginName)
-{
-    if (!firstFormattedSqlStatement())
-    {
-        return nullptr;
-    }
-
-    std::string sqlStatement = boost::mysql::format_sql(
-    dbFormatOptions,
-    R"sql(SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, ScheduleDayStart, ScheduleDayEnd,
-        IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, UseLettersForMajorPriority, SeparatePriorityWithDot
-        FROM PlannerTaskScheduleDB.UserProfile WHERE LoginName = {})sql", loginName);
-
-    try
-    {
-        return std::make_shared<UserModel>(UserModel(runAsyncUserSqlQuery(sqlStatement)));
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << "In DBInterface::getUserByLogin " << e.what() << '\n';
-        return nullptr;
-    }
-}
-
-boost::asio::awaitable<boost::mysql::results> DBInterface::getUserFromDBCoRoutine(std::string selectSqlStatement)
-{
-    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-//    std::cout << "Executing " << selectSqlStatement << "\n"; 
-    boost::mysql::results result;
-    co_await conn.async_execute(selectSqlStatement, result);
-
-    co_await conn.async_close();
-
-    co_return result;
-}
-
-UserSqlData DBInterface::runAsyncUserSqlQuery(std::string selectSqlStatement)
+boost::mysql::results DBInterface::runAnyMySQLstatementsAsynchronously(std::string selectSqlStatement)
 {
     boost::asio::io_context ctx;
-    UserSqlData localUser ={0, "", "", "", "", "", "", "", "", true, true, true, false};
+    boost::mysql::results localResult;
 
     boost::asio::co_spawn(
-        ctx,
-        getUserFromDBCoRoutine(selectSqlStatement),
-        [&localUser, this](std::exception_ptr ptr, boost::mysql::results result)
+        ctx, executeSqlStatementsCoRoutine(selectSqlStatement),
+        [&localResult, this](std::exception_ptr ptr, boost::mysql::results result)
         {
             if (ptr)
             {
                 std::rethrow_exception(ptr);
             }
-            if (result.rows().empty())
-            {
-                std::domain_error noData("User not found!");
-                throw noData;
-            }
-            else
-            {
-                boost::mysql::row_view foundUser = result.rows().at(0);
-                localUser = convertRowViewToUserSqlData(foundUser);
-            }
+            localResult = std::move(result);
         }
     );
 
     ctx.run();
 
-    return localUser;
+    return localResult;
 }
 
-UserSqlData DBInterface::convertRowViewToUserSqlData(boost::mysql::row_view& queryRestultData)
+UserSqlData DBInterface::convertResultsToUserSqlData(boost::mysql::results& results)
 {
     UserSqlData localUser = {0, "", "", "", "", "", "", "", "", true, true, true, false};
+    if (results.rows().empty())
+    {
+        std::domain_error noData("User not found!");
+        throw noData;
+    }
+
+    boost::mysql::row_view queryRestultData = results.rows().at(0);
 
     for (std::size_t i = 0; i < queryRestultData.size(); ++i)
     {

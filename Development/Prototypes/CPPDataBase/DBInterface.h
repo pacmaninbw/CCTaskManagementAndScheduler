@@ -43,20 +43,18 @@ private:
     void clearPreviousErrors() { errorMessages.clear(); };
     void appendErrorMessage(std::string newError) { errorMessages.append(newError); };
     boost::mysql::date convertChronoDateToBoostMySQLDate(std::chrono::year_month_day source);
+    boost::asio::awaitable<void> getFormatOptionsFromDB();
+    boost::asio::awaitable<boost::mysql::results> executeSqlStatementsCoRoutine(std::string selectSqlStatement);
+    boost::mysql::results runAnyMySQLstatementsAsynchronously(std::string selectSqlStatement);
     void getOptionalTaskFields(TaskModel& task,std::optional<std::size_t>& parentTaskID, 
         std::optional<unsigned int>& status, std::optional<boost::mysql::date>& actualStart,
         std::optional<boost::mysql::date>& estimatedCompleteDate,
         std::optional<boost::mysql::date>& completeDate);
-    boost::asio::awaitable<std::size_t> genericInsertCoRoutine(std::string& sqlStatement);
     std::string formatInsert(TaskModel& task);
     std::string formatInsert(UserModel& user);
-    boost::asio::awaitable<void> getFormatOptionsFromDB();
     bool firstFormattedSqlStatement();
     bool validateObjectAndSetUp(ModelBase& model);
-    bool runAsyncSQLInsertion(std::string& sqlStatement, std::size_t& newEntryID);
-    boost::asio::awaitable<boost::mysql::results> getUserFromDBCoRoutine(std::string selectSqlStatement);
-    UserSqlData runAsyncUserSqlQuery(std::string selectSqlStatement);
-    UserSqlData convertRowViewToUserSqlData(boost::mysql::row_view& queryRestultData);
+    UserSqlData convertResultsToUserSqlData(boost::mysql::results& results);
 
     boost::mysql::connect_params dbConnectionParameters;
     boost::mysql::format_options dbFormatOptions;
