@@ -73,7 +73,7 @@ UserModel_shp DBInterface::getUserByLogin(std::string loginName)
 {
     try
     {
-        if (!firstFormattedSqlStatement())
+        if (!getFormatOptionsOnFirstFormatting())
         {
             return nullptr;
         }
@@ -238,7 +238,7 @@ std::string DBInterface::formatInsert(UserModel &user)
  * Co-routines can't be called from constructors, so the first formatted
  * statement need to retrieve the connection details. 
  */
-bool DBInterface::firstFormattedSqlStatement()
+bool DBInterface::getFormatOptionsOnFirstFormatting()
 {
     if (dbFormatOptionsAreSet)
     {
@@ -293,7 +293,7 @@ bool DBInterface::validateObjectAndSetUp(ModelBase &model)
 
     if (!dbFormatOptionsAreSet)
     {
-        if (!firstFormattedSqlStatement())
+        if (!getFormatOptionsOnFirstFormatting())
         {
             return false;
         }

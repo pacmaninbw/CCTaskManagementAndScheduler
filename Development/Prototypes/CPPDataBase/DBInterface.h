@@ -52,7 +52,7 @@ private:
         std::optional<boost::mysql::date>& completeDate);
     std::string formatInsert(TaskModel& task);
     std::string formatInsert(UserModel& user);
-    bool firstFormattedSqlStatement();
+    bool getFormatOptionsOnFirstFormatting();
     bool validateObjectAndSetUp(ModelBase& model);
     UserSqlData convertResultsToUserSqlData(boost::mysql::results& results);
 
