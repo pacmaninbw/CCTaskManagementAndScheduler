@@ -19,18 +19,11 @@ public:
 
     TaskModel();
     // new task from GUI or program.
-    TaskModel(UserModel& creator, std::string& descriptionIn, unsigned int estimatedHoursEffort, std::string dueDate,
+    TaskModel(UserModel_shp creator, std::string& descriptionIn, unsigned int estimatedHoursEffort, std::string dueDate,
         std::string startDate, TaskModel* parentTaskp = nullptr, TaskStatus statusIn = TaskStatus::Not_Started,
         unsigned int majorPriority = 1, unsigned int minorPriority = 1
     );
-    // existing task from database.
-    TaskModel(std::size_t taskIDfromDB, std::size_t createdByUidfromDb, std::size_t assignedToUidfromDb,
-        std::string descriptionfromDb, std::size_t parentTaskIDfromDb, unsigned int statusfromDb,
-        double percentageCompletefromDb, std::string createdOnDatefromDb, std::string requiredDeliveryDatefromDb,
-        std::string scheduledStartDatefromDb, std::string actualStartDatefromDb, std::string estimatedCompletionDatefromDb,
-        std::string completedDatefromDb, unsigned int estimatedEffortHoursfromDb, double actualEffortHoursfromDb,
-        unsigned int priorityGroupfromDb, unsigned int priorityfromDb      
-    );
+
     ~TaskModel();
     std::size_t getTaskID() const;
     std::size_t getCreatorID() const;

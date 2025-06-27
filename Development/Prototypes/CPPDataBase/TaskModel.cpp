@@ -26,12 +26,12 @@ TaskModel::TaskModel()
 }
 
 TaskModel::TaskModel(
-    UserModel &creator, std::string &descriptionIn, unsigned int estimatedHoursEffort, std::string dueDate, std::string startDate,
+    UserModel_shp creator, std::string &descriptionIn, unsigned int estimatedHoursEffort, std::string dueDate, std::string startDate,
     TaskModel *parentTaskp, TaskStatus statusIn, unsigned int majorPriority, unsigned int minorPriority)
     : TaskModel()
 {
-    setFieldValue("CreatedBy", creator.getUserID());
-    setFieldValue("AsignedTo", creator.getUserID());
+    setFieldValue("CreatedBy", creator->getUserID());
+    setFieldValue("AsignedTo", creator->getUserID());
     setFieldValue("Description", descriptionIn);
     setFieldValue("EstimatedEffortHours", estimatedHoursEffort);
     setFieldValue("RequiredDelivery", stringToDate(dueDate));
@@ -49,33 +49,6 @@ TaskModel::TaskModel(
     {
         setFieldValue("ParentTask", parentTaskp->getTaskID());
     }
-}
-
-TaskModel::TaskModel(
-    std::size_t taskIDfromDB, std::size_t createdByUidfromDb, std::size_t assignedToUidfromDb, std::string descriptionfromDb,
-    std::size_t parentTaskIDfromDb, unsigned int statusfromDb, double percentageCompletefromDb, std::string createdOnDatefromDb,
-    std::string requiredDeliveryDatefromDb, std::string scheduledStartDatefromDb, std::string actualStartDatefromDb,
-    std::string estimatedCompletionDatefromDb, std::string completedDatefromDb, unsigned int estimatedEffortHoursfromDb,
-    double actualEffortHoursfromDb, unsigned int priorityGroupfromDb, unsigned int priorityfromDb)
-    : TaskModel()
-{
-    setPrimaryKey(taskIDfromDB);
-    initFieldValueNotChanged("CreatedBy", createdByUidfromDb);
-    initFieldValueNotChanged("AsignedTo", assignedToUidfromDb);
-    initFieldValueNotChanged("Description", descriptionfromDb);
-    initFieldValueNotChanged("ParentTask", parentTaskIDfromDb);
-    initFieldValueNotChanged("Status", statusfromDb);
-    initFieldValueNotChanged("PercentageComplete", percentageCompletefromDb);
-    initFieldValueNotChanged("CreatedOn", stringToDate(createdOnDatefromDb));
-    initFieldValueNotChanged("RequiredDelivery", stringToDate(requiredDeliveryDatefromDb));
-    initFieldValueNotChanged("ScheduledStart", stringToDate(scheduledStartDatefromDb));
-    initFieldValueNotChanged("ActualStart", stringToDate(actualStartDatefromDb));
-    initFieldValueNotChanged("EstimatedCompletion", stringToDate(estimatedCompletionDatefromDb));
-    initFieldValueNotChanged("Completed", stringToDate(completedDatefromDb));
-    initFieldValueNotChanged("EstimatedEffortHours", estimatedEffortHoursfromDb);
-    initFieldValueNotChanged("ActualEffortHours", actualEffortHoursfromDb);
-    initFieldValueNotChanged("SchedulePriorityGroup", priorityGroupfromDb);
-    initFieldValueNotChanged("PriorityInGroup", priorityfromDb);
 }
 
 TaskModel::~TaskModel()
