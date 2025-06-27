@@ -54,24 +54,6 @@ UserModel::UserModel(const UserModel &original)
     initFieldValueNotChanged("ScheduleDayEnd", original.getEndTime());
 }
 
-UserModel::UserModel(UserSqlData sqlData)
-    : UserModel()
-{
-    setPrimaryKey(sqlData.UserID);
-    initFieldValueNotChanged("LastName", sqlData.LastName);
-    initFieldValueNotChanged("FirstName", sqlData.FirstName);
-    initFieldValueNotChanged("MiddleInitial", sqlData.MiddleInitial);
-    initFieldValueNotChanged("EmailAddress", sqlData.EmailAddress);
-    initFieldValueNotChanged("LoginName", sqlData.LoginName);
-    initFieldValueNotChanged("HashedPassWord", sqlData.HashedPassWord);
-    initFieldValueNotChanged("IncludePriorityInSchedule", sqlData.IncludePriorityInSchedule);
-    initFieldValueNotChanged("IncludeMinorPriorityInSchedule", sqlData.IncludeMinorPriorityInSchedule);
-    initFieldValueNotChanged("UseLettersForMajorPriority", sqlData.UseLettersForMajorPriority);
-    initFieldValueNotChanged("SeparatePriorityWithDot", sqlData.SeparatePriorityWithDot);
-    initFieldValueNotChanged("ScheduleDayStart", sqlData.ScheduleDayStart);
-    initFieldValueNotChanged("ScheduleDayEnd", sqlData.ScheduleDayEnd);
-}
-
 void UserModel::createLoginBasedOnUserName(std::string lastName, std::string firstName, std::string middleInitial)
 {
     std::string tempLoginName(lastName);
