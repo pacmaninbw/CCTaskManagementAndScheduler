@@ -43,6 +43,7 @@ private:
     void clearPreviousErrors() { errorMessages.clear(); };
     void appendErrorMessage(std::string newError) { errorMessages.append(newError); };
     boost::mysql::date convertChronoDateToBoostMySQLDate(std::chrono::year_month_day source);
+    std::chrono::year_month_day convertBoostMySQLDateToChornoDate(boost::mysql::date source);
     boost::asio::awaitable<void> getFormatOptionsFromDB();
     boost::asio::awaitable<boost::mysql::results> executeSqlStatementsCoRoutine(std::string selectSqlStatement);
     boost::mysql::results runAnyMySQLstatementsAsynchronously(std::string selectSqlStatement);
@@ -54,7 +55,7 @@ private:
     std::string formatInsert(UserModel& user);
     bool getFormatOptionsOnFirstFormatting();
     bool validateObjectAndSetUp(ModelBase& model);
-    UserSqlData convertResultsToUserSqlData(boost::mysql::results& results);
+    bool convertResultsToModel(boost::mysql::row_view& sourceFromDB, std::vector<std::string>& columnNames, Modelshp destination);
 
     boost::mysql::connect_params dbConnectionParameters;
     boost::mysql::format_options dbFormatOptions;

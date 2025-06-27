@@ -85,7 +85,19 @@ UserModel_shp DBInterface::getUserByLogin(std::string loginName)
             FROM PlannerTaskScheduleDB.UserProfile WHERE LoginName = {})sql", loginName);
 
         boost::mysql::results results = runAnyMySQLstatementsAsynchronously(sqlStatement);
-        return std::make_shared<UserModel>(UserModel(convertResultsToUserSqlData(results)));
+        std::vector<std::string> columnNames;
+        for (auto metaIter: results.meta())
+        {
+            columnNames.push_back(metaIter.column_name());
+        }
+        UserModel_shp newUser = std::make_shared<UserModel>(UserModel());
+        boost::mysql::row_view sourceFromDB = results.rows().at(0);
+        if (convertResultsToModel(sourceFromDB, columnNames, newUser))
+        {
+            return newUser;
+        }
+
+        return nullptr;
     }
     catch(const std::exception& e)
     {
@@ -96,11 +108,24 @@ UserModel_shp DBInterface::getUserByLogin(std::string loginName)
     }
 }
 
+/*
+ * Protected or private methods.
+ */
 boost::mysql::date DBInterface::convertChronoDateToBoostMySQLDate(std::chrono::year_month_day source)
 {
     std::chrono::sys_days tp = source;
     boost::mysql::date boostDate(tp);
     return boostDate;
+}
+
+std::chrono::year_month_day DBInterface::convertBoostMySQLDateToChornoDate(boost::mysql::date source)
+{
+    const std::chrono::year year{source.year()};
+    const std::chrono::month month{source.month()};
+    const std::chrono::day day{source.day()};
+    std::chrono::year_month_day converted{year, month, day};
+
+    return converted;
 }
 
 /*
@@ -125,15 +150,26 @@ boost::asio::awaitable<void> DBInterface::getFormatOptionsFromDB()
  * level as necessary where the knowlege about the results exists. This method only
  * executes the SQL statement(s) and returns all results.
  */
-boost::asio::awaitable<boost::mysql::results> DBInterface::executeSqlStatementsCoRoutine(std::string selectSqlStatement)
+boost::asio::awaitable<boost::mysql::results> DBInterface::executeSqlStatementsCoRoutine(std::string sqlStatement)
 {
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
+/*
+ * To properly process the select statements we need the column names in the metadata.
+ */
+    size_t foundPos = sqlStatement.find("SELECT");
+    if (foundPos != std::string::npos) {
+        conn.set_meta_mode(boost::mysql::metadata_mode::full);
+    }
+    else
+    {
+        conn.set_meta_mode(boost::mysql::metadata_mode::minimal);
+    }
 
-//    std::cout << "Executing " << selectSqlStatement << "\n"; 
+//    std::cout << "Executing " << sqlStatement << std::endl; 
     boost::mysql::results result;
-    co_await conn.async_execute(selectSqlStatement, result);
+    co_await conn.async_execute(sqlStatement, result);
 
     co_await conn.async_close();
 
@@ -324,67 +360,83 @@ boost::mysql::results DBInterface::runAnyMySQLstatementsAsynchronously(std::stri
     return localResult;
 }
 
-UserSqlData DBInterface::convertResultsToUserSqlData(boost::mysql::results& results)
+bool DBInterface::convertResultsToModel(boost::mysql::row_view &sourceFromDB, std::vector<std::string> &columnNames, Modelshp destination)
 {
-    UserSqlData localUser = {0, "", "", "", "", "", "", "", "", true, true, true, false};
-    if (results.rows().empty())
-    {
-        std::domain_error noData("User not found!");
-        throw noData;
-    }
+    bool success = true;
+    auto sourceField = sourceFromDB.begin();
 
-    boost::mysql::row_view queryRestultData = results.rows().at(0);
-
-    for (std::size_t i = 0; i < queryRestultData.size(); ++i)
+    for (auto columnName: columnNames)
     {
-        switch (i)
+        std::string conversionError("In DBInterface::convertResultsToMode(): to " + destination->getModelName() + " ");
+        PTS_DataField_shp currentFieldPtr = destination->findFieldInDataFields(columnName);
+        if (!currentFieldPtr)
         {
-            case 0:
-                localUser.UserID = queryRestultData.at(i).as_uint64();
+            conversionError += " does nt contain field: " + columnName;
+            appendErrorMessage(conversionError);
+            return false;
+        }
+
+        switch (currentFieldPtr->getFieldType())
+        {
+            default:
+                conversionError += "Column " + currentFieldPtr->getColumnName() +
+                    "Unknown column type " + std::to_string(static_cast<int>(currentFieldPtr->getFieldType()));
+                appendErrorMessage(conversionError);
+                success = false;
                 break;
-            case 1:
-                localUser.LastName = queryRestultData.at(i).as_string();
+
+            case PTS_DataField::PTS_DB_FieldType::VarChar45 :
+            case PTS_DataField::PTS_DB_FieldType::VarChar256 :
+            case PTS_DataField::PTS_DB_FieldType::VarChar1024 :
+            case PTS_DataField::PTS_DB_FieldType::TinyText :
+            case PTS_DataField::PTS_DB_FieldType::Text :
+            case PTS_DataField::PTS_DB_FieldType::TinyBlob :
+            case PTS_DataField::PTS_DB_FieldType::Blob :
+                currentFieldPtr->dbSetValue(sourceField->as_string());
                 break;
-            case 2:
-                localUser.FirstName = queryRestultData.at(i).as_string();
+                
+            case PTS_DataField::PTS_DB_FieldType::Boolean :
+                currentFieldPtr->dbSetValue(static_cast<bool>(sourceField->as_int64()));
                 break;
-            case 3:
-                localUser.MiddleInitial = queryRestultData.at(i).as_string();
+
+            case PTS_DataField::PTS_DB_FieldType::Date :
+                currentFieldPtr->dbSetValue(convertBoostMySQLDateToChornoDate(sourceField->as_date()));
                 break;
-            case 4:
-                localUser.EmailAddress = queryRestultData.at(i).as_string();
+
+            case PTS_DataField::PTS_DB_FieldType::DateTime :
+            case PTS_DataField::PTS_DB_FieldType::TimeStamp :
+                currentFieldPtr->dbSetValue(sourceField->as_datetime().as_time_point());
                 break;
-            case 5: 
-                localUser.LoginName = queryRestultData.at(i).as_string();
+
+            case PTS_DataField::PTS_DB_FieldType::Time :
+                currentFieldPtr->dbSetValue(static_cast<std::chrono::time_point<std::chrono::system_clock>>(sourceField->as_time()));
                 break;
-            case 6: 
-                localUser.HashedPassWord = queryRestultData.at(i).as_string();
+
+            case PTS_DataField::PTS_DB_FieldType::Int :
+                currentFieldPtr->dbSetValue(static_cast<int>(sourceField->as_int64()));
                 break;
-            case 7: 
-                localUser.ScheduleDayStart = queryRestultData.at(i).as_string();
+
+            case PTS_DataField::PTS_DB_FieldType::Key :
+            case PTS_DataField::PTS_DB_FieldType::Size_T :
+                currentFieldPtr->dbSetValue(sourceField->as_uint64());
                 break;
-            case 8: 
-                localUser.ScheduleDayEnd = queryRestultData.at(i).as_string();
+
+            case PTS_DataField::PTS_DB_FieldType::UnsignedInt :
+                currentFieldPtr->dbSetValue(static_cast<unsigned int>(sourceField->as_uint64()));
                 break;
-            case 9: 
-                localUser.IncludePriorityInSchedule = static_cast<bool>(queryRestultData.at(i).as_int64());
+
+            case PTS_DataField::PTS_DB_FieldType::Double :
+                currentFieldPtr->dbSetValue(sourceField->as_double());
                 break;
-            case 10: 
-                localUser.IncludeMinorPriorityInSchedule = static_cast<bool>(queryRestultData.at(i).as_int64());
-                break;
-            case 11: 
-                localUser.UseLettersForMajorPriority = static_cast<bool>(queryRestultData.at(i).as_int64());
-                break;
-            case 12:
-                localUser.SeparatePriorityWithDot = static_cast<bool>(queryRestultData.at(i).as_int64());
-                break;
-            default: 
-                std::string ooEMsg("convertRowViewToUserSqlData i out of range for UserSqlData");
-                std::out_of_range oor(ooEMsg);
-                throw oor;
+
+            case PTS_DataField::PTS_DB_FieldType::Float :
+                currentFieldPtr->dbSetValue(sourceField->as_float());
                 break;
         }
+
+        ++sourceField;
     }
 
-    return localUser;
+    return success;
 }
+
