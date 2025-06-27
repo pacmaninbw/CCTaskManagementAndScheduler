@@ -6,17 +6,17 @@
 #include "TaskModel.h"
 #include "UserModel.h"
 
-void loadUserProfileTestDataIntoDatabase()
+static UserList loadUserProfileTestDataIntoDatabase()
 {
 
-    std::vector<UserModel*> userProfileTestData = 
+    UserList userProfileTestData = 
     {
-        {new UserModel("Chernick", "Paul", "A", "paul.chernick@chernicksw.com")},
-        {new UserModel("Chernick", "Nina", "L", "ChernickNinaL@gmail.com")},
-        {new UserModel("Chernick", "Dina", "B", "ChernickDinaB@gmail.com")},
-        {new UserModel("Shiminovics", "Eitan", "I", "ShimonvicsEitanI@gmail.com")},
-        {new UserModel("PacMan", "IN", "BW", "pacmaninbw@gmail.com")},
-        {new UserModel("Black", "Patrick", "A", "BlackPatrickA@gmail.com")}
+        {std::make_shared<UserModel>("Chernick", "Paul", "A", "paul.chernick@chernicksw.com")},
+        {std::make_shared<UserModel>("Chernick", "Nina", "L", "ChernickNinaL@gmail.com")},
+        {std::make_shared<UserModel>("Chernick", "Dina", "B", "ChernickDinaB@gmail.com")},
+        {std::make_shared<UserModel>("Shiminovics", "Eitan", "I", "ShimonvicsEitanI@gmail.com")},
+        {std::make_shared<UserModel>("PacMan", "IN", "BW", "pacmaninbw@gmail.com")},
+        {std::make_shared<UserModel>("Black", "Patrick", "A", "BlackPatrickA@gmail.com")}
     };
 
     DBInterface userDBInterface;
@@ -58,11 +58,7 @@ void loadUserProfileTestDataIntoDatabase()
         }
     }
 
-    for (UserModel* user: userProfileTestData)
-    {
-        delete user;
-    }
-    userProfileTestData.clear();
+    return userProfileTestData;
 }
 struct UserTaskTestData
 {
@@ -84,7 +80,7 @@ struct UserTaskTestData
     std::string estimatedCompletionDate;
 };
 
-static void loadUserTaskestDataIntoDatabase()
+static void loadUserTaskestDataIntoDatabase(UserModel_shp userOne)
 {
     std::vector<UserTaskTestData> userTaskTestData = 
     {
@@ -106,13 +102,10 @@ static void loadUserTaskestDataIntoDatabase()
 
     DBInterface TaskDBInterface;
 
-    UserModel testUser("Chernick", "Paul", "A", "paul.chernick@chernicksw.com");
-    testUser.setPrimaryKey(1);
-
     for (auto taskTestData: userTaskTestData)
     {
         std::cout << "Creating task from \"" << taskTestData.description << "\" " << taskTestData.estimatedEffortHours << "\n";
-        TaskModel testTask(testUser, taskTestData.description, taskTestData.estimatedEffortHours,
+        TaskModel testTask(userOne, taskTestData.description, taskTestData.estimatedEffortHours,
             taskTestData.dueDate, taskTestData.scheduledStartDate);
 
 
@@ -127,8 +120,8 @@ int main()
 {
 
     try {
-        loadUserProfileTestDataIntoDatabase();
-        loadUserTaskestDataIntoDatabase();
+        UserList userList = loadUserProfileTestDataIntoDatabase();
+        loadUserTaskestDataIntoDatabase(userList[1]);
     } catch (const std::exception& err) {
         std::cerr << "Error: " << err.what() << "\n";
         return EXIT_FAILURE;
