@@ -24,6 +24,7 @@ public:
 /*
  * Field access methods. 
  */
+    PTS_DataField_shp findFieldInDataFields(const std::string& fieldName) const;
     void setPrimaryKey(std::size_t keyValue);
     std::size_t getPrimaryKey() const;
     void addDataField(const std::string& fieldName, PTS_DataField::PTS_DB_FieldType fieldType, bool required=false);
@@ -139,7 +140,6 @@ public:
 protected:
     std::string createDateString(int month, int day, int year);
     std::chrono::year_month_day getTodaysDate();
-    PTS_DataField_shp findFieldInDataFields(const std::string& fieldName) const;
 
     const std::string modelClassName;
     const std::string primaryKeyFieldName;
