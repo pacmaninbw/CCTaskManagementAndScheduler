@@ -45,6 +45,10 @@ void loadUserProfileTestDataIntoDatabase()
                         *user << "\n" "Retreived User:\n" << *testInDB << "\n";
                     }
                 }
+                else
+                {
+                    std::cerr << "userDBInterface.getUserByLogin(user->getLoginName()) FAILED!\n"; 
+                }
             }
             else
             {
