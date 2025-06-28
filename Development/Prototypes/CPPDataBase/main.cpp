@@ -6,6 +6,52 @@
 #include "TaskModel.h"
 #include "UserModel.h"
 
+static void testGetUserByLoginName(DBInterface& userDBInterface, UserModel_shp user)
+{
+    UserModel_shp testInDB = userDBInterface.getUserByLogin(user->getLoginName());
+    if (testInDB)
+    {
+        if (*testInDB == *user)
+        {
+            std::cout << "User:" << user->getLastName() << ", " << user->getFirstName() <<
+                "Successfully iserted and retrieved from database\n";
+        }
+        else
+        {
+            std::cout << "Insertion and retrieval of User Failed\nInserted User:\n" <<
+            *user << "\n" "Retreived User:\n" << *testInDB << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << "userDBInterface.getUserByLogin(user->getLoginName()) FAILED!\n";
+        std::cerr << userDBInterface.getAllErrorMessages() << "\n";
+    }
+}
+
+static void testGetUserByFullName(DBInterface& userDBInterface, UserModel_shp user)
+{
+    UserModel_shp testInDB = userDBInterface.getUserByFullName(user->getLastName(), user->getFirstName(), user->getMiddleInitial());
+    if (testInDB)
+    {
+        if (*testInDB == *user)
+        {
+            std::cout << "User:" << user->getLastName() << ", " << user->getFirstName() <<
+                "Successfully iserted and retrieved by full name from database\n";
+        }
+        else
+        {
+            std::cout << "Insertion and retrieval of User by full name Failed\nInserted User:\n" <<
+            *user << "\n" "Retreived User:\n" << *testInDB << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << "userDBInterface.getUserByFullName() FAILED!\n";
+        std::cerr << userDBInterface.getAllErrorMessages() << "\n";
+    }
+}
+
 static UserList loadUserProfileTestDataIntoDatabase()
 {
 
@@ -31,24 +77,8 @@ static UserList loadUserProfileTestDataIntoDatabase()
         {
             if (user->isInDataBase())
             {
-                UserModel_shp testInDB = userDBInterface.getUserByLogin(user->getLoginName());
-                if (testInDB)
-                {
-                    if (*testInDB == *user)
-                    {
-                        std::cout << "User:" << user->getLastName() << ", " << user->getFirstName() <<
-                            "Successfully iserted and retrieved from database\n";
-                    }
-                    else
-                    {
-                        std::cout << "Insertion and retrieval of User Failed\nInserted User:\n" <<
-                        *user << "\n" "Retreived User:\n" << *testInDB << "\n";
-                    }
-                }
-                else
-                {
-                    std::cerr << "userDBInterface.getUserByLogin(user->getLoginName()) FAILED!\n"; 
-                }
+                testGetUserByLoginName(userDBInterface, user);
+                testGetUserByFullName(userDBInterface, user);
             }
             else
             {
