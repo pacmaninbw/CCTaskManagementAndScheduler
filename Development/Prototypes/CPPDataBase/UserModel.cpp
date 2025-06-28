@@ -7,8 +7,8 @@ UserModel::UserModel()
     : ModelBase("UserModel", "UserID")
 {
     addDataField("LastName", PTS_DataField::PTS_DB_FieldType::VarChar45, true);
-    addDataField("FirstName", PTS_DataField::PTS_DB_FieldType::TinyText, true);
-    addDataField("MiddleInitial", PTS_DataField::PTS_DB_FieldType::TinyText);
+    addDataField("FirstName", PTS_DataField::PTS_DB_FieldType::VarChar45, true);
+    addDataField("MiddleInitial", PTS_DataField::PTS_DB_FieldType::VarChar45);
     addDataField("LoginName",  PTS_DataField::PTS_DB_FieldType::VarChar45, true);
     addDataField("HashedPassWord", PTS_DataField::PTS_DB_FieldType::TinyText, true);
     addDataField("EmailAddress", PTS_DataField::PTS_DB_FieldType::VarChar256, true);
