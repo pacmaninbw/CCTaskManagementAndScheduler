@@ -11,7 +11,7 @@ TaskModel::TaskModel()
     addDataField("AsignedTo", PTS_DataField::PTS_DB_FieldType::Key, true);
     addDataField("Description", PTS_DataField::PTS_DB_FieldType::VarChar256, true);
     addDataField("ParentTask", PTS_DataField::PTS_DB_FieldType::Key);
-    addDataField("Status", PTS_DataField::PTS_DB_FieldType::Int);
+    addDataField("Status", PTS_DataField::PTS_DB_FieldType::UnsignedInt);
     addDataField("PercentageComplete", PTS_DataField::PTS_DB_FieldType::Double, true);
     addDataField("CreatedOn", PTS_DataField::PTS_DB_FieldType::Date, true);
     addDataField("RequiredDelivery", PTS_DataField::PTS_DB_FieldType::Date, true);
@@ -20,7 +20,7 @@ TaskModel::TaskModel()
     addDataField("EstimatedCompletion", PTS_DataField::PTS_DB_FieldType::Date);
     addDataField("Completed", PTS_DataField::PTS_DB_FieldType::Date);
     addDataField("EstimatedEffortHours", PTS_DataField::PTS_DB_FieldType::UnsignedInt, true);
-    addDataField("ActualEffortHours", PTS_DataField::PTS_DB_FieldType::Float, true);
+    addDataField("ActualEffortHours", PTS_DataField::PTS_DB_FieldType::Double, true);
     addDataField("SchedulePriorityGroup", PTS_DataField::PTS_DB_FieldType::UnsignedInt, true);
     addDataField("PriorityInGroup", PTS_DataField::PTS_DB_FieldType::UnsignedInt, true);
 }
@@ -36,10 +36,10 @@ TaskModel::TaskModel(
     setFieldValue("EstimatedEffortHours", estimatedHoursEffort);
     setFieldValue("RequiredDelivery", stringToDate(dueDate));
     setFieldValue("ScheduledStart", stringToDate(startDate));
-    setFieldValue("Status", static_cast<int>(statusIn));
+    setFieldValue("Status", static_cast<unsigned int>(statusIn));
     setFieldValue("SchedulePriorityGroup", majorPriority);
     setFieldValue("PriorityInGroup", minorPriority);
-    setFieldValue("ActualEffortHours", static_cast<float>(0.0));
+    setFieldValue("ActualEffortHours", 0.0);
     setFieldValue("PercentageComplete", 0.0);
    
     std::chrono::year_month_day today = getTodaysDate();

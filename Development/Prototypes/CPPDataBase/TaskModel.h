@@ -14,7 +14,7 @@ class TaskModel : public ModelBase
 public:
     enum class TaskStatus
     {
-        Not_Started=1, On_Hold=2, Waiting_for_Dependency=3, Work_in_Progress=4, Complete=5
+        Not_Started, On_Hold, Waiting_for_Dependency, Work_in_Progress, Complete
     };
 
     TaskModel();
