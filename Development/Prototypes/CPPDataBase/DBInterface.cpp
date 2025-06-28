@@ -78,13 +78,11 @@ UserModel_shp DBInterface::getUserByLogin(std::string loginName)
             return nullptr;
         }
 
-        std::string sqlStatement = boost::mysql::format_sql(
-        dbFormatOptions,
-        R"sql(SELECT * FROM PlannerTaskScheduleDB.UserProfile WHERE LoginName = {})sql", loginName);
+        std::string sqlStatement = boost::mysql::format_sql(dbFormatOptions,
+            R"sql(SELECT * FROM PlannerTaskScheduleDB.UserProfile WHERE LoginName = {})sql", loginName);
 
-        boost::mysql::results results = runAnyMySQLstatementsAsynchronously(sqlStatement);
         UserModel_shp newUser = std::make_shared<UserModel>(UserModel());
-        if (processSingleQueryResults(results, newUser))
+        if (executeSimpleQueryProcessResults(sqlStatement, newUser))
         {
             return newUser;
         }
@@ -109,14 +107,12 @@ UserModel_shp DBInterface::getUserByFullName(std::string lastName, std::string f
             return nullptr;
         }
 
-        std::string sqlStatement = boost::mysql::format_sql(
-        dbFormatOptions,
+        std::string sqlStatement = boost::mysql::format_sql(dbFormatOptions,
         R"sql(SELECT * FROM PlannerTaskScheduleDB.UserProfile WHERE LastName = {} AND FirstName = {} AND MiddleInitial = {} )sql",
         lastName, firstName, middleInitial);
 
-        boost::mysql::results results = runAnyMySQLstatementsAsynchronously(sqlStatement);
         UserModel_shp newUser = std::make_shared<UserModel>(UserModel());
-        if (processSingleQueryResults(results, newUser))
+        if (executeSimpleQueryProcessResults(sqlStatement, newUser))
         {
             return newUser;
         }
@@ -132,6 +128,34 @@ UserModel_shp DBInterface::getUserByFullName(std::string lastName, std::string f
     }
 }
 
+TaskModel_shp DBInterface::getTaskByDescription(std::string description)
+{
+    try
+    {
+        if (!getFormatOptionsOnFirstFormatting())
+        {
+            return nullptr;
+        }
+
+        std::string sqlStatement = boost::mysql::format_sql(dbFormatOptions,
+        R"sql(SELECT * FROM PlannerTaskScheduleDB.Tasks WHERE Description = {})sql", description);
+
+        TaskModel_shp newTask = std::make_shared<TaskModel>(TaskModel());
+        if (executeSimpleQueryProcessResults(sqlStatement, newTask))
+        {
+            return newTask;
+        }
+
+        return nullptr;
+    }
+    catch(const std::exception& e)
+    {
+        std::string eMsg("In DBInterface::getTaskByDescription ");
+        eMsg += e.what();
+        appendErrorMessage(eMsg);
+        return nullptr;
+    }
+}
 /*
  * Protected or private methods.
  */
@@ -191,7 +215,7 @@ boost::asio::awaitable<boost::mysql::results> DBInterface::executeSqlStatementsC
         conn.set_meta_mode(boost::mysql::metadata_mode::minimal);
     }
 
-//    std::cout << "Executing " << sqlStatement << std::endl; 
+// std::cout << "Executing " << sqlStatement << std::endl; 
     boost::mysql::results result;
     co_await conn.async_execute(sqlStatement, result);
 
@@ -208,7 +232,7 @@ void DBInterface::getOptionalTaskFields(
     std::optional<boost::mysql::date> &estimatedCompleteDate,
     std::optional<boost::mysql::date> &completeDate
 ) {
-    if (task.hasOptionalFieldStatus())
+    if (task.hasOptionalFieldParentTaskID())
     {
         parentTaskID = task.getParentTaskID();
     }
@@ -399,63 +423,65 @@ bool DBInterface::convertResultsToModel(boost::mysql::row_view &sourceFromDB, st
             appendErrorMessage(conversionError);
             return false;
         }
-
-        switch (currentFieldPtr->getFieldType())
+        if (!sourceField->is_null())
         {
-            default:
-                conversionError += "Column " + currentFieldPtr->getColumnName() +
-                    "Unknown column type " + std::to_string(static_cast<int>(currentFieldPtr->getFieldType()));
-                appendErrorMessage(conversionError);
-                success = false;
-                break;
+            switch (currentFieldPtr->getFieldType())
+            {
+                default:
+                    conversionError += "Column " + currentFieldPtr->getColumnName() +
+                        "Unknown column type " + std::to_string(static_cast<int>(currentFieldPtr->getFieldType()));
+                    appendErrorMessage(conversionError);
+                    success = false;
+                    break;
 
-            case PTS_DataField::PTS_DB_FieldType::VarChar45 :
-            case PTS_DataField::PTS_DB_FieldType::VarChar256 :
-            case PTS_DataField::PTS_DB_FieldType::VarChar1024 :
-            case PTS_DataField::PTS_DB_FieldType::TinyText :
-            case PTS_DataField::PTS_DB_FieldType::Text :
-            case PTS_DataField::PTS_DB_FieldType::TinyBlob :
-            case PTS_DataField::PTS_DB_FieldType::Blob :
-                currentFieldPtr->dbSetValue(sourceField->as_string());
-                break;
-                
-            case PTS_DataField::PTS_DB_FieldType::Boolean :
-                currentFieldPtr->dbSetValue(static_cast<bool>(sourceField->as_int64()));
-                break;
+                case PTS_DataField::PTS_DB_FieldType::VarChar45 :
+                case PTS_DataField::PTS_DB_FieldType::VarChar256 :
+                case PTS_DataField::PTS_DB_FieldType::VarChar1024 :
+                case PTS_DataField::PTS_DB_FieldType::TinyText :
+                case PTS_DataField::PTS_DB_FieldType::Text :
+                case PTS_DataField::PTS_DB_FieldType::TinyBlob :
+                case PTS_DataField::PTS_DB_FieldType::Blob :
+                    currentFieldPtr->dbSetValue(sourceField->as_string());
+                    break;
+                    
+                case PTS_DataField::PTS_DB_FieldType::Boolean :
+                    currentFieldPtr->dbSetValue(static_cast<bool>(sourceField->as_int64()));
+                    break;
 
-            case PTS_DataField::PTS_DB_FieldType::Date :
-                currentFieldPtr->dbSetValue(convertBoostMySQLDateToChornoDate(sourceField->as_date()));
-                break;
+                case PTS_DataField::PTS_DB_FieldType::Date :
+                    currentFieldPtr->dbSetValue(convertBoostMySQLDateToChornoDate(sourceField->as_date()));
+                    break;
 
-            case PTS_DataField::PTS_DB_FieldType::DateTime :
-            case PTS_DataField::PTS_DB_FieldType::TimeStamp :
-                currentFieldPtr->dbSetValue(sourceField->as_datetime().as_time_point());
-                break;
+                case PTS_DataField::PTS_DB_FieldType::DateTime :
+                case PTS_DataField::PTS_DB_FieldType::TimeStamp :
+                    currentFieldPtr->dbSetValue(sourceField->as_datetime().as_time_point());
+                    break;
 
-            case PTS_DataField::PTS_DB_FieldType::Time :
-                currentFieldPtr->dbSetValue(static_cast<std::chrono::time_point<std::chrono::system_clock>>(sourceField->as_time()));
-                break;
+                case PTS_DataField::PTS_DB_FieldType::Time :
+                    currentFieldPtr->dbSetValue(static_cast<std::chrono::time_point<std::chrono::system_clock>>(sourceField->as_time()));
+                    break;
 
-            case PTS_DataField::PTS_DB_FieldType::Int :
-                currentFieldPtr->dbSetValue(static_cast<int>(sourceField->as_int64()));
-                break;
+                case PTS_DataField::PTS_DB_FieldType::Int :
+                    currentFieldPtr->dbSetValue(static_cast<int>(sourceField->as_int64()));
+                    break;
 
-            case PTS_DataField::PTS_DB_FieldType::Key :
-            case PTS_DataField::PTS_DB_FieldType::Size_T :
-                currentFieldPtr->dbSetValue(sourceField->as_uint64());
-                break;
+                case PTS_DataField::PTS_DB_FieldType::Key :
+                case PTS_DataField::PTS_DB_FieldType::Size_T :
+                    currentFieldPtr->dbSetValue(sourceField->as_uint64());
+                    break;
 
-            case PTS_DataField::PTS_DB_FieldType::UnsignedInt :
-                currentFieldPtr->dbSetValue(static_cast<unsigned int>(sourceField->as_uint64()));
-                break;
+                case PTS_DataField::PTS_DB_FieldType::UnsignedInt :
+                    currentFieldPtr->dbSetValue(static_cast<unsigned int>(sourceField->as_uint64()));
+                    break;
 
-            case PTS_DataField::PTS_DB_FieldType::Double :
-                currentFieldPtr->dbSetValue(sourceField->as_double());
-                break;
+                case PTS_DataField::PTS_DB_FieldType::Double :
+                    currentFieldPtr->dbSetValue(sourceField->as_double());
+                    break;
 
-            case PTS_DataField::PTS_DB_FieldType::Float :
-                currentFieldPtr->dbSetValue(sourceField->as_float());
-                break;
+                case PTS_DataField::PTS_DB_FieldType::Float :
+                    currentFieldPtr->dbSetValue(sourceField->as_float());
+                    break;
+            }
         }
 
         ++sourceField;
@@ -464,8 +490,10 @@ bool DBInterface::convertResultsToModel(boost::mysql::row_view &sourceFromDB, st
     return success;
 }
 
-bool DBInterface::processSingleQueryResults(boost::mysql::results results, Modelshp destination)
+bool DBInterface::executeSimpleQueryProcessResults(std::string sqlStatements, Modelshp destination)
 {
+    boost::mysql::results results = runAnyMySQLstatementsAsynchronously(sqlStatements);
+
     if (results.rows().empty())
     {
         std::string eMsg("No results from query, object not found in database!");
