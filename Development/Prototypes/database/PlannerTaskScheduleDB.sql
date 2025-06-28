@@ -9,8 +9,8 @@ DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserProfile`;
 CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserProfile` (
     `UserID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `LastName` VARCHAR(45) NOT NULL,
-    `FirstName` TINYTEXT NOT NULL,
-    `MiddleInitial` TINYTEXT,
+    `FirstName` VARCHAR(45) NOT NULL,
+    `MiddleInitial` VARCHAR(45),
     `EmailAddress` VARCHAR(256),
     `LoginName` VARCHAR(45) NOT NULL,
     `HashedPassWord` TINYTEXT,
@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserProfile` (
     `SeparatePriorityWithDot` BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (`UserID`, `LastName`, `LoginName`),
     UNIQUE INDEX `UserID_UNIQUE` (`UserID`),
+    UNIQUE INDEX `FullName_UNIQUE` (`LastName`, `FirstName`, `MiddleInitial`),
     UNIQUE INDEX `LoginName_UNIQUE` (`LoginName` ASC)
 );
 
