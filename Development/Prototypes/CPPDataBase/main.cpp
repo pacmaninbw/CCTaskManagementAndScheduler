@@ -37,11 +37,11 @@ static void testGetUserByFullName(DBInterface& userDBInterface, UserModel_shp us
         if (*testInDB == *user)
         {
             std::cout << "User:" << user->getLastName() << ", " << user->getFirstName() <<
-                " Successfully inserted and retrieved by full name from database\n";
+                " Successfully retrieved by full name from database\n";
         }
         else
         {
-            std::cout << "Insertion and retrieval of User by full name Failed\nInserted User:\n" <<
+            std::cout << "Retrieval of User by full name Failed\nInserted User:\n" <<
             *user << "\n" "Retreived User:\n" << *testInDB << "\n";
         }
     }
