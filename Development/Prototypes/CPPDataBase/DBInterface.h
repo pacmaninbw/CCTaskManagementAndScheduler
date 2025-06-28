@@ -56,6 +56,7 @@ private:
     bool getFormatOptionsOnFirstFormatting();
     bool validateObjectAndSetUp(ModelBase& model);
     bool convertResultsToModel(boost::mysql::row_view& sourceFromDB, std::vector<std::string>& columnNames, Modelshp destination);
+    bool processSingleQueryResults(boost::mysql::results results, Modelshp destination);
 
     boost::mysql::connect_params dbConnectionParameters;
     boost::mysql::format_options dbFormatOptions;

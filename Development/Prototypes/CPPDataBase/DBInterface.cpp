@@ -80,19 +80,11 @@ UserModel_shp DBInterface::getUserByLogin(std::string loginName)
 
         std::string sqlStatement = boost::mysql::format_sql(
         dbFormatOptions,
-        R"sql(SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, ScheduleDayStart, ScheduleDayEnd,
-            IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, UseLettersForMajorPriority, SeparatePriorityWithDot
-            FROM PlannerTaskScheduleDB.UserProfile WHERE LoginName = {})sql", loginName);
+        R"sql(SELECT * FROM PlannerTaskScheduleDB.UserProfile WHERE LoginName = {})sql", loginName);
 
         boost::mysql::results results = runAnyMySQLstatementsAsynchronously(sqlStatement);
-        std::vector<std::string> columnNames;
-        for (auto metaIter: results.meta())
-        {
-            columnNames.push_back(metaIter.column_name());
-        }
         UserModel_shp newUser = std::make_shared<UserModel>(UserModel());
-        boost::mysql::row_view sourceFromDB = results.rows().at(0);
-        if (convertResultsToModel(sourceFromDB, columnNames, newUser))
+        if (processSingleQueryResults(results, newUser))
         {
             return newUser;
         }
@@ -102,6 +94,38 @@ UserModel_shp DBInterface::getUserByLogin(std::string loginName)
     catch(const std::exception& e)
     {
         std::string eMsg("In DBInterface::getUserByLogin ");
+        eMsg += e.what();
+        appendErrorMessage(eMsg);
+        return nullptr;
+    }
+}
+
+UserModel_shp DBInterface::getUserByFullName(std::string lastName, std::string firstName, std::string middleInitial)
+{
+    try
+    {
+        if (!getFormatOptionsOnFirstFormatting())
+        {
+            return nullptr;
+        }
+
+        std::string sqlStatement = boost::mysql::format_sql(
+        dbFormatOptions,
+        R"sql(SELECT * FROM PlannerTaskScheduleDB.UserProfile WHERE LastName = {} AND FirstName = {} AND MiddleInitial = {} )sql",
+        lastName, firstName, middleInitial);
+
+        boost::mysql::results results = runAnyMySQLstatementsAsynchronously(sqlStatement);
+        UserModel_shp newUser = std::make_shared<UserModel>(UserModel());
+        if (processSingleQueryResults(results, newUser))
+        {
+            return newUser;
+        }
+
+        return nullptr;
+    }
+    catch(const std::exception& e)
+    {
+        std::string eMsg("In DBInterface::getUserByFullName ");
         eMsg += e.what();
         appendErrorMessage(eMsg);
         return nullptr;
@@ -371,7 +395,7 @@ bool DBInterface::convertResultsToModel(boost::mysql::row_view &sourceFromDB, st
         PTS_DataField_shp currentFieldPtr = destination->findFieldInDataFields(columnName);
         if (!currentFieldPtr)
         {
-            conversionError += " does nt contain field: " + columnName;
+            conversionError += " does not contain field: " + columnName;
             appendErrorMessage(conversionError);
             return false;
         }
@@ -440,3 +464,26 @@ bool DBInterface::convertResultsToModel(boost::mysql::row_view &sourceFromDB, st
     return success;
 }
 
+bool DBInterface::processSingleQueryResults(boost::mysql::results results, Modelshp destination)
+{
+    if (results.rows().empty())
+    {
+        std::string eMsg("No results from query, object not found in database!");
+        appendErrorMessage(eMsg);
+        return false;
+    }
+
+    std::vector<std::string> columnNames;
+    for (auto metaIter: results.meta())
+    {
+        columnNames.push_back(metaIter.column_name());
+    }
+
+    boost::mysql::row_view sourceFromDB = results.rows().at(0);
+    if (convertResultsToModel(sourceFromDB, columnNames, destination))
+    {
+        return true;
+    }
+
+    return false;
+}
