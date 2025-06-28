@@ -90,6 +90,30 @@ static UserList loadUserProfileTestDataIntoDatabase()
 
     return userProfileTestData;
 }
+
+static void testGetTaskByDescription(DBInterface& taskDBInterface, TaskModel& task)
+{
+    TaskModel_shp testInDB = taskDBInterface.getTaskByDescription(task.getDescription());
+    if (testInDB)
+    {
+        if (*testInDB == task)
+        {
+            std::cout << "task:" << task.getDescription() <<
+                " Successfully inserted and retrieved from database\n";
+        }
+        else
+        {
+            std::cout << "Insertion and retrieval of Task Failed\nInserted Task:\n" <<
+            task << "\n" "Retreived Task:\n" << *testInDB << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << "userDBInterface.getTaskByDescription(task.getDescription())) FAILED!\n";
+        std::cerr << taskDBInterface.getAllErrorMessages() << "\n";
+    }
+}
+
 struct UserTaskTestData
 {
     unsigned int priorityInAllTasks;
@@ -143,6 +167,18 @@ static void loadUserTaskestDataIntoDatabase(UserModel_shp userOne)
         {
             std::cerr << TaskDBInterface.getAllErrorMessages() << testTask << "\n";
         }
+        else
+        {
+            if (testTask.isInDataBase())
+            {
+                testGetTaskByDescription(TaskDBInterface, testTask);
+            }
+            else
+            {
+                std::cout << "Primary key for task: " << testTask.getPrimaryKey() << ", " << testTask.getDescription() <<
+                " not set!\n";
+            }
+        }
     }
 }
 
@@ -151,7 +187,7 @@ int main()
 
     try {
         UserList userList = loadUserProfileTestDataIntoDatabase();
-        loadUserTaskestDataIntoDatabase(userList[1]);
+        loadUserTaskestDataIntoDatabase(userList[0]);
     } catch (const std::exception& err) {
         std::cerr << "Error: " << err.what() << "\n";
         return EXIT_FAILURE;
