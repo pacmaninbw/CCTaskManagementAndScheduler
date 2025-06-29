@@ -39,7 +39,7 @@ public:
     std::chrono::year_month_day getEstimatedCompletion() const;
     std::chrono::year_month_day getCompletionDate() const;
     unsigned int getEstimatedEffort() const;
-    float getactualEffortToDate() const;
+    double getactualEffortToDate() const;
     unsigned int getPriorityGoup() const;
     unsigned int getPriority() const;
     bool hasOptionalFieldStatus() const;

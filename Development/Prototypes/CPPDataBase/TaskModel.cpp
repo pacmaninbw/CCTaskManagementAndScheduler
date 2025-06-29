@@ -89,7 +89,7 @@ std::chrono::year_month_day TaskModel::getactualStartDate() const { return getDa
 std::chrono::year_month_day TaskModel::getEstimatedCompletion() const { return getDateFieldValue("EstimatedCompletion"); }
 std::chrono::year_month_day TaskModel::getCompletionDate() const { return getDateFieldValue("Completed"); }
 unsigned int TaskModel::getEstimatedEffort() const { return getUnsignedIntFieldValue("EstimatedEffortHours"); }
-float TaskModel::getactualEffortToDate() const { return getFloatFieldValue("ActualEffortHours"); }
+double TaskModel::getactualEffortToDate() const { return getDoubleFieldValue("ActualEffortHours"); }
 unsigned int TaskModel::getPriorityGoup() const { return getUnsignedIntFieldValue("SchedulePriorityGroup"); }
 unsigned int TaskModel::getPriority() const { return getUnsignedIntFieldValue("PriorityInGroup"); }
 bool TaskModel::hasOptionalFieldStatus() const { return fieldHasValue("Status"); }
