@@ -425,62 +425,55 @@ bool DBInterface::convertResultsToModel(boost::mysql::row_view &sourceFromDB, st
         }
         if (!sourceField->is_null())
         {
-            switch (currentFieldPtr->getFieldType())
+            if (currentFieldPtr->isStringType())
             {
-                default:
-                    conversionError += "Column " + currentFieldPtr->getColumnName() +
-                        "Unknown column type " + std::to_string(static_cast<int>(currentFieldPtr->getFieldType()));
-                    appendErrorMessage(conversionError);
-                    success = false;
-                    break;
+                currentFieldPtr->dbSetValue(sourceField->as_string());
+            }
+            else
+            {
+                switch (currentFieldPtr->getFieldType())
+                {
+                    default:
+                        conversionError += "Column " + currentFieldPtr->getColumnName() +
+                            "Unknown column type " + std::to_string(static_cast<int>(currentFieldPtr->getFieldType()));
+                        appendErrorMessage(conversionError);
+                        success = false;
+                        break;
 
-                case PTS_DataField::PTS_DB_FieldType::VarChar45 :
-                case PTS_DataField::PTS_DB_FieldType::VarChar256 :
-                case PTS_DataField::PTS_DB_FieldType::VarChar1024 :
-                case PTS_DataField::PTS_DB_FieldType::TinyText :
-                case PTS_DataField::PTS_DB_FieldType::Text :
-                case PTS_DataField::PTS_DB_FieldType::TinyBlob :
-                case PTS_DataField::PTS_DB_FieldType::Blob :
-                    currentFieldPtr->dbSetValue(sourceField->as_string());
-                    break;
-                    
-                case PTS_DataField::PTS_DB_FieldType::Boolean :
-                    currentFieldPtr->dbSetValue(static_cast<bool>(sourceField->as_int64()));
-                    break;
+                    case PTS_DataField::PTS_DB_FieldType::Boolean :
+                        currentFieldPtr->dbSetValue(static_cast<bool>(sourceField->as_int64()));
+                        break;
 
-                case PTS_DataField::PTS_DB_FieldType::Date :
-                    currentFieldPtr->dbSetValue(convertBoostMySQLDateToChornoDate(sourceField->as_date()));
-                    break;
+                    case PTS_DataField::PTS_DB_FieldType::Date :
+                        currentFieldPtr->dbSetValue(convertBoostMySQLDateToChornoDate(sourceField->as_date()));
+                        break;
 
-                case PTS_DataField::PTS_DB_FieldType::DateTime :
-                case PTS_DataField::PTS_DB_FieldType::TimeStamp :
-                    currentFieldPtr->dbSetValue(sourceField->as_datetime().as_time_point());
-                    break;
+                    case PTS_DataField::PTS_DB_FieldType::DateTime :
+                    case PTS_DataField::PTS_DB_FieldType::TimeStamp :
+                        currentFieldPtr->dbSetValue(sourceField->as_datetime().as_time_point());
+                        break;
 
-                case PTS_DataField::PTS_DB_FieldType::Time :
-                    currentFieldPtr->dbSetValue(static_cast<std::chrono::time_point<std::chrono::system_clock>>(sourceField->as_time()));
-                    break;
+                    case PTS_DataField::PTS_DB_FieldType::Time :
+                        currentFieldPtr->dbSetValue(static_cast<std::chrono::time_point<std::chrono::system_clock>>(sourceField->as_time()));
+                        break;
 
-                case PTS_DataField::PTS_DB_FieldType::Int :
-                    currentFieldPtr->dbSetValue(static_cast<int>(sourceField->as_int64()));
-                    break;
+                    case PTS_DataField::PTS_DB_FieldType::Int :
+                        currentFieldPtr->dbSetValue(static_cast<int>(sourceField->as_int64()));
+                        break;
 
-                case PTS_DataField::PTS_DB_FieldType::Key :
-                case PTS_DataField::PTS_DB_FieldType::Size_T :
-                    currentFieldPtr->dbSetValue(sourceField->as_uint64());
-                    break;
+                    case PTS_DataField::PTS_DB_FieldType::Key :
+                    case PTS_DataField::PTS_DB_FieldType::Size_T :
+                        currentFieldPtr->dbSetValue(sourceField->as_uint64());
+                        break;
 
-                case PTS_DataField::PTS_DB_FieldType::UnsignedInt :
-                    currentFieldPtr->dbSetValue(static_cast<unsigned int>(sourceField->as_uint64()));
-                    break;
+                    case PTS_DataField::PTS_DB_FieldType::UnsignedInt :
+                        currentFieldPtr->dbSetValue(static_cast<unsigned int>(sourceField->as_uint64()));
+                        break;
 
-                case PTS_DataField::PTS_DB_FieldType::Double :
-                    currentFieldPtr->dbSetValue(sourceField->as_double());
-                    break;
-
-                case PTS_DataField::PTS_DB_FieldType::Float :
-                    currentFieldPtr->dbSetValue(sourceField->as_float());
-                    break;
+                    case PTS_DataField::PTS_DB_FieldType::Double :
+                        currentFieldPtr->dbSetValue(sourceField->as_double());
+                        break;
+                }
             }
         }
 

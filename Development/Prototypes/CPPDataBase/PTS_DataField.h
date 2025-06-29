@@ -13,27 +13,21 @@
 #include <variant>
 
 using DataValueType = std::variant<std::monostate, std::size_t, std::chrono::time_point<std::chrono::system_clock>, std::chrono::year_month_day, 
-        unsigned int, int, double, float, std::string, bool>;
+        unsigned int, int, double, std::string, bool>;
 
 class PTS_DataField
 {
 public:
-    enum class PTS_DB_FieldType {Key, Date, DateTime, TimeStamp, Time, VarChar45, VarChar256, VarChar1024, TinyText, Text, TinyBlob, Blob,
-        Boolean, UnsignedInt, Int, Size_T, Double, Float
+    enum class PTS_DB_FieldType {Key, Date, DateTime, TimeStamp, Time, VarChar45, VarChar256, VarChar1024, TinyText, Text,
+        Boolean, UnsignedInt, Int, Size_T, Double
     };
 
     /*
      * Currently the closest we can get to a default constructor. Field type and column
      * name must be set. 
      */
-    PTS_DataField(PTS_DataField::PTS_DB_FieldType cType, std::string cName, bool isRequired=false)
-        : columnType{cType}, dbColumnName{cName}, required{isRequired}, modified{false}
-        {
-            dataValue = std::monostate{};
-        };
-    PTS_DataField(PTS_DataField::PTS_DB_FieldType cType, std::string cName, DataValueType inValue, bool isRequired=false)
-        : columnType{cType}, dbColumnName{cName}, dataValue{inValue}, required{isRequired}, modified{false}
-        {};
+    PTS_DataField(PTS_DataField::PTS_DB_FieldType cType, std::string cName, bool isRequired=false);
+    PTS_DataField(PTS_DataField::PTS_DB_FieldType cType, std::string cName, DataValueType inValue, bool isRequired=false);
     ~PTS_DataField() = default;
 /*
  * Data access methods.
@@ -63,14 +57,14 @@ public:
     PTS_DataField::PTS_DB_FieldType getFieldType() const { return columnType; };
     std::string fieldInfo();
     const std::string typeToName() const;
+    bool isStringType() const { return stringType; };
 
 /*
  * Operators
  */
     bool operator==(const PTS_DataField& other) const
     {
-        bool areTheSame = (columnType == other.columnType &&
-            dbColumnName == other.dbColumnName &&
+        bool areTheSame = (columnType == other.columnType && dbColumnName == other.dbColumnName &&
             dataValue == other.dataValue);
 
         if (!areTheSame)
@@ -114,6 +108,7 @@ private:
     DataValueType dataValue;
     bool required;
     bool modified;
+    bool stringType;
 };
 
 #endif  // PTS_DATAFIELD_H_

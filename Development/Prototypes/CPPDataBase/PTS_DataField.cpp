@@ -3,10 +3,62 @@
 #include "PTS_DataField.h"
 #include <string>
 #include <variant>
+#include <vector>
+#include <utility>
+
+static std::vector<std::pair<PTS_DataField::PTS_DB_FieldType, std::string>> translationTable = {
+    {PTS_DataField::PTS_DB_FieldType::Key, "Key"},
+    {PTS_DataField::PTS_DB_FieldType::Date, "Date"},
+    {PTS_DataField::PTS_DB_FieldType::DateTime, "DateTime"},
+    {PTS_DataField::PTS_DB_FieldType::TimeStamp, "TimeStamp"},
+    {PTS_DataField::PTS_DB_FieldType::Time, "Time"},
+    {PTS_DataField::PTS_DB_FieldType::VarChar45, ""},
+    {PTS_DataField::PTS_DB_FieldType::VarChar256, ""},
+    {PTS_DataField::PTS_DB_FieldType::VarChar1024, ""},
+    {PTS_DataField::PTS_DB_FieldType::TinyText,  ""},
+    {PTS_DataField::PTS_DB_FieldType::Text, ""},
+    {PTS_DataField::PTS_DB_FieldType::Boolean, ""},
+    {PTS_DataField::PTS_DB_FieldType::UnsignedInt, "UnsignedInt"},
+    {PTS_DataField::PTS_DB_FieldType::Int, "Int"},
+    {PTS_DataField::PTS_DB_FieldType::Size_T, "Size_T"},
+    {PTS_DataField::PTS_DB_FieldType::Double, "Double"}
+};
+
+PTS_DataField::PTS_DataField(PTS_DataField::PTS_DB_FieldType cType, std::string cName, bool isRequired)
+: columnType{cType}, dbColumnName{cName}, required{isRequired}, modified{false}
+{
+    dataValue = std::monostate{};
+
+    switch (cType)
+    {
+        default :
+            stringType = false;
+            break;
+        case PTS_DataField::PTS_DB_FieldType::VarChar45 :
+        case PTS_DataField::PTS_DB_FieldType::VarChar256 :
+        case PTS_DataField::PTS_DB_FieldType::VarChar1024 :
+        case PTS_DataField::PTS_DB_FieldType::TinyText :
+        case PTS_DataField::PTS_DB_FieldType::Text :
+            stringType = true;
+            break;
+    }
+};
+
+PTS_DataField::PTS_DataField(PTS_DataField::PTS_DB_FieldType cType, std::string cName, DataValueType inValue, bool isRequired)
+: PTS_DataField(cType, cName, isRequired)
+{
+    dataValue = inValue;
+};
+
 
 std::string PTS_DataField::toString()
 {
     std::string returnValue;
+
+    if (isStringType())
+    {
+        return std::get<std::string>(dataValue);
+    }
 
     switch (columnType)
     {
@@ -39,16 +91,6 @@ std::string PTS_DataField::toString()
         }
         break;
 
-    case PTS_DataField::PTS_DB_FieldType::VarChar45 :
-    case PTS_DataField::PTS_DB_FieldType::VarChar256 :
-    case PTS_DataField::PTS_DB_FieldType::VarChar1024 :
-    case PTS_DataField::PTS_DB_FieldType::TinyText :
-    case PTS_DataField::PTS_DB_FieldType::Text :
-    case PTS_DataField::PTS_DB_FieldType::TinyBlob :
-    case PTS_DataField::PTS_DB_FieldType::Blob :
-        returnValue = std::get<std::string>(dataValue);
-        break;
-    
     case PTS_DataField::PTS_DB_FieldType::Int :
         returnValue = std::to_string(std::get<int>(dataValue));
         break;
@@ -64,10 +106,6 @@ std::string PTS_DataField::toString()
 
     case PTS_DataField::PTS_DB_FieldType::Double :
         returnValue = std::to_string(std::get<double>(dataValue));
-        break;
-
-    case PTS_DataField::PTS_DB_FieldType::Float :
-        returnValue = std::to_string(std::get<float>(dataValue));
         break;
 
     case PTS_DataField::PTS_DB_FieldType::Boolean :
@@ -118,65 +156,18 @@ std::string PTS_DataField::fieldInfo()
 
 const std::string PTS_DataField::typeToName() const
 {
-    switch (columnType)
+    PTS_DataField::PTS_DB_FieldType target_key = columnType;
+
+    auto found = std::find_if(translationTable.begin(), translationTable.end(), 
+        [target_key](const std::pair<PTS_DataField::PTS_DB_FieldType, std::string>& p) {
+            return p.first == target_key;
+        });
+    if (found != translationTable.end())
     {
-    default:
-        return "Unknown column type";
-
-    case PTS_DataField::PTS_DB_FieldType::Date :
-        return "Date";
-
-    case PTS_DataField::PTS_DB_FieldType::DateTime :
-        return "DateTime";
-
-    case PTS_DataField::PTS_DB_FieldType::TimeStamp :
-        return "TimeStamp";
-
-    case PTS_DataField::PTS_DB_FieldType::Time :
-        return "Time";
-
-    case PTS_DataField::PTS_DB_FieldType::VarChar45 :
-        return "VarChar45";
-
-    case PTS_DataField::PTS_DB_FieldType::VarChar256 :
-        return "VarChar256";
-
-    case PTS_DataField::PTS_DB_FieldType::VarChar1024 :
-        return "VarChar1024";
-
-    case PTS_DataField::PTS_DB_FieldType::TinyText :
-        return "TinyText";
-
-    case PTS_DataField::PTS_DB_FieldType::Text :
-        return "Text";
-
-    case PTS_DataField::PTS_DB_FieldType::TinyBlob :
-        return "TinyBlob";
-
-    case PTS_DataField::PTS_DB_FieldType::Blob :
-        return "Blob";
-    
-    case PTS_DataField::PTS_DB_FieldType::Int :
-        return "Int";
-
-    case PTS_DataField::PTS_DB_FieldType::Key :
-        return "Key";
-
-    case PTS_DataField::PTS_DB_FieldType::Size_T :
-        return "Size_T";
-
-    case PTS_DataField::PTS_DB_FieldType::UnsignedInt :
-        return "UnsignedInt";
-
-    case PTS_DataField::PTS_DB_FieldType::Double :
-        return "Double";
-
-    case PTS_DataField::PTS_DB_FieldType::Float :
-        return "Float";
-
-    case PTS_DataField::PTS_DB_FieldType::Boolean :
-        return "Boolean";
+        return found->second;
     }
+
+    return std::string();
 }
 
 int PTS_DataField::getIntValue() const
@@ -211,16 +202,6 @@ double PTS_DataField::getDoubleValue() const
     return 0.0;
 }
 
-float PTS_DataField::getFloatValue() const
-{
-    if (hasValue() && columnType == PTS_DataField::PTS_DB_FieldType::Float)
-    {
-        return std::get<float>(dataValue);
-    }
-
-    return 0.0f;
-}
-
 std::chrono::year_month_day PTS_DataField::getDateValue() const
 {
     if (hasValue() && columnType == PTS_DataField::PTS_DB_FieldType::Date)
@@ -247,21 +228,13 @@ std::string PTS_DataField::getStringValue() const
 {
     if (hasValue())
     {
-        switch (columnType)
+        if (isStringType())
         {
-            default:
-                break;
-            case PTS_DataField::PTS_DB_FieldType::VarChar45 :
-            case PTS_DataField::PTS_DB_FieldType::VarChar256 :
-            case PTS_DataField::PTS_DB_FieldType::VarChar1024 :
-            case PTS_DataField::PTS_DB_FieldType::TinyText :
-            case PTS_DataField::PTS_DB_FieldType::Text :
-            case PTS_DataField::PTS_DB_FieldType::TinyBlob :
-            case PTS_DataField::PTS_DB_FieldType::Blob :
-                return std::get<std::string>(dataValue);
+            return std::get<std::string>(dataValue);
         }
     }
-    return std::string();
+
+        return std::string();
 }
 
 bool PTS_DataField::getBoolValue() const
