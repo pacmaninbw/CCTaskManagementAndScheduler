@@ -453,10 +453,6 @@ bool DBInterface::convertResultsToModel(boost::mysql::row_view &sourceFromDB, st
                         currentFieldPtr->dbSetValue(sourceField->as_datetime().as_time_point());
                         break;
 
-                    case PTS_DataField::PTS_DB_FieldType::Time :
-                        currentFieldPtr->dbSetValue(static_cast<std::chrono::time_point<std::chrono::system_clock>>(sourceField->as_time()));
-                        break;
-
                     case PTS_DataField::PTS_DB_FieldType::Int :
                         currentFieldPtr->dbSetValue(static_cast<int>(sourceField->as_int64()));
                         break;
