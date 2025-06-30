@@ -6,49 +6,52 @@
 #include "TaskModel.h"
 #include "UserModel.h"
 
-static void testGetUserByLoginName(DBInterface& userDBInterface, UserModel_shp user)
+static bool testGetUserByLoginName(DBInterface& userDBInterface, UserModel_shp insertedUser)
 {
-    UserModel_shp testInDB = userDBInterface.getUserByLogin(user->getLoginName());
-    if (testInDB)
+    UserModel_shp retrievedUser = userDBInterface.getUserByLogin(insertedUser->getLoginName());
+    if (retrievedUser)
     {
-        if (*testInDB == *user)
+        if (*retrievedUser == *insertedUser)
         {
-            std::cout << "User:" << user->getLastName() << ", " << user->getFirstName() <<
-                " Successfully inserted and retrieved from database\n";
+            return true;
         }
         else
         {
-            std::cout << "Insertion and retrieval of User Failed\nInserted User:\n" <<
-            *user << "\n" "Retreived User:\n" << *testInDB << "\n";
+            std::cerr << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
+            *insertedUser << "\n" "Retreived User:\n" << *retrievedUser << "\n";
+            return false;
         }
     }
     else
     {
-        std::cerr << "userDBInterface.getUserByLogin(user->getLoginName()) FAILED!\n";
-        std::cerr << userDBInterface.getAllErrorMessages() << "\n";
+        std::cerr << "userDBInterface.getUserByLogin(user->getLoginName()) FAILED!\n" <<
+            userDBInterface.getAllErrorMessages() << "\n";
+        return false;
     }
 }
 
-static void testGetUserByFullName(DBInterface& userDBInterface, UserModel_shp user)
+static bool testGetUserByFullName(DBInterface& userDBInterface, UserModel_shp insertedUser)
 {
-    UserModel_shp testInDB = userDBInterface.getUserByFullName(user->getLastName(), user->getFirstName(), user->getMiddleInitial());
-    if (testInDB)
+    UserModel_shp retrievedUser = userDBInterface.getUserByFullName(insertedUser->getLastName(),
+        insertedUser->getFirstName(), insertedUser->getMiddleInitial());
+    if (retrievedUser)
     {
-        if (*testInDB == *user)
+        if (*retrievedUser == *insertedUser)
         {
-            std::cout << "User:" << user->getLastName() << ", " << user->getFirstName() <<
-                " Successfully retrieved by full name from database\n";
+            return true;
         }
         else
         {
-            std::cout << "Retrieval of User by full name Failed\nInserted User:\n" <<
-            *user << "\n" "Retreived User:\n" << *testInDB << "\n";
+            std::cerr << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
+            *insertedUser << "\n" "Retreived User:\n" << *retrievedUser << "\n";
+            return false;
         }
     }
     else
     {
-        std::cerr << "userDBInterface.getUserByFullName() FAILED!\n";
-        std::cerr << userDBInterface.getAllErrorMessages() << "\n";
+        std::cerr << "userDBInterface.getUserByFullName() FAILED!\n" <<
+            userDBInterface.getAllErrorMessages() << "\n";
+        return false;
     }
 }
 
@@ -66,51 +69,69 @@ static UserList loadUserProfileTestDataIntoDatabase()
     };
 
     DBInterface userDBInterface;
+    bool allTestsPassed = true;
 
     for (auto user: userProfileTestData)
     {
         if (!userDBInterface.insertIntoDataBase(*user))
         {
             std::cerr << userDBInterface.getAllErrorMessages() << "\n" << *user << "\n";
+            allTestsPassed = false;
         }
         else
         {
             if (user->isInDataBase())
             {
-                testGetUserByLoginName(userDBInterface, user);
-                testGetUserByFullName(userDBInterface, user);
+                if (!testGetUserByLoginName(userDBInterface, user))
+                {
+                    allTestsPassed = false;
+                }
+                if (!testGetUserByFullName(userDBInterface, user))
+                {
+                    allTestsPassed = false;
+                }
             }
             else
             {
                 std::cout << "Primary key for user: " << user->getLastName() << ", " << user->getFirstName() <<
                 " not set!\n";
+                allTestsPassed = false;
             }
         }
     }
 
+    if (allTestsPassed)
+    {
+        std::cout << "Insertion and retrieval of users test PASSED\n";
+    }
+    else
+    {
+        userProfileTestData.clear();
+    }
     return userProfileTestData;
 }
 
-static void testGetTaskByDescription(DBInterface& taskDBInterface, TaskModel& task)
+static bool testGetTaskByDescription(DBInterface& taskDBInterface, TaskModel& task)
 {
     TaskModel_shp testInDB = taskDBInterface.getTaskByDescription(task.getDescription());
     if (testInDB)
     {
         if (*testInDB == task)
         {
-            std::cout << "task:" << task.getDescription() <<
-                " Successfully inserted and retrieved from database\n";
+            return true;
         }
         else
         {
-            std::cout << "Insertion and retrieval of Task Failed\nInserted Task:\n" <<
+            std::cout << "Inserted and retrieved Task are not the same! Test FAILED!\nInserted Task:\n" <<
             task << "\n" "Retreived Task:\n" << *testInDB << "\n";
+            return false;
         }
     }
     else
     {
-        std::cerr << "userDBInterface.getTaskByDescription(task.getDescription())) FAILED!\n";
-        std::cerr << taskDBInterface.getAllErrorMessages() << "\n";
+        std::cerr << "userDBInterface.getTaskByDescription(task.getDescription())) FAILED!\n" 
+            << taskDBInterface.getAllErrorMessages() << "\n";
+        return false;
     }
 }
 
@@ -134,7 +155,7 @@ struct UserTaskTestData
     std::string estimatedCompletionDate;
 };
 
-static void loadUserTaskestDataIntoDatabase(UserModel_shp userOne)
+static bool loadUserTaskestDataIntoDatabase(UserModel_shp userOne)
 {
     std::vector<UserTaskTestData> userTaskTestData = 
     {
@@ -155,39 +176,56 @@ static void loadUserTaskestDataIntoDatabase(UserModel_shp userOne)
     };
 
     DBInterface TaskDBInterface;
+    bool allTestsPassed = true;
 
     for (auto taskTestData: userTaskTestData)
     {
-        std::cout << "Creating task from \"" << taskTestData.description << "\" " << taskTestData.estimatedEffortHours << "\n";
         TaskModel testTask(userOne, taskTestData.description, taskTestData.estimatedEffortHours,
             taskTestData.dueDate, taskTestData.scheduledStartDate);
-
 
         if (!TaskDBInterface.insertIntoDataBase(testTask))
         {
             std::cerr << TaskDBInterface.getAllErrorMessages() << testTask << "\n";
+            allTestsPassed = false;
         }
         else
         {
             if (testTask.isInDataBase())
             {
-                testGetTaskByDescription(TaskDBInterface, testTask);
+                if (!testGetTaskByDescription(TaskDBInterface, testTask))
+                {
+                    allTestsPassed = false;
+                }
             }
             else
             {
                 std::cout << "Primary key for task: " << testTask.getPrimaryKey() << ", " << testTask.getDescription() <<
                 " not set!\n";
+                allTestsPassed = false;
             }
         }
     }
+
+    std::cout << "All Task insertions and retrival tests PASSED\n";
+    return allTestsPassed;
 }
 
 int main()
 {
-
     try {
         UserList userList = loadUserProfileTestDataIntoDatabase();
-        loadUserTaskestDataIntoDatabase(userList[0]);
+        if (userList.size())
+        {
+            if (!loadUserTaskestDataIntoDatabase(userList[0]))
+            {
+                return EXIT_FAILURE;
+            }
+        }
+        else
+        {
+            return EXIT_FAILURE;
+        }
+        std::cout << "All tests Passed\n";
     } catch (const std::exception& err) {
         std::cerr << "Error: " << err.what() << "\n";
         return EXIT_FAILURE;
