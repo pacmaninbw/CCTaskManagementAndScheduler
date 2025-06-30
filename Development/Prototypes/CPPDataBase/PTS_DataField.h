@@ -18,7 +18,7 @@ using DataValueType = std::variant<std::monostate, std::size_t, std::chrono::tim
 class PTS_DataField
 {
 public:
-    enum class PTS_DB_FieldType {Key, Date, DateTime, TimeStamp, Time, VarChar45, VarChar256, VarChar1024, TinyText, Text,
+    enum class PTS_DB_FieldType {Key, Date, DateTime, TimeStamp, VarChar45, VarChar256, VarChar1024, TinyText, Text,
         Boolean, UnsignedInt, Int, Size_T, Double
     };
 

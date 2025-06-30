@@ -6,24 +6,6 @@
 #include <vector>
 #include <utility>
 
-static std::vector<std::pair<PTS_DataField::PTS_DB_FieldType, std::string>> translationTable = {
-    {PTS_DataField::PTS_DB_FieldType::Key, "Key"},
-    {PTS_DataField::PTS_DB_FieldType::Date, "Date"},
-    {PTS_DataField::PTS_DB_FieldType::DateTime, "DateTime"},
-    {PTS_DataField::PTS_DB_FieldType::TimeStamp, "TimeStamp"},
-    {PTS_DataField::PTS_DB_FieldType::Time, "Time"},
-    {PTS_DataField::PTS_DB_FieldType::VarChar45, ""},
-    {PTS_DataField::PTS_DB_FieldType::VarChar256, ""},
-    {PTS_DataField::PTS_DB_FieldType::VarChar1024, ""},
-    {PTS_DataField::PTS_DB_FieldType::TinyText,  ""},
-    {PTS_DataField::PTS_DB_FieldType::Text, ""},
-    {PTS_DataField::PTS_DB_FieldType::Boolean, ""},
-    {PTS_DataField::PTS_DB_FieldType::UnsignedInt, "UnsignedInt"},
-    {PTS_DataField::PTS_DB_FieldType::Int, "Int"},
-    {PTS_DataField::PTS_DB_FieldType::Size_T, "Size_T"},
-    {PTS_DataField::PTS_DB_FieldType::Double, "Double"}
-};
-
 PTS_DataField::PTS_DataField(PTS_DataField::PTS_DB_FieldType cType, std::string cName, bool isRequired)
 : columnType{cType}, dbColumnName{cName}, required{isRequired}, modified{false}
 {
@@ -79,14 +61,6 @@ std::string PTS_DataField::toString()
         {
             std::stringstream ss;
             ss << std::format("%F %T", std::get<std::chrono::time_point<std::chrono::system_clock>>(dataValue));
-            returnValue = ss.str();
-        }
-        break;
-
-    case PTS_DataField::PTS_DB_FieldType::Time :
-        {
-            std::stringstream ss;
-            ss << std::format("%T", std::get<std::chrono::time_point<std::chrono::system_clock>>(dataValue));
             returnValue = ss.str();
         }
         break;
@@ -156,6 +130,23 @@ std::string PTS_DataField::fieldInfo()
 
 const std::string PTS_DataField::typeToName() const
 {
+    std::vector<std::pair<PTS_DataField::PTS_DB_FieldType, std::string>> translationTable = {
+        {PTS_DataField::PTS_DB_FieldType::Key, "Key"},
+        {PTS_DataField::PTS_DB_FieldType::Date, "Date"},
+        {PTS_DataField::PTS_DB_FieldType::DateTime, "DateTime"},
+        {PTS_DataField::PTS_DB_FieldType::TimeStamp, "TimeStamp"},
+        {PTS_DataField::PTS_DB_FieldType::VarChar45, "VarChar45"},
+        {PTS_DataField::PTS_DB_FieldType::VarChar256, "VarChar256"},
+        {PTS_DataField::PTS_DB_FieldType::VarChar1024, "VarChar1024"},
+        {PTS_DataField::PTS_DB_FieldType::TinyText, "TinyText"},
+        {PTS_DataField::PTS_DB_FieldType::Text, "Text"},
+        {PTS_DataField::PTS_DB_FieldType::Boolean, "Boolean"},
+        {PTS_DataField::PTS_DB_FieldType::UnsignedInt, "UnsignedInt"},
+        {PTS_DataField::PTS_DB_FieldType::Int, "Int"},
+        {PTS_DataField::PTS_DB_FieldType::Size_T, "Size_T"},
+        {PTS_DataField::PTS_DB_FieldType::Double, "Double"}
+    };
+
     PTS_DataField::PTS_DB_FieldType target_key = columnType;
 
     auto found = std::find_if(translationTable.begin(), translationTable.end(), 
@@ -215,8 +206,7 @@ std::chrono::year_month_day PTS_DataField::getDateValue() const
 std::chrono::time_point<std::chrono::system_clock> PTS_DataField::getTimeValue() const
 {
     if (hasValue() && (columnType == PTS_DataField::PTS_DB_FieldType::DateTime
-        || columnType == PTS_DataField::PTS_DB_FieldType::TimeStamp
-        || columnType == PTS_DataField::PTS_DB_FieldType::Time))
+        || columnType == PTS_DataField::PTS_DB_FieldType::TimeStamp))
     {
         return std::get<std::chrono::time_point<std::chrono::system_clock>>(dataValue);
     }
