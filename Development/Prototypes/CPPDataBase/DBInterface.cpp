@@ -431,52 +431,66 @@ bool DBInterface::convertResultsToModel(boost::mysql::row_view &sourceFromDB, st
             }
             else
             {
-                switch (currentFieldPtr->getFieldType())
+                try
                 {
-                    default:
-                        conversionError += "Column " + currentFieldPtr->getColumnName() +
-                            "Unknown column type " + std::to_string(static_cast<int>(currentFieldPtr->getFieldType()));
-                        appendErrorMessage(conversionError);
-                        success = false;
-                        break;
-
-                    case PTS_DataField::PTS_DB_FieldType::Boolean :
-                        currentFieldPtr->dbSetValue(static_cast<bool>(sourceField->as_int64()));
-                        break;
-
-                    case PTS_DataField::PTS_DB_FieldType::Date :
-                        currentFieldPtr->dbSetValue(convertBoostMySQLDateToChornoDate(sourceField->as_date()));
-                        break;
-
-                    case PTS_DataField::PTS_DB_FieldType::DateTime :
-                    case PTS_DataField::PTS_DB_FieldType::TimeStamp :
-                        currentFieldPtr->dbSetValue(sourceField->as_datetime().as_time_point());
-                        break;
-
-                    case PTS_DataField::PTS_DB_FieldType::Int :
-                        currentFieldPtr->dbSetValue(static_cast<int>(sourceField->as_int64()));
-                        break;
-
-                    case PTS_DataField::PTS_DB_FieldType::Key :
-                    case PTS_DataField::PTS_DB_FieldType::Size_T :
-                        currentFieldPtr->dbSetValue(sourceField->as_uint64());
-                        break;
-
-                    case PTS_DataField::PTS_DB_FieldType::UnsignedInt :
-                        currentFieldPtr->dbSetValue(static_cast<unsigned int>(sourceField->as_uint64()));
-                        break;
-
-                    case PTS_DataField::PTS_DB_FieldType::Double :
-                        currentFieldPtr->dbSetValue(sourceField->as_double());
-                        break;
+                    convertScalarFieldValue(*sourceField, currentFieldPtr);
                 }
+                catch(const std::exception& e)
+                {
+                    conversionError += e.what();
+                    appendErrorMessage(conversionError);
+                    success = false;
+                }
+                
             }
         }
-
         ++sourceField;
     }
 
     return success;
+}
+
+void DBInterface::convertScalarFieldValue(boost::mysql::field_view sourceField, PTS_DataField_shp currentFieldPtr)
+{
+    switch (currentFieldPtr->getFieldType())
+    {
+        case PTS_DataField::PTS_DB_FieldType::Boolean :
+            currentFieldPtr->dbSetValue(static_cast<bool>(sourceField.as_int64()));
+            break;
+
+        case PTS_DataField::PTS_DB_FieldType::Date :
+            currentFieldPtr->dbSetValue(convertBoostMySQLDateToChornoDate(sourceField.as_date()));
+            break;
+
+        case PTS_DataField::PTS_DB_FieldType::DateTime :
+        case PTS_DataField::PTS_DB_FieldType::TimeStamp :
+            currentFieldPtr->dbSetValue(sourceField.as_datetime().as_time_point());
+            break;
+
+        case PTS_DataField::PTS_DB_FieldType::Int :
+            currentFieldPtr->dbSetValue(static_cast<int>(sourceField.as_int64()));
+            break;
+
+        case PTS_DataField::PTS_DB_FieldType::Key :
+        case PTS_DataField::PTS_DB_FieldType::Size_T :
+            currentFieldPtr->dbSetValue(sourceField.as_uint64());
+            break;
+
+        case PTS_DataField::PTS_DB_FieldType::UnsignedInt :
+            currentFieldPtr->dbSetValue(static_cast<unsigned int>(sourceField.as_uint64()));
+            break;
+
+        case PTS_DataField::PTS_DB_FieldType::Double :
+            currentFieldPtr->dbSetValue(sourceField.as_double());
+            break;
+
+        default:
+            std::string typeError("Column " + currentFieldPtr->getColumnName() +
+                "Unknown column type " + std::to_string(static_cast<int>(currentFieldPtr->getFieldType())));
+            std::domain_error ex(typeError);
+            throw ex;
+            break;
+    }
 }
 
 bool DBInterface::executeSimpleQueryProcessResults(std::string sqlStatements, Modelshp destination)
@@ -504,3 +518,4 @@ bool DBInterface::executeSimpleQueryProcessResults(std::string sqlStatements, Mo
 
     return false;
 }
+

@@ -58,6 +58,7 @@ private:
     bool validateObjectAndSetUp(ModelBase& model);
     bool convertResultsToModel(boost::mysql::row_view& sourceFromDB, std::vector<std::string>& columnNames, Modelshp destination);
     bool executeSimpleQueryProcessResults(std::string sqlStatements, Modelshp destination);
+    void convertScalarFieldValue(boost::mysql::field_view sourceField, PTS_DataField_shp currentFieldPtr);
 
     boost::mysql::connect_params dbConnectionParameters;
     boost::mysql::format_options dbFormatOptions;
