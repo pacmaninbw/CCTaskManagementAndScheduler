@@ -25,6 +25,7 @@ public:
     );
 
     ~TaskModel();
+    void addEffortHours(double hours);
     std::size_t getTaskID() const;
     std::size_t getCreatorID() const;
     std::size_t getAssignToID() const;
@@ -47,6 +48,27 @@ public:
     bool hasOptionalFieldActualStartDate() const;
     bool hasOptionalFieldEstimatedCompletion() const;
     bool hasOptionalFieldCompletionDate() const;
+    void setCreatorID(std::size_t creatorID);
+    void setCreatorID(UserModel_shp creator);
+    void setAssignToID(std::size_t assignedID);
+    void setAssignToID(UserModel_shp assignedUser);
+    void setDescription(std::string description);
+    void setStatus(TaskModel::TaskStatus status);
+    void setParentTaskID(std::size_t parentTaskID);
+    void setParentTaskID(std::shared_ptr<TaskModel> parentTask);
+    void setPercentageComplete(double percentComplete);
+    void setCreationDate(std::chrono::year_month_day creationDate);
+    void setDueDate(std::chrono::year_month_day dueDate);
+    void setScheduledStart(std::chrono::year_month_day startDate);
+    void setactualStartDate(std::chrono::year_month_day startDate);
+    void setEstimatedCompletion(std::chrono::year_month_day completionDate);
+    void setCompletionDate(std::chrono::year_month_day completionDate);
+    void setEstimatedEffort(unsigned int estimatedHours);
+    void setactualEffortToDate(double effortHoursYTD);
+    void setPriorityGoup(unsigned int priorityGroup);
+    void setPriorityGoup(const unsigned char priorityGroup);
+    void setPriority(unsigned int priority);
+
     std::string taskStatusString() const;
 
     friend std::ostream& operator<<(std::ostream& os, const TaskModel& obj)

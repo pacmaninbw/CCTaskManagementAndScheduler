@@ -75,26 +75,220 @@ std::string TaskModel::taskStatusString() const
     }
 }
 
-std::size_t TaskModel::getTaskID() const { return getPrimaryKey(); }
-std::size_t TaskModel::getCreatorID() const { return getKeyFieldValue("CreatedBy"); }
-std::size_t TaskModel::getAssignToID() const { return getKeyFieldValue("AsignedTo"); }
-std::string TaskModel::getDescription() const { return getStringFieldValue("Description") ; }
-TaskModel::TaskStatus TaskModel::getStatus() const { return statusFromInt(getIntFieldValue("Status")); }
-std::size_t TaskModel::getParentTaskID() const { return getKeyFieldValue("ParentTask"); }
-double TaskModel::getPercentageComplete() const { return getDoubleFieldValue("PercentageComplete"); }
-std::chrono::year_month_day TaskModel::getCreationDate() const { return getDateFieldValue("CreatedOn"); }
-std::chrono::year_month_day TaskModel::getDueDate() const { return getDateFieldValue("RequiredDelivery"); }
-std::chrono::year_month_day TaskModel::getScheduledStart() const { return getDateFieldValue("ScheduledStart"); }
-std::chrono::year_month_day TaskModel::getactualStartDate() const { return getDateFieldValue("ActualStart"); }
-std::chrono::year_month_day TaskModel::getEstimatedCompletion() const { return getDateFieldValue("EstimatedCompletion"); }
-std::chrono::year_month_day TaskModel::getCompletionDate() const { return getDateFieldValue("Completed"); }
-unsigned int TaskModel::getEstimatedEffort() const { return getUnsignedIntFieldValue("EstimatedEffortHours"); }
-double TaskModel::getactualEffortToDate() const { return getDoubleFieldValue("ActualEffortHours"); }
-unsigned int TaskModel::getPriorityGoup() const { return getUnsignedIntFieldValue("SchedulePriorityGroup"); }
-unsigned int TaskModel::getPriority() const { return getUnsignedIntFieldValue("PriorityInGroup"); }
-bool TaskModel::hasOptionalFieldStatus() const { return fieldHasValue("Status"); }
-bool TaskModel::hasOptionalFieldParentTaskID() const { return fieldHasValue("ParentTask"); }
-bool TaskModel::hasOptionalFieldActualStartDate() const { return fieldHasValue("ActualStart"); }
-bool TaskModel::hasOptionalFieldEstimatedCompletion() const { return fieldHasValue("EstimatedCompletion"); }
-bool TaskModel::hasOptionalFieldCompletionDate() const { return fieldHasValue("Completed"); }
+std::size_t TaskModel::getTaskID() const 
+{
+    return getPrimaryKey();
+}
 
+std::size_t TaskModel::getCreatorID() const 
+{
+    return getKeyFieldValue("CreatedBy");
+}
+
+std::size_t TaskModel::getAssignToID() const 
+{
+    return getKeyFieldValue("AsignedTo");
+}
+
+std::string TaskModel::getDescription() const 
+{
+    return getStringFieldValue("Description") ;
+}
+
+TaskModel::TaskStatus TaskModel::getStatus() const 
+{
+    return statusFromInt(getIntFieldValue("Status"));
+}
+
+std::size_t TaskModel::getParentTaskID() const 
+{
+    return getKeyFieldValue("ParentTask");
+}
+
+double TaskModel::getPercentageComplete() const 
+{
+    return getDoubleFieldValue("PercentageComplete");
+}
+
+std::chrono::year_month_day TaskModel::getCreationDate() const 
+{
+    return getDateFieldValue("CreatedOn");
+}
+
+std::chrono::year_month_day TaskModel::getDueDate() const 
+{
+    return getDateFieldValue("RequiredDelivery");
+}
+
+std::chrono::year_month_day TaskModel::getScheduledStart() const 
+{
+    return getDateFieldValue("ScheduledStart");
+}
+
+std::chrono::year_month_day TaskModel::getactualStartDate() const 
+{
+    return getDateFieldValue("ActualStart");
+}
+
+std::chrono::year_month_day TaskModel::getEstimatedCompletion() const 
+{
+return getDateFieldValue("EstimatedCompletion");
+}
+
+std::chrono::year_month_day TaskModel::getCompletionDate() const
+{
+    return getDateFieldValue("Completed");
+}
+
+unsigned int TaskModel::getEstimatedEffort() const
+{
+    return getUnsignedIntFieldValue("EstimatedEffortHours");
+}
+
+double TaskModel::getactualEffortToDate() const
+{
+    return getDoubleFieldValue("ActualEffortHours");
+}
+
+unsigned int TaskModel::getPriorityGoup() const
+{
+    return getUnsignedIntFieldValue("SchedulePriorityGroup");
+}
+
+unsigned int TaskModel::getPriority() const
+{
+    return getUnsignedIntFieldValue("PriorityInGroup");
+}
+
+bool TaskModel::hasOptionalFieldStatus() const
+{
+    return fieldHasValue("Status");
+}
+
+bool TaskModel::hasOptionalFieldParentTaskID() const
+{
+    return fieldHasValue("ParentTask");
+}
+
+bool TaskModel::hasOptionalFieldActualStartDate() const
+{
+    return fieldHasValue("ActualStart");
+}
+
+bool TaskModel::hasOptionalFieldEstimatedCompletion() const
+{
+    return fieldHasValue("EstimatedCompletion");
+}
+
+bool TaskModel::hasOptionalFieldCompletionDate() const
+{
+    return fieldHasValue("Completed");
+}
+
+void TaskModel::setCreatorID(std::size_t creatorID)
+{
+    setFieldValue("CreatedBy", creatorID);
+}
+
+void TaskModel::setCreatorID(UserModel_shp creator)
+{
+    setCreatorID(creator->getPrimaryKey());
+}
+
+void TaskModel::setAssignToID(std::size_t assignedID)
+{
+    setFieldValue("AsignedTo", assignedID);
+}
+
+void TaskModel::setAssignToID(UserModel_shp assignedUser)
+{
+    setAssignToID(assignedUser->getPrimaryKey());
+}
+
+void TaskModel::setDescription(std::string description)
+{
+    setFieldValue("Description", description);
+}
+
+void TaskModel::setStatus(TaskModel::TaskStatus status)
+{
+    setFieldValue("Status", static_cast<unsigned int>(status));
+}
+
+void TaskModel::setParentTaskID(std::size_t parentTaskID)
+{
+        setFieldValue("ParentTask", parentTaskID);
+}
+
+void TaskModel::setParentTaskID(std::shared_ptr<TaskModel> parentTask)
+{
+    setFieldValue("ParentTask", parentTask->getTaskID());
+}
+
+void TaskModel::setPercentageComplete(double percentComplete)
+{
+    setFieldValue("PercentageComplete", percentComplete);
+}
+
+void TaskModel::setCreationDate(std::chrono::year_month_day creationDate)
+{
+    setFieldValue("CreatedOn", creationDate);
+}
+
+void TaskModel::setDueDate(std::chrono::year_month_day dueDate)
+{
+    setFieldValue("RequiredDelivery", dueDate);
+}
+
+void TaskModel::setScheduledStart(std::chrono::year_month_day startDate)
+{
+    setFieldValue("ScheduledStart", startDate);
+}
+
+void TaskModel::setactualStartDate(std::chrono::year_month_day startDate)
+{
+    setFieldValue("ActualStart", startDate);
+}
+
+void TaskModel::setEstimatedCompletion(std::chrono::year_month_day completionDate)
+{
+    setFieldValue("EstimatedCompletion", completionDate);
+}
+
+void TaskModel::setCompletionDate(std::chrono::year_month_day completionDate)
+{
+    setFieldValue("Completed", completionDate);
+}
+
+void TaskModel::setEstimatedEffort(unsigned int estimatedHours)
+{
+    setFieldValue("EstimatedEffortHours", estimatedHours);
+}
+
+void TaskModel::setactualEffortToDate(double effortHoursYTD)
+{
+    setFieldValue("ActualEffortHours", effortHoursYTD);
+}
+
+void TaskModel::setPriorityGoup(unsigned int priorityGroup)
+{
+    setFieldValue("SchedulePriorityGroup", priorityGroup);
+}
+
+void TaskModel::setPriorityGoup(const unsigned char priorityGroup)
+{
+    unsigned int group = priorityGroup - 'A';
+    setFieldValue("SchedulePriorityGroup", group);
+}
+
+void TaskModel::setPriority(unsigned int priority)
+{
+    setFieldValue("PriorityInGroup", priority);
+}
+
+void TaskModel::addEffortHours(double hours)
+{
+    double actualEffortHours = getactualEffortToDate();
+    actualEffortHours += hours;
+    setactualEffortToDate(actualEffortHours);
+}
