@@ -36,45 +36,150 @@ UserModel::UserModel(const char *lastIn, const char *firstIn, const char *middle
     initFieldValueNotChanged("ScheduleDayEnd", "5:00 PM");
 }
 
-UserModel::UserModel(const UserModel &original)
-    : UserModel()
+void UserModel::autoGenerateLoginAndPassword()
 {
-    setPrimaryKey(original.getPrimaryKey());
-    initFieldValueNotChanged("LastName", original.getLastName());
-    initFieldValueNotChanged("FirstName", original.getFirstName());
-    initFieldValueNotChanged("MiddleInitial", original.getMiddleInitial());
-    initFieldValueNotChanged("EmailAddress", original.getEmail());
-    initFieldValueNotChanged("LoginName", original.getLoginName());
-    initFieldValueNotChanged("HashedPassWord", original.getPassword());
-    initFieldValueNotChanged("IncludePriorityInSchedule", original.isPriorityInSchedule());
-    initFieldValueNotChanged("IncludeMinorPriorityInSchedule", original.isMinorPriorityInSchedule());
-    initFieldValueNotChanged("UseLettersForMajorPriority", original.isUsingLettersForMaorPriority());
-    initFieldValueNotChanged("SeparatePriorityWithDot", original.isSeparatingPriorityWithDot());
-    initFieldValueNotChanged("ScheduleDayStart", original.getStartTime());
-    initFieldValueNotChanged("ScheduleDayEnd", original.getEndTime());
+    if (!fieldHasValue("LoginName") && !fieldHasValue("HashedPassWord"))
+    {
+        createLoginBasedOnUserName(getLastName(), getFirstName(), getMiddleInitial());
+    }
 }
 
-void UserModel::createLoginBasedOnUserName(std::string lastName, std::string firstName, std::string middleInitial)
+void UserModel::createLoginBasedOnUserName(
+    const std::string& lastName, const std::string& firstName, const std::string& middleInitial)
 {
     std::string tempLoginName(lastName);
     tempLoginName += firstName;
-    tempLoginName += middleInitial[0];
+    if (middleInitial.size())
+    {
+        tempLoginName += middleInitial[0];
+    }
 
-    setFieldValue("LoginName", tempLoginName);
-    setFieldValue("HashedPassWord", tempLoginName);
+    setLoginName(tempLoginName);
+    setPassword(tempLoginName);
 }
 
-std::string UserModel::getLastName() const { return getStringFieldValue("LastName"); };
-std::string UserModel::getFirstName() const { return getStringFieldValue("FirstName");  };
-std::string UserModel::getMiddleInitial() const { return getStringFieldValue("MiddleInitial"); };
-std::string UserModel::getEmail() const { return getStringFieldValue("EmailAddress"); };
-std::string UserModel::getLoginName() const {return getStringFieldValue("LoginName"); };
-std::string UserModel::getPassword() const { return getStringFieldValue("HashedPassWord");  };
-std::string UserModel::getStartTime() const { return getStringFieldValue("ScheduleDayStart"); };
-std::string UserModel::getEndTime() const { return getStringFieldValue("ScheduleDayEnd"); };
-std::size_t UserModel::getUserID() const { return getPrimaryKey(); };
-bool UserModel::isPriorityInSchedule() const { return getBoolFieldValue("IncludePriorityInSchedule"); };
-bool UserModel::isMinorPriorityInSchedule() const { return getBoolFieldValue("IncludeMinorPriorityInSchedule"); };
-bool UserModel::isUsingLettersForMaorPriority() const { return getBoolFieldValue("UseLettersForMajorPriority"); };
-bool UserModel::isSeparatingPriorityWithDot() const { return getBoolFieldValue("SeparatePriorityWithDot"); };
+std::string UserModel::getLastName() const
+{
+    return getStringFieldValue("LastName");
+}
+
+std::string UserModel::getFirstName() const
+{
+    return getStringFieldValue("FirstName");
+}
+
+std::string UserModel::getMiddleInitial() const
+{
+    return getStringFieldValue("MiddleInitial");
+}
+
+std::string UserModel::getEmail() const
+{
+    return getStringFieldValue("EmailAddress");
+}
+
+std::string UserModel::getLoginName() const
+{
+    return getStringFieldValue("LoginName");
+}
+
+std::string UserModel::getPassword() const
+{
+    return getStringFieldValue("HashedPassWord"); 
+}
+
+std::string UserModel::getStartTime() const
+{
+    return getStringFieldValue("ScheduleDayStart"); 
+}
+
+std::string UserModel::getEndTime() const
+{
+    return getStringFieldValue("ScheduleDayEnd"); 
+}
+
+std::size_t UserModel::getUserID() const
+{
+    return getPrimaryKey();
+}
+
+bool UserModel::isPriorityInSchedule() const
+{
+    return getBoolFieldValue("IncludePriorityInSchedule");
+}
+
+bool UserModel::isMinorPriorityInSchedule() const 
+{
+    return getBoolFieldValue("IncludeMinorPriorityInSchedule");
+}
+
+bool UserModel::isUsingLettersForMaorPriority() const
+{
+    return getBoolFieldValue("UseLettersForMajorPriority");
+}
+
+bool UserModel::isSeparatingPriorityWithDot() const
+{
+    return getBoolFieldValue("SeparatePriorityWithDot");
+}
+
+void UserModel::setLastName(const std::string& lastName)
+{
+    setFieldValue("LastName", lastName);
+};
+
+void UserModel::setFirstName(const std::string& firstName)
+{
+    setFieldValue("FirstName", firstName);
+}
+
+void UserModel::setMiddleInitial(const std::string& middleinit)
+{
+    setFieldValue("MiddleInitial", middleinit);
+}
+
+void UserModel::setEmail(const std::string& email)
+{
+    setFieldValue("EmailAddress", email);
+}
+
+void UserModel::setLoginName(const std::string& loginName)
+{
+    setFieldValue("LoginName", loginName);
+}
+
+void UserModel::setPassword(const std::string& password)
+{
+    setFieldValue("HashedPassWord", password);
+};
+
+void UserModel::setStartTime(const std::string& startTime)
+{
+    setFieldValue("ScheduleDayStart", startTime); 
+}
+
+void UserModel::setEndTime(const std::string& endTime)
+{
+    setFieldValue("ScheduleDayEnd", endTime); 
+}
+
+void UserModel::setPriorityInSchedule(bool inSchedule)
+{
+    setFieldValue("IncludePriorityInSchedule", inSchedule); 
+}
+
+void UserModel::setMinorPriorityInSchedule(bool inSchedule)
+{
+    setFieldValue("IncludeMinorPriorityInSchedule", inSchedule); 
+}
+
+void UserModel::setUsingLettersForMaorPriority(bool usingLetters)
+{
+    setFieldValue("UseLettersForMajorPriority", usingLetters);
+}
+
+void UserModel::setSeparatingPriorityWithDot(bool separate)
+{
+    setFieldValue("SeparatePriorityWithDot", separate);
+}
 
