@@ -13,6 +13,16 @@ endif()
 
 find_package(Boost 1.87.0 REQUIRED COMPONENTS system charconv)
 
+include(FetchContent)
+
+FetchContent_Declare(
+    genericDictionary
+    GIT_REPOSITORY https://github.com/pacmaninbw/GenericDictionaryHeaderLibraryGeneric.git
+    CMAKE_FIND_PACKAGE_NAME GenericDictionaryHeaderLibraryGeneric
+)
+
+FetchContent_MakeAvailable(genericDictionary)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/PrivateData/dbadmindata.h")
@@ -25,5 +35,7 @@ add_executable(protoTaskPlanner
     UserModel.h UserModel.cpp TaskModel.h TaskModel.cpp ModelBase.h ModelBase.cpp
     DBInterface.h DBInterface.cpp
 )
+
+target_include_directories(protoTaskPlanner PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/genericdictionary-src)
 
 target_link_libraries(protoTaskPlanner  ${Boost_LIBRARIES} ssl crypto)
