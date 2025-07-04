@@ -18,19 +18,17 @@ public:
     };
 
     TaskModel();
-    // new task from GUI or program.
-    TaskModel(UserModel_shp creator, std::string& descriptionIn, unsigned int estimatedHoursEffort, std::string dueDate,
-        std::string startDate, TaskModel* parentTaskp = nullptr, TaskStatus statusIn = TaskStatus::Not_Started,
-        unsigned int majorPriority = 1, unsigned int minorPriority = 1
-    );
+    TaskModel(UserModel_shp creator);
+    TaskModel(UserModel_shp creator, std::string descriptionIn);
+    virtual ~TaskModel() = default;
 
-    ~TaskModel();
     void addEffortHours(double hours);
     std::size_t getTaskID() const;
     std::size_t getCreatorID() const;
     std::size_t getAssignToID() const;
     std::string getDescription() const;
     TaskModel::TaskStatus getStatus() const;
+    unsigned int getStatusIntVal() const;
     std::size_t getParentTaskID() const;
     double getPercentageComplete() const;
     std::chrono::year_month_day getCreationDate() const;
@@ -41,7 +39,7 @@ public:
     std::chrono::year_month_day getCompletionDate() const;
     unsigned int getEstimatedEffort() const;
     double getactualEffortToDate() const;
-    unsigned int getPriorityGoup() const;
+    unsigned int getPriorityGroup() const;
     unsigned int getPriority() const;
     bool hasOptionalFieldStatus() const;
     bool hasOptionalFieldParentTaskID() const;
@@ -54,6 +52,7 @@ public:
     void setAssignToID(UserModel_shp assignedUser);
     void setDescription(std::string description);
     void setStatus(TaskModel::TaskStatus status);
+    void setStatus(std::string statusStr);
     void setParentTaskID(std::size_t parentTaskID);
     void setParentTaskID(std::shared_ptr<TaskModel> parentTask);
     void setPercentageComplete(double percentComplete);
@@ -65,11 +64,12 @@ public:
     void setCompletionDate(std::chrono::year_month_day completionDate);
     void setEstimatedEffort(unsigned int estimatedHours);
     void setactualEffortToDate(double effortHoursYTD);
-    void setPriorityGoup(unsigned int priorityGroup);
-    void setPriorityGoup(const unsigned char priorityGroup);
+    void setPriorityGroup(unsigned int priorityGroup);
+    void setPriorityGroup(const char priorityGroup);
     void setPriority(unsigned int priority);
 
     std::string taskStatusString() const;
+    TaskModel::TaskStatus stringToStatus(std::string statusName) const;
 
     friend std::ostream& operator<<(std::ostream& os, const TaskModel& obj)
     {
