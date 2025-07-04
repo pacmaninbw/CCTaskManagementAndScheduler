@@ -1,8 +1,24 @@
+#include <chrono>
+#include "GenericDictionary.h"
 #include <iostream>
+#include <memory>
 #include "ModelBase.h"
 #include <string>
 #include "TaskModel.h"
 #include "UserModel.h"
+#include <vector>
+
+static const TaskModel::TaskStatus UnknowStatus = static_cast<TaskModel::TaskStatus>(-1);
+
+static std::vector<GenericDictionary<TaskModel::TaskStatus, std::string>::DictType> statusConversionsDefs = {
+    {TaskModel::TaskStatus::Not_Started, "Not Started"},
+    {TaskModel::TaskStatus::On_Hold, "On Hold"},
+    {TaskModel::TaskStatus::Waiting_for_Dependency, "Waiting for Dependency"},
+    {TaskModel::TaskStatus::Work_in_Progress, "Work in Progress"},
+    {TaskModel::TaskStatus::Complete, "Completed"}
+};
+
+static GenericDictionary<TaskModel::TaskStatus, std::string> taskStatusConversionTable(statusConversionsDefs);
 
 TaskModel::TaskModel()
     : ModelBase("TaskModel", "TaskID")
@@ -23,56 +39,37 @@ TaskModel::TaskModel()
     addDataField("ActualEffortHours", PTS_DataField::PTS_DB_FieldType::Double, true);
     addDataField("SchedulePriorityGroup", PTS_DataField::PTS_DB_FieldType::UnsignedInt, true);
     addDataField("PriorityInGroup", PTS_DataField::PTS_DB_FieldType::UnsignedInt, true);
-}
 
-TaskModel::TaskModel(
-    UserModel_shp creator, std::string &descriptionIn, unsigned int estimatedHoursEffort, std::string dueDate, std::string startDate,
-    TaskModel *parentTaskp, TaskStatus statusIn, unsigned int majorPriority, unsigned int minorPriority)
-    : TaskModel()
-{
-    setFieldValue("CreatedBy", creator->getUserID());
-    setFieldValue("AsignedTo", creator->getUserID());
-    setFieldValue("Description", descriptionIn);
-    setFieldValue("EstimatedEffortHours", estimatedHoursEffort);
-    setFieldValue("RequiredDelivery", stringToDate(dueDate));
-    setFieldValue("ScheduledStart", stringToDate(startDate));
-    setFieldValue("Status", static_cast<unsigned int>(statusIn));
-    setFieldValue("SchedulePriorityGroup", majorPriority);
-    setFieldValue("PriorityInGroup", minorPriority);
-    setFieldValue("ActualEffortHours", 0.0);
-    setFieldValue("PercentageComplete", 0.0);
-   
     std::chrono::year_month_day today = getTodaysDate();
-    setFieldValue("CreatedOn", today);
-
-    if (parentTaskp)
-    {
-        setFieldValue("ParentTask", parentTaskp->getTaskID());
-    }
+    setCreationDate(today);
 }
 
-TaskModel::~TaskModel()
+TaskModel::TaskModel(UserModel_shp creator)
+: TaskModel()
 {
+    setCreatorID(creator->getUserID());
+    setAssignToID(creator->getUserID());
+}
 
+TaskModel::TaskModel(UserModel_shp creator, std::string description)
+: TaskModel()
+{
+    setCreatorID(creator->getUserID());
+    setAssignToID(creator->getUserID());
+    setDescription(description);
 }
 
 std::string TaskModel::taskStatusString() const
 {
-    switch (status)
-    {
-        default:
-            return "Unknown TaskStatus Value";
-        case TaskStatus::Not_Started :
-            return "Not Started";
-        case TaskStatus::On_Hold:
-            return "On Hold";
-        case TaskStatus::Waiting_for_Dependency:
-            return "Waiting for Dependency";
-        case TaskStatus::Work_in_Progress:
-            return "Work in Progress";
-        case TaskStatus::Complete:
-            return "Completed";
-    }
+    TaskModel::TaskStatus status = getStatus();
+    auto statusName = taskStatusConversionTable.lookupName(status);
+    return statusName.has_value()? *statusName : "Unknown TaskStatus Value";
+}
+
+TaskModel::TaskStatus TaskModel::stringToStatus(std::string statusName) const
+{
+    auto status = taskStatusConversionTable.lookupID(statusName);
+    return status.has_value()? *status : UnknowStatus;
 }
 
 std::size_t TaskModel::getTaskID() const 
@@ -97,7 +94,12 @@ std::string TaskModel::getDescription() const
 
 TaskModel::TaskStatus TaskModel::getStatus() const 
 {
-    return statusFromInt(getIntFieldValue("Status"));
+    return statusFromInt(getUnsignedIntFieldValue("Status"));
+}
+
+unsigned int TaskModel::getStatusIntVal() const
+{
+    return getUnsignedIntFieldValue("Status");
 }
 
 std::size_t TaskModel::getParentTaskID() const 
@@ -150,7 +152,7 @@ double TaskModel::getactualEffortToDate() const
     return getDoubleFieldValue("ActualEffortHours");
 }
 
-unsigned int TaskModel::getPriorityGoup() const
+unsigned int TaskModel::getPriorityGroup() const
 {
     return getUnsignedIntFieldValue("SchedulePriorityGroup");
 }
@@ -215,14 +217,23 @@ void TaskModel::setStatus(TaskModel::TaskStatus status)
     setFieldValue("Status", static_cast<unsigned int>(status));
 }
 
+void TaskModel::setStatus(std::string statusStr)
+{
+    TaskModel::TaskStatus status = stringToStatus(statusStr);
+    if (status != UnknowStatus)
+    {
+        setStatus(status);
+    }
+}
+
 void TaskModel::setParentTaskID(std::size_t parentTaskID)
 {
-        setFieldValue("ParentTask", parentTaskID);
+    setFieldValue("ParentTask", parentTaskID);
 }
 
 void TaskModel::setParentTaskID(std::shared_ptr<TaskModel> parentTask)
 {
-    setFieldValue("ParentTask", parentTask->getTaskID());
+    setParentTaskID(parentTask->getTaskID());
 }
 
 void TaskModel::setPercentageComplete(double percentComplete)
@@ -270,15 +281,15 @@ void TaskModel::setactualEffortToDate(double effortHoursYTD)
     setFieldValue("ActualEffortHours", effortHoursYTD);
 }
 
-void TaskModel::setPriorityGoup(unsigned int priorityGroup)
+void TaskModel::setPriorityGroup(unsigned int priorityGroup)
 {
     setFieldValue("SchedulePriorityGroup", priorityGroup);
 }
 
-void TaskModel::setPriorityGoup(const unsigned char priorityGroup)
+void TaskModel::setPriorityGroup(const char priorityGroup)
 {
-    unsigned int group = priorityGroup - 'A';
-    setFieldValue("SchedulePriorityGroup", group);
+    unsigned int group = priorityGroup - 'A' + 1;
+    setPriorityGroup(group);
 }
 
 void TaskModel::setPriority(unsigned int priority)
@@ -292,3 +303,4 @@ void TaskModel::addEffortHours(double hours)
     actualEffortHours += hours;
     setactualEffortToDate(actualEffortHours);
 }
+
