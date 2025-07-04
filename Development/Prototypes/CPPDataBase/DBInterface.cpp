@@ -215,7 +215,7 @@ boost::asio::awaitable<boost::mysql::results> DBInterface::executeSqlStatementsC
         conn.set_meta_mode(boost::mysql::metadata_mode::minimal);
     }
 
-// std::cout << "Executing " << sqlStatement << std::endl; 
+//std::cout << "Executing " << sqlStatement << std::endl; 
     boost::mysql::results result;
     co_await conn.async_execute(sqlStatement, result);
 
@@ -239,7 +239,7 @@ void DBInterface::getOptionalTaskFields(
 
     if (task.hasOptionalFieldStatus())
     {
-        status = static_cast<unsigned int>(task.getStatus());
+        status = task.getStatusIntVal();
     }
 
     if (task.hasOptionalFieldActualStartDate())
@@ -291,7 +291,7 @@ std::string DBInterface::formatInsert(TaskModel &task)
         completeDate,
         task.getEstimatedEffort(),
         task.getactualEffortToDate(),
-        task.getPriorityGoup(),
+        task.getPriorityGroup(),
         task.getPriority()
     );
 
