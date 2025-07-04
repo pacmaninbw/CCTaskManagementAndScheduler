@@ -1,10 +1,30 @@
 #include <chrono>
+#include "GenericDictionary.h"
 #include <iostream>
 #include "PTS_DataField.h"
 #include <string>
 #include <variant>
 #include <vector>
 #include <utility>
+
+static std::vector<GenericDictionary<PTS_DataField::PTS_DB_FieldType, std::string>::DictType> translationTableDefs = {
+    {PTS_DataField::PTS_DB_FieldType::Key, "Key"},
+    {PTS_DataField::PTS_DB_FieldType::Date, "Date"},
+    {PTS_DataField::PTS_DB_FieldType::DateTime, "DateTime"},
+    {PTS_DataField::PTS_DB_FieldType::TimeStamp, "TimeStamp"},
+    {PTS_DataField::PTS_DB_FieldType::VarChar45, "VarChar45"},
+    {PTS_DataField::PTS_DB_FieldType::VarChar256, "VarChar256"},
+    {PTS_DataField::PTS_DB_FieldType::VarChar1024, "VarChar1024"},
+    {PTS_DataField::PTS_DB_FieldType::TinyText, "TinyText"},
+    {PTS_DataField::PTS_DB_FieldType::Text, "Text"},
+    {PTS_DataField::PTS_DB_FieldType::Boolean, "Boolean"},
+    {PTS_DataField::PTS_DB_FieldType::UnsignedInt, "UnsignedInt"},
+    {PTS_DataField::PTS_DB_FieldType::Int, "Int"},
+    {PTS_DataField::PTS_DB_FieldType::Size_T, "Size_T"},
+    {PTS_DataField::PTS_DB_FieldType::Double, "Double"}
+};
+
+static GenericDictionary<PTS_DataField::PTS_DB_FieldType, std::string> translationTable(translationTableDefs);
 
 PTS_DataField::PTS_DataField(PTS_DataField::PTS_DB_FieldType cType, std::string cName, bool isRequired)
 : columnType{cType}, dbColumnName{cName}, required{isRequired}, modified{false}
@@ -130,35 +150,9 @@ std::string PTS_DataField::fieldInfo()
 
 const std::string PTS_DataField::typeToName() const
 {
-    std::vector<std::pair<PTS_DataField::PTS_DB_FieldType, std::string>> translationTable = {
-        {PTS_DataField::PTS_DB_FieldType::Key, "Key"},
-        {PTS_DataField::PTS_DB_FieldType::Date, "Date"},
-        {PTS_DataField::PTS_DB_FieldType::DateTime, "DateTime"},
-        {PTS_DataField::PTS_DB_FieldType::TimeStamp, "TimeStamp"},
-        {PTS_DataField::PTS_DB_FieldType::VarChar45, "VarChar45"},
-        {PTS_DataField::PTS_DB_FieldType::VarChar256, "VarChar256"},
-        {PTS_DataField::PTS_DB_FieldType::VarChar1024, "VarChar1024"},
-        {PTS_DataField::PTS_DB_FieldType::TinyText, "TinyText"},
-        {PTS_DataField::PTS_DB_FieldType::Text, "Text"},
-        {PTS_DataField::PTS_DB_FieldType::Boolean, "Boolean"},
-        {PTS_DataField::PTS_DB_FieldType::UnsignedInt, "UnsignedInt"},
-        {PTS_DataField::PTS_DB_FieldType::Int, "Int"},
-        {PTS_DataField::PTS_DB_FieldType::Size_T, "Size_T"},
-        {PTS_DataField::PTS_DB_FieldType::Double, "Double"}
-    };
-
     PTS_DataField::PTS_DB_FieldType target_key = columnType;
-
-    auto found = std::find_if(translationTable.begin(), translationTable.end(), 
-        [target_key](const std::pair<PTS_DataField::PTS_DB_FieldType, std::string>& p) {
-            return p.first == target_key;
-        });
-    if (found != translationTable.end())
-    {
-        return found->second;
-    }
-
-    return std::string();
+    auto typeName = translationTable.lookupName(target_key);
+    return typeName.has_value()? *typeName : std::string();
 }
 
 int PTS_DataField::getIntValue() const
