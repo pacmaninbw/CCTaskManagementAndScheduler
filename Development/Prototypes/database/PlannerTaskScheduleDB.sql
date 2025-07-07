@@ -1,7 +1,9 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 
-CREATE DATABASE IF NOT EXISTS `PlannerTaskScheduleDB`;
+DROP DATABASE IF EXISTS `PlannerTaskScheduleDB`;
+
+CREATE DATABASE `PlannerTaskScheduleDB`;
 
 -- --------------------------------------------------------
 
