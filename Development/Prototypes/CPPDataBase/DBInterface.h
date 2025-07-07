@@ -3,11 +3,14 @@
 
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
+#include <initializer_list>
 #include "ModelBase.h"
 #include <string>
 #include <string_view>
 #include "TaskModel.h"
 #include "UserModel.h"
+#include <utility>
+#include <vector>
 
 /*
  * Error Handling: 
@@ -25,6 +28,8 @@
  * 
  */
 
+ using WhereArg = std::pair<std::string, std::string>;
+
 class DBInterface
 {
 public:
@@ -36,6 +41,8 @@ public:
     UserModel_shp getUserByLogin(std::string loginName);
     UserModel_shp getUserByFullName(std::string LastName, std::string firstName, std::string middleInitial);
     TaskModel_shp getTaskByDescription(std::string description);
+    bool getModelFromDB(ModelShp model, std::vector<WhereArg> whereArgs);
+    bool getModelFromDB(ModelShp model, std::initializer_list<WhereArg> whereArgs);
     UserList getAllUsers();
     TaskList getAllTasksForUser(UserModel_shp user);
     TaskList getAllTasksForUser(UserModel& user);
@@ -54,10 +61,12 @@ private:
         std::optional<boost::mysql::date>& completeDate);
     std::string formatInsert(TaskModel& task);
     std::string formatInsert(UserModel& user);
+    std::string formatSelect(std::string tableName, std::vector<WhereArg> whereArgs);
+    std::string getTableNameFrom(ModelBase& model);
     bool getFormatOptionsOnFirstFormatting();
     bool validateObjectAndSetUp(ModelBase& model);
-    bool convertResultsToModel(boost::mysql::row_view& sourceFromDB, std::vector<std::string>& columnNames, Modelshp destination);
-    bool executeSimpleQueryProcessResults(std::string sqlStatements, Modelshp destination);
+    bool convertResultsToModel(boost::mysql::row_view& sourceFromDB, std::vector<std::string>& columnNames, ModelShp destination);
+    bool executeSimpleQueryProcessResults(std::string sqlStatements, ModelShp destination);
     void convertScalarFieldValue(boost::mysql::field_view sourceField, PTS_DataField_shp currentFieldPtr);
 
     boost::mysql::connect_params dbConnectionParameters;

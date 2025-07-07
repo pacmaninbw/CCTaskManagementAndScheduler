@@ -69,92 +69,95 @@ bool DBInterface::insertIntoDataBase(UserModel &user)
     }
 }
 
-UserModel_shp DBInterface::getUserByLogin(std::string loginName)
+bool DBInterface::getModelFromDB(ModelShp model, std::vector<WhereArg> whereArgs)
 {
     try
     {
-        if (!getFormatOptionsOnFirstFormatting())
+        clearPreviousErrors();
+
+        std::string sqlStatement = formatSelect(getTableNameFrom(*model), whereArgs);
+        if (executeSimpleQueryProcessResults(sqlStatement, model))
         {
-            return nullptr;
+            return true;
         }
-
-        std::string sqlStatement = boost::mysql::format_sql(dbFormatOptions,
-            R"sql(SELECT * FROM PlannerTaskScheduleDB.UserProfile WHERE LoginName = {})sql", loginName);
-
-        UserModel_shp newUser = std::make_shared<UserModel>(UserModel());
-        if (executeSimpleQueryProcessResults(sqlStatement, newUser))
-        {
-            return newUser;
-        }
-
-        return nullptr;
     }
     catch(const std::exception& e)
     {
-        std::string eMsg("In DBInterface::getUserByLogin ");
+        std::string eMsg("In DBInterface::getModelFromDB ");
         eMsg += e.what();
         appendErrorMessage(eMsg);
-        return nullptr;
+        return false;
     }
+    
+    return false;
+}
+
+bool DBInterface::getModelFromDB(ModelShp model, std::initializer_list<WhereArg> whereArgs)
+{
+    std::vector<WhereArg> vWhereArgs{whereArgs};
+
+    return getModelFromDB(model, vWhereArgs);
+}
+
+std::string DBInterface::formatSelect(std::string tableName, std::vector<WhereArg> whereArgs)
+{
+    std::string selectFMT("SELECT * FROM PlannerTaskScheduleDB." +  tableName + " WHERE ");
+    bool notFirstTime = false;
+
+    for (auto whereArg: whereArgs)
+    {
+        if (notFirstTime)
+        {
+            selectFMT += " AND " + whereArg.first + " = '" + whereArg.second + "'";
+        }
+        else
+        {
+            selectFMT += whereArg.first + " = '" + whereArg.second + "'";
+            notFirstTime = true;
+        }
+    }
+
+    return selectFMT;
+}
+
+std::string DBInterface::getTableNameFrom(ModelBase &model)
+{
+    std::string tableName;
+    tableName = model.getTableName();
+    return tableName;
+}
+
+UserModel_shp DBInterface::getUserByLogin(std::string loginName)
+{
+    UserModel_shp newUser = std::make_shared<UserModel>(UserModel());
+    if (getModelFromDB(newUser, {{"LoginName", loginName}}))
+    {
+        return newUser;
+    }
+
+    return nullptr;
 }
 
 UserModel_shp DBInterface::getUserByFullName(std::string lastName, std::string firstName, std::string middleInitial)
 {
-    try
+    UserModel_shp newUser = std::make_shared<UserModel>(UserModel());
+    if (getModelFromDB(newUser, {{"LastName", lastName}, {"FirstName", firstName}, {"MiddleInitial", middleInitial}}))
     {
-        if (!getFormatOptionsOnFirstFormatting())
-        {
-            return nullptr;
-        }
-
-        std::string sqlStatement = boost::mysql::format_sql(dbFormatOptions,
-        R"sql(SELECT * FROM PlannerTaskScheduleDB.UserProfile WHERE LastName = {} AND FirstName = {} AND MiddleInitial = {} )sql",
-        lastName, firstName, middleInitial);
-
-        UserModel_shp newUser = std::make_shared<UserModel>(UserModel());
-        if (executeSimpleQueryProcessResults(sqlStatement, newUser))
-        {
-            return newUser;
-        }
-
-        return nullptr;
+        return newUser;
     }
-    catch(const std::exception& e)
-    {
-        std::string eMsg("In DBInterface::getUserByFullName ");
-        eMsg += e.what();
-        appendErrorMessage(eMsg);
-        return nullptr;
-    }
+
+    return nullptr;
 }
 
 TaskModel_shp DBInterface::getTaskByDescription(std::string description)
 {
-    try
+    TaskModel_shp newTask = std::make_shared<TaskModel>(TaskModel());
+    if (getModelFromDB(newTask, {{"Description", description}}))
     {
-        if (!getFormatOptionsOnFirstFormatting())
-        {
-            return nullptr;
-        }
-
-        std::string sqlStatement = boost::mysql::format_sql(dbFormatOptions,
-        R"sql(SELECT * FROM PlannerTaskScheduleDB.Tasks WHERE Description = {})sql", description);
-
-        TaskModel_shp newTask = std::make_shared<TaskModel>(TaskModel());
-        if (executeSimpleQueryProcessResults(sqlStatement, newTask))
-        {
-            return newTask;
-        }
-
-        return nullptr;
+        return newTask;
     }
-    catch(const std::exception& e)
-    {
-        std::string eMsg("In DBInterface::getTaskByDescription ");
-        eMsg += e.what();
-        appendErrorMessage(eMsg);
-        return nullptr;
-    }
+
+    return nullptr;
 }
 /*
  * Protected or private methods.
@@ -215,7 +218,10 @@ boost::asio::awaitable<boost::mysql::results> DBInterface::executeSqlStatementsC
         conn.set_meta_mode(boost::mysql::metadata_mode::minimal);
     }
 
-//std::cout << "Executing " << sqlStatement << std::endl; 
+#ifdef SQL4DEBUG
+    std::cout << "Executing " << sqlStatement << std::endl; 
+#endif
+
     boost::mysql::results result;
     co_await conn.async_execute(sqlStatement, result);
 
@@ -408,7 +414,7 @@ boost::mysql::results DBInterface::runAnyMySQLstatementsAsynchronously(std::stri
     return localResult;
 }
 
-bool DBInterface::convertResultsToModel(boost::mysql::row_view &sourceFromDB, std::vector<std::string> &columnNames, Modelshp destination)
+bool DBInterface::convertResultsToModel(boost::mysql::row_view &sourceFromDB, std::vector<std::string> &columnNames, ModelShp destination)
 {
     bool success = true;
     auto sourceField = sourceFromDB.begin();
@@ -493,7 +499,7 @@ void DBInterface::convertScalarFieldValue(boost::mysql::field_view sourceField, 
     }
 }
 
-bool DBInterface::executeSimpleQueryProcessResults(std::string sqlStatements, Modelshp destination)
+bool DBInterface::executeSimpleQueryProcessResults(std::string sqlStatements, ModelShp destination)
 {
     boost::mysql::results results = runAnyMySQLstatementsAsynchronously(sqlStatements);
 
