@@ -36,6 +36,8 @@ add_executable(protoTaskPlanner
     DBInterface.h DBInterface.cpp
 )
 
+#target_compile_definitions(protoTaskPlanner PRIVATE SQL4DEBUG=1)
+
 target_include_directories(protoTaskPlanner PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/genericdictionary-src)
 
 target_link_libraries(protoTaskPlanner  ${Boost_LIBRARIES} ssl crypto)
