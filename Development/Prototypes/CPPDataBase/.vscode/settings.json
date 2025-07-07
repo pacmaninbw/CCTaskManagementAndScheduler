@@ -70,6 +70,9 @@
         "format": "cpp",
         "iomanip": "cpp",
         "span": "cpp",
-        "text_encoding": "cpp"
+        "text_encoding": "cpp",
+        "expected": "cpp",
+        "ranges": "cpp",
+        "stdfloat": "cpp"
     }
 }
