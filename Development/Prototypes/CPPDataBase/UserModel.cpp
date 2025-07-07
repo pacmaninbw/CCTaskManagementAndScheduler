@@ -4,7 +4,7 @@
 #include <string>
 
 UserModel::UserModel()
-    : ModelBase("UserModel", "UserID")
+    : ModelBase("UserModel", "UserProfile", "UserID")
 {
     addDataField("LastName", PTS_DataField::PTS_DB_FieldType::VarChar45, true);
     addDataField("FirstName", PTS_DataField::PTS_DB_FieldType::VarChar45, true);

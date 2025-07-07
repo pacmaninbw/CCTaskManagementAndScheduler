@@ -16,11 +16,13 @@ using PTS_DataField_map = std::unordered_map<std::string, PTS_DataField_shp>;
 class ModelBase
 {
 public:
-    ModelBase(const std::string modelName, const std::string primaryKeyName, std::size_t primaryKeyIn=0);
+    ModelBase(const std::string modelName, const std::string tabName, const std::string primaryKeyName, std::size_t primaryKeyIn=0);
     virtual ~ModelBase() = default;
     std::string dateToString(std::chrono::year_month_day taskDate);
     std::chrono::year_month_day stringToDate(std::string dateString);
     bool isInDataBase() const;
+    std::string getTableName() const { return tableName; };
+    
 /*
  * Field access methods. 
  */
@@ -142,12 +144,13 @@ protected:
     std::chrono::year_month_day getTodaysDate();
 
     const std::string modelClassName;
+    const std::string tableName;
     const std::string primaryKeyFieldName;
     PTS_DataField_map dataFields;
 };
 
-using Modelshp = std::shared_ptr<ModelBase>;
-using ModelList = std::vector<Modelshp>;
+using ModelShp = std::shared_ptr<ModelBase>;
+using ModelList = std::vector<ModelShp>;
 
 #endif  // MODELBASE_H_
 

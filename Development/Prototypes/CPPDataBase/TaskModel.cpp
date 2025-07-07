@@ -21,7 +21,7 @@ static std::vector<GenericDictionary<TaskModel::TaskStatus, std::string>::DictTy
 static GenericDictionary<TaskModel::TaskStatus, std::string> taskStatusConversionTable(statusConversionsDefs);
 
 TaskModel::TaskModel()
-    : ModelBase("TaskModel", "TaskID")
+    : ModelBase("TaskModel", "Tasks", "TaskID")
 {
     addDataField("CreatedBy", PTS_DataField::PTS_DB_FieldType::Key, true);
     addDataField("AsignedTo", PTS_DataField::PTS_DB_FieldType::Key, true);

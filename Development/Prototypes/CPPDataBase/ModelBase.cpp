@@ -9,8 +9,8 @@
 #include <vector>
 
 
-ModelBase::ModelBase(const std::string modelName, std::string primaryKeyName, std::size_t primaryKeyIn)
-: modelClassName{modelName}, primaryKeyFieldName{primaryKeyName}
+ModelBase::ModelBase(const std::string modelName, const std::string tabName, std::string primaryKeyName, std::size_t primaryKeyIn)
+: modelClassName{modelName}, tableName{tabName}, primaryKeyFieldName{primaryKeyName}
 {
     PTS_DataField_shp primaryKey = std::make_shared<PTS_DataField>(PTS_DataField(PTS_DataField::PTS_DB_FieldType::Key, primaryKeyName, true));
     if (primaryKeyIn)
