@@ -3,10 +3,10 @@
 
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
+#include <chrono>
 #include <initializer_list>
 #include "ModelBase.h"
 #include <string>
-#include <string_view>
 #include "TaskModel.h"
 #include "UserModel.h"
 #include <utility>
@@ -38,11 +38,12 @@ public:
     std::string getAllErrorMessages() const { return errorMessages; };
     bool insertIntoDataBase(TaskModel &task);
     bool insertIntoDataBase(UserModel &user);
-    UserModel_shp getUserByLogin(std::string loginName);
-    UserModel_shp getUserByFullName(std::string LastName, std::string firstName, std::string middleInitial);
-    TaskModel_shp getTaskByDescription(std::string description);
-    bool getModelFromDB(ModelShp model, std::vector<WhereArg> whereArgs);
-    bool getModelFromDB(ModelShp model, std::initializer_list<WhereArg> whereArgs);
+    bool getUniqueModelFromDB(ModelShp model, std::vector<WhereArg> whereArgs);
+    bool getUniqueModelFromDB(ModelShp model, std::initializer_list<WhereArg> whereArgs)
+    {
+        std::vector<WhereArg> vWhereArgs{whereArgs};
+        return getUniqueModelFromDB(model, vWhereArgs);
+    };
     UserList getAllUsers();
     TaskList getAllTasksForUser(UserModel_shp user);
     TaskList getAllTasksForUser(UserModel& user);
@@ -50,8 +51,12 @@ public:
 private:
     void clearPreviousErrors() { errorMessages.clear(); };
     void appendErrorMessage(std::string newError) { errorMessages.append(newError); };
-    boost::mysql::date convertChronoDateToBoostMySQLDate(std::chrono::year_month_day source);
-    std::chrono::year_month_day convertBoostMySQLDateToChornoDate(boost::mysql::date source);
+    bool getFormatOptionsOnFirstFormatting();
+    bool validateObjectAndSetUp(ModelBase& model);
+    std::string getTableNameFrom(ModelBase& model);
+    std::string formatInsert(TaskModel& task);
+    std::string formatInsert(UserModel& user);
+    std::string formatSelect(std::string tableName, std::vector<WhereArg> whereArgs);
     boost::asio::awaitable<void> getFormatOptionsFromDB();
     boost::asio::awaitable<boost::mysql::results> executeSqlStatementsCoRoutine(std::string selectSqlStatement);
     boost::mysql::results runAnyMySQLstatementsAsynchronously(std::string selectSqlStatement);
@@ -59,15 +64,23 @@ private:
         std::optional<unsigned int>& status, std::optional<boost::mysql::date>& actualStart,
         std::optional<boost::mysql::date>& estimatedCompleteDate,
         std::optional<boost::mysql::date>& completeDate);
-    std::string formatInsert(TaskModel& task);
-    std::string formatInsert(UserModel& user);
-    std::string formatSelect(std::string tableName, std::vector<WhereArg> whereArgs);
-    std::string getTableNameFrom(ModelBase& model);
-    bool getFormatOptionsOnFirstFormatting();
-    bool validateObjectAndSetUp(ModelBase& model);
     bool convertResultsToModel(boost::mysql::row_view& sourceFromDB, std::vector<std::string>& columnNames, ModelShp destination);
-    bool executeSimpleQueryProcessResults(std::string sqlStatements, ModelShp destination);
     void convertScalarFieldValue(boost::mysql::field_view sourceField, PTS_DataField_shp currentFieldPtr);
+    bool executeSimpleQueryProcessResults(std::string sqlStatements, ModelShp destination);
+    boost::mysql::date convertChronoDateToBoostMySQLDate(std::chrono::year_month_day source)
+    {
+        std::chrono::sys_days tp = source;
+        boost::mysql::date boostDate(tp);
+        return boostDate;
+    };
+    std::chrono::year_month_day convertBoostMySQLDateToChornoDate(boost::mysql::date source)
+    {
+        const std::chrono::year year{source.year()};
+        const std::chrono::month month{source.month()};
+        const std::chrono::day day{source.day()};
+        std::chrono::year_month_day converted{year, month, day};
+        return converted;
+    };
 
     boost::mysql::connect_params dbConnectionParameters;
     boost::mysql::format_options dbFormatOptions;
