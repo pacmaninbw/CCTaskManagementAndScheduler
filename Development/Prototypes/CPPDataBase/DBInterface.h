@@ -54,8 +54,7 @@ private:
     bool getFormatOptionsOnFirstFormatting();
     bool validateObjectAndSetUp(ModelBase& model);
     std::string getTableNameFrom(ModelBase& model);
-    std::string formatInsert(TaskModel& task);
-    std::string formatInsert(UserModel& user);
+    std::string formatInsert(ModelBase& model);
     std::string formatSelect(std::string tableName, std::vector<WhereArg> whereArgs);
     boost::asio::awaitable<void> getFormatOptionsFromDB();
     boost::asio::awaitable<boost::mysql::results> executeSqlStatementsCoRoutine(std::string selectSqlStatement);
@@ -81,6 +80,13 @@ private:
         std::chrono::year_month_day converted{year, month, day};
         return converted;
     };
+    std::string wrapInSingleQuotes(const std::string& value)
+    {
+        std::string outValue("\'");
+        outValue.append(value);
+        outValue.append("\'");
+        return outValue;
+    }
 
     boost::mysql::connect_params dbConnectionParameters;
     boost::mysql::format_options dbFormatOptions;

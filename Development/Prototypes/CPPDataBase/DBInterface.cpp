@@ -181,64 +181,36 @@ std::string DBInterface::getTableNameFrom(ModelBase &model)
     return tableName;
 }
 
-std::string DBInterface::formatInsert(TaskModel &task)
+std::string DBInterface::formatInsert(ModelBase &model)
 {
-    boost::mysql::date createdOn = convertChronoDateToBoostMySQLDate(task.getCreationDate());
-    boost::mysql::date dueDate = convertChronoDateToBoostMySQLDate(task.getDueDate());
-    boost::mysql::date scheduledStart = convertChronoDateToBoostMySQLDate(task.getScheduledStart());
-    std::optional<std::size_t> parentTaskID;
-    std::optional<unsigned int> status;
-    std::optional<boost::mysql::date> actualStart;
-    std::optional<boost::mysql::date> estimatedCompleteDate;
-    std::optional<boost::mysql::date> completeDate;
+    std::string insertFMT("INSERT INTO PlannerTaskScheduleDB." +  getTableNameFrom(model) + " (");
+    PTS_DataField_vector allFieldsWithValue = model.getAllFieldsWithValue();
+    bool notFirstValue = false;
 
-    getOptionalTaskFields(task, parentTaskID, status, actualStart, estimatedCompleteDate, completeDate);
+    for (auto field: allFieldsWithValue)
+    {
+        if (notFirstValue)
+        {
+            insertFMT.append(", ");
+        }
+        insertFMT.append(field->getColumnName());
+        notFirstValue = true;
+    }
+    insertFMT.append(") VALUES (");
 
-    std::string sqlStatement = boost::mysql::format_sql(
-    dbFormatOptions,
-    R"sql(INSERT INTO PlannerTaskScheduleDB.Tasks (
-        CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, 
-        ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup
-        ) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}))sql",
-        task.getCreatorID(),
-        task.getAssignToID(),
-        task.getDescription(),
-        parentTaskID,
-        status,
-        task.getPercentageComplete(),
-        createdOn,
-        dueDate,
-        scheduledStart,
-        actualStart,
-        estimatedCompleteDate,
-        completeDate,
-        task.getEstimatedEffort(),
-        task.getactualEffortToDate(),
-        task.getPriorityGroup(),
-        task.getPriority()
-    );
+    notFirstValue = false;
+    for (auto field: allFieldsWithValue)
+    {
+        if (notFirstValue)
+        {
+            insertFMT.append(", ");
+        }
+        insertFMT.append(wrapInSingleQuotes(field->toString()));
+        notFirstValue = true;
+    }
+    insertFMT.append(")");
 
-    return sqlStatement;
-}
-
-std::string DBInterface::formatInsert(UserModel &user)
-{
-    std::string sqlStatement = boost::mysql::format_sql(
-    dbFormatOptions,
-    R"sql(INSERT INTO PlannerTaskScheduleDB.UserProfile (
-            LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, ScheduleDayStart, ScheduleDayEnd
-            ) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}))sql",
-            user.getLastName(),
-            user.getFirstName(),
-            user.getMiddleInitial(),
-            user.getEmail(),
-            user.getLoginName(),
-            user.getPassword(),
-            user.getStartTime(),
-            user.getEndTime()
-    );
-
-    return sqlStatement;
+    return insertFMT;
 }
 
 std::string DBInterface::formatSelect(std::string tableName, std::vector<WhereArg> whereArgs)
