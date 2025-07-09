@@ -49,6 +49,7 @@ public:
     std::string getStringValue() const;
     bool getBoolValue() const;
     unsigned int getUnsignedIntValue() const;
+    void clearDirtyBit() { modified = false; };
 
 /*
  * Field information methods.
