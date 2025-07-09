@@ -72,6 +72,14 @@ bool ModelBase::isInDataBase() const
     return pkField? pkField->hasValue() : false;
 }
 
+void ModelBase::onInsertionClearDirtyBits()
+{
+    for (const auto& [key, value] : dataFields)
+    {
+        value->clearDirtyBit();
+    }
+}
+
 bool ModelBase::setFieldValue(const std::string& fieldName, DataValueType dataValue)
 {
     PTS_DataField_shp fieldToUpdate = findFieldInDataFields(fieldName);
@@ -288,3 +296,4 @@ bool ModelBase::diffAllFields(ModelBase other)
 
     return areTheSame;
 }
+

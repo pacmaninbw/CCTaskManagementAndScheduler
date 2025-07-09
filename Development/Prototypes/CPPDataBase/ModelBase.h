@@ -22,6 +22,7 @@ public:
     std::chrono::year_month_day stringToDate(std::string dateString);
     bool isInDataBase() const;
     std::string getTableName() const { return tableName; };
+    void onInsertionClearDirtyBits();
     
 /*
  * Field access methods. 
