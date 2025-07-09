@@ -307,40 +307,6 @@ boost::mysql::results DBInterface::runAnyMySQLstatementsAsynchronously(std::stri
     return localResult;
 }
 
-void DBInterface::getOptionalTaskFields(
-    TaskModel &task,
-    std::optional<std::size_t> &parentTaskID,
-    std::optional<unsigned int> &status,
-    std::optional<boost::mysql::date> &actualStart,
-    std::optional<boost::mysql::date> &estimatedCompleteDate,
-    std::optional<boost::mysql::date> &completeDate
-) {
-    if (task.hasOptionalFieldParentTaskID())
-    {
-        parentTaskID = task.getParentTaskID();
-    }
-
-    if (task.hasOptionalFieldStatus())
-    {
-        status = task.getStatusIntVal();
-    }
-
-    if (task.hasOptionalFieldActualStartDate())
-    {
-        actualStart = convertChronoDateToBoostMySQLDate(task.getactualStartDate());
-    }
-
-    if (task.hasOptionalFieldEstimatedCompletion())
-    {
-        estimatedCompleteDate = convertChronoDateToBoostMySQLDate(task.getEstimatedCompletion());
-    }
-
-    if (task.hasOptionalFieldCompletionDate())
-    {
-        completeDate = convertChronoDateToBoostMySQLDate(task.getCompletionDate());
-    }
-}
-
 bool DBInterface::convertResultsToModel(boost::mysql::row_view &sourceFromDB, std::vector<std::string> &columnNames, ModelShp destination)
 {
     bool success = true;

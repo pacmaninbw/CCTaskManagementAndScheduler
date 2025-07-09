@@ -59,10 +59,6 @@ private:
     boost::asio::awaitable<void> getFormatOptionsFromDB();
     boost::asio::awaitable<boost::mysql::results> executeSqlStatementsCoRoutine(std::string selectSqlStatement);
     boost::mysql::results runAnyMySQLstatementsAsynchronously(std::string selectSqlStatement);
-    void getOptionalTaskFields(TaskModel& task,std::optional<std::size_t>& parentTaskID, 
-        std::optional<unsigned int>& status, std::optional<boost::mysql::date>& actualStart,
-        std::optional<boost::mysql::date>& estimatedCompleteDate,
-        std::optional<boost::mysql::date>& completeDate);
     bool convertResultsToModel(boost::mysql::row_view& sourceFromDB, std::vector<std::string>& columnNames, ModelShp destination);
     void convertScalarFieldValue(boost::mysql::field_view sourceField, PTS_DataField_shp currentFieldPtr);
     bool executeSimpleQueryProcessResults(std::string sqlStatements, ModelShp destination);
