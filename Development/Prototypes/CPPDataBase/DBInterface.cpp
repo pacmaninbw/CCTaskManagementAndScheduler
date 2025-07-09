@@ -28,46 +28,24 @@ DBInterface::DBInterface()
     dbConnectionParameters.database = PlannerDB;
 }
 
-bool DBInterface::insertIntoDataBase(TaskModel& task)
+bool DBInterface::insertIntoDataBase(ModelBase& model)
 {
     try
     {
-        if (!validateObjectAndSetUp(task))
+        if (!validateObjectAndSetUp(model))
         {
             return false;
         }
 
-        boost::mysql::results results = runAnyMySQLstatementsAsynchronously(formatInsert(task));
-        task.setPrimaryKey(results.last_insert_id());
+        boost::mysql::results results = runAnyMySQLstatementsAsynchronously(formatInsert(model));
+        model.setPrimaryKey(results.last_insert_id());
+        model.onInsertionClearDirtyBits();
 
         return true;
     }
     catch(const std::exception& e)
     {
-        std::string eMsg("In DBInterface::insertIntoDataBase(TaskModel &task) ");
-        eMsg += e.what();
-        appendErrorMessage(eMsg);
-        return false;
-    }
-}
-
-bool DBInterface::insertIntoDataBase(UserModel &user)
-{
-    try
-    {
-        if (!validateObjectAndSetUp(user))
-        {
-            return false;
-        }
-
-        boost::mysql::results results = runAnyMySQLstatementsAsynchronously(formatInsert(user));
-        user.setPrimaryKey(results.last_insert_id());
-
-        return true;
-    }
-    catch(const std::exception& e)
-    {
-        std::string eMsg("In DBInterface::insertIntoDataBase(UserModel &user) ");
+        std::string eMsg("In DBInterface::insertIntoDataBase(ModelBase &model) ");
         eMsg += e.what();
         appendErrorMessage(eMsg);
         return false;

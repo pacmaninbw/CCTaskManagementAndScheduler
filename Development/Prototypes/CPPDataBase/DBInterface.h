@@ -36,8 +36,7 @@ public:
     DBInterface();
     virtual ~DBInterface() = default;
     std::string getAllErrorMessages() const { return errorMessages; };
-    bool insertIntoDataBase(TaskModel &task);
-    bool insertIntoDataBase(UserModel &user);
+    bool insertIntoDataBase(ModelBase& model);
     bool getUniqueModelFromDB(ModelShp model, std::vector<WhereArg> whereArgs);
     bool getUniqueModelFromDB(ModelShp model, std::initializer_list<WhereArg> whereArgs)
     {
