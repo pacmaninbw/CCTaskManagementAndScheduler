@@ -52,62 +52,33 @@ PTS_DataField::PTS_DataField(PTS_DataField::PTS_DB_FieldType cType, std::string 
     dataValue = inValue;
 };
 
+struct Visitor
+{
+    template<typename T>
+    std::string operator()(const T& value) const { return std::to_string(value); }
+
+    std::string operator()(const std::string& value) const { return value; }
+    std::string operator()(std::monostate) const { return "NULL"; }
+    std::string operator()(bool arg) const { return arg? "1" : "0"; }
+
+    std::string operator()(std::chrono::time_point<std::chrono::system_clock> arg) const
+    {
+        std::stringstream ss;
+        ss << std::format("{:%F %T}", arg);
+        return ss.str();
+    }
+
+    std::string operator()(std::chrono::year_month_day arg) const
+    {
+        std::stringstream ss;
+        ss << arg;
+        return ss.str();
+    }
+};
 
 std::string PTS_DataField::toString()
 {
-    std::string returnValue;
-
-    if (isStringType())
-    {
-        return std::get<std::string>(dataValue);
-    }
-
-    switch (columnType)
-    {
-    default:
-        std::cerr << "Unknown column type in PTS_DataField::toString()" << static_cast<int>(columnType) << "\n";
-        break;
-
-    case PTS_DataField::PTS_DB_FieldType::Date :
-        {
-            std::stringstream ss;
-            ss << std::get<std::chrono::year_month_day>(dataValue);
-            returnValue = ss.str();
-        }
-        break;
-
-    case PTS_DataField::PTS_DB_FieldType::DateTime :
-    case PTS_DataField::PTS_DB_FieldType::TimeStamp :
-        {
-            std::stringstream ss;
-            ss << std::format("%F %T", std::get<std::chrono::time_point<std::chrono::system_clock>>(dataValue));
-            returnValue = ss.str();
-        }
-        break;
-
-    case PTS_DataField::PTS_DB_FieldType::Int :
-        returnValue = std::to_string(std::get<int>(dataValue));
-        break;
-
-    case PTS_DataField::PTS_DB_FieldType::Key :
-    case PTS_DataField::PTS_DB_FieldType::Size_T :
-        returnValue = std::to_string(std::get<std::size_t>(dataValue));
-        break;
-
-    case PTS_DataField::PTS_DB_FieldType::UnsignedInt :
-        returnValue = std::to_string(std::get<unsigned int>(dataValue));
-        break;
-
-    case PTS_DataField::PTS_DB_FieldType::Double :
-        returnValue = std::to_string(std::get<double>(dataValue));
-        break;
-
-    case PTS_DataField::PTS_DB_FieldType::Boolean :
-        returnValue = (std::get<bool>(dataValue)) ? "1" : "0";
-        break;
-    }
-
-    return returnValue;
+    return std::visit(Visitor{}, dataValue);
 }
 
 void PTS_DataField::setValue(DataValueType inValue)
