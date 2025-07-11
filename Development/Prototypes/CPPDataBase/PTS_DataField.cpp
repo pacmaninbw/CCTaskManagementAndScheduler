@@ -26,6 +26,11 @@ static std::vector<GenericDictionary<PTS_DataField::PTS_DB_FieldType, std::strin
 
 static GenericDictionary<PTS_DataField::PTS_DB_FieldType, std::string> translationTable(translationTableDefs);
 
+PTS_DataField::PTS_DataField(DataValueType inValue)
+: dataValue{inValue}, required{false}, modified{false}
+{
+}
+
 PTS_DataField::PTS_DataField(PTS_DataField::PTS_DB_FieldType cType, std::string cName, bool isRequired)
 : columnType{cType}, dbColumnName{cName}, required{isRequired}, modified{false}
 {
@@ -211,3 +216,4 @@ unsigned int PTS_DataField::getUnsignedIntValue() const
 
     return 0;
 }
+

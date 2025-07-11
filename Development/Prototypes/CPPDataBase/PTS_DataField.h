@@ -21,11 +21,7 @@ public:
     enum class PTS_DB_FieldType {Key, Date, DateTime, TimeStamp, VarChar45, VarChar256, VarChar1024, TinyText, Text,
         Boolean, UnsignedInt, Int, Size_T, Double
     };
-
-    /*
-     * Currently the closest we can get to a default constructor. Field type and column
-     * name must be set. 
-     */
+    PTS_DataField(DataValueType inValue);   // Only used for parameters for SELECT statement
     PTS_DataField(PTS_DataField::PTS_DB_FieldType cType, std::string cName, bool isRequired=false);
     PTS_DataField(PTS_DataField::PTS_DB_FieldType cType, std::string cName, DataValueType inValue, bool isRequired=false);
     ~PTS_DataField() = default;
