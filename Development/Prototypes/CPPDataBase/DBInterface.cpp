@@ -30,13 +30,22 @@ DBInterface::DBInterface()
 
 bool DBInterface::insertIntoDataBase(ModelBase& model)
 {
+    clearPreviousErrors();
+
+    if (model.isInDataBase())
+    {
+        appendErrorMessage("The model object is already in the database.\n");
+        return false;
+    }
+
+    if (!model.allRequiredFieldsHaveData())
+    {
+        appendErrorMessage(model.reportMissingRequiredFields());
+        return false;
+    }
+
     try
     {
-        if (!validateObjectAndSetUp(model))
-        {
-            return false;
-        }
-
         boost::mysql::results results = runAnyMySQLstatementsAsynchronously(formatInsert(model));
         model.setPrimaryKey(results.last_insert_id());
         model.onInsertionClearDirtyBits();
@@ -54,6 +63,8 @@ bool DBInterface::insertIntoDataBase(ModelBase& model)
 
 bool DBInterface::getUniqueModelFromDB(ModelShp model, std::vector<WhereArg> whereArgs)
 {
+    clearPreviousErrors();
+
     if (!model)
     {
         std::invalid_argument missingModelPtr("NULL model pointer in DBInterface::getUniqueModelFromDB()!");
@@ -62,8 +73,6 @@ bool DBInterface::getUniqueModelFromDB(ModelShp model, std::vector<WhereArg> whe
 
     try
     {
-        clearPreviousErrors();
-
         std::string sqlStatement = formatSelect(getTableNameFrom(*model), whereArgs);
         if (executeSimpleQueryProcessResults(sqlStatement, model))
         {
@@ -84,74 +93,6 @@ bool DBInterface::getUniqueModelFromDB(ModelShp model, std::vector<WhereArg> whe
 /*
  * Protected or private methods.
  */
-/*
- * Co-routines can't be called from constructors, so the first formatted
- * statement need to retrieve the connection details. 
- */
-bool DBInterface::getFormatOptionsOnFirstFormatting()
-{
-    if (dbFormatOptionsAreSet)
-    {
-        return true;
-    }
-
-    boost::asio::io_context ctx;
-
-    boost::asio::co_spawn(
-        ctx,
-        [this] { return getFormatOptionsFromDB(); },
-        [](std::exception_ptr ptr) {
-            if (ptr)
-            {
-                std::rethrow_exception(ptr);
-            }
-        }
-    );
-
-    try
-    {
-        ctx.run();
-        return true;
-    }
-/*
- * Handle any errors here since this function is called by most methods that send
- * or receive data from the database.
- */
-    catch (const std::exception& e)
-    {
-        std::string eMsg("Failed to connect to database to get formatting options. MySQL Server Error: ");
-        eMsg += e.what();
-        appendErrorMessage(eMsg);
-        return false;
-    }
-}
-
-bool DBInterface::validateObjectAndSetUp(ModelBase &model)
-{
-    clearPreviousErrors();
-    if (model.isInDataBase())
-    {
-        appendErrorMessage("The model object is already in the database.\n");
-        return false;
-    }
-
-    if (!model.allRequiredFieldsHaveData())
-    {
-        appendErrorMessage(model.reportMissingRequiredFields());
-        return false;
-    }
-
-    if (!dbFormatOptionsAreSet)
-    {
-        if (!getFormatOptionsOnFirstFormatting())
-        {
-            return false;
-        }
-    }
-    
-    return true;
-}
-
 std::string DBInterface::getTableNameFrom(ModelBase &model)
 {
     std::string tableName;
@@ -210,23 +151,6 @@ std::string DBInterface::formatSelect(std::string tableName, std::vector<WhereAr
     }
 
     return selectFMT;
-}
-
-/*
- * retrieve the format options from the connection. Should only be called
- * once per instantiation of the class, but it can't be called from the constructor.
- * No SQL is executed.
- */
-boost::asio::awaitable<void> DBInterface::getFormatOptionsFromDB()
-{
-    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-    dbFormatOptions = conn.format_opts().value();
-    dbFormatOptionsAreSet = true;
-
-    co_await conn.async_close();
 }
 
 /*

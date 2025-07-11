@@ -50,12 +50,9 @@ public:
 private:
     void clearPreviousErrors() { errorMessages.clear(); };
     void appendErrorMessage(std::string newError) { errorMessages.append(newError); };
-    bool getFormatOptionsOnFirstFormatting();
-    bool validateObjectAndSetUp(ModelBase& model);
     std::string getTableNameFrom(ModelBase& model);
     std::string formatInsert(ModelBase& model);
     std::string formatSelect(std::string tableName, std::vector<WhereArg> whereArgs);
-    boost::asio::awaitable<void> getFormatOptionsFromDB();
     boost::asio::awaitable<boost::mysql::results> executeSqlStatementsCoRoutine(std::string selectSqlStatement);
     boost::mysql::results runAnyMySQLstatementsAsynchronously(std::string selectSqlStatement);
     bool convertResultsToModel(boost::mysql::row_view& sourceFromDB, std::vector<std::string>& columnNames, ModelShp destination);
@@ -84,8 +81,6 @@ private:
     }
 
     boost::mysql::connect_params dbConnectionParameters;
-    boost::mysql::format_options dbFormatOptions;
-    bool dbFormatOptionsAreSet = false;
     std::string errorMessages;
 };
 
