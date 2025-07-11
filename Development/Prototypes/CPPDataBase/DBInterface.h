@@ -6,6 +6,7 @@
 #include <chrono>
 #include <initializer_list>
 #include "ModelBase.h"
+#include "PTS_DataField.h"
 #include <string>
 #include "TaskModel.h"
 #include "UserModel.h"
@@ -28,7 +29,7 @@
  * 
  */
 
- using WhereArg = std::pair<std::string, std::string>;
+ using WhereArg = std::pair<std::string, PTS_DataField>;
 
 class DBInterface
 {

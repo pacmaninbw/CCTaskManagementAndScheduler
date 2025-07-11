@@ -4,11 +4,11 @@
 #include "DBInterface.h"
 #include <exception>
 #include <iostream>
+#include "ModelBase.h"
 #include <optional>
+#include "PTS_DataField.h"
 #include <stdexcept>
 #include <string>
-#include "TaskModel.h"
-#include "UserModel.h"
 #include <utility>
 #include <vector>
 
@@ -141,11 +141,11 @@ std::string DBInterface::formatSelect(std::string tableName, std::vector<WhereAr
     {
         if (notFirstTime)
         {
-            selectFMT += " AND " + whereArg.first + " = '" + whereArg.second + "'";
+            selectFMT += " AND " + whereArg.first + " = '" + whereArg.second.toString() + "'";
         }
         else
         {
-            selectFMT += whereArg.first + " = '" + whereArg.second + "'";
+            selectFMT += whereArg.first + " = '" + whereArg.second.toString() + "'";
             notFirstTime = true;
         }
     }
