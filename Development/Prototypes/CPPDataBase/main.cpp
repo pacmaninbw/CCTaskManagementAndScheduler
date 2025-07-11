@@ -9,7 +9,7 @@
 static bool testGetUserByLoginName(DBInterface& userDBInterface, UserModel_shp insertedUser)
 {
     UserModel_shp retrievedUser = std::make_shared<UserModel>(UserModel());
-    if (userDBInterface.getUniqueModelFromDB(retrievedUser, {{"LoginName", insertedUser->getLoginName()}}))
+    if (userDBInterface.getUniqueModelFromDB(retrievedUser, {{"LoginName", PTS_DataField(insertedUser->getLoginName())}}))
     {
         if (*retrievedUser == *insertedUser)
         {
@@ -33,8 +33,8 @@ static bool testGetUserByLoginName(DBInterface& userDBInterface, UserModel_shp i
 static bool testGetUserByFullName(DBInterface& userDBInterface, UserModel_shp insertedUser)
 {
     UserModel_shp retrievedUser = std::make_shared<UserModel>(UserModel());
-    if (userDBInterface.getUniqueModelFromDB(retrievedUser, {{"LastName", insertedUser->getLastName()},
-        {"FirstName", insertedUser->getFirstName()}, {"MiddleInitial", insertedUser->getMiddleInitial()}}))
+    if (userDBInterface.getUniqueModelFromDB(retrievedUser, {{"LastName", PTS_DataField(insertedUser->getLastName())},
+        {"FirstName", PTS_DataField(insertedUser->getFirstName())}, {"MiddleInitial", PTS_DataField(insertedUser->getMiddleInitial())}}))
     {
         if (*retrievedUser == *insertedUser)
         {
@@ -114,7 +114,7 @@ static UserList loadUserProfileTestDataIntoDatabase()
 static bool testGetTaskByDescription(DBInterface& taskDBInterface, TaskModel& task)
 {
     TaskModel_shp testInDB = std::make_shared<TaskModel>(TaskModel());
-    if (taskDBInterface.getUniqueModelFromDB(testInDB, {{"Description", task.getDescription()}}))
+    if (taskDBInterface.getUniqueModelFromDB(testInDB, {{"Description", PTS_DataField(task.getDescription())}}))
     {
         if (*testInDB == task)
         {
