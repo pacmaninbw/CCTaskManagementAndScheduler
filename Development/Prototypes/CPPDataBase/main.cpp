@@ -1,6 +1,10 @@
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
 #include "DBInterface.h"
+#include "CSVReader.h"
 #include <exception>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include "TaskModel.h"
@@ -57,16 +61,22 @@ static bool testGetUserByFullName(DBInterface& userDBInterface, UserModel_shp in
 
 static UserList loadUserProfileTestDataIntoDatabase()
 {
+    // Test one case of the alternate constructor.
+    UserList userProfileTestData = {{std::make_shared<UserModel>("PacMan", "IN", "BW", "pacmaninbw@gmail.com")}};
 
-    UserList userProfileTestData = 
+    std::ifstream userData("testData/userData.txt");
+    
+    std::cout << "Attempting to read testData/userData.txt\n";
+    for (auto row: CSVRange(userData))
     {
-        {std::make_shared<UserModel>("Chernick", "Paul", "A", "paul.chernick@chernicksw.com")},
-        {std::make_shared<UserModel>("Chernick", "Nina", "L", "ChernickNinaL@gmail.com")},
-        {std::make_shared<UserModel>("Chernick", "Dina", "B", "ChernickDinaB@gmail.com")},
-        {std::make_shared<UserModel>("Shiminovics", "Eitan", "I", "ShimonvicsEitanI@gmail.com")},
-        {std::make_shared<UserModel>("PacMan", "IN", "BW", "pacmaninbw@gmail.com")},
-        {std::make_shared<UserModel>("Black", "Patrick", "A", "BlackPatrickA@gmail.com")}
-    };
+        UserModel_shp userIn = std::make_shared<UserModel>(UserModel());
+        userIn->setLastName(row[0]);
+        userIn->setFirstName(row[1]);
+        userIn->setMiddleInitial(row[2]);
+        userIn->setEmail(row[3]);
+        userIn->autoGenerateLoginAndPassword();
+        userProfileTestData.push_back(userIn);
+    }
 
     DBInterface userDBInterface;
     bool allTestsPassed = true;
@@ -137,7 +147,7 @@ static bool testGetTaskByDescription(DBInterface& taskDBInterface, TaskModel& ta
 
 struct UserTaskTestData
 {
-    const char majorPriority;
+    char majorPriority;
     unsigned int minorPriority;
     std::string description;
     std::string dueDate;
@@ -146,7 +156,6 @@ struct UserTaskTestData
     std::size_t parentTask;
     std::string dependencies;
     std::string status;
-    std::string relatedGoals;
     std::string scheduledStartDate;
     std::string actualStartDate;
     std::string createdDate;
@@ -154,23 +163,38 @@ struct UserTaskTestData
     std::string estimatedCompletionDate;
 };
 
-static std::vector<UserTaskTestData> userTaskTestData = 
+static std::vector<UserTaskTestData> loadTasksFromDataFile(std::string taskFileName)
 {
-    {'A', 1, "Archive BHHS74Reunion website to external SSD", "2025-05-05", 12, 1.0, 0, "", "Work in Progress", "5", "2025-04-08", "2025-04-08", "2025-04-01", "2025-06-30", "2025-05-05"},
-    {'A', 2, "Develop Personal Planning Tool", "2025-05-05", 300, 40.0, 0, "", "Work in Progress", "3,  6, 7, 16", "2025-03-20", "2025-03-20", "2025-04-01", "2025-04-30", "2025-05-15"},
-    {'A', 1, "Check with GoDaddy about providing service to archive website to external SSD", "2025-04-15", 2, 1.0, 1, "", "Work in Progress", "5", "", "", "", "", ""},
-    {'B', 2, "Install a WordPress Archive Plugin", "2025-05-01", 1, 0.0, 1, "3", "Not Started", "5", "2025-05-01", "", "2025-04-10", "2025-06-30", "2025-05-01"},
-    {'B', 3, "Have GoDaddy install PHPMyAdmin", "2025-05-02", 1, 0.0, 1, "3", "Not Started", "5", "2025-05-02", "", "2025-04-10", "2025-06-30", "2025-05-03"},
-    {'B', 4, "Run Archive Plugin", "2025-05-03", 2, 0.0, 1, "3", "Not Started", "5", "2025-05-03", "", "2025-04-10", "2025-06-30", "2025-05-03"},
-    {'B', 5, "Log into PHPMyAdmin and save Database to disk", "2025-05-04", 1, 0.0, 1, "3", "Not Started", "5", "2025-05-04", "", "2025-04-10", "2025-06-30", "2025-05-04"},
-    {'B', 6, "FTP all website files to computer", "2025-05-05", 3, 0.0, 1, "3", "Not Started", "5", "2025-05-05", "", "2025-04-10", "2025-06-30", "2025-05-05"},
-    {'B', 7, "Store all website files on external SSD", "2025-05-05", 2, 0.0, 1, "3, 4, 5, 6, 7, 8", "Not Started", "5", "2025-05-05", "", "2025-04-10", "2025-06-30", "2025-05-05"},
-    {'A', 0, "Design Database for Personal Planner", "2025-04-08", 24, 16.0, 2, "", "Work in Progress", "3,  6, 7, 16", "2025-03-20", "2025-03-20", "2025-04-10", "2025-04-08", "2025-05-01"},
-    {'A', 0, "Design UML Diagram for Personal Planner", "2025-04-12", 16, 5.25, 2, "10", "Work in Progress", "3,  6, 7, 16", "2025-04-08", "2025-04-08", "2025-04-10", "2025-04-15", "2025-04-15"},
-    {'C', 1, "Grocery Shopping", "2025-04-12", 2, 2, 0, "", "Not Started", "", "2025-04-11", "", "2025-04-11", "2025-04-11", ""},
-    {'C', 2, "Daily 30 minute walk", "2025-04-11", 1, 0.0, 0, "", "Not Started", "", "2025-04-11", "", "2025-04-11", "2056-07-07", "2056-07-07"},
-    {'C', 3, "Clean apartment", "2025-04-12", 2, 0.0, 0, "", "Not Started", "", "2025-04-12", "", "2025-04-11", "2025-04-12", ""}
-};
+    std::vector<UserTaskTestData> inputTaskData;
+
+    std::ifstream taskDataFile(taskFileName);
+    
+    std::cout << "Attempting to read testData/userData.txt\n";
+    for (auto row: CSVRange(taskDataFile))
+    {
+        UserTaskTestData currentTask;
+        currentTask.majorPriority = row[0][0];
+        currentTask.minorPriority = std::stoi(row[1]);
+        currentTask.description = row[2];
+        currentTask.dueDate = row[3];
+        currentTask.estimatedEffortHours = std::stoi(row[4]);
+        currentTask.actualEffortHours = std::stod(row[5]);
+        currentTask.parentTask = std::stoi(row[6]);
+        currentTask.status = row[7];
+        currentTask.scheduledStartDate = row[8];
+        currentTask.actualStartDate = row[9];
+        currentTask.createdDate = row[10];
+        currentTask.dueDate2 = row[11];
+        if (row.size() > 12)
+        {
+            currentTask.estimatedCompletionDate = row[12];
+        }
+
+        inputTaskData.push_back(currentTask);
+    }
+
+    return inputTaskData;
+}
 
 static void commonTaskInit(TaskModel_shp newTask, const UserTaskTestData taskData)
 {
@@ -226,6 +250,7 @@ static bool loadUserTaskestDataIntoDatabase(UserModel_shp userOne)
     DBInterface TaskDBInterface;
     bool allTestsPassed = true;
     std::size_t lCount = 0;
+    std::vector<UserTaskTestData> userTaskTestData = loadTasksFromDataFile("testData/planData.txt");;
 
     for (auto taskTestData: userTaskTestData)
     {
@@ -262,6 +287,7 @@ static bool loadUserTaskestDataIntoDatabase(UserModel_shp userOne)
 
 int main()
 {
+
     try {
         UserList userList = loadUserProfileTestDataIntoDatabase();
         if (userList.size())
