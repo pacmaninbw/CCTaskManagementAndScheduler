@@ -13,7 +13,8 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/PrivateData/dbadmindata.h")
 endif()
 
 add_executable(protoTaskPlanner
-    main.cpp 
+    main.cpp
+    CSVReader.h
     PTS_DataField.h 
     PTS_DataField.cpp 
     UserModel.h
