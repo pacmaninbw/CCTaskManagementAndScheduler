@@ -66,7 +66,6 @@ static UserList loadUserProfileTestDataIntoDatabase()
 
     std::ifstream userData("testData/userData.txt");
     
-    std::cout << "Attempting to read testData/userData.txt\n";
     for (auto row: CSVRange(userData))
     {
         UserModel_shp userIn = std::make_shared<UserModel>(UserModel());
@@ -169,7 +168,6 @@ static std::vector<UserTaskTestData> loadTasksFromDataFile(std::string taskFileN
 
     std::ifstream taskDataFile(taskFileName);
     
-    std::cout << "Attempting to read testData/userData.txt\n";
     for (auto row: CSVRange(taskDataFile))
     {
         UserTaskTestData currentTask;
