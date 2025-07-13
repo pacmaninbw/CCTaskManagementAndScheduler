@@ -18,9 +18,15 @@ UserModel::UserModel()
     addDataField("IncludeMinorPriorityInSchedule", PTS_DataField::PTS_DB_FieldType::Boolean);
     addDataField("UseLettersForMajorPriority", PTS_DataField::PTS_DB_FieldType::Boolean);
     addDataField("SeparatePriorityWithDot", PTS_DataField::PTS_DB_FieldType::Boolean);
+    initFieldValueNotChanged("IncludePriorityInSchedule", true);
+    initFieldValueNotChanged("IncludeMinorPriorityInSchedule", true);
+    initFieldValueNotChanged("UseLettersForMajorPriority", true);
+    initFieldValueNotChanged("SeparatePriorityWithDot", false);
+    initFieldValueNotChanged("ScheduleDayStart", "8:30 AM");
+    initFieldValueNotChanged("ScheduleDayEnd", "5:00 PM");
 }
 
-UserModel::UserModel(const char *lastIn, const char *firstIn, const char *middleIIn, const char *email)
+UserModel::UserModel(std::string lastIn, std::string firstIn, std::string middleIIn, std::string email)
     : UserModel()
 {
     setFieldValue("LastName", lastIn);
@@ -28,12 +34,6 @@ UserModel::UserModel(const char *lastIn, const char *firstIn, const char *middle
     setFieldValue("MiddleInitial", middleIIn);
     setFieldValue("EmailAddress", email);
     createLoginBasedOnUserName(lastIn, firstIn, middleIIn);
-    initFieldValueNotChanged("IncludePriorityInSchedule", true);
-    initFieldValueNotChanged("IncludeMinorPriorityInSchedule", true);
-    initFieldValueNotChanged("UseLettersForMajorPriority", true);
-    initFieldValueNotChanged("SeparatePriorityWithDot", false);
-    initFieldValueNotChanged("ScheduleDayStart", "8:30 AM");
-    initFieldValueNotChanged("ScheduleDayEnd", "5:00 PM");
 }
 
 void UserModel::autoGenerateLoginAndPassword()

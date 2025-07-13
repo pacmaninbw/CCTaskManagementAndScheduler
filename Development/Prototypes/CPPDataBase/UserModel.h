@@ -9,7 +9,7 @@ class UserModel : public ModelBase
 {
 public:
     UserModel();
-    UserModel(const char* lastIn, const char* firstIn, const char* middleIIn, const char* email="");
+    UserModel(std::string lastIn, std::string firstIn, std::string middleIIn, std::string email="");
     ~UserModel() = default;
 
     void autoGenerateLoginAndPassword();
