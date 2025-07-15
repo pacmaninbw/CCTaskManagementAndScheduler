@@ -290,7 +290,7 @@ bool ModelBase::diffAllFields(ModelBase other)
         if (*value != *otherValue)
         {
             areTheSame = false;
-            std::cout << "Fields differ: " << key << "\n\t" << *value << "\n\t" << *otherValue << "\n";
+            std::clog << "Fields differ: " << key << "\n\t" << *value << "\n\t" << *otherValue << "\n";
         }
     }
 
