@@ -30,7 +30,7 @@ static po::options_description addOptions()
 		("mysql-user,u", po::value<std::string>()->required(), "Existing MySQL user with sufficient privilege to insert and query")
 		("mysql-password,p", po::value<std::string>()->required(), "password for the MySQL user")
 		("mysql-URL", po::value<std::string>()->default_value("127.0.0.1"), "IP address for the MySQL server")
-		("mysql-port", po::value<unsigned int>(), "The port value for the MySQL server")
+		("mysql-port", po::value<unsigned int>(), "The port value for the MySQL server. A default of 3306 is provided.")
 		("mysql-dbname", po::value<std::string>()->default_value("PlannerTaskScheduleDB"), "The name of the database that contains the tables")
 		("user-data-file", po::value<std::string>()->default_value("testData/userData.txt"), "File path including file name to user test data")
 		("task-data-file", po::value<std::string>()->default_value("testData/planData.txt"), "File path including file name to task test data")
@@ -158,8 +158,7 @@ static CommandLineStatus usage(const std::string& progName,
 {
 	std::string usageStr =
 	" :\n\tTest storing and retrieving user profiles and tasks in a MySQL database.\n"
-	"\tEither a file name containing the MySQL connection data must be provided or\n"
-	"\tthe connection data must be listed with the appropriate flags. Default MySQL\n"
+	"\tThe connection data must be listed with the appropriate flags. Default MySQL\n"
 	"\tIP address is 127.0.0.1 and a default MySQL port 3306 are provided. Default\n"
 	"\tvalues for the user data file name and task data file name are also provided\n"
 ;
