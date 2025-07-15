@@ -12,20 +12,13 @@
 #include <utility>
 #include <vector>
 
-
-#ifdef USINGPRIVATECONNECTIONDATA
-    #include "./PrivateData/dbadmindata.h"
-#else
-    #include "dbadmindata.h"
-#endif
-
-DBInterface::DBInterface()
-:   errorMessages{""}
+DBInterface::DBInterface(ProgramOptions& programOptions)
+:   errorMessages{""}, databaseName{programOptions.mySqlDBName}
 {
-    dbConnectionParameters.server_address.emplace_host_and_port(HostURL, MySQLPort);
-    dbConnectionParameters.username = MySQLAdminUser;
-    dbConnectionParameters.password = MySQLAdminPassword;
-    dbConnectionParameters.database = PlannerDB;
+    dbConnectionParameters.server_address.emplace_host_and_port(programOptions.mySqlUrl, programOptions.mySqlPort);
+    dbConnectionParameters.username = programOptions.mySqlUser;
+    dbConnectionParameters.password = programOptions.mySqlPassword;
+    dbConnectionParameters.database = programOptions.mySqlDBName;
 }
 
 bool DBInterface::insertIntoDataBase(ModelBase& model)
@@ -176,7 +169,7 @@ boost::asio::awaitable<boost::mysql::results> DBInterface::executeSqlStatementsC
     }
 
 #ifdef SQL4DEBUG
-    std::cout << "Executing " << sqlStatement << std::endl; 
+    std::clog << "Executing " << sqlStatement << std::endl; 
 #endif
 
     boost::mysql::results result;

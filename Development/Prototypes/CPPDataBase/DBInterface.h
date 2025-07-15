@@ -4,6 +4,7 @@
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
 #include <chrono>
+#include "CommandLineParser.h"
 #include <initializer_list>
 #include "ModelBase.h"
 #include "PTS_DataField.h"
@@ -34,7 +35,7 @@
 class DBInterface
 {
 public:
-    DBInterface();
+    DBInterface(ProgramOptions& programOptions);
     virtual ~DBInterface() = default;
     std::string getAllErrorMessages() const { return errorMessages; };
     bool insertIntoDataBase(ModelBase& model);
@@ -83,6 +84,7 @@ private:
 
     boost::mysql::connect_params dbConnectionParameters;
     std::string errorMessages;
+    std::string databaseName;
 };
 
 #endif // DBINTERFACE_H_
