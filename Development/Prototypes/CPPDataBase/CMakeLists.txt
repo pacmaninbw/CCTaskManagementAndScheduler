@@ -6,17 +6,14 @@ if(POLICY CMP0167)
     cmake_policy(SET CMP0167 NEW)
 endif()
 
-find_package(Boost 1.87.0 REQUIRED COMPONENTS system charconv)
-
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/PrivateData/dbadmindata.h")
-    add_compile_definitions(USINGPRIVATECONNECTIONDATA=1)
-endif()
+find_package(Boost 1.87.0 REQUIRED COMPONENTS system charconv program_options)
 
 add_executable(protoTaskPlanner
     main.cpp
+    CommandLineParser.cpp
     CSVReader.h
     PTS_DataField.h 
-    PTS_DataField.cpp 
+    PTS_DataField.cpp
     UserModel.h
     UserModel.cpp
     TaskModel.h
