@@ -1,5 +1,6 @@
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
+#include "CommandLineParser.h"
 #include "DBInterface.h"
 #include "CSVReader.h"
 #include <exception>
@@ -9,6 +10,7 @@
 #include <vector>
 #include "TaskModel.h"
 #include "UserModel.h"
+#include "UtilityTimer.h"
 
 static bool testGetUserByLoginName(DBInterface& userDBInterface, UserModel_shp insertedUser)
 {
@@ -59,12 +61,12 @@ static bool testGetUserByFullName(DBInterface& userDBInterface, UserModel_shp in
     }
 }
 
-static UserList loadUserProfileTestDataIntoDatabase()
+static UserList loadUserProfileTestDataIntoDatabase(ProgramOptions &programOptions)
 {
     // Test one case of the alternate constructor.
     UserList userProfileTestData = {{std::make_shared<UserModel>("PacMan", "IN", "BW", "pacmaninbw@gmail.com")}};
 
-    std::ifstream userData("testData/userData.txt");
+    std::ifstream userData(programOptions.userTestDataFile);
     
     for (auto row: CSVRange(userData))
     {
@@ -77,7 +79,7 @@ static UserList loadUserProfileTestDataIntoDatabase()
         userProfileTestData.push_back(userIn);
     }
 
-    DBInterface userDBInterface;
+    DBInterface userDBInterface(programOptions);
     bool allTestsPassed = true;
 
     for (auto user: userProfileTestData)
@@ -102,7 +104,7 @@ static UserList loadUserProfileTestDataIntoDatabase()
             }
             else
             {
-                std::cout << "Primary key for user: " << user->getLastName() << ", " << user->getFirstName() <<
+                std::clog << "Primary key for user: " << user->getLastName() << ", " << user->getFirstName() <<
                 " not set!\n";
                 allTestsPassed = false;
             }
@@ -111,7 +113,7 @@ static UserList loadUserProfileTestDataIntoDatabase()
 
     if (allTestsPassed)
     {
-        std::cout << "Insertion and retrieval of users test PASSED\n";
+        std::clog << "Insertion and retrieval of users test PASSED\n";
     }
     else
     {
@@ -131,7 +133,7 @@ static bool testGetTaskByDescription(DBInterface& taskDBInterface, TaskModel& ta
         }
         else
         {
-            std::cout << "Inserted and retrieved Task are not the same! Test FAILED!\nInserted Task:\n" <<
+            std::clog << "Inserted and retrieved Task are not the same! Test FAILED!\nInserted Task:\n" <<
             task << "\n" "Retreived Task:\n" << *testInDB << "\n";
             return false;
         }
@@ -243,12 +245,12 @@ static TaskModel_shp creatEvenTask(const UserModel_shp userOne, const UserTaskTe
     return newTask;
 }
 
-static bool loadUserTaskestDataIntoDatabase(UserModel_shp userOne)
+static bool loadUserTaskestDataIntoDatabase(UserModel_shp userOne, ProgramOptions& programOptions)
 {
-    DBInterface TaskDBInterface;
+    DBInterface TaskDBInterface(programOptions);
     bool allTestsPassed = true;
     std::size_t lCount = 0;
-    std::vector<UserTaskTestData> userTaskTestData = loadTasksFromDataFile("testData/planData.txt");;
+    std::vector<UserTaskTestData> userTaskTestData = loadTasksFromDataFile(programOptions.taskTestDataFile);;
 
     for (auto taskTestData: userTaskTestData)
     {
@@ -271,7 +273,7 @@ static bool loadUserTaskestDataIntoDatabase(UserModel_shp userOne)
             }
             else
             {
-                std::cout << "Primary key for task: " << testTask->getPrimaryKey() << ", " << testTask->getDescription() <<
+                std::clog << "Primary key for task: " << testTask->getPrimaryKey() << ", " << testTask->getDescription() <<
                 " not set!\n";
                 allTestsPassed = false;
             }
@@ -279,27 +281,42 @@ static bool loadUserTaskestDataIntoDatabase(UserModel_shp userOne)
         ++lCount;
     }
 
-    std::cout << "All Task insertions and retrival tests PASSED\n";
+    std::clog << "All Task insertions and retrival tests PASSED\n";
     return allTestsPassed;
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-
     try {
-        UserList userList = loadUserProfileTestDataIntoDatabase();
-        if (userList.size())
-        {
-            if (!loadUserTaskestDataIntoDatabase(userList[0]))
+		if (const auto progOptions = parseCommandLine(argc, argv); progOptions.has_value())
+		{
+			ProgramOptions programOptions = *progOptions;
+            UtilityTimer stopWatch;
+            UserList userList = loadUserProfileTestDataIntoDatabase(programOptions);
+            if (userList.size())
+            {
+                if (!loadUserTaskestDataIntoDatabase(userList[0], programOptions))
+                {
+                    return EXIT_FAILURE;
+                }
+            }
+            else
             {
                 return EXIT_FAILURE;
             }
+            std::clog << "All tests Passed\n";
+			if (programOptions.enableExecutionTime)
+			{
+                stopWatch.stopTimerAndReport("Testing of Insertion and retrieval of users and tasks in MySQL database\n");
+			}
         }
         else
-        {
-            return EXIT_FAILURE;
-        }
-        std::cout << "All tests Passed\n";
+		{
+			if (progOptions.error() != CommandLineStatus::HelpRequested)
+			{
+				return EXIT_FAILURE;
+			}
+		}
     } catch (const std::exception& err) {
         std::cerr << "Error: " << err.what() << "\n";
         return EXIT_FAILURE;
