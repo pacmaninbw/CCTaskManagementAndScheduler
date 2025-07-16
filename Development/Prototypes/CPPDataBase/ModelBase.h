@@ -104,13 +104,13 @@ public:
         if (modelClassName != other.modelClassName)
         {
             areTheSame = false;
-            std::cout << "Model names differ: " << modelClassName << " " << other.modelClassName << "\n";
+            std::clog << "Model names differ: " << modelClassName << " " << other.modelClassName << "\n";
         }
 
         if (primaryKeyFieldName != other.primaryKeyFieldName)
         {
             areTheSame = false;
-            std::cout << "Primary key names differ: " << primaryKeyFieldName << " " << other.primaryKeyFieldName << "\n";
+            std::clog << "Primary key names differ: " << primaryKeyFieldName << " " << other.primaryKeyFieldName << "\n";
         }
 
         // using == of dataFields doesn't seem to reflect the realality.
