@@ -85,6 +85,7 @@ private:
     boost::mysql::connect_params dbConnectionParameters;
     std::string errorMessages;
     std::string databaseName;
+    bool verboseOutput;
 };
 
 #endif // DBINTERFACE_H_

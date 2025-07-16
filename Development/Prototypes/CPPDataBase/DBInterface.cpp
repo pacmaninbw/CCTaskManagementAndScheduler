@@ -13,7 +13,7 @@
 #include <vector>
 
 DBInterface::DBInterface(ProgramOptions& programOptions)
-:   errorMessages{""}, databaseName{programOptions.mySqlDBName}
+:   errorMessages{""}, databaseName{programOptions.mySqlDBName}, verboseOutput{programOptions.verboseOutput}
 {
     dbConnectionParameters.server_address.emplace_host_and_port(programOptions.mySqlUrl, programOptions.mySqlPort);
     dbConnectionParameters.username = programOptions.mySqlUser;
@@ -168,9 +168,10 @@ boost::asio::awaitable<boost::mysql::results> DBInterface::executeSqlStatementsC
         conn.set_meta_mode(boost::mysql::metadata_mode::minimal);
     }
 
-#ifdef SQL4DEBUG
-    std::clog << "Executing " << sqlStatement << std::endl; 
-#endif
+    if (verboseOutput)
+    {
+        std::clog << "Executing " << sqlStatement << std::endl; 
+    }
 
     boost::mysql::results result;
     co_await conn.async_execute(sqlStatement, result);
