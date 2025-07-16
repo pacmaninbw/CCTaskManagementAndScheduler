@@ -35,6 +35,7 @@ static po::options_description addOptions()
 		("user-data-file", po::value<std::string>()->default_value("testData/userData.txt"), "File path including file name to user test data")
 		("task-data-file", po::value<std::string>()->default_value("testData/planData.txt"), "File path including file name to task test data")
 		("time-tests", "Time the execution of the tests")
+		("verbose", "Output additional information for testing and debugging.")
 	;
 
 	return options;
@@ -144,6 +145,10 @@ static auto processProgramOptions(po::variables_map& inputOptions,
 
 	if (inputOptions.count("time-tests")) {
 		programOptions.enableExecutionTime = true;
+	}
+
+	if (inputOptions.count("verbose")) {
+		programOptions.verboseOutput = true;
 	}
 
 	return programOptions;
