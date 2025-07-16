@@ -24,8 +24,6 @@ add_executable(protoTaskPlanner
     DBInterface.cpp
 )
 
-#target_compile_definitions(protoTaskPlanner PRIVATE SQL4DEBUG=1)
-
 target_compile_options(protoTaskPlanner PRIVATE -Wall -Wextra -pedantic -Werror)
 
 target_compile_features(protoTaskPlanner PRIVATE cxx_std_23)
