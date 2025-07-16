@@ -66,7 +66,7 @@ public:
 
         if (!areTheSame)
         {
-            std::cout << "Fields differ: " << dbColumnName << "\n";// << other;
+            std::clog << "Fields differ: " << dbColumnName << "\n";// << other;
         }
 
         return areTheSame;
