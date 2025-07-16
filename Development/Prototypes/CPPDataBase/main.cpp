@@ -104,8 +104,11 @@ static UserList loadUserProfileTestDataIntoDatabase(ProgramOptions &programOptio
             }
             else
             {
-                std::clog << "Primary key for user: " << user->getLastName() << ", " << user->getFirstName() <<
-                " not set!\n";
+                std::clog << "Primary key for user: " << user->getLastName() << ", " << user->getFirstName() << " not set!\n";
+                if (programOptions.verboseOutput)
+                {
+                    std::clog << *user << "\n\n";
+                }
                 allTestsPassed = false;
             }
         }
@@ -122,7 +125,7 @@ static UserList loadUserProfileTestDataIntoDatabase(ProgramOptions &programOptio
     return userProfileTestData;
 }
 
-static bool testGetTaskByDescription(DBInterface& taskDBInterface, TaskModel& task)
+static bool testGetTaskByDescription(DBInterface& taskDBInterface, TaskModel& task, bool verboseOutput)
 {
     TaskModel_shp testInDB = std::make_shared<TaskModel>(TaskModel());
     if (taskDBInterface.getUniqueModelFromDB(testInDB, {{"Description", PTS_DataField(task.getDescription())}}))
@@ -133,8 +136,11 @@ static bool testGetTaskByDescription(DBInterface& taskDBInterface, TaskModel& ta
         }
         else
         {
-            std::clog << "Inserted and retrieved Task are not the same! Test FAILED!\nInserted Task:\n" <<
-            task << "\n" "Retreived Task:\n" << *testInDB << "\n";
+            std::clog << "Inserted and retrieved Task are not the same! Test FAILED!\n";
+            if (verboseOutput)
+            {
+                std::clog << "Inserted Task:\n" << task << "\n" "Retreived Task:\n" << *testInDB << "\n";
+            }
             return false;
         }
     }
@@ -266,7 +272,7 @@ static bool loadUserTaskestDataIntoDatabase(UserModel_shp userOne, ProgramOption
         {
             if (testTask->isInDataBase())
             {
-                if (!testGetTaskByDescription(TaskDBInterface, *testTask))
+                if (!testGetTaskByDescription(TaskDBInterface, *testTask, programOptions.verboseOutput))
                 {
                     allTestsPassed = false;
                 }
@@ -275,6 +281,10 @@ static bool loadUserTaskestDataIntoDatabase(UserModel_shp userOne, ProgramOption
             {
                 std::clog << "Primary key for task: " << testTask->getPrimaryKey() << ", " << testTask->getDescription() <<
                 " not set!\n";
+                if (programOptions.verboseOutput)
+                {
+                    std::clog << *testTask << "\n\n";
+                }
                 allTestsPassed = false;
             }
         }
