@@ -73,6 +73,7 @@
         "text_encoding": "cpp",
         "expected": "cpp",
         "ranges": "cpp",
-        "stdfloat": "cpp"
+        "stdfloat": "cpp",
+        "fstream": "cpp"
     }
 }
