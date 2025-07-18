@@ -74,13 +74,6 @@ private:
         std::chrono::year_month_day converted{year, month, day};
         return converted;
     };
-    std::string wrapInSingleQuotes(const std::string& value)
-    {
-        std::string outValue("\'");
-        outValue.append(value);
-        outValue.append("\'");
-        return outValue;
-    }
 
     boost::mysql::connect_params dbConnectionParameters;
     std::string errorMessages;
