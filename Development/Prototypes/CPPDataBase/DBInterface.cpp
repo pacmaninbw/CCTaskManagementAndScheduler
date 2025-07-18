@@ -3,12 +3,14 @@
 #include <chrono>
 #include "DBInterface.h"
 #include <exception>
+#include <format>
 #include <iostream>
 #include "ModelBase.h"
 #include <optional>
 #include "PTS_DataField.h"
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -95,50 +97,38 @@ std::string DBInterface::getTableNameFrom(ModelBase &model)
 
 std::string DBInterface::formatInsert(ModelBase &model)
 {
-    std::string insertFMT("INSERT INTO PlannerTaskScheduleDB." +  getTableNameFrom(model) + " (");
     PTS_DataField_vector allFieldsWithValue = model.getAllFieldsWithValue();
     bool notFirstValue = false;
 
-    for (auto field: allFieldsWithValue)
-    {
-        if (notFirstValue)
-        {
-            insertFMT.append(", ");
-        }
-        insertFMT.append(field->getColumnName());
-        notFirstValue = true;
-    }
-    insertFMT.append(") VALUES (");
+    std::string argFMT;
+    std::string valueFmt;
 
-    notFirstValue = false;
     for (auto field: allFieldsWithValue)
     {
-        if (notFirstValue)
-        {
-            insertFMT.append(", ");
-        }
-        insertFMT.append(wrapInSingleQuotes(field->toString()));
+        argFMT.append((notFirstValue) ? std::format(", {}", field->getColumnName()) : std::format("{}", field->getColumnName()));
+        valueFmt.append((notFirstValue) ? std::format(", '{}'", field->toString()) : std::format("{}", field->toString()));
         notFirstValue = true;
     }
-    insertFMT.append(")");
+
+    std::string insertFMT(std::format("INSERT INTO {}.{} ({}) VALUES ({})", databaseName,  getTableNameFrom(model), argFMT, valueFmt));
 
     return insertFMT;
 }
 
 std::string DBInterface::formatSelect(std::string tableName, std::vector<WhereArg> whereArgs)
 {
-    std::string selectFMT("SELECT * FROM PlannerTaskScheduleDB." +  tableName + " WHERE ");
+    std::string selectFMT(std::format("SELECT * FROM {}.{} WHERE ", databaseName, tableName));
     bool notFirstTime = false;
 
     for (auto whereArg: whereArgs)
     {
         if (notFirstTime)
         {
-            selectFMT += " AND " + whereArg.first + " = '" + whereArg.second.toString() + "'";
+            selectFMT += std::format(" AND {} = '{}'", whereArg.first, whereArg.second.toString());
         }
         else
         {
-            selectFMT += whereArg.first + " = '" + whereArg.second.toString() + "'";
+            selectFMT += std::format("{} = '{}'", whereArg.first, whereArg.second.toString());
             notFirstTime = true;
         }
     }
