@@ -122,15 +122,9 @@ std::string DBInterface::formatSelect(std::string tableName, std::vector<WhereAr
 
     for (auto whereArg: whereArgs)
     {
-        if (notFirstTime)
-        {
-            selectFMT += std::format(" AND {} = '{}'", whereArg.first, whereArg.second.toString());
-        }
-        else
-        {
-            selectFMT += std::format("{} = '{}'", whereArg.first, whereArg.second.toString());
-            notFirstTime = true;
-        }
+        selectFMT.append((notFirstTime)? std::format(" AND {} = '{}'", whereArg.first, whereArg.second.toString()) :
+            std::format("{} = '{}'", whereArg.first, whereArg.second.toString()));
+        notFirstTime = true;
     }
 
     return selectFMT;
