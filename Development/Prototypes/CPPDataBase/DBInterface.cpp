@@ -98,19 +98,21 @@ std::string DBInterface::getTableNameFrom(ModelBase &model)
 std::string DBInterface::formatInsert(ModelBase &model)
 {
     PTS_DataField_vector allFieldsWithValue = model.getAllFieldsWithValue();
-    bool notFirstValue = false;
-
-    std::string argFMT;
+    std::string argFmt;
     std::string valueFmt;
 
+    bool noComma = true;
     for (auto field: allFieldsWithValue)
     {
-        argFMT.append((notFirstValue) ? std::format(", {}", field->getColumnName()) : std::format("{}", field->getColumnName()));
-        valueFmt.append((notFirstValue) ? std::format(", '{}'", field->toString()) : std::format("{}", field->toString()));
-        notFirstValue = true;
+        argFmt.append((noComma) ? std::format("{}", field->getColumnName()) : 
+            std::format(", {}", field->getColumnName()));
+        valueFmt.append((noComma) ? std::format("{}", field->toString()) :
+            std::format(", '{}'", field->toString()));
+        noComma = false;
     }
 
-    std::string insertFMT(std::format("INSERT INTO {}.{} ({}) VALUES ({})", databaseName,  getTableNameFrom(model), argFMT, valueFmt));
+    std::string insertFMT(std::format("INSERT INTO {}.{} ({}) VALUES ({})", databaseName,
+        getTableNameFrom(model), argFmt, valueFmt));
 
     return insertFMT;
 }
@@ -118,13 +120,13 @@ std::string DBInterface::formatInsert(ModelBase &model)
 std::string DBInterface::formatSelect(std::string tableName, std::vector<WhereArg> whereArgs)
 {
     std::string selectFMT(std::format("SELECT * FROM {}.{} WHERE ", databaseName, tableName));
-    bool notFirstTime = false;
 
+    bool noComma = true;
     for (auto whereArg: whereArgs)
     {
-        selectFMT.append((notFirstTime)? std::format(" AND {} = '{}'", whereArg.first, whereArg.second.toString()) :
-            std::format("{} = '{}'", whereArg.first, whereArg.second.toString()));
-        notFirstTime = true;
+        selectFMT.append((noComma)? std::format("{} = '{}'", whereArg.first, whereArg.second.toString()) :
+            std::format(" AND {} = '{}'", whereArg.first, whereArg.second.toString()));
+        noComma = false;
     }
 
     return selectFMT;
