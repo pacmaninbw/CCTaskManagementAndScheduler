@@ -2,6 +2,7 @@
 #define USERMODEL_H_
 
 #include <iostream>
+#include <format>
 #include <memory>
 #include "ModelBase.h"
 #include <string>
@@ -38,6 +39,7 @@ public:
     bool isUsingLettersForMaorPriority() const { return preferences.userLetterForMajorPriority; };
     bool isSeparatingPriorityWithDot() const { return preferences.separateMajorAndMinorWithDot; };
 
+    void clearModified() { modified = false; };
     void setLastName(const std::string& lastNameP);
     void setFirstName(const std::string& firstNameP);
     void setMiddleInitial(const std::string& middleinitP);
@@ -51,9 +53,15 @@ public:
     void setUsingLettersForMaorPriority(bool usingLetters);
     void setSeparatingPriorityWithDot(bool separate);
 
-
-    friend std::ostream& operator<<(std::ostream& os, const UserModel& obj)
+    friend std::ostream& operator<<(std::ostream& os, const UserModel& user)
     {
+        constexpr const char* outFmtStr = "{}: {}\n";
+        os << std::format(outFmtStr, "User ID", user.userID);
+        os << std::format(outFmtStr, "Last Name", user.lastName);
+        os << std::format(outFmtStr, "First Name", user.firstName);
+        os << std::format(outFmtStr, "Middle Initial", user.middleInitial);
+        os << std::format(outFmtStr, "Email", user.email);
+        os << std::format(outFmtStr, "Login Name", user.loginName);
 
         return os;
     };

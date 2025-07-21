@@ -21,7 +21,6 @@ public:
     bool atleastOneFieldModified() const;
     bool allRequiredFieldsHaveData() const;
     bool diffAllFields(ModelBase other);
-    PTS_DataField_vector getAllFieldsWithValue();
     std::string reportMissingRequiredFields() const;
     const std::string getModelName() { return modelClassName; };
 
@@ -52,7 +51,6 @@ protected:
 
     const std::string modelClassName;
     const std::string tableName;
-    PTS_DataField_map dataFields;
 };
 
 using ModelShp = std::shared_ptr<ModelBase>;

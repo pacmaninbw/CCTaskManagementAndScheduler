@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include "ModelBase.h"
+#include <optional>
 #include <string>
 #include "UserModel.h"
 #include <vector>
@@ -23,7 +24,7 @@ public:
     virtual ~TaskModel() = default;
 
     void addEffortHours(double hours);
-    std::size_t getTaskID() const;
+    std::size_t getTaskID() const { return taskID; };
     std::size_t getCreatorID() const;
     std::size_t getAssignToID() const;
     std::string getDescription() const;
@@ -41,11 +42,6 @@ public:
     double getactualEffortToDate() const;
     unsigned int getPriorityGroup() const;
     unsigned int getPriority() const;
-    bool hasOptionalFieldStatus() const;
-    bool hasOptionalFieldParentTaskID() const;
-    bool hasOptionalFieldActualStartDate() const;
-    bool hasOptionalFieldEstimatedCompletion() const;
-    bool hasOptionalFieldCompletionDate() const;
     void setCreatorID(std::size_t creatorID);
     void setCreatorID(UserModel_shp creator);
     void setAssignToID(std::size_t assignedID);
@@ -74,20 +70,6 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const TaskModel& obj)
     {
         os << "TaskModel:\n";
-        os << obj.primaryKeyFieldName;
-        os << "Column Names: ";
-        for (const auto& [key, value] : obj.dataFields)
-        {
-            os << key;
-            os << ", ";
-        }
-        os << "\n";
-        for (const auto& [key, value] : obj.dataFields)
-        {
-            PTS_DataField_shp currentField = value;
-            os << currentField->fieldInfo();
-            os << "\n";
-        }
         return os;
     };
 
@@ -95,11 +77,27 @@ public:
 private:
     TaskStatus statusFromInt(unsigned int statusI) const { return static_cast<TaskModel::TaskStatus>(statusI); };
 
-/*
- * Member variables.
- */
-    // std::size_t taskID; // Using primaryKey as TaskID
-    TaskStatus status;
+    bool modified;
+    std::size_t taskID;
+    std::size_t creatorID;
+    std::size_t assignToID;
+    std::string description;
+    std::optional<TaskStatus> status;
+    std::optional<std::size_t> parentTaskID;
+    double percentageComplete;
+    std::chrono::year_month_day creationDate;
+    std::chrono::year_month_day dueDate;
+    std::chrono::year_month_day scheduledStart;
+    std::optional<std::chrono::year_month_day> actualStartDate;
+    std::optional<std::chrono::year_month_day> estimatedCompletion;
+    std::optional<std::chrono::year_month_day> completionDate;
+    unsigned int estimatedEffort;
+    double actualEffortToDate;
+    unsigned int priorityGroup;
+    unsigned int priority;
+    bool completed;
+    bool personal;
+
 };
 
 using TaskModel_shp = std::shared_ptr<TaskModel>;
