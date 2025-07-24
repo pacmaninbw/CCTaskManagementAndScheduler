@@ -2,15 +2,15 @@
 #define TASKMODEL_H_
 
 #include <chrono>
+#include <format>
 #include <iostream>
 #include <memory>
-#include "ModelBase.h"
 #include <optional>
 #include <string>
 #include "UserModel.h"
 #include <vector>
 
-class TaskModel : public ModelBase
+class TaskModel
 {
 public:
     enum class TaskStatus
@@ -23,25 +23,30 @@ public:
     TaskModel(UserModel_shp creator, std::string descriptionIn);
     virtual ~TaskModel() = default;
 
+    bool getDatabaseValues();
+    bool updateDatabase();
+    bool isInDatabase() const { return taskID > 0; };
+    void clearModified() { modified = false; };
     void addEffortHours(double hours);
     std::size_t getTaskID() const { return taskID; };
-    std::size_t getCreatorID() const;
-    std::size_t getAssignToID() const;
-    std::string getDescription() const;
-    TaskModel::TaskStatus getStatus() const;
-    unsigned int getStatusIntVal() const;
-    std::size_t getParentTaskID() const;
-    double getPercentageComplete() const;
-    std::chrono::year_month_day getCreationDate() const;
-    std::chrono::year_month_day getDueDate() const;
-    std::chrono::year_month_day getScheduledStart() const;
+    std::size_t getCreatorID() const { return creatorID; };
+    std::size_t getAssignToID() const { return assignToID; };
+    std::string getDescription() const { return description; };
+    TaskModel::TaskStatus getStatus() const { return status.value_or(TaskModel::TaskStatus::Not_Started); };
+    unsigned int getStatusIntVal() const { return static_cast<unsigned int>(getStatus()); };
+    std::size_t getParentTaskID() const { return parentTaskID.value_or(0); };
+    double getPercentageComplete() const { return percentageComplete; };
+    std::chrono::year_month_day getCreationDate() const { return creationDate; };
+    std::chrono::year_month_day getDueDate() const { return dueDate; };
+    std::chrono::year_month_day getScheduledStart() const { return scheduledStart; };
     std::chrono::year_month_day getactualStartDate() const;
     std::chrono::year_month_day getEstimatedCompletion() const;
-    std::chrono::year_month_day getCompletionDate() const;
-    unsigned int getEstimatedEffort() const;
-    double getactualEffortToDate() const;
-    unsigned int getPriorityGroup() const;
-    unsigned int getPriority() const;
+    std::chrono::year_month_day getCompletionDate() const ;
+    unsigned int getEstimatedEffort() const { return estimatedEffort; };
+    double getactualEffortToDate() const { return actualEffortToDate; };
+    unsigned int getPriorityGroup() const { return priorityGroup; };
+    unsigned int getPriority() const { return priority; };
+    bool isPersonal() const { return personal; };
     void setCreatorID(std::size_t creatorID);
     void setCreatorID(UserModel_shp creator);
     void setAssignToID(std::size_t assignedID);
@@ -63,19 +68,43 @@ public:
     void setPriorityGroup(unsigned int priorityGroup);
     void setPriorityGroup(const char priorityGroup);
     void setPriority(unsigned int priority);
-
+    void setPersonal(bool personalIn);
+    void setTaskID(std::size_t newID);
+    std::string dateToString(std::chrono::year_month_day taskDate);
+    std::chrono::year_month_day stringToDate(std::string dateString);
     std::string taskStatusString() const;
     TaskModel::TaskStatus stringToStatus(std::string statusName) const;
 
-    friend std::ostream& operator<<(std::ostream& os, const TaskModel& obj)
+    bool operator==(TaskModel& other)
     {
+        return diffTask(other);
+    }
+    bool operator==(std::shared_ptr<TaskModel> other)
+    {
+        return diffTask(*other);
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const TaskModel& task)
+    {
+        constexpr const char* outFmtStr = "{}: {}\n";
         os << "TaskModel:\n";
+        os << std::format(outFmtStr, "Task ID", task.taskID);
+        os << std::format(outFmtStr, "Creator ID", task.creatorID);
+        os << std::format(outFmtStr, "Description", task.description);
+        os << std::format(outFmtStr, "Status", static_cast<unsigned int>(task.status.value_or(TaskModel::TaskStatus::Not_Started)));
+        os << std::format(outFmtStr, "Parent ID", task.parentTaskID.value_or(0));
+        os << std::format(outFmtStr, "Percentage Complete", task.percentageComplete);
+        os << std::format(outFmtStr, "Creation Date", task.creationDate);
+        os << std::format(outFmtStr, "Due Date", task.dueDate);
+
         return os;
     };
 
 
 private:
     TaskStatus statusFromInt(unsigned int statusI) const { return static_cast<TaskModel::TaskStatus>(statusI); };
+    std::chrono::year_month_day getTodaysDate();
+    bool diffTask(TaskModel& other);
 
     bool modified;
     std::size_t taskID;
@@ -95,8 +124,8 @@ private:
     double actualEffortToDate;
     unsigned int priorityGroup;
     unsigned int priority;
-    bool completed;
     bool personal;
+    std::optional<std::vector<std::size_t>> dependencies;
 
 };
 

@@ -4,10 +4,10 @@
 #include <iostream>
 #include <format>
 #include <memory>
-#include "ModelBase.h"
 #include <string>
+#include <vector>
 
-class UserModel : public ModelBase
+class UserModel
 {
 public:
     struct UserPreferences
@@ -21,9 +21,12 @@ public:
     };
 
     UserModel();
-    UserModel(std::string lastIn, std::string firstIn, std::string middleIIn, std::string email="");
+    UserModel(std::string lastIn, std::string firstIn, std::string middleIIn, std::string emailIn="", std::size_t uID=0);
     ~UserModel() = default;
 
+    bool isInDataBase(){return(userID>0);};
+    bool getDatabaseValues();
+    bool updateDatabase();
     void autoGenerateLoginAndPassword();
     std::string getLastName() const { return lastName;};
     std::string getFirstName() const { return firstName; };
@@ -52,6 +55,16 @@ public:
     void setMinorPriorityInSchedule(bool inSchedule);
     void setUsingLettersForMaorPriority(bool usingLetters);
     void setSeparatingPriorityWithDot(bool separate);
+    void setUserID(std::size_t UserID);
+
+    bool operator==(UserModel& other)
+    {
+        return diffUser(other);
+    };
+    bool operator==(std::shared_ptr<UserModel> other)
+    {
+        return diffUser(*other);
+    }
 
     friend std::ostream& operator<<(std::ostream& os, const UserModel& user)
     {
@@ -69,6 +82,7 @@ public:
 private:
     void createLoginBasedOnUserName(const std::string& lastName,
         const std::string& firstName,const std::string& middleInitial);
+    bool diffUser(UserModel& other);
     
     std::size_t userID;
     std::string lastName;

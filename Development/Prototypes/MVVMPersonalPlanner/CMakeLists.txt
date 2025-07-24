@@ -16,10 +16,12 @@ add_executable(protoPersonalPlanner
     UserModel.cpp
     TaskModel.h
     TaskModel.cpp
-    ModelBase.h
-    ModelBase.cpp
     DBInterface.h
     DBInterface.cpp
+    UserDbInterface.h
+    UserDbInterface.cpp
+    TaskDbInterface.h
+    TaskDbInterface.cpp
 )
 
 target_compile_options(protoPersonalPlanner PRIVATE -Wall -Wextra -pedantic -Werror)

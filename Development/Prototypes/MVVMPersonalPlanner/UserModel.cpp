@@ -4,7 +4,7 @@
 #include <string>
 
 UserModel::UserModel()
-    : ModelBase("UserModel", "UserProfile", "UserID"), modified{false}
+: userID{0}, modified{false}
 {
     preferences.includePriorityInSchedule = true;
     preferences.includeMinorPriorityInSchedule = true;
@@ -14,13 +14,28 @@ UserModel::UserModel()
     preferences.endTime = "5:00 PM";
 }
 
-UserModel::UserModel(std::string lastIn, std::string firstIn, std::string middleIIn, std::string emailIn)
-    : UserModel()
+UserModel::UserModel(std::string lastIn, std::string firstIn, std::string middleIIn, std::string emailIn, std::size_t uID)
+: UserModel()
 {
     lastName = lastIn;
     firstName = firstIn;
     middleInitial = middleIIn;
     email = emailIn;
+    userID = uID;
+    if (!uID)
+    {
+        modified = true;
+    }
+}
+
+bool UserModel::getDatabaseValues()
+{
+    return false;
+}
+
+bool UserModel::updateDatabase()
+{
+    return false;
 }
 
 void UserModel::autoGenerateLoginAndPassword()
@@ -116,3 +131,17 @@ void UserModel::setSeparatingPriorityWithDot(bool separate)
     modified = true;
     preferences.separateMajorAndMinorWithDot = separate;
 }
+
+void UserModel::setUserID(std::size_t UserID)
+{
+    modified = true;
+    userID = UserID;
+}
+
+bool UserModel::diffUser(UserModel &other)
+{
+    // Ignore user preferences and password
+    return (userID == other.userID && loginName == other.loginName &&
+        lastName == other.lastName && firstName == other.firstName && middleInitial == other.middleInitial);
+}
+

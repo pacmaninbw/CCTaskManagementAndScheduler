@@ -74,6 +74,9 @@
         "expected": "cpp",
         "ranges": "cpp",
         "stdfloat": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "strstream": "cpp",
+        "map": "cpp",
+        "set": "cpp"
     }
 }

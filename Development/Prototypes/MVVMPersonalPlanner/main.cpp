@@ -1,21 +1,23 @@
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
 #include "CommandLineParser.h"
-#include "DBInterface.h"
 #include "CSVReader.h"
 #include <exception>
 #include <iostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "TaskDbInterface.h"
 #include "TaskModel.h"
+#include "UserDbInterface.h"
 #include "UserModel.h"
 #include "UtilityTimer.h"
 
-static bool testGetUserByLoginName(DBInterface& userDBInterface, UserModel_shp insertedUser)
+static bool testGetUserByLoginName(UserDbInterface& userDBInterface, UserModel_shp insertedUser)
 {
     UserModel_shp retrievedUser = std::make_shared<UserModel>(UserModel());
-    if (userDBInterface.getUniqueModelFromDB(retrievedUser, {{"LoginName", PTS_DataField(insertedUser->getLoginName())}}))
+    retrievedUser->setLoginName(insertedUser->getLoginName());
+    if (retrievedUser->getDatabaseValues())
     {
         if (*retrievedUser == *insertedUser)
         {
@@ -36,11 +38,11 @@ static bool testGetUserByLoginName(DBInterface& userDBInterface, UserModel_shp i
     }
 }
 
-static bool testGetUserByFullName(DBInterface& userDBInterface, UserModel_shp insertedUser)
+static bool testGetUserByFullName(UserDbInterface& userDBInterface, UserModel_shp insertedUser)
 {
-    UserModel_shp retrievedUser = std::make_shared<UserModel>(UserModel());
-    if (userDBInterface.getUniqueModelFromDB(retrievedUser, {{"LastName", PTS_DataField(insertedUser->getLastName())},
-        {"FirstName", PTS_DataField(insertedUser->getFirstName())}, {"MiddleInitial", PTS_DataField(insertedUser->getMiddleInitial())}}))
+    UserModel_shp retrievedUser = retrievedUser = userDBInterface.getUserByFullName(insertedUser->getLastName(),
+        insertedUser->getFirstName(), insertedUser->getMiddleInitial());
+    if (retrievedUser)
     {
         if (*retrievedUser == *insertedUser)
         {
@@ -79,12 +81,14 @@ static UserList loadUserProfileTestDataIntoDatabase(ProgramOptions &programOptio
         userProfileTestData.push_back(userIn);
     }
 
-    DBInterface userDBInterface(programOptions);
+    UserDbInterface userDBInterface(programOptions);
     bool allTestsPassed = true;
 
     for (auto user: userProfileTestData)
     {
-        if (!userDBInterface.insertIntoDataBase(*user))
+        std::size_t userID = userDBInterface.insert(user);
+        user->setUserID(userID);
+        if (!userID)
         {
             std::cerr << userDBInterface.getAllErrorMessages() << "\n" << *user << "\n";
             allTestsPassed = false;
@@ -125,10 +129,10 @@ static UserList loadUserProfileTestDataIntoDatabase(ProgramOptions &programOptio
     return userProfileTestData;
 }
 
-static bool testGetTaskByDescription(DBInterface& taskDBInterface, TaskModel& task, bool verboseOutput)
+static bool testGetTaskByDescription(TaskDbInterface& taskDBInterface, TaskModel& task, bool verboseOutput)
 {
-    TaskModel_shp testInDB = std::make_shared<TaskModel>(TaskModel());
-    if (taskDBInterface.getUniqueModelFromDB(testInDB, {{"Description", PTS_DataField(task.getDescription())}}))
+    TaskModel_shp testInDB = taskDBInterface.getTaskByDescriptionAndUserID(task.getDescription(), task.getCreatorID());
+    if (testInDB)
     {
         if (*testInDB == task)
         {
@@ -170,6 +174,44 @@ struct UserTaskTestData
     std::string estimatedCompletionDate;
 };
 
+static std::chrono::year_month_day getTodaysDate()
+{
+    std::chrono::time_point<std::chrono::system_clock> today = std::chrono::system_clock::now();
+    return std::chrono::floor<std::chrono::days>(today);
+}
+
+static std::chrono::year_month_day stringToDate(std::string dateString)
+{
+    std::chrono::year_month_day dateValue = getTodaysDate();
+
+    // First try the ISO standard date.
+    std::istringstream ss(dateString);
+    ss >> std::chrono::parse("%Y-%m-%d", dateValue);
+    if (!ss.fail())
+    {
+        return dateValue;
+    }
+
+    // The ISO standard didn't work, try some local dates
+    std::locale usEnglish("en_US.UTF-8");
+    std::vector<std::string> legalFormats = {
+        {"%B %d, %Y"},
+        {"%m/%d/%Y"},
+        {"%m-%d-%Y"}
+    };
+
+    ss.imbue(usEnglish);
+    for (auto legalFormat: legalFormats)
+    {
+        ss >> std::chrono::parse(legalFormat, dateValue);
+        if (!ss.fail())
+        {
+            return dateValue;
+        }
+    }
+
+    return dateValue;
+}
 static std::vector<UserTaskTestData> loadTasksFromDataFile(std::string taskFileName)
 {
     std::vector<UserTaskTestData> inputTaskData;
@@ -207,8 +249,8 @@ static void commonTaskInit(TaskModel_shp newTask, const UserTaskTestData taskDat
     // Required fields first.
     newTask->setEstimatedEffort(taskData.estimatedEffortHours);
     newTask->setactualEffortToDate(taskData.actualEffortHours);
-    newTask->setDueDate(newTask->stringToDate(taskData.dueDate));
-    newTask->setScheduledStart(newTask->stringToDate(taskData.scheduledStartDate));
+    newTask->setDueDate(stringToDate(taskData.dueDate));
+    newTask->setScheduledStart(stringToDate(taskData.scheduledStartDate));
     newTask->setStatus(taskData.status);
     newTask->setPriorityGroup(taskData.majorPriority);
     newTask->setPriority(taskData.minorPriority);
@@ -221,16 +263,16 @@ static void commonTaskInit(TaskModel_shp newTask, const UserTaskTestData taskDat
     }
     if (!taskData.actualStartDate.empty())
     {
-        newTask->setactualStartDate(newTask->stringToDate(taskData.actualStartDate));
+        newTask->setactualStartDate(stringToDate(taskData.actualStartDate));
     }
     if (!taskData.estimatedCompletionDate.empty())
     {
-        newTask->setEstimatedCompletion(newTask->stringToDate(taskData.estimatedCompletionDate));
+        newTask->setEstimatedCompletion(stringToDate(taskData.estimatedCompletionDate));
     }
     if (!taskData.createdDate.empty())
     {
         // Override the auto date creation with the actual creation date.
-        newTask->setCreationDate(newTask->stringToDate(taskData.createdDate));
+        newTask->setCreationDate(stringToDate(taskData.createdDate));
     }
 }
 
@@ -253,7 +295,7 @@ static TaskModel_shp creatEvenTask(const UserModel_shp userOne, const UserTaskTe
 
 static bool loadUserTaskestDataIntoDatabase(UserModel_shp userOne, ProgramOptions& programOptions)
 {
-    DBInterface TaskDBInterface(programOptions);
+    TaskDbInterface taskDBInterface(programOptions);
     bool allTestsPassed = true;
     std::size_t lCount = 0;
     std::vector<UserTaskTestData> userTaskTestData = loadTasksFromDataFile(programOptions.taskTestDataFile);;
@@ -262,31 +304,25 @@ static bool loadUserTaskestDataIntoDatabase(UserModel_shp userOne, ProgramOption
     {
         // Try both constructors on an alternating basis.
         TaskModel_shp testTask = (lCount & 0x000001)? creatOddTask(userOne, taskTestData) : creatEvenTask(userOne, taskTestData);
+        testTask->setTaskID(taskDBInterface.insert(testTask));
 
-        if (!TaskDBInterface.insertIntoDataBase(*testTask))
+        if (testTask->isInDatabase())
         {
-            std::cerr << TaskDBInterface.getAllErrorMessages() << *testTask << "\n";
-            allTestsPassed = false;
+            if (!testGetTaskByDescription(taskDBInterface, *testTask, programOptions.verboseOutput))
+            {
+                allTestsPassed = false;
+            }
         }
         else
         {
-            if (testTask->isInDataBase())
+            std::cerr << taskDBInterface.getAllErrorMessages() << *testTask << "\n";
+            std::clog << "Primary key for task: " << testTask->getTaskID() << ", " << testTask->getDescription() <<
+            " not set!\n";
+            if (programOptions.verboseOutput)
             {
-                if (!testGetTaskByDescription(TaskDBInterface, *testTask, programOptions.verboseOutput))
-                {
-                    allTestsPassed = false;
-                }
+                std::clog << *testTask << "\n\n";
             }
-            else
-            {
-                std::clog << "Primary key for task: " << testTask->getPrimaryKey() << ", " << testTask->getDescription() <<
-                " not set!\n";
-                if (programOptions.verboseOutput)
-                {
-                    std::clog << *testTask << "\n\n";
-                }
-                allTestsPassed = false;
-            }
+            allTestsPassed = false;
         }
         ++lCount;
     }

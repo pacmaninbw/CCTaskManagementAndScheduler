@@ -6,7 +6,6 @@
 #include <chrono>
 #include "CommandLineParser.h"
 #include <initializer_list>
-#include "ModelBase.h"
 #include <string>
 #include "TaskModel.h"
 #include "UserModel.h"
@@ -29,7 +28,6 @@
  * 
  */
 
- using WhereArg = std::pair<std::string, PTS_DataField>;
 
 class DBInterface
 {
@@ -37,28 +35,12 @@ public:
     DBInterface(ProgramOptions& programOptions);
     virtual ~DBInterface() = default;
     std::string getAllErrorMessages() const { return errorMessages; };
-    bool insertIntoDataBase(ModelBase& model);
-    bool getUniqueModelFromDB(ModelShp model, std::vector<WhereArg> whereArgs);
-    bool getUniqueModelFromDB(ModelShp model, std::initializer_list<WhereArg> whereArgs)
-    {
-        std::vector<WhereArg> vWhereArgs{whereArgs};
-        return getUniqueModelFromDB(model, vWhereArgs);
-    };
-    UserList getAllUsers();
-    TaskList getAllTasksForUser(UserModel_shp user);
-    TaskList getAllTasksForUser(UserModel& user);
 
-private:
+protected:
     void clearPreviousErrors() { errorMessages.clear(); };
     void appendErrorMessage(std::string newError) { errorMessages.append(newError); };
-    std::string getTableNameFrom(ModelBase& model);
-    std::string formatInsert(ModelBase& model);
-    std::string formatSelect(std::string tableName, std::vector<WhereArg> whereArgs);
     boost::asio::awaitable<boost::mysql::results> executeSqlStatementsCoRoutine(std::string selectSqlStatement);
     boost::mysql::results runAnyMySQLstatementsAsynchronously(std::string selectSqlStatement);
-    bool convertResultsToModel(boost::mysql::row_view& sourceFromDB, std::vector<std::string>& columnNames, ModelShp destination);
-    void convertScalarFieldValue(boost::mysql::field_view sourceField, PTS_DataField_shp currentFieldPtr);
-    bool executeSimpleQueryProcessResults(std::string sqlStatements, ModelShp destination);
     boost::mysql::date convertChronoDateToBoostMySQLDate(std::chrono::year_month_day source)
     {
         std::chrono::sys_days tp = source;
@@ -74,6 +56,7 @@ private:
         return converted;
     };
 
+private:
     boost::mysql::connect_params dbConnectionParameters;
     std::string errorMessages;
     std::string databaseName;
