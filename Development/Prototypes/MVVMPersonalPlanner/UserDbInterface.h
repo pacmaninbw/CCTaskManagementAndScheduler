@@ -19,6 +19,13 @@ public:
     UserModel_shp getUserByLoginName(std::string_view loginName);
 
 private:
+    UserModel_shp processResults(boost::mysql::results& results);
+    boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByID(std::size_t userID);
+    boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByFullName(std::string lastName,
+        std::string firstName, std::string middleInit);
+    boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByEmailAddress(std::string emailAddr);
+    boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByLoginName(std::string loginName);
+    boost::asio::awaitable<boost::mysql::results>  coRoInsertUser(const UserModel& user);
 
 };
 

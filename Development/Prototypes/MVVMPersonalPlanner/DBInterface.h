@@ -56,7 +56,6 @@ protected:
         return converted;
     };
 
-private:
     boost::mysql::connect_params dbConnectionParameters;
     std::string errorMessages;
     std::string databaseName;
