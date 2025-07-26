@@ -5,12 +5,7 @@
 #include <boost/mysql.hpp>
 #include <chrono>
 #include "CommandLineParser.h"
-#include <initializer_list>
 #include <string>
-#include "TaskModel.h"
-#include "UserModel.h"
-#include <utility>
-#include <vector>
 
 /*
  * Error Handling: 
@@ -32,15 +27,16 @@
 class DBInterface
 {
 public:
-    DBInterface(ProgramOptions& programOptions);
+    DBInterface();
     virtual ~DBInterface() = default;
     std::string getAllErrorMessages() const { return errorMessages; };
 
 protected:
     void clearPreviousErrors() { errorMessages.clear(); };
     void appendErrorMessage(std::string newError) { errorMessages.append(newError); };
-    boost::asio::awaitable<boost::mysql::results> executeSqlStatementsCoRoutine(std::string selectSqlStatement);
-    boost::mysql::results runAnyMySQLstatementsAsynchronously(std::string selectSqlStatement);
+/*
+ * Date converters are located here because they will be used by multiple dependent classes.
+ */
     boost::mysql::date convertChronoDateToBoostMySQLDate(std::chrono::year_month_day source)
     {
         std::chrono::sys_days tp = source;
