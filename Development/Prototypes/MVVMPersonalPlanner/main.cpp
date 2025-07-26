@@ -13,6 +13,12 @@
 #include "UserModel.h"
 #include "UtilityTimer.h"
 
+/*
+ * All of the DBInterface classes need access to the programOptions global variable for the
+ * MySQL user name and password, as well as the database name and other connection details.
+ */
+ProgramOptions programOptions;
+
 static bool testGetUserByLoginName(UserDbInterface& userDBInterface, UserModel_shp insertedUser)
 {
     UserModel_shp retrievedUser = std::make_shared<UserModel>(UserModel());
@@ -63,7 +69,7 @@ static bool testGetUserByFullName(UserDbInterface& userDBInterface, UserModel_sh
     }
 }
 
-static UserList loadUserProfileTestDataIntoDatabase(ProgramOptions &programOptions)
+static UserList loadUserProfileTestDataIntoDatabase()
 {
     // Test one case of the alternate constructor.
     UserList userProfileTestData = {{std::make_shared<UserModel>("PacMan", "IN", "BW", "pacmaninbw@gmail.com")}};
@@ -81,7 +87,7 @@ static UserList loadUserProfileTestDataIntoDatabase(ProgramOptions &programOptio
         userProfileTestData.push_back(userIn);
     }
 
-    UserDbInterface userDBInterface(programOptions);
+    UserDbInterface userDBInterface;
     bool allTestsPassed = true;
 
     for (auto user: userProfileTestData)
@@ -293,9 +299,9 @@ static TaskModel_shp creatEvenTask(const UserModel_shp userOne, const UserTaskTe
     return newTask;
 }
 
-static bool loadUserTaskestDataIntoDatabase(UserModel_shp userOne, ProgramOptions& programOptions)
+static bool loadUserTaskestDataIntoDatabase(UserModel_shp userOne)
 {
-    TaskDbInterface taskDBInterface(programOptions);
+    TaskDbInterface taskDBInterface;
     bool allTestsPassed = true;
     std::size_t lCount = 0;
     std::vector<UserTaskTestData> userTaskTestData = loadTasksFromDataFile(programOptions.taskTestDataFile);;
@@ -338,10 +344,10 @@ int main(int argc, char* argv[])
 		{
 			ProgramOptions programOptions = *progOptions;
             UtilityTimer stopWatch;
-            UserList userList = loadUserProfileTestDataIntoDatabase(programOptions);
+            UserList userList = loadUserProfileTestDataIntoDatabase();
             if (userList.size())
             {
-                if (!loadUserTaskestDataIntoDatabase(userList[0], programOptions))
+                if (!loadUserTaskestDataIntoDatabase(userList[0]))
                 {
                     return EXIT_FAILURE;
                 }

@@ -27,4 +27,6 @@ enum class CommandLineStatus
 
 auto parseCommandLine(int argc, char* argv[]) -> std::expected<ProgramOptions, CommandLineStatus>;
 
+extern ProgramOptions programOptions;
+
 #endif // COMMAND_LINE_PARSER_H_
