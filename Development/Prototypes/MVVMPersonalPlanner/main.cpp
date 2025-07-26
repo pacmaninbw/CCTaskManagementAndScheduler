@@ -135,9 +135,9 @@ static UserList loadUserProfileTestDataIntoDatabase()
     return userProfileTestData;
 }
 
-static bool testGetTaskByDescription(TaskDbInterface& taskDBInterface, TaskModel& task, bool verboseOutput)
+static bool testGetTaskByDescription(TaskDbInterface& taskDBInterface, TaskModel& task, UserModel& user , bool verboseOutput)
 {
-    TaskModel_shp testInDB = taskDBInterface.getTaskByDescriptionAndUserID(task.getDescription(), task.getCreatorID());
+    TaskModel_shp testInDB = taskDBInterface.getTaskByDescriptionAndAssignedUser(task.getDescription(), user);
     if (testInDB)
     {
         if (*testInDB == task)
@@ -314,7 +314,7 @@ static bool loadUserTaskestDataIntoDatabase(UserModel_shp userOne)
 
         if (testTask->isInDatabase())
         {
-            if (!testGetTaskByDescription(taskDBInterface, *testTask, programOptions.verboseOutput))
+            if (!testGetTaskByDescription(taskDBInterface, *testTask, *userOne, programOptions.verboseOutput))
             {
                 allTestsPassed = false;
             }
