@@ -35,13 +35,17 @@ public:
     TaskModel::TaskStatus getStatus() const { return status.value_or(TaskModel::TaskStatus::Not_Started); };
     unsigned int getStatusIntVal() const { return static_cast<unsigned int>(getStatus()); };
     std::size_t getParentTaskID() const { return parentTaskID.value_or(0); };
+    std::optional<std::size_t> rawParentTaskID() const { return parentTaskID; };
     double getPercentageComplete() const { return percentageComplete; };
     std::chrono::year_month_day getCreationDate() const { return creationDate; };
     std::chrono::year_month_day getDueDate() const { return dueDate; };
     std::chrono::year_month_day getScheduledStart() const { return scheduledStart; };
     std::chrono::year_month_day getactualStartDate() const;
+    std::optional<std::chrono::year_month_day> rawActualStartDate() const { return actualStartDate; };
     std::chrono::year_month_day getEstimatedCompletion() const;
+    std::optional<std::chrono::year_month_day> rawEstimatedCompletion() const { return estimatedCompletion; };
     std::chrono::year_month_day getCompletionDate() const ;
+    std::optional<std::chrono::year_month_day> rawCompletionDate() const { return completionDate; };
     unsigned int getEstimatedEffort() const { return estimatedEffort; };
     double getactualEffortToDate() const { return actualEffortToDate; };
     unsigned int getPriorityGroup() const { return priorityGroup; };
