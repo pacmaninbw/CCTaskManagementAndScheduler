@@ -1,10 +1,20 @@
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
 #include "CommandLineParser.h"
 #include "DBInterface.h"
+#include <exception>
+#include <format>
+#include <iostream>
+#include <optional>
+#include <stdexcept>
+#include <string>
+#include <string_view>
 #include "UserDbInterface.h"
 #include "UserModel.h"
+#include <utility>
 
-UserDbInterface::UserDbInterface(ProgramOptions &programOptions)
-: DBInterface(programOptions)
+UserDbInterface::UserDbInterface()
+: DBInterface()
 {
 }
 
@@ -34,9 +44,7 @@ std::size_t UserDbInterface::insert(const UserModel &user)
 
     catch(const std::exception& e)
     {
-        std::string eMsg("In UserDbInterface::getUserByUserID ");
-        eMsg += e.what();
-        appendErrorMessage(eMsg);
+        appendErrorMessage(std::format("In UserDbInterface::insert : {}", e.what()));
         return 0;
     }
 }
@@ -67,29 +75,102 @@ UserModel_shp UserDbInterface::getUserByUserID(std::size_t userID)
 
     catch(const std::exception& e)
     {
-        std::string eMsg("In UserDbInterface::getUserByUserID ");
-        eMsg += e.what();
-        appendErrorMessage(eMsg);
+        appendErrorMessage(std::format("In UserDbInterface::getUserByUserID : {}", e.what()));
         return nullptr;
     }    
 }
 
 UserModel_shp UserDbInterface::getUserByFullName(std::string_view lastName, std::string_view firstName, std::string_view middleI)
 {
-    std::cout << lastName << firstName << middleI << "\n";
-    return UserModel_shp();
+    try
+    {
+        boost::asio::io_context ctx;
+        boost::mysql::results localResult;
+
+        boost::asio::co_spawn(
+            ctx, coRoSelectUserByFullName(lastName, firstName, middleI),
+            [&localResult, this](std::exception_ptr ptr, boost::mysql::results result)
+            {
+                if (ptr)
+                {
+                    std::rethrow_exception(ptr);
+                }
+                localResult = std::move(result);
+            }
+        );
+
+        ctx.run();
+
+        return processResults(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserDbInterface::getUserByFullName : {}", e.what()));
+        return nullptr;
+    }    
 }
 
 UserModel_shp UserDbInterface::getUserByEmail(std::string_view emailAddress)
 {
-    std::cout << emailAddress;
-    return UserModel_shp();
+    try
+    {
+        boost::asio::io_context ctx;
+        boost::mysql::results localResult;
+
+        boost::asio::co_spawn(
+            ctx, coRoSelectUserByEmailAddress(emailAddress),
+            [&localResult, this](std::exception_ptr ptr, boost::mysql::results result)
+            {
+                if (ptr)
+                {
+                    std::rethrow_exception(ptr);
+                }
+                localResult = std::move(result);
+            }
+        );
+
+        ctx.run();
+
+        return processResults(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserDbInterface::getUserByEmail : {}", e.what()));
+        return nullptr;
+    }    
 }
 
 UserModel_shp UserDbInterface::getUserByLoginName(std::string_view loginName)
 {
-    std::cout << loginName;
-    return UserModel_shp();
+    try
+    {
+        boost::asio::io_context ctx;
+        boost::mysql::results localResult;
+
+        boost::asio::co_spawn(
+            ctx, coRoSelectUserByLoginName(loginName),
+            [&localResult, this](std::exception_ptr ptr, boost::mysql::results result)
+            {
+                if (ptr)
+                {
+                    std::rethrow_exception(ptr);
+                }
+                localResult = std::move(result);
+            }
+        );
+
+        ctx.run();
+
+        return processResults(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserDbInterface::getUserByLoginName : {}", e.what()));
+        return nullptr;
+    }    
 }
 
 UserModel_shp UserDbInterface::processResults(boost::mysql::results& results)
@@ -162,25 +243,9 @@ boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoSelectUserByI
     co_return result;
 }
 
-boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoSelectUserByFullName(std::string lastName, std::string firstName, std::string middleInit)
-{
-    std::cout << lastName << firstName << middleInit << "\n";
-    return boost::asio::awaitable<boost::mysql::results>();
-}
-
-boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoSelectUserByEmailAddress(std::string emailAddr)
-{
-    std::cout << emailAddr << "\n";
-    return boost::asio::awaitable<boost::mysql::results>();
-}
-
-boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoSelectUserByLoginName(std::string loginName)
-{
-    std::cout << loginName << "\n";
-    return boost::asio::awaitable<boost::mysql::results>();
-}
-
-boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoInsertUser(const UserModel& user)
+boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoSelectUserByFullName(
+    std::string_view lastName, std::string_view firstName, std::string_view middleI
+)
 {
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
@@ -191,10 +256,79 @@ boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoInsertUser(co
     boost::mysql::results result;
 
     co_await conn.async_execute(
+        boost::mysql::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
+            "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
+            "UseLettersForMajorPriority, SeparatePriorityWithDot FROM UserProfile WHERE LastName = {} AND FirstName = {} AND MiddleInitial = {}",
+            lastName, firstName, middleI),
+        result
+    );
+
+    co_await conn.async_close();
+
+    co_return result;
+}
+
+boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoSelectUserByEmailAddress(std::string_view emailAddr)
+{
+    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+
+    co_await conn.async_connect(dbConnectionParameters);
+
+    conn.set_meta_mode(boost::mysql::metadata_mode::full);
+
+    boost::mysql::results result;
+
+    co_await conn.async_execute(
+        boost::mysql::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
+            "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
+            "UseLettersForMajorPriority, SeparatePriorityWithDot FROM UserProfile WHERE EmailAddress = {}", emailAddr),
+        result
+    );
+
+    co_await conn.async_close();
+
+    co_return result;
+}
+
+boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoSelectUserByLoginName(std::string_view loginName)
+{
+    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+
+    co_await conn.async_connect(dbConnectionParameters);
+
+    conn.set_meta_mode(boost::mysql::metadata_mode::full);
+
+    boost::mysql::results result;
+
+    co_await conn.async_execute(
+        boost::mysql::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
+            "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
+            "UseLettersForMajorPriority, SeparatePriorityWithDot FROM UserProfile WHERE LoginName = {}", loginName),
+        result
+    );
+
+    co_await conn.async_close();
+
+    co_return result;
+}
+
+boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoInsertUser(const UserModel& user)
+{
+    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+
+    co_await conn.async_connect(dbConnectionParameters);
+
+    conn.set_meta_mode(boost::mysql::metadata_mode::minimal);
+
+    boost::mysql::results result;
+
+    co_await conn.async_execute(
         boost::mysql::with_params("INSERT INTO UserProfile (UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
             "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
             "UseLettersForMajorPriority, SeparatePriorityWithDot) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12})",
-             user.getUserID(), user.getLastName(), user.getFirstName(), user.getMiddleInitial()),
+             user.getUserID(), user.getLastName(), user.getFirstName(), user.getMiddleInitial(), user.getEmail(), user.getLoginName(),
+             user.getPassword(), user.getStartTime(), user.getEndTime(), user.isPriorityInSchedule(), user.isMinorPriorityInSchedule(),
+             user.isUsingLettersForMaorPriority(), user.isSeparatingPriorityWithDot()),
         result
     );
 

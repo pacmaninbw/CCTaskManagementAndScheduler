@@ -9,7 +9,7 @@
 class UserDbInterface : public DBInterface
 {
 public:
-    UserDbInterface(ProgramOptions& programOptions);
+    UserDbInterface();
     ~UserDbInterface() = default;
     std::size_t insert(const UserModel& user);
     std::size_t insert(UserModel_shp userP) { return insert(*userP); };
@@ -21,10 +21,10 @@ public:
 private:
     UserModel_shp processResults(boost::mysql::results& results);
     boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByID(std::size_t userID);
-    boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByFullName(std::string lastName,
-        std::string firstName, std::string middleInit);
-    boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByEmailAddress(std::string emailAddr);
-    boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByLoginName(std::string loginName);
+    boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByFullName(std::string_view lastName, 
+        std::string_view firstName, std::string_view middleI);
+    boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByEmailAddress(std::string_view emailAddr);
+    boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByLoginName(std::string_view loginName);
     boost::asio::awaitable<boost::mysql::results>  coRoInsertUser(const UserModel& user);
 
 };
