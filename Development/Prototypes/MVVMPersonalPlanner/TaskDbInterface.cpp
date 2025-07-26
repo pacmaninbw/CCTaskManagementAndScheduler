@@ -4,7 +4,7 @@
 #include "TaskDbInterface.h"
 #include "TaskModel.h"
 
-TaskDbInterface::TaskDbInterface(ProgramOptions &programOptions)
-: DBInterface(programOptions)
+TaskDbInterface::TaskDbInterface()
+: DBInterface()
 {
 }

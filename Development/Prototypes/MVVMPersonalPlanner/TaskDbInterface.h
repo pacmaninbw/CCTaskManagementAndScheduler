@@ -9,7 +9,7 @@
 class TaskDbInterface : public DBInterface
 {
 public:
-    TaskDbInterface(ProgramOptions& programOptions);
+    TaskDbInterface();
     ~TaskDbInterface() = default;
     std::size_t insert(const TaskModel& task);
     std::size_t insert(TaskModel_shp task) { return insert(*task); };
