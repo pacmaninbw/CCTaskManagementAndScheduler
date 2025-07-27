@@ -323,10 +323,10 @@ boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoInsertUser(co
     boost::mysql::results result;
 
     co_await conn.async_execute(
-        boost::mysql::with_params("INSERT INTO UserProfile (UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
+        boost::mysql::with_params("INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
             "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
             "UseLettersForMajorPriority, SeparatePriorityWithDot) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12})",
-             user.getUserID(), user.getLastName(), user.getFirstName(), user.getMiddleInitial(), user.getEmail(), user.getLoginName(),
+             user.getLastName(), user.getFirstName(), user.getMiddleInitial(), user.getEmail(), user.getLoginName(),
              user.getPassword(), user.getStartTime(), user.getEndTime(), user.isPriorityInSchedule(), user.isMinorPriorityInSchedule(),
              user.isUsingLettersForMaorPriority(), user.isSeparatingPriorityWithDot()),
         result
