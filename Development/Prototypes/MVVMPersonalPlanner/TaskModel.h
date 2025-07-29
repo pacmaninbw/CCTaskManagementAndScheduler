@@ -50,6 +50,7 @@ public:
     double getactualEffortToDate() const { return actualEffortToDate; };
     unsigned int getPriorityGroup() const { return priorityGroup; };
     unsigned int getPriority() const { return priority; };
+    std::vector<std::size_t> getDependencies() { return dependencies; };
     bool isPersonal() const { return personal; };
     void setCreatorID(std::size_t creatorID);
     void setCreatorID(UserModel_shp creator);
@@ -68,11 +69,14 @@ public:
     void setEstimatedCompletion(std::chrono::year_month_day completionDate);
     void setCompletionDate(std::chrono::year_month_day completionDate);
     void setEstimatedEffort(unsigned int estimatedHours);
-    void setactualEffortToDate(double effortHoursYTD);
+    void setActualEffortToDate(double effortHoursYTD);
     void setPriorityGroup(unsigned int priorityGroup);
-    void setPriorityGroup(const char priorityGroup);
+    void setPriorityGroupC(const char priorityGroup);
     void setPriority(unsigned int priority);
     void setPersonal(bool personalIn);
+    void addDependency(std::size_t taskId);
+    void addDependency(TaskModel& dependency) { addDependency(dependency.getTaskID()); };
+    void addDependency(std::shared_ptr<TaskModel> dependency) { addDependency(dependency->getTaskID()); };
     void setTaskID(std::size_t newID);
     std::string dateToString(std::chrono::year_month_day taskDate);
     std::chrono::year_month_day stringToDate(std::string dateString);
@@ -129,7 +133,7 @@ private:
     unsigned int priorityGroup;
     unsigned int priority;
     bool personal;
-    std::optional<std::vector<std::size_t>> dependencies;
+    std::vector<std::size_t> dependencies;
 
 };
 

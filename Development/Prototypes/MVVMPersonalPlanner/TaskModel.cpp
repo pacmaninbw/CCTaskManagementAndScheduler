@@ -20,6 +20,7 @@ static std::vector<GenericDictionary<TaskModel::TaskStatus, std::string>::DictTy
 static GenericDictionary<TaskModel::TaskStatus, std::string> taskStatusConversionTable(statusConversionsDefs);
 
 TaskModel::TaskModel()
+: personal{false}
 {
     std::chrono::year_month_day today = getTodaysDate();
     setCreationDate(today);
@@ -48,6 +49,13 @@ bool TaskModel::getDatabaseValues()
 bool TaskModel::updateDatabase()
 {
     return false;
+}
+
+void TaskModel::addEffortHours(double hours)
+{
+    double actualEffortHours = getactualEffortToDate();
+    actualEffortHours += hours;
+    setActualEffortToDate(actualEffortHours);
 }
 
 std::chrono::year_month_day TaskModel::getactualStartDate() const
@@ -163,7 +171,7 @@ void TaskModel::setEstimatedEffort(unsigned int estimatedHours)
     estimatedEffort = estimatedHours;
 }
 
-void TaskModel::setactualEffortToDate(double effortHoursYTD)
+void TaskModel::setActualEffortToDate(double effortHoursYTD)
 {
     modified = true;
     actualEffortToDate = effortHoursYTD;
@@ -175,7 +183,7 @@ void TaskModel::setPriorityGroup(unsigned int priorityGroup)
     priorityGroup = priorityGroup;
 }
 
-void TaskModel::setPriorityGroup(const char priorityGroup)
+void TaskModel::setPriorityGroupC(const char priorityGroup)
 {
     unsigned int group = priorityGroup - 'A' + 1;
     setPriorityGroup(group);
@@ -191,6 +199,12 @@ void TaskModel::setPersonal(bool personalIn)
 {
     modified = true;
     personal = personalIn;
+}
+
+void TaskModel::addDependency(std::size_t taskId)
+{
+    modified = true;
+    dependencies.push_back(taskId);
 }
 
 void TaskModel::setTaskID(std::size_t newID)
@@ -210,14 +224,6 @@ TaskModel::TaskStatus TaskModel::stringToStatus(std::string statusName) const
 {
     auto status = taskStatusConversionTable.lookupID(statusName);
     return status.has_value()? *status : UnknowStatus;
-}
-
-
-void TaskModel::addEffortHours(double hours)
-{
-    double actualEffortHours = getactualEffortToDate();
-    actualEffortHours += hours;
-    setactualEffortToDate(actualEffortHours);
 }
 
 std::chrono::year_month_day TaskModel::getTodaysDate()
