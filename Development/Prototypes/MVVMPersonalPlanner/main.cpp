@@ -21,9 +21,8 @@ ProgramOptions programOptions;
 
 static bool testGetUserByLoginName(UserDbInterface& userDBInterface, UserModel_shp insertedUser)
 {
-    UserModel_shp retrievedUser = std::make_shared<UserModel>(UserModel());
-    retrievedUser->setLoginName(insertedUser->getLoginName());
-    if (retrievedUser->getDatabaseValues())
+    UserModel_shp retrievedUser = userDBInterface.getUserByLoginName(insertedUser->getLoginName());
+    if (retrievedUser)
     {
         if (*retrievedUser == *insertedUser)
         {
@@ -157,6 +156,33 @@ static bool testGetTaskByDescription(TaskDbInterface& taskDBInterface, TaskModel
     else
     {
         std::cerr << "userDBInterface.getTaskByDescription(task.getDescription())) FAILED!\n" 
+            << taskDBInterface.getAllErrorMessages() << "\n";
+        return false;
+    }
+}
+
+static bool testGetTaskByID(TaskDbInterface& taskDBInterface, TaskModel& task, bool verboseOutput)
+{
+    TaskModel_shp testInDB = taskDBInterface.getTaskByTaskID(task.getTaskID());
+    if (testInDB)
+    {
+        if (*testInDB == task)
+        {
+            return true;
+        }
+        else
+        {
+            std::clog << "Inserted and retrieved Task are not the same! Test FAILED!\n";
+            if (verboseOutput)
+            {
+                std::clog << "Inserted Task:\n" << task << "\n" "Retreived Task:\n" << *testInDB << "\n";
+            }
+            return false;
+        }
+    }
+    else
+    {
+        std::cerr << "userDBInterface.getTaskByDescription(task.getTaskByTaskID())) FAILED!\n" 
             << taskDBInterface.getAllErrorMessages() << "\n";
         return false;
     }
@@ -314,6 +340,11 @@ static bool loadUserTaskestDataIntoDatabase(UserModel_shp userOne)
 
         if (testTask->isInDatabase())
         {
+            if (!testGetTaskByID(taskDBInterface, *testTask, programOptions.verboseOutput))
+            {
+                allTestsPassed = false;
+            }
+
             if (!testGetTaskByDescription(taskDBInterface, *testTask, *userOne, programOptions.verboseOutput))
             {
                 allTestsPassed = false;
@@ -333,7 +364,15 @@ static bool loadUserTaskestDataIntoDatabase(UserModel_shp userOne)
         ++lCount;
     }
 
-    std::clog << "All Task insertions and retrival tests PASSED\n";
+    if (allTestsPassed)
+    {
+        std::clog << "All Task insertions and retrival tests PASSED\n";
+    }
+    else
+    {
+        std::clog << "Some or all Task related tests FAILED!\n";
+    }
+
     return allTestsPassed;
 }
 
