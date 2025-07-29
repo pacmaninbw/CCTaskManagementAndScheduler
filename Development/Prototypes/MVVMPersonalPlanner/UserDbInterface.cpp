@@ -20,6 +20,8 @@ UserDbInterface::UserDbInterface()
 
 std::size_t UserDbInterface::insert(const UserModel &user)
 {
+    clearPreviousErrors();
+
     try
     {
         boost::asio::io_context ctx;
@@ -51,6 +53,8 @@ std::size_t UserDbInterface::insert(const UserModel &user)
 
 UserModel_shp UserDbInterface::getUserByUserID(std::size_t userID)
 {
+    clearPreviousErrors();
+
     try
     {
         boost::asio::io_context ctx;
@@ -82,6 +86,8 @@ UserModel_shp UserDbInterface::getUserByUserID(std::size_t userID)
 
 UserModel_shp UserDbInterface::getUserByFullName(std::string_view lastName, std::string_view firstName, std::string_view middleI)
 {
+    clearPreviousErrors();
+
     try
     {
         boost::asio::io_context ctx;
@@ -113,6 +119,8 @@ UserModel_shp UserDbInterface::getUserByFullName(std::string_view lastName, std:
 
 UserModel_shp UserDbInterface::getUserByEmail(std::string_view emailAddress)
 {
+    clearPreviousErrors();
+
     try
     {
         boost::asio::io_context ctx;
@@ -144,6 +152,8 @@ UserModel_shp UserDbInterface::getUserByEmail(std::string_view emailAddress)
 
 UserModel_shp UserDbInterface::getUserByLoginName(std::string_view loginName)
 {
+    clearPreviousErrors();
+
     try
     {
         boost::asio::io_context ctx;
@@ -322,15 +332,18 @@ boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoInsertUser(co
 
     boost::mysql::results result;
 
+    // Boolean values are stored as TINYINT and need to be converted.
     co_await conn.async_execute(
         boost::mysql::with_params("INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
             "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
-            "UseLettersForMajorPriority, SeparatePriorityWithDot) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12})",
+            "UseLettersForMajorPriority, SeparatePriorityWithDot) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11})",
              user.getLastName(), user.getFirstName(), user.getMiddleInitial(), user.getEmail(), user.getLoginName(),
-             user.getPassword(), user.getStartTime(), user.getEndTime(), user.isPriorityInSchedule(), user.isMinorPriorityInSchedule(),
-             user.isUsingLettersForMaorPriority(), user.isSeparatingPriorityWithDot()),
+             user.getPassword(), user.getStartTime(), user.getEndTime(), static_cast<int>(user.isPriorityInSchedule()),
+             static_cast<int>(user.isMinorPriorityInSchedule()), static_cast<int>(user.isUsingLettersForMaorPriority()),
+             static_cast<int>(user.isSeparatingPriorityWithDot())),
         result
     );
+
 
     co_await conn.async_close();
 
