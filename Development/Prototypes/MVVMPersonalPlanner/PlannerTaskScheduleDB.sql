@@ -106,6 +106,8 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Tasks` (
     `ActualEffortHours` double NOT NULL,
     `SchedulePriorityGroup` INT UNSIGNED NOT NULL,
     `PriorityInGroup` INT UNSIGNED NOT NULL,
+    `Personal` BOOLEAN,
+    `DependencyCount` INT UNSIGNED,
     PRIMARY KEY (`TaskID`, `CreatedBy`),
     UNIQUE INDEX `TaskID_UNIQUE` (`TaskID` ASC),
     INDEX `fk_Tasks_CreatedBy_idx` (`CreatedBy` ASC),
