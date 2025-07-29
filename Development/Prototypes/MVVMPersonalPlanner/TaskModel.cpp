@@ -20,7 +20,17 @@ static std::vector<GenericDictionary<TaskModel::TaskStatus, std::string>::DictTy
 static GenericDictionary<TaskModel::TaskStatus, std::string> taskStatusConversionTable(statusConversionsDefs);
 
 TaskModel::TaskModel()
-: personal{false}
+: modified{false},
+  taskID{0},
+  creatorID{0},
+  assignToID{0},
+  description{""},
+  percentageComplete{0.0},
+  estimatedEffort{0},
+  actualEffortToDate{0.0},
+  priorityGroup{0},
+  priority{0},
+  personal{false}
 {
     std::chrono::year_month_day today = getTodaysDate();
     setCreationDate(today);
@@ -41,14 +51,14 @@ TaskModel::TaskModel(UserModel_shp creator, std::string description)
     setDescription(description);
 }
 
-bool TaskModel::getDatabaseValues()
+bool TaskModel::hasRequiredValues() const
 {
-    return false;
-}
-
-bool TaskModel::updateDatabase()
-{
-    return false;
+    if (description.empty() || description.length() < 10)
+    {
+        return false;
+    }
+    
+    return true;
 }
 
 void TaskModel::addEffortHours(double hours)
@@ -60,7 +70,7 @@ void TaskModel::addEffortHours(double hours)
 
 std::chrono::year_month_day TaskModel::getactualStartDate() const
 {
-    return std::chrono::year_month_day();
+    return actualStartDate.value_or(std::chrono::year_month_day());
 }
 
 std::chrono::year_month_day TaskModel::getEstimatedCompletion() const
@@ -73,72 +83,52 @@ std::chrono::year_month_day TaskModel::getCompletionDate() const
     return std::chrono::year_month_day();
 }
 
-void TaskModel::setCreatorID(std::size_t creatorID)
+void TaskModel::setCreatorID(std::size_t inCreatorID)
 {
     modified = true;
-    creatorID = creatorID;
+    creatorID = inCreatorID;
 }
 
-void TaskModel::setCreatorID(UserModel_shp creator)
-{
-    setCreatorID(creator->getUserID());
-}
-
-void TaskModel::setAssignToID(std::size_t assignedID)
+void TaskModel::setAssignToID(std::size_t inAssignedID)
 {
     modified = true;
-    assignToID = assignedID;
+    assignToID = inAssignedID;
 }
 
-void TaskModel::setAssignToID(UserModel_shp assignedUser)
-{
-    setAssignToID(assignedUser->getUserID());
-}
-
-void TaskModel::setDescription(std::string description)
+void TaskModel::setDescription(std::string inDescription)
 {
     modified = true;
-    description = description;
+    description = inDescription;
 }
 
-void TaskModel::setStatus(TaskModel::TaskStatus status)
+void TaskModel::setStatus(TaskModel::TaskStatus inStatus)
 {
     modified = true;
-    status = status;
+    status = inStatus;
 }
 
-void TaskModel::setStatus(std::string statusStr)
-{
-    setStatus(stringToStatus(statusStr));
-}
-
-void TaskModel::setParentTaskID(std::size_t parentTaskID)
+void TaskModel::setParentTaskID(std::size_t inParentTaskID)
 {
     modified = true;
-    parentTaskID = parentTaskID;
+    parentTaskID = inParentTaskID;
 }
 
-void TaskModel::setParentTaskID(std::shared_ptr<TaskModel> parentTask)
-{
-    setParentTaskID(parentTask->getTaskID());
-}
-
-void TaskModel::setPercentageComplete(double percentComplete)
+void TaskModel::setPercentageComplete(double inPercentComplete)
 {
     modified = true;
-    percentageComplete = percentComplete;
+    percentageComplete = inPercentComplete;
 }
 
-void TaskModel::setCreationDate(std::chrono::year_month_day creationDate)
+void TaskModel::setCreationDate(std::chrono::year_month_day inCreationDate)
 {
     modified = true;
-    creationDate = creationDate;
+    creationDate = inCreationDate;
 }
 
-void TaskModel::setDueDate(std::chrono::year_month_day dueDate)
+void TaskModel::setDueDate(std::chrono::year_month_day inDueDate)
 {
     modified = true;
-    dueDate = dueDate;
+    dueDate = inDueDate;
 }
 
 void TaskModel::setScheduledStart(std::chrono::year_month_day startDate)
@@ -159,16 +149,16 @@ void TaskModel::setEstimatedCompletion(std::chrono::year_month_day completionDat
     estimatedCompletion = completionDate;
 }
 
-void TaskModel::setCompletionDate(std::chrono::year_month_day completionDate)
+void TaskModel::setCompletionDate(std::chrono::year_month_day inCompletionDate)
 {
     modified = true;
-    completionDate = completionDate;
+    completionDate = inCompletionDate;
 }
 
-void TaskModel::setEstimatedEffort(unsigned int estimatedHours)
+void TaskModel::setEstimatedEffort(unsigned int inEstimatedHours)
 {
     modified = true;
-    estimatedEffort = estimatedHours;
+    estimatedEffort = inEstimatedHours;
 }
 
 void TaskModel::setActualEffortToDate(double effortHoursYTD)
@@ -177,10 +167,10 @@ void TaskModel::setActualEffortToDate(double effortHoursYTD)
     actualEffortToDate = effortHoursYTD;
 }
 
-void TaskModel::setPriorityGroup(unsigned int priorityGroup)
+void TaskModel::setPriorityGroup(unsigned int inPriorityGroup)
 {
     modified = true;
-    priorityGroup = priorityGroup;
+    priorityGroup = inPriorityGroup;
 }
 
 void TaskModel::setPriorityGroupC(const char priorityGroup)
@@ -189,10 +179,10 @@ void TaskModel::setPriorityGroupC(const char priorityGroup)
     setPriorityGroup(group);
 }
 
-void TaskModel::setPriority(unsigned int priority)
+void TaskModel::setPriority(unsigned int inPriority)
 {
     modified = true;
-    priority = priority;
+    priority = inPriority;
 }
 
 void TaskModel::setPersonal(bool personalIn)

@@ -23,9 +23,9 @@ public:
     TaskModel(UserModel_shp creator, std::string descriptionIn);
     virtual ~TaskModel() = default;
 
-    bool getDatabaseValues();
-    bool updateDatabase();
     bool isInDatabase() const { return taskID > 0; };
+    bool isModified() const { return modified; };
+    bool hasRequiredValues() const;
     void clearModified() { modified = false; };
     void addEffortHours(double hours);
     std::size_t getTaskID() const { return taskID; };
@@ -53,14 +53,14 @@ public:
     std::vector<std::size_t> getDependencies() { return dependencies; };
     bool isPersonal() const { return personal; };
     void setCreatorID(std::size_t creatorID);
-    void setCreatorID(UserModel_shp creator);
+    void setCreatorID(UserModel_shp creator) { setCreatorID(creator->getUserID()); };
     void setAssignToID(std::size_t assignedID);
-    void setAssignToID(UserModel_shp assignedUser);
+    void setAssignToID(UserModel_shp assignedUser) { setAssignToID(assignedUser->getUserID()); };
     void setDescription(std::string description);
     void setStatus(TaskModel::TaskStatus status);
-    void setStatus(std::string statusStr);
+    void setStatus(std::string statusStr) { setStatus(stringToStatus(statusStr)); };
     void setParentTaskID(std::size_t parentTaskID);
-    void setParentTaskID(std::shared_ptr<TaskModel> parentTask);
+    void setParentTaskID(std::shared_ptr<TaskModel> parentTask) { setParentTaskID(parentTask->getTaskID()); };
     void setPercentageComplete(double percentComplete);
     void setCreationDate(std::chrono::year_month_day creationDate);
     void setDueDate(std::chrono::year_month_day dueDate);
@@ -78,8 +78,6 @@ public:
     void addDependency(TaskModel& dependency) { addDependency(dependency.getTaskID()); };
     void addDependency(std::shared_ptr<TaskModel> dependency) { addDependency(dependency->getTaskID()); };
     void setTaskID(std::size_t newID);
-    std::string dateToString(std::chrono::year_month_day taskDate);
-    std::chrono::year_month_day stringToDate(std::string dateString);
     std::string taskStatusString() const;
     TaskModel::TaskStatus stringToStatus(std::string statusName) const;
 
@@ -98,11 +96,13 @@ public:
         os << "TaskModel:\n";
         os << std::format(outFmtStr, "Task ID", task.taskID);
         os << std::format(outFmtStr, "Creator ID", task.creatorID);
+        os << std::format(outFmtStr, "Assigned To ID", task.assignToID);
         os << std::format(outFmtStr, "Description", task.description);
         os << std::format(outFmtStr, "Status", static_cast<unsigned int>(task.status.value_or(TaskModel::TaskStatus::Not_Started)));
         os << std::format(outFmtStr, "Parent ID", task.parentTaskID.value_or(0));
         os << std::format(outFmtStr, "Percentage Complete", task.percentageComplete);
         os << std::format(outFmtStr, "Creation Date", task.creationDate);
+        os << std::format(outFmtStr, "Scheduled Start Date", task.scheduledStart);
         os << std::format(outFmtStr, "Due Date", task.dueDate);
 
         return os;
