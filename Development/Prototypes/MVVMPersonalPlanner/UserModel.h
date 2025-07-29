@@ -25,8 +25,6 @@ public:
     ~UserModel() = default;
 
     bool isInDataBase(){return(userID>0);};
-    bool getDatabaseValues();
-    bool updateDatabase();
     void autoGenerateLoginAndPassword();
     std::string getLastName() const { return lastName;};
     std::string getFirstName() const { return firstName; };

@@ -28,16 +28,6 @@ UserModel::UserModel(std::string lastIn, std::string firstIn, std::string middle
     }
 }
 
-bool UserModel::getDatabaseValues()
-{
-    return false;
-}
-
-bool UserModel::updateDatabase()
-{
-    return false;
-}
-
 void UserModel::autoGenerateLoginAndPassword()
 {
     if (loginName.empty() && password.empty())
