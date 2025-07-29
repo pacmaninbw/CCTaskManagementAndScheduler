@@ -254,7 +254,7 @@ static void commonTaskInit(TaskModel_shp newTask, const UserTaskTestData taskDat
 {
     // Required fields first.
     newTask->setEstimatedEffort(taskData.estimatedEffortHours);
-    newTask->setactualEffortToDate(taskData.actualEffortHours);
+    newTask->setActualEffortToDate(taskData.actualEffortHours);
     newTask->setDueDate(stringToDate(taskData.dueDate));
     newTask->setScheduledStart(stringToDate(taskData.scheduledStartDate));
     newTask->setStatus(taskData.status);
@@ -342,7 +342,7 @@ int main(int argc, char* argv[])
     try {
 		if (const auto progOptions = parseCommandLine(argc, argv); progOptions.has_value())
 		{
-			ProgramOptions programOptions = *progOptions;
+			programOptions = *progOptions;
             UtilityTimer stopWatch;
             UserList userList = loadUserProfileTestDataIntoDatabase();
             if (userList.size())
