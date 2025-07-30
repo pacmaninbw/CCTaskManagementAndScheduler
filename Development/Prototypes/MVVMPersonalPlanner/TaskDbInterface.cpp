@@ -265,8 +265,6 @@ boost::asio::awaitable<boost::mysql::results> TaskDbInterface::coRoInsertTask(Ta
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    conn.set_meta_mode(boost::mysql::metadata_mode::minimal);
-
     boost::mysql::results insertResult;
     std::size_t dependencyCount = task.getDependencies().size();
 
@@ -332,8 +330,6 @@ boost::asio::awaitable<boost::mysql::results> TaskDbInterface::selectTaskById(co
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    conn.set_meta_mode(boost::mysql::metadata_mode::full);
-
     boost::mysql::results selectResult;
 
     co_await conn.async_execute(
@@ -354,8 +350,6 @@ boost::asio::awaitable<boost::mysql::results> TaskDbInterface::selectTaskDepende
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
-
-    conn.set_meta_mode(boost::mysql::metadata_mode::full);
 
     boost::mysql::results selectResult;
 
@@ -406,8 +400,6 @@ boost::asio::awaitable<boost::mysql::results> TaskDbInterface::selectTaskByDescr
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
-
-    conn.set_meta_mode(boost::mysql::metadata_mode::full);
 
     boost::mysql::results selectResult;
 

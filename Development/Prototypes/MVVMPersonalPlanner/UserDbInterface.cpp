@@ -237,8 +237,6 @@ boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoSelectUserByI
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    conn.set_meta_mode(boost::mysql::metadata_mode::full);
-
     boost::mysql::results result;
 
     co_await conn.async_execute(
@@ -261,8 +259,6 @@ boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoSelectUserByF
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    conn.set_meta_mode(boost::mysql::metadata_mode::full);
-
     boost::mysql::results result;
 
     co_await conn.async_execute(
@@ -284,8 +280,6 @@ boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoSelectUserByE
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    conn.set_meta_mode(boost::mysql::metadata_mode::full);
-
     boost::mysql::results result;
 
     co_await conn.async_execute(
@@ -306,8 +300,6 @@ boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoSelectUserByL
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    conn.set_meta_mode(boost::mysql::metadata_mode::full);
-
     boost::mysql::results result;
 
     co_await conn.async_execute(
@@ -327,8 +319,6 @@ boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoInsertUser(co
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
-
-    conn.set_meta_mode(boost::mysql::metadata_mode::minimal);
 
     boost::mysql::results result;
 
