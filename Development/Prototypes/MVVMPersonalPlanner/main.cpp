@@ -45,7 +45,7 @@ static bool testGetUserByLoginName(UserDbInterface& userDBInterface, UserModel_s
 
 static bool testGetUserByFullName(UserDbInterface& userDBInterface, UserModel_shp insertedUser)
 {
-    UserModel_shp retrievedUser = retrievedUser = userDBInterface.getUserByFullName(insertedUser->getLastName(),
+    UserModel_shp retrievedUser = userDBInterface.getUserByFullName(insertedUser->getLastName(),
         insertedUser->getFirstName(), insertedUser->getMiddleInitial());
     if (retrievedUser)
     {
@@ -68,7 +68,7 @@ static bool testGetUserByFullName(UserDbInterface& userDBInterface, UserModel_sh
     }
 }
 
-static UserList loadUserProfileTestDataIntoDatabase()
+static bool loadUserProfileTestDataIntoDatabase()
 {
     // Test one case of the alternate constructor.
     UserList userProfileTestData = {{std::make_shared<UserModel>("PacMan", "IN", "BW", "pacmaninbw@gmail.com")}};
@@ -123,15 +123,17 @@ static UserList loadUserProfileTestDataIntoDatabase()
         }
     }
 
+    userProfileTestData.clear();
+
     if (allTestsPassed)
     {
         std::clog << "Insertion and retrieval of users test PASSED\n";
+        return true;
     }
     else
     {
-        userProfileTestData.clear();
+        return false;
     }
-    return userProfileTestData;
 }
 
 static bool testGetTaskByDescription(TaskDbInterface& taskDBInterface, TaskModel& task, UserModel& user , bool verboseOutput)
@@ -325,12 +327,20 @@ static TaskModel_shp creatEvenTask(const UserModel_shp userOne, const UserTaskTe
     return newTask;
 }
 
-static bool loadUserTaskestDataIntoDatabase(UserModel_shp userOne)
+static bool loadUserTaskestDataIntoDatabase()
 {
+    UserDbInterface userDbInterface;
+    UserModel_shp userOne = userDbInterface.getUserByUserID(1);
+    if (!userOne)
+    {
+        std::cerr << "Failed to retrieve userOne from DataBase!\n";
+        return false;
+    }
+
     TaskDbInterface taskDBInterface;
     bool allTestsPassed = true;
     std::size_t lCount = 0;
-    std::vector<UserTaskTestData> userTaskTestData = loadTasksFromDataFile(programOptions.taskTestDataFile);;
+    std::vector<UserTaskTestData> userTaskTestData = loadTasksFromDataFile(programOptions.taskTestDataFile);
 
     for (auto taskTestData: userTaskTestData)
     {
@@ -383,10 +393,9 @@ int main(int argc, char* argv[])
 		{
 			programOptions = *progOptions;
             UtilityTimer stopWatch;
-            UserList userList = loadUserProfileTestDataIntoDatabase();
-            if (userList.size())
+            if (loadUserProfileTestDataIntoDatabase())
             {
-                if (!loadUserTaskestDataIntoDatabase(userList[0]))
+                if (!loadUserTaskestDataIntoDatabase())
                 {
                     return EXIT_FAILURE;
                 }
