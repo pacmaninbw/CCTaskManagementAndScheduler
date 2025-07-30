@@ -135,6 +135,15 @@ TaskModel_shp TaskDbInterface::getTaskByDescriptionAndAssignedUser(std::string_v
     }    
 }
 
+TaskModel_shp TaskDbInterface::getParentTask(TaskModel& task)
+{
+    if (task.rawParentTaskID().has_value())
+    {
+        return getTaskByTaskID(task.getParentTaskID());
+    }
+
+    return nullptr;
+}
 /*
  * Private methods.
  */
@@ -415,3 +424,4 @@ boost::asio::awaitable<boost::mysql::results> TaskDbInterface::selectTaskByDescr
 
     co_return selectResult;
 }
+

@@ -15,7 +15,9 @@ public:
     std::size_t insert(TaskModel& task);
     std::size_t insert(TaskModel_shp task) { return insert(*task); };
     TaskModel_shp getTaskByTaskID(std::size_t taskId);
-    TaskModel_shp getTaskByDescriptionAndAssignedUser(std::string_view description, UserModel& assignedUser); 
+    TaskModel_shp getTaskByDescriptionAndAssignedUser(std::string_view description, UserModel& assignedUser);
+    TaskModel_shp getParentTask(TaskModel& task);
+    TaskModel_shp getParentTask(TaskModel_shp task) { return getParentTask(*task); };
 
 private:
     TaskModel_shp processResult(boost::mysql::results& results);
