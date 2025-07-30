@@ -67,6 +67,27 @@ static bool testGetUserByFullName(UserDbInterface& userDBInterface, UserModel_sh
         return false;
     }
 }
+static bool testGetAllUsers(UserList userProfileTestData, UserDbInterface& userDbInterface)
+{
+    UserList allUsers = userDbInterface.getAllUsers();
+    bool testPassed = false;
+
+    if ((userProfileTestData.size() == allUsers.size()) &&
+        std::equal(userProfileTestData.begin(), userProfileTestData.end(), allUsers.begin(),
+            [](const UserModel_shp a, const UserModel_shp b) { return *a == *b; }))
+    {
+        std::clog << "Get All users PASSED!";
+        testPassed = true;
+    }
+    else
+    {
+        std::clog << "Get All users FAILED! " << allUsers.size() << "\n";
+    }
+
+    allUsers.clear();
+
+    return testPassed;
+}
 
 static bool loadUserProfileTestDataIntoDatabase()
 {
@@ -121,6 +142,11 @@ static bool loadUserProfileTestDataIntoDatabase()
                 allTestsPassed = false;
             }
         }
+    }
+
+    if (allTestsPassed)
+    {
+        allTestsPassed = testGetAllUsers(userProfileTestData, userDBInterface);
     }
 
     userProfileTestData.clear();
@@ -345,7 +371,8 @@ static bool loadUserTaskestDataIntoDatabase()
     for (auto taskTestData: userTaskTestData)
     {
         // Try both constructors on an alternating basis.
-        TaskModel_shp testTask = (lCount & 0x000001)? creatOddTask(userOne, taskTestData) : creatEvenTask(userOne, taskTestData);
+        TaskModel_shp testTask = (lCount & 0x000001)? creatOddTask(userOne, taskTestData) :
+            creatEvenTask(userOne, taskTestData);
         testTask->setTaskID(taskDBInterface.insert(testTask));
 
         if (testTask->isInDatabase())
