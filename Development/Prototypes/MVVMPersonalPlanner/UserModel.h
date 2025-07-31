@@ -66,7 +66,7 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const UserModel& user)
     {
-        constexpr const char* outFmtStr = "{}: {}\n";
+        constexpr const char* outFmtStr = "\t{}: {}\n";
         os << std::format(outFmtStr, "User ID", user.userID);
         os << std::format(outFmtStr, "Last Name", user.lastName);
         os << std::format(outFmtStr, "First Name", user.firstName);
