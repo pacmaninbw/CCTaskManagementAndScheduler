@@ -17,6 +17,7 @@ public:
     UserModel_shp getUserByFullName(std::string_view lastName, std::string_view firstName, std::string_view middleI);
     UserModel_shp getUserByEmail(std::string_view emailAddress);
     UserModel_shp getUserByLoginName(std::string_view loginName);
+    UserModel_shp getUserByLoginAndPassword(std::string_view loginName, std::string_view password);
     UserList getAllUsers();
 
 private:
@@ -30,6 +31,7 @@ private:
     boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByLoginName(std::string_view loginName);
     boost::asio::awaitable<boost::mysql::results>  coRoInsertUser(const UserModel& user);
     boost::asio::awaitable<boost::mysql::results>  coRoSelectAllUsers();
+    boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByLoginAndPassword(std::string_view loginName, std::string_view password);
 };
 
 #endif // USERDBINTERFACE_H_

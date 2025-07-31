@@ -183,6 +183,40 @@ UserModel_shp UserDbInterface::getUserByLoginName(std::string_view loginName)
     }    
 }
 
+UserModel_shp UserDbInterface::getUserByLoginAndPassword(std::string_view loginName, std::string_view password)
+{
+    clearPreviousErrors();
+
+    try
+    {
+        boost::asio::io_context ctx;
+        boost::mysql::results localResult;
+
+        boost::asio::co_spawn(
+            ctx, coRoSelectUserByLoginAndPassword(loginName, password),
+            [&localResult, this](std::exception_ptr ptr, boost::mysql::results result)
+            {
+                if (ptr)
+                {
+                    std::rethrow_exception(ptr);
+                }
+                localResult = std::move(result);
+            }
+        );
+
+        ctx.run();
+
+        return processResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserDbInterface::getUserByLoginAndPassword : {}", e.what()));
+        return nullptr;
+    }    
+}
+
+
 UserList UserDbInterface::getAllUsers()
 {
     clearPreviousErrors();
@@ -410,6 +444,28 @@ boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoSelectAllUser
         "SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
             "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
             "UseLettersForMajorPriority, SeparatePriorityWithDot FROM UserProfile ORDER BY UserID",
+        result
+    );
+
+    co_await conn.async_close();
+
+    co_return result;
+}
+
+boost::asio::awaitable<boost::mysql::results> UserDbInterface::coRoSelectUserByLoginAndPassword(
+    std::string_view loginName, std::string_view password)
+{
+    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+
+    co_await conn.async_connect(dbConnectionParameters);
+
+    boost::mysql::results result;
+
+    co_await conn.async_execute(
+        boost::mysql::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
+            "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
+            "UseLettersForMajorPriority, SeparatePriorityWithDot FROM UserProfile WHERE LoginName = {} AND HashedPassWord = {}",
+            loginName, password),
         result
     );
 
