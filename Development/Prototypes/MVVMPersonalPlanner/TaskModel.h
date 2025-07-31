@@ -28,6 +28,11 @@ public:
     bool hasRequiredValues() const;
     void clearModified() { modified = false; };
     void addEffortHours(double hours);
+    void markComplete()
+    {
+        setCompletionDate(getTodaysDate());
+        setStatus(TaskModel::TaskStatus::Complete);
+    }
     std::size_t getTaskID() const { return taskID; };
     std::size_t getCreatorID() const { return creatorID; };
     std::size_t getAssignToID() const { return assignToID; };
@@ -92,18 +97,38 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const TaskModel& task)
     {
-        constexpr const char* outFmtStr = "{}: {}\n";
+        constexpr const char* outFmtStr = "\t{}: {}\n";
         os << "TaskModel:\n";
         os << std::format(outFmtStr, "Task ID", task.taskID);
         os << std::format(outFmtStr, "Creator ID", task.creatorID);
         os << std::format(outFmtStr, "Assigned To ID", task.assignToID);
         os << std::format(outFmtStr, "Description", task.description);
-        os << std::format(outFmtStr, "Status", static_cast<unsigned int>(task.status.value_or(TaskModel::TaskStatus::Not_Started)));
-        os << std::format(outFmtStr, "Parent ID", task.parentTaskID.value_or(0));
         os << std::format(outFmtStr, "Percentage Complete", task.percentageComplete);
         os << std::format(outFmtStr, "Creation Date", task.creationDate);
         os << std::format(outFmtStr, "Scheduled Start Date", task.scheduledStart);
         os << std::format(outFmtStr, "Due Date", task.dueDate);
+
+        os << "Optional Fields\n";
+        if (task.status.has_value())
+        {
+            os << std::format(outFmtStr, "Status", task.taskStatusString());
+        }
+        if (task.parentTaskID.has_value())
+        {
+            os << std::format(outFmtStr, "Parent ID", task.parentTaskID.value());
+        }
+        if (task.actualStartDate.has_value())
+        {
+            os << std::format(outFmtStr, "Actual Start Date", task.actualStartDate.value());
+        }
+        if (task.estimatedCompletion.has_value())
+        {
+            os << std::format(outFmtStr, "Estimated Completion Date", task.estimatedCompletion.value());
+        }
+        if (task.completionDate.has_value())
+        {
+            os << std::format(outFmtStr, "Completed Date", task.completionDate.value());
+        }
 
         return os;
     };
