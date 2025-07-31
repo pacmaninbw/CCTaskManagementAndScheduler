@@ -19,6 +19,38 @@
  */
 ProgramOptions programOptions;
 
+static bool testGetUserByLoginAndPassword(UserDbInterface& userDBInterface, UserModel_shp insertedUser)
+{
+    std::string_view testName = insertedUser->getLoginName();
+    std::string_view testPassword = insertedUser->getPassword();
+
+    UserModel_shp retrievedUser = userDBInterface.getUserByLoginAndPassword(testName, testPassword);
+    if (retrievedUser)
+    {
+        if (*retrievedUser != *insertedUser)
+        {
+            std::cerr << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
+            *insertedUser << "\n" "Retreived User:\n" << *retrievedUser << "\n";
+            return false;
+        }
+    }
+    else
+    {
+        std::cerr << "userDBInterface.getUserByLogin(user->getLoginName()) FAILED!\n" <<
+            userDBInterface.getAllErrorMessages() << "\n";
+        return false;
+    }
+
+    retrievedUser = userDBInterface.getUserByLoginAndPassword(testName, "NotThePassword");
+    if (retrievedUser)
+    {
+        std::cerr << "userDBInterface.getUserByLogin(user->getLoginName()) Found user with fake password!\n";
+        return false;
+    }
+
+    return true;
+}
+
 static bool testGetUserByLoginName(UserDbInterface& userDBInterface, UserModel_shp insertedUser)
 {
     UserModel_shp retrievedUser = userDBInterface.getUserByLoginName(insertedUser->getLoginName());
@@ -147,6 +179,12 @@ static bool loadUserProfileTestDataIntoDatabase()
                 {
                     allTestsPassed = false;
                 }
+
+                if (!testGetUserByLoginAndPassword(userDBInterface, user))
+                {
+                    allTestsPassed = false;
+                }
+
                 if (!testGetUserByFullName(userDBInterface, user))
                 {
                     allTestsPassed = false;
