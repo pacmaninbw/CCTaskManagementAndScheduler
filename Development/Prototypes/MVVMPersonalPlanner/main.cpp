@@ -76,12 +76,28 @@ static bool testGetAllUsers(UserList userProfileTestData, UserDbInterface& userD
         std::equal(userProfileTestData.begin(), userProfileTestData.end(), allUsers.begin(),
             [](const UserModel_shp a, const UserModel_shp b) { return *a == *b; }))
     {
-        std::clog << "Get All users PASSED!";
         testPassed = true;
     }
     else
     {
         std::clog << "Get All users FAILED! " << allUsers.size() << "\n";
+        if (userProfileTestData.size() != allUsers.size())
+        {
+            std::clog << std::format("Size differs: userProfileTestData.size({}) != llUsers.size({})",
+                userProfileTestData.size(), allUsers.size());
+        }
+        else
+        {
+            for (std::size_t userLisetIdx = 0; userLisetIdx < userProfileTestData.size(); ++userLisetIdx)
+            {
+                if (*userProfileTestData[userLisetIdx] != *allUsers[userLisetIdx])
+                {
+                    std::clog << std::format("Original Data [{}]", userLisetIdx) << "\n" <<
+                        *userProfileTestData[userLisetIdx] << std::format("Database Data [{}]", userLisetIdx) << 
+                        "\n" << *allUsers[userLisetIdx] << "\n";
+                }
+            }
+        }
     }
 
     allUsers.clear();
@@ -89,12 +105,9 @@ static bool testGetAllUsers(UserList userProfileTestData, UserDbInterface& userD
     return testPassed;
 }
 
-static bool loadUserProfileTestDataIntoDatabase()
+static void loadTestUsersFromFile(std::string fileName, UserList& userProfileTestData)
 {
-    // Test one case of the alternate constructor.
-    UserList userProfileTestData = {{std::make_shared<UserModel>("PacMan", "IN", "BW", "pacmaninbw@gmail.com")}};
-
-    std::ifstream userData(programOptions.userTestDataFile);
+    std::ifstream userData(fileName);
     
     for (auto row: CSVRange(userData))
     {
@@ -106,6 +119,13 @@ static bool loadUserProfileTestDataIntoDatabase()
         userIn->autoGenerateLoginAndPassword();
         userProfileTestData.push_back(userIn);
     }
+}
+
+static bool loadUserProfileTestDataIntoDatabase()
+{
+    // Test one case of the alternate constructor.
+    UserList userProfileTestData = {{std::make_shared<UserModel>("PacMan", "IN", "BW", "pacmaninbw@gmail.com")}};
+    loadTestUsersFromFile(programOptions.userTestDataFile, userProfileTestData);
 
     UserDbInterface userDBInterface;
     bool allTestsPassed = true;
@@ -153,11 +173,12 @@ static bool loadUserProfileTestDataIntoDatabase()
 
     if (allTestsPassed)
     {
-        std::clog << "Insertion and retrieval of users test PASSED\n";
+        std::clog << "Insertion and retrieval of users test PASSED!\n";
         return true;
     }
     else
     {
+        std::cerr << "Some or all insertion and retrieval of users test FAILED!\n";
         return false;
     }
 }
@@ -272,6 +293,7 @@ static std::chrono::year_month_day stringToDate(std::string dateString)
 
     return dateValue;
 }
+
 static std::vector<UserTaskTestData> loadTasksFromDataFile(std::string taskFileName)
 {
     std::vector<UserTaskTestData> inputTaskData;
