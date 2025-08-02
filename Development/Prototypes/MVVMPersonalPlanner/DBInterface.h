@@ -5,24 +5,12 @@
 #include <boost/mysql.hpp>
 #include <chrono>
 #include "CommandLineParser.h"
+#include <functional>
 #include <string>
+#include <string_view>
 
-/*
- * Error Handling: 
- *
- * Prevent SQL errors if possible. 
- * 
- * Any errors in the content of a model object should be reported by appending to
- * the errorMessages string. Collect as many errors as possible. The user
- * interface will be responsible for the actual reporting of errors.
- * 
- * Errors from previous attemps to generate a SQL statement should be cleared
- * when starting a fresh SQL statement.
- * 
- * Exceptions should not be used if at all possible.
- * 
- */
-
+namespace bAsio = boost::asio;
+namespace bMysql = boost::mysql;
 
 class DBInterface
 {
@@ -34,16 +22,41 @@ public:
 protected:
     void clearPreviousErrors() { errorMessages.clear(); };
     void appendErrorMessage(std::string newError) { errorMessages.append(newError); };
+
+/*
+ * All calls to runQueryAsync should be implemented within try blocks.
+ * Find the proper signature for the query, if one doesn't exist
+ * add new signatures as necessary to allow for reuse.
+ */
+    bMysql::results runQueryAsync(
+        std::function<bAsio::awaitable<bMysql::results>(std::size_t, std::chrono::year_month_day)>queryFunc,
+        std::size_t id, std::chrono::year_month_day searchDate);
+    bMysql::results runQueryAsync(
+        std::function<bAsio::awaitable<bMysql::results>(std::size_t)>queryFunc, std::size_t id);
+    bMysql::results runQueryAsync(
+        std::function<bAsio::awaitable<bMysql::results>(std::string_view, std::string_view, std::string_view)>queryFunc,
+        std::string_view searchStr1, std::string_view searchStr2, std::string_view searchStr3);
+    bMysql::results runQueryAsync(
+        std::function<bAsio::awaitable<bMysql::results>(std::string_view, std::string_view)>queryFunc,
+        std::string_view searchStr1, std::string_view searchStr2);
+    bMysql::results runQueryAsync(
+        std::function<bAsio::awaitable<bMysql::results>(std::string_view)>queryFunc,
+        std::string_view searchString);
+    bMysql::results runQueryAsync(std::function<bAsio::awaitable<bMysql::results>(void)>queryFunc);
+    bMysql::results runQueryAsync(
+        std::function<bAsio::awaitable<bMysql::results>(std::string_view, std::size_t)>queryFunc,
+        std::string_view searchStr, std::size_t id);
+
 /*
  * Date converters are located here because they will be used by multiple dependent classes.
  */
-    boost::mysql::date convertChronoDateToBoostMySQLDate(std::chrono::year_month_day source)
+    bMysql::date convertChronoDateToBoostMySQLDate(std::chrono::year_month_day source)
     {
         std::chrono::sys_days tp = source;
-        boost::mysql::date boostDate(tp);
+        bMysql::date boostDate(tp);
         return boostDate;
     };
-    std::chrono::year_month_day convertBoostMySQLDateToChornoDate(boost::mysql::date source)
+    std::chrono::year_month_day convertBoostMySQLDateToChornoDate(bMysql::date source)
     {
         const std::chrono::year year{source.year()};
         const std::chrono::month month{source.month()};
@@ -52,7 +65,8 @@ protected:
         return converted;
     };
 
-    boost::mysql::connect_params dbConnectionParameters;
+protected:
+    bMysql::connect_params dbConnectionParameters;
     std::string errorMessages;
     std::string databaseName;
     bool verboseOutput;
