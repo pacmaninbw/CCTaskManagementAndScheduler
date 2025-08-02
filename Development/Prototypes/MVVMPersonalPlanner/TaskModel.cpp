@@ -1,4 +1,5 @@
 #include <chrono>
+#include "commonUtilities.h"
 #include "GenericDictionary.h"
 #include <iostream>
 #include <memory>
@@ -214,12 +215,6 @@ TaskModel::TaskStatus TaskModel::stringToStatus(std::string statusName) const
 {
     auto status = taskStatusConversionTable.lookupID(statusName);
     return status.has_value()? *status : UnknowStatus;
-}
-
-std::chrono::year_month_day TaskModel::getTodaysDate()
-{
-    std::chrono::time_point<std::chrono::system_clock> today = std::chrono::system_clock::now();
-    return std::chrono::floor<std::chrono::days>(today);
 }
 
 bool TaskModel::diffTask(TaskModel& other)

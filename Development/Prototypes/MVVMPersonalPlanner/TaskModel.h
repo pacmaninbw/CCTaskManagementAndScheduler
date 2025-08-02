@@ -136,7 +136,6 @@ public:
 
 private:
     TaskStatus statusFromInt(unsigned int statusI) const { return static_cast<TaskModel::TaskStatus>(statusI); };
-    std::chrono::year_month_day getTodaysDate();
     bool diffTask(TaskModel& other);
 
     bool modified;
