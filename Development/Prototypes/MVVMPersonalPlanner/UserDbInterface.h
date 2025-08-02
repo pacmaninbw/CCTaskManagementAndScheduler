@@ -21,17 +21,17 @@ public:
     UserList getAllUsers();
 
 private:
-    UserModel_shp processResult(boost::mysql::results& results);
-    UserList processResults(boost::mysql::results& results);
-    void processResultRow(boost::mysql::row_view rv, UserModel_shp newUser);
-    boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByID(std::size_t userID);
-    boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByFullName(std::string_view lastName, 
+    UserModel_shp processResult(bMysql::results& results);
+    UserList processResults(bMysql::results& results);
+    void processResultRow(bMysql::row_view rv, UserModel_shp newUser);
+    bAsio::awaitable<bMysql::results> coRoSelectUserByID(std::size_t userID);
+    bAsio::awaitable<bMysql::results> coRoSelectUserByFullName(std::string_view lastName, 
         std::string_view firstName, std::string_view middleI);
-    boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByEmailAddress(std::string_view emailAddr);
-    boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByLoginName(std::string_view loginName);
-    boost::asio::awaitable<boost::mysql::results>  coRoInsertUser(const UserModel& user);
-    boost::asio::awaitable<boost::mysql::results>  coRoSelectAllUsers();
-    boost::asio::awaitable<boost::mysql::results>  coRoSelectUserByLoginAndPassword(std::string_view loginName, std::string_view password);
+    bAsio::awaitable<bMysql::results> coRoSelectUserByEmailAddress(std::string_view emailAddr);
+    bAsio::awaitable<bMysql::results> coRoSelectUserByLoginName(std::string_view loginName);
+    bAsio::awaitable<bMysql::results> coRoInsertUser(const UserModel& user);
+    bAsio::awaitable<bMysql::results> coRoSelectAllUsers();
+    bAsio::awaitable<bMysql::results> coRoSelectUserByLoginAndPassword(std::string_view loginName, std::string_view password);
 };
 
 #endif // USERDBINTERFACE_H_

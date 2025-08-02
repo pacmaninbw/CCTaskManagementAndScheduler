@@ -5,6 +5,7 @@
 #include "DBInterface.h"
 #include <exception>
 #include <format>
+#include <functional>
 #include <iostream>
 #include <optional>
 #include <stdexcept>
@@ -40,12 +41,12 @@ std::size_t TaskDbInterface::insert(TaskModel &task)
 
     try
     {
-        boost::asio::io_context ctx;
-        boost::mysql::results localResult;
+        bAsio::io_context ctx;
+        bMysql::results localResult;
 
-        boost::asio::co_spawn(
+        bAsio::co_spawn(
             ctx, coRoInsertTask(task),
-            [&localResult, this](std::exception_ptr ptr, boost::mysql::results result)
+            [&localResult, this](std::exception_ptr ptr, bMysql::results result)
             {
                 if (ptr)
                 {
@@ -58,81 +59,58 @@ std::size_t TaskDbInterface::insert(TaskModel &task)
         ctx.run();
 
         taskID = localResult.last_insert_id();
-
-        return taskID;
     }
 
     catch(const std::exception& e)
     {
         appendErrorMessage(std::format("In TaskDbInterface::insert : {}", e.what()));
-        return taskID;
     }
+
+    return taskID;
 }
 
 TaskModel_shp TaskDbInterface::getTaskByTaskID(std::size_t taskId)
 {
+    TaskModel_shp newTask = nullptr;
     clearPreviousErrors();
 
     try
     {
-        boost::asio::io_context ctx;
-        boost::mysql::results localResult;
+        bMysql::results localResult = runQueryAsync(
+            std::bind(&TaskDbInterface::coRoSelectTaskById, this, std::placeholders::_1), taskId);
 
-        boost::asio::co_spawn(
-            ctx, selectTaskById(taskId),
-            [&localResult, this](std::exception_ptr ptr, boost::mysql::results result)
-            {
-                if (ptr)
-                {
-                    std::rethrow_exception(ptr);
-                }
-                localResult = std::move(result);
-            }
-        );
-
-        ctx.run();
-
-        return processResult(localResult);
+        newTask = processResult(localResult);
     }
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In askDbInterface::getTaskByTaskID({}) : {}", taskId, e.what()));
-        return nullptr;
-    }    
+        appendErrorMessage(std::format("In TaskDbInterface::getTaskByTaskID({}) : {}", taskId, e.what()));
+    }
+    
+    return newTask;
 }
 
 TaskModel_shp TaskDbInterface::getTaskByDescriptionAndAssignedUser(std::string_view description, UserModel& assignedUser)
 {
+    TaskModel_shp newTask = nullptr;
     clearPreviousErrors();
 
     try
     {
-        boost::asio::io_context ctx;
-        boost::mysql::results localResult;
+        std::size_t userId = assignedUser.getUserID();
+        bMysql::results localResult = runQueryAsync(
+            std::bind(&TaskDbInterface::coRoSelectTaskByDescriptionAndAssignedUser, this, std::placeholders::_1, std::placeholders::_2),
+            description, userId);
 
-        boost::asio::co_spawn(
-            ctx, selectTaskByDescriptionAndAssignedUser(description, assignedUser.getUserID()),
-            [&localResult, this](std::exception_ptr ptr, boost::mysql::results result)
-            {
-                if (ptr)
-                {
-                    std::rethrow_exception(ptr);
-                }
-                localResult = std::move(result);
-            }
-        );
-
-        ctx.run();
-
-        return processResult(localResult);
+        newTask = processResult(localResult);
     }
 
     catch(const std::exception& e)
     {
         appendErrorMessage(std::format("In askDbInterface::getTaskByDescriptionAndAssignedUser({}) : {}", description, e.what()));
-        return nullptr;
-    }    
+    }
+    
+    return newTask;
 }
 
 TaskModel_shp TaskDbInterface::getParentTask(TaskModel& task)
@@ -144,10 +122,53 @@ TaskModel_shp TaskDbInterface::getParentTask(TaskModel& task)
 
     return nullptr;
 }
+
+TaskList TaskDbInterface::getAllCurrentActiveTasksForAssignedUser(UserModel &assignedUser)
+{
+    clearPreviousErrors();
+
+    std::cerr << std::format("getAllCurrentActiveTasksForAssignedUser({}) NOT Implemented", assignedUser.getUserID()) << "\n";
+
+    return TaskList();
+}
+
+TaskList TaskDbInterface::getUnstartedDueForStartForAssignedUser(UserModel &assignedUser)
+{
+    clearPreviousErrors();
+    std::size_t userId = assignedUser.getUserID();
+    TaskList unstartedTasks;
+
+    try {
+        bMysql::results localResults = runQueryAsync(
+            std::bind(&TaskDbInterface::coRoSelecUnstartedDueForStartForAssignedUsert, this, std::placeholders::_1, std::placeholders::_2),
+            userId, getTodaysDate());
+        unstartedTasks = processResults(localResults);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In TaskDbInterface::getUnstartedDueForStartForAssignedUser({}) : {}", userId, e.what()));
+    }
+
+    return unstartedTasks;
+}
+
+TaskList TaskDbInterface::getAllRecentCompletedTasksForAssignedUser(UserModel &assignedUser, std::chrono::year_month_day searchStartDate)
+{
+    clearPreviousErrors();
+
+    std::cerr << 
+        std::format("getAllRecentCompletedTasksForAssignedUser({} on or after {}) NOT Implemented",
+            assignedUser.getUserID(), searchStartDate) <<
+        "\n";
+
+    return TaskList();
+}
+
 /*
  * Private methods.
  */
-TaskModel_shp TaskDbInterface::processResult(boost::mysql::results& results)
+TaskModel_shp TaskDbInterface::processResult(bMysql::results& results)
 {
     if (results.rows().empty())
     {
@@ -162,14 +183,14 @@ TaskModel_shp TaskDbInterface::processResult(boost::mysql::results& results)
     }
 
     TaskModel_shp newTask = std::make_shared<TaskModel>(TaskModel());
-    boost::mysql::row_view rv = results.rows().at(0);
+    bMysql::row_view rv = results.rows().at(0);
 
     processResultRow(rv, newTask);
 
     return newTask;
 }
 
-TaskList TaskDbInterface::processResults(boost::mysql::results& results)
+TaskList TaskDbInterface::processResults(bMysql::results& results)
 {
     TaskList taskList;
 
@@ -216,7 +237,7 @@ constexpr std::size_t priorityInGroupIdx = 16;
 constexpr std::size_t personalIdx = 17;
 constexpr std::size_t dependencyCountIdx = 18;
 
-void TaskDbInterface::processResultRow(boost::mysql::row_view rv, TaskModel_shp newTask)
+void TaskDbInterface::processResultRow(bMysql::row_view rv, TaskModel_shp newTask)
 {
     // Required fields.
     newTask->setTaskID(rv.at(taskIdIdx).as_uint64());
@@ -268,17 +289,17 @@ void TaskDbInterface::processResultRow(boost::mysql::row_view rv, TaskModel_shp 
     newTask->clearModified();
 }
 
-boost::asio::awaitable<boost::mysql::results> TaskDbInterface::coRoInsertTask(TaskModel &task)
+bAsio::awaitable<bMysql::results> TaskDbInterface::coRoInsertTask(TaskModel &task)
 {
-    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+    bMysql::any_connection conn(co_await bAsio::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    boost::mysql::results insertResult;
+    bMysql::results insertResult;
     std::size_t dependencyCount = task.getDependencies().size();
 
     co_await conn.async_execute(
-        boost::mysql::with_params("INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
+        bMysql::with_params("INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
             "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount)"
             " VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17})",
@@ -307,12 +328,12 @@ boost::asio::awaitable<boost::mysql::results> TaskDbInterface::coRoInsertTask(Ta
     std::vector<std::size_t> dependencies = task.getDependencies();
     if (taskID > 0 &&  dependencies.size() > 0)
     {
-        boost::mysql::statement stmt = co_await conn.async_prepare_statement(
+        bMysql::statement stmt = co_await conn.async_prepare_statement(
             "INSERT INTO TaskDependencies (TaskID, Dependency) VALUES (?, ?)"
         );
         for (auto dependency: dependencies)
         {
-            boost::mysql::results result;
+            bMysql::results result;
             co_await conn.async_execute(stmt.bind(taskID, dependency), result);
         }
         co_await conn.async_close_statement(stmt);
@@ -322,9 +343,9 @@ boost::asio::awaitable<boost::mysql::results> TaskDbInterface::coRoInsertTask(Ta
     co_return insertResult;
 }
 
-std::optional<boost::mysql::date> TaskDbInterface::optionalDateConversion(std::optional<std::chrono::year_month_day> optDate)
+std::optional<bMysql::date> TaskDbInterface::optionalDateConversion(std::optional<std::chrono::year_month_day> optDate)
 {
-    std::optional<boost::mysql::date> mySqlDate;
+    std::optional<bMysql::date> mySqlDate;
 
     if (optDate.has_value())
     {
@@ -333,16 +354,16 @@ std::optional<boost::mysql::date> TaskDbInterface::optionalDateConversion(std::o
     return mySqlDate;
 }
 
-boost::asio::awaitable<boost::mysql::results> TaskDbInterface::selectTaskById(const std::size_t taskId)
+bAsio::awaitable<bMysql::results> TaskDbInterface::coRoSelectTaskById(const std::size_t taskId)
 {
-    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+    bMysql::any_connection conn(co_await bAsio::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    boost::mysql::results selectResult;
+    bMysql::results selectResult;
 
     co_await conn.async_execute(
-        boost::mysql::with_params("SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
+        bMysql::with_params("SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
             "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount FROM Tasks WHERE TaskID = {0}",
             taskId),
@@ -354,16 +375,16 @@ boost::asio::awaitable<boost::mysql::results> TaskDbInterface::selectTaskById(co
     co_return selectResult;
 }
 
-boost::asio::awaitable<boost::mysql::results> TaskDbInterface::selectTaskDependencies(const std::size_t taskId)
+bAsio::awaitable<bMysql::results> TaskDbInterface::coRoSelectTaskDependencies(const std::size_t taskId)
 {
-    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+    bMysql::any_connection conn(co_await bAsio::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    boost::mysql::results selectResult;
+    bMysql::results selectResult;
 
     co_await conn.async_execute(
-        boost::mysql::with_params("SELECT Dependency FROM TaskDependencies WHERE TaskID = {0} ORDER BY Dependency ASC", taskId), selectResult);
+        bMysql::with_params("SELECT Dependency FROM TaskDependencies WHERE TaskID = {0} ORDER BY Dependency ASC", taskId), selectResult);
 
     co_await conn.async_close();
 
@@ -372,22 +393,9 @@ boost::asio::awaitable<boost::mysql::results> TaskDbInterface::selectTaskDepende
 
 void TaskDbInterface::addDependencies(TaskModel_shp newTask)
 {
-    boost::asio::io_context ctx;
-    boost::mysql::results localResult;
-
-    boost::asio::co_spawn(
-        ctx, selectTaskById(newTask->getTaskID()),
-        [&localResult, this](std::exception_ptr ptr, boost::mysql::results result)
-        {
-            if (ptr)
-            {
-                std::rethrow_exception(ptr);
-            }
-            localResult = std::move(result);
-        }
-    );
-
-    ctx.run();
+    std::size_t taskId = newTask->getTaskID();
+    bMysql::results localResult = runQueryAsync(
+        std::bind(&TaskDbInterface::coRoSelectTaskDependencies, this, std::placeholders::_1), taskId);
 
     if (!localResult.rows().empty())
     {
@@ -403,17 +411,17 @@ void TaskDbInterface::addDependencies(TaskModel_shp newTask)
     }
 }
 
-boost::asio::awaitable<boost::mysql::results> TaskDbInterface::selectTaskByDescriptionAndAssignedUser(
+bAsio::awaitable<bMysql::results> TaskDbInterface::coRoSelectTaskByDescriptionAndAssignedUser(
     std::string_view description, const std::size_t userID)
 {
-    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+    bMysql::any_connection conn(co_await bAsio::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    boost::mysql::results selectResult;
+    bMysql::results selectResult;
 
     co_await conn.async_execute(
-        boost::mysql::with_params("SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
+        bMysql::with_params("SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
             "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount FROM Tasks WHERE Description = {0}"
             " AND AsignedTo = {1}", description, userID),
@@ -424,4 +432,27 @@ boost::asio::awaitable<boost::mysql::results> TaskDbInterface::selectTaskByDescr
 
     co_return selectResult;
 }
+
+bAsio::awaitable<bMysql::results> TaskDbInterface::coRoSelecUnstartedDueForStartForAssignedUsert(
+    std::size_t userID, std::chrono::year_month_day searchStart)
+{
+    bMysql::any_connection conn(co_await bAsio::this_coro::executor);
+
+    co_await conn.async_connect(dbConnectionParameters);
+
+    bMysql::results selectResult;
+
+    co_await conn.async_execute(
+        bMysql::with_params("SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
+            "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
+            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount FROM Tasks WHERE AsignedTo = {0}"
+            " AND ScheduledStart = {1}", userID, convertChronoDateToBoostMySQLDate(searchStart)),
+        selectResult
+    );
+
+    co_await conn.async_close();
+
+    co_return selectResult;
+}
+
 
