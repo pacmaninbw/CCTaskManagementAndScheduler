@@ -10,6 +10,8 @@ find_package(Boost 1.87.0 REQUIRED COMPONENTS system charconv program_options)
 
 add_executable(protoPersonalPlanner
     main.cpp
+    commonUtilities.h
+    commonUtilities.cpp
     CommandLineParser.cpp
     CSVReader.h
     UserModel.h
