@@ -20,29 +20,29 @@ public:
     TaskModel_shp getTaskByDescriptionAndAssignedUser(std::string_view description, UserModel& assignedUser);
     TaskModel_shp getParentTask(TaskModel& task);
     TaskModel_shp getParentTask(TaskModel_shp task) { return getParentTask(*task); };
-    TaskList getAllCurrentActiveTasksForAssignedUser(UserModel& assignedUser);
-    TaskList getAllCurrentActiveTasksForAssignedUser(UserModel_shp assignedUser)
-        { return getAllCurrentActiveTasksForAssignedUser(*assignedUser); };
+    TaskList getActiveTasksForAssignedUser(UserModel& assignedUser);
+    TaskList getActiveTasksForAssignedUser(UserModel_shp assignedUser)
+        { return getActiveTasksForAssignedUser(*assignedUser); };
     TaskList getUnstartedDueForStartForAssignedUser(UserModel& assignedUser);
     TaskList getUnstartedDueForStartForAssignedUser(UserModel_shp assignedUser)
         { return getUnstartedDueForStartForAssignedUser(*assignedUser); };
-    TaskList getAllRecentCompletedTasksForAssignedUser(UserModel& assignedUser,
+    TaskList getTasksCompletedByAssignedAfterDate(UserModel& assignedUser,
         std::chrono::year_month_day searchStartDate);
-    TaskList getAllRecentCompletedTasksForAssignedUser(UserModel_shp assignedUser,
+    TaskList getTasksCompletedByAssignedAfterDate(UserModel_shp assignedUser,
         std::chrono::year_month_day searchStartDate)
-        { return getAllRecentCompletedTasksForAssignedUser(*assignedUser, searchStartDate); };
+        { return getTasksCompletedByAssignedAfterDate(*assignedUser, searchStartDate); };
 
 private:
-    TaskModel_shp processResult(bMysql::results& results);
-    TaskList processResults(bMysql::results& results);
-    void processResultRow(bMysql::row_view rv, TaskModel_shp newTask);
-    bAsio::awaitable<bMysql::results> coRoInsertTask(TaskModel& task);
-    std::optional<bMysql::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate);
-    bAsio::awaitable<bMysql::results> coRoSelectTaskById(const std::size_t taskId);
-    bAsio::awaitable<bMysql::results> coRoSelectTaskDependencies(const std::size_t taskId);
+    TaskModel_shp processResult(NSBM::results& results);
+    TaskList processResults(NSBM::results& results);
+    void processResultRow(NSBM::row_view rv, TaskModel_shp newTask);
+    NSBA::awaitable<NSBM::results> coRoInsertTask(TaskModel& task);
+    std::optional<NSBM::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate);
+    NSBA::awaitable<NSBM::results> coRoSelectTaskById(const std::size_t taskId);
+    NSBA::awaitable<NSBM::results> coRoSelectTaskDependencies(const std::size_t taskId);
     void addDependencies(TaskModel_shp newTask);
-    bAsio::awaitable<bMysql::results> coRoSelectTaskByDescriptionAndAssignedUser(std::string_view description, const std::size_t userID);
-    bAsio::awaitable<bMysql::results> coRoSelecUnstartedDueForStartForAssignedUsert(std::size_t userID, std::chrono::year_month_day searchStart);
+    NSBA::awaitable<NSBM::results> coRoSelectTaskByDescriptionAndAssignedUser(std::string_view description, const std::size_t userID);
+    NSBA::awaitable<NSBM::results> coRoSelecUnstartedDueForStartForAssignedUsert(std::size_t userID, std::chrono::year_month_day searchStart);
 
 };
 

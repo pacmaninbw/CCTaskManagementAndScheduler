@@ -25,12 +25,12 @@ std::size_t UserDbInterface::insert(const UserModel &user)
 
     try
     {
-        bAsio::io_context ctx;
-        bMysql::results localResult;
+        NSBA::io_context ctx;
+        NSBM::results localResult;
 
-        bAsio::co_spawn(
+        NSBA::co_spawn(
             ctx, coRoInsertUser(user),
-            [&localResult, this](std::exception_ptr ptr, bMysql::results result)
+            [&localResult, this](std::exception_ptr ptr, NSBM::results result)
             {
                 if (ptr)
                 {
@@ -59,7 +59,7 @@ UserModel_shp UserDbInterface::getUserByUserID(std::size_t userID)
 
     try
     {
-        bMysql::results localResult = runQueryAsync(
+        NSBM::results localResult = runQueryAsync(
             std::bind(&UserDbInterface::coRoSelectUserByID, this, std::placeholders::_1),
             userID);
 
@@ -81,7 +81,7 @@ UserModel_shp UserDbInterface::getUserByFullName(std::string_view lastName, std:
 
     try
     {
-        bMysql::results localResult = runQueryAsync(
+        NSBM::results localResult = runQueryAsync(
             std::bind(&UserDbInterface::coRoSelectUserByFullName, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
             lastName, firstName, middleI);
 
@@ -103,7 +103,7 @@ UserModel_shp UserDbInterface::getUserByEmail(std::string_view emailAddress)
 
     try
     {
-        bMysql::results localResult = runQueryAsync(
+        NSBM::results localResult = runQueryAsync(
             std::bind(&UserDbInterface::coRoSelectUserByEmailAddress, this, std::placeholders::_1),
             emailAddress);
 
@@ -125,7 +125,7 @@ UserModel_shp UserDbInterface::getUserByLoginName(std::string_view loginName)
 
     try
     {
-        bMysql::results localResults = runQueryAsync(
+        NSBM::results localResults = runQueryAsync(
             std::bind(&UserDbInterface::coRoSelectUserByLoginName, this, std::placeholders::_1),
             loginName);
 
@@ -147,7 +147,7 @@ UserModel_shp UserDbInterface::getUserByLoginAndPassword(std::string_view loginN
 
     try
     {
-        bMysql::results localResult = runQueryAsync(
+        NSBM::results localResult = runQueryAsync(
             std::bind(&UserDbInterface::coRoSelectUserByLoginAndPassword, this, std::placeholders::_1, std::placeholders::_2),
             loginName, password);
 
@@ -170,7 +170,7 @@ UserList UserDbInterface::getAllUsers()
 
     try
     {
-        bMysql::results localResult = runQueryAsync(std::bind(&UserDbInterface::coRoSelectAllUsers, this));
+        NSBM::results localResult = runQueryAsync(std::bind(&UserDbInterface::coRoSelectAllUsers, this));
 
         userList = processResults(localResult);
     }
@@ -183,7 +183,7 @@ UserList UserDbInterface::getAllUsers()
     return userList;
 }
 /**/
-UserModel_shp UserDbInterface::processResult(bMysql::results& results)
+UserModel_shp UserDbInterface::processResult(NSBM::results& results)
 {
     if (results.rows().empty())
     {
@@ -198,13 +198,13 @@ UserModel_shp UserDbInterface::processResult(bMysql::results& results)
     }
 
     UserModel_shp newUser = std::make_shared<UserModel>(UserModel());
-    bMysql::row_view rv = results.rows().at(0);
+    NSBM::row_view rv = results.rows().at(0);
     processResultRow(rv, newUser);
 
     return newUser;
 }
 
-UserList UserDbInterface::processResults(bMysql::results& results)
+UserList UserDbInterface::processResults(NSBM::results& results)
 {
     UserList users;
 
@@ -224,7 +224,7 @@ UserList UserDbInterface::processResults(bMysql::results& results)
     return users;
 }
 
-void UserDbInterface::processResultRow(bMysql::row_view rv, UserModel_shp newUser)
+void UserDbInterface::processResultRow(NSBM::row_view rv, UserModel_shp newUser)
 {
     newUser->setUserID(rv.at(0).as_uint64());
     newUser->setLastName(rv.at(1).as_string());
@@ -256,16 +256,16 @@ void UserDbInterface::processResultRow(bMysql::row_view rv, UserModel_shp newUse
     newUser->clearModified();
 }
 
-bAsio::awaitable<bMysql::results> UserDbInterface::coRoSelectUserByID(std::size_t userID)
+NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByID(std::size_t userID)
 {
-    bMysql::any_connection conn(co_await bAsio::this_coro::executor);
+    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    bMysql::results result;
+    NSBM::results result;
 
     co_await conn.async_execute(
-        bMysql::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
+        NSBM::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
             "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
             "UseLettersForMajorPriority, SeparatePriorityWithDot FROM UserProfile WHERE UserID = {}", userID),
         result
@@ -276,18 +276,18 @@ bAsio::awaitable<bMysql::results> UserDbInterface::coRoSelectUserByID(std::size_
     co_return result;
 }
 
-bAsio::awaitable<bMysql::results> UserDbInterface::coRoSelectUserByFullName(
+NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByFullName(
     std::string_view lastName, std::string_view firstName, std::string_view middleI
 )
 {
-    bMysql::any_connection conn(co_await bAsio::this_coro::executor);
+    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    bMysql::results result;
+    NSBM::results result;
 
     co_await conn.async_execute(
-        bMysql::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
+        NSBM::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
             "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
             "UseLettersForMajorPriority, SeparatePriorityWithDot FROM UserProfile WHERE LastName = {} AND FirstName = {} AND MiddleInitial = {}",
             lastName, firstName, middleI),
@@ -299,16 +299,16 @@ bAsio::awaitable<bMysql::results> UserDbInterface::coRoSelectUserByFullName(
     co_return result;
 }
 
-bAsio::awaitable<bMysql::results> UserDbInterface::coRoSelectUserByEmailAddress(std::string_view emailAddr)
+NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByEmailAddress(std::string_view emailAddr)
 {
-    bMysql::any_connection conn(co_await bAsio::this_coro::executor);
+    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    bMysql::results result;
+    NSBM::results result;
 
     co_await conn.async_execute(
-        bMysql::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
+        NSBM::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
             "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
             "UseLettersForMajorPriority, SeparatePriorityWithDot FROM UserProfile WHERE EmailAddress = {}", emailAddr),
         result
@@ -319,16 +319,16 @@ bAsio::awaitable<bMysql::results> UserDbInterface::coRoSelectUserByEmailAddress(
     co_return result;
 }
 
-bAsio::awaitable<bMysql::results> UserDbInterface::coRoSelectUserByLoginName(std::string_view loginName)
+NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByLoginName(std::string_view loginName)
 {
-    bMysql::any_connection conn(co_await bAsio::this_coro::executor);
+    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    bMysql::results result;
+    NSBM::results result;
 
     co_await conn.async_execute(
-        bMysql::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
+        NSBM::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
             "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
             "UseLettersForMajorPriority, SeparatePriorityWithDot FROM UserProfile WHERE LoginName = {}", loginName),
         result
@@ -339,17 +339,17 @@ bAsio::awaitable<bMysql::results> UserDbInterface::coRoSelectUserByLoginName(std
     co_return result;
 }
 
-bAsio::awaitable<bMysql::results> UserDbInterface::coRoInsertUser(const UserModel& user)
+NSBA::awaitable<NSBM::results> UserDbInterface::coRoInsertUser(const UserModel& user)
 {
-    bMysql::any_connection conn(co_await bAsio::this_coro::executor);
+    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    bMysql::results result;
+    NSBM::results result;
 
     // Boolean values are stored as TINYINT and need to be converted.
     co_await conn.async_execute(
-        bMysql::with_params("INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
+        NSBM::with_params("INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
             "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
             "UseLettersForMajorPriority, SeparatePriorityWithDot) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11})",
              user.getLastName(), user.getFirstName(), user.getMiddleInitial(), user.getEmail(), user.getLoginName(),
@@ -365,13 +365,13 @@ bAsio::awaitable<bMysql::results> UserDbInterface::coRoInsertUser(const UserMode
     co_return result;
 }
 
-bAsio::awaitable<bMysql::results> UserDbInterface::coRoSelectAllUsers()
+NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectAllUsers()
 {
-    bMysql::any_connection conn(co_await bAsio::this_coro::executor);
+    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    bMysql::results result;
+    NSBM::results result;
 
     co_await conn.async_execute(
         "SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
@@ -385,17 +385,17 @@ bAsio::awaitable<bMysql::results> UserDbInterface::coRoSelectAllUsers()
     co_return result;
 }
 
-bAsio::awaitable<bMysql::results> UserDbInterface::coRoSelectUserByLoginAndPassword(
+NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByLoginAndPassword(
     std::string_view loginName, std::string_view password)
 {
-    bMysql::any_connection conn(co_await bAsio::this_coro::executor);
+    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    bMysql::results result;
+    NSBM::results result;
 
     co_await conn.async_execute(
-        bMysql::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
+        NSBM::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
             "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
             "UseLettersForMajorPriority, SeparatePriorityWithDot FROM UserProfile WHERE LoginName = {} AND HashedPassWord = {}",
             loginName, password),

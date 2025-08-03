@@ -22,6 +22,9 @@ TaskDbInterface::TaskDbInterface()
 {
 }
 
+static constexpr unsigned int OneWeek = 7;
+static constexpr unsigned int TwoWeeks = 14;
+
 std::size_t TaskDbInterface::insert(TaskModel &task)
 {
     std::size_t taskID = 0;
@@ -41,12 +44,12 @@ std::size_t TaskDbInterface::insert(TaskModel &task)
 
     try
     {
-        bAsio::io_context ctx;
-        bMysql::results localResult;
+        NSBA::io_context ctx;
+        NSBM::results localResult;
 
-        bAsio::co_spawn(
+        NSBA::co_spawn(
             ctx, coRoInsertTask(task),
-            [&localResult, this](std::exception_ptr ptr, bMysql::results result)
+            [&localResult, this](std::exception_ptr ptr, NSBM::results result)
             {
                 if (ptr)
                 {
@@ -76,7 +79,7 @@ TaskModel_shp TaskDbInterface::getTaskByTaskID(std::size_t taskId)
 
     try
     {
-        bMysql::results localResult = runQueryAsync(
+        NSBM::results localResult = runQueryAsync(
             std::bind(&TaskDbInterface::coRoSelectTaskById, this, std::placeholders::_1), taskId);
 
         newTask = processResult(localResult);
@@ -98,7 +101,7 @@ TaskModel_shp TaskDbInterface::getTaskByDescriptionAndAssignedUser(std::string_v
     try
     {
         std::size_t userId = assignedUser.getUserID();
-        bMysql::results localResult = runQueryAsync(
+        NSBM::results localResult = runQueryAsync(
             std::bind(&TaskDbInterface::coRoSelectTaskByDescriptionAndAssignedUser, this, std::placeholders::_1, std::placeholders::_2),
             description, userId);
 
@@ -123,7 +126,7 @@ TaskModel_shp TaskDbInterface::getParentTask(TaskModel& task)
     return nullptr;
 }
 
-TaskList TaskDbInterface::getAllCurrentActiveTasksForAssignedUser(UserModel &assignedUser)
+TaskList TaskDbInterface::getActiveTasksForAssignedUser(UserModel &assignedUser)
 {
     clearPreviousErrors();
 
@@ -137,11 +140,12 @@ TaskList TaskDbInterface::getUnstartedDueForStartForAssignedUser(UserModel &assi
     clearPreviousErrors();
     std::size_t userId = assignedUser.getUserID();
     TaskList unstartedTasks;
+    std::chrono::year_month_day searchDate = getTodaysDatePlus(OneWeek);
 
     try {
-        bMysql::results localResults = runQueryAsync(
+        NSBM::results localResults = runQueryAsync(
             std::bind(&TaskDbInterface::coRoSelecUnstartedDueForStartForAssignedUsert, this, std::placeholders::_1, std::placeholders::_2),
-            userId, getTodaysDate());
+            userId, searchDate);
         unstartedTasks = processResults(localResults);
     }
 
@@ -153,22 +157,34 @@ TaskList TaskDbInterface::getUnstartedDueForStartForAssignedUser(UserModel &assi
     return unstartedTasks;
 }
 
-TaskList TaskDbInterface::getAllRecentCompletedTasksForAssignedUser(UserModel &assignedUser, std::chrono::year_month_day searchStartDate)
+TaskList TaskDbInterface::getTasksCompletedByAssignedAfterDate(UserModel &assignedUser, std::chrono::year_month_day searchStartDate)
 {
     clearPreviousErrors();
-
-    std::cerr << 
-        std::format("getAllRecentCompletedTasksForAssignedUser({} on or after {}) NOT Implemented",
-            assignedUser.getUserID(), searchStartDate) <<
-        "\n";
+    std::size_t userId = assignedUser.getUserID();
+    TaskList completedTasks;
 
     return TaskList();
+
+    try {
+        std::cerr << 
+            std::format("getTasksCompletedByAssignedAfterDate({} on or after {}) NOT Implemented",
+                userId, searchStartDate) <<
+            "\n";
+
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In TaskDbInterface::getTasksCompletedByAssignedAfterDate({}) : {}", userId, e.what()));
+    }
+
+    return completedTasks;
 }
 
 /*
  * Private methods.
  */
-TaskModel_shp TaskDbInterface::processResult(bMysql::results& results)
+TaskModel_shp TaskDbInterface::processResult(NSBM::results& results)
 {
     if (results.rows().empty())
     {
@@ -183,14 +199,14 @@ TaskModel_shp TaskDbInterface::processResult(bMysql::results& results)
     }
 
     TaskModel_shp newTask = std::make_shared<TaskModel>(TaskModel());
-    bMysql::row_view rv = results.rows().at(0);
+    NSBM::row_view rv = results.rows().at(0);
 
     processResultRow(rv, newTask);
 
     return newTask;
 }
 
-TaskList TaskDbInterface::processResults(bMysql::results& results)
+TaskList TaskDbInterface::processResults(NSBM::results& results)
 {
     TaskList taskList;
 
@@ -237,7 +253,7 @@ constexpr std::size_t priorityInGroupIdx = 16;
 constexpr std::size_t personalIdx = 17;
 constexpr std::size_t dependencyCountIdx = 18;
 
-void TaskDbInterface::processResultRow(bMysql::row_view rv, TaskModel_shp newTask)
+void TaskDbInterface::processResultRow(NSBM::row_view rv, TaskModel_shp newTask)
 {
     // Required fields.
     newTask->setTaskID(rv.at(taskIdIdx).as_uint64());
@@ -289,17 +305,17 @@ void TaskDbInterface::processResultRow(bMysql::row_view rv, TaskModel_shp newTas
     newTask->clearModified();
 }
 
-bAsio::awaitable<bMysql::results> TaskDbInterface::coRoInsertTask(TaskModel &task)
+NSBA::awaitable<NSBM::results> TaskDbInterface::coRoInsertTask(TaskModel &task)
 {
-    bMysql::any_connection conn(co_await bAsio::this_coro::executor);
+    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    bMysql::results insertResult;
+    NSBM::results insertResult;
     std::size_t dependencyCount = task.getDependencies().size();
 
     co_await conn.async_execute(
-        bMysql::with_params("INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
+        NSBM::with_params("INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
             "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount)"
             " VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17})",
@@ -328,12 +344,12 @@ bAsio::awaitable<bMysql::results> TaskDbInterface::coRoInsertTask(TaskModel &tas
     std::vector<std::size_t> dependencies = task.getDependencies();
     if (taskID > 0 &&  dependencies.size() > 0)
     {
-        bMysql::statement stmt = co_await conn.async_prepare_statement(
+        NSBM::statement stmt = co_await conn.async_prepare_statement(
             "INSERT INTO TaskDependencies (TaskID, Dependency) VALUES (?, ?)"
         );
         for (auto dependency: dependencies)
         {
-            bMysql::results result;
+            NSBM::results result;
             co_await conn.async_execute(stmt.bind(taskID, dependency), result);
         }
         co_await conn.async_close_statement(stmt);
@@ -343,9 +359,9 @@ bAsio::awaitable<bMysql::results> TaskDbInterface::coRoInsertTask(TaskModel &tas
     co_return insertResult;
 }
 
-std::optional<bMysql::date> TaskDbInterface::optionalDateConversion(std::optional<std::chrono::year_month_day> optDate)
+std::optional<NSBM::date> TaskDbInterface::optionalDateConversion(std::optional<std::chrono::year_month_day> optDate)
 {
-    std::optional<bMysql::date> mySqlDate;
+    std::optional<NSBM::date> mySqlDate;
 
     if (optDate.has_value())
     {
@@ -354,16 +370,16 @@ std::optional<bMysql::date> TaskDbInterface::optionalDateConversion(std::optiona
     return mySqlDate;
 }
 
-bAsio::awaitable<bMysql::results> TaskDbInterface::coRoSelectTaskById(const std::size_t taskId)
+NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTaskById(const std::size_t taskId)
 {
-    bMysql::any_connection conn(co_await bAsio::this_coro::executor);
+    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    bMysql::results selectResult;
+    NSBM::results selectResult;
 
     co_await conn.async_execute(
-        bMysql::with_params("SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
+        NSBM::with_params("SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
             "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount FROM Tasks WHERE TaskID = {0}",
             taskId),
@@ -375,16 +391,16 @@ bAsio::awaitable<bMysql::results> TaskDbInterface::coRoSelectTaskById(const std:
     co_return selectResult;
 }
 
-bAsio::awaitable<bMysql::results> TaskDbInterface::coRoSelectTaskDependencies(const std::size_t taskId)
+NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTaskDependencies(const std::size_t taskId)
 {
-    bMysql::any_connection conn(co_await bAsio::this_coro::executor);
+    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    bMysql::results selectResult;
+    NSBM::results selectResult;
 
     co_await conn.async_execute(
-        bMysql::with_params("SELECT Dependency FROM TaskDependencies WHERE TaskID = {0} ORDER BY Dependency ASC", taskId), selectResult);
+        NSBM::with_params("SELECT Dependency FROM TaskDependencies WHERE TaskID = {0} ORDER BY Dependency ASC", taskId), selectResult);
 
     co_await conn.async_close();
 
@@ -394,7 +410,7 @@ bAsio::awaitable<bMysql::results> TaskDbInterface::coRoSelectTaskDependencies(co
 void TaskDbInterface::addDependencies(TaskModel_shp newTask)
 {
     std::size_t taskId = newTask->getTaskID();
-    bMysql::results localResult = runQueryAsync(
+    NSBM::results localResult = runQueryAsync(
         std::bind(&TaskDbInterface::coRoSelectTaskDependencies, this, std::placeholders::_1), taskId);
 
     if (!localResult.rows().empty())
@@ -411,17 +427,17 @@ void TaskDbInterface::addDependencies(TaskModel_shp newTask)
     }
 }
 
-bAsio::awaitable<bMysql::results> TaskDbInterface::coRoSelectTaskByDescriptionAndAssignedUser(
+NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTaskByDescriptionAndAssignedUser(
     std::string_view description, const std::size_t userID)
 {
-    bMysql::any_connection conn(co_await bAsio::this_coro::executor);
+    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    bMysql::results selectResult;
+    NSBM::results selectResult;
 
     co_await conn.async_execute(
-        bMysql::with_params("SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
+        NSBM::with_params("SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
             "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount FROM Tasks WHERE Description = {0}"
             " AND AsignedTo = {1}", description, userID),
@@ -433,20 +449,22 @@ bAsio::awaitable<bMysql::results> TaskDbInterface::coRoSelectTaskByDescriptionAn
     co_return selectResult;
 }
 
-bAsio::awaitable<bMysql::results> TaskDbInterface::coRoSelecUnstartedDueForStartForAssignedUsert(
+NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelecUnstartedDueForStartForAssignedUsert(
     std::size_t userID, std::chrono::year_month_day searchStart)
 {
-    bMysql::any_connection conn(co_await bAsio::this_coro::executor);
+    constexpr unsigned int notStarted = static_cast<unsigned int>(TaskModel::TaskStatus::Not_Started);
+    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    bMysql::results selectResult;
+    NSBM::results selectResult;
 
     co_await conn.async_execute(
-        bMysql::with_params("SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
+        NSBM::with_params("SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
             "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount FROM Tasks WHERE AsignedTo = {0}"
-            " AND ScheduledStart = {1}", userID, convertChronoDateToBoostMySQLDate(searchStart)),
+            " AND ScheduledStart < {1} AND (Status IS NULL OR Status = {2})",
+            userID, convertChronoDateToBoostMySQLDate(searchStart), notStarted),
         selectResult
     );
 

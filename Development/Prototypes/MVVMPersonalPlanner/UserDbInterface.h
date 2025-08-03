@@ -21,17 +21,17 @@ public:
     UserList getAllUsers();
 
 private:
-    UserModel_shp processResult(bMysql::results& results);
-    UserList processResults(bMysql::results& results);
-    void processResultRow(bMysql::row_view rv, UserModel_shp newUser);
-    bAsio::awaitable<bMysql::results> coRoSelectUserByID(std::size_t userID);
-    bAsio::awaitable<bMysql::results> coRoSelectUserByFullName(std::string_view lastName, 
+    UserModel_shp processResult(NSBM::results& results);
+    UserList processResults(NSBM::results& results);
+    void processResultRow(NSBM::row_view rv, UserModel_shp newUser);
+    NSBA::awaitable<NSBM::results> coRoSelectUserByID(std::size_t userID);
+    NSBA::awaitable<NSBM::results> coRoSelectUserByFullName(std::string_view lastName, 
         std::string_view firstName, std::string_view middleI);
-    bAsio::awaitable<bMysql::results> coRoSelectUserByEmailAddress(std::string_view emailAddr);
-    bAsio::awaitable<bMysql::results> coRoSelectUserByLoginName(std::string_view loginName);
-    bAsio::awaitable<bMysql::results> coRoInsertUser(const UserModel& user);
-    bAsio::awaitable<bMysql::results> coRoSelectAllUsers();
-    bAsio::awaitable<bMysql::results> coRoSelectUserByLoginAndPassword(std::string_view loginName, std::string_view password);
+    NSBA::awaitable<NSBM::results> coRoSelectUserByEmailAddress(std::string_view emailAddr);
+    NSBA::awaitable<NSBM::results> coRoSelectUserByLoginName(std::string_view loginName);
+    NSBA::awaitable<NSBM::results> coRoInsertUser(const UserModel& user);
+    NSBA::awaitable<NSBM::results> coRoSelectAllUsers();
+    NSBA::awaitable<NSBM::results> coRoSelectUserByLoginAndPassword(std::string_view loginName, std::string_view password);
 };
 
 #endif // USERDBINTERFACE_H_
