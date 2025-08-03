@@ -276,6 +276,30 @@ static bool testGetTaskByID(TaskDbInterface& taskDBInterface, TaskModel& task, b
     }
 }
 
+static bool testGetUnstartedTasks(TaskDbInterface& taskDBInterface, UserModel_shp assigned, bool verboseOutput)
+{
+    TaskList notStartedList = taskDBInterface.getUnstartedDueForStartForAssignedUser(assigned);
+    if (!notStartedList.empty())
+    {
+        std::clog << "taskDBInterface.getUnstartedDueForStartForAssignedUser PASSED!\n" <<
+            std::format("\nUser {} has {} unstarted tasks\n", assigned->getUserID(), notStartedList.size());
+        
+        if (verboseOutput)
+        {
+            for (auto task: notStartedList)
+            {
+                std::clog << *task << "\n";
+            }
+        }
+        return true; 
+    }
+
+    std::cerr << std::format("taskDBInterface.getUnstartedDueForStartForAssignedUser({}) FAILED!\n", assigned->getUserID()) <<
+        taskDBInterface.getAllErrorMessages() << "\n";
+
+    return false;
+}
+
 struct UserTaskTestData
 {
     char majorPriority;
@@ -454,6 +478,11 @@ static bool loadUserTaskestDataIntoDatabase()
             allTestsPassed = false;
         }
         ++lCount;
+    }
+
+    if (allTestsPassed)
+    {
+        allTestsPassed = testGetUnstartedTasks(taskDBInterface, userOne, programOptions.verboseOutput);
     }
 
     if (allTestsPassed)
