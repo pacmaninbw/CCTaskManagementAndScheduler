@@ -225,34 +225,6 @@ TaskList TaskDbInterface::processResults(NSBM::results& results)
     return taskList;
 }
 
-/*
- * The indexes below are based on the following select statement, maintain this order
- * for any new select statements, add any new field indexes at the end.
- *       "SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
- *           "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
- *           "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup FROM Tasks WHERE TaskID = {0}",
- */
-constexpr std::size_t taskIdIdx = 0;
-constexpr std::size_t createdByIdx = 1;
-constexpr std::size_t assignedToIdx = 2;
-constexpr std::size_t descriptionIdx = 3;
-constexpr std::size_t parentTaskIdx = 4;
-constexpr std::size_t statusIdx = 5;
-constexpr std::size_t percentageCompleteIdx = 6;
-constexpr std::size_t createdOnIdx = 7;
-constexpr std::size_t requiredDeliveryIdx = 8;
-constexpr std::size_t scheduledStartIdx = 9;
-constexpr std::size_t actualStartIdx = 10;
-constexpr std::size_t estimatedCompletionIdx = 11;
-constexpr std::size_t completedIdx = 12;
-constexpr std::size_t estimatedEffortHoursIdx = 13;
-constexpr std::size_t actualEffortHoursIdx = 14;
-constexpr std::size_t schedulePriorityGroupIdx = 15;
-constexpr std::size_t priorityInGroupIdx = 16;
-// Added fields
-constexpr std::size_t personalIdx = 17;
-constexpr std::size_t dependencyCountIdx = 18;
-
 void TaskDbInterface::processResultRow(NSBM::row_view rv, TaskModel_shp newTask)
 {
     // Required fields.
