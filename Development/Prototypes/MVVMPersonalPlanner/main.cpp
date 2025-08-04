@@ -281,11 +281,12 @@ static bool testGetUnstartedTasks(TaskDbInterface& taskDBInterface, UserModel_sh
     TaskList notStartedList = taskDBInterface.getUnstartedDueForStartForAssignedUser(assigned);
     if (!notStartedList.empty())
     {
-        std::clog << "taskDBInterface.getUnstartedDueForStartForAssignedUser PASSED!\n" <<
-            std::format("\nUser {} has {} unstarted tasks\n", assigned->getUserID(), notStartedList.size());
+        std::clog << std::format("Find unstarted tasks for user({}) PASSED!\n", assigned->getUserID());
         
         if (verboseOutput)
         {
+            std::clog << std::format("User {} has {} unstarted tasks\n",
+                assigned->getUserID(), notStartedList.size());
             for (auto task: notStartedList)
             {
                 std::clog << *task << "\n";
