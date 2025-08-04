@@ -17,6 +17,30 @@ DBInterface::DBInterface()
 /*
  * All calls to runQueryAsync should be implemented within try blocks.
  */
+NSBM::results DBInterface::runQueryAsync(std::function<NSBA::awaitable<NSBM::results>(
+    std::size_t, unsigned int, std::chrono::year_month_day)> queryFunc,
+    std::size_t id, unsigned int enumInt, std::chrono::year_month_day searchDate)
+{
+    NSBM::results localResult;
+    NSBA::io_context ctx;
+
+    NSBA::co_spawn(
+        ctx, queryFunc(id, enumInt, searchDate),
+        [&localResult, this](std::exception_ptr ptr, NSBM::results result)
+        {
+            if (ptr)
+            {
+                std::rethrow_exception(ptr);
+            }
+            localResult = std::move(result);
+        }
+    );
+
+    ctx.run();
+
+    return localResult;
+}
+
 NSBM::results DBInterface::runQueryAsync(
     std::function<NSBA::awaitable<NSBM::results>(std::size_t, std::chrono::year_month_day)>queryFunc, 
     std::size_t id, std::chrono::year_month_day searchDate)
@@ -181,3 +205,4 @@ NSBM::results DBInterface::runQueryAsync(
 
     return localResult;
 }
+

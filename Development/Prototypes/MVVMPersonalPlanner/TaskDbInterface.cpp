@@ -473,4 +473,25 @@ NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelecUnstartedDueForStartFor
     co_return selectResult;
 }
 
+NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTasksWithStatusForAssignedUserBefore(
+    std::size_t userID, unsigned int status, std::chrono::year_month_day searchStart)
+{
+    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
+    co_await conn.async_connect(dbConnectionParameters);
+
+    NSBM::results selectResult;
+
+    co_await conn.async_execute(
+        NSBM::with_params("SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
+            "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
+            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount FROM Tasks WHERE AsignedTo = {0}"
+            " AND ScheduledStart < {1} AND Status = {2})",
+            userID, convertChronoDateToBoostMySQLDate(searchStart), status),
+        selectResult
+    );
+
+    co_await conn.async_close();
+
+    co_return selectResult;
+}

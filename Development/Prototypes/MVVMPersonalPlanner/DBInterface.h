@@ -29,6 +29,9 @@ protected:
  * add new signatures as necessary to allow for reuse.
  */
     NSBM::results runQueryAsync(
+        std::function<NSBA::awaitable<NSBM::results>(std::size_t, unsigned int, std::chrono::year_month_day)>queryFunc,
+        std::size_t id, unsigned int enumInt, std::chrono::year_month_day searchDate);
+    NSBM::results runQueryAsync(
         std::function<NSBA::awaitable<NSBM::results>(std::size_t, std::chrono::year_month_day)>queryFunc,
         std::size_t id, std::chrono::year_month_day searchDate);
     NSBM::results runQueryAsync(
