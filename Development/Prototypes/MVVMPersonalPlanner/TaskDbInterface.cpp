@@ -2,7 +2,7 @@
 #include <boost/mysql.hpp>
 #include <chrono>
 #include "CommandLineParser.h"
-#include "DBInterface.h"
+#include "BoostDBInterfaceCore.h"
 #include <exception>
 #include <format>
 #include <functional>
@@ -18,7 +18,7 @@
 #include <utility>
 
 TaskDbInterface::TaskDbInterface()
-: DBInterface()
+: BoostDBInterfaceCore()
 {
 }
 

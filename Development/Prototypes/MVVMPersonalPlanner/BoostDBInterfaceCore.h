@@ -1,5 +1,5 @@
-#ifndef DBINTERFACE_H_
-#define DBINTERFACE_H_
+#ifndef BOOSTMYSQLDBINTERFACECORE_H_
+#define BOOSTMYSQLDBINTERFACECORE_H_
 
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
@@ -12,11 +12,11 @@
 namespace NSBA = boost::asio;
 namespace NSBM = boost::mysql;
 
-class DBInterface
+class BoostDBInterfaceCore
 {
 public:
-    DBInterface();
-    virtual ~DBInterface() = default;
+    BoostDBInterfaceCore();
+    virtual ~BoostDBInterfaceCore() = default;
     std::string getAllErrorMessages() const { return errorMessages; };
 
 protected:
@@ -75,6 +75,6 @@ protected:
     bool verboseOutput;
 };
 
-#endif // DBINTERFACE_H_
+#endif // BOOSTMYSQLDBINTERFACECORE_H_
 
 

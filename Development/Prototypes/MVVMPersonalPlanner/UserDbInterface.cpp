@@ -1,7 +1,7 @@
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
 #include "CommandLineParser.h"
-#include "DBInterface.h"
+#include "BoostDBInterfaceCore.h"
 #include <exception>
 #include <format>
 #include <functional>
@@ -15,7 +15,7 @@
 #include <utility>
 
 UserDbInterface::UserDbInterface()
-: DBInterface()
+: BoostDBInterfaceCore()
 {
 }
 

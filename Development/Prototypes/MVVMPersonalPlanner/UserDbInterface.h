@@ -2,11 +2,11 @@
 #define USERDBINTERFACE_H_
 
 #include "CommandLineParser.h"
-#include "DBInterface.h"
+#include "BoostDBInterfaceCore.h"
 #include <string_view>
 #include "UserModel.h"
 
-class UserDbInterface : public DBInterface
+class UserDbInterface : public BoostDBInterfaceCore
 {
 public:
     UserDbInterface();

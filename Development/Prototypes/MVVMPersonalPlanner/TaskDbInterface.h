@@ -3,13 +3,13 @@
 
 #include "CommandLineParser.h"
 #include "commonUtilities.h"
-#include "DBInterface.h"
+#include "BoostDBInterfaceCore.h"
 #include <functional>
 #include <optional>
 #include <string_view>
 #include "TaskModel.h"
 
-class TaskDbInterface : public DBInterface
+class TaskDbInterface : public BoostDBInterfaceCore
 {
 public:
     TaskDbInterface();

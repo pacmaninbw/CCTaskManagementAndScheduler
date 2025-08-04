@@ -18,8 +18,8 @@ add_executable(protoPersonalPlanner
     UserModel.cpp
     TaskModel.h
     TaskModel.cpp
-    DBInterface.h
-    DBInterface.cpp
+    BoostDBInterfaceCore.h
+    BoostDBInterfaceCore.cpp
     UserDbInterface.h
     UserDbInterface.cpp
     TaskDbInterface.h
