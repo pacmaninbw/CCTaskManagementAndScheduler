@@ -226,30 +226,30 @@ UserList UserDbInterface::processResults(NSBM::results& results)
 
 void UserDbInterface::processResultRow(NSBM::row_view rv, UserModel_shp newUser)
 {
-    newUser->setUserID(rv.at(0).as_uint64());
-    newUser->setLastName(rv.at(1).as_string());
-    newUser->setFirstName(rv.at(2).as_string());
-    newUser->setMiddleInitial(rv.at(3).as_string());
-    newUser->setEmail(rv.at(4).as_string());
-    newUser->setLoginName(rv.at(5).as_string());
-    newUser->setPassword(rv.at(6).as_string());
-    newUser->setStartTime(rv.at(7).as_string());
-    newUser->setEndTime(rv.at(8).as_string());
-    if (!rv.at(9).is_null())
+    newUser->setUserID(rv.at(UserIdIdx).as_uint64());
+    newUser->setLastName(rv.at(LastNameIdx).as_string());
+    newUser->setFirstName(rv.at(FirstNameIdx).as_string());
+    newUser->setMiddleInitial(rv.at(MiddleInitialIdx).as_string());
+    newUser->setEmail(rv.at(EmailAddressIdx).as_string());
+    newUser->setLoginName(rv.at(LoginNameIdx).as_string());
+    newUser->setPassword(rv.at(PasswordIdx).as_string());
+    newUser->setStartTime(rv.at(StartDayIdx).as_string());
+    newUser->setEndTime(rv.at(EndDayIdx).as_string());
+    if (!rv.at(PriorityGroupIdx).is_null())
     {
-        newUser->setPriorityInSchedule(rv.at(9).as_int64());
+        newUser->setPriorityInSchedule(rv.at(PriorityGroupIdx).as_int64());
     }
-    if (!rv.at(10).is_null())
+    if (!rv.at(PriorityIdx).is_null())
     {
-        newUser->setMinorPriorityInSchedule(rv.at(10).as_int64());
+        newUser->setMinorPriorityInSchedule(rv.at(PriorityIdx).as_int64());
     }
-    if (!rv.at(11).is_null())
+    if (!rv.at(UseLettersIdx).is_null())
     {
-        newUser->setUsingLettersForMaorPriority(rv.at(11).as_int64());
+        newUser->setUsingLettersForMaorPriority(rv.at(UseLettersIdx).as_int64());
     }
-    if (!rv.at(12).is_null())
+    if (!rv.at(DotSeparationIdx).is_null())
     {
-        newUser->setSeparatingPriorityWithDot(rv.at(12).as_int64());
+        newUser->setSeparatingPriorityWithDot(rv.at(DotSeparationIdx).as_int64());
     }
 
     // All the set functions set modified, since this user is new in memory it is not modified.
