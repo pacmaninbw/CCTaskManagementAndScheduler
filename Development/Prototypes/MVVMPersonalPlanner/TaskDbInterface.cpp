@@ -28,7 +28,7 @@ static constexpr unsigned int TwoWeeks = 14;
 std::size_t TaskDbInterface::insert(TaskModel &task)
 {
     std::size_t taskID = 0;
-    clearPreviousErrors();
+    prepareForRunQueryAsync();
 
     if (!task.isModified())
     {
@@ -75,12 +75,13 @@ std::size_t TaskDbInterface::insert(TaskModel &task)
 TaskModel_shp TaskDbInterface::getTaskByTaskID(std::size_t taskId)
 {
     TaskModel_shp newTask = nullptr;
-    clearPreviousErrors();
+    prepareForRunQueryAsync();
 
     try
     {
-        NSBM::results localResult = runQueryAsync(
-            std::bind(&TaskDbInterface::coRoSelectTaskById, this, std::placeholders::_1), taskId);
+        selectStatementWhatArgs.push_back(std::any(taskId));
+
+        NSBM::results localResult = runQueryAsync(std::bind(&TaskDbInterface::coRoSelectTaskById, this));
 
         newTask = processResult(localResult);
     }
@@ -89,21 +90,21 @@ TaskModel_shp TaskDbInterface::getTaskByTaskID(std::size_t taskId)
     {
         appendErrorMessage(std::format("In TaskDbInterface::getTaskByTaskID({}) : {}", taskId, e.what()));
     }
-    
+
     return newTask;
 }
 
 TaskModel_shp TaskDbInterface::getTaskByDescriptionAndAssignedUser(std::string_view description, UserModel& assignedUser)
 {
     TaskModel_shp newTask = nullptr;
-    clearPreviousErrors();
+    prepareForRunQueryAsync();
 
     try
     {
-        std::size_t userId = assignedUser.getUserID();
+        selectStatementWhatArgs.push_back(std::any(description));
+        selectStatementWhatArgs.push_back(std::any(assignedUser.getUserID()));
         NSBM::results localResult = runQueryAsync(
-            std::bind(&TaskDbInterface::coRoSelectTaskByDescriptionAndAssignedUser, this, std::placeholders::_1, std::placeholders::_2),
-            description, userId);
+            std::bind(&TaskDbInterface::coRoSelectTaskByDescriptionAndAssignedUser, this));
 
         newTask = processResult(localResult);
     }
@@ -112,7 +113,7 @@ TaskModel_shp TaskDbInterface::getTaskByDescriptionAndAssignedUser(std::string_v
     {
         appendErrorMessage(std::format("In askDbInterface::getTaskByDescriptionAndAssignedUser({}) : {}", description, e.what()));
     }
-    
+
     return newTask;
 }
 
@@ -128,30 +129,33 @@ TaskModel_shp TaskDbInterface::getParentTask(TaskModel& task)
 
 TaskList TaskDbInterface::getActiveTasksForAssignedUser(UserModel &assignedUser)
 {
-    clearPreviousErrors();
+    prepareForRunQueryAsync();
 
     std::cerr << std::format("getAllCurrentActiveTasksForAssignedUser({}) NOT Implemented", assignedUser.getUserID()) << "\n";
+
+    selectStatementWhatArgs.clear();
 
     return TaskList();
 }
 
 TaskList TaskDbInterface::getUnstartedDueForStartForAssignedUser(UserModel &assignedUser)
 {
-    clearPreviousErrors();
-    std::size_t userId = assignedUser.getUserID();
+    prepareForRunQueryAsync();
+
     TaskList unstartedTasks;
-    std::chrono::year_month_day searchDate = getTodaysDatePlus(OneWeek);
 
     try {
+        selectStatementWhatArgs.push_back(std::any(assignedUser.getUserID()));
+        selectStatementWhatArgs.push_back(std::any(convertChronoDateToBoostMySQLDate(getTodaysDatePlus(OneWeek))));
+
         NSBM::results localResults = runQueryAsync(
-            std::bind(&TaskDbInterface::coRoSelecUnstartedDueForStartForAssignedUsert, this, std::placeholders::_1, std::placeholders::_2),
-            userId, searchDate);
+            std::bind(&TaskDbInterface::coRoSelectUnstartedDueForStartForAssignedUser, this));
         unstartedTasks = processResults(localResults);
     }
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In TaskDbInterface::getUnstartedDueForStartForAssignedUser({}) : {}", userId, e.what()));
+        appendErrorMessage(std::format("In TaskDbInterface::getUnstartedDueForStartForAssignedUser({}) : {}", assignedUser.getUserID(), e.what()));
     }
 
     return unstartedTasks;
@@ -159,13 +163,14 @@ TaskList TaskDbInterface::getUnstartedDueForStartForAssignedUser(UserModel &assi
 
 TaskList TaskDbInterface::getTasksCompletedByAssignedAfterDate(UserModel &assignedUser, std::chrono::year_month_day searchStartDate)
 {
-    clearPreviousErrors();
+    prepareForRunQueryAsync();
     std::size_t userId = assignedUser.getUserID();
     TaskList completedTasks;
 
     return TaskList();
 
     try {
+        selectStatementWhatArgs.push_back(std::any(userId));
         std::cerr << 
             std::format("getTasksCompletedByAssignedAfterDate({} on or after {}) NOT Implemented",
                 userId, searchStartDate) <<
@@ -342,8 +347,9 @@ std::optional<NSBM::date> TaskDbInterface::optionalDateConversion(std::optional<
     return mySqlDate;
 }
 
-NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTaskById(const std::size_t taskId)
+NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTaskById()
 {
+    std::size_t taskId = std::any_cast<std::size_t>(selectStatementWhatArgs[0]);
     NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
@@ -399,9 +405,10 @@ void TaskDbInterface::addDependencies(TaskModel_shp newTask)
     }
 }
 
-NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTaskByDescriptionAndAssignedUser(
-    std::string_view description, const std::size_t userID)
+NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTaskByDescriptionAndAssignedUser()
 {
+    std::string_view description = std::any_cast<std::string_view>(selectStatementWhatArgs[0]);
+    std::size_t userID = std::any_cast<std::size_t>(selectStatementWhatArgs[1]);
     NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
@@ -421,10 +428,11 @@ NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTaskByDescriptionAndAs
     co_return selectResult;
 }
 
-NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelecUnstartedDueForStartForAssignedUsert(
-    std::size_t userID, std::chrono::year_month_day searchStart)
+NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectUnstartedDueForStartForAssignedUser()
 {
     constexpr unsigned int notStarted = static_cast<unsigned int>(TaskModel::TaskStatus::Not_Started);
+    std::size_t userID = std::any_cast<std::size_t>(selectStatementWhatArgs[0]);
+    NSBM::date searchStart = std::any_cast<NSBM::date>(selectStatementWhatArgs[1]);
     NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
@@ -436,7 +444,7 @@ NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelecUnstartedDueForStartFor
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
             "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount FROM Tasks WHERE AsignedTo = {0}"
             " AND ScheduledStart < {1} AND (Status IS NULL OR Status = {2})",
-            userID, convertChronoDateToBoostMySQLDate(searchStart), notStarted),
+            userID, searchStart, notStarted),
         selectResult
     );
 
@@ -445,21 +453,23 @@ NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelecUnstartedDueForStartFor
     co_return selectResult;
 }
 
-NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTasksWithStatusForAssignedUserBefore(
-    std::size_t userID, unsigned int status, std::chrono::year_month_day searchStart)
+NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTasksWithStatusForAssignedUserBefore()
 {
     NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
     NSBM::results selectResult;
+    std::size_t userID = std::any_cast<std::size_t>(selectStatementWhatArgs[0]);
+    NSBM::date searchStart = convertChronoDateToBoostMySQLDate(std::any_cast<std::chrono::year_month_day>(selectStatementWhatArgs[1]));
+    unsigned int status = std::any_cast<unsigned int>(selectStatementWhatArgs[2]);
 
     co_await conn.async_execute(
         NSBM::with_params("SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
             "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount FROM Tasks WHERE AsignedTo = {0}"
             " AND ScheduledStart < {1} AND Status = {2})",
-            userID, convertChronoDateToBoostMySQLDate(searchStart), status),
+            userID, searchStart, status),
         selectResult
     );
 
@@ -467,3 +477,4 @@ NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTasksWithStatusForAssi
 
     co_return selectResult;
 }
+

@@ -38,15 +38,12 @@ private:
     void processResultRow(NSBM::row_view rv, TaskModel_shp newTask);
     NSBA::awaitable<NSBM::results> coRoInsertTask(TaskModel& task);
     std::optional<NSBM::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate);
-    NSBA::awaitable<NSBM::results> coRoSelectTaskById(const std::size_t taskId);
+    NSBA::awaitable<NSBM::results> coRoSelectTaskById();
     NSBA::awaitable<NSBM::results> coRoSelectTaskDependencies(const std::size_t taskId);
     void addDependencies(TaskModel_shp newTask);
-    NSBA::awaitable<NSBM::results> coRoSelectTaskByDescriptionAndAssignedUser(
-        std::string_view description, const std::size_t userID);
-    NSBA::awaitable<NSBM::results> coRoSelecUnstartedDueForStartForAssignedUsert(
-        std::size_t userID, std::chrono::year_month_day searchStart);
-    NSBA::awaitable<NSBM::results> coRoSelectTasksWithStatusForAssignedUserBefore(
-        std::size_t userID, unsigned int status, std::chrono::year_month_day searchStart);
+    NSBA::awaitable<NSBM::results> coRoSelectTaskByDescriptionAndAssignedUser();
+    NSBA::awaitable<NSBM::results> coRoSelectUnstartedDueForStartForAssignedUser();
+    NSBA::awaitable<NSBM::results> coRoSelectTasksWithStatusForAssignedUserBefore();
 
 private:
 /*
