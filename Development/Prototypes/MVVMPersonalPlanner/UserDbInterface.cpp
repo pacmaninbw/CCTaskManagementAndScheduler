@@ -21,7 +21,7 @@ UserDbInterface::UserDbInterface()
 
 std::size_t UserDbInterface::insert(const UserModel &user)
 {
-    clearPreviousErrors();
+    prepareForRunQueryAsync();
 
     try
     {
@@ -55,13 +55,13 @@ std::size_t UserDbInterface::insert(const UserModel &user)
 UserModel_shp UserDbInterface::getUserByUserID(std::size_t userID)
 {
     UserModel_shp newUser = nullptr;
-    clearPreviousErrors();
+    prepareForRunQueryAsync();
 
     try
     {
-        NSBM::results localResult = runQueryAsync(
-            std::bind(&UserDbInterface::coRoSelectUserByID, this, std::placeholders::_1),
-            userID);
+        selectStatementWhatArgs.push_back(std::any(userID));
+
+        NSBM::results localResult = runQueryAsync(std::bind(&UserDbInterface::coRoSelectUserByID, this));
 
         newUser = processResult(localResult);
     }
@@ -77,13 +77,15 @@ UserModel_shp UserDbInterface::getUserByUserID(std::size_t userID)
 UserModel_shp UserDbInterface::getUserByFullName(std::string_view lastName, std::string_view firstName, std::string_view middleI)
 {
     UserModel_shp newUser = nullptr;
-    clearPreviousErrors();
+    prepareForRunQueryAsync();
 
     try
     {
-        NSBM::results localResult = runQueryAsync(
-            std::bind(&UserDbInterface::coRoSelectUserByFullName, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
-            lastName, firstName, middleI);
+        selectStatementWhatArgs.push_back(std::any(lastName));
+        selectStatementWhatArgs.push_back(std::any(firstName));
+        selectStatementWhatArgs.push_back(std::any(middleI));
+
+        NSBM::results localResult = runQueryAsync(std::bind(&UserDbInterface::coRoSelectUserByFullName, this));
 
         newUser = processResult(localResult);
     }
@@ -99,13 +101,14 @@ UserModel_shp UserDbInterface::getUserByFullName(std::string_view lastName, std:
 UserModel_shp UserDbInterface::getUserByEmail(std::string_view emailAddress)
 {
     UserModel_shp newUser = nullptr;
-    clearPreviousErrors();
+    prepareForRunQueryAsync();
 
     try
     {
+        selectStatementWhatArgs.push_back(std::any(emailAddress));
+
         NSBM::results localResult = runQueryAsync(
-            std::bind(&UserDbInterface::coRoSelectUserByEmailAddress, this, std::placeholders::_1),
-            emailAddress);
+            std::bind(&UserDbInterface::coRoSelectUserByEmailAddress, this));
 
         newUser = processResult(localResult);
     }
@@ -121,15 +124,15 @@ UserModel_shp UserDbInterface::getUserByEmail(std::string_view emailAddress)
 UserModel_shp UserDbInterface::getUserByLoginName(std::string_view loginName)
 {
     UserModel_shp newUser = nullptr;
-    clearPreviousErrors();
+    prepareForRunQueryAsync();
 
     try
     {
-        NSBM::results localResults = runQueryAsync(
-            std::bind(&UserDbInterface::coRoSelectUserByLoginName, this, std::placeholders::_1),
-            loginName);
+        selectStatementWhatArgs.push_back(std::any(loginName));
 
-            newUser = processResult(localResults);
+        NSBM::results localResults = runQueryAsync(std::bind(&UserDbInterface::coRoSelectUserByLoginName, this));
+
+        newUser = processResult(localResults);
     }
 
     catch(const std::exception& e)
@@ -143,13 +146,14 @@ UserModel_shp UserDbInterface::getUserByLoginName(std::string_view loginName)
 UserModel_shp UserDbInterface::getUserByLoginAndPassword(std::string_view loginName, std::string_view password)
 {
     UserModel_shp newUser = nullptr;
-    clearPreviousErrors();
+    prepareForRunQueryAsync();
 
     try
     {
-        NSBM::results localResult = runQueryAsync(
-            std::bind(&UserDbInterface::coRoSelectUserByLoginAndPassword, this, std::placeholders::_1, std::placeholders::_2),
-            loginName, password);
+        selectStatementWhatArgs.push_back(std::any(loginName));
+        selectStatementWhatArgs.push_back(std::any(password));
+
+        NSBM::results localResult = runQueryAsync(std::bind(&UserDbInterface::coRoSelectUserByLoginAndPassword, this));
 
         newUser =  processResult(localResult);
     }
@@ -166,7 +170,7 @@ UserModel_shp UserDbInterface::getUserByLoginAndPassword(std::string_view loginN
 UserList UserDbInterface::getAllUsers()
 {
     UserList userList;
-    clearPreviousErrors();
+    prepareForRunQueryAsync();
 
     try
     {
@@ -256,8 +260,9 @@ void UserDbInterface::processResultRow(NSBM::row_view rv, UserModel_shp newUser)
     newUser->clearModified();
 }
 
-NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByID(std::size_t userID)
+NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByID()
 {
+    std::size_t userID = std::any_cast<std::size_t>(selectStatementWhatArgs[0]);
     NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
@@ -276,10 +281,12 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByID(std::size_t u
     co_return result;
 }
 
-NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByFullName(
-    std::string_view lastName, std::string_view firstName, std::string_view middleI
-)
+NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByFullName()
 {
+    std::string_view lastName = std::any_cast<std::string_view>(selectStatementWhatArgs[0]);
+    std::string_view firstName = std::any_cast<std::string_view>(selectStatementWhatArgs[1]);
+    std::string_view middleI = std::any_cast<std::string_view>(selectStatementWhatArgs[2]);
+
     NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
@@ -299,8 +306,10 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByFullName(
     co_return result;
 }
 
-NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByEmailAddress(std::string_view emailAddr)
+NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByEmailAddress()
 {
+    std::string_view emailAddr = std::any_cast<std::string_view>(selectStatementWhatArgs[0]);
+
     NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
@@ -319,8 +328,10 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByEmailAddress(std
     co_return result;
 }
 
-NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByLoginName(std::string_view loginName)
+NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByLoginName()
 {
+    std::string_view loginName = std::any_cast<std::string_view>(selectStatementWhatArgs[0]);
+
     NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
@@ -385,9 +396,11 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectAllUsers()
     co_return result;
 }
 
-NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByLoginAndPassword(
-    std::string_view loginName, std::string_view password)
+NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByLoginAndPassword()
 {
+    std::string_view loginName = std::any_cast<std::string_view>(selectStatementWhatArgs[0]);
+    std::string_view password = std::any_cast<std::string_view>(selectStatementWhatArgs[1]);
+
     NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
