@@ -1,6 +1,7 @@
 #ifndef BOOSTMYSQLDBINTERFACECORE_H_
 #define BOOSTMYSQLDBINTERFACECORE_H_
 
+#include <any>
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
 #include <chrono>
@@ -20,35 +21,31 @@ public:
     std::string getAllErrorMessages() const { return errorMessages; };
 
 protected:
-    void clearPreviousErrors() { errorMessages.clear(); };
+    std::string errorMessages;
+/*
+ * Design decision. While putting the arguments for each select statement into a vector of std::any()
+ * is not the most maintainable or safest way to program, it reduces the number of implementations of
+ * runQueryAsync() where only the function signature and one line of code to call the select function
+ * co-routine differ. This removed more than 200 lines of repetitive code.
+ * Until I can figure out how to pass the results from boost::mysql::with_params() into a function,
+ * this is necessary.
+ */
+    std::vector<std::any> selectStatementWhatArgs;
+    void prepareForRunQueryAsync()
+    {
+        errorMessages.clear();
+        selectStatementWhatArgs.clear();
+    };
     void appendErrorMessage(std::string newError) { errorMessages.append(newError); };
 
 /*
  * All calls to runQueryAsync should be implemented within try blocks.
- * Find the proper signature for the query, if one doesn't exist
- * add new signatures as necessary to allow for reuse.
  */
-    NSBM::results runQueryAsync(
-        std::function<NSBA::awaitable<NSBM::results>(std::size_t, unsigned int, std::chrono::year_month_day)>queryFunc,
-        std::size_t id, unsigned int enumInt, std::chrono::year_month_day searchDate);
-    NSBM::results runQueryAsync(
-        std::function<NSBA::awaitable<NSBM::results>(std::size_t, std::chrono::year_month_day)>queryFunc,
-        std::size_t id, std::chrono::year_month_day searchDate);
-    NSBM::results runQueryAsync(
-        std::function<NSBA::awaitable<NSBM::results>(std::size_t)>queryFunc, std::size_t id);
-    NSBM::results runQueryAsync(
-        std::function<NSBA::awaitable<NSBM::results>(std::string_view, std::string_view, std::string_view)>queryFunc,
-        std::string_view searchStr1, std::string_view searchStr2, std::string_view searchStr3);
-    NSBM::results runQueryAsync(
-        std::function<NSBA::awaitable<NSBM::results>(std::string_view, std::string_view)>queryFunc,
-        std::string_view searchStr1, std::string_view searchStr2);
-    NSBM::results runQueryAsync(
-        std::function<NSBA::awaitable<NSBM::results>(std::string_view)>queryFunc,
-        std::string_view searchString);
     NSBM::results runQueryAsync(std::function<NSBA::awaitable<NSBM::results>(void)>queryFunc);
-    NSBM::results runQueryAsync(
-        std::function<NSBA::awaitable<NSBM::results>(std::string_view, std::size_t)>queryFunc,
-        std::string_view searchStr, std::size_t id);
+/*
+ * Special case, for functions called within another runQueryAsync() execution.
+ */
+    NSBM::results runQueryAsync(std::function<NSBA::awaitable<NSBM::results>(std::size_t)>queryFunc, std::size_t id);
 
 /*
  * Date converters are located here because they will be used by multiple dependent classes.
@@ -70,8 +67,6 @@ protected:
 
 protected:
     NSBM::connect_params dbConnectionParameters;
-    std::string errorMessages;
-    std::string databaseName;
     bool verboseOutput;
 };
 
