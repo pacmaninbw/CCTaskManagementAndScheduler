@@ -130,8 +130,8 @@ void UserModel::setUserID(std::size_t UserID)
 
 bool UserModel::diffUser(UserModel &other)
 {
-    // Ignore user preferences and password
-    return (userID == other.userID && loginName == other.loginName &&
+    // Ignore user preferences
+    return (userID == other.userID && loginName == other.loginName && password == other.password &&
         lastName == other.lastName && firstName == other.firstName && middleInitial == other.middleInitial);
 }
 
