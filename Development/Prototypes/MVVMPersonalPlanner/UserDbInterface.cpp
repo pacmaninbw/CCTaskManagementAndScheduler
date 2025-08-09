@@ -464,7 +464,7 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoUpdateUser(const UserModel &
                 " UserProfile.LastName = {0},"
                 " UserProfile.FirstName = {1},"
                 " UserProfile.MiddleInitial = {2},"
-                " UserProfile.EmailAddress = {3},"
+                " UserProfile.EmailAddress = {3}," 
                 " UserProfile.LoginName = {4},"
                 " UserProfile.HashedPassWord = {5},"
                 " UserProfile.ScheduleDayStart = {6},"
@@ -477,7 +477,7 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoUpdateUser(const UserModel &
              user.getLastName(), user.getFirstName(), user.getMiddleInitial(), user.getEmail(), user.getLoginName(),
              user.getPassword(), user.getStartTime(), user.getEndTime(), static_cast<int>(user.isPriorityInSchedule()),
              static_cast<int>(user.isMinorPriorityInSchedule()), static_cast<int>(user.isUsingLettersForMaorPriority()),
-             static_cast<int>(user.isSeparatingPriorityWithDot(), user.getUserID())),
+             static_cast<int>(user.isSeparatingPriorityWithDot()), user.getUserID()),
         result
     );
 
