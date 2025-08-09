@@ -20,6 +20,40 @@
  */
 ProgramOptions programOptions;
 
+static bool testUpdateUserPassword(UserDbInterface& userDBInterface, UserModel_shp insertedUser)
+{
+    bool testPassed = true;
+    UserModel oldUserValues = *insertedUser;
+    std::string newPassword = "MyNew**&pAs5Word" + std::to_string(oldUserValues.getUserID());
+
+    insertedUser->setPassword(newPassword);
+    userDBInterface.update(insertedUser);
+    std::cerr << userDBInterface.getAllErrorMessages();
+    UserModel_shp newUserValues = userDBInterface.getUserByUserID(insertedUser->getUserID());
+    if (oldUserValues == *newUserValues)
+    {
+        std::clog << std::format("Password update for user {} FAILED!\n", oldUserValues.getUserID());
+        testPassed = false;
+    }
+
+    return testPassed;
+}
+
+static bool testUpdateAllUserPasswords(UserDbInterface& userDBInterface)
+{
+    UserList allUsers = userDBInterface.getAllUsers();
+
+    for (auto user: allUsers)
+    {
+        if (!testUpdateUserPassword(userDBInterface, user))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 static bool testGetUserByLoginAndPassword(UserDbInterface& userDBInterface, UserModel_shp insertedUser)
 {
     std::string_view testName = insertedUser->getLoginName();
@@ -100,6 +134,7 @@ static bool testGetUserByFullName(UserDbInterface& userDBInterface, UserModel_sh
         return false;
     }
 }
+
 static bool testGetAllUsers(UserList userProfileTestData, UserDbInterface& userDbInterface)
 {
     UserList allUsers = userDbInterface.getAllUsers();
@@ -206,6 +241,11 @@ static bool loadUserProfileTestDataIntoDatabase()
     if (allTestsPassed)
     {
         allTestsPassed = testGetAllUsers(userProfileTestData, userDBInterface);
+    }
+
+    if (allTestsPassed)
+    {
+        allTestsPassed = testUpdateAllUserPasswords(userDBInterface);
     }
 
     userProfileTestData.clear();
