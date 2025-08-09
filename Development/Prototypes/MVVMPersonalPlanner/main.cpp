@@ -28,7 +28,7 @@ static bool testUpdateUserPassword(UserDbInterface& userDBInterface, UserModel_s
 
     insertedUser->setPassword(newPassword);
     userDBInterface.update(insertedUser);
-    std::cerr << userDBInterface.getAllErrorMessages();
+
     UserModel_shp newUserValues = userDBInterface.getUserByUserID(insertedUser->getUserID());
     if (oldUserValues == *newUserValues)
     {
