@@ -25,22 +25,8 @@ std::size_t UserDbInterface::insert(const UserModel &user)
 
     try
     {
-        NSBA::io_context ctx;
-        NSBM::results localResult;
-
-        NSBA::co_spawn(
-            ctx, coRoInsertUser(user),
-            [&localResult, this](std::exception_ptr ptr, NSBM::results result)
-            {
-                if (ptr)
-                {
-                    std::rethrow_exception(ptr);
-                }
-                localResult = std::move(result);
-            }
-        );
-
-        ctx.run();
+        NSBM::results localResult = runUpdateAsync(
+            std::bind(&UserDbInterface::coRoInsertUser, this, std::placeholders::_1), user);
 
         return localResult.last_insert_id();
     }
@@ -186,7 +172,51 @@ UserList UserDbInterface::getAllUsers()
 
     return userList;
 }
-/**/
+
+void UserDbInterface::update(const UserModel &user)
+{
+    prepareForRunQueryAsync();
+
+    try
+    {
+        NSBM::results localResult = runUpdateAsync(
+            std::bind(&UserDbInterface::coRoUpdateUser, this, std::placeholders::_1), user);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserDbInterface::update : {}", e.what()));
+    }
+}
+
+/*
+ * Private or Protected methods.
+ */
+NSBM::results UserDbInterface::runUpdateAsync(
+    std::function<NSBA::awaitable<NSBM::results>(const UserModel &)> queryFunc,
+    const UserModel &user
+)
+{
+    NSBM::results localResult;
+    NSBA::io_context ctx;
+
+    NSBA::co_spawn(
+        ctx, queryFunc(user),
+        [&localResult, this](std::exception_ptr ptr, NSBM::results result)
+        {
+            if (ptr)
+            {
+                std::rethrow_exception(ptr);
+            }
+            localResult = std::move(result);
+        }
+    );
+
+    ctx.run();
+
+    return localResult;
+}
+
 UserModel_shp UserDbInterface::processResult(NSBM::results& results)
 {
     if (results.rows().empty())
@@ -414,6 +444,43 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByLoginAndPassword
             loginName, password),
         result
     );
+
+    co_await conn.async_close();
+
+    co_return result;
+}
+
+NSBA::awaitable<NSBM::results> UserDbInterface::coRoUpdateUser(const UserModel &user)
+{
+    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
+
+    co_await conn.async_connect(dbConnectionParameters);
+
+    NSBM::results result;
+
+    // Boolean values are stored as TINYINT and need to be converted.
+    co_await conn.async_execute(
+        NSBM::with_params("UPDATE UserProfile SET"
+                " UserProfile.LastName = {0},"
+                " UserProfile.FirstName = {1},"
+                " UserProfile.MiddleInitial = {2},"
+                " UserProfile.EmailAddress = {3},"
+                " UserProfile.LoginName = {4},"
+                " UserProfile.HashedPassWord = {5},"
+                " UserProfile.ScheduleDayStart = {6},"
+                " UserProfile.ScheduleDayEnd = {7},"
+                " UserProfile.IncludePriorityInSchedule = {8},"
+                " UserProfile.IncludeMinorPriorityInSchedule = {9},"
+                " UserProfile.UseLettersForMajorPriority = {10},"
+                " UserProfile.SeparatePriorityWithDot = {11}"
+            " WHERE UserProfile.UserID = {12}",
+             user.getLastName(), user.getFirstName(), user.getMiddleInitial(), user.getEmail(), user.getLoginName(),
+             user.getPassword(), user.getStartTime(), user.getEndTime(), static_cast<int>(user.isPriorityInSchedule()),
+             static_cast<int>(user.isMinorPriorityInSchedule()), static_cast<int>(user.isUsingLettersForMaorPriority()),
+             static_cast<int>(user.isSeparatingPriorityWithDot(), user.getUserID())),
+        result
+    );
+
 
     co_await conn.async_close();
 
