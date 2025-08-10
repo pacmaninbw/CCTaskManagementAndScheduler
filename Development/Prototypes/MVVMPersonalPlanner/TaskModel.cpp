@@ -219,7 +219,21 @@ TaskModel::TaskStatus TaskModel::stringToStatus(std::string statusName) const
 
 bool TaskModel::diffTask(TaskModel& other)
 {
-    return (taskID == other.taskID && description == other.description &&
-        other.creatorID == creatorID);
+    // Ignoring optional fields
+    return (taskID == other.taskID &&
+        description == other.description &&
+        other.creatorID == creatorID &&
+        assignToID == other.assignToID &&
+        percentageComplete == other.percentageComplete &&
+        creationDate == other.creationDate &&
+        dueDate == other.dueDate &&
+        scheduledStart == other.scheduledStart &&
+        scheduledStart == other.scheduledStart &&
+        actualEffortToDate == other.actualEffortToDate &&
+        priorityGroup == other.priorityGroup &&
+        priority == other.priority &&
+        personal == other.personal &&
+        dependencies.size() == other.dependencies.size()
+    );
 }
 
