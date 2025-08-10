@@ -31,8 +31,11 @@ public:
     TaskList getTasksCompletedByAssignedAfterDate(UserModel_shp assignedUser,
         std::chrono::year_month_day searchStartDate)
         { return getTasksCompletedByAssignedAfterDate(*assignedUser, searchStartDate); };
+    bool update(TaskModel& task);
+    bool update(TaskModel_shp task) { return update(*task); };
 
 private:
+    NSBM::results runUpdateAsync(std::function<NSBA::awaitable<NSBM::results>(TaskModel&)>queryFunc, TaskModel& task);
     TaskModel_shp processResult(NSBM::results& results);
     TaskList processResults(NSBM::results& results);
     void processResultRow(NSBM::row_view rv, TaskModel_shp newTask);
@@ -44,6 +47,7 @@ private:
     NSBA::awaitable<NSBM::results> coRoSelectTaskByDescriptionAndAssignedUser();
     NSBA::awaitable<NSBM::results> coRoSelectUnstartedDueForStartForAssignedUser();
     NSBA::awaitable<NSBM::results> coRoSelectTasksWithStatusForAssignedUserBefore();
+    NSBA::awaitable<NSBM::results> coRoUpdateTask(TaskModel& task);
 
 private:
 /*

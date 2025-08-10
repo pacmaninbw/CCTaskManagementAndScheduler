@@ -44,22 +44,8 @@ std::size_t TaskDbInterface::insert(TaskModel &task)
 
     try
     {
-        NSBA::io_context ctx;
-        NSBM::results localResult;
-
-        NSBA::co_spawn(
-            ctx, coRoInsertTask(task),
-            [&localResult, this](std::exception_ptr ptr, NSBM::results result)
-            {
-                if (ptr)
-                {
-                    std::rethrow_exception(ptr);
-                }
-                localResult = std::move(result);
-            }
-        );
-
-        ctx.run();
+        NSBM::results localResult = runUpdateAsync(
+            std::bind(&TaskDbInterface::coRoInsertTask, this, std::placeholders::_1), task);
 
         taskID = localResult.last_insert_id();
     }
@@ -186,9 +172,53 @@ TaskList TaskDbInterface::getTasksCompletedByAssignedAfterDate(UserModel &assign
     return completedTasks;
 }
 
+bool TaskDbInterface::update(TaskModel &task)
+{
+    prepareForRunQueryAsync();
+
+    try
+    {
+        NSBM::results localResult = runUpdateAsync(
+            std::bind(&TaskDbInterface::coRoUpdateTask, this, std::placeholders::_1), task);
+
+        return true;
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In TaskDbInterface::update : {}", e.what()));
+        return false;
+    }
+}
+
 /*
  * Private methods.
  */
+NSBM::results TaskDbInterface::runUpdateAsync(
+    std::function<NSBA::awaitable<NSBM::results>(TaskModel &)> updateFunc,
+    TaskModel &task
+)
+{
+    NSBM::results localResult;
+    NSBA::io_context ctx;
+
+    NSBA::co_spawn(
+        ctx, updateFunc(task),
+        [&localResult, this](std::exception_ptr ptr, NSBM::results result)
+        {
+            if (ptr)
+            {
+                std::rethrow_exception(ptr);
+            }
+            localResult = std::move(result);
+        }
+    );
+
+    ctx.run();
+
+    return localResult;
+}
+
 TaskModel_shp TaskDbInterface::processResult(NSBM::results& results)
 {
     if (results.rows().empty())
@@ -477,4 +507,75 @@ NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTasksWithStatusForAssi
 
     co_return selectResult;
 }
+
+NSBA::awaitable<NSBM::results> TaskDbInterface::coRoUpdateTask(TaskModel &task)
+{
+    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
+
+    co_await conn.async_connect(dbConnectionParameters);
+
+    NSBM::results insertResult;
+    std::size_t dependencyCount = task.getDependencies().size();
+
+    co_await conn.async_execute(
+        NSBM::with_params(
+            "UPDATE Tasks SET"
+                " CreatedBy = {0},"
+                " AsignedTo = {1},"
+                " Description = {2},"
+                " ParentTask = {3},"
+                " Status = {4},"
+                " PercentageComplete = {5},"
+                " CreatedOn = {6},"
+                " RequiredDelivery = {7},"
+                " ScheduledStart = {8},"
+                " ActualStart = {9},"
+                " EstimatedCompletion = {10},"
+                " Completed = {11},"
+                " EstimatedEffortHours = {12},"
+                " ActualEffortHours = {13},"
+                " SchedulePriorityGroup = {14},"
+                " PriorityInGroup = {15},"
+                " Personal = {16},"
+                " DependencyCount = {17}"
+            " WHERE TaskID = {18} ",
+            task.getCreatorID(),
+            task.getAssignToID(),
+            task.getDescription(),
+            task.rawParentTaskID(),
+            task.getStatusIntVal(),
+            task.getPercentageComplete(),
+            convertChronoDateToBoostMySQLDate(task.getCreationDate()),
+            convertChronoDateToBoostMySQLDate(task.getDueDate()),
+            convertChronoDateToBoostMySQLDate(task.getScheduledStart()),
+            optionalDateConversion(task.rawActualStartDate()),
+            optionalDateConversion(task.rawEstimatedCompletion()),
+            optionalDateConversion(task.rawCompletionDate()),
+            task.getEstimatedEffort(),
+            task.getactualEffortToDate(),
+            task.getPriorityGroup(),
+            task.getPriority(),
+            task.isPersonal(),
+            dependencyCount,
+            task.getTaskID()
+        ), insertResult
+    );
+
+    std::size_t taskID = task.getTaskID();
+    std::vector<std::size_t> dependencies = task.getDependencies();
+    if (taskID > 0 &&  dependencies.size() > 0)
+    {
+        NSBM::statement stmt = co_await conn.async_prepare_statement(
+            "INSERT INTO TaskDependencies (TaskID, Dependency) VALUES (?, ?)"
+        );
+        for (auto dependency: dependencies)
+        {
+            NSBM::results result;
+            co_await conn.async_execute(stmt.bind(taskID, dependency), result);
+        }
+        co_await conn.async_close_statement(stmt);
+    }
+    co_await conn.async_close();
+
+    co_return insertResult;}
 
