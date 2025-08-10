@@ -19,11 +19,11 @@ public:
     UserModel_shp getUserByLoginName(std::string_view loginName);
     UserModel_shp getUserByLoginAndPassword(std::string_view loginName, std::string_view password);
     UserList getAllUsers();
-    void update(const UserModel& user);
-    void update(UserModel_shp userP) { update(*userP); };
+    bool update(const UserModel& user);
+    bool update(UserModel_shp userP) { return update(*userP); };
 
 private:
-    NSBM::results runUpdateAsync(std::function<NSBA::awaitable<NSBM::results>(const UserModel&)>queryFunc,const UserModel& user);
+    NSBM::results runUpdateAsync(std::function<NSBA::awaitable<NSBM::results>(const UserModel&)>queryFunc, const UserModel& user);
     UserModel_shp processResult(NSBM::results& results);
     UserList processResults(NSBM::results& results);
     void processResultRow(NSBM::row_view rv, UserModel_shp newUser);

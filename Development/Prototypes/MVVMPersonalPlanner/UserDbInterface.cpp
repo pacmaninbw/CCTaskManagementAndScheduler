@@ -173,7 +173,7 @@ UserList UserDbInterface::getAllUsers()
     return userList;
 }
 
-void UserDbInterface::update(const UserModel &user)
+bool UserDbInterface::update(const UserModel &user)
 {
     prepareForRunQueryAsync();
 
@@ -181,11 +181,14 @@ void UserDbInterface::update(const UserModel &user)
     {
         NSBM::results localResult = runUpdateAsync(
             std::bind(&UserDbInterface::coRoUpdateUser, this, std::placeholders::_1), user);
+            
+        return true;
     }
 
     catch(const std::exception& e)
     {
         appendErrorMessage(std::format("In UserDbInterface::update : {}", e.what()));
+        return false;
     }
 }
 
