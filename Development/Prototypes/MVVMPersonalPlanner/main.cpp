@@ -27,7 +27,11 @@ static bool testUpdateUserPassword(UserDbInterface& userDBInterface, UserModel_s
     std::string newPassword = "MyNew**&pAs5Word" + std::to_string(oldUserValues.getUserID());
 
     insertedUser->setPassword(newPassword);
-    userDBInterface.update(insertedUser);
+    if (!userDBInterface.update(insertedUser))
+    {
+        std::cerr << "userDBInterface.update(insertedUser) FAILED" << userDBInterface.getAllErrorMessages() << "\n";
+        return false;
+    }
 
     UserModel_shp newUserValues = userDBInterface.getUserByUserID(insertedUser->getUserID());
     if (oldUserValues == *newUserValues)
@@ -260,6 +264,44 @@ static bool loadUserProfileTestDataIntoDatabase()
         std::cerr << "Some or all insertion and retrieval of users test FAILED!\n";
         return false;
     }
+}
+
+static bool testTaskUpdate(TaskDbInterface& taskDBInterface, TaskModel& changedTask)
+{
+    bool testPassed = true;
+    std::size_t taskID = changedTask.getTaskID();
+    TaskModel_shp original = taskDBInterface.getTaskByTaskID(taskID);
+
+    if (!taskDBInterface.update(changedTask))
+    {
+        std::cerr << std::format("taskDBInterface.update({}) failed execution!\n: {}\n",
+            taskID, taskDBInterface.getAllErrorMessages());
+        return false;
+    }
+
+    TaskModel_shp shouldBeDifferent = taskDBInterface.getTaskByTaskID(taskID);
+    if (*original == *shouldBeDifferent)
+    {
+        std::clog << std::format("Task update test FAILED for task: {}\n", taskID);
+        testPassed = false;
+    }
+
+    return testPassed;
+}
+
+static bool testSomeUpdates(TaskDbInterface dbInterface, UserModel& user)
+{
+    TaskModel_shp firstTaskToChange = dbInterface.getTaskByDescriptionAndAssignedUser("Archive BHHS74Reunion website to external SSD", user);
+    firstTaskToChange->addEffortHours(5.0);
+    firstTaskToChange->markComplete();
+    if (!testTaskUpdate(dbInterface, *firstTaskToChange))
+    {
+        return false;
+    }
+
+    std::clog << "All update task tests PASSED!\n";
+
+    return true;
 }
 
 static bool testGetTaskByDescription(TaskDbInterface& taskDBInterface, TaskModel& task, UserModel& user , bool verboseOutput)
@@ -524,6 +566,11 @@ static bool loadUserTaskestDataIntoDatabase()
     if (allTestsPassed)
     {
         allTestsPassed = testGetUnstartedTasks(taskDBInterface, userOne, programOptions.verboseOutput);
+    }
+
+    if (allTestsPassed)
+    {
+        allTestsPassed = testSomeUpdates(taskDBInterface, *userOne);
     }
 
     if (allTestsPassed)
