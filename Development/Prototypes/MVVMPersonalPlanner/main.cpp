@@ -7,12 +7,12 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
-#include <vector>
 #include "TaskDbInterface.h"
 #include "TaskModel.h"
 #include "UserDbInterface.h"
 #include "UserModel.h"
 #include "UtilityTimer.h"
+#include <vector>
 
 /*
  * All of the DBInterface classes need access to the programOptions global variable for the
