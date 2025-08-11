@@ -4,10 +4,15 @@
 #include "BoostDBInterfaceCore.h"
 #include <functional>
 #include <iostream>
+#include <sstream>
+#include <string>
+#include <utility>
+
 
 BoostDBInterfaceCore::BoostDBInterfaceCore()
 : errorMessages{""},
-  verboseOutput{programOptions.verboseOutput}
+  verboseOutput{programOptions.verboseOutput},
+  delimiter{';'}
 {
     dbConnectionParameters.server_address.emplace_host_and_port(programOptions.mySqlUrl, programOptions.mySqlPort);
     dbConnectionParameters.username = programOptions.mySqlUser;
@@ -63,4 +68,27 @@ NSBM::results BoostDBInterfaceCore::runQueryAsync(
     return localResult;
 }
 
+std::vector<std::string> BoostDBInterfaceCore::explodeTextField(std::string const& textField)
+{
+    std::vector<std::string> subFields;
+    std::istringstream iss(textField);
 
+    for (std::string token; std::getline(iss, token, delimiter); )
+    {
+        subFields.push_back(std::move(token));
+    }
+    return subFields;
+}
+
+std::string BoostDBInterfaceCore::implodeTextField(std::vector<std::string> &fields)
+{
+    std::string textField;
+
+    for (auto field: fields)
+    {
+        textField.append(field);
+        textField += delimiter;
+    }
+
+    return textField;
+}
