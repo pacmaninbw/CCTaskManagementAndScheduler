@@ -17,6 +17,7 @@
 UserDbInterface::UserDbInterface()
 : BoostDBInterfaceCore()
 {
+    delimiter = ';';
 }
 
 std::size_t UserDbInterface::insert(const UserModel &user)
@@ -270,24 +271,7 @@ void UserDbInterface::processResultRow(NSBM::row_view rv, UserModel_shp newUser)
     newUser->setEmail(rv.at(EmailAddressIdx).as_string());
     newUser->setLoginName(rv.at(LoginNameIdx).as_string());
     newUser->setPassword(rv.at(PasswordIdx).as_string());
-    newUser->setStartTime(rv.at(StartDayIdx).as_string());
-    newUser->setEndTime(rv.at(EndDayIdx).as_string());
-    if (!rv.at(PriorityGroupIdx).is_null())
-    {
-        newUser->setPriorityInSchedule(rv.at(PriorityGroupIdx).as_int64());
-    }
-    if (!rv.at(PriorityIdx).is_null())
-    {
-        newUser->setMinorPriorityInSchedule(rv.at(PriorityIdx).as_int64());
-    }
-    if (!rv.at(UseLettersIdx).is_null())
-    {
-        newUser->setUsingLettersForMaorPriority(rv.at(UseLettersIdx).as_int64());
-    }
-    if (!rv.at(DotSeparationIdx).is_null())
-    {
-        newUser->setSeparatingPriorityWithDot(rv.at(DotSeparationIdx).as_int64());
-    }
+    std::string preferences = rv.at(PasswordIdx).as_string();
 
     // All the set functions set modified, since this user is new in memory it is not modified.
     newUser->clearModified();
@@ -304,8 +288,8 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByID()
 
     co_await conn.async_execute(
         NSBM::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
-            "UseLettersForMajorPriority, SeparatePriorityWithDot FROM UserProfile WHERE UserID = {}", userID),
+            "HashedPassWord, Preferences "
+            "FROM UserProfile WHERE UserID = {}", userID),
         result
     );
 
@@ -328,8 +312,8 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByFullName()
 
     co_await conn.async_execute(
         NSBM::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
-            "UseLettersForMajorPriority, SeparatePriorityWithDot FROM UserProfile WHERE LastName = {} AND FirstName = {} AND MiddleInitial = {}",
+            "HashedPassWord, Preferences "
+            "FROM UserProfile WHERE LastName = {} AND FirstName = {} AND MiddleInitial = {}",
             lastName, firstName, middleI),
         result
     );
@@ -351,8 +335,8 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByEmailAddress()
 
     co_await conn.async_execute(
         NSBM::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
-            "UseLettersForMajorPriority, SeparatePriorityWithDot FROM UserProfile WHERE EmailAddress = {}", emailAddr),
+            "HashedPassWord, Preferences "
+            "FROM UserProfile WHERE EmailAddress = {}", emailAddr),
         result
     );
 
@@ -373,8 +357,8 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByLoginName()
 
     co_await conn.async_execute(
         NSBM::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
-            "UseLettersForMajorPriority, SeparatePriorityWithDot FROM UserProfile WHERE LoginName = {}", loginName),
+            "HashedPassWord, Preferences "
+            "FROM UserProfile WHERE LoginName = {}", loginName),
         result
     );
 
@@ -385,6 +369,8 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByLoginName()
 
 NSBA::awaitable<NSBM::results> UserDbInterface::coRoInsertUser(const UserModel& user)
 {
+    std::string preferences = buildPreferenceText(user);
+
     NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
@@ -394,12 +380,9 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoInsertUser(const UserModel& 
     // Boolean values are stored as TINYINT and need to be converted.
     co_await conn.async_execute(
         NSBM::with_params("INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
-            "UseLettersForMajorPriority, SeparatePriorityWithDot) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11})",
+            "HashedPassWord, Preferences) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6})",
              user.getLastName(), user.getFirstName(), user.getMiddleInitial(), user.getEmail(), user.getLoginName(),
-             user.getPassword(), user.getStartTime(), user.getEndTime(), static_cast<int>(user.isPriorityInSchedule()),
-             static_cast<int>(user.isMinorPriorityInSchedule()), static_cast<int>(user.isUsingLettersForMaorPriority()),
-             static_cast<int>(user.isSeparatingPriorityWithDot())),
+             user.getPassword(), preferences),
         result
     );
 
@@ -419,8 +402,8 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectAllUsers()
 
     co_await conn.async_execute(
         "SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
-            "UseLettersForMajorPriority, SeparatePriorityWithDot FROM UserProfile ORDER BY UserID",
+            "HashedPassWord, Preferences "
+            "FROM UserProfile ORDER BY UserID",
         result
     );
 
@@ -442,8 +425,8 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByLoginAndPassword
 
     co_await conn.async_execute(
         NSBM::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
-            "UseLettersForMajorPriority, SeparatePriorityWithDot FROM UserProfile WHERE LoginName = {} AND HashedPassWord = {}",
+            "HashedPassWord, Preferences "
+            "FROM UserProfile WHERE LoginName = {} AND HashedPassWord = {}",
             loginName, password),
         result
     );
@@ -455,6 +438,8 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByLoginAndPassword
 
 NSBA::awaitable<NSBM::results> UserDbInterface::coRoUpdateUser(const UserModel &user)
 {
+    std::string preferences = buildPreferenceText(user);
+
     NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
@@ -470,17 +455,10 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoUpdateUser(const UserModel &
                 " UserProfile.EmailAddress = {3}," 
                 " UserProfile.LoginName = {4},"
                 " UserProfile.HashedPassWord = {5},"
-                " UserProfile.ScheduleDayStart = {6},"
-                " UserProfile.ScheduleDayEnd = {7},"
-                " UserProfile.IncludePriorityInSchedule = {8},"
-                " UserProfile.IncludeMinorPriorityInSchedule = {9},"
-                " UserProfile.UseLettersForMajorPriority = {10},"
-                " UserProfile.SeparatePriorityWithDot = {11}"
-            " WHERE UserProfile.UserID = {12}",
+                " UserProfile.Preferences = {6}"
+            " WHERE UserProfile.UserID = {7}",
              user.getLastName(), user.getFirstName(), user.getMiddleInitial(), user.getEmail(), user.getLoginName(),
-             user.getPassword(), user.getStartTime(), user.getEndTime(), static_cast<int>(user.isPriorityInSchedule()),
-             static_cast<int>(user.isMinorPriorityInSchedule()), static_cast<int>(user.isUsingLettersForMaorPriority()),
-             static_cast<int>(user.isSeparatingPriorityWithDot()), user.getUserID()),
+             user.getPassword(), preferences, user.getUserID()),
         result
     );
 
@@ -490,3 +468,34 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoUpdateUser(const UserModel &
     co_return result;
 }
 
+/*
+ * Rather than store user preferences separately in fields in the table, all
+ * user preferences will be stored in a single TEXT field in the table. This
+ * will allow expansion of preferences as needed while not needing to modify
+ * the database.
+ */
+std::string UserDbInterface::buildPreferenceText(const UserModel &user)
+{
+    std::vector<std::string> preferences;
+
+    preferences.push_back(user.getStartTime());
+    preferences.push_back(user.getEndTime());
+    preferences.push_back(std::to_string(static_cast<int>(user.isPriorityInSchedule())));
+    preferences.push_back(std::to_string(static_cast<int>(user.isMinorPriorityInSchedule())));
+    preferences.push_back(std::to_string(static_cast<int>(user.isUsingLettersForMaorPriority())));
+    preferences.push_back(std::to_string(static_cast<int>(user.isSeparatingPriorityWithDot())));
+
+    return implodeTextField(preferences);
+}
+
+void UserDbInterface::parsePrefenceText(std::string preferences, UserModel_shp newUser)
+{
+    std::vector<std::string> subfields = explodeTextField(preferences);
+
+    newUser->setStartTime(subfields[PrefDayStartIdx]);
+    newUser->setEndTime(subfields[PrefDayEndIdx]);
+    newUser->setPriorityInSchedule(std::stoi(subfields[PrefMajorPriorityIdx]));
+    newUser->setMinorPriorityInSchedule(std::stoi(subfields[PrefMinorPriorityIdx]));
+    newUser->setUsingLettersForMaorPriority(std::stoi(subfields[PrefUsingLetterIdx]));
+    newUser->setSeparatingPriorityWithDot(std::stoi(subfields[PrefUsingDotIdx]));
+}

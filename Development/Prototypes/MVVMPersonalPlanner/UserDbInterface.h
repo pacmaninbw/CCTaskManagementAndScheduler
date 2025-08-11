@@ -35,13 +35,14 @@ private:
     NSBA::awaitable<NSBM::results> coRoSelectAllUsers();
     NSBA::awaitable<NSBM::results> coRoSelectUserByLoginAndPassword();
     NSBA::awaitable<NSBM::results> coRoUpdateUser(const UserModel& user);
+    std::string buildPreferenceText(const UserModel& user);
+    void parsePrefenceText(std::string preferences, UserModel_shp newUser);
 
 /*
  * The indexes below are based on the following select statement, maintain this order
  * for any new select statements, add any new field indexes at the end.
  *  SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-*      "HashedPassWord, ScheduleDayStart, ScheduleDayEnd, IncludePriorityInSchedule, IncludeMinorPriorityInSchedule, "
-*       "UseLettersForMajorPriority, SeparatePriorityWithDot FROM UserProfile WHERE UserID = {}", userID),
+*      "HashedPassWord, Preferences FROM UserProfile WHERE UserID = {}", userID),
 */
 private:
     const std::size_t UserIdIdx = 0;
@@ -51,12 +52,14 @@ private:
     const std::size_t EmailAddressIdx = 4;
     const std::size_t LoginNameIdx = 5;
     const std::size_t PasswordIdx = 6;
-    const std::size_t StartDayIdx = 7;
-    const std::size_t EndDayIdx = 8;
-    const std::size_t PriorityGroupIdx = 9;
-    const std::size_t PriorityIdx = 10;
-    const std::size_t UseLettersIdx = 11;
-    const std::size_t DotSeparationIdx = 12;
+    const std::size_t PreferencesIdx = 7;
+// Preference subfield indexes
+    const std::size_t PrefDayStartIdx = 0;
+    const std::size_t PrefDayEndIdx = 1;
+    const std::size_t PrefMajorPriorityIdx = 2;
+    const std::size_t PrefMinorPriorityIdx = 3;
+    const std::size_t PrefUsingLetterIdx = 4;
+    const std::size_t PrefUsingDotIdx = 5;
 };
 
 #endif // USERDBINTERFACE_H_

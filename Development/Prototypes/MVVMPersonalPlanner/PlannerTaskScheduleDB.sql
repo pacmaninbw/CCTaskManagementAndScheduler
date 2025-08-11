@@ -15,17 +15,13 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserProfile` (
     `MiddleInitial` VARCHAR(45),
     `EmailAddress` VARCHAR(256),
     `LoginName` VARCHAR(45) NOT NULL,
-    `HashedPassWord` TINYTEXT,
-    `ScheduleDayStart` VARCHAR(45) NOT NULL,
-    `ScheduleDayEnd` VARCHAR(45) NOT NULL,
-    `IncludePriorityInSchedule` BOOLEAN DEFAULT TRUE,
-    `IncludeMinorPriorityInSchedule` BOOLEAN DEFAULT TRUE,
-    `UseLettersForMajorPriority` BOOLEAN DEFAULT TRUE,
-    `SeparatePriorityWithDot` BOOLEAN DEFAULT FALSE,
+    `HashedPassWord` VARCHAR(45) NOT NULL,
+    `Preferences` MEDIUMTEXT NOT NULL,
     PRIMARY KEY (`UserID`, `LastName`, `LoginName`),
-    UNIQUE INDEX `UserID_UNIQUE` (`UserID`),
+    UNIQUE INDEX `UserID_UNIQUE` (`UserID` ASC),
     UNIQUE INDEX `FullName_UNIQUE` (`LastName`, `FirstName`, `MiddleInitial`),
-    UNIQUE INDEX `LoginName_UNIQUE` (`LoginName` ASC)
+    UNIQUE INDEX `LoginName_UNIQUE` (`LoginName` ASC),
+    UNIQUE INDEX `Email_UNIQUE` (`EmailAddress` ASC)
 );
 
 -- --------------------------------------------------------
@@ -67,26 +63,6 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserNotes` (
     
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`TaskStatusEnum`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`TaskStatusEnum` (
-    `TaskIDtatusEnum` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `TaskStatusEnumLable` VARCHAR(45) NOT NULL,
-    PRIMARY KEY (`TaskIDtatusEnum`),
-    UNIQUE INDEX `TaskIDtatusEnum_UNIQUE` (`TaskIDtatusEnum` ASC),
-    UNIQUE INDEX `TaskStatusEnumLable_UNIQUE` (`TaskStatusEnumLable` ASC)
-);
-
-INSERT INTO PlannerTaskScheduleDB.TaskStatusEnum
-    (TaskStatusEnumLable)
-    VALUES
-        ('Not Started'),
-        ('On Hold'),
-        ('Waiting for Dependency'),
-        ('Work in Progress'),
-        ('Complete');
-
--- --------------------------------------------------------
-
 DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Tasks`;
 CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Tasks` (
     `TaskID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -108,6 +84,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Tasks` (
     `PriorityInGroup` INT UNSIGNED NOT NULL,
     `Personal` BOOLEAN,
     `DependencyCount` INT UNSIGNED,
+    `Dependencies` MEDIUMTEXT,
     PRIMARY KEY (`TaskID`, `CreatedBy`),
     UNIQUE INDEX `TaskID_UNIQUE` (`TaskID` ASC),
     INDEX `fk_Tasks_CreatedBy_idx` (`CreatedBy` ASC),
@@ -127,8 +104,6 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Tasks` (
 
 -- --------------------------------------------------------
 
--- --------------------------------------------------------
-
 DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserTaskGoals`;
 CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskGoals` (
     `UserID` INT UNSIGNED NOT NULL,
@@ -141,22 +116,6 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskGoals` (
         ON DELETE RESTRICT
         ON UPDATE RESTRICT,
     CONSTRAINT `fk_UserTaskGoals_TaskID`
-        FOREIGN KEY (`TaskID`)
-        REFERENCES `Tasks` (`TaskID`)
-        ON DELETE RESTRICT
-        ON UPDATE RESTRICT
-);
-
--- --------------------------------------------------------
-
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`TaskDependencies`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`TaskDependencies` (
-    `idTaskDependencies` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `TaskID`  INT UNSIGNED NOT NULL,
-    `Dependency`  INT UNSIGNED NOT NULL,
-    PRIMARY KEY (`idTaskDependencies`, `TaskID`),
-    UNIQUE INDEX `idTaskDependencies_UNIQUE` (`idTaskDependencies` ASC),
-    CONSTRAINT `fk_TaskDependencies_TaskID`
         FOREIGN KEY (`TaskID`)
         REFERENCES `Tasks` (`TaskID`)
         ON DELETE RESTRICT
@@ -228,66 +187,6 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserScheduleItem` (
 -- -----------------------------------------------------
 -- Stored Functions
 -- -----------------------------------------------------
-
--- -----------------------------------------------------
--- function findTaskStatusEnumValueByLabel
--- -----------------------------------------------------
-
-USE `PlannerTaskScheduleDB`;
-DROP function IF EXISTS `PlannerTaskScheduleDB`.`findTaskStatusEnumValueByLabel`;
-
-DELIMITER $$
-USE `PlannerTaskScheduleDB`$$
-CREATE FUNCTION `findTaskStatusEnumValueByLabel`(
-    TaskStatusEnumLable VARCHAR(20)
-) RETURNS INT
-DETERMINISTIC
-BEGIN
-    
-    SET @TaskStatusEnumKey = 0;
-    
-    SELECT TaskStatusEnum.TaskIDtatusEnum INTO @TaskStatusEnumKey
-        FROM TaskStatusEnum
-        WHERE TaskStatusEnum.TaskStatusEnumLable = TaskStatusEnumLable;
-    IF @TaskStatusEnumKey IS NULL THEN
-        SET @TaskStatusEnumKey = 0;
-    END IF;
-
-    RETURN @TaskStatusEnumKey;
-    
-END$$
-
-DELIMITER ;
-
--- -----------------------------------------------------
--- function findTaskStatusEnumLabelByValue
--- -----------------------------------------------------
-
-USE `PlannerTaskScheduleDB`;
-DROP function IF EXISTS `PlannerTaskScheduleDB`.`findTaskStatusEnumLabelByValue`;
-
-DELIMITER $$
-USE `PlannerTaskScheduleDB`$$
-CREATE FUNCTION `findTaskStatusEnumLabelByValue`(
-    StatusKey INT
-) RETURNS VARCHAR(20)
-DETERMINISTIC
-BEGIN
-    
-    SET @TaskStatusEnumLabel = ``;
-    
-    SELECT TaskStatusEnum.TaskStatusEnumLable INTO @TaskStatusEnumLabel
-        FROM TaskStatusEnum
-        WHERE TaskStatusEnum.TaskIDtatusEnum = TaskStatusEnumLable;
-    IF @TasTaskStatusEnumLabelkStatusKey IS NULL THEN
-        SET @TaskStatusEnumLabel = 'Not Started';
-    END IF;
-
-    RETURN @TaskStatusEnumLabel;
-    
-END$$
-
-DELIMITER ;
 
 -- -----------------------------------------------------
 -- function findUserScheduleItemTypeEnumLabelByValue
