@@ -289,12 +289,61 @@ static bool testTaskUpdate(TaskDbInterface& taskDBInterface, TaskModel& changedT
     return testPassed;
 }
 
+static bool testAddDepenedcies(TaskDbInterface dbInterface, UserModel& user)
+{
+    std::string dependentDescription("Install a WordPress Archive Plugin");
+    std::string mostDependentTaskDesc("Log into PHPMyAdmin and save Database to disk");
+    std::vector<std::string> taskDescriptions = {
+        {"Check with GoDaddy about providing service to archive website to external SSD"},
+        dependentDescription,
+        {"Have GoDaddy install PHPMyAdmin"},
+        {"Run Archive Plugin"}
+    };
+
+    TaskModel_shp depenedentTask = dbInterface.getTaskByDescriptionAndAssignedUser(taskDescriptions[1], user);
+    depenedentTask->addDependency(dbInterface.getTaskByDescriptionAndAssignedUser(taskDescriptions[0], user));
+    if (!dbInterface.update(depenedentTask))
+    {
+        std::clog << std::format("Update to add depenency to '{}' FAILED\n", taskDescriptions[0]);
+        return false;
+    }
+
+    std::vector<std::size_t> comparison;
+    TaskModel_shp mostDepenedentTask = dbInterface.getTaskByDescriptionAndAssignedUser(mostDependentTaskDesc, user);
+    for (auto task: taskDescriptions)
+    {
+        TaskModel_shp dependency = dbInterface.getTaskByDescriptionAndAssignedUser(task, user);
+        comparison.push_back(dependency->getTaskID());
+        mostDepenedentTask->addDependency(dependency);
+    }
+    if (!dbInterface.update(mostDepenedentTask))
+    {
+        std::clog << std::format("Update to add depenency to '{}' FAILED\n", mostDependentTaskDesc);
+        return false;
+    }
+
+    TaskModel_shp testDepenedenciesInDB = dbInterface.getTaskByTaskID(mostDepenedentTask->getTaskID());
+    std::vector<std::size_t> dbValue = testDepenedenciesInDB->getDependencies();
+    if (comparison != dbValue)
+    {
+        std::cerr << "Retrival of task dependencies differ, Test FAILED\n";
+        return false;
+    }
+
+    return true;
+}
+
 static bool testSomeUpdates(TaskDbInterface dbInterface, UserModel& user)
 {
     TaskModel_shp firstTaskToChange = dbInterface.getTaskByDescriptionAndAssignedUser("Archive BHHS74Reunion website to external SSD", user);
     firstTaskToChange->addEffortHours(5.0);
     firstTaskToChange->markComplete();
     if (!testTaskUpdate(dbInterface, *firstTaskToChange))
+    {
+        return false;
+    }
+
+    if (!testAddDepenedcies(dbInterface, user))
     {
         return false;
     }
