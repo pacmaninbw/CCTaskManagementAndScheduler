@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
 #include <chrono>
@@ -314,18 +315,25 @@ void TaskDbInterface::processResultRow(NSBM::row_view rv, TaskModel_shp newTask)
 
 NSBA::awaitable<NSBM::results> TaskDbInterface::coRoInsertTask(TaskModel &task)
 {
+    std::size_t dependencyCount = task.getDependencies().size();
+    std::optional<std::string> depenenciesText;
+    if (dependencyCount)
+    {
+        std::vector<std::size_t> dependencyList = task.getDependencies();
+        depenenciesText = buildDependenciesText(dependencyList);
+    }
+
     NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
     NSBM::results insertResult;
-    std::size_t dependencyCount = task.getDependencies().size();
 
     co_await conn.async_execute(
         NSBM::with_params("INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
-            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount)"
-            " VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17})",
+            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies)"
+            " VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, {18})",
             task.getCreatorID(),
             task.getAssignToID(),
             task.getDescription(),
@@ -343,24 +351,12 @@ NSBA::awaitable<NSBM::results> TaskDbInterface::coRoInsertTask(TaskModel &task)
             task.getPriorityGroup(),
             task.getPriority(),
             task.isPersonal(),
-            dependencyCount),
+            dependencyCount,
+            depenenciesText
+        ),
         insertResult
     );
 
-    std::size_t taskID = insertResult.last_insert_id();
-    std::vector<std::size_t> dependencies = task.getDependencies();
-    if (taskID > 0 &&  dependencies.size() > 0)
-    {
-        NSBM::statement stmt = co_await conn.async_prepare_statement(
-            "INSERT INTO TaskDependencies (TaskID, Dependency) VALUES (?, ?)"
-        );
-        for (auto dependency: dependencies)
-        {
-            NSBM::results result;
-            co_await conn.async_execute(stmt.bind(taskID, dependency), result);
-        }
-        co_await conn.async_close_statement(stmt);
-    }
     co_await conn.async_close();
 
     co_return insertResult;
@@ -389,7 +385,7 @@ NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTaskById()
     co_await conn.async_execute(
         NSBM::with_params("SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
-            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount FROM Tasks WHERE TaskID = {0}",
+            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies FROM Tasks WHERE TaskID = {0}",
             taskId),
         selectResult
     );
@@ -448,7 +444,7 @@ NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTaskByDescriptionAndAs
     co_await conn.async_execute(
         NSBM::with_params("SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
-            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount FROM Tasks WHERE Description = {0}"
+            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies FROM Tasks WHERE Description = {0}"
             " AND AsignedTo = {1}", description, userID),
         selectResult
     );
@@ -472,7 +468,7 @@ NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectUnstartedDueForStartFo
     co_await conn.async_execute(
         NSBM::with_params("SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
-            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount FROM Tasks WHERE AsignedTo = {0}"
+            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies FROM Tasks WHERE AsignedTo = {0}"
             " AND ScheduledStart < {1} AND (Status IS NULL OR Status = {2})",
             userID, searchStart, notStarted),
         selectResult
@@ -497,7 +493,7 @@ NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTasksWithStatusForAssi
     co_await conn.async_execute(
         NSBM::with_params("SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
-            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount FROM Tasks WHERE AsignedTo = {0}"
+            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies FROM Tasks WHERE AsignedTo = {0}"
             " AND ScheduledStart < {1} AND Status = {2})",
             userID, searchStart, status),
         selectResult
@@ -510,12 +506,19 @@ NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTasksWithStatusForAssi
 
 NSBA::awaitable<NSBM::results> TaskDbInterface::coRoUpdateTask(TaskModel &task)
 {
+    std::size_t dependencyCount = task.getDependencies().size();
+    std::optional<std::string> depenenciesText;
+    if (dependencyCount)
+    {
+        std::vector<std::size_t> dependencyList = task.getDependencies();
+        depenenciesText = buildDependenciesText(dependencyList);
+    }
+
     NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    NSBM::results insertResult;
-    std::size_t dependencyCount = task.getDependencies().size();
+    NSBM::results updateResult;
 
     co_await conn.async_execute(
         NSBM::with_params(
@@ -537,8 +540,9 @@ NSBA::awaitable<NSBM::results> TaskDbInterface::coRoUpdateTask(TaskModel &task)
                 " SchedulePriorityGroup = {14},"
                 " PriorityInGroup = {15},"
                 " Personal = {16},"
-                " DependencyCount = {17}"
-            " WHERE TaskID = {18} ",
+                " DependencyCount = {17},"
+                "Dependencies = {18}"
+            " WHERE TaskID = {19} ",
             task.getCreatorID(),
             task.getAssignToID(),
             task.getDescription(),
@@ -557,25 +561,27 @@ NSBA::awaitable<NSBM::results> TaskDbInterface::coRoUpdateTask(TaskModel &task)
             task.getPriority(),
             task.isPersonal(),
             dependencyCount,
+            depenenciesText,
             task.getTaskID()
-        ), insertResult
+        ), updateResult
     );
 
-    std::size_t taskID = task.getTaskID();
-    std::vector<std::size_t> dependencies = task.getDependencies();
-    if (taskID > 0 &&  dependencies.size() > 0)
-    {
-        NSBM::statement stmt = co_await conn.async_prepare_statement(
-            "INSERT INTO TaskDependencies (TaskID, Dependency) VALUES (?, ?)"
-        );
-        for (auto dependency: dependencies)
-        {
-            NSBM::results result;
-            co_await conn.async_execute(stmt.bind(taskID, dependency), result);
-        }
-        co_await conn.async_close_statement(stmt);
-    }
     co_await conn.async_close();
 
-    co_return insertResult;}
+    co_return updateResult;}
 
+std::string TaskDbInterface::buildDependenciesText(std::vector<std::size_t>& dependencyList)
+{
+    if (dependencyList.size() > 1)
+    {
+        std::sort(dependencyList.begin(), dependencyList.end());
+    }
+
+    std::vector<std::string> dependencyStrings;
+    for (auto dependency: dependencyList)
+    {
+        dependencyStrings.push_back(std::to_string(dependency));
+    }
+
+    return implodeTextField(dependencyStrings);
+}

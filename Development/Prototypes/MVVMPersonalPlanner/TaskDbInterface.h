@@ -8,6 +8,7 @@
 #include <optional>
 #include <string_view>
 #include "TaskModel.h"
+#include <vector>
 
 class TaskDbInterface : public BoostDBInterfaceCore
 {
@@ -48,6 +49,7 @@ private:
     NSBA::awaitable<NSBM::results> coRoSelectUnstartedDueForStartForAssignedUser();
     NSBA::awaitable<NSBM::results> coRoSelectTasksWithStatusForAssignedUserBefore();
     NSBA::awaitable<NSBM::results> coRoUpdateTask(TaskModel& task);
+    std::string buildDependenciesText(std::vector<std::size_t>& dependencyList);
 
 private:
 /*
