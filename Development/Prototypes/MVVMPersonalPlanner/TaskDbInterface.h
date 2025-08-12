@@ -44,7 +44,7 @@ private:
     std::optional<NSBM::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate);
     NSBA::awaitable<NSBM::results> coRoSelectTaskById();
     NSBA::awaitable<NSBM::results> coRoSelectTaskDependencies(const std::size_t taskId);
-    void addDependencies(TaskModel_shp newTask);
+    void addDependencies(const std::string& dependenciesText, TaskModel_shp newTask);
     NSBA::awaitable<NSBM::results> coRoSelectTaskByDescriptionAndAssignedUser();
     NSBA::awaitable<NSBM::results> coRoSelectUnstartedDueForStartForAssignedUser();
     NSBA::awaitable<NSBM::results> coRoSelectTasksWithStatusForAssignedUserBefore();
@@ -55,9 +55,9 @@ private:
 /*
  * The indexes below are based on the following select statement, maintain this order
  * for any new select statements, add any new field indexes at the end.
- *       "SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
- *           "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
- *           "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup FROM Tasks WHERE TaskID = {0}",
+ * "SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
+ *    "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
+  *   "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies FROM Tasks WHERE TaskID = {0}
  */
     const std::size_t taskIdIdx = 0;
     const std::size_t createdByIdx = 1;
@@ -76,9 +76,9 @@ private:
     const std::size_t actualEffortHoursIdx = 14;
     const std::size_t schedulePriorityGroupIdx = 15;
     const std::size_t priorityInGroupIdx = 16;
-    // Added fields
     const std::size_t personalIdx = 17;
     const std::size_t dependencyCountIdx = 18;
+    const std::size_t depenedenciesTextIdx = 19;
 };
 
 #endif // TASKDBINTERFACE_H_

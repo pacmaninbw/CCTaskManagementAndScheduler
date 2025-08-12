@@ -298,6 +298,7 @@ void TaskDbInterface::processResultRow(NSBM::row_view rv, TaskModel_shp newTask)
     {
         newTask->setEstimatedCompletion(convertBoostMySQLDateToChornoDate(rv.at(estimatedCompletionIdx).as_date()));
     }
+
     if (!rv.at(completedIdx).is_null())
     {
         newTask->setCompletionDate(convertBoostMySQLDateToChornoDate(rv.at(completedIdx).as_date()));
@@ -306,7 +307,8 @@ void TaskDbInterface::processResultRow(NSBM::row_view rv, TaskModel_shp newTask)
     std::size_t dependencyCount = rv.at(dependencyCountIdx).as_uint64();
     if (dependencyCount > 0)
     {
-        addDependencies(newTask);
+        std::string dependenciesText = rv.at(depenedenciesTextIdx).as_string();
+        addDependencies(dependenciesText, newTask);
     }
 
     // All the set functions set modified, since this user is new in memory it is not modified.
@@ -411,17 +413,15 @@ NSBA::awaitable<NSBM::results> TaskDbInterface::coRoSelectTaskDependencies(const
     co_return selectResult;
 }
 
-void TaskDbInterface::addDependencies(TaskModel_shp newTask)
+void TaskDbInterface::addDependencies(const std::string& dependenciesText, TaskModel_shp newTask)
 {
-    std::size_t taskId = newTask->getTaskID();
-    NSBM::results localResult = runQueryAsync(
-        std::bind(&TaskDbInterface::coRoSelectTaskDependencies, this, std::placeholders::_1), taskId);
+    std::vector<std::string> dependencyStrings = explodeTextField(dependenciesText);
 
-    if (!localResult.rows().empty())
+    if (!dependencyStrings.empty())
     {
-        for (auto row: localResult.rows())
+        for (auto dependencyStr: dependencyStrings)
         {
-            newTask->addDependency(row.at(0).as_uint64());
+            newTask->addDependency(static_cast<std::size_t>(std::stol(dependencyStr)));
         }
     }
     else
