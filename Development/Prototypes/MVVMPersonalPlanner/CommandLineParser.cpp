@@ -9,7 +9,7 @@
 
 static std::string simplifyName(char *path)
 {
-	return std::filesystem::path{path ? path : "PhotoResizeTool"}.filename().string();
+	return std::filesystem::path{path ? path : "protoPersonalPlanner"}.filename().string();
 }
 
 namespace po = boost::program_options;
