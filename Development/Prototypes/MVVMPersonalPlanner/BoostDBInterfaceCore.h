@@ -44,10 +44,6 @@ protected:
  */
     NSBM::results runQueryAsync(std::function<NSBA::awaitable<NSBM::results>(void)>queryFunc);
 /*
- * Special case, for functions called within another runQueryAsync() execution.
- */
-    NSBM::results runQueryAsync(std::function<NSBA::awaitable<NSBM::results>(std::size_t)>queryFunc, std::size_t id);
-/*
  * To process TEXT fields that contain model fields.
  */
 std::vector<std::string> explodeTextField(std::string const& textField);

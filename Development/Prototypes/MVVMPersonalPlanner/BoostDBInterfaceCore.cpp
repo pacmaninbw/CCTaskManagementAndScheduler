@@ -45,29 +45,6 @@ NSBM::results BoostDBInterfaceCore::runQueryAsync(std::function<NSBA::awaitable<
     return localResult;
 }
 
-NSBM::results BoostDBInterfaceCore::runQueryAsync(
-    std::function<NSBA::awaitable<NSBM::results>(std::size_t)> queryFunc, std::size_t id)
-{
-    NSBM::results localResult;
-    NSBA::io_context ctx;
-
-    NSBA::co_spawn(
-        ctx, queryFunc(id),
-        [&localResult, this](std::exception_ptr ptr, NSBM::results result)
-        {
-            if (ptr)
-            {
-                std::rethrow_exception(ptr);
-            }
-            localResult = std::move(result);
-        }
-    );
-
-    ctx.run();
-
-    return localResult;
-}
-
 std::vector<std::string> BoostDBInterfaceCore::explodeTextField(std::string const& textField)
 {
     std::vector<std::string> subFields;
