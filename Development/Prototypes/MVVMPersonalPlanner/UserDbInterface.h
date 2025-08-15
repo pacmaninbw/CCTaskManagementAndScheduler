@@ -23,18 +23,17 @@ public:
     bool update(UserModel_shp userP) { return update(*userP); };
 
 private:
-    NSBM::results runUpdateAsync(std::function<NSBA::awaitable<NSBM::results>(const UserModel&)>queryFunc, const UserModel& user);
     UserModel_shp processResult(NSBM::results& results);
     UserList processResults(NSBM::results& results);
     void processResultRow(NSBM::row_view rv, UserModel_shp newUser);
-    NSBA::awaitable<NSBM::results> coRoInsertUser(const UserModel& user);
-    NSBA::awaitable<NSBM::results> coRoUpdateUser(const UserModel& user);
     std::string buildPreferenceText(const UserModel& user);
     void parsePrefenceText(std::string preferences, UserModel_shp newUser);
 
 private:
 /*
- * The indexes below are based on the following select statement, maintain this order
+ * The indexes below are based on the following select statement, maintain this order.
+ * baseQuery could be SELECT * FROM UserProfile, but this way the order of the columns
+ * returned are known.
  */
     NSBM::constant_string_view baseQuery = 
         "SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "

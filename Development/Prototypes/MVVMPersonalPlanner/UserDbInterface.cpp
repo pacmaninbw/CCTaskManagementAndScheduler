@@ -25,8 +25,14 @@ std::size_t UserDbInterface::insert(const UserModel &user)
 
     try
     {
-        NSBM::results localResult = runUpdateAsync(
-            std::bind(&UserDbInterface::coRoInsertUser, this, std::placeholders::_1), user);
+        std::string insertStatement = NSBM::format_sql(format_opts ,
+            "INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
+            "HashedPassWord, Preferences) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6})",
+            user.getLastName(), user.getFirstName(), user.getMiddleInitial(), user.getEmail(), user.getLoginName(),
+            user.getPassword(), buildPreferenceText(user)
+        );
+
+        NSBM::results localResult = runQueryAsync(insertStatement);
 
         return localResult.last_insert_id();
     }
@@ -188,8 +194,20 @@ bool UserDbInterface::update(const UserModel &user)
 
     try
     {
-        NSBM::results localResult = runUpdateAsync(
-            std::bind(&UserDbInterface::coRoUpdateUser, this, std::placeholders::_1), user);
+        std::string updateStatement = NSBM::format_sql(format_opts,
+            "UPDATE UserProfile SET"
+                " UserProfile.LastName = {0},"
+                " UserProfile.FirstName = {1},"
+                " UserProfile.MiddleInitial = {2},"
+                " UserProfile.EmailAddress = {3}," 
+                " UserProfile.LoginName = {4},"
+                " UserProfile.HashedPassWord = {5},"
+                " UserProfile.Preferences = {6}"
+            " WHERE UserProfile.UserID = {7}",
+             user.getLastName(), user.getFirstName(), user.getMiddleInitial(), user.getEmail(), user.getLoginName(),
+             user.getPassword(), buildPreferenceText(user), user.getUserID());
+
+        NSBM::results localResult = runQueryAsync(updateStatement);
             
         return true;
     }
@@ -204,31 +222,6 @@ bool UserDbInterface::update(const UserModel &user)
 /*
  * Private or Protected methods.
  */
-NSBM::results UserDbInterface::runUpdateAsync(
-    std::function<NSBA::awaitable<NSBM::results>(const UserModel &)> queryFunc,
-    const UserModel &user
-)
-{
-    NSBM::results localResult;
-    NSBA::io_context ctx;
-
-    NSBA::co_spawn(
-        ctx, queryFunc(user),
-        [&localResult, this](std::exception_ptr ptr, NSBM::results result)
-        {
-            if (ptr)
-            {
-                std::rethrow_exception(ptr);
-            }
-            localResult = std::move(result);
-        }
-    );
-
-    ctx.run();
-
-    return localResult;
-}
-
 UserModel_shp UserDbInterface::processResult(NSBM::results& results)
 {
     if (results.rows().empty())
@@ -283,62 +276,6 @@ void UserDbInterface::processResultRow(NSBM::row_view rv, UserModel_shp newUser)
 
     // All the set functions set modified, since this user is new in memory it is not modified.
     newUser->clearModified();
-}
-
-NSBA::awaitable<NSBM::results> UserDbInterface::coRoInsertUser(const UserModel& user)
-{
-    std::string preferences = buildPreferenceText(user);
-
-    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-    NSBM::results result;
-
-    // Boolean values are stored as TINYINT and need to be converted.
-    co_await conn.async_execute(
-        NSBM::with_params("INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, Preferences) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6})",
-             user.getLastName(), user.getFirstName(), user.getMiddleInitial(), user.getEmail(), user.getLoginName(),
-             user.getPassword(), preferences),
-        result
-    );
-
-    co_await conn.async_close();
-
-    co_return result;
-}
-
-NSBA::awaitable<NSBM::results> UserDbInterface::coRoUpdateUser(const UserModel &user)
-{
-    std::string preferences = buildPreferenceText(user);
-
-    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-    NSBM::results result;
-
-    // Boolean values are stored as TINYINT and need to be converted.
-    co_await conn.async_execute(
-        NSBM::with_params("UPDATE UserProfile SET"
-                " UserProfile.LastName = {0},"
-                " UserProfile.FirstName = {1},"
-                " UserProfile.MiddleInitial = {2},"
-                " UserProfile.EmailAddress = {3}," 
-                " UserProfile.LoginName = {4},"
-                " UserProfile.HashedPassWord = {5},"
-                " UserProfile.Preferences = {6}"
-            " WHERE UserProfile.UserID = {7}",
-             user.getLastName(), user.getFirstName(), user.getMiddleInitial(), user.getEmail(), user.getLoginName(),
-             user.getPassword(), preferences, user.getUserID()),
-        result
-    );
-
-
-    co_await conn.async_close();
-
-    co_return result;
 }
 
 /*
