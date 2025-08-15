@@ -197,6 +197,8 @@ static bool loadUserProfileTestDataIntoDatabase()
 {
     // Test one case of the alternate constructor.
     UserList userProfileTestData = {{std::make_shared<UserModel>("PacMan", "IN", "BW", "pacmaninbw@gmail.com")}};
+    userProfileTestData[0]->autoGenerateLoginAndPassword();
+
     loadTestUsersFromFile(programOptions.userTestDataFile, userProfileTestData);
 
     UserDbInterface userDBInterface;
