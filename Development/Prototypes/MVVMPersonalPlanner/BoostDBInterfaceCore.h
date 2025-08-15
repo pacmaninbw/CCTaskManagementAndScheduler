@@ -6,7 +6,6 @@
 #include <boost/mysql.hpp>
 #include <chrono>
 #include "CommandLineParser.h"
-#include <functional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -23,26 +22,16 @@ public:
 
 protected:
     std::string errorMessages;
-/*
- * Design decision. While putting the arguments for each select statement into a vector of std::any()
- * is not the most maintainable or safest way to program, it reduces the number of implementations of
- * runQueryAsync() where only the function signature and one line of code to call the select function
- * co-routine differ. This removed more than 200 lines of repetitive code.
- * Until I can figure out how to pass the results from boost::mysql::with_params() into a function,
- * this is necessary.
- */
-    std::vector<std::any> selectStatementWhatArgs;
-    void prepareForRunQueryAsync()
-    {
-        errorMessages.clear();
-        selectStatementWhatArgs.clear();
-    };
+    void prepareForRunQueryAsync();
     void appendErrorMessage(std::string newError) { errorMessages.append(newError); };
+    NSBM::format_options getConnectionFormatOptsAsync();
+    NSBA::awaitable<NSBM::format_options> coRoGetFormatOptions();
 
 /*
  * All calls to runQueryAsync should be implemented within try blocks.
  */
-    NSBM::results runQueryAsync(std::function<NSBA::awaitable<NSBM::results>(void)>queryFunc);
+    NSBM::results runQueryAsync(std::string query);
+    NSBA::awaitable<NSBM::results> coRoutineExecuteSqlStatement(std::string query);
 /*
  * To process TEXT fields that contain model fields.
  */
@@ -71,6 +60,8 @@ protected:
     NSBM::connect_params dbConnectionParameters;
     bool verboseOutput;
     char delimiter;
+    NSBM::format_options format_opts;
+    bool firstMySqlConnection = true;
 };
 
 #endif // BOOSTMYSQLDBINTERFACECORE_H_

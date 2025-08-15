@@ -4,7 +4,6 @@
 #include "BoostDBInterfaceCore.h"
 #include <exception>
 #include <format>
-#include <functional>
 #include <iostream>
 #include <optional>
 #include <stdexcept>
@@ -46,9 +45,11 @@ UserModel_shp UserDbInterface::getUserByUserID(std::size_t userID)
 
     try
     {
-        selectStatementWhatArgs.push_back(std::any(userID));
+        NSBM::format_context fctx(format_opts);
+        NSBM::format_sql_to(fctx, baseQuery);
+        NSBM::format_sql_to(fctx, " WHERE UserID = {}", userID);
 
-        NSBM::results localResult = runQueryAsync(std::bind(&UserDbInterface::coRoSelectUserByID, this));
+        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
 
         newUser = processResult(localResult);
     }
@@ -68,11 +69,11 @@ UserModel_shp UserDbInterface::getUserByFullName(std::string_view lastName, std:
 
     try
     {
-        selectStatementWhatArgs.push_back(std::any(lastName));
-        selectStatementWhatArgs.push_back(std::any(firstName));
-        selectStatementWhatArgs.push_back(std::any(middleI));
+        NSBM::format_context fctx(format_opts);
+        NSBM::format_sql_to(fctx, baseQuery);
+        NSBM::format_sql_to(fctx, " WHERE LastName = {} AND FirstName = {} AND MiddleInitial = {}", lastName, firstName, middleI);
 
-        NSBM::results localResult = runQueryAsync(std::bind(&UserDbInterface::coRoSelectUserByFullName, this));
+        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
 
         newUser = processResult(localResult);
     }
@@ -92,10 +93,11 @@ UserModel_shp UserDbInterface::getUserByEmail(std::string_view emailAddress)
 
     try
     {
-        selectStatementWhatArgs.push_back(std::any(emailAddress));
+        NSBM::format_context fctx(format_opts);
+        NSBM::format_sql_to(fctx, baseQuery);
+        NSBM::format_sql_to(fctx, " WHERE EmailAddress = {}", emailAddress);
 
-        NSBM::results localResult = runQueryAsync(
-            std::bind(&UserDbInterface::coRoSelectUserByEmailAddress, this));
+        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
 
         newUser = processResult(localResult);
     }
@@ -115,11 +117,13 @@ UserModel_shp UserDbInterface::getUserByLoginName(std::string_view loginName)
 
     try
     {
-        selectStatementWhatArgs.push_back(std::any(loginName));
+        NSBM::format_context fctx(format_opts);
+        NSBM::format_sql_to(fctx, baseQuery);
+        NSBM::format_sql_to(fctx, " WHERE LoginName = {}", loginName);
 
-        NSBM::results localResults = runQueryAsync(std::bind(&UserDbInterface::coRoSelectUserByLoginName, this));
+        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
 
-        newUser = processResult(localResults);
+        newUser = processResult(localResult);
     }
 
     catch(const std::exception& e)
@@ -137,10 +141,11 @@ UserModel_shp UserDbInterface::getUserByLoginAndPassword(std::string_view loginN
 
     try
     {
-        selectStatementWhatArgs.push_back(std::any(loginName));
-        selectStatementWhatArgs.push_back(std::any(password));
+        NSBM::format_context fctx(format_opts);
+        NSBM::format_sql_to(fctx, baseQuery);
+        NSBM::format_sql_to(fctx, " WHERE LoginName = {} AND HashedPassWord = {}", loginName, password);
 
-        NSBM::results localResult = runQueryAsync(std::bind(&UserDbInterface::coRoSelectUserByLoginAndPassword, this));
+        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
 
         newUser =  processResult(localResult);
     }
@@ -161,8 +166,11 @@ UserList UserDbInterface::getAllUsers()
 
     try
     {
-        NSBM::results localResult = runQueryAsync(std::bind(&UserDbInterface::coRoSelectAllUsers, this));
+        NSBM::format_context fctx(format_opts);
+        NSBM::format_sql_to(fctx, baseQuery);
+        NSBM::format_sql_to(fctx, " ORDER BY UserID");
 
+        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
         userList = processResults(localResult);
     }
 
@@ -277,96 +285,6 @@ void UserDbInterface::processResultRow(NSBM::row_view rv, UserModel_shp newUser)
     newUser->clearModified();
 }
 
-NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByID()
-{
-    std::size_t userID = std::any_cast<std::size_t>(selectStatementWhatArgs[0]);
-    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-    NSBM::results result;
-
-    co_await conn.async_execute(
-        NSBM::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, Preferences "
-            "FROM UserProfile WHERE UserID = {}", userID),
-        result
-    );
-
-    co_await conn.async_close();
-
-    co_return result;
-}
-
-NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByFullName()
-{
-    std::string_view lastName = std::any_cast<std::string_view>(selectStatementWhatArgs[0]);
-    std::string_view firstName = std::any_cast<std::string_view>(selectStatementWhatArgs[1]);
-    std::string_view middleI = std::any_cast<std::string_view>(selectStatementWhatArgs[2]);
-
-    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-    NSBM::results result;
-
-    co_await conn.async_execute(
-        NSBM::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, Preferences "
-            "FROM UserProfile WHERE LastName = {} AND FirstName = {} AND MiddleInitial = {}",
-            lastName, firstName, middleI),
-        result
-    );
-
-    co_await conn.async_close();
-
-    co_return result;
-}
-
-NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByEmailAddress()
-{
-    std::string_view emailAddr = std::any_cast<std::string_view>(selectStatementWhatArgs[0]);
-
-    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-    NSBM::results result;
-
-    co_await conn.async_execute(
-        NSBM::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, Preferences "
-            "FROM UserProfile WHERE EmailAddress = {}", emailAddr),
-        result
-    );
-
-    co_await conn.async_close();
-
-    co_return result;
-}
-
-NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByLoginName()
-{
-    std::string_view loginName = std::any_cast<std::string_view>(selectStatementWhatArgs[0]);
-
-    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-    NSBM::results result;
-
-    co_await conn.async_execute(
-        NSBM::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, Preferences "
-            "FROM UserProfile WHERE LoginName = {}", loginName),
-        result
-    );
-
-    co_await conn.async_close();
-
-    co_return result;
-}
-
 NSBA::awaitable<NSBM::results> UserDbInterface::coRoInsertUser(const UserModel& user)
 {
     std::string preferences = buildPreferenceText(user);
@@ -383,51 +301,6 @@ NSBA::awaitable<NSBM::results> UserDbInterface::coRoInsertUser(const UserModel& 
             "HashedPassWord, Preferences) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6})",
              user.getLastName(), user.getFirstName(), user.getMiddleInitial(), user.getEmail(), user.getLoginName(),
              user.getPassword(), preferences),
-        result
-    );
-
-
-    co_await conn.async_close();
-
-    co_return result;
-}
-
-NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectAllUsers()
-{
-    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-    NSBM::results result;
-
-    co_await conn.async_execute(
-        "SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, Preferences "
-            "FROM UserProfile ORDER BY UserID",
-        result
-    );
-
-    co_await conn.async_close();
-
-    co_return result;
-}
-
-NSBA::awaitable<NSBM::results> UserDbInterface::coRoSelectUserByLoginAndPassword()
-{
-    std::string_view loginName = std::any_cast<std::string_view>(selectStatementWhatArgs[0]);
-    std::string_view password = std::any_cast<std::string_view>(selectStatementWhatArgs[1]);
-
-    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-    NSBM::results result;
-
-    co_await conn.async_execute(
-        NSBM::with_params("SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, Preferences "
-            "FROM UserProfile WHERE LoginName = {} AND HashedPassWord = {}",
-            loginName, password),
         result
     );
 

@@ -4,7 +4,6 @@
 #include "CommandLineParser.h"
 #include "commonUtilities.h"
 #include "BoostDBInterfaceCore.h"
-#include <functional>
 #include <optional>
 #include <string_view>
 #include "TaskModel.h"
@@ -43,22 +42,18 @@ private:
     NSBA::awaitable<NSBM::results> coRoInsertTask(TaskModel& task);
     std::optional<NSBM::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate);
     NSBA::awaitable<NSBM::results> coRoSelectTaskById();
-    NSBA::awaitable<NSBM::results> coRoSelectTaskDependencies(const std::size_t taskId);
     void addDependencies(const std::string& dependenciesText, TaskModel_shp newTask);
-    NSBA::awaitable<NSBM::results> coRoSelectTaskByDescriptionAndAssignedUser();
-    NSBA::awaitable<NSBM::results> coRoSelectUnstartedDueForStartForAssignedUser();
-    NSBA::awaitable<NSBM::results> coRoSelectTasksWithStatusForAssignedUserBefore();
     NSBA::awaitable<NSBM::results> coRoUpdateTask(TaskModel& task);
     std::string buildDependenciesText(std::vector<std::size_t>& dependencyList);
 
 private:
 /*
  * The indexes below are based on the following select statement, maintain this order
- * for any new select statements, add any new field indexes at the end.
- * "SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
- *    "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
-  *   "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies FROM Tasks WHERE TaskID = {0}
  */
+    NSBM::constant_string_view baseQuery = "SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
+            "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
+            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies FROM Tasks ";
+
     const std::size_t taskIdIdx = 0;
     const std::size_t createdByIdx = 1;
     const std::size_t assignedToIdx = 2;

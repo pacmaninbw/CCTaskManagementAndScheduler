@@ -2,7 +2,6 @@
 #include <boost/mysql.hpp>
 #include "CommandLineParser.h"
 #include "BoostDBInterfaceCore.h"
-#include <functional>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -23,13 +22,13 @@ BoostDBInterfaceCore::BoostDBInterfaceCore()
 /*
  * All calls to runQueryAsync should be implemented within try blocks.
  */
-NSBM::results BoostDBInterfaceCore::runQueryAsync(std::function<NSBA::awaitable<NSBM::results>(void)> queryFunc)
+NSBM::results BoostDBInterfaceCore::runQueryAsync(std::string query)
 {
     NSBM::results localResult;
     NSBA::io_context ctx;
 
     NSBA::co_spawn(
-        ctx, queryFunc(),
+        ctx, coRoutineExecuteSqlStatement(query),
         [&localResult, this](std::exception_ptr ptr, NSBM::results result)
         {
             if (ptr)
@@ -44,6 +43,43 @@ NSBM::results BoostDBInterfaceCore::runQueryAsync(std::function<NSBA::awaitable<
 
     return localResult;
 }
+
+NSBA::awaitable<NSBM::results> BoostDBInterfaceCore::coRoutineExecuteSqlStatement(std::string query)
+{
+    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
+
+    co_await conn.async_connect(dbConnectionParameters);
+    
+    NSBM::results selectResult;
+
+    if (verboseOutput)
+    {
+        std::clog << "Running " << query << "\n";
+    }
+
+    co_await conn.async_execute(query, selectResult);
+
+    co_await conn.async_close();
+
+    co_return selectResult;
+}
+
+void BoostDBInterfaceCore::prepareForRunQueryAsync()
+{
+    try {
+        errorMessages.clear();
+        if (firstMySqlConnection)
+        {
+            format_opts = getConnectionFormatOptsAsync();
+            firstMySqlConnection = false;
+        }
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "\nBoostDBInterfaceCore::prepareForRunQueryAsync() FAILED!! : " << e.what() << "!!\n\n";
+        appendErrorMessage(e.what());
+    }
+};
 
 std::vector<std::string> BoostDBInterfaceCore::explodeTextField(std::string const& textField)
 {
@@ -69,3 +105,38 @@ std::string BoostDBInterfaceCore::implodeTextField(std::vector<std::string> &fie
 
     return textField;
 }
+
+NSBM::format_options BoostDBInterfaceCore::getConnectionFormatOptsAsync()
+{
+    NSBM::format_options options;
+    NSBA::io_context ctx;
+
+    NSBA::co_spawn(
+        ctx, coRoGetFormatOptions(),
+        [&options, this](std::exception_ptr ptr, NSBM::format_options result)
+        {
+            if (ptr)
+            {
+                std::rethrow_exception(ptr);
+            }
+            options = std::move(result);
+        }
+    );
+
+    ctx.run();
+    return NSBM::format_options();
+}
+
+NSBA::awaitable<NSBM::format_options> BoostDBInterfaceCore::coRoGetFormatOptions()
+{
+    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
+
+    co_await conn.async_connect(dbConnectionParameters);
+
+    NSBM::format_options options = conn.format_opts().value();
+
+    co_await conn.async_close();
+
+    co_return options;
+}
+
