@@ -54,7 +54,7 @@ NSBA::awaitable<NSBM::results> BoostDBInterfaceCore::coRoutineExecuteSqlStatemen
 
     if (verboseOutput)
     {
-        std::clog << "Running " << query << "\n";
+        std::clog << "Running: \n\t" << query << "\n";
     }
 
     co_await conn.async_execute(query, selectResult);
