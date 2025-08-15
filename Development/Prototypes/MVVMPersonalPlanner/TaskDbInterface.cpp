@@ -44,8 +44,7 @@ std::size_t TaskDbInterface::insert(TaskModel &task)
 
     try
     {
-        NSBM::results localResult = runUpdateAsync(
-            std::bind(&TaskDbInterface::coRoInsertTask, this, std::placeholders::_1), task);
+        NSBM::results localResult = runQueryAsync(formatInsertTask(task));
 
         taskID = localResult.last_insert_id();
     }
@@ -182,8 +181,7 @@ bool TaskDbInterface::update(TaskModel &task)
 
     try
     {
-        NSBM::results localResult = runUpdateAsync(
-            std::bind(&TaskDbInterface::coRoUpdateTask, this, std::placeholders::_1), task);
+        NSBM::results localResult = runQueryAsync(formatUpdateTask(task));
 
         return true;
     }
@@ -198,31 +196,6 @@ bool TaskDbInterface::update(TaskModel &task)
 /*
  * Private methods.
  */
-NSBM::results TaskDbInterface::runUpdateAsync(
-    std::function<NSBA::awaitable<NSBM::results>(TaskModel &)> updateFunc,
-    TaskModel &task
-)
-{
-    NSBM::results localResult;
-    NSBA::io_context ctx;
-
-    NSBA::co_spawn(
-        ctx, updateFunc(task),
-        [&localResult, this](std::exception_ptr ptr, NSBM::results result)
-        {
-            if (ptr)
-            {
-                std::rethrow_exception(ptr);
-            }
-            localResult = std::move(result);
-        }
-    );
-
-    ctx.run();
-
-    return localResult;
-}
-
 TaskModel_shp TaskDbInterface::processResult(NSBM::results& results)
 {
     if (results.rows().empty())
@@ -318,7 +291,7 @@ void TaskDbInterface::processResultRow(NSBM::row_view rv, TaskModel_shp newTask)
     newTask->clearModified();
 }
 
-NSBA::awaitable<NSBM::results> TaskDbInterface::coRoInsertTask(TaskModel &task)
+std::string TaskDbInterface::formatInsertTask(TaskModel &task)
 {
     std::size_t dependencyCount = task.getDependencies().size();
     std::optional<std::string> depenenciesText;
@@ -328,14 +301,8 @@ NSBA::awaitable<NSBM::results> TaskDbInterface::coRoInsertTask(TaskModel &task)
         depenenciesText = buildDependenciesText(dependencyList);
     }
 
-    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-    NSBM::results insertResult;
-
-    co_await conn.async_execute(
-        NSBM::with_params("INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
+    return NSBM::format_sql(format_opts,
+        "INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
             "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies)"
             " VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, {18})",
@@ -358,13 +325,65 @@ NSBA::awaitable<NSBM::results> TaskDbInterface::coRoInsertTask(TaskModel &task)
             task.isPersonal(),
             dependencyCount,
             depenenciesText
-        ),
-        insertResult
+    );
+}
+
+std::string TaskDbInterface::formatUpdateTask(TaskModel &task)
+{
+
+    std::size_t dependencyCount = task.getDependencies().size();
+    std::optional<std::string> depenenciesText;
+    if (dependencyCount)
+    {
+        std::vector<std::size_t> dependencyList = task.getDependencies();
+        depenenciesText = buildDependenciesText(dependencyList);
+    }
+
+    return NSBM::format_sql(format_opts,
+        "UPDATE Tasks SET"
+            " CreatedBy = {0},"
+            " AsignedTo = {1},"
+            " Description = {2},"
+            " ParentTask = {3},"
+            " Status = {4},"
+            " PercentageComplete = {5},"
+            " CreatedOn = {6},"
+            " RequiredDelivery = {7},"
+            " ScheduledStart = {8},"
+            " ActualStart = {9},"
+            " EstimatedCompletion = {10},"
+            " Completed = {11},"
+            " EstimatedEffortHours = {12},"
+            " ActualEffortHours = {13},"
+            " SchedulePriorityGroup = {14},"
+            " PriorityInGroup = {15},"
+            " Personal = {16},"
+            " DependencyCount = {17},"
+            "Dependencies = {18}"
+        " WHERE TaskID = {19} ",
+        task.getCreatorID(),
+        task.getAssignToID(),
+        task.getDescription(),
+        task.rawParentTaskID(),
+        task.getStatusIntVal(),
+        task.getPercentageComplete(),
+        convertChronoDateToBoostMySQLDate(task.getCreationDate()),
+        convertChronoDateToBoostMySQLDate(task.getDueDate()),
+        convertChronoDateToBoostMySQLDate(task.getScheduledStart()),
+        optionalDateConversion(task.rawActualStartDate()),
+        optionalDateConversion(task.rawEstimatedCompletion()),
+        optionalDateConversion(task.rawCompletionDate()),
+        task.getEstimatedEffort(),
+        task.getactualEffortToDate(),
+        task.getPriorityGroup(),
+        task.getPriority(),
+        task.isPersonal(),
+        dependencyCount,
+        depenenciesText,
+        task.getTaskID()
     );
 
-    co_await conn.async_close();
-
-    co_return insertResult;
+    return std::string();
 }
 
 std::optional<NSBM::date> TaskDbInterface::optionalDateConversion(std::optional<std::chrono::year_month_day> optDate)
@@ -395,72 +414,6 @@ void TaskDbInterface::addDependencies(const std::string& dependenciesText, TaskM
         throw NoExpectedDependencies;
     }
 }
-
-NSBA::awaitable<NSBM::results> TaskDbInterface::coRoUpdateTask(TaskModel &task)
-{
-    std::size_t dependencyCount = task.getDependencies().size();
-    std::optional<std::string> depenenciesText;
-    if (dependencyCount)
-    {
-        std::vector<std::size_t> dependencyList = task.getDependencies();
-        depenenciesText = buildDependenciesText(dependencyList);
-    }
-
-    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-    NSBM::results updateResult;
-
-    co_await conn.async_execute(
-        NSBM::with_params(
-            "UPDATE Tasks SET"
-                " CreatedBy = {0},"
-                " AsignedTo = {1},"
-                " Description = {2},"
-                " ParentTask = {3},"
-                " Status = {4},"
-                " PercentageComplete = {5},"
-                " CreatedOn = {6},"
-                " RequiredDelivery = {7},"
-                " ScheduledStart = {8},"
-                " ActualStart = {9},"
-                " EstimatedCompletion = {10},"
-                " Completed = {11},"
-                " EstimatedEffortHours = {12},"
-                " ActualEffortHours = {13},"
-                " SchedulePriorityGroup = {14},"
-                " PriorityInGroup = {15},"
-                " Personal = {16},"
-                " DependencyCount = {17},"
-                "Dependencies = {18}"
-            " WHERE TaskID = {19} ",
-            task.getCreatorID(),
-            task.getAssignToID(),
-            task.getDescription(),
-            task.rawParentTaskID(),
-            task.getStatusIntVal(),
-            task.getPercentageComplete(),
-            convertChronoDateToBoostMySQLDate(task.getCreationDate()),
-            convertChronoDateToBoostMySQLDate(task.getDueDate()),
-            convertChronoDateToBoostMySQLDate(task.getScheduledStart()),
-            optionalDateConversion(task.rawActualStartDate()),
-            optionalDateConversion(task.rawEstimatedCompletion()),
-            optionalDateConversion(task.rawCompletionDate()),
-            task.getEstimatedEffort(),
-            task.getactualEffortToDate(),
-            task.getPriorityGroup(),
-            task.getPriority(),
-            task.isPersonal(),
-            dependencyCount,
-            depenenciesText,
-            task.getTaskID()
-        ), updateResult
-    );
-
-    co_await conn.async_close();
-
-    co_return updateResult;}
 
 std::string TaskDbInterface::buildDependenciesText(std::vector<std::size_t>& dependencyList)
 {

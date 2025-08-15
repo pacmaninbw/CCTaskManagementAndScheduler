@@ -35,15 +35,13 @@ public:
     bool update(TaskModel_shp task) { return update(*task); };
 
 private:
-    NSBM::results runUpdateAsync(std::function<NSBA::awaitable<NSBM::results>(TaskModel&)>queryFunc, TaskModel& task);
     TaskModel_shp processResult(NSBM::results& results);
     TaskList processResults(NSBM::results& results);
     void processResultRow(NSBM::row_view rv, TaskModel_shp newTask);
-    NSBA::awaitable<NSBM::results> coRoInsertTask(TaskModel& task);
+    std::string formatInsertTask(TaskModel& task);
+    std::string formatUpdateTask(TaskModel& task);
     std::optional<NSBM::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate);
-    NSBA::awaitable<NSBM::results> coRoSelectTaskById();
     void addDependencies(const std::string& dependenciesText, TaskModel_shp newTask);
-    NSBA::awaitable<NSBM::results> coRoUpdateTask(TaskModel& task);
     std::string buildDependenciesText(std::vector<std::size_t>& dependencyList);
 
 private:
