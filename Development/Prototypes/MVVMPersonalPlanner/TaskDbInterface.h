@@ -17,17 +17,17 @@ public:
     std::size_t insert(TaskModel& task);
     std::size_t insert(TaskModel_shp task) { return insert(*task); };
     TaskModel_shp getTaskByTaskID(std::size_t taskId);
-    TaskModel_shp getTaskByDescriptionAndAssignedUser(std::string_view description, UserModel& assignedUser);
-    TaskModel_shp getParentTask(TaskModel& task);
+    TaskModel_shp getTaskByDescriptionAndAssignedUser(std::string_view description, const UserModel& assignedUser);
+    TaskModel_shp getParentTask(const TaskModel& task);
     TaskModel_shp getParentTask(TaskModel_shp task) { return getParentTask(*task); };
-    TaskList getActiveTasksForAssignedUser(UserModel& assignedUser);
+    TaskList getActiveTasksForAssignedUser(const UserModel& assignedUser);
     TaskList getActiveTasksForAssignedUser(UserModel_shp assignedUser)
         { return getActiveTasksForAssignedUser(*assignedUser); };
-    TaskList getUnstartedDueForStartForAssignedUser(UserModel& assignedUser);
+    TaskList getUnstartedDueForStartForAssignedUser(const UserModel& assignedUser);
     TaskList getUnstartedDueForStartForAssignedUser(UserModel_shp assignedUser)
         { return getUnstartedDueForStartForAssignedUser(*assignedUser); };
-    TaskList getTasksCompletedByAssignedAfterDate(UserModel& assignedUser,
-        std::chrono::year_month_day searchStartDate);
+    TaskList getTasksCompletedByAssignedAfterDate(const UserModel& assignedUser,
+        std::chrono::year_month_day& searchStartDate);
     TaskList getTasksCompletedByAssignedAfterDate(UserModel_shp assignedUser,
         std::chrono::year_month_day searchStartDate)
         { return getTasksCompletedByAssignedAfterDate(*assignedUser, searchStartDate); };

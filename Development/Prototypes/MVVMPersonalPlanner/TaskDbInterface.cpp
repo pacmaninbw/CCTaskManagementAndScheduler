@@ -81,7 +81,7 @@ TaskModel_shp TaskDbInterface::getTaskByTaskID(std::size_t taskId)
     return newTask;
 }
 
-TaskModel_shp TaskDbInterface::getTaskByDescriptionAndAssignedUser(std::string_view description, UserModel& assignedUser)
+TaskModel_shp TaskDbInterface::getTaskByDescriptionAndAssignedUser(std::string_view description, const UserModel& assignedUser)
 {
     TaskModel_shp newTask = nullptr;
     prepareForRunQueryAsync();
@@ -99,13 +99,13 @@ TaskModel_shp TaskDbInterface::getTaskByDescriptionAndAssignedUser(std::string_v
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In askDbInterface::getTaskByDescriptionAndAssignedUser({}) : {}", description, e.what()));
+        appendErrorMessage(std::format("In TaskDbInterface::getTaskByDescriptionAndAssignedUser({}) : {}", description, e.what()));
     }
 
     return newTask;
 }
 
-TaskModel_shp TaskDbInterface::getParentTask(TaskModel& task)
+TaskModel_shp TaskDbInterface::getParentTask(const TaskModel& task)
 {
     if (task.rawParentTaskID().has_value())
     {
@@ -115,7 +115,7 @@ TaskModel_shp TaskDbInterface::getParentTask(TaskModel& task)
     return nullptr;
 }
 
-TaskList TaskDbInterface::getActiveTasksForAssignedUser(UserModel &assignedUser)
+TaskList TaskDbInterface::getActiveTasksForAssignedUser(const UserModel &assignedUser)
 {
     prepareForRunQueryAsync();
 
@@ -124,7 +124,7 @@ TaskList TaskDbInterface::getActiveTasksForAssignedUser(UserModel &assignedUser)
     return TaskList();
 }
 
-TaskList TaskDbInterface::getUnstartedDueForStartForAssignedUser(UserModel &assignedUser)
+TaskList TaskDbInterface::getUnstartedDueForStartForAssignedUser(const UserModel &assignedUser)
 {
     prepareForRunQueryAsync();
 
@@ -151,13 +151,11 @@ TaskList TaskDbInterface::getUnstartedDueForStartForAssignedUser(UserModel &assi
     return unstartedTasks;
 }
 
-TaskList TaskDbInterface::getTasksCompletedByAssignedAfterDate(UserModel &assignedUser, std::chrono::year_month_day searchStartDate)
+TaskList TaskDbInterface::getTasksCompletedByAssignedAfterDate(const UserModel& assignedUser, std::chrono::year_month_day& searchStartDate)
 {
     prepareForRunQueryAsync();
     std::size_t userId = assignedUser.getUserID();
     TaskList completedTasks;
-
-    return TaskList();
 
     try {
         std::cerr << 
