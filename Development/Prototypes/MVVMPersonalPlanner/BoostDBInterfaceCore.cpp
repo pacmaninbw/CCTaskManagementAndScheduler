@@ -22,7 +22,7 @@ BoostDBInterfaceCore::BoostDBInterfaceCore()
 /*
  * All calls to runQueryAsync should be implemented within try blocks.
  */
-NSBM::results BoostDBInterfaceCore::runQueryAsync(std::string query)
+NSBM::results BoostDBInterfaceCore::runQueryAsync(const std::string& query)
 {
     NSBM::results localResult;
     NSBA::io_context ctx;

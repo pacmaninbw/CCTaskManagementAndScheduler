@@ -30,7 +30,7 @@ protected:
 /*
  * All calls to runQueryAsync should be implemented within try blocks.
  */
-    NSBM::results runQueryAsync(std::string query);
+    NSBM::results runQueryAsync(const std::string& query);
     NSBA::awaitable<NSBM::results> coRoutineExecuteSqlStatement(const std::string& query);
 /*
  * To process TEXT fields that contain model fields.
