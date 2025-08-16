@@ -47,6 +47,8 @@ private:
 private:
 /*
  * The indexes below are based on the following select statement, maintain this order
+ * baseQuery could be SELECT * FROM Tasks, but this way the order of the columns
+ * returned are known.
  */
     NSBM::constant_string_view baseQuery = "SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
