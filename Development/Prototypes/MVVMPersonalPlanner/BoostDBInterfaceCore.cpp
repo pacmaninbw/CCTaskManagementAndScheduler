@@ -44,7 +44,7 @@ NSBM::results BoostDBInterfaceCore::runQueryAsync(std::string query)
     return localResult;
 }
 
-NSBA::awaitable<NSBM::results> BoostDBInterfaceCore::coRoutineExecuteSqlStatement(std::string query)
+NSBA::awaitable<NSBM::results> BoostDBInterfaceCore::coRoutineExecuteSqlStatement(const std::string& query)
 {
     NSBM::any_connection conn(co_await NSBA::this_coro::executor);
 

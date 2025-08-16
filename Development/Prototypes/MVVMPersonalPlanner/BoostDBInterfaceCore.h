@@ -23,7 +23,7 @@ public:
 protected:
     std::string errorMessages;
     void prepareForRunQueryAsync();
-    void appendErrorMessage(std::string newError) { errorMessages.append(newError); };
+    void appendErrorMessage(const std::string& newError) { errorMessages.append(newError); };
     NSBM::format_options getConnectionFormatOptsAsync();
     NSBA::awaitable<NSBM::format_options> coRoGetFormatOptions();
 
@@ -31,7 +31,7 @@ protected:
  * All calls to runQueryAsync should be implemented within try blocks.
  */
     NSBM::results runQueryAsync(std::string query);
-    NSBA::awaitable<NSBM::results> coRoutineExecuteSqlStatement(std::string query);
+    NSBA::awaitable<NSBM::results> coRoutineExecuteSqlStatement(const std::string& query);
 /*
  * To process TEXT fields that contain model fields.
  */
@@ -41,13 +41,13 @@ std::string implodeTextField(std::vector<std::string>& fields);
 /*
  * Date converters are located here because they will be used by multiple dependent classes.
  */
-    NSBM::date convertChronoDateToBoostMySQLDate(std::chrono::year_month_day source)
+    NSBM::date convertChronoDateToBoostMySQLDate(const std::chrono::year_month_day& source)
     {
         std::chrono::sys_days tp = source;
         NSBM::date boostDate(tp);
         return boostDate;
     };
-    std::chrono::year_month_day convertBoostMySQLDateToChornoDate(NSBM::date source)
+    std::chrono::year_month_day convertBoostMySQLDateToChornoDate(const NSBM::date& source)
     {
         const std::chrono::year year{source.year()};
         const std::chrono::month month{source.month()};

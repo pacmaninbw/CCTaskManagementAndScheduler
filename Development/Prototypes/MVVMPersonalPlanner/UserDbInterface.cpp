@@ -68,7 +68,9 @@ UserModel_shp UserDbInterface::getUserByUserID(std::size_t userID)
     return newUser;
 }
 
-UserModel_shp UserDbInterface::getUserByFullName(std::string_view lastName, std::string_view firstName, std::string_view middleI)
+UserModel_shp UserDbInterface::getUserByFullName(
+    const std::string_view& lastName, const std::string_view& firstName, const std::string_view& middleI
+)
 {
     UserModel_shp newUser = nullptr;
     prepareForRunQueryAsync();
@@ -92,7 +94,7 @@ UserModel_shp UserDbInterface::getUserByFullName(std::string_view lastName, std:
     return newUser;
 }
 
-UserModel_shp UserDbInterface::getUserByEmail(std::string_view emailAddress)
+UserModel_shp UserDbInterface::getUserByEmail(const std::string_view& emailAddress)
 {
     UserModel_shp newUser = nullptr;
     prepareForRunQueryAsync();
@@ -116,7 +118,7 @@ UserModel_shp UserDbInterface::getUserByEmail(std::string_view emailAddress)
     return newUser;
 }
 
-UserModel_shp UserDbInterface::getUserByLoginName(std::string_view loginName)
+UserModel_shp UserDbInterface::getUserByLoginName(const std::string_view& loginName)
 {
     UserModel_shp newUser = nullptr;
     prepareForRunQueryAsync();
@@ -140,7 +142,7 @@ UserModel_shp UserDbInterface::getUserByLoginName(std::string_view loginName)
     return newUser;
 }
 
-UserModel_shp UserDbInterface::getUserByLoginAndPassword(std::string_view loginName, std::string_view password)
+UserModel_shp UserDbInterface::getUserByLoginAndPassword(const std::string_view& loginName, const std::string_view& password)
 {
     UserModel_shp newUser = nullptr;
     prepareForRunQueryAsync();

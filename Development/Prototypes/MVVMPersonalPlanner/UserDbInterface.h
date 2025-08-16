@@ -14,10 +14,10 @@ public:
     std::size_t insert(const UserModel& user);
     std::size_t insert(UserModel_shp userP) { return insert(*userP); };
     UserModel_shp getUserByUserID(std::size_t userID);
-    UserModel_shp getUserByFullName(std::string_view lastName, std::string_view firstName, std::string_view middleI);
-    UserModel_shp getUserByEmail(std::string_view emailAddress);
-    UserModel_shp getUserByLoginName(std::string_view loginName);
-    UserModel_shp getUserByLoginAndPassword(std::string_view loginName, std::string_view password);
+    UserModel_shp getUserByFullName(const std::string_view& lastName, const std::string_view& firstName, const std::string_view& middleI);
+    UserModel_shp getUserByEmail(const std::string_view& emailAddress);
+    UserModel_shp getUserByLoginName(const std::string_view& loginName);
+    UserModel_shp getUserByLoginAndPassword(const std::string_view& loginName, const std::string_view& password);
     UserList getAllUsers();
     bool update(const UserModel& user);
     bool update(UserModel_shp userP) { return update(*userP); };
