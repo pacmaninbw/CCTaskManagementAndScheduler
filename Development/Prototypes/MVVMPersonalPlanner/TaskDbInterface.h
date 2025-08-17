@@ -42,7 +42,7 @@ private:
     std::string formatUpdateTask(TaskModel& task);
     std::optional<NSBM::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate);
     void addDependencies(const std::string& dependenciesText, TaskModel_shp newTask);
-    std::string buildDependenciesText(std::vector<std::size_t>& dependencyList);
+    std::string buildDependenciesText(std::vector<std::size_t>& dependencyList) noexcept;
 
 private:
 /*

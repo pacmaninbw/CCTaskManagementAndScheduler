@@ -64,7 +64,7 @@ TaskModel_shp TaskDbInterface::getTaskByTaskID(std::size_t taskId)
 
     try
     {
-        NSBM::format_context fctx(format_opts);
+        NSBM::format_context fctx(format_opts.value());
         NSBM::format_sql_to(fctx, baseQuery);
         NSBM::format_sql_to(fctx, " WHERE TaskID = {}", taskId);
 
@@ -88,7 +88,7 @@ TaskModel_shp TaskDbInterface::getTaskByDescriptionAndAssignedUser(std::string_v
 
     try
     {
-        NSBM::format_context fctx(format_opts);
+        NSBM::format_context fctx(format_opts.value());
         NSBM::format_sql_to(fctx, baseQuery);
         NSBM::format_sql_to(fctx, " WHERE Description = {} AND AsignedTo = {}", description, assignedUser.getUserID());
 
@@ -133,7 +133,7 @@ TaskList TaskDbInterface::getUnstartedDueForStartForAssignedUser(const UserModel
     try {
         constexpr unsigned int notStarted = static_cast<unsigned int>(TaskModel::TaskStatus::Not_Started);
 
-        NSBM::format_context fctx(format_opts);
+        NSBM::format_context fctx(format_opts.value());
         NSBM::format_sql_to(fctx, baseQuery);
         NSBM::format_sql_to(fctx, " WHERE AsignedTo = {} AND ScheduledStart < {} AND (Status IS NULL OR Status = {})",
             assignedUser.getUserID(), convertChronoDateToBoostMySQLDate(getTodaysDatePlus(OneWeek)), notStarted);
@@ -299,7 +299,7 @@ std::string TaskDbInterface::formatInsertTask(TaskModel &task)
         depenenciesText = buildDependenciesText(dependencyList);
     }
 
-    return NSBM::format_sql(format_opts,
+    return NSBM::format_sql(format_opts.value(),
         "INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
             "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies)"
@@ -337,7 +337,7 @@ std::string TaskDbInterface::formatUpdateTask(TaskModel &task)
         depenenciesText = buildDependenciesText(dependencyList);
     }
 
-    return NSBM::format_sql(format_opts,
+    return NSBM::format_sql(format_opts.value(),
         "UPDATE Tasks SET"
             " CreatedBy = {0},"
             " AsignedTo = {1},"
@@ -413,7 +413,7 @@ void TaskDbInterface::addDependencies(const std::string& dependenciesText, TaskM
     }
 }
 
-std::string TaskDbInterface::buildDependenciesText(std::vector<std::size_t>& dependencyList)
+std::string TaskDbInterface::buildDependenciesText(std::vector<std::size_t>& dependencyList) noexcept
 {
     if (dependencyList.size() > 1)
     {
