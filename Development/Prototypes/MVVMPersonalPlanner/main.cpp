@@ -202,6 +202,7 @@ static bool loadUserProfileTestDataIntoDatabase()
     loadTestUsersFromFile(programOptions.userTestDataFile, userProfileTestData);
 
     UserDbInterface userDBInterface;
+    userDBInterface.initFormatOptions();
     bool allTestsPassed = true;
 
     for (auto user: userProfileTestData)
@@ -376,7 +377,7 @@ static bool testGetTaskByDescription(TaskDbInterface& taskDBInterface, TaskModel
     }
     else
     {
-        std::cerr << "userDBInterface.getTaskByDescription(task.getDescription())) FAILED!\n" 
+        std::cerr << "taskDBInterface.getTaskByDescription(task.getDescription())) FAILED!\n" 
             << taskDBInterface.getAllErrorMessages() << "\n";
         return false;
     }
@@ -403,7 +404,7 @@ static bool testGetTaskByID(TaskDbInterface& taskDBInterface, TaskModel& task, b
     }
     else
     {
-        std::cerr << "userDBInterface.getTaskByDescription(task.getTaskByTaskID())) FAILED!\n" 
+        std::cerr << "taskDBInterface.getTaskByDescription(task.getTaskByTaskID())) FAILED!\n" 
             << taskDBInterface.getAllErrorMessages() << "\n";
         return false;
     }
@@ -577,6 +578,7 @@ static bool loadUserTaskestDataIntoDatabase()
     }
 
     TaskDbInterface taskDBInterface;
+    taskDBInterface.initFormatOptions();
     bool allTestsPassed = true;
     std::size_t lCount = 0;
     std::vector<UserTaskTestData> userTaskTestData = loadTasksFromDataFile(programOptions.taskTestDataFile);
