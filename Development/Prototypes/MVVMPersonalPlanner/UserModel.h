@@ -24,7 +24,9 @@ public:
     UserModel(std::string lastIn, std::string firstIn, std::string middleIIn, std::string emailIn="", std::size_t uID=0);
     ~UserModel() = default;
 
-    bool isInDataBase(){return(userID>0);};
+    bool isInDataBase() const noexcept { return (userID > 0); };
+    bool isModified() const noexcept { return modified; };
+    bool hasRequiredValues() const noexcept;
     void autoGenerateLoginAndPassword();
     std::string getLastName() const { return lastName;};
     std::string getFirstName() const { return firstName; };
