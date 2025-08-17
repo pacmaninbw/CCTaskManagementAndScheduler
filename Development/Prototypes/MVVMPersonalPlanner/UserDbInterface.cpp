@@ -21,11 +21,25 @@ UserDbInterface::UserDbInterface()
 
 std::size_t UserDbInterface::insert(const UserModel &user)
 {
+    std::size_t uID = 0;
+
+    if (!user.isModified())
+    {
+        appendErrorMessage("User not modified!");
+        return uID;
+    }
+
+    if (!user.hasRequiredValues())
+    {
+        appendErrorMessage("User is missing required values!");
+        return uID;
+    }
+
     prepareForRunQueryAsync();
 
     try
     {
-        std::string insertStatement = NSBM::format_sql(format_opts ,
+        std::string insertStatement = NSBM::format_sql(format_opts.value(),
             "INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
             "HashedPassWord, Preferences) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6})",
             user.getLastName(), user.getFirstName(), user.getMiddleInitial(), user.getEmail(), user.getLoginName(),
@@ -34,14 +48,15 @@ std::size_t UserDbInterface::insert(const UserModel &user)
 
         NSBM::results localResult = runQueryAsync(insertStatement);
 
-        return localResult.last_insert_id();
+        uID = localResult.last_insert_id();
     }
 
     catch(const std::exception& e)
     {
         appendErrorMessage(std::format("In UserDbInterface::insert : {}", e.what()));
-        return 0;
     }
+
+    return uID;
 }
 
 UserModel_shp UserDbInterface::getUserByUserID(std::size_t userID)
@@ -51,7 +66,7 @@ UserModel_shp UserDbInterface::getUserByUserID(std::size_t userID)
 
     try
     {
-        NSBM::format_context fctx(format_opts);
+        NSBM::format_context fctx(format_opts.value());
         NSBM::format_sql_to(fctx, baseQuery);
         NSBM::format_sql_to(fctx, " WHERE UserID = {}", userID);
 
@@ -77,7 +92,7 @@ UserModel_shp UserDbInterface::getUserByFullName(
 
     try
     {
-        NSBM::format_context fctx(format_opts);
+        NSBM::format_context fctx(format_opts.value());
         NSBM::format_sql_to(fctx, baseQuery);
         NSBM::format_sql_to(fctx, " WHERE LastName = {} AND FirstName = {} AND MiddleInitial = {}", lastName, firstName, middleI);
 
@@ -101,7 +116,7 @@ UserModel_shp UserDbInterface::getUserByEmail(const std::string_view& emailAddre
 
     try
     {
-        NSBM::format_context fctx(format_opts);
+        NSBM::format_context fctx(format_opts.value());
         NSBM::format_sql_to(fctx, baseQuery);
         NSBM::format_sql_to(fctx, " WHERE EmailAddress = {}", emailAddress);
 
@@ -125,7 +140,7 @@ UserModel_shp UserDbInterface::getUserByLoginName(const std::string_view& loginN
 
     try
     {
-        NSBM::format_context fctx(format_opts);
+        NSBM::format_context fctx(format_opts.value());
         NSBM::format_sql_to(fctx, baseQuery);
         NSBM::format_sql_to(fctx, " WHERE LoginName = {}", loginName);
 
@@ -149,7 +164,7 @@ UserModel_shp UserDbInterface::getUserByLoginAndPassword(const std::string_view&
 
     try
     {
-        NSBM::format_context fctx(format_opts);
+        NSBM::format_context fctx(format_opts.value());
         NSBM::format_sql_to(fctx, baseQuery);
         NSBM::format_sql_to(fctx, " WHERE LoginName = {} AND HashedPassWord = {}", loginName, password);
 
@@ -174,7 +189,7 @@ UserList UserDbInterface::getAllUsers()
 
     try
     {
-        NSBM::format_context fctx(format_opts);
+        NSBM::format_context fctx(format_opts.value());
         NSBM::format_sql_to(fctx, baseQuery);
         NSBM::format_sql_to(fctx, " ORDER BY UserID");
 
@@ -196,7 +211,7 @@ bool UserDbInterface::update(const UserModel &user)
 
     try
     {
-        std::string updateStatement = NSBM::format_sql(format_opts,
+        std::string updateStatement = NSBM::format_sql(format_opts.value(),
             "UPDATE UserProfile SET"
                 " UserProfile.LastName = {0},"
                 " UserProfile.FirstName = {1},"
@@ -286,7 +301,7 @@ void UserDbInterface::processResultRow(NSBM::row_view rv, UserModel_shp newUser)
  * will allow expansion of preferences as needed while not needing to modify
  * the database.
  */
-std::string UserDbInterface::buildPreferenceText(const UserModel &user)
+std::string UserDbInterface::buildPreferenceText(const UserModel &user) noexcept
 {
     std::vector<std::string> preferences;
 
@@ -300,7 +315,7 @@ std::string UserDbInterface::buildPreferenceText(const UserModel &user)
     return implodeTextField(preferences);
 }
 
-void UserDbInterface::parsePrefenceText(std::string preferences, UserModel_shp newUser)
+void UserDbInterface::parsePrefenceText(std::string preferences, UserModel_shp newUser) noexcept
 {
     std::vector<std::string> subfields = explodeTextField(preferences);
 

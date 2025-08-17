@@ -26,8 +26,8 @@ private:
     UserModel_shp processResult(NSBM::results& results);
     UserList processResults(NSBM::results& results);
     void processResultRow(NSBM::row_view rv, UserModel_shp newUser);
-    std::string buildPreferenceText(const UserModel& user);
-    void parsePrefenceText(std::string preferences, UserModel_shp newUser);
+    std::string buildPreferenceText(const UserModel& user) noexcept;
+    void parsePrefenceText(std::string preferences, UserModel_shp newUser) noexcept;
 
 private:
 /*
