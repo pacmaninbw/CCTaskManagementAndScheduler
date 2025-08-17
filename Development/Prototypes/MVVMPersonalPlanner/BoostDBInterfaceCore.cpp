@@ -19,6 +19,20 @@ BoostDBInterfaceCore::BoostDBInterfaceCore()
     dbConnectionParameters.database = programOptions.mySqlDBName;
 }
 
+void BoostDBInterfaceCore::initFormatOptions()
+{
+    try {
+        if (!format_opts.has_value())
+        {
+            format_opts = getConnectionFormatOptsAsync();
+        }
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "ERROR: initFormatOptions() FAILED: " << e.what() << "\n";
+    }
+}
+
 /*
  * All calls to runQueryAsync should be implemented within try blocks.
  */
@@ -66,22 +80,11 @@ NSBA::awaitable<NSBM::results> BoostDBInterfaceCore::coRoutineExecuteSqlStatemen
 
 void BoostDBInterfaceCore::prepareForRunQueryAsync()
 {
-    try {
-        errorMessages.clear();
-        if (firstMySqlConnection)
-        {
-            format_opts = getConnectionFormatOptsAsync();
-            firstMySqlConnection = false;
-        }
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << "\nBoostDBInterfaceCore::prepareForRunQueryAsync() FAILED!! : " << e.what() << "!!\n\n";
-        appendErrorMessage(e.what());
-    }
+    errorMessages.clear();
+    initFormatOptions();
 };
 
-std::vector<std::string> BoostDBInterfaceCore::explodeTextField(std::string const& textField)
+std::vector<std::string> BoostDBInterfaceCore::explodeTextField(std::string const& textField) noexcept
 {
     std::vector<std::string> subFields;
     std::istringstream iss(textField);
@@ -93,7 +96,7 @@ std::vector<std::string> BoostDBInterfaceCore::explodeTextField(std::string cons
     return subFields;
 }
 
-std::string BoostDBInterfaceCore::implodeTextField(std::vector<std::string> &fields)
+std::string BoostDBInterfaceCore::implodeTextField(std::vector<std::string> &fields) noexcept
 {
     std::string textField;
 

@@ -6,6 +6,7 @@
 #include <boost/mysql.hpp>
 #include <chrono>
 #include "CommandLineParser.h"
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,8 @@ class BoostDBInterfaceCore
 public:
     BoostDBInterfaceCore();
     virtual ~BoostDBInterfaceCore() = default;
-    std::string getAllErrorMessages() const { return errorMessages; };
+    std::string getAllErrorMessages() const noexcept { return errorMessages; };
+    void initFormatOptions();
 
 protected:
     std::string errorMessages;
@@ -34,19 +36,19 @@ protected:
 /*
  * To process TEXT fields that contain model fields.
  */
-std::vector<std::string> explodeTextField(std::string const& textField);
-std::string implodeTextField(std::vector<std::string>& fields);
+std::vector<std::string> explodeTextField(std::string const& textField) noexcept;
+std::string implodeTextField(std::vector<std::string>& fields) noexcept;
 
 /*
  * Date converters are located here because they will be used by multiple dependent classes.
  */
-    NSBM::date convertChronoDateToBoostMySQLDate(const std::chrono::year_month_day& source)
+    NSBM::date convertChronoDateToBoostMySQLDate(const std::chrono::year_month_day& source) noexcept
     {
         std::chrono::sys_days tp = source;
         NSBM::date boostDate(tp);
         return boostDate;
     };
-    std::chrono::year_month_day convertBoostMySQLDateToChornoDate(const NSBM::date& source)
+    std::chrono::year_month_day convertBoostMySQLDateToChornoDate(const NSBM::date& source) noexcept
     {
         const std::chrono::year year{source.year()};
         const std::chrono::month month{source.month()};
@@ -59,8 +61,7 @@ protected:
     NSBM::connect_params dbConnectionParameters;
     bool verboseOutput;
     char delimiter;
-    NSBM::format_options format_opts;
-    bool firstMySqlConnection = true;
+    std::optional<NSBM::format_options> format_opts;
 };
 
 #endif // BOOSTMYSQLDBINTERFACECORE_H_
