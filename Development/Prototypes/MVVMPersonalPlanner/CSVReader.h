@@ -1,3 +1,5 @@
+#ifndef CSVREADER_H_
+#define CSVREADER_H_
 #include <iterator>
 #include <iostream>
 #include <fstream>
@@ -41,13 +43,14 @@
     private:
         std::string         m_line;
         std::vector<int>    m_data;
+
+    friend std::istream& operator>>(std::istream& str, CSVRow& data)
+    {
+        data.readNextRow(str);
+        return str;
+    }
 };
 
-std::istream& operator>>(std::istream& str, CSVRow& data)
-{
-    data.readNextRow(str);
-    return str;
-}
 
 class CSVIterator
 {   
@@ -85,4 +88,5 @@ class CSVRange
         CSVIterator begin() const {return CSVIterator{stream};}
         CSVIterator end()   const {return CSVIterator{};}
 };
+#endif // CSVREADER_H_
 
