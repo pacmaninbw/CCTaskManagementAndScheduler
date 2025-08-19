@@ -10,8 +10,6 @@
 #include "TaskDbInterface.h"
 #include "TaskModel.h"
 #include "TestUserDBInterface.h"
-#include "UserDbInterface.h"
-#include "UserModel.h"
 #include "UtilityTimer.h"
 #include <vector>
 
