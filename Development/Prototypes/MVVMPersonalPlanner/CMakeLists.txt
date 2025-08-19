@@ -24,6 +24,7 @@ add_executable(protoPersonalPlanner
     UserDbInterface.cpp
     TaskDbInterface.h
     TaskDbInterface.cpp
+    TestUserDBInterface.cpp
 )
 
 target_compile_options(protoPersonalPlanner PRIVATE -Wall -Wextra -pedantic -Werror)
