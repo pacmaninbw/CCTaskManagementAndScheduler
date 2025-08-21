@@ -318,8 +318,9 @@ bool TestTaskDBInterface::testAddDepenedcies()
         {"Run Archive Plugin"}
     };
 
+    // Tests the use of both UserModel & and UserModel_shp 
     TaskModel_shp depenedentTask = taskDBInteface.getTaskByDescriptionAndAssignedUser(taskDescriptions[1], *userOne);
-    depenedentTask->addDependency(taskDBInteface.getTaskByDescriptionAndAssignedUser(taskDescriptions[0], *userOne));
+    depenedentTask->addDependency(taskDBInteface.getTaskByDescriptionAndAssignedUser(taskDescriptions[0], userOne));
     if (!taskDBInteface.update(depenedentTask))
     {
         std::clog << std::format("Update to add depenency to '{}' FAILED\n", taskDescriptions[0]);
@@ -330,7 +331,7 @@ bool TestTaskDBInterface::testAddDepenedcies()
     TaskModel_shp mostDepenedentTask = taskDBInteface.getTaskByDescriptionAndAssignedUser(mostDependentTaskDesc, *userOne);
     for (auto task: taskDescriptions)
     {
-        TaskModel_shp dependency = taskDBInteface.getTaskByDescriptionAndAssignedUser(task, *userOne);
+        TaskModel_shp dependency = taskDBInteface.getTaskByDescriptionAndAssignedUser(task, userOne);
         comparison.push_back(dependency->getTaskID());
         mostDepenedentTask->addDependency(dependency);
     }
