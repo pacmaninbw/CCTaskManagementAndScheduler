@@ -18,6 +18,8 @@ public:
     std::size_t insert(TaskModel_shp task) { return insert(*task); };
     TaskModel_shp getTaskByTaskID(std::size_t taskId);
     TaskModel_shp getTaskByDescriptionAndAssignedUser(std::string_view description, const UserModel& assignedUser);
+    TaskModel_shp getTaskByDescriptionAndAssignedUser(std::string_view description, UserModel_shp assignedUser)
+        { return getTaskByDescriptionAndAssignedUser(description, *assignedUser); };
     TaskModel_shp getParentTask(const TaskModel& task);
     TaskModel_shp getParentTask(TaskModel_shp task) { return getParentTask(*task); };
     TaskList getActiveTasksForAssignedUser(const UserModel& assignedUser);
