@@ -22,6 +22,8 @@ TestUserDBInterface::TestUserDBInterface(std::string userFileName)
 
 bool TestUserDBInterface::runAllTests()
 {
+    userDBInterface.initFormatOptions();
+    
     if (negativePathTests())
     {
         return positivePathTests();
