@@ -72,7 +72,7 @@ bool TestTaskDBInterface::runPositivePathTests()
             std::cerr << taskDBInteface.getAllErrorMessages() << *testTask << "\n";
             std::clog << "Primary key for task: " << testTask->getTaskID() << ", " << testTask->getDescription() <<
             " not set!\n";
-            if (programOptions.verboseOutput)
+            if (verboseOutput)
             {
                 std::clog << *testTask << "\n\n";
             }
