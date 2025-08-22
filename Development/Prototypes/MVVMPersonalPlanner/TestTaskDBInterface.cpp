@@ -21,6 +21,10 @@ TestTaskDBInterface::TestTaskDBInterface(std::string taskFileName)
 
     testsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testGetUnstartedTasks, this));
     testsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testTaskUpdates, this));
+
+    negativeTestsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testNegativePathAlreadyInDataBase, this));
+    negativeTestsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testnegativePathNotModified, this));
+    negativeTestsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testNegativePathMissingRequiredFields, this));
 }
 
 bool TestTaskDBInterface::runAllTests()
@@ -35,9 +39,10 @@ bool TestTaskDBInterface::runAllTests()
         return false;
     }
 
-    if (runNegativePathTests())
+// Order is important because the negative path depends on tasks inserted in the positive path.
+    if (runPositivePathTests())
     {
-        return runPositivePathTests();
+        return runNegativePathTests();
     }
 
     return false;
@@ -45,8 +50,27 @@ bool TestTaskDBInterface::runAllTests()
 
 bool TestTaskDBInterface::runNegativePathTests()
 {
-    std::cerr << "\n\nTestTaskDBInterface::runNegativePathTests() NOT IMPLEMENTED!!\n\n";
-    return true;
+    bool allTestsPassed = true;
+
+    for (auto test: negativeTestsWithoutParameters)
+    {
+        if (allTestsPassed && !test())
+        {
+            allTestsPassed = false;
+            break;
+        }
+    }
+
+    if (allTestsPassed)
+    {
+        std::clog << "All negative path task tests PASSED\n";
+    }
+    else
+    {
+        std::clog << "Some or all negative task tests FAILED!\n";
+    }
+
+    return allTestsPassed;
 }
 
 bool TestTaskDBInterface::runPositivePathTests()
@@ -82,7 +106,6 @@ bool TestTaskDBInterface::runPositivePathTests()
 
     for (auto test: testsWithoutParameters)
     {
-
         if (allTestsPassed && !test())
         {
             allTestsPassed = false;
@@ -383,4 +406,142 @@ std::chrono::year_month_day TestTaskDBInterface::stringToDate(std::string dateSt
     }
 
     return dateValue;
+}
+
+bool TestTaskDBInterface::testnegativePathNotModified()
+{
+    TaskModel_shp taskNotModified = taskDBInteface.getTaskByTaskID(1);
+    if (taskNotModified == nullptr)
+    {
+        std::cerr << "Task 1 not found in database!!\n";
+        return false;
+    }
+
+    taskNotModified->setTaskID(0); // Force it to check modified rather than Already in DB.
+    taskNotModified->clearModified();
+    if (insertionWasSuccessfull(taskDBInteface.insert(taskNotModified),
+        "Inserted unmodified task!"))
+    {
+        return false;
+    }
+
+    if (!hasErrorMessage())
+    {
+        return false;
+    }
+
+    return wrongErrorMessage("not modified!");
+}
+
+bool TestTaskDBInterface::testNegativePathAlreadyInDataBase()
+{
+    TaskModel_shp taskAlreadyInDB = taskDBInteface.getTaskByTaskID(1);
+    if (taskAlreadyInDB == nullptr)
+    {
+        std::cerr << "Task 1 not found in database!!\n";
+        return false;
+    }
+
+    if (insertionWasSuccessfull(taskDBInteface.insert(taskAlreadyInDB),
+        "Inserted existing task!"))
+    {
+        return false;
+    }
+
+    if (!hasErrorMessage())
+    {
+        return false;
+    }
+
+    return wrongErrorMessage("already in Database");
+}
+
+bool TestTaskDBInterface::testMissingReuqiredField(TaskModel_shp taskMissingFields)
+{
+    if (insertionWasSuccessfull(taskDBInteface.insert(taskMissingFields),
+        "Inserted task missing required fields!"))
+    {
+        return false;
+    }
+
+    if (!hasErrorMessage())
+    {
+        return false;
+    }
+
+    return wrongErrorMessage("missing required values!");
+}
+
+bool TestTaskDBInterface::wrongErrorMessage(std::string expectedString)
+{
+    std::string errorMessage = taskDBInteface.getAllErrorMessages();
+    std::size_t found = errorMessage.find(expectedString);
+    if (found == std::string::npos)
+    {
+        std::clog << "Wrong message generated! TEST FAILED!\n";
+        std::clog << errorMessage << "\n";
+        return false;
+    }
+
+    return true;
+}
+
+bool TestTaskDBInterface::hasErrorMessage()
+{
+    std::string errorMessage = taskDBInteface.getAllErrorMessages();
+    if (errorMessage.empty())
+    {
+        std::clog << "No error message generated! TEST FAILED!\n";
+        return false;
+    }
+
+    return true;
+}
+
+bool TestTaskDBInterface::insertionWasSuccessfull(std::size_t taskID, std::string logMessage)
+{
+    if (taskID > 0)
+    {
+        std::clog << logMessage << " TEST FAILED\n";
+        return true;
+    }
+
+    return false;
+}
+
+bool TestTaskDBInterface::testNegativePathMissingRequiredFields()
+{
+    TaskModel_shp newTask = std::make_shared<TaskModel>(userOne);
+    if (!testMissingReuqiredField(newTask))
+    {
+        return false;
+    }
+
+    newTask->setDescription("Test missing required fields");
+    if (!testMissingReuqiredField(newTask))
+    {
+        return false;
+    }
+
+    newTask->setEstimatedEffort(3);
+    if (!testMissingReuqiredField(newTask))
+    {
+        return false;
+    }
+
+    newTask->setPriorityGroup('A');
+    newTask->setPriority(1);
+
+    if (!taskDBInteface.insert(newTask))
+    {
+        std::cerr << taskDBInteface.getAllErrorMessages() << *newTask << "\n";
+        std::clog << "Primary key for task: " << newTask->getTaskID() << ", " << newTask->getDescription() <<
+        " not set!\n";
+        if (verboseOutput)
+        {
+            std::clog << *newTask << "\n\n";
+        }
+    }
+
+    return true;
 }

@@ -31,6 +31,13 @@ private:
     bool testTaskUpdate(TaskModel_shp changedTask);
     bool testAddDepenedcies();
     std::chrono::year_month_day stringToDate(std::string dateString);
+    bool testnegativePathNotModified();
+    bool testNegativePathAlreadyInDataBase();
+    bool testMissingReuqiredField(TaskModel_shp taskMissingFields);
+    bool wrongErrorMessage(std::string expectedString);
+    bool hasErrorMessage();
+    bool insertionWasSuccessfull(std::size_t taskID, std::string logMessage);
+    bool testNegativePathMissingRequiredFields();
 
     UserDbInterface userDBInterface;
     TaskDbInterface taskDBInteface;
@@ -38,6 +45,7 @@ private:
     bool verboseOutput;
     std::vector<std::function<bool(TaskModel_shp)>> positiveTestFuncs;
     std::vector<std::function<bool(void)>> testsWithoutParameters;
+    std::vector<std::function<bool(void)>> negativeTestsWithoutParameters;
     UserModel_shp userOne;
 };
 
