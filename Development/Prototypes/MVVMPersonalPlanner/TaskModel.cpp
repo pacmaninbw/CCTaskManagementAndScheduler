@@ -19,6 +19,7 @@ static std::vector<GenericDictionary<TaskModel::TaskStatus, std::string>::DictTy
 };
 
 static GenericDictionary<TaskModel::TaskStatus, std::string> taskStatusConversionTable(statusConversionsDefs);
+static constexpr std::size_t MinimumDescriptionLength = 10;
 
 TaskModel::TaskModel()
 : modified{false},
@@ -54,7 +55,8 @@ TaskModel::TaskModel(UserModel_shp creator, std::string description)
 
 bool TaskModel::hasRequiredValues() const
 {
-    if (description.empty() || description.length() < 10)
+    if (description.empty() || description.length() < MinimumDescriptionLength ||
+        creatorID == 0 || assignToID == 0 || estimatedEffort == 0 || priorityGroup == 0)
     {
         return false;
     }
