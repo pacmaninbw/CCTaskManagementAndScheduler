@@ -30,6 +30,12 @@ std::size_t TaskDbInterface::insert(TaskModel &task)
     std::size_t taskID = 0;
     prepareForRunQueryAsync();
 
+    if (task.isInDatabase())
+    {
+        appendErrorMessage("Task already in Database, use Update!");
+        return taskID;
+    }
+
     if (!task.isModified())
     {
         appendErrorMessage("Task not modified!");
@@ -176,6 +182,18 @@ TaskList TaskDbInterface::getTasksCompletedByAssignedAfterDate(const UserModel& 
 bool TaskDbInterface::update(TaskModel &task)
 {
     prepareForRunQueryAsync();
+
+    if (!task.isInDatabase())
+    {
+        appendErrorMessage("Task has no primary key, Use INSERT!");
+        return false;
+    }
+ 
+    if (!task.isModified())
+    {
+        appendErrorMessage("Task not modified!");
+        return false;
+    }
 
     try
     {
