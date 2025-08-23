@@ -107,6 +107,10 @@ public:
         os << std::format(outFmtStr, "Creation Date", task.creationDate);
         os << std::format(outFmtStr, "Scheduled Start Date", task.scheduledStart);
         os << std::format(outFmtStr, "Due Date", task.dueDate);
+        os << std::format(outFmtStr, "Estimated Effort Hours", task.estimatedEffort);
+        os << std::format(outFmtStr, "Actual Effort Hours", task.actualEffortToDate);
+        os << std::format(outFmtStr, "Priority Group", task.priorityGroup);
+        os << std::format(outFmtStr, "Priority", task.priority);
 
         os << "Optional Fields\n";
         if (task.status.has_value())
