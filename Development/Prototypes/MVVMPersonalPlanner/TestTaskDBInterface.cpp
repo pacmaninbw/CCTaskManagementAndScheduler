@@ -19,12 +19,14 @@ TestTaskDBInterface::TestTaskDBInterface(std::string taskFileName)
     positiveTestFuncs.push_back(std::bind(&TestTaskDBInterface::testGetTaskByID, this, std::placeholders::_1));
     positiveTestFuncs.push_back(std::bind(&TestTaskDBInterface::testGetTaskByDescription, this, std::placeholders::_1));
 
+    testsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testTasksFromDataFile, this));
     testsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testGetUnstartedTasks, this));
     testsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testTaskUpdates, this));
 
     negativeTestsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testNegativePathAlreadyInDataBase, this));
     negativeTestsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testnegativePathNotModified, this));
     negativeTestsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testNegativePathMissingRequiredFields, this));
+    negativeTestsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testSharedPointerInteraction, this));
 }
 
 bool TestTaskDBInterface::runAllTests()
@@ -54,10 +56,9 @@ bool TestTaskDBInterface::runNegativePathTests()
 
     for (auto test: negativeTestsWithoutParameters)
     {
-        if (allTestsPassed && !test())
+        if (allTestsPassed)
         {
-            allTestsPassed = false;
-            break;
+            allTestsPassed = test();
         }
     }
 
@@ -76,33 +77,6 @@ bool TestTaskDBInterface::runNegativePathTests()
 bool TestTaskDBInterface::runPositivePathTests()
 {
     bool allTestsPassed = true;
-    TaskList userTaskTestData = loadTasksFromDataFile();
-
-    for (auto testTask: userTaskTestData)
-    {
-        testTask->setTaskID(taskDBInteface.insert(testTask));
-        if (testTask->isInDatabase())
-        {
-            for (auto test: positiveTestFuncs)
-            {
-                if (!test(testTask))
-                {
-                    allTestsPassed = false;
-                }
-            }
-        }
-        else
-        {
-            std::cerr << taskDBInteface.getAllErrorMessages() << *testTask << "\n";
-            std::clog << "Primary key for task: " << testTask->getTaskID() << ", " << testTask->getDescription() <<
-            " not set!\n";
-            if (verboseOutput)
-            {
-                std::clog << *testTask << "\n\n";
-            }
-            allTestsPassed = false;
-        }
-    }
 
     for (auto test: testsWithoutParameters)
     {
@@ -221,6 +195,7 @@ void TestTaskDBInterface::commonTaskInit(TaskModel_shp newTask, CSVRow taskData)
     newTask->setPriorityGroup(taskData[CSV_MajorPriorityColIdx][0]);
     newTask->setPriority(std::stoi(taskData[CSV_MinorPriorityColIdx]));
     newTask->setPercentageComplete(0.0);
+    newTask->setCreationDate(getTodaysDateMinus(5));
 
     // Optional fields
     if (!taskData[CSV_ParentTaskColIdx].empty())
@@ -456,7 +431,7 @@ bool TestTaskDBInterface::testNegativePathAlreadyInDataBase()
     return wrongErrorMessage("already in Database");
 }
 
-bool TestTaskDBInterface::testMissingReuqiredField(TaskModel_shp taskMissingFields)
+bool TestTaskDBInterface::testMissingReuqiredField(TaskModel& taskMissingFields)
 {
     if (insertionWasSuccessfull(taskDBInteface.insert(taskMissingFields),
         "Inserted task missing required fields!"))
@@ -511,36 +486,146 @@ bool TestTaskDBInterface::insertionWasSuccessfull(std::size_t taskID, std::strin
 
 bool TestTaskDBInterface::testNegativePathMissingRequiredFields()
 {
-    TaskModel_shp newTask = std::make_shared<TaskModel>(userOne);
+    TaskModel newTask(userOne);
     if (!testMissingReuqiredField(newTask))
     {
         return false;
     }
 
-    newTask->setDescription("Test missing required fields");
+    newTask.setDescription("Test missing required fields: Set Description");
     if (!testMissingReuqiredField(newTask))
+    {
+        return false;
+    }
+
+    newTask.setEstimatedEffort(3);
+    if (!testMissingReuqiredField(newTask))
+    {
+        return false;
+    }
+
+    newTask.setCreationDate(getTodaysDateMinus(2));
+    if (!testMissingReuqiredField(newTask))
+    {
+        return false;
+    }
+
+    newTask.setScheduledStart(getTodaysDate());
+    if (!testMissingReuqiredField(newTask))
+    {
+        return false;
+    }
+
+    newTask.setDueDate(getTodaysDatePlus(2));
+    if (!testMissingReuqiredField(newTask))
+    {
+        return false;
+    }
+
+    newTask.setPriorityGroup('A');
+    newTask.setPriority(1);
+    if (!taskDBInteface.insert(newTask))
+    {
+        std::cerr << taskDBInteface.getAllErrorMessages() << newTask << "\n";
+        std::clog << "Primary key for task: " << newTask.getTaskID() << ", " << newTask.getDescription() <<
+        " not set!\n";
+        if (verboseOutput)
+        {
+            std::clog << newTask << "\n\n";
+        }
+        return false;
+    }
+
+    return true;
+}
+
+bool TestTaskDBInterface::testTasksFromDataFile()
+{
+    bool allTestsPassed = true;
+    TaskList userTaskTestData = loadTasksFromDataFile();
+
+    for (auto testTask: userTaskTestData)
+    {
+        testTask->setTaskID(taskDBInteface.insert(testTask));
+        if (testTask->isInDatabase())
+        {
+            for (auto test: positiveTestFuncs)
+            {
+                if (!test(testTask))
+                {
+                    allTestsPassed = false;
+                }
+            }
+        }
+        else
+        {
+            std::cerr << taskDBInteface.getAllErrorMessages() << *testTask << "\n";
+            std::clog << "Primary key for task: " << testTask->getTaskID() << ", " << testTask->getDescription() <<
+            " not set!\n";
+            if (verboseOutput)
+            {
+                std::clog << *testTask << "\n\n";
+            }
+            allTestsPassed = false;
+        }
+    }
+
+    userTaskTestData.clear();
+
+    return allTestsPassed;
+}
+
+bool TestTaskDBInterface::testSharedPointerInteraction()
+{
+    TaskModel_shp newTask = std::make_shared<TaskModel>(userOne);
+
+    if (!testMissingReuqiredField(*newTask))
+    {
+        return false;
+    }
+
+    newTask->setDescription("Test shared pointer interaction in missing required fields");
+    if (!testMissingReuqiredField(*newTask))
     {
         return false;
     }
 
     newTask->setEstimatedEffort(3);
-    if (!testMissingReuqiredField(newTask))
+    if (!testMissingReuqiredField(*newTask))
+    {
+        return false;
+    }
+
+    newTask->setCreationDate(getTodaysDateMinus(2));
+    if (!testMissingReuqiredField(*newTask))
+    {
+        return false;
+    }
+
+    newTask->setScheduledStart(getTodaysDate());
+    if (!testMissingReuqiredField(*newTask))
+    {
+        return false;
+    }
+
+    newTask->setDueDate(getTodaysDatePlus(2));
+    if (!testMissingReuqiredField(*newTask))
     {
         return false;
     }
 
     newTask->setPriorityGroup('A');
     newTask->setPriority(1);
-
-    if (!taskDBInteface.insert(newTask))
+    if (!taskDBInteface.insert(*newTask))
     {
-        std::cerr << taskDBInteface.getAllErrorMessages() << *newTask << "\n";
+        std::cerr << taskDBInteface.getAllErrorMessages() << newTask << "\n";
         std::clog << "Primary key for task: " << newTask->getTaskID() << ", " << newTask->getDescription() <<
         " not set!\n";
         if (verboseOutput)
         {
-            std::clog << *newTask << "\n\n";
+            std::clog << newTask << "\n\n";
         }
+        return false;
     }
 
     return true;

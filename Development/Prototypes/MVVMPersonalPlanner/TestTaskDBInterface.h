@@ -33,11 +33,13 @@ private:
     std::chrono::year_month_day stringToDate(std::string dateString);
     bool testnegativePathNotModified();
     bool testNegativePathAlreadyInDataBase();
-    bool testMissingReuqiredField(TaskModel_shp taskMissingFields);
+    bool testMissingReuqiredField(TaskModel& taskMissingFields);
     bool wrongErrorMessage(std::string expectedString);
     bool hasErrorMessage();
     bool insertionWasSuccessfull(std::size_t taskID, std::string logMessage);
     bool testNegativePathMissingRequiredFields();
+    bool testTasksFromDataFile();
+    bool testSharedPointerInteraction();
 
     UserDbInterface userDBInterface;
     TaskDbInterface taskDBInteface;
