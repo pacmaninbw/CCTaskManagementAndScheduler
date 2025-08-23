@@ -34,8 +34,6 @@ TaskModel::TaskModel()
   priority{0},
   personal{false}
 {
-    std::chrono::year_month_day today = getTodaysDate();
-    setCreationDate(today);
 }
 
 TaskModel::TaskModel(UserModel_shp creator)
@@ -56,7 +54,8 @@ TaskModel::TaskModel(UserModel_shp creator, std::string description)
 bool TaskModel::hasRequiredValues() const
 {
     if (description.empty() || description.length() < MinimumDescriptionLength ||
-        creatorID == 0 || assignToID == 0 || estimatedEffort == 0 || priorityGroup == 0)
+        creatorID == 0 || assignToID == 0 || estimatedEffort == 0 ||
+        priorityGroup == 0 || !creationDate.ok() || !scheduledStart.ok() || !dueDate.ok())
     {
         return false;
     }
