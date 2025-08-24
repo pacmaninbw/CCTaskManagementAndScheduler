@@ -18,15 +18,17 @@ TestUserDBInterface::TestUserDBInterface(std::string userFileName)
     positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByLoginAndPassword, this, std::placeholders::_1));
     positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByFullName, this, std::placeholders::_1));
     positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testUpdateUserPassword, this, std::placeholders::_1));
+
+    negativePathTestFuncs.push_back(std::bind(&TestUserDBInterface::negativePathMissingRequiredFields, this));
 }
 
 bool TestUserDBInterface::runAllTests()
 {
     userDBInterface.initFormatOptions();
     
-    if (negativePathTests())
+    if (positivePathTests())
     {
-        return positivePathTests();
+        return negativePathTests();
     }
     
     return false;
@@ -36,14 +38,32 @@ bool TestUserDBInterface::negativePathTests()
 {
     std::cerr << "TestUserDBInterface::negativePathTests() NOT IMPLEMENTED!!\n";
 
-    return true;
+    bool allTestsPassed = true;
+
+    for (auto test: negativePathTestFuncs)
+    {
+        if (allTestsPassed)
+        {
+            allTestsPassed = test();
+        }
+    }
+
+    if (allTestsPassed)
+    {
+        std::clog << "All negative path user tests PASSED\n";
+    }
+    else
+    {
+        std::clog << "Some or all negative user tests FAILED!\n";
+    }
+
+    return allTestsPassed;
 }
 
 bool TestUserDBInterface::positivePathTests()
 {
-    // Test one case of the alternate constructor.
-    UserList userProfileTestData = {{std::make_shared<UserModel>("PacMan", "IN", "BW", "pacmaninbw@gmail.com")}};
-    userProfileTestData[0]->autoGenerateLoginAndPassword();
+    UserList userProfileTestData;
+    addFirstUser(userProfileTestData);
 
     if (!loadTestUsersFromFile(userProfileTestData))
     {
@@ -267,4 +287,124 @@ bool TestUserDBInterface::testGetAllUsers(UserList userProfileTestData)
     allUsers.clear();
 
     return testPassed;
+}
+
+bool TestUserDBInterface::testMissingRequiredField(UserModel &userMissingField, std::vector<std::string>&  expectedErrors)
+{
+    if (insertionWasSuccessfull(userDBInterface.insert(userMissingField),
+        "Inserted User missing required fields!"))
+    {
+        return false;
+    }
+
+    if (!hasErrorMessage())
+    {
+        return false;
+    }
+
+    for (auto expectedError: expectedErrors)
+    {
+        if (!wrongErrorMessage(expectedError))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool TestUserDBInterface::wrongErrorMessage(std::string expectedString)
+{
+    std::string errorMessage = userDBInterface.getAllErrorMessages();
+    std::size_t found = errorMessage.find(expectedString);
+    if (found == std::string::npos)
+    {
+        std::clog << "Wrong message generated! TEST FAILED!\n";
+        std::clog << errorMessage << "\n";
+        return false;
+    }
+
+    return true;
+}
+
+bool TestUserDBInterface::hasErrorMessage()
+{
+    std::string errorMessage = userDBInterface.getAllErrorMessages();
+    if (errorMessage.empty())
+    {
+        std::clog << "No error message generated! TEST FAILED!\n";
+        return false;
+    }
+
+    return true;
+}
+
+bool TestUserDBInterface::insertionWasSuccessfull(std::size_t userID, std::string logMessage)
+{
+    if (userID > 0)
+    {
+        std::clog << logMessage << " TEST FAILED\n";
+        return true;
+    }
+
+    return false;
+}
+
+bool TestUserDBInterface::negativePathMissingRequiredFields()
+{
+    std::vector<std::string> expectedErrors =
+    {
+        "Last Name", "First Name", "Login Name", "Password", "User is missing required values"
+    };
+
+    UserModel newuser;
+    newuser.setUserID(0);   // Force a modification so that missing fields can be tested.
+    if (!testMissingRequiredField(newuser, expectedErrors))
+    {
+        return false;
+    }
+
+    newuser.setLastName("TestUser");
+    expectedErrors.erase(expectedErrors.begin());
+    if (!testMissingRequiredField(newuser, expectedErrors))
+    {
+        return false;
+    }
+
+    newuser.setFirstName("Alternate");
+    expectedErrors.erase(expectedErrors.begin());
+    if (!testMissingRequiredField(newuser, expectedErrors))
+    {
+        return false;
+    }
+
+    newuser.setMiddleInitial("One");
+    newuser.setLoginName("TestUserAlternateO");
+    expectedErrors.erase(expectedErrors.begin());
+    if (!testMissingRequiredField(newuser, expectedErrors))
+    {
+        return false;
+    }
+
+    newuser.setPassword("TestUserAlternateO");
+    newuser.setUserID(userDBInterface.insert(newuser));
+    if (!newuser.isInDataBase())
+    {
+        std::cerr << userDBInterface.getAllErrorMessages() << newuser << "\n";
+        std::clog << "Primary key for task: " << newuser.getUserID() << " not set!\n";
+        if (verboseOutput)
+        {
+            std::clog << newuser << "\n\n";
+        }
+        return false;
+    }
+
+    return true;
+}
+
+void TestUserDBInterface::addFirstUser(UserList &TestUsers)
+{
+    // Test one case of the alternate constructor.
+    UserModel_shp firstUser = std::make_shared<UserModel>("PacMan", "IN", "BW", "pacmaninbw@gmail.com");
+    firstUser->autoGenerateLoginAndPassword();
+    TestUsers.push_back(firstUser);
 }
