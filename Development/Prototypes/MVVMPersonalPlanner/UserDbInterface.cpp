@@ -23,15 +23,23 @@ std::size_t UserDbInterface::insert(const UserModel &user)
 {
     std::size_t uID = 0;
 
+    if (user.isInDataBase())
+    {
+        appendErrorMessage("User already in Database, use Update!");
+        return uID;
+    }
+
     if (!user.isModified())
     {
         appendErrorMessage("User not modified!");
         return uID;
     }
 
-    if (!user.hasRequiredValues())
+    std::string missingFieldErrors;
+    if (!user.hasRequiredValues(missingFieldErrors))
     {
         appendErrorMessage("User is missing required values!");
+        appendErrorMessage(missingFieldErrors);
         return uID;
     }
 
@@ -208,6 +216,12 @@ UserList UserDbInterface::getAllUsers()
 bool UserDbInterface::update(const UserModel &user)
 {
     prepareForRunQueryAsync();
+
+    if (!user.isModified())
+    {
+        appendErrorMessage("User not modified!");
+        return false;
+    }
 
     try
     {
