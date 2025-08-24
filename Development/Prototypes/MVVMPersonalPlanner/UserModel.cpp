@@ -30,31 +30,31 @@ UserModel::UserModel(std::string lastIn, std::string firstIn, std::string middle
 
 static constexpr std::size_t minNameLenght = 2;
 
-bool UserModel::hasRequiredValues() const noexcept
+bool UserModel::hasRequiredValues(std::string& missingFields) const noexcept
 {
     bool hasValues = true;
 
     if (lastName.empty() || lastName.length() < minNameLenght)
     {
-        std::cerr << "Missing Users Last Name.\n";
+        missingFields.append("Missing Users Last Name.\n");
         hasValues = false;
     }
 
     if (firstName.empty() || firstName.length() < minNameLenght)
     {
-        std::cerr << "Missing Users First Name.\n";
+        missingFields.append("Missing Users First Name.\n");
         hasValues = false;
     }
 
     if (loginName.empty() || loginName.length() < 4)
     {
-        std::cerr << "Missing Users Login Name.\n";
+        missingFields.append("Missing Users Login Name.\n");
         hasValues = false;
     }
 
     if (password.empty() || password.length() < 8)
     {
-        std::cerr << "Missing Users Password.\n";
+        missingFields.append("Missing Users Password.\n");
         hasValues = false;
     }
     
