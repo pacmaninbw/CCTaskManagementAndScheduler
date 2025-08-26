@@ -24,6 +24,7 @@ add_executable(protoPersonalPlanner
     UserDbInterface.cpp
     TaskDbInterface.h
     TaskDbInterface.cpp
+    TestDBInterfaceCore.cpp
     TestUserDBInterface.cpp
     TestTaskDBInterface.cpp
 )
