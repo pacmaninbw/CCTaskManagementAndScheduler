@@ -14,9 +14,6 @@
 #include "UserModel.h"
 #include <vector>
 
-static constexpr TestDBInterfaceCore::TestStatus TESTFAILED = TestDBInterfaceCore::TestStatus::TestFailed;
-static constexpr TestDBInterfaceCore::TestStatus TESTPASSED = TestDBInterfaceCore::TestStatus::TestPassed;
-
 TestTaskDBInterface::TestTaskDBInterface(std::string taskFileName)
 : TestDBInterfaceCore(taskDBInteface, programOptions.verboseOutput, "task")
 {
@@ -360,7 +357,7 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testnegativePathNotModified
     taskNotModified->setTaskID(0); // Force it to check modified rather than Already in DB.
     taskNotModified->clearModified();
     std::vector<std::string> expectedErrors = {"not modified!"};
-    return testInsertionFailureMessage(*taskNotModified, expectedErrors);
+    return testInsertionFailureMessages(taskDBInteface.insert(taskNotModified), expectedErrors);
 }
 
 TestDBInterfaceCore::TestStatus TestTaskDBInterface::testNegativePathAlreadyInDataBase()
@@ -373,13 +370,13 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testNegativePathAlreadyInDa
     }
 
     std::vector<std::string> expectedErrors = {"already in Database"};
-    return testInsertionFailureMessage(*taskAlreadyInDB, expectedErrors);
+    return testInsertionFailureMessages(taskDBInteface.insert(taskAlreadyInDB), expectedErrors);
 }
 
 TestDBInterfaceCore::TestStatus TestTaskDBInterface::testMissingReuqiredField(TaskModel& taskMissingFields)
 {
     std::vector<std::string> expectedErrors = {"missing required values!"};
-    return testInsertionFailureMessage(taskMissingFields, expectedErrors);
+    return testInsertionFailureMessages(taskDBInteface.insert(taskMissingFields), expectedErrors);
 }
 
 TestDBInterfaceCore::TestStatus TestTaskDBInterface::testNegativePathMissingRequiredFields()
@@ -492,32 +489,6 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testSharedPointerInteractio
     newTask->setPriorityGroup('A');
     newTask->setPriority(1);
     return insertShouldPass(newTask);
-}
-
-TestDBInterfaceCore::TestStatus TestTaskDBInterface::testInsertionFailureMessage(
-    TaskModel &badTask,
-    std::vector<std::string> expectedErrors
-)
-{
-    if (insertionWasSuccessfull(taskDBInteface.insert(badTask)))
-    {
-        return TESTFAILED;
-    }
-
-    if (!hasErrorMessage())
-    {
-        return TESTFAILED;
-    }
-
-    for (auto expectedError: expectedErrors)
-    {
-        if (wrongErrorMessage(expectedError) == TESTFAILED)
-        {
-            return TESTFAILED;
-        }
-    }
-
-    return TESTPASSED;
 }
 
 TestDBInterfaceCore::TestStatus TestTaskDBInterface::insertShouldPass(TaskModel_shp newTask)

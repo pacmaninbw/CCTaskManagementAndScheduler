@@ -36,8 +36,6 @@ private:
     TestDBInterfaceCore::TestStatus testNegativePathMissingRequiredFields();
     TestDBInterfaceCore::TestStatus testTasksFromDataFile();
     TestDBInterfaceCore::TestStatus testSharedPointerInteraction();
-    TestDBInterfaceCore::TestStatus testInsertionFailureMessage(
-        TaskModel& badTask, std::vector<std::string> expectedErrors);
     TestDBInterfaceCore::TestStatus insertShouldPass(TaskModel_shp newTask);
 
     UserDbInterface userDBInterface;

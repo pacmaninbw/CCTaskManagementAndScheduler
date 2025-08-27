@@ -31,7 +31,7 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::runPositivePathTests()
 
     if (!loadTestUsersFromFile(userProfileTestData))
     {
-        return TestDBInterfaceCore::TestStatus::TestFailed;
+        return TESTFAILED;
     }
 
     userDBInterface.initFormatOptions();
@@ -72,12 +72,12 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::runPositivePathTests()
     if (allTestsPassed)
     {
         std::clog << "Insertion and retrieval of users test PASSED!\n";
-        return TestDBInterfaceCore::TestStatus::TestPassed;
+        return TESTPASSED;
     }
     else
     {
         std::cerr << "Some or all insertion and retrieval of users test FAILED!\n";
-        return TestDBInterfaceCore::TestStatus::TestFailed;
+        return TESTFAILED;
     }
 }
 
@@ -253,28 +253,6 @@ bool TestUserDBInterface::testGetAllUsers(UserList userProfileTestData)
     return testPassed;
 }
 
-bool TestUserDBInterface::testMissingRequiredField(UserModel &userMissingField, std::vector<std::string>&  expectedErrors)
-{
-    if (insertionWasSuccessfull(userDBInterface.insert(userMissingField)))
-    {
-        return false;
-    }
-
-    if (!hasErrorMessage())
-    {
-        return false;
-    }
-
-    for (auto expectedError: expectedErrors)
-    {
-        if (wrongErrorMessage(expectedError) == TestDBInterfaceCore::TestStatus::TestFailed)
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
 TestDBInterfaceCore::TestStatus TestUserDBInterface::negativePathMissingRequiredFields()
 {
     std::vector<std::string> expectedErrors =
@@ -295,9 +273,9 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::negativePathMissingRequired
 
     for (auto setField: fieldSettings)
     {
-        if (!testMissingRequiredField(newuser, expectedErrors))
+        if (testInsertionFailureMessages(userDBInterface.insert(newuser), expectedErrors) != TESTPASSED)
         {
-            return TestDBInterfaceCore::TestStatus::TestFailed;
+            return TESTFAILED;
         }
         expectedErrors.erase(expectedErrors.begin());
         setField("teststringvalue");
@@ -312,10 +290,10 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::negativePathMissingRequired
         {
             std::clog << newuser << "\n\n";
         }
-        return TestDBInterfaceCore::TestStatus::TestFailed;
+        return TESTFAILED;
     }
 
-    return TestDBInterfaceCore::TestStatus::TestPassed;
+    return TESTPASSED;
 }
 
 void TestUserDBInterface::addFirstUser(UserList &TestUsers)

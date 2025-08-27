@@ -22,6 +22,12 @@ protected:
     TestDBInterfaceCore::TestStatus wrongErrorMessage(std::string expectedString);
     bool hasErrorMessage();
     bool insertionWasSuccessfull(std::size_t primaryKey);
+    TestDBInterfaceCore::TestStatus testInsertionFailureMessages(
+        std::size_t primaryKey, std::vector<std::string> expectedErrors);
+
+    const TestDBInterfaceCore::TestStatus TESTFAILED = TestDBInterfaceCore::TestStatus::TestFailed;
+    const TestDBInterfaceCore::TestStatus TESTPASSED = TestDBInterfaceCore::TestStatus::TestPassed;
+
     BoostDBInterfaceCore* dbInterfaceUnderTest; 
     bool verboseOutput;
     std::string_view modelUnderTest;

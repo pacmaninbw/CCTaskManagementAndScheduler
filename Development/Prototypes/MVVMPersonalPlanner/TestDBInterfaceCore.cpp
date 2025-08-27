@@ -21,35 +21,34 @@ TestDBInterfaceCore::TestStatus TestDBInterfaceCore::runAllTests()
     TestDBInterfaceCore::TestStatus positivePathPassed = runPositivePathTests();
     TestDBInterfaceCore::TestStatus negativePathPassed = runNegativePathTests();
     
-    if (positivePathPassed == TestDBInterfaceCore::TestStatus::TestPassed &&
-        negativePathPassed == TestDBInterfaceCore::TestStatus::TestPassed)
+    if (positivePathPassed == TESTPASSED && negativePathPassed == TESTPASSED)
     {
         std::clog << std::format(
             "All tests for database insertions and retrievals of {} PASSED!\n",
             modelUnderTest);
-        return TestDBInterfaceCore::TestStatus::TestPassed;
+        return TESTPASSED;
     }
 
     std::clog << std::format(
         "Some or all tests for database insertions and retrievals of {} FAILED!\n",
         modelUnderTest);
-    return TestDBInterfaceCore::TestStatus::TestFailed;
+    return TESTFAILED;
 }
 
 TestDBInterfaceCore::TestStatus TestDBInterfaceCore::runNegativePathTests()
 {
-    TestDBInterfaceCore::TestStatus allTestPassed = TestDBInterfaceCore::TestStatus::TestPassed;
+    TestDBInterfaceCore::TestStatus allTestPassed = TESTPASSED;
 
     for (auto test: negativePathTestFuncsNoArgs)
     {
         TestDBInterfaceCore::TestStatus testResult = test();
-        if (allTestPassed == TestDBInterfaceCore::TestStatus::TestPassed)
+        if (allTestPassed == TESTPASSED)
         {
             allTestPassed = testResult;
         }
     }
 
-    if (allTestPassed == TestDBInterfaceCore::TestStatus::TestPassed)
+    if (allTestPassed == TESTPASSED)
     {
         std::clog << std::format(
             "All negative path tests for database insertions and retrievals of {} PASSED!\n",
@@ -67,18 +66,18 @@ TestDBInterfaceCore::TestStatus TestDBInterfaceCore::runNegativePathTests()
 
 TestDBInterfaceCore::TestStatus TestDBInterfaceCore::runPositivePathTests()
 {
-    TestDBInterfaceCore::TestStatus allTestPassed = TestDBInterfaceCore::TestStatus::TestPassed;
+    TestDBInterfaceCore::TestStatus allTestPassed = TESTPASSED;
 
     for (auto test: positiviePathTestFuncsNoArgs)
     {
         TestDBInterfaceCore::TestStatus testResult = test();
-        if (allTestPassed == TestDBInterfaceCore::TestStatus::TestPassed)
+        if (allTestPassed == TESTPASSED)
         {
             allTestPassed = testResult;
         }
     }
 
-    if (allTestPassed == TestDBInterfaceCore::TestStatus::TestPassed)
+    if (allTestPassed == TESTPASSED)
     {
         std::clog << std::format(
             "All positive path tests for database insertions and retrievals of {} PASSED!\n",
@@ -105,10 +104,10 @@ TestDBInterfaceCore::TestStatus TestDBInterfaceCore::wrongErrorMessage(std::stri
     {
         std::clog << "Wrong message generated! TEST FAILED!\n";
         std::clog << errorMessage << "\n";
-        return TestDBInterfaceCore::TestStatus::TestFailed;
+        return TESTFAILED;
     }
 
-    return TestDBInterfaceCore::TestStatus::TestPassed;
+    return TESTPASSED;
 }
 
 bool TestDBInterfaceCore::hasErrorMessage()
@@ -133,4 +132,27 @@ bool TestDBInterfaceCore::insertionWasSuccessfull(std::size_t primaryKey)
     }
 
     return false;
+}
+
+TestDBInterfaceCore::TestStatus TestDBInterfaceCore::testInsertionFailureMessages(std::size_t primaryKey, std::vector<std::string> expectedErrors)
+{
+    if (insertionWasSuccessfull(primaryKey))
+    {
+        return TESTFAILED;
+    }
+
+    if (!hasErrorMessage())
+    {
+        return TESTFAILED;
+    }
+
+    for (auto expectedError: expectedErrors)
+    {
+        if (wrongErrorMessage(expectedError) == TESTFAILED)
+        {
+            return TESTFAILED;
+        }
+    }
+
+    return TESTPASSED;
 }

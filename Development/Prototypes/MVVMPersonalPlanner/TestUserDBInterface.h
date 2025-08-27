@@ -22,7 +22,6 @@ private:
     bool testUpdateUserPassword(UserModel_shp insertedUser);
     bool loadTestUsersFromFile(UserList& userProfileTestData);
     bool testGetAllUsers(UserList userProfileTestData);
-    bool testMissingRequiredField(UserModel& userMissingField, std::vector<std::string>& expectedErrors);
     TestDBInterfaceCore::TestStatus negativePathMissingRequiredFields();
     void addFirstUser(UserList& TestUsers);
 
