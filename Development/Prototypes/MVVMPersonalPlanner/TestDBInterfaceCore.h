@@ -14,7 +14,7 @@ public:
     enum class TestStatus {TestPassed, TestFailed};
     TestDBInterfaceCore(BoostDBInterfaceCore& dbInterfaceToTest, bool isVerboseOutput, std::string_view modelName);
     virtual ~TestDBInterfaceCore() = default;
-    TestDBInterfaceCore::TestStatus runAllTests();
+    virtual TestDBInterfaceCore::TestStatus runAllTests();
     virtual TestDBInterfaceCore::TestStatus runNegativePathTests();
     virtual TestDBInterfaceCore::TestStatus runPositivePathTests();
 
