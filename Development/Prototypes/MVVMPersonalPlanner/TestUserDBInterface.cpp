@@ -12,62 +12,25 @@
 #include <vector>
 
 TestUserDBInterface::TestUserDBInterface(std::string userFileName)
-: dataFileName{userFileName}, verboseOutput{programOptions.verboseOutput}
+: TestDBInterfaceCore(userDBInterface, programOptions.verboseOutput, "user")
 {
+    dataFileName = userFileName;
     positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByLoginName, this, std::placeholders::_1));
     positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByLoginAndPassword, this, std::placeholders::_1));
     positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByFullName, this, std::placeholders::_1));
     positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testUpdateUserPassword, this, std::placeholders::_1));
 
-    negativePathTestFuncs.push_back(std::bind(&TestUserDBInterface::negativePathMissingRequiredFields, this));
+    negativePathTestFuncsNoArgs.push_back(std::bind(&TestUserDBInterface::negativePathMissingRequiredFields, this));
 }
 
-bool TestUserDBInterface::runAllTests()
-{
-    userDBInterface.initFormatOptions();
-    
-    if (positivePathTests())
-    {
-        return negativePathTests();
-    }
-    
-    return false;
-}
-
-bool TestUserDBInterface::negativePathTests()
-{
-    std::cerr << "TestUserDBInterface::negativePathTests() NOT IMPLEMENTED!!\n";
-
-    bool allTestsPassed = true;
-
-    for (auto test: negativePathTestFuncs)
-    {
-        if (allTestsPassed)
-        {
-            allTestsPassed = test();
-        }
-    }
-
-    if (allTestsPassed)
-    {
-        std::clog << "All negative path user tests PASSED\n";
-    }
-    else
-    {
-        std::clog << "Some or all negative user tests FAILED!\n";
-    }
-
-    return allTestsPassed;
-}
-
-bool TestUserDBInterface::positivePathTests()
+TestDBInterfaceCore::TestStatus TestUserDBInterface::runPositivePathTests()
 {
     UserList userProfileTestData;
     addFirstUser(userProfileTestData);
 
     if (!loadTestUsersFromFile(userProfileTestData))
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     userDBInterface.initFormatOptions();
@@ -108,12 +71,12 @@ bool TestUserDBInterface::positivePathTests()
     if (allTestsPassed)
     {
         std::clog << "Insertion and retrieval of users test PASSED!\n";
-        return true;
+        return TestDBInterfaceCore::TestStatus::TestPassed;
     }
     else
     {
         std::cerr << "Some or all insertion and retrieval of users test FAILED!\n";
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 }
 
@@ -291,8 +254,7 @@ bool TestUserDBInterface::testGetAllUsers(UserList userProfileTestData)
 
 bool TestUserDBInterface::testMissingRequiredField(UserModel &userMissingField, std::vector<std::string>&  expectedErrors)
 {
-    if (insertionWasSuccessfull(userDBInterface.insert(userMissingField),
-        "Inserted User missing required fields!"))
+    if (insertionWasSuccessfull(userDBInterface.insert(userMissingField)))
     {
         return false;
     }
@@ -304,7 +266,7 @@ bool TestUserDBInterface::testMissingRequiredField(UserModel &userMissingField, 
 
     for (auto expectedError: expectedErrors)
     {
-        if (!wrongErrorMessage(expectedError))
+        if (wrongErrorMessage(expectedError) == TestDBInterfaceCore::TestStatus::TestFailed)
         {
             return false;
         }
@@ -312,44 +274,7 @@ bool TestUserDBInterface::testMissingRequiredField(UserModel &userMissingField, 
     return true;
 }
 
-bool TestUserDBInterface::wrongErrorMessage(std::string expectedString)
-{
-    std::string errorMessage = userDBInterface.getAllErrorMessages();
-    std::size_t found = errorMessage.find(expectedString);
-    if (found == std::string::npos)
-    {
-        std::clog << "Wrong message generated! TEST FAILED!\n";
-        std::clog << errorMessage << "\n";
-        return false;
-    }
-
-    return true;
-}
-
-bool TestUserDBInterface::hasErrorMessage()
-{
-    std::string errorMessage = userDBInterface.getAllErrorMessages();
-    if (errorMessage.empty())
-    {
-        std::clog << "No error message generated! TEST FAILED!\n";
-        return false;
-    }
-
-    return true;
-}
-
-bool TestUserDBInterface::insertionWasSuccessfull(std::size_t userID, std::string logMessage)
-{
-    if (userID > 0)
-    {
-        std::clog << logMessage << " TEST FAILED\n";
-        return true;
-    }
-
-    return false;
-}
-
-bool TestUserDBInterface::negativePathMissingRequiredFields()
+TestDBInterfaceCore::TestStatus TestUserDBInterface::negativePathMissingRequiredFields()
 {
     std::vector<std::string> expectedErrors =
     {
@@ -358,47 +283,38 @@ bool TestUserDBInterface::negativePathMissingRequiredFields()
 
     UserModel newuser;
     newuser.setUserID(0);   // Force a modification so that missing fields can be tested.
-    if (!testMissingRequiredField(newuser, expectedErrors))
+
+    std::vector<std::function<void(std::string)>> fieldSettings = 
     {
-        return false;
+        std::bind(&UserModel::setLastName, &newuser, std::placeholders::_1),
+        std::bind(&UserModel::setFirstName, &newuser, std::placeholders::_1),
+        std::bind(&UserModel::setLoginName, &newuser, std::placeholders::_1),
+        std::bind(&UserModel::setPassword, &newuser, std::placeholders::_1)
+    };
+
+    for (auto setField: fieldSettings)
+    {
+        if (!testMissingRequiredField(newuser, expectedErrors))
+        {
+            return TestDBInterfaceCore::TestStatus::TestFailed;
+        }
+        expectedErrors.erase(expectedErrors.begin());
+        setField("teststringvalue");
     }
 
-    newuser.setLastName("TestUser");
-    expectedErrors.erase(expectedErrors.begin());
-    if (!testMissingRequiredField(newuser, expectedErrors))
-    {
-        return false;
-    }
-
-    newuser.setFirstName("Alternate");
-    expectedErrors.erase(expectedErrors.begin());
-    if (!testMissingRequiredField(newuser, expectedErrors))
-    {
-        return false;
-    }
-
-    newuser.setMiddleInitial("One");
-    newuser.setLoginName("TestUserAlternateO");
-    expectedErrors.erase(expectedErrors.begin());
-    if (!testMissingRequiredField(newuser, expectedErrors))
-    {
-        return false;
-    }
-
-    newuser.setPassword("TestUserAlternateO");
     newuser.setUserID(userDBInterface.insert(newuser));
     if (!newuser.isInDataBase())
     {
         std::cerr << userDBInterface.getAllErrorMessages() << newuser << "\n";
-        std::clog << "Primary key for task: " << newuser.getUserID() << " not set!\n";
+        std::clog << "Primary key for user: " << newuser.getUserID() << " not set!\n";
         if (verboseOutput)
         {
             std::clog << newuser << "\n\n";
         }
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
-    return true;
+    return TestDBInterfaceCore::TestStatus::TestPassed;
 }
 
 void TestUserDBInterface::addFirstUser(UserList &TestUsers)

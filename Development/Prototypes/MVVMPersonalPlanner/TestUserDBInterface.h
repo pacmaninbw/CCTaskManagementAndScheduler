@@ -3,20 +3,19 @@
 
 #include <functional>
 #include <string>
+#include "TestDBInterfaceCore.h"
 #include "UserDbInterface.h"
 #include "UserModel.h"
 #include <vector>
 
-class TestUserDBInterface
+class TestUserDBInterface : public TestDBInterfaceCore
 {
 public:
     TestUserDBInterface(std::string userFileName);
     ~TestUserDBInterface() = default;
-    bool runAllTests();
+    virtual TestDBInterfaceCore::TestStatus runPositivePathTests() override;
 
 private:
-    bool negativePathTests();
-    bool positivePathTests();
     bool testGetUserByLoginName(UserModel_shp insertedUser);
     bool testGetUserByLoginAndPassword(UserModel_shp insertedUser);
     bool testGetUserByFullName(UserModel_shp insertedUser);
@@ -24,10 +23,7 @@ private:
     bool loadTestUsersFromFile(UserList& userProfileTestData);
     bool testGetAllUsers(UserList userProfileTestData);
     bool testMissingRequiredField(UserModel& userMissingField, std::vector<std::string>& expectedErrors);
-    bool wrongErrorMessage(std::string expectedString);
-    bool hasErrorMessage();
-    bool insertionWasSuccessfull(std::size_t userID, std::string logMessage);
-    bool negativePathMissingRequiredFields();
+    TestDBInterfaceCore::TestStatus negativePathMissingRequiredFields();
     void addFirstUser(UserList& TestUsers);
 
     UserDbInterface userDBInterface;
