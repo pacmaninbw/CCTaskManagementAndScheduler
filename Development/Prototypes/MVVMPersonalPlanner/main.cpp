@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
             if (userTests.runAllTests() == TestDBInterfaceCore::TestStatus::TestPassed)
             {
                 TestTaskDBInterface tasktests(programOptions.taskTestDataFile);
-                if (!tasktests.runAllTests())
+                if (tasktests.runAllTests() != TestDBInterfaceCore::TestStatus::TestPassed)
                 {
                     return EXIT_FAILURE;
                 }

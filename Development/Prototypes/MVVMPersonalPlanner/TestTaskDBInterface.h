@@ -7,47 +7,41 @@
 #include <string>
 #include "TaskDbInterface.h"
 #include "TaskModel.h"
+#include "TestDBInterfaceCore.h"
 #include "UserDbInterface.h"
 #include <vector>
 
-class TestTaskDBInterface
+class TestTaskDBInterface : public TestDBInterfaceCore
 {
 public:
     TestTaskDBInterface(std::string taskFileName);
     ~TestTaskDBInterface() = default;
-    bool runAllTests();
+    virtual TestDBInterfaceCore::TestStatus runAllTests() override;
 
 private:
-    bool runNegativePathTests();
-    bool runPositivePathTests();
     bool testGetTaskByDescription(TaskModel_shp task);
     bool testGetTaskByID(TaskModel_shp task);
     TaskList loadTasksFromDataFile();
     void commonTaskInit(TaskModel_shp newTask, CSVRow taskData);
     TaskModel_shp creatOddTask(CSVRow taskData);
     TaskModel_shp creatEvenTask(CSVRow taskData);
-    bool testGetUnstartedTasks();
-    bool testTaskUpdates();
+    TestDBInterfaceCore::TestStatus testGetUnstartedTasks();
+    TestDBInterfaceCore::TestStatus testTaskUpdates();
     bool testTaskUpdate(TaskModel_shp changedTask);
     bool testAddDepenedcies();
     std::chrono::year_month_day stringToDate(std::string dateString);
-    bool testnegativePathNotModified();
-    bool testNegativePathAlreadyInDataBase();
+    TestDBInterfaceCore::TestStatus testnegativePathNotModified();
+    TestDBInterfaceCore::TestStatus testNegativePathAlreadyInDataBase();
     bool testMissingReuqiredField(TaskModel& taskMissingFields);
-    bool wrongErrorMessage(std::string expectedString);
-    bool hasErrorMessage();
-    bool insertionWasSuccessfull(std::size_t taskID, std::string logMessage);
-    bool testNegativePathMissingRequiredFields();
-    bool testTasksFromDataFile();
-    bool testSharedPointerInteraction();
+    TestDBInterfaceCore::TestStatus testNegativePathMissingRequiredFields();
+    TestDBInterfaceCore::TestStatus testTasksFromDataFile();
+    TestDBInterfaceCore::TestStatus testSharedPointerInteraction();
 
     UserDbInterface userDBInterface;
     TaskDbInterface taskDBInteface;
     std::string dataFileName;
     bool verboseOutput;
     std::vector<std::function<bool(TaskModel_shp)>> positiveTestFuncs;
-    std::vector<std::function<bool(void)>> testsWithoutParameters;
-    std::vector<std::function<bool(void)>> negativeTestsWithoutParameters;
     UserModel_shp userOne;
 };
 

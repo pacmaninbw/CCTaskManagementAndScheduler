@@ -15,6 +15,7 @@ TestUserDBInterface::TestUserDBInterface(std::string userFileName)
 : TestDBInterfaceCore(userDBInterface, programOptions.verboseOutput, "user")
 {
     dataFileName = userFileName;
+    
     positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByLoginName, this, std::placeholders::_1));
     positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByLoginAndPassword, this, std::placeholders::_1));
     positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByFullName, this, std::placeholders::_1));

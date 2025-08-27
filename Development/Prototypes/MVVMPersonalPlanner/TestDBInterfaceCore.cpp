@@ -68,6 +68,29 @@ TestDBInterfaceCore::TestStatus TestDBInterfaceCore::runNegativePathTests()
 TestDBInterfaceCore::TestStatus TestDBInterfaceCore::runPositivePathTests()
 {
     TestDBInterfaceCore::TestStatus allTestPassed = TestDBInterfaceCore::TestStatus::TestPassed;
+
+    for (auto test: positiviePathTestFuncsNoArgs)
+    {
+        TestDBInterfaceCore::TestStatus testResult = test();
+        if (allTestPassed == TestDBInterfaceCore::TestStatus::TestPassed)
+        {
+            allTestPassed = testResult;
+        }
+    }
+
+    if (allTestPassed == TestDBInterfaceCore::TestStatus::TestPassed)
+    {
+        std::clog << std::format(
+            "All positive path tests for database insertions and retrievals of {} PASSED!\n",
+            modelUnderTest);
+    }
+    else
+    {
+        std::clog << std::format(
+            "Some or all positive path tests for database insertions and retrievals of {} FAILED!\n",
+            modelUnderTest);
+    }
+
     return allTestPassed;
 }
 

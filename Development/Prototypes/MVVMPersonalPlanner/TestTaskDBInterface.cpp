@@ -6,6 +6,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include "TestDBInterfaceCore.h"
 #include "TestTaskDBInterface.h"
 #include "TaskDbInterface.h"
 #include "TaskModel.h"
@@ -14,22 +15,23 @@
 #include <vector>
 
 TestTaskDBInterface::TestTaskDBInterface(std::string taskFileName)
-: dataFileName{taskFileName}, verboseOutput{programOptions.verboseOutput}
+: TestDBInterfaceCore(taskDBInteface, programOptions.verboseOutput, "task")
 {
+    dataFileName = taskFileName;
     positiveTestFuncs.push_back(std::bind(&TestTaskDBInterface::testGetTaskByID, this, std::placeholders::_1));
     positiveTestFuncs.push_back(std::bind(&TestTaskDBInterface::testGetTaskByDescription, this, std::placeholders::_1));
 
-    testsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testTasksFromDataFile, this));
-    testsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testGetUnstartedTasks, this));
-    testsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testTaskUpdates, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testTasksFromDataFile, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetUnstartedTasks, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testTaskUpdates, this));
 
-    negativeTestsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testNegativePathAlreadyInDataBase, this));
-    negativeTestsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testnegativePathNotModified, this));
-    negativeTestsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testNegativePathMissingRequiredFields, this));
-    negativeTestsWithoutParameters.push_back(std::bind(&TestTaskDBInterface::testSharedPointerInteraction, this));
+    negativePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testNegativePathAlreadyInDataBase, this));
+    negativePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testnegativePathNotModified, this));
+    negativePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testNegativePathMissingRequiredFields, this));
+    negativePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testSharedPointerInteraction, this));
 }
 
-bool TestTaskDBInterface::runAllTests()
+TestDBInterfaceCore::TestStatus TestTaskDBInterface::runAllTests()
 {
     userDBInterface.initFormatOptions();
     taskDBInteface.initFormatOptions();
@@ -38,64 +40,25 @@ bool TestTaskDBInterface::runAllTests()
     if (!userOne)
     {
         std::cerr << "Failed to retrieve userOne from DataBase!\n";
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
-// Order is important because the negative path depends on tasks inserted in the positive path.
-    if (runPositivePathTests())
+    TestDBInterfaceCore::TestStatus positivePathPassed = runPositivePathTests();
+    TestDBInterfaceCore::TestStatus negativePathPassed = runNegativePathTests();
+    
+    if (positivePathPassed == TestDBInterfaceCore::TestStatus::TestPassed &&
+        negativePathPassed == TestDBInterfaceCore::TestStatus::TestPassed)
     {
-        return runNegativePathTests();
+        std::clog << std::format(
+            "All tests for database insertions and retrievals of {} PASSED!\n",
+            modelUnderTest);
+        return TestDBInterfaceCore::TestStatus::TestPassed;
     }
 
-    return false;
-}
-
-bool TestTaskDBInterface::runNegativePathTests()
-{
-    bool allTestsPassed = true;
-
-    for (auto test: negativeTestsWithoutParameters)
-    {
-        if (allTestsPassed)
-        {
-            allTestsPassed = test();
-        }
-    }
-
-    if (allTestsPassed)
-    {
-        std::clog << "All negative path task tests PASSED\n";
-    }
-    else
-    {
-        std::clog << "Some or all negative task tests FAILED!\n";
-    }
-
-    return allTestsPassed;
-}
-
-bool TestTaskDBInterface::runPositivePathTests()
-{
-    bool allTestsPassed = true;
-
-    for (auto test: testsWithoutParameters)
-    {
-        if (allTestsPassed && !test())
-        {
-            allTestsPassed = false;
-        }
-    }
-
-    if (allTestsPassed)
-    {
-        std::clog << "All Task insertions and retrival tests PASSED\n";
-    }
-    else
-    {
-        std::clog << "Some or all Task related tests FAILED!\n";
-    }
-
-    return allTestsPassed;
+    std::clog << std::format(
+        "Some or all tests for database insertions and retrievals of {} FAILED!\n",
+        modelUnderTest);
+    return TestDBInterfaceCore::TestStatus::TestFailed;
 }
 
 bool TestTaskDBInterface::testGetTaskByDescription(TaskModel_shp insertedTask)
@@ -237,7 +200,7 @@ TaskModel_shp TestTaskDBInterface::creatEvenTask(CSVRow taskData)
     return newTask;
 }
 
-bool TestTaskDBInterface::testGetUnstartedTasks()
+TestDBInterfaceCore::TestStatus TestTaskDBInterface::testGetUnstartedTasks()
 {
     TaskList notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(userOne);
     if (!notStartedList.empty())
@@ -253,33 +216,33 @@ bool TestTaskDBInterface::testGetUnstartedTasks()
                 std::clog << *task << "\n";
             }
         }
-        return true; 
+        return TestDBInterfaceCore::TestStatus::TestPassed; 
     }
 
     std::cerr << std::format("taskDBInterface.getUnstartedDueForStartForAssignedUser({}) FAILED!\n", userOne->getUserID()) <<
         taskDBInteface.getAllErrorMessages() << "\n";
 
-    return false;
+    return TestDBInterfaceCore::TestStatus::TestFailed;
 }
 
-bool TestTaskDBInterface::testTaskUpdates()
+TestDBInterfaceCore::TestStatus TestTaskDBInterface::testTaskUpdates()
 {
     TaskModel_shp firstTaskToChange = taskDBInteface.getTaskByDescriptionAndAssignedUser("Archive BHHS74Reunion website to external SSD", *userOne);
     firstTaskToChange->addEffortHours(5.0);
     firstTaskToChange->markComplete();
     if (!testTaskUpdate(firstTaskToChange))
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     if (!testAddDepenedcies())
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     std::clog << "All update task tests PASSED!\n";
 
-    return true;
+    return TestDBInterfaceCore::TestStatus::TestPassed;
 }
 
 bool TestTaskDBInterface::testTaskUpdate(TaskModel_shp changedTask)
@@ -383,49 +346,47 @@ std::chrono::year_month_day TestTaskDBInterface::stringToDate(std::string dateSt
     return dateValue;
 }
 
-bool TestTaskDBInterface::testnegativePathNotModified()
+TestDBInterfaceCore::TestStatus TestTaskDBInterface::testnegativePathNotModified()
 {
     TaskModel_shp taskNotModified = taskDBInteface.getTaskByTaskID(1);
     if (taskNotModified == nullptr)
     {
         std::cerr << "Task 1 not found in database!!\n";
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     taskNotModified->setTaskID(0); // Force it to check modified rather than Already in DB.
     taskNotModified->clearModified();
-    if (insertionWasSuccessfull(taskDBInteface.insert(taskNotModified),
-        "Inserted unmodified task!"))
+    if (insertionWasSuccessfull(taskDBInteface.insert(taskNotModified)))
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     if (!hasErrorMessage())
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     return wrongErrorMessage("not modified!");
 }
 
-bool TestTaskDBInterface::testNegativePathAlreadyInDataBase()
+TestDBInterfaceCore::TestStatus TestTaskDBInterface::testNegativePathAlreadyInDataBase()
 {
     TaskModel_shp taskAlreadyInDB = taskDBInteface.getTaskByTaskID(1);
     if (taskAlreadyInDB == nullptr)
     {
         std::cerr << "Task 1 not found in database!!\n";
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
-    if (insertionWasSuccessfull(taskDBInteface.insert(taskAlreadyInDB),
-        "Inserted existing task!"))
+    if (insertionWasSuccessfull(taskDBInteface.insert(taskAlreadyInDB)))
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     if (!hasErrorMessage())
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     return wrongErrorMessage("already in Database");
@@ -433,8 +394,7 @@ bool TestTaskDBInterface::testNegativePathAlreadyInDataBase()
 
 bool TestTaskDBInterface::testMissingReuqiredField(TaskModel& taskMissingFields)
 {
-    if (insertionWasSuccessfull(taskDBInteface.insert(taskMissingFields),
-        "Inserted task missing required fields!"))
+    if (insertionWasSuccessfull(taskDBInteface.insert(taskMissingFields)))
     {
         return false;
     }
@@ -444,82 +404,45 @@ bool TestTaskDBInterface::testMissingReuqiredField(TaskModel& taskMissingFields)
         return false;
     }
 
-    return wrongErrorMessage("missing required values!");
+    return wrongErrorMessage("missing required values!") == TestDBInterfaceCore::TestStatus::TestPassed;
 }
 
-bool TestTaskDBInterface::wrongErrorMessage(std::string expectedString)
-{
-    std::string errorMessage = taskDBInteface.getAllErrorMessages();
-    std::size_t found = errorMessage.find(expectedString);
-    if (found == std::string::npos)
-    {
-        std::clog << "Wrong message generated! TEST FAILED!\n";
-        std::clog << errorMessage << "\n";
-        return false;
-    }
-
-    return true;
-}
-
-bool TestTaskDBInterface::hasErrorMessage()
-{
-    std::string errorMessage = taskDBInteface.getAllErrorMessages();
-    if (errorMessage.empty())
-    {
-        std::clog << "No error message generated! TEST FAILED!\n";
-        return false;
-    }
-
-    return true;
-}
-
-bool TestTaskDBInterface::insertionWasSuccessfull(std::size_t taskID, std::string logMessage)
-{
-    if (taskID > 0)
-    {
-        std::clog << logMessage << " TEST FAILED\n";
-        return true;
-    }
-
-    return false;
-}
-
-bool TestTaskDBInterface::testNegativePathMissingRequiredFields()
+TestDBInterfaceCore::TestStatus TestTaskDBInterface::testNegativePathMissingRequiredFields()
 {
     TaskModel newTask(userOne);
     if (!testMissingReuqiredField(newTask))
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     newTask.setDescription("Test missing required fields: Set Description");
     if (!testMissingReuqiredField(newTask))
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     newTask.setEstimatedEffort(3);
     if (!testMissingReuqiredField(newTask))
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     newTask.setCreationDate(getTodaysDateMinus(2));
     if (!testMissingReuqiredField(newTask))
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     newTask.setScheduledStart(getTodaysDate());
     if (!testMissingReuqiredField(newTask))
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     newTask.setDueDate(getTodaysDatePlus(2));
     if (!testMissingReuqiredField(newTask))
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     newTask.setPriorityGroup('A');
@@ -533,15 +456,15 @@ bool TestTaskDBInterface::testNegativePathMissingRequiredFields()
         {
             std::clog << newTask << "\n\n";
         }
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
-    return true;
+    return TestDBInterfaceCore::TestStatus::TestPassed;
 }
 
-bool TestTaskDBInterface::testTasksFromDataFile()
+TestDBInterfaceCore::TestStatus TestTaskDBInterface::testTasksFromDataFile()
 {
-    bool allTestsPassed = true;
+    TestDBInterfaceCore::TestStatus allTestsPassed = TestDBInterfaceCore::TestStatus::TestPassed;
     TaskList userTaskTestData = loadTasksFromDataFile();
 
     for (auto testTask: userTaskTestData)
@@ -553,7 +476,7 @@ bool TestTaskDBInterface::testTasksFromDataFile()
             {
                 if (!test(testTask))
                 {
-                    allTestsPassed = false;
+                    allTestsPassed = TestDBInterfaceCore::TestStatus::TestFailed;
                 }
             }
         }
@@ -566,7 +489,7 @@ bool TestTaskDBInterface::testTasksFromDataFile()
             {
                 std::clog << *testTask << "\n\n";
             }
-            allTestsPassed = false;
+            allTestsPassed = TestDBInterfaceCore::TestStatus::TestFailed;
         }
     }
 
@@ -575,43 +498,43 @@ bool TestTaskDBInterface::testTasksFromDataFile()
     return allTestsPassed;
 }
 
-bool TestTaskDBInterface::testSharedPointerInteraction()
+TestDBInterfaceCore::TestStatus TestTaskDBInterface::testSharedPointerInteraction()
 {
     TaskModel_shp newTask = std::make_shared<TaskModel>(userOne);
 
     if (!testMissingReuqiredField(*newTask))
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     newTask->setDescription("Test shared pointer interaction in missing required fields");
     if (!testMissingReuqiredField(*newTask))
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     newTask->setEstimatedEffort(3);
     if (!testMissingReuqiredField(*newTask))
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     newTask->setCreationDate(getTodaysDateMinus(2));
     if (!testMissingReuqiredField(*newTask))
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     newTask->setScheduledStart(getTodaysDate());
     if (!testMissingReuqiredField(*newTask))
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     newTask->setDueDate(getTodaysDatePlus(2));
     if (!testMissingReuqiredField(*newTask))
     {
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
     newTask->setPriorityGroup('A');
@@ -625,8 +548,8 @@ bool TestTaskDBInterface::testSharedPointerInteraction()
         {
             std::clog << newTask << "\n\n";
         }
-        return false;
+        return TestDBInterfaceCore::TestStatus::TestFailed;
     }
 
-    return true;
+    return TestDBInterfaceCore::TestStatus::TestPassed;
 }
