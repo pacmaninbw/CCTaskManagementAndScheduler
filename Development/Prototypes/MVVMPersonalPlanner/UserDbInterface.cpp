@@ -22,6 +22,7 @@ UserDbInterface::UserDbInterface()
 std::size_t UserDbInterface::insert(const UserModel &user)
 {
     std::size_t uID = 0;
+    errorMessages.clear();
 
     if (user.isInDataBase())
     {
