@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
             UtilityTimer stopWatch;
             TestUserDBInterface userTests(programOptions.userTestDataFile);
 
-            if (userTests.runAllTests())
+            if (userTests.runAllTests() == TestDBInterfaceCore::TestStatus::TestPassed)
             {
                 TestTaskDBInterface tasktests(programOptions.taskTestDataFile);
                 if (!tasktests.runAllTests())
