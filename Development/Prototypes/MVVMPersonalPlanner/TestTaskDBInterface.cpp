@@ -197,11 +197,10 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testGetUnstartedTasks()
 {
     TaskList notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(userOne);
     if (!notStartedList.empty())
-    {
-        std::clog << std::format("Find unstarted tasks for user({}) PASSED!\n", userOne->getUserID());
-        
+    {    
         if (verboseOutput)
         {
+            std::clog << std::format("Find unstarted tasks for user({}) PASSED!\n", userOne->getUserID());
             std::clog << std::format("User {} has {} unstarted tasks\n",
                 userOne->getUserID(), notStartedList.size());
             for (auto task: notStartedList)
@@ -232,8 +231,6 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testTaskUpdates()
     {
         return TESTFAILED;
     }
-
-    std::clog << "All update task tests PASSED!\n";
 
     return TESTPASSED;
 }
