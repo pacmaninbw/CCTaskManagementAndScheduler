@@ -21,18 +21,12 @@ TestDBInterfaceCore::TestStatus TestDBInterfaceCore::runAllTests()
     TestDBInterfaceCore::TestStatus positivePathPassed = runPositivePathTests();
     TestDBInterfaceCore::TestStatus negativePathPassed = runNegativePathTests();
     
-    if (positivePathPassed == TESTPASSED && negativePathPassed == TESTPASSED)
-    {
-        std::clog << std::format(
-            "All tests for database insertions and retrievals of {} PASSED!\n",
-            modelUnderTest);
-        return TESTPASSED;
-    }
+    TestDBInterfaceCore::TestStatus allTestsStatus =
+        (positivePathPassed == TESTPASSED && negativePathPassed == TESTPASSED) ? TESTPASSED : TESTFAILED;
 
-    std::clog << std::format(
-        "Some or all tests for database insertions and retrievals of {} FAILED!\n",
-        modelUnderTest);
-    return TESTFAILED;
+    reportTestStatus(allTestsStatus, "");
+
+    return allTestsStatus;
 }
 
 TestDBInterfaceCore::TestStatus TestDBInterfaceCore::runNegativePathTests()
@@ -48,18 +42,7 @@ TestDBInterfaceCore::TestStatus TestDBInterfaceCore::runNegativePathTests()
         }
     }
 
-    if (allTestPassed == TESTPASSED)
-    {
-        std::clog << std::format(
-            "All negative path tests for database insertions and retrievals of {} PASSED!\n",
-            modelUnderTest);
-    }
-    else
-    {
-        std::clog << std::format(
-            "Some or all negative path tests for database insertions and retrievals of {} FAILED!\n",
-            modelUnderTest);
-    }
+    reportTestStatus(allTestPassed, "negative");
 
     return allTestPassed;
 }
@@ -77,18 +60,7 @@ TestDBInterfaceCore::TestStatus TestDBInterfaceCore::runPositivePathTests()
         }
     }
 
-    if (allTestPassed == TESTPASSED)
-    {
-        std::clog << std::format(
-            "All positive path tests for database insertions and retrievals of {} PASSED!\n",
-            modelUnderTest);
-    }
-    else
-    {
-        std::clog << std::format(
-            "Some or all positive path tests for database insertions and retrievals of {} FAILED!\n",
-            modelUnderTest);
-    }
+    reportTestStatus(allTestPassed, "positive");
 
     return allTestPassed;
 }
@@ -155,4 +127,23 @@ TestDBInterfaceCore::TestStatus TestDBInterfaceCore::testInsertionFailureMessage
     }
 
     return TESTPASSED;
+}
+
+void TestDBInterfaceCore::reportTestStatus(TestDBInterfaceCore::TestStatus status, std::string_view path)
+{
+    std::string_view statusStr = status == TESTPASSED? "PASSED" : "FAILED";
+
+    if (path.length() > 0)
+    {
+        std::clog << std::format(
+            "All {} path tests for database insertions and retrievals of {} {}!\n",
+            path, modelUnderTest, statusStr);
+    }
+    else
+    {
+        std::clog << std::format(
+            "All tests for database insertions and retrievals of {} {}!\n",
+            modelUnderTest, statusStr);
+
+    }
 }

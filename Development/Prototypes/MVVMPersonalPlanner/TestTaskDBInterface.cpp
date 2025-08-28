@@ -45,19 +45,13 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::runAllTests()
 
     TestDBInterfaceCore::TestStatus positivePathPassed = runPositivePathTests();
     TestDBInterfaceCore::TestStatus negativePathPassed = runNegativePathTests();
-    
-    if (positivePathPassed == TESTPASSED && negativePathPassed == TESTPASSED)
-    {
-        std::clog << std::format(
-            "All tests for database insertions and retrievals of {} PASSED!\n",
-            modelUnderTest);
-        return TESTPASSED;
-    }
 
-    std::clog << std::format(
-        "Some or all tests for database insertions and retrievals of {} FAILED!\n",
-        modelUnderTest);
-    return TESTFAILED;
+    TestDBInterfaceCore::TestStatus allTestsStatus =
+        (positivePathPassed == TESTPASSED && negativePathPassed == TESTPASSED) ? TESTPASSED : TESTFAILED;
+
+    reportTestStatus(allTestsStatus, "");
+
+    return allTestsStatus;
 }
 
 bool TestTaskDBInterface::testGetTaskByDescription(TaskModel_shp insertedTask)

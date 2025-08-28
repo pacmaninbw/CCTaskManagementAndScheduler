@@ -24,6 +24,8 @@ private:
     bool testGetAllUsers(UserList userProfileTestData);
     TestDBInterfaceCore::TestStatus negativePathMissingRequiredFields();
     void addFirstUser(UserList& TestUsers);
+    TestDBInterfaceCore::TestStatus testnegativePathNotModified();
+    TestDBInterfaceCore::TestStatus testNegativePathAlreadyInDataBase();
 
     UserDbInterface userDBInterface;
     std::string dataFileName;

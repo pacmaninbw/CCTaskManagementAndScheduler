@@ -24,6 +24,7 @@ protected:
     bool insertionWasSuccessfull(std::size_t primaryKey);
     TestDBInterfaceCore::TestStatus testInsertionFailureMessages(
         std::size_t primaryKey, std::vector<std::string> expectedErrors);
+    void reportTestStatus(TestDBInterfaceCore::TestStatus status, std::string_view path);
 
     const TestDBInterfaceCore::TestStatus TESTFAILED = TestDBInterfaceCore::TestStatus::TestFailed;
     const TestDBInterfaceCore::TestStatus TESTPASSED = TestDBInterfaceCore::TestStatus::TestPassed;

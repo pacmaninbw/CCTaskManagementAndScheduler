@@ -22,6 +22,8 @@ TestUserDBInterface::TestUserDBInterface(std::string userFileName)
     positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testUpdateUserPassword, this, std::placeholders::_1));
 
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestUserDBInterface::negativePathMissingRequiredFields, this));
+    negativePathTestFuncsNoArgs.push_back(std::bind(&TestUserDBInterface::testnegativePathNotModified, this));
+    negativePathTestFuncsNoArgs.push_back(std::bind(&TestUserDBInterface::testNegativePathAlreadyInDataBase, this));
 }
 
 TestDBInterfaceCore::TestStatus TestUserDBInterface::runPositivePathTests()
@@ -69,16 +71,8 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::runPositivePathTests()
 
     userProfileTestData.clear();
 
-    if (allTestsPassed)
-    {
-        std::clog << "Insertion and retrieval of users test PASSED!\n";
-        return TESTPASSED;
-    }
-    else
-    {
-        std::cerr << "Some or all insertion and retrieval of users test FAILED!\n";
-        return TESTFAILED;
-    }
+    reportTestStatus(allTestsPassed? TESTPASSED : TESTFAILED, "positive");
+    return allTestsPassed? TESTPASSED : TESTFAILED;
 }
 
 bool TestUserDBInterface::testGetUserByLoginName(UserModel_shp insertedUser)
@@ -302,4 +296,32 @@ void TestUserDBInterface::addFirstUser(UserList &TestUsers)
     UserModel_shp firstUser = std::make_shared<UserModel>("PacMan", "IN", "BW", "pacmaninbw@gmail.com");
     firstUser->autoGenerateLoginAndPassword();
     TestUsers.push_back(firstUser);
+}
+
+TestDBInterfaceCore::TestStatus TestUserDBInterface::testnegativePathNotModified()
+{
+    UserModel_shp userNotModified = userDBInterface.getUserByUserID(1);
+    if (userNotModified == nullptr)
+    {
+        std::cerr << "Task 1 not found in database!!\n";
+        return TESTFAILED;
+    }
+
+    userNotModified->setUserID(0); // Force it to check modified rather than Already in DB.
+    userNotModified->clearModified();
+    std::vector<std::string> expectedErrors = {"not modified!"};
+    return testInsertionFailureMessages(userDBInterface.insert(userNotModified), expectedErrors);
+}
+
+TestDBInterfaceCore::TestStatus TestUserDBInterface::testNegativePathAlreadyInDataBase()
+{
+    UserModel_shp userAlreadyInDB = userDBInterface.getUserByUserID(1);
+    if (userAlreadyInDB == nullptr)
+    {
+        std::cerr << "Task 1 not found in database!!\n";
+        return TESTFAILED;
+    }
+
+    std::vector<std::string> expectedErrors = {"already in Database"};
+    return testInsertionFailureMessages(userDBInterface.insert(userAlreadyInDB), expectedErrors);
 }
