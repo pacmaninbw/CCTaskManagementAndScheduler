@@ -4,8 +4,8 @@
 #include <functional>
 #include <string>
 #include "TestDBInterfaceCore.h"
-#include "../DataBaseInterface/UserDbInterface.h"
-#include "../Models/UserModel.h"
+#include "UserDbInterface.h"
+#include "UserModel.h"
 #include <vector>
 
 class TestUserDBInterface : public TestDBInterfaceCore

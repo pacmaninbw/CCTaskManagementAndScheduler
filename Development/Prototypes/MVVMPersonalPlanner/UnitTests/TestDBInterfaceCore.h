@@ -1,7 +1,7 @@
 #ifndef TESTDBINTERFACECORE_H_
 #define TESTDBINTERFACECORE_H_
 
-#include "../DataBaseInterface/BoostDBInterfaceCore.h"
+#include "BoostDBInterfaceCore.h"
 #include <functional>
 #include <memory>
 #include <string>
