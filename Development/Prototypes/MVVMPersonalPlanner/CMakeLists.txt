@@ -22,6 +22,13 @@ add_executable(protoPersonalPlanner
     UnitTests/TestTaskDBInterface.cpp
 )
 
+target_include_directories(protoPersonalPlanner PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Models>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/DataBaseInterface>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/UnitTests>
+)
+
 target_compile_options(protoPersonalPlanner PRIVATE -Wall -Wextra -pedantic -Werror)
 
 target_compile_features(protoPersonalPlanner PRIVATE cxx_std_23)
