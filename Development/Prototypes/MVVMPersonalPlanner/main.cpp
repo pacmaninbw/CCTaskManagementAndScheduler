@@ -2,8 +2,8 @@
 #include <exception>
 #include <iostream>
 #include <stdexcept>
-#include "UnitTests/TestTaskDBInterface.h"
-#include "UnitTests/TestUserDBInterface.h"
+#include "TestTaskDBInterface.h"
+#include "TestUserDBInterface.h"
 #include "UtilityTimer.h"
 
 /*
