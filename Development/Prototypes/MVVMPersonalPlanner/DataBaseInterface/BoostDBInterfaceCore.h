@@ -5,7 +5,7 @@
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
 #include <chrono>
-#include "../CommandLineParser.h"
+#include "CommandLineParser.h"
 #include <optional>
 #include <string>
 #include <vector>

@@ -1,7 +1,7 @@
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
-#include "../CommandLineParser.h"
-#include "./BoostDBInterfaceCore.h"
+#include "CommandLineParser.h"
+#include "BoostDBInterfaceCore.h"
 #include <iostream>
 #include <sstream>
 #include <string>

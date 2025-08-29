@@ -1,12 +1,12 @@
 #ifndef TASKDBINTERFACE_H_
 #define TASKDBINTERFACE_H_
 
-#include "../CommandLineParser.h"
-#include "../commonUtilities.h"
+#include "CommandLineParser.h"
+#include "commonUtilities.h"
 #include "BoostDBInterfaceCore.h"
 #include <optional>
 #include <string_view>
-#include "../Models/TaskModel.h"
+#include "TaskModel.h"
 #include <vector>
 
 class TaskDbInterface : public BoostDBInterfaceCore
