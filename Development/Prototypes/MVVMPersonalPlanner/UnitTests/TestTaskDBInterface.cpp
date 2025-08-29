@@ -1,6 +1,6 @@
-#include "CommandLineParser.h"
-#include "commonUtilities.h"
-#include "CSVReader.h"
+#include "../CommandLineParser.h"
+#include "../commonUtilities.h"
+#include "../CSVReader.h"
 #include <exception>
 #include <functional>
 #include <iostream>
@@ -8,10 +8,10 @@
 #include <string>
 #include "TestDBInterfaceCore.h"
 #include "TestTaskDBInterface.h"
-#include "TaskDbInterface.h"
-#include "TaskModel.h"
-#include "UserDbInterface.h"
-#include "UserModel.h"
+#include "../DataBaseInterface/TaskDbInterface.h"
+#include "../Models/TaskModel.h"
+#include "../DataBaseInterface/UserDbInterface.h"
+#include "../Models/UserModel.h"
 #include <vector>
 
 TestTaskDBInterface::TestTaskDBInterface(std::string taskFileName)

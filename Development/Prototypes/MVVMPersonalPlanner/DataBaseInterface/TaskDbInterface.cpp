@@ -2,8 +2,8 @@
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
 #include <chrono>
-#include "CommandLineParser.h"
-#include "BoostDBInterfaceCore.h"
+#include "../CommandLineParser.h"
+#include "./BoostDBInterfaceCore.h"
 #include <exception>
 #include <format>
 #include <iostream>
@@ -11,10 +11,10 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
-#include "TaskDbInterface.h"
-#include "TaskModel.h"
-#include "UserDbInterface.h"
-#include "UserModel.h"
+#include "./TaskDbInterface.h"
+#include "../Models/TaskModel.h"
+#include "./UserDbInterface.h"
+#include "../Models/UserModel.h"
 #include <utility>
 
 TaskDbInterface::TaskDbInterface()

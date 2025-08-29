@@ -2,13 +2,13 @@
 #define TESTTASKDBINTERFACE_H_
 
 #include <chrono>
-#include "CSVReader.h"
+#include "../CSVReader.h"
 #include <functional>
 #include <string>
-#include "TaskDbInterface.h"
-#include "TaskModel.h"
+#include "../DataBaseInterface/TaskDbInterface.h"
+#include "../Models/TaskModel.h"
 #include "TestDBInterfaceCore.h"
-#include "UserDbInterface.h"
+#include "../DataBaseInterface/UserDbInterface.h"
 #include <vector>
 
 class TestTaskDBInterface : public TestDBInterfaceCore

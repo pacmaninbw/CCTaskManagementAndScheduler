@@ -10,23 +10,16 @@ find_package(Boost 1.87.0 REQUIRED COMPONENTS system charconv program_options)
 
 add_executable(protoPersonalPlanner
     main.cpp
-    commonUtilities.h
     commonUtilities.cpp
     CommandLineParser.cpp
-    CSVReader.h
-    UserModel.h
-    UserModel.cpp
-    TaskModel.h
-    TaskModel.cpp
-    BoostDBInterfaceCore.h
-    BoostDBInterfaceCore.cpp
-    UserDbInterface.h
-    UserDbInterface.cpp
-    TaskDbInterface.h
-    TaskDbInterface.cpp
-    TestDBInterfaceCore.cpp
-    TestUserDBInterface.cpp
-    TestTaskDBInterface.cpp
+    Models/UserModel.cpp
+    Models/TaskModel.cpp
+    DataBaseInterface/BoostDBInterfaceCore.cpp
+    DataBaseInterface/UserDbInterface.cpp
+    DataBaseInterface/TaskDbInterface.cpp
+    UnitTests/TestDBInterfaceCore.cpp
+    UnitTests/TestUserDBInterface.cpp
+    UnitTests/TestTaskDBInterface.cpp
 )
 
 target_compile_options(protoPersonalPlanner PRIVATE -Wall -Wextra -pedantic -Werror)

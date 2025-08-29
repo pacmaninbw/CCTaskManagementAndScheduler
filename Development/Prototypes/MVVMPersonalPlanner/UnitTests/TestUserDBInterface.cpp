@@ -1,14 +1,14 @@
-#include "CommandLineParser.h"
-#include "commonUtilities.h"
-#include "CSVReader.h"
+#include "../CommandLineParser.h"
+#include "../commonUtilities.h"
+#include "../CSVReader.h"
 #include <exception>
 #include <functional>
 #include <iostream>
 #include <stdexcept>
 #include <string>
 #include "TestUserDBInterface.h"
-#include "UserDbInterface.h"
-#include "UserModel.h"
+#include "../DataBaseInterface/UserDbInterface.h"
+#include "../Models/UserModel.h"
 #include <vector>
 
 TestUserDBInterface::TestUserDBInterface(std::string userFileName)

@@ -1,6 +1,6 @@
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
-#include "CommandLineParser.h"
+#include "../CommandLineParser.h"
 #include "BoostDBInterfaceCore.h"
 #include <exception>
 #include <format>
@@ -10,7 +10,7 @@
 #include <string>
 #include <string_view>
 #include "UserDbInterface.h"
-#include "UserModel.h"
+#include "../Models/UserModel.h"
 #include <utility>
 
 UserDbInterface::UserDbInterface()
