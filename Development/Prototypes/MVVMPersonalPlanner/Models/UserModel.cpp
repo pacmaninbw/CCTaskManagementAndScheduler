@@ -17,15 +17,14 @@ UserModel::UserModel()
 UserModel::UserModel(std::string lastIn, std::string firstIn, std::string middleIIn, std::string emailIn, std::size_t uID)
 : UserModel()
 {
-    lastName = lastIn;
-    firstName = firstIn;
-    middleInitial = middleIIn;
-    email = emailIn;
-    userID = uID;
-    if (!uID)
+    if (uID > 0)
     {
-        modified = true;
+        setUserID(uID);
     }
+    setLastName(lastIn);
+    setFirstName(firstIn);
+    setMiddleInitial(middleIIn);
+    setEmail(emailIn);
 }
 
 static constexpr std::size_t minNameLenght = 2;
