@@ -402,17 +402,6 @@ std::string TaskDbInterface::formatUpdateTask(TaskModel &task)
     return std::string();
 }
 
-std::optional<NSBM::date> TaskDbInterface::optionalDateConversion(std::optional<std::chrono::year_month_day> optDate)
-{
-    std::optional<NSBM::date> mySqlDate;
-
-    if (optDate.has_value())
-    {
-        mySqlDate = convertChronoDateToBoostMySQLDate(optDate.value());
-    }
-    return mySqlDate;
-}
-
 void TaskDbInterface::addDependencies(const std::string& dependenciesText, TaskModel_shp newTask)
 {
     std::vector<std::string> dependencyStrings = explodeTextField(dependenciesText);
