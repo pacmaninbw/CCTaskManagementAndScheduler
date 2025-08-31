@@ -48,6 +48,7 @@ std::string implodeTextField(std::vector<std::string>& fields) noexcept;
         NSBM::date boostDate(tp);
         return boostDate;
     };
+
     std::chrono::year_month_day convertBoostMySQLDateToChornoDate(const NSBM::date& source) noexcept
     {
         const std::chrono::year year{source.year()};
@@ -57,7 +58,36 @@ std::string implodeTextField(std::vector<std::string>& fields) noexcept;
         return converted;
     };
 
-protected:
+    NSBM::datetime convertChronoTPToChronoLT(std::chrono::system_clock::time_point source) noexcept
+    {
+        NSBM::datetime::time_point btp = std::chrono::time_point_cast<boost::mysql::datetime::time_point::duration>(source);
+        NSBM::datetime boostDate(btp);
+        return boostDate;
+    };
+
+    std::optional<NSBM::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate)
+    {
+        std::optional<NSBM::date> mySqlDate;
+
+        if (optDate.has_value())
+        {
+            mySqlDate = convertChronoDateToBoostMySQLDate(optDate.value());
+        }
+        return mySqlDate;
+    };
+
+    std::optional<NSBM::datetime> optionalDateTimeConversion(std::optional<std::chrono::system_clock::time_point> optDateTime)
+    {
+        std::optional<NSBM::datetime> timeStamp;
+
+        if (optDateTime.has_value())
+        {
+            timeStamp = convertChronoTPToChronoLT(optDateTime.value());
+        }
+        return timeStamp;
+    };
+
+    protected:
     NSBM::connect_params dbConnectionParameters;
     bool verboseOutput;
     char delimiter;
