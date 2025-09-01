@@ -56,6 +56,7 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::runPositivePathTests()
         else
         {
             std::clog << "Primary key for user: " << user->getLastName() << ", " << user->getFirstName() << " not set!\n";
+            std::clog << userDBInterface.getAllErrorMessages() << "\n";
             if (verboseOutput)
             {
                 std::clog << *user << "\n\n";
@@ -196,6 +197,7 @@ bool TestUserDBInterface::loadTestUsersFromFile(UserList &userProfileTestData)
         userIn->setFirstName(row[1]);
         userIn->setMiddleInitial(row[2]);
         userIn->setEmail(row[3]);
+        userIn->setCreationDate(getTodaysDate());
         userIn->autoGenerateLoginAndPassword();
         userProfileTestData.push_back(userIn);
     }
@@ -251,7 +253,7 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::negativePathMissingRequired
 {
     std::vector<std::string> expectedErrors =
     {
-        "Last Name", "First Name", "Login Name", "Password", "User is missing required values"
+        "Last Name", "First Name", "Login Name", "Password", "creation date", "User is missing required values"
     };
 
     UserModel newuser;
@@ -274,6 +276,10 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::negativePathMissingRequired
         expectedErrors.erase(expectedErrors.begin());
         setField("teststringvalue");
     }
+
+    expectedErrors.clear();
+
+    newuser.setCreationDate(getTodaysDate());
 
     newuser.setUserID(userDBInterface.insert(newuser));
     if (!newuser.isInDataBase())
