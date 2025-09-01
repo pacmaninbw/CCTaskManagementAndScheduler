@@ -14,7 +14,9 @@ UserModel::UserModel()
     preferences.endTime = "5:00 PM";
 }
 
-UserModel::UserModel(std::string lastIn, std::string firstIn, std::string middleIIn, std::string emailIn, std::size_t uID)
+UserModel::UserModel(
+    std::string lastIn, std::string firstIn, std::string middleIIn, std::string emailIn,
+    std::size_t uID, std::chrono::year_month_day dateAdded)
 : UserModel()
 {
     if (uID > 0)
@@ -25,6 +27,7 @@ UserModel::UserModel(std::string lastIn, std::string firstIn, std::string middle
     setFirstName(firstIn);
     setMiddleInitial(middleIIn);
     setEmail(emailIn);
+    setCreationDate(dateAdded);
 }
 
 static constexpr std::size_t minNameLenght = 2;
@@ -54,6 +57,12 @@ bool UserModel::hasRequiredValues(std::string& missingFields) const noexcept
     if (password.empty() || password.length() < 8)
     {
         missingFields.append("Missing Users Password.\n");
+        hasValues = false;
+    }
+
+    if (!created.ok())
+    {
+        missingFields.append("Missing Users creation date.\n");
         hasValues = false;
     }
     
@@ -161,10 +170,23 @@ void UserModel::setUserID(std::size_t UserID)
     userID = UserID;
 }
 
+void UserModel::setCreationDate(std::chrono::year_month_day dateIn)
+{
+    modified = true;
+    created = dateIn;
+}
+
+void UserModel::setLastLogin(std::chrono::system_clock::time_point dateAndTime)
+{
+    modified = true;
+    lastLogin = dateAndTime;
+}
+
 bool UserModel::diffUser(UserModel &other)
 {
     // Ignore user preferences
     return (userID == other.userID && loginName == other.loginName && password == other.password &&
-        lastName == other.lastName && firstName == other.firstName && middleInitial == other.middleInitial);
+        lastName == other.lastName && firstName == other.firstName &&middleInitial == other.middleInitial &&
+        created == other.created);
 }
 

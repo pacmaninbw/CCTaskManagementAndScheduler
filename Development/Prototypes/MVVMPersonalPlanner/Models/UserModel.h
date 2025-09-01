@@ -1,9 +1,12 @@
 #ifndef USERMODEL_H_
 #define USERMODEL_H_
 
+#include <chrono>
+#include "commonUtilities.h"
 #include <iostream>
 #include <format>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +24,9 @@ public:
     };
 
     UserModel();
-    UserModel(std::string lastIn, std::string firstIn, std::string middleIIn, std::string emailIn="", std::size_t uID=0);
+    UserModel(
+        std::string lastIn, std::string firstIn, std::string middleIIn, std::string emailIn="",
+        std::size_t uID=0, std::chrono::year_month_day dateAdded=getTodaysDate());
     ~UserModel() = default;
 
     bool isInDataBase() const noexcept { return (userID > 0); };
@@ -37,6 +42,8 @@ public:
     std::string getStartTime() const { return preferences.startTime; };
     std::string getEndTime() const { return preferences.endTime; };
     std::size_t getUserID() const { return userID; };
+    std::chrono::year_month_day getCreationDate() const { return created; };
+    std::optional<std::chrono::system_clock::time_point> getLastLogin() const { return lastLogin; };
     bool isPriorityInSchedule() const { return preferences.includePriorityInSchedule; };
     bool isMinorPriorityInSchedule() const { return preferences.includeMinorPriorityInSchedule; };
     bool isUsingLettersForMaorPriority() const { return preferences.userLetterForMajorPriority; };
@@ -56,6 +63,8 @@ public:
     void setUsingLettersForMaorPriority(bool usingLetters);
     void setSeparatingPriorityWithDot(bool separate);
     void setUserID(std::size_t UserID);
+    void setCreationDate(std::chrono::year_month_day dateIn);
+    void setLastLogin(std::chrono::system_clock::time_point dateAndTime);
 
     bool operator==(UserModel& other)
     {
@@ -75,6 +84,11 @@ public:
         os << std::format(outFmtStr, "Middle Initial", user.middleInitial);
         os << std::format(outFmtStr, "Email", user.email);
         os << std::format(outFmtStr, "Login Name", user.loginName);
+        os << std::format(outFmtStr, "User Added", user.created);
+        if (user.lastLogin.has_value())
+        {
+            os << std::format(outFmtStr, "Last Login", user.lastLogin.value());
+        }
 
         return os;
     };
@@ -92,6 +106,8 @@ private:
     std::string loginName;
     std::string password;
     UserPreferences preferences;
+    std::chrono::year_month_day created;
+    std::optional<std::chrono::system_clock::time_point> lastLogin;
     bool modified;
 };
 
