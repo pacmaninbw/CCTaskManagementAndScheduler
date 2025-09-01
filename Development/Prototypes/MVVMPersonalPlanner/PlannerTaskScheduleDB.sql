@@ -17,11 +17,14 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserProfile` (
     `LoginName` VARCHAR(45) NOT NULL,
     `HashedPassWord` VARCHAR(45) NOT NULL,
     `Preferences` MEDIUMTEXT NOT NULL,
+    `UserAdded` DATE NOT NULL,
+    `LastLogin` DATETIME,
     PRIMARY KEY (`UserID`, `LastName`, `LoginName`),
     UNIQUE INDEX `UserID_UNIQUE` (`UserID` ASC),
     UNIQUE INDEX `FullName_UNIQUE` (`LastName`, `FirstName`, `MiddleInitial`),
     UNIQUE INDEX `LoginName_UNIQUE` (`LoginName` ASC),
-    UNIQUE INDEX `Email_UNIQUE` (`EmailAddress` ASC)
+    UNIQUE INDEX `Email_UNIQUE` (`EmailAddress` ASC),
+    UNIQUE INDEX `LastLogin_UNIQUE` (`LastLogin` DESC)
 );
 
 -- --------------------------------------------------------
@@ -51,6 +54,9 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserNotes` (
     `UserID` INT UNSIGNED NOT NULL,
     `NotationDateTime` DATETIME NOT NULL,
     `Content` VARCHAR(1024) NOT NULL,
+    `LastUpdate` DATETIME NOT NULL,
+    UNIQUE INDEX `NotationDateTime_UNIQUE` (`NotationDateTime` DESC),
+    UNIQUE INDEX `LastUpdate_UNIQUE` (`LastUpdate` DESC),
     PRIMARY KEY (`idUserNotes`, `UserID`),
     UNIQUE INDEX `idUserNotes_UNIQUE` (`idUserNotes` ASC),
     INDEX `fk_UserNotes_UserID_idx` (`UserID` ASC),
