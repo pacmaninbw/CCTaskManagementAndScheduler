@@ -142,7 +142,7 @@ TaskList TaskDbInterface::getUnstartedDueForStartForAssignedUser(const UserModel
         NSBM::format_context fctx(format_opts.value());
         NSBM::format_sql_to(fctx, baseQuery);
         NSBM::format_sql_to(fctx, " WHERE AsignedTo = {} AND ScheduledStart < {} AND (Status IS NULL OR Status = {})",
-            assignedUser.getUserID(), convertChronoDateToBoostMySQLDate(getTodaysDatePlus(OneWeek)), notStarted);
+            assignedUser.getUserID(), stdchronoDateToBoostMySQLDate(getTodaysDatePlus(OneWeek)), notStarted);
 
         NSBM::results localResults = runQueryAsync(std::move(fctx).get().value());
 
@@ -261,9 +261,9 @@ void TaskDbInterface::processResultRow(NSBM::row_view rv, TaskModel_shp newTask)
     newTask->setAssignToID(rv.at(assignedToIdx).as_uint64());
     newTask->setDescription(rv.at(descriptionIdx).as_string());
     newTask->setPercentageComplete(rv.at(percentageCompleteIdx).as_double());
-    newTask->setCreationDate(convertBoostMySQLDateToChornoDate(rv.at(createdOnIdx).as_date()));
-    newTask->setDueDate(convertBoostMySQLDateToChornoDate(rv.at(requiredDeliveryIdx).as_date()));
-    newTask->setScheduledStart(convertBoostMySQLDateToChornoDate(rv.at(scheduledStartIdx).as_date()));
+    newTask->setCreationDate(boostMysqlDateTimeToChronoTimePoint(rv.at(createdOnIdx).as_date()));
+    newTask->setDueDate(boostMysqlDateTimeToChronoTimePoint(rv.at(requiredDeliveryIdx).as_date()));
+    newTask->setScheduledStart(boostMysqlDateTimeToChronoTimePoint(rv.at(scheduledStartIdx).as_date()));
     newTask->setEstimatedEffort(rv.at(estimatedEffortHoursIdx).as_uint64());
     newTask->setActualEffortToDate(rv.at(actualEffortHoursIdx).as_double());
     newTask->setPriorityGroup(rv.at(schedulePriorityGroupIdx).as_uint64());
@@ -283,17 +283,17 @@ void TaskDbInterface::processResultRow(NSBM::row_view rv, TaskModel_shp newTask)
 
     if (!rv.at(actualStartIdx).is_null())
     {
-        newTask->setactualStartDate(convertBoostMySQLDateToChornoDate(rv.at(actualStartIdx).as_date()));
+        newTask->setactualStartDate(boostMysqlDateTimeToChronoTimePoint(rv.at(actualStartIdx).as_date()));
     }
 
     if (!rv.at(estimatedCompletionIdx).is_null())
     {
-        newTask->setEstimatedCompletion(convertBoostMySQLDateToChornoDate(rv.at(estimatedCompletionIdx).as_date()));
+        newTask->setEstimatedCompletion(boostMysqlDateTimeToChronoTimePoint(rv.at(estimatedCompletionIdx).as_date()));
     }
 
     if (!rv.at(completedIdx).is_null())
     {
-        newTask->setCompletionDate(convertBoostMySQLDateToChornoDate(rv.at(completedIdx).as_date()));
+        newTask->setCompletionDate(boostMysqlDateTimeToChronoTimePoint(rv.at(completedIdx).as_date()));
     }
 
     std::size_t dependencyCount = rv.at(dependencyCountIdx).as_uint64();
@@ -328,9 +328,9 @@ std::string TaskDbInterface::formatInsertTask(TaskModel &task)
             task.rawParentTaskID(),
             task.getStatusIntVal(),
             task.getPercentageComplete(),
-            convertChronoDateToBoostMySQLDate(task.getCreationDate()),
-            convertChronoDateToBoostMySQLDate(task.getDueDate()),
-            convertChronoDateToBoostMySQLDate(task.getScheduledStart()),
+            stdchronoDateToBoostMySQLDate(task.getCreationDate()),
+            stdchronoDateToBoostMySQLDate(task.getDueDate()),
+            stdchronoDateToBoostMySQLDate(task.getScheduledStart()),
             optionalDateConversion(task.rawActualStartDate()),
             optionalDateConversion(task.rawEstimatedCompletion()),
             optionalDateConversion(task.rawCompletionDate()),
@@ -383,9 +383,9 @@ std::string TaskDbInterface::formatUpdateTask(TaskModel &task)
         task.rawParentTaskID(),
         task.getStatusIntVal(),
         task.getPercentageComplete(),
-        convertChronoDateToBoostMySQLDate(task.getCreationDate()),
-        convertChronoDateToBoostMySQLDate(task.getDueDate()),
-        convertChronoDateToBoostMySQLDate(task.getScheduledStart()),
+        stdchronoDateToBoostMySQLDate(task.getCreationDate()),
+        stdchronoDateToBoostMySQLDate(task.getDueDate()),
+        stdchronoDateToBoostMySQLDate(task.getScheduledStart()),
         optionalDateConversion(task.rawActualStartDate()),
         optionalDateConversion(task.rawEstimatedCompletion()),
         optionalDateConversion(task.rawCompletionDate()),

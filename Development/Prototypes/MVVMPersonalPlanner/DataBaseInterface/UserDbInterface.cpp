@@ -52,7 +52,7 @@ std::size_t UserDbInterface::insert(const UserModel &user)
             "INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
             "HashedPassWord, UserAdded, LastLogin, Preferences) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8})",
             user.getLastName(), user.getFirstName(), user.getMiddleInitial(), user.getEmail(), user.getLoginName(),
-            user.getPassword(), convertChronoDateToBoostMySQLDate(user.getCreationDate()),
+            user.getPassword(), stdchronoDateToBoostMySQLDate(user.getCreationDate()),
             optionalDateTimeConversion(user.getLastLogin()), buildPreferenceText(user)
         );
 
@@ -305,11 +305,11 @@ void UserDbInterface::processResultRow(NSBM::row_view rv, UserModel_shp newUser)
     newUser->setEmail(rv.at(EmailAddressIdx).as_string());
     newUser->setLoginName(rv.at(LoginNameIdx).as_string());
     newUser->setPassword(rv.at(PasswordIdx).as_string());
-    newUser->setCreationDate(convertBoostMySQLDateToChornoDate(rv.at(UserAddedIdx).as_date()));
+    newUser->setCreationDate(boostMysqlDateTimeToChronoTimePoint(rv.at(UserAddedIdx).as_date()));
     std::string preferences = rv.at(PasswordIdx).as_string();
-        if (!rv.at(LastLoginIdx).is_null())
+    if (!rv.at(LastLoginIdx).is_null())
     {
-//        newUser->setLastLogin(rv.at(LastLoginIdx).as_datetime());
+        newUser->setLastLogin(boostMysqlDateTimeToChronoTimePoint(rv.at(LastLoginIdx).as_datetime()));
     }
 
 
