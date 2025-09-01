@@ -50,9 +50,10 @@ std::size_t UserDbInterface::insert(const UserModel &user)
     {
         std::string insertStatement = NSBM::format_sql(format_opts.value(),
             "INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, Preferences) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6})",
+            "HashedPassWord, UserAdded, LastLogin, Preferences) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8})",
             user.getLastName(), user.getFirstName(), user.getMiddleInitial(), user.getEmail(), user.getLoginName(),
-            user.getPassword(), buildPreferenceText(user)
+            user.getPassword(), convertChronoDateToBoostMySQLDate(user.getCreationDate()),
+            optionalDateTimeConversion(user.getLastLogin()), buildPreferenceText(user)
         );
 
         NSBM::results localResult = runQueryAsync(insertStatement);
@@ -304,7 +305,13 @@ void UserDbInterface::processResultRow(NSBM::row_view rv, UserModel_shp newUser)
     newUser->setEmail(rv.at(EmailAddressIdx).as_string());
     newUser->setLoginName(rv.at(LoginNameIdx).as_string());
     newUser->setPassword(rv.at(PasswordIdx).as_string());
+    newUser->setCreationDate(convertBoostMySQLDateToChornoDate(rv.at(UserAddedIdx).as_date()));
     std::string preferences = rv.at(PasswordIdx).as_string();
+        if (!rv.at(LastLoginIdx).is_null())
+    {
+//        newUser->setLastLogin(rv.at(LastLoginIdx).as_datetime());
+    }
+
 
     // All the set functions set modified, since this user is new in memory it is not modified.
     newUser->clearModified();

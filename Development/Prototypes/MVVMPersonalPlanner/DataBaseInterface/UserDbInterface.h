@@ -37,7 +37,7 @@ private:
  */
     NSBM::constant_string_view baseQuery = 
         "SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, Preferences FROM UserProfile";
+            "HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile";
 
     const std::size_t UserIdIdx = 0;
     const std::size_t LastNameIdx = 1;
@@ -46,7 +46,9 @@ private:
     const std::size_t EmailAddressIdx = 4;
     const std::size_t LoginNameIdx = 5;
     const std::size_t PasswordIdx = 6;
-    const std::size_t PreferencesIdx = 7;
+    const std::size_t UserAddedIdx = 7;
+    const std::size_t LastLoginIdx = 8;
+    const std::size_t PreferencesIdx = 9;
 // Preference subfield indexes
     const std::size_t PrefDayStartIdx = 0;
     const std::size_t PrefDayEndIdx = 1;
