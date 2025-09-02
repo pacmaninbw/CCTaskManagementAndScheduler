@@ -1,7 +1,6 @@
 Memcheck, a memory error detector
 Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
 Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
-Command: protoPersonalPlanner -u pacman -p M1nus+1r3th
 
 All positive path tests for database insertions and retrievals of user PASSED!
 All negative path tests for database insertions and retrievals of user PASSED!
@@ -12,8 +11,8 @@ All tests for database insertions and retrievals of task PASSED!
 All tests Passed
 
 HEAP SUMMARY:
-in use at exit: 0 bytes in 0 blocks
-total heap usage: 18,045 allocs, 18,045 frees, 2,175,786 bytes allocated
+    in use at exit: 0 bytes in 0 blocks
+  total heap usage: 18,045 allocs, 18,045 frees, 2,175,786 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 
