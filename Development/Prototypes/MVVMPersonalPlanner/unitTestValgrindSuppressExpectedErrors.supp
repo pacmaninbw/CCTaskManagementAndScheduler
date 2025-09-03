@@ -1,9 +1,9 @@
 {
-   <UserModelhasRequiredValues>
+   <report1MssingField>
    Memcheck:Cond
    fun:_ZNKSt6chrono4year2okEv
    fun:_ZNKSt6chrono14year_month_day2okEv
-   fun:_ZNK9UserModel17hasRequiredValuesERNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   fun:_ZNK9UserModel19reportMissingFieldsB5cxx11Ev
    fun:_ZN15UserDbInterface6insertERK9UserModel
    fun:_ZN19TestUserDBInterface33negativePathMissingRequiredFieldsEv
    fun:_ZSt13__invoke_implIN19TestDBInterfaceCore10TestStatusERM19TestUserDBInterfaceFS1_vERPS2_JEET_St21__invoke_memfun_derefOT0_OT1_DpOT2_
@@ -15,11 +15,11 @@
    fun:_ZNSt17_Function_handlerIFN19TestDBInterfaceCore10TestStatusEvESt5_BindIFM19TestUserDBInterfaceFS1_vEPS4_EEE9_M_invokeERKSt9_Any_data
 }
 {
-   <UserModelHasReq2>
+   <report2userMssingField>
    Memcheck:Cond
    fun:_ZNKSt6chrono4year2okEv
    fun:_ZNKSt6chrono14year_month_day2okEv
-   fun:_ZNK9UserModel17hasRequiredValuesERNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   fun:_ZNK9UserModel19reportMissingFieldsB5cxx11Ev
    fun:_ZN15UserDbInterface6insertERK9UserModel
    fun:_ZN19TestUserDBInterface33negativePathMissingRequiredFieldsEv
    fun:_ZSt13__invoke_implIN19TestDBInterfaceCore10TestStatusERM19TestUserDBInterfaceFS1_vERPS2_JEET_St21__invoke_memfun_derefOT0_OT1_DpOT2_
@@ -31,11 +31,11 @@
    fun:_ZNSt17_Function_handlerIFN19TestDBInterfaceCore10TestStatusEvESt5_BindIFM19TestUserDBInterfaceFS1_vEPS4_EEE9_M_invokeERKSt9_Any_data
 }
 {
-   <User3ModelHasReq3>
+   <user3reportMissinsgField>
    Memcheck:Cond
    fun:_ZNKSt6chrono5month2okEv
    fun:_ZNKSt6chrono14year_month_day2okEv
-   fun:_ZNK9UserModel17hasRequiredValuesERNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   fun:_ZNK9UserModel19reportMissingFieldsB5cxx11Ev
    fun:_ZN15UserDbInterface6insertERK9UserModel
    fun:_ZN19TestUserDBInterface33negativePathMissingRequiredFieldsEv
    fun:_ZSt13__invoke_implIN19TestDBInterfaceCore10TestStatusERM19TestUserDBInterfaceFS1_vERPS2_JEET_St21__invoke_memfun_derefOT0_OT1_DpOT2_
@@ -46,4 +46,5 @@
    fun:_ZSt10__invoke_rIN19TestDBInterfaceCore10TestStatusERSt5_BindIFM19TestUserDBInterfaceFS1_vEPS3_EEJEENSt9enable_ifIX16is_invocable_r_vIT_T0_JDpT1_EEESB_E4typeEOSC_DpOSD_
    fun:_ZNSt17_Function_handlerIFN19TestDBInterfaceCore10TestStatusEvESt5_BindIFM19TestUserDBInterfaceFS1_vEPS4_EEE9_M_invokeERKSt9_Any_data
 }
+
 
