@@ -31,44 +31,51 @@ UserModel::UserModel(
 }
 
 static constexpr std::size_t minNameLenght = 2;
+static constexpr std::size_t minPasswordLenght = 8;
 
-bool UserModel::hasRequiredValues(std::string& missingFields) const noexcept
+bool UserModel::hasRequiredValues() const noexcept
 {
-    bool hasValues = true;
+    // Each condition is an error, if any condition is true, then the fuction
+    // should return false. If you add an error condition make sure to add it
+    // to reportMissingFields() as well.
+    return !((lastName.empty() || lastName.length() < minNameLenght) ||
+        (firstName.empty() || firstName.length() < minNameLenght) ||
+        (loginName.empty() || loginName.length() < (2 * minNameLenght)) ||
+        (password.empty() || password.length() < minPasswordLenght) ||
+        (!created.ok()));
+}
+
+std::string UserModel::reportMissingFields() const noexcept
+{
+    std::string missingFields;
 
     if (lastName.empty() || lastName.length() < minNameLenght)
     {
         missingFields.append("Missing Users Last Name.\n");
-        hasValues = false;
     }
 
     if (firstName.empty() || firstName.length() < minNameLenght)
     {
         missingFields.append("Missing Users First Name.\n");
-        hasValues = false;
     }
 
-    if (loginName.empty() || loginName.length() < 4)
+    if (loginName.empty() || loginName.length() < (2 * minNameLenght))
     {
         missingFields.append("Missing Users Login Name.\n");
-        hasValues = false;
     }
 
-    if (password.empty() || password.length() < 8)
+    if (password.empty() || password.length() < minPasswordLenght)
     {
         missingFields.append("Missing Users Password.\n");
-        hasValues = false;
     }
 
     if (!created.ok())
     {
         missingFields.append("Missing Users creation date.\n");
-        hasValues = false;
     }
-    
-    return hasValues;
-}
 
+    return missingFields;
+}
 
 void UserModel::autoGenerateLoginAndPassword()
 {

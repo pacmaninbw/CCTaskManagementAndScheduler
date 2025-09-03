@@ -36,11 +36,10 @@ std::size_t UserDbInterface::insert(const UserModel &user)
         return uID;
     }
 
-    std::string missingFieldErrors;
-    if (!user.hasRequiredValues(missingFieldErrors))
+    if (!user.hasRequiredValues())
     {
         appendErrorMessage("User is missing required values!");
-        appendErrorMessage(missingFieldErrors);
+        appendErrorMessage(user.reportMissingFields());
         return uID;
     }
 

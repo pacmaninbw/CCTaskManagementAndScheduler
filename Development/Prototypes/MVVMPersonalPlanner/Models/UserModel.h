@@ -31,7 +31,8 @@ public:
 
     bool isInDataBase() const noexcept { return (userID > 0); };
     bool isModified() const noexcept { return modified; };
-    bool hasRequiredValues(std::string& missingFields) const noexcept;
+    bool hasRequiredValues() const noexcept;
+    std::string reportMissingFields() const noexcept;
     void autoGenerateLoginAndPassword();
     std::string getLastName() const { return lastName;};
     std::string getFirstName() const { return firstName; };
