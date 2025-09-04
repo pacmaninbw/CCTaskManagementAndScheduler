@@ -1,5 +1,6 @@
 #include <chrono>
 #include "commonUtilities.h"
+#include <functional>
 #include "GenericDictionary.h"
 #include <iostream>
 #include <memory>
@@ -19,7 +20,6 @@ static std::vector<GenericDictionary<TaskModel::TaskStatus, std::string>::DictTy
 };
 
 static GenericDictionary<TaskModel::TaskStatus, std::string> taskStatusConversionTable(statusConversionsDefs);
-static constexpr std::size_t MinimumDescriptionLength = 10;
 
 TaskModel::TaskModel()
 : modified{false},
@@ -34,6 +34,14 @@ TaskModel::TaskModel()
   priority{0},
   personal{false}
 {
+    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingDescription, this), "description"});
+    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingCreatorID, this), "user ID for creator"});
+    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingAssignedID, this), "user ID for assigned user"});
+    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingEffortEstimate, this), "estimated effort in hours"});
+    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingPriorityGroup, this), "priority"});
+    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingCreationDate, this), "date of creation"});
+    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingScheduledStart, this), "scheduled start date"});
+    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingDueDate, this), "due date (deadline)"});
 }
 
 TaskModel::TaskModel(UserModel_shp creator)
@@ -51,17 +59,34 @@ TaskModel::TaskModel(UserModel_shp creator, std::string description)
     setDescription(description);
 }
 
-bool TaskModel::hasRequiredValues() const
+bool TaskModel::hasRequiredValues() const noexcept
 {
-    if (description.empty() || description.length() < MinimumDescriptionLength ||
-        creatorID == 0 || assignToID == 0 || estimatedEffort == 0 ||
-        priorityGroup == 0 || !creationDate.ok() || !scheduledStart.ok() || !dueDate.ok())
+    for (auto fieldTest: missingRequiredFieldsTests)
     {
-        return false;
+        if (fieldTest.errorCondition())
+        {
+            return false;
+        }
     }
-    
+
     return true;
 }
+
+std::string TaskModel::reportMissingValues() const noexcept
+{
+    std::string missingFieldsReport;
+
+    for (auto testAndReport: missingRequiredFieldsTests)
+    {
+        if (testAndReport.errorCondition())
+        {
+            missingFieldsReport.append(std::format("Task is missing required {}!\n", testAndReport.errorReport));
+        }
+    }
+
+    return missingFieldsReport;
+}
+
 
 void TaskModel::addEffortHours(double hours)
 {
