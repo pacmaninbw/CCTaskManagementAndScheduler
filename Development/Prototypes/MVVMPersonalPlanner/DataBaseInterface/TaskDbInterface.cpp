@@ -45,6 +45,7 @@ std::size_t TaskDbInterface::insert(TaskModel &task)
     if (!task.hasRequiredValues())
     {
         appendErrorMessage("Task is missing required values!");
+        appendErrorMessage(task.reportMissingValues());
         return taskID;
     }
 
