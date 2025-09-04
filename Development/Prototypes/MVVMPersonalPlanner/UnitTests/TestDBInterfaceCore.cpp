@@ -92,6 +92,11 @@ bool TestDBInterfaceCore::hasErrorMessage()
         return false;
     }
 
+    if (verboseOutput)
+    {
+        std::clog << "Expected error was; " << errorMessage << "\n";
+    }
+
     return true;
 }
 
