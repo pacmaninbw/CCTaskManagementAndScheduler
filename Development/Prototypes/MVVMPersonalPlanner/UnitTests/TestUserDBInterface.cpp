@@ -253,7 +253,7 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::negativePathMissingRequired
 {
     std::vector<std::string> expectedErrors =
     {
-        "Last Name", "First Name", "Login Name", "Password", "creation date", "User is missing required values"
+        "Last Name", "First Name", "Login Name", "Password", "Date Added", "User is missing required values"
     };
 
     UserModel newuser;
