@@ -34,14 +34,6 @@ TaskModel::TaskModel()
   priority{0},
   personal{false}
 {
-    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingDescription, this), "description"});
-    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingCreatorID, this), "user ID for creator"});
-    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingAssignedID, this), "user ID for assigned user"});
-    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingEffortEstimate, this), "estimated effort in hours"});
-    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingPriorityGroup, this), "priority"});
-    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingCreationDate, this), "date of creation"});
-    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingScheduledStart, this), "scheduled start date"});
-    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingDueDate, this), "due date (deadline)"});
 }
 
 TaskModel::TaskModel(UserModel_shp creator)
@@ -59,8 +51,10 @@ TaskModel::TaskModel(UserModel_shp creator, std::string description)
     setDescription(description);
 }
 
-bool TaskModel::hasRequiredValues() const noexcept
+bool TaskModel::hasRequiredValues()
 {
+    initMissingFieldsTests();
+
     for (auto fieldTest: missingRequiredFieldsTests)
     {
         if (fieldTest.errorCondition())
@@ -72,7 +66,7 @@ bool TaskModel::hasRequiredValues() const noexcept
     return true;
 }
 
-std::string TaskModel::reportMissingValues() const noexcept
+std::string TaskModel::reportMissingValues()
 {
     std::string missingFieldsReport;
 
@@ -261,5 +255,17 @@ bool TaskModel::diffTask(TaskModel& other)
         personal == other.personal &&
         dependencies.size() == other.dependencies.size()
     );
+}
+
+void TaskModel::initMissingFieldsTests()
+{
+    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingDescription, this), "description"});
+    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingCreatorID, this), "user ID for creator"});
+    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingAssignedID, this), "user ID for assigned user"});
+    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingEffortEstimate, this), "estimated effort in hours"});
+    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingPriorityGroup, this), "priority"});
+    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingCreationDate, this), "date of creation"});
+    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingScheduledStart, this), "scheduled start date"});
+    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingDueDate, this), "due date (deadline)"});
 }
 

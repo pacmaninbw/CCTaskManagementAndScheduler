@@ -26,8 +26,8 @@ public:
 
     bool isInDatabase() const { return taskID > 0; };
     bool isModified() const { return modified; };
-    bool hasRequiredValues() const noexcept;
-    std::string reportMissingValues() const noexcept;
+    bool hasRequiredValues();
+    std::string reportMissingValues();
     void clearModified() { modified = false; };
     void addEffortHours(double hours);
     void markComplete()
@@ -87,6 +87,14 @@ public:
     void setTaskID(std::size_t newID);
     std::string taskStatusString() const;
     TaskModel::TaskStatus stringToStatus(std::string statusName) const;
+    bool isMissingDescription() { return (description.empty() || description.length() < MinimumDescriptionLength); };
+    bool isMissingCreatorID() { return creatorID == 0; };
+    bool isMissingAssignedID() { return assignToID == 0; };
+    bool isMissingEffortEstimate() { return estimatedEffort == 0; };
+    bool isMissingPriorityGroup() { return priorityGroup == 0; };
+    bool isMissingCreationDate() { return !creationDate.ok(); };
+    bool isMissingScheduledStart() { return !scheduledStart.ok(); };
+    bool isMissingDueDate() { return !dueDate.ok(); };
 
     bool operator==(TaskModel& other)
     {
@@ -143,14 +151,7 @@ public:
 private:
     TaskStatus statusFromInt(unsigned int statusI) const { return static_cast<TaskModel::TaskStatus>(statusI); };
     bool diffTask(TaskModel& other);
-    bool isMissingDescription() { return (description.empty() || description.length() < MinimumDescriptionLength); };
-    bool isMissingCreatorID() { return creatorID == 0; };
-    bool isMissingAssignedID() { return assignToID == 0; };
-    bool isMissingEffortEstimate() { return estimatedEffort == 0; };
-    bool isMissingPriorityGroup() { return priorityGroup == 0; };
-    bool isMissingCreationDate() { return !creationDate.ok(); };
-    bool isMissingScheduledStart() { return !scheduledStart.ok(); };
-    bool isMissingDueDate() { return !dueDate.ok(); };
+    void initMissingFieldsTests();
 
     bool modified;
     std::size_t taskID;
@@ -173,12 +174,12 @@ private:
     bool personal;
     const std::size_t MinimumDescriptionLength = 10;
     std::vector<std::size_t> dependencies;
-    struct missingFieldReportor
+    struct TmissingFieldReportor
     {
         std::function<bool(void)>errorCondition;
         std::string errorReport;
     };
-    std::vector<missingFieldReportor> missingRequiredFieldsTests;
+    std::vector<TmissingFieldReportor> missingRequiredFieldsTests;
 
 };
 
