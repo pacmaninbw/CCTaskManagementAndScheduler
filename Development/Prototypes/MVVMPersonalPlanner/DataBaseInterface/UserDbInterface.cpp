@@ -19,7 +19,7 @@ UserDbInterface::UserDbInterface()
     delimiter = ';';
 }
 
-std::size_t UserDbInterface::insert(const UserModel &user)
+std::size_t UserDbInterface::insert(UserModel &user)
 {
     std::size_t uID = 0;
     errorMessages.clear();

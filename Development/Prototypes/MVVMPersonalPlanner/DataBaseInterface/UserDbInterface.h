@@ -11,7 +11,7 @@ class UserDbInterface : public BoostDBInterfaceCore
 public:
     UserDbInterface();
     ~UserDbInterface() = default;
-    std::size_t insert(const UserModel& user);
+    std::size_t insert(UserModel& user);
     std::size_t insert(UserModel_shp userP) { return insert(*userP); };
     UserModel_shp getUserByUserID(std::size_t userID);
     UserModel_shp getUserByFullName(const std::string_view& lastName, const std::string_view& firstName, const std::string_view& middleI);
