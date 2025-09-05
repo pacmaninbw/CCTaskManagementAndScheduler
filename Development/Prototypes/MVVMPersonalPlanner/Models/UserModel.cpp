@@ -1,7 +1,15 @@
 #include <exception>
-#include "UserModel.h"
+#include <chrono>
+#include "commonUtilities.h"
+#include <format>
+#include <functional>
+#include <iostream>
+#include <memory>
+#include <optional>
 #include <stdexcept>
 #include <string>
+#include "UserModel.h"
+#include <vector>
 
 UserModel::UserModel()
 : userID{0}, modified{false}
@@ -30,48 +38,31 @@ UserModel::UserModel(
     setCreationDate(dateAdded);
 }
 
-static constexpr std::size_t minNameLenght = 2;
-static constexpr std::size_t minPasswordLenght = 8;
 
-bool UserModel::hasRequiredValues() const noexcept
+bool UserModel::hasRequiredValues()
 {
-    // Each condition is an error, if any condition is true, then the fuction
-    // should return false. If you add an error condition make sure to add it
-    // to reportMissingFields() as well.
-    return !((lastName.empty() || lastName.length() < minNameLenght) ||
-        (firstName.empty() || firstName.length() < minNameLenght) ||
-        (loginName.empty() || loginName.length() < (2 * minNameLenght)) ||
-        (password.empty() || password.length() < minPasswordLenght) ||
-        (!created.ok()));
+    initMissingFieldsTests();
+    for (auto fieldTest: missingRequiredFieldsTests)
+    {
+        if (fieldTest.errorCondition())
+        {
+            return false;
+        }
+    }
+    
+    return true;
 }
 
 std::string UserModel::reportMissingFields() const noexcept
 {
     std::string missingFields;
 
-    if (lastName.empty() || lastName.length() < minNameLenght)
+    for (auto testAndReport: missingRequiredFieldsTests)
     {
-        missingFields.append("Missing Users Last Name.\n");
-    }
-
-    if (firstName.empty() || firstName.length() < minNameLenght)
-    {
-        missingFields.append("Missing Users First Name.\n");
-    }
-
-    if (loginName.empty() || loginName.length() < (2 * minNameLenght))
-    {
-        missingFields.append("Missing Users Login Name.\n");
-    }
-
-    if (password.empty() || password.length() < minPasswordLenght)
-    {
-        missingFields.append("Missing Users Password.\n");
-    }
-
-    if (!created.ok())
-    {
-        missingFields.append("Missing Users creation date.\n");
+        if (testAndReport.errorCondition())
+        {
+            missingFields.append(std::format("Missing User's required {}!\n", testAndReport.errorReport));
+        }
     }
 
     return missingFields;
@@ -189,6 +180,31 @@ void UserModel::setLastLogin(std::chrono::system_clock::time_point dateAndTime)
     lastLogin = dateAndTime;
 }
 
+bool UserModel::isMissingLastName()
+{
+    return (lastName.empty() || lastName.length() < minNameLenght);
+}
+
+bool UserModel::isMissingFirstName()
+{
+    return (firstName.empty() || firstName.length() < minNameLenght);
+}
+
+bool UserModel::isMissingLoginName()
+{
+    return (loginName.empty() || loginName.length() < (2 * minNameLenght));
+}
+
+bool UserModel::isMissingPassword()
+{
+    return (password.empty() || password.length() < minPasswordLenght);;
+}
+
+bool UserModel::isMissingDateAdded()
+{
+    return !created.ok();
+}
+
 bool UserModel::diffUser(UserModel &other)
 {
     // Ignore user preferences
@@ -197,3 +213,11 @@ bool UserModel::diffUser(UserModel &other)
         created == other.created);
 }
 
+void UserModel::initMissingFieldsTests()
+{
+    missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingLastName, this), "Last Name"});
+    missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingFirstName, this), "First Name"});
+    missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingLoginName, this), "Login Name"});
+    missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingPassword, this), "Password"});
+    missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingDateAdded, this), "Date Added"});
+}

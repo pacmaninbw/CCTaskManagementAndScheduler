@@ -3,8 +3,9 @@
 
 #include <chrono>
 #include "commonUtilities.h"
-#include <iostream>
 #include <format>
+#include <functional>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <string>
@@ -26,12 +27,13 @@ public:
     UserModel();
     UserModel(
         std::string lastIn, std::string firstIn, std::string middleIIn, std::string emailIn="",
-        std::size_t uID=0, std::chrono::year_month_day dateAdded=getTodaysDate());
+        std::size_t uID=0, std::chrono::year_month_day dateAdded=getTodaysDate()
+    );
     ~UserModel() = default;
 
     bool isInDataBase() const noexcept { return (userID > 0); };
     bool isModified() const noexcept { return modified; };
-    bool hasRequiredValues() const noexcept;
+    bool hasRequiredValues();
     std::string reportMissingFields() const noexcept;
     void autoGenerateLoginAndPassword();
     std::string getLastName() const { return lastName;};
@@ -66,6 +68,13 @@ public:
     void setUserID(std::size_t UserID);
     void setCreationDate(std::chrono::year_month_day dateIn);
     void setLastLogin(std::chrono::system_clock::time_point dateAndTime);
+
+    bool isMissingLastName();
+    bool isMissingFirstName();
+    bool isMissingLoginName();
+    bool isMissingPassword();
+    bool isMissingDateAdded();
+    void initMissingFieldsTests();
 
     bool operator==(UserModel& other)
     {
@@ -110,6 +119,18 @@ private:
     std::chrono::year_month_day created;
     std::optional<std::chrono::system_clock::time_point> lastLogin;
     bool modified;
+
+    const std::size_t minNameLenght = 2;
+    const std::size_t minPasswordLenght = 8;
+
+
+    struct UmissingFieldReportor
+    {
+        std::function<bool(void)>errorCondition;
+        std::string errorReport;
+    };
+    std::vector<UmissingFieldReportor> missingRequiredFieldsTests;
+
 };
 
 using UserModel_shp = std::shared_ptr<UserModel>;
