@@ -1,6 +1,9 @@
 #include <chrono>
 #include "commonUtilities.h"
 
+unsigned int OneWeek = 7;
+unsigned int TwoWeeks = 14;
+
 std::chrono::year_month_day getTodaysDate()
 {
     std::chrono::time_point<std::chrono::system_clock> today = std::chrono::system_clock::now();

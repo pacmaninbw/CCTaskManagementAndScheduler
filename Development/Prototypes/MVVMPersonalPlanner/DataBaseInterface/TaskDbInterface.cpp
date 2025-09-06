@@ -22,9 +22,6 @@ TaskDbInterface::TaskDbInterface()
 {
 }
 
-static constexpr unsigned int OneWeek = 7;
-static constexpr unsigned int TwoWeeks = 14;
-
 std::size_t TaskDbInterface::insert(TaskModel &task)
 {
     std::size_t taskID = 0;
