@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/protoPersonalPlanner",
-            "args": ["-u", "MySQLUserName", "-p", "MySQLPassword"],
+            "args": ["-u", "pacman", "-p", "M1nus+1r3th"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
