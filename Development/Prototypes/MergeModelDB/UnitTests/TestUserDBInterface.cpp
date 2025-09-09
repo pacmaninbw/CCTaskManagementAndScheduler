@@ -178,9 +178,9 @@ bool TestUserDBInterface::testUpdateUserPassword(UserModel_shp insertedUser)
     std::string newPassword = "MyNew**&pAs5Word" + std::to_string(oldUserValues.getUserID());
 
     insertedUser->setPassword(newPassword);
-    if (!insertedUser->update())
+    if (!insertedUser->save())
     {
-        std::cerr << "userDBInterface.update(insertedUser) FAILED" << insertedUser->getAllErrorMessages() << "\n";
+        std::cerr << "insertedUser->save()() FAILED" << insertedUser->getAllErrorMessages() << "\n";
         return false;
     }
 
@@ -348,7 +348,7 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::testNegativePathAlreadyInDa
 {
     UserModel_shp userAlreadyInDB = std::make_shared<UserModel>();
     userAlreadyInDB->setUserID(1);
-    if (userAlreadyInDB->retrieve())
+    if (!userAlreadyInDB->retrieve())
     {
         std::cerr << "User 1 not found in database!!\n" << userAlreadyInDB->getAllErrorMessages() << "\n";
         return TESTFAILED;
@@ -358,6 +358,7 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::testNegativePathAlreadyInDa
     std::vector<std::string> expectedErrors = {"already in Database"};
     return testInsertionFailureMessages(userDBInterface.insert(userAlreadyInDB), expectedErrors);
 #else
+    std::cout << "User 1 = \n" << *userAlreadyInDB << "\n";
     return TESTPASSED;
 #endif
 }
