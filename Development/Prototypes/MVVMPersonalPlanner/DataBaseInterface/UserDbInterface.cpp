@@ -305,12 +305,11 @@ void UserDbInterface::processResultRow(NSBM::row_view rv, UserModel_shp newUser)
     newUser->setLoginName(rv.at(LoginNameIdx).as_string());
     newUser->setPassword(rv.at(PasswordIdx).as_string());
     newUser->setCreationDate(boostMysqlDateTimeToChronoTimePoint(rv.at(UserAddedIdx).as_date()));
-    std::string preferences = rv.at(PasswordIdx).as_string();
+    parsePrefenceText(rv.at(PreferencesIdx).as_string(), newUser);
     if (!rv.at(LastLoginIdx).is_null())
     {
         newUser->setLastLogin(boostMysqlDateTimeToChronoTimePoint(rv.at(LastLoginIdx).as_datetime()));
     }
-
 
     // All the set functions set modified, since this user is new in memory it is not modified.
     newUser->clearModified();
