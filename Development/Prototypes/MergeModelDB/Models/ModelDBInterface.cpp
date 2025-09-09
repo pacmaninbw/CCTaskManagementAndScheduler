@@ -89,6 +89,12 @@ bool ModelDBInterface::update()
 {
     prepareForRunQueryAsync();
 
+    if (!isInDataBase())
+    {
+        appendErrorMessage(std::format("{} not in Database, use Insert!", modelName));
+        return false;
+    }
+
     if (!isModified())
     {
         appendErrorMessage(std::format("{} not modified!", modelName));
@@ -143,6 +149,10 @@ bool ModelDBInterface::hasRequiredValues()
     return true;
 }
 
+/*
+ * Assumes that ModelDBInterface::hasRequiredValues() was called previously and that
+ * initRequiredFields() has been called.
+ */
 void ModelDBInterface::reportMissingFields() noexcept
 {
     for (auto testAndReport: missingRequiredFieldsTests)
