@@ -19,11 +19,10 @@ public:
     virtual TestDBInterfaceCore::TestStatus runPositivePathTests();
 
 protected:
-    TestDBInterfaceCore::TestStatus wrongErrorMessage(std::string expectedString);
-    bool hasErrorMessage();
-    bool insertionWasSuccessfull(std::size_t primaryKey);
+    TestDBInterfaceCore::TestStatus wrongErrorMessage(std::string expectedString, ModelDBInterface* modelUnderTest);
+    bool hasErrorMessage(ModelDBInterface* modelUnderTest);
     TestDBInterfaceCore::TestStatus testInsertionFailureMessages(
-        std::size_t primaryKey, std::vector<std::string> expectedErrors);
+        ModelDBInterface* modelUnderTest, std::vector<std::string> expectedErrors);
     void reportTestStatus(TestDBInterfaceCore::TestStatus status, std::string_view path);
 
     const TestDBInterfaceCore::TestStatus TESTFAILED = TestDBInterfaceCore::TestStatus::TestFailed;
