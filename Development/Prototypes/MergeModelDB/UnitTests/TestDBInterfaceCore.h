@@ -23,6 +23,11 @@ protected:
     bool hasErrorMessage(ModelDBInterface* modelUnderTest);
     TestDBInterfaceCore::TestStatus testInsertionFailureMessages(
         ModelDBInterface* modelUnderTest, std::vector<std::string> expectedErrors);
+    TestDBInterfaceCore::TestStatus testInsertionFailureMessages(
+        std::shared_ptr<ModelDBInterface>modelUnderTest, std::vector<std::string> expectedErrors) {
+            ModelDBInterface* ptr = modelUnderTest.get();
+            return testInsertionFailureMessages(ptr, expectedErrors);
+        };
     void reportTestStatus(TestDBInterfaceCore::TestStatus status, std::string_view path);
 
     const TestDBInterfaceCore::TestStatus TESTFAILED = TestDBInterfaceCore::TestStatus::TestFailed;
