@@ -66,14 +66,9 @@ TestDBInterfaceCore::TestStatus TestDBInterfaceCore::runPositivePathTests()
 /*
  * Protected methods.
  */
-TestDBInterfaceCore::TestStatus TestDBInterfaceCore::wrongErrorMessage(std::string expectedString)
+TestDBInterfaceCore::TestStatus TestDBInterfaceCore::wrongErrorMessage(std::string expectedString, ModelDBInterface* modelUnderTest)
 {
-#if 1
-        std::clog << "Wrong message generated! TEST FAILED!\n";
-        std::clog << expectedString << "\n";
-        return TESTFAILED;
-#else
-    std::string errorMessage = dbInterfaceUnderTest->getAllErrorMessages();
+    std::string errorMessage = modelUnderTest->getAllErrorMessages();
     std::size_t found = errorMessage.find(expectedString);
     if (found == std::string::npos)
     {
@@ -83,15 +78,11 @@ TestDBInterfaceCore::TestStatus TestDBInterfaceCore::wrongErrorMessage(std::stri
     }
 
     return TESTPASSED;
-#endif
 }
 
-bool TestDBInterfaceCore::hasErrorMessage()
+bool TestDBInterfaceCore::hasErrorMessage(ModelDBInterface* modelUnderTest)
 {
-#if 1
-    return false;
-#else
-    std::string errorMessage = dbInterfaceUnderTest->getAllErrorMessages();
+    std::string errorMessage = modelUnderTest->getAllErrorMessages();
 
     if (errorMessage.empty())
     {
@@ -105,35 +96,24 @@ bool TestDBInterfaceCore::hasErrorMessage()
     }
 
     return true;
-#endif
 }
 
-bool TestDBInterfaceCore::insertionWasSuccessfull(std::size_t primaryKey)
+TestDBInterfaceCore::TestStatus TestDBInterfaceCore::testInsertionFailureMessages(ModelDBInterface* modelUnderTest, std::vector<std::string> expectedErrors)
 {
-    if (primaryKey > 0)
+    if (modelUnderTest->save())
     {
-        std::clog << std::format("Inserted {} missing required fields!  TEST FAILED\n", modelUnderTest);
-        return true;
-    }
-
-    return false;
-}
-
-TestDBInterfaceCore::TestStatus TestDBInterfaceCore::testInsertionFailureMessages(std::size_t primaryKey, std::vector<std::string> expectedErrors)
-{
-    if (insertionWasSuccessfull(primaryKey))
-    {
+        std::clog << std::format("Inserted {} missing required fields!  TEST FAILED\n", modelUnderTest->getModelName());
         return TESTFAILED;
     }
 
-    if (!hasErrorMessage())
+    if (!hasErrorMessage(modelUnderTest))
     {
         return TESTFAILED;
     }
 
     for (auto expectedError: expectedErrors)
     {
-        if (wrongErrorMessage(expectedError) == TESTFAILED)
+        if (wrongErrorMessage(expectedError, modelUnderTest) == TESTFAILED)
         {
             return TESTFAILED;
         }
