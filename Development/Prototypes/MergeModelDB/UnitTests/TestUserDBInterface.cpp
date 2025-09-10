@@ -325,21 +325,18 @@ void TestUserDBInterface::addFirstUser(UserList &TestUsers)
 
 TestDBInterfaceCore::TestStatus TestUserDBInterface::testnegativePathNotModified()
 {
-#if 0
-    UserModel_shp userNotModified = userDBInterface.getUserByUserID(1);
-    if (userNotModified == nullptr)
+    UserModel_shp userNotModified = std::make_shared<UserModel>();
+    userNotModified->setUserID(1);
+    if (!userNotModified->retrieve())
     {
-        std::cerr << "Task 1 not found in database!!\n";
+        std::cerr << "User 1 not found in database!!\n" << userNotModified->getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 
     userNotModified->setUserID(0); // Force it to check modified rather than Already in DB.
     userNotModified->clearModified();
     std::vector<std::string> expectedErrors = {"not modified!"};
-    return testInsertionFailureMessages(userDBInterface.insert(userNotModified), expectedErrors);
-#else
-        return TESTFAILED;
-#endif
+    return testInsertionFailureMessages(userNotModified, expectedErrors);
 }
 
 TestDBInterfaceCore::TestStatus TestUserDBInterface::testNegativePathAlreadyInDataBase()
