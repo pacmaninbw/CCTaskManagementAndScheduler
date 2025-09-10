@@ -77,12 +77,8 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::runPositivePathTests()
 
 bool TestUserDBInterface::testGetUserByLoginName(UserModel_shp insertedUser)
 {
-#if 1
-    std::clog << "testGetUserByLoginName " << insertedUser->getLoginName() << " Not Implemented\n";
-    return false;
-#else
-    UserModel_shp retrievedUser = userDBInterface.getUserByLoginName(insertedUser->getLoginName());
-    if (retrievedUser)
+    UserModel_shp retrievedUser = std::make_shared<UserModel>();
+    if (retrievedUser->selectByLoginName(insertedUser->getLoginName()))
     {
         if (*retrievedUser == *insertedUser)
         {
@@ -98,10 +94,9 @@ bool TestUserDBInterface::testGetUserByLoginName(UserModel_shp insertedUser)
     else
     {
         std::cerr << "userDBInterface.getUserByLogin(user->getLoginName()) FAILED!\n" <<
-            userDBInterface.getAllErrorMessages() << "\n";
+            retrievedUser->getAllErrorMessages() << "\n";
         return false;
     }
-#endif
 }
 
 bool TestUserDBInterface::testGetUserByLoginAndPassword(UserModel_shp insertedUser)
@@ -349,11 +344,6 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::testNegativePathAlreadyInDa
         return TESTFAILED;
     }
 
-#if 0
     std::vector<std::string> expectedErrors = {"already in Database"};
-    return testInsertionFailureMessages(userDBInterface.insert(userAlreadyInDB), expectedErrors);
-#else
-    std::cout << "User 1 = \n" << *userAlreadyInDB << "\n";
-    return TESTPASSED;
-#endif
+    return testInsertionFailureMessages(userAlreadyInDB, expectedErrors);
 }

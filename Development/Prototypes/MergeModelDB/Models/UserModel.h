@@ -65,6 +65,11 @@ public:
     void setCreationDate(std::chrono::year_month_day dateIn);
     void setLastLogin(std::chrono::system_clock::time_point dateAndTime);
 
+/*
+ * Select with arguments
+ */
+    bool selectByLoginName(const std::string_view& loginName);
+
     bool isMissingLastName();
     bool isMissingFirstName();
     bool isMissingLoginName();

@@ -41,7 +41,6 @@ bool ModelDBInterface::save()
     {
         return insert();
     }
-
 }
 
 bool ModelDBInterface::insert()
@@ -124,6 +123,22 @@ bool ModelDBInterface::retrieve()
     try
     {
         NSBM::results localResult = runQueryAsync(formatSelectStatement());
+
+        return processResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In {}.retrieve() : {}", modelName, e.what()));
+        return false;
+    }
+}
+
+bool ModelDBInterface::selectWithArguments(std::string formattedSelectStatement)
+{
+    try
+    {
+        NSBM::results localResult = runQueryAsync(formattedSelectStatement);
 
         return processResult(localResult);
     }

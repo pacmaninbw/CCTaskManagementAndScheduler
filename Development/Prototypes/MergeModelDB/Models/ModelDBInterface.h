@@ -40,6 +40,7 @@ protected:
     virtual std::string formatInsertStatement() = 0;
     virtual std::string formatUpdateStatement() = 0;
     virtual std::string formatSelectStatement() = 0;
+    bool selectWithArguments(std::string formattedSelectStatement);
     virtual bool processResult(NSBM::results& results);
     virtual void processResultRow(NSBM::row_view rv) { std::cerr << modelName << " processResultRow not implemented " << rv.at(0).as_int64() << "\n"; };
 

@@ -284,3 +284,24 @@ void UserModel::parsePrefenceText(std::string preferences) noexcept
     clearModified();
 }
 
+bool UserModel::selectByLoginName(const std::string_view &loginName)
+{
+    prepareForRunQueryAsync();
+
+    try
+    {
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, baseQuery);
+        NSBM::format_sql_to(fctx, " WHERE LoginName = {}", loginName);
+
+        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+
+        return processResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserDbInterface::getUserByLoginName : {}", e.what()));
+        return false;
+    }
+}
