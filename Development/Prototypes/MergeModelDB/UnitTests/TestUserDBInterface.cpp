@@ -270,7 +270,6 @@ bool TestUserDBInterface::testGetAllUsers(UserList userProfileTestData)
 
 TestDBInterfaceCore::TestStatus TestUserDBInterface::negativePathMissingRequiredFields()
 {
-#if 0
     std::vector<std::string> expectedErrors =
     {
         "Last Name", "First Name", "Login Name", "Password", "Date Added", "User is missing required values"
@@ -289,7 +288,7 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::negativePathMissingRequired
 
     for (auto setField: fieldSettings)
     {
-        if (testInsertionFailureMessages(newuser.insert(), expectedErrors) != TESTPASSED)
+        if (testInsertionFailureMessages(&newuser, expectedErrors) != TESTPASSED)
         {
             return TESTFAILED;
         }
@@ -301,10 +300,10 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::negativePathMissingRequired
 
     newuser.setCreationDate(getTodaysDate());
 
-    newuser.setUserID(userDBInterface.insert(newuser));
+    newuser.save();
     if (!newuser.isInDataBase())
     {
-        std::cerr << userDBInterface.getAllErrorMessages() << newuser << "\n";
+        std::cerr << newuser.getAllErrorMessages() << newuser << "\n";
         std::clog << "Primary key for user: " << newuser.getUserID() << " not set!\n";
         if (verboseOutput)
         {
@@ -312,7 +311,6 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::negativePathMissingRequired
         }
         return TESTFAILED;
     }
-#endif
 
     return TESTPASSED;
 }
