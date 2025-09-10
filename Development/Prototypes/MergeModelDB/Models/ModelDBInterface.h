@@ -30,6 +30,7 @@ public:
     void clearModified() { modified = false; };
     bool hasRequiredValues();
     void reportMissingFields() noexcept;
+    std::string_view getModelName() const { return modelName; };
 
 protected:
     void initFormatOptions();
