@@ -301,7 +301,73 @@ bool UserModel::selectByLoginName(const std::string_view &loginName)
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In UserDbInterface::getUserByLoginName : {}", e.what()));
+        appendErrorMessage(std::format("In UserModel::selectByLoginName : {}", e.what()));
+        return false;
+    }
+}
+
+bool UserModel::selectByEmail(const std::string_view &emailAddress)
+{
+    prepareForRunQueryAsync();
+
+    try
+    {
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, baseQuery);
+        NSBM::format_sql_to(fctx, " WHERE EmailAddress = {}", emailAddress);
+
+        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+
+        return processResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserModel::selectByEmail : {}", e.what()));
+        return false;
+    }
+}
+
+bool UserModel::selectByLoginAndPassword(const std::string_view &loginName, const std::string_view &password)
+{
+    prepareForRunQueryAsync();
+
+    try
+    {
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, baseQuery);
+        NSBM::format_sql_to(fctx, " WHERE LoginName = {} AND HashedPassWord = {}", loginName, password);
+
+        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+
+        return processResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserModel::selectByLoginAndPassword : {}", e.what()));
+        return false;
+    }
+}
+
+bool UserModel::selectByFullName(const std::string_view &lastName, const std::string_view &firstName, const std::string_view &middleI)
+{
+    prepareForRunQueryAsync();
+
+    try
+    {
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, baseQuery);
+        NSBM::format_sql_to(fctx, " WHERE LastName = {} AND FirstName = {} AND MiddleInitial = {}", lastName, firstName, middleI);
+
+        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+
+        return processResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserModel::selectByFullName : {}", e.what()));
         return false;
     }
 }

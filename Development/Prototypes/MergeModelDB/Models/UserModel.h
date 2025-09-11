@@ -69,7 +69,14 @@ public:
  * Select with arguments
  */
     bool selectByLoginName(const std::string_view& loginName);
+    bool selectByEmail(const std::string_view& emailAddress);
+    bool selectByLoginAndPassword(const std::string_view& loginName, const std::string_view& password);
+    bool selectByFullName(const std::string_view& lastName, const std::string_view& firstName,
+        const std::string_view& middleI);
 
+/*
+ * Required fields.
+ */
     bool isMissingLastName();
     bool isMissingFirstName();
     bool isMissingLoginName();
