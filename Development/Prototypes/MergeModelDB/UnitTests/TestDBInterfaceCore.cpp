@@ -100,7 +100,7 @@ bool TestDBInterfaceCore::hasErrorMessage(ModelDBInterface* modelUnderTest)
 
 TestDBInterfaceCore::TestStatus TestDBInterfaceCore::testInsertionFailureMessages(ModelDBInterface* modelUnderTest, std::vector<std::string> expectedErrors)
 {
-    if (modelUnderTest->save())
+    if (modelUnderTest->insert())
     {
         std::clog << std::format("Inserted {} missing required fields!  TEST FAILED\n", modelUnderTest->getModelName());
         return TESTFAILED;

@@ -101,15 +101,11 @@ bool TestUserDBInterface::testGetUserByLoginName(UserModel_shp insertedUser)
 
 bool TestUserDBInterface::testGetUserByLoginAndPassword(UserModel_shp insertedUser)
 {
-#if 1
-    std::clog << "testGetUserByLoginAndPassword " << insertedUser->getLoginName() << " Not Implemented\n";
-    return false;
-#else
     std::string_view testName = insertedUser->getLoginName();
     std::string_view testPassword = insertedUser->getPassword();
 
-    UserModel_shp retrievedUser = userDBInterface.getUserByLoginAndPassword(testName, testPassword);
-    if (retrievedUser)
+    UserModel_shp retrievedUser = std::make_shared<UserModel>();
+    if (retrievedUser->selectByLoginAndPassword(testName, testPassword))
     {
         if (*retrievedUser != *insertedUser)
         {
@@ -121,30 +117,25 @@ bool TestUserDBInterface::testGetUserByLoginAndPassword(UserModel_shp insertedUs
     else
     {
         std::cerr << "userDBInterface.getUserByLogin(user->getLoginName()) FAILED!\n" <<
-            userDBInterface.getAllErrorMessages() << "\n";
+            retrievedUser->getAllErrorMessages() << "\n";
         return false;
     }
 
-    retrievedUser = userDBInterface.getUserByLoginAndPassword(testName, "NotThePassword");
-    if (retrievedUser)
+
+    if (retrievedUser->selectByLoginAndPassword(testName, "NotThePassword"))
     {
-        std::cerr << "userDBInterface.getUserByLogin(user->getLoginName()) Found user with fake password!\n";
+        std::cerr << "retrievedUser->selectByLoginAndPassword(user->getLoginName()) Found user with fake password!\n";
         return false;
     }
 
     return true;
-#endif
 }
 
 bool TestUserDBInterface::testGetUserByFullName(UserModel_shp insertedUser)
 {
-#if 1
-    std::clog << "testGetUserByFullName " << insertedUser->getLoginName() << " Not Implemented\n";
-    return false;
-#else
-    UserModel_shp retrievedUser = userDBInterface.getUserByFullName(insertedUser->getLastName(),
-        insertedUser->getFirstName(), insertedUser->getMiddleInitial());
-    if (retrievedUser)
+    UserModel_shp retrievedUser = std::make_shared<UserModel>();
+    if (retrievedUser->selectByFullName(insertedUser->getLastName(), insertedUser->getFirstName(),
+        insertedUser->getMiddleInitial()))
     {
         if (*retrievedUser == *insertedUser)
         {
@@ -159,11 +150,10 @@ bool TestUserDBInterface::testGetUserByFullName(UserModel_shp insertedUser)
     }
     else
     {
-        std::cerr << "userDBInterface.getUserByFullName() FAILED!\n" <<
-            userDBInterface.getAllErrorMessages() << "\n";
+        std::cerr << "retrievedUser->selectByFullName FAILED!\n" <<
+            retrievedUser->getAllErrorMessages() << "\n";
         return false;
     }
-#endif
 }
 
 bool TestUserDBInterface::testUpdateUserPassword(UserModel_shp insertedUser)
