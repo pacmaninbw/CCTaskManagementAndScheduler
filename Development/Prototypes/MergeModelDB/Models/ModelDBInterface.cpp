@@ -304,7 +304,8 @@ NSBM::format_options ModelDBInterface::getConnectionFormatOptsAsync()
     );
 
     ctx.run();
-    return NSBM::format_options();
+
+    return options;
 }
 
 NSBA::awaitable<NSBM::format_options> ModelDBInterface::coRoutineGetFormatOptions()
