@@ -2,7 +2,7 @@
 #include <exception>
 #include <iostream>
 #include <stdexcept>
-//#include "TestTaskDBInterface.h"
+#include "TestTaskDBInterface.h"
 #include "TestUserDBInterface.h"
 #include "UtilityTimer.h"
 
@@ -22,12 +22,12 @@ int main(int argc, char* argv[])
             TestUserDBInterface userTests(programOptions.userTestDataFile);
 
             if (userTests.runAllTests() == TestDBInterfaceCore::TestStatus::TestPassed)
-            {/*
+            {
                 TestTaskDBInterface tasktests(programOptions.taskTestDataFile);
                 if (tasktests.runAllTests() != TestDBInterfaceCore::TestStatus::TestPassed)
                 {
                     return EXIT_FAILURE;
-                }*/
+                }
             }
             else
             {
