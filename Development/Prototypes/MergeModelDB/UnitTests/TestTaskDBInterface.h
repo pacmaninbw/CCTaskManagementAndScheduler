@@ -5,10 +5,9 @@
 #include "CSVReader.h"
 #include <functional>
 #include <string>
-#include "TaskDbInterface.h"
 #include "TaskModel.h"
 #include "TestDBInterfaceCore.h"
-#include "UserDbInterface.h"
+#include "UserModel.h"
 #include <vector>
 
 class TestTaskDBInterface : public TestDBInterfaceCore
@@ -32,14 +31,12 @@ private:
     std::chrono::year_month_day stringToDate(std::string dateString);
     TestDBInterfaceCore::TestStatus testnegativePathNotModified();
     TestDBInterfaceCore::TestStatus testNegativePathAlreadyInDataBase();
-    TestDBInterfaceCore::TestStatus testMissingReuqiredField(TaskModel& taskMissingFields);
+    TestDBInterfaceCore::TestStatus testMissingReuqiredField(TaskModel taskMissingFields);
     TestDBInterfaceCore::TestStatus testNegativePathMissingRequiredFields();
     TestDBInterfaceCore::TestStatus testTasksFromDataFile();
     TestDBInterfaceCore::TestStatus testSharedPointerInteraction();
     TestDBInterfaceCore::TestStatus insertShouldPass(TaskModel_shp newTask);
 
-    UserDbInterface userDBInterface;
-    TaskDbInterface taskDBInteface;
     std::string dataFileName;
     std::vector<std::function<bool(TaskModel_shp)>> positiveTestFuncs;
     UserModel_shp userOne;
