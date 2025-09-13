@@ -24,7 +24,7 @@ public:
     bool save();
     bool insert();
     bool update();
-    bool retrieve();
+    bool retrieve();    // Only select object by object ID.
     bool isInDataBase() const noexcept { return (primaryKey > 0); };
     bool isModified() const noexcept { return modified; };
     void clearModified() { modified = false; };
@@ -34,15 +34,27 @@ public:
 
 protected:
     void initFormatOptions();
+/*
+ * Each model will have 1 or more required fields, the model must specify what those
+ * fields are.
+ */
     virtual void initRequiredFields() = 0;
     void prepareForRunQueryAsync();
     void appendErrorMessage(const std::string& newError) { errorMessages.append(newError); errorMessages.append("\n");};
+/*
+ * Each model must provide formating for Insert, Update and Select by object ID.
+ * Additional select statements will be handled by each model as necessary.
+ */
     virtual std::string formatInsertStatement() = 0;
     virtual std::string formatUpdateStatement() = 0;
     virtual std::string formatSelectStatement() = 0;
     bool selectWithArguments(std::string formattedSelectStatement);
     virtual bool processResult(NSBM::results& results);
-    virtual void processResultRow(NSBM::row_view rv) { std::cerr << modelName << " processResultRow not implemented " << rv.at(0).as_int64() << "\n"; };
+/*
+ * Each model must provide the process by which the database information will
+ * be translated into the specific model.
+ */
+    virtual void processResultRow(NSBM::row_view rv) = 0;
 
 
 /*
