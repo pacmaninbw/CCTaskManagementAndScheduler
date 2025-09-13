@@ -10,7 +10,7 @@ find_package(Boost 1.87.0 REQUIRED COMPONENTS system charconv program_options)
 
 add_executable(protoPersonalPlanner
     main.cpp
-    commonUtilities.cpp
+    common/commonUtilities.cpp
     CommandLineParser.cpp
     Models/UserModel.cpp
     Models/TaskModel.cpp
@@ -24,8 +24,9 @@ add_executable(protoPersonalPlanner
 
 target_include_directories(protoPersonalPlanner PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Models>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/DataBaseInterface>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Models>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/UnitTests>
 )
 
