@@ -1,5 +1,5 @@
 {
-   <neg1ExpectedError>
+   <User1DateMissing>
    Memcheck:Cond
    fun:_ZNKSt6chrono4year2okEv
    fun:_ZNKSt6chrono14year_month_day2okEv
@@ -12,10 +12,10 @@
    fun:_ZSt10__invoke_rIbRSt5_BindIFM9UserModelFbvEPS1_EEJEENSt9enable_ifIX16is_invocable_r_vIT_T0_JDpT1_EEES9_E4typeEOSA_DpOSB_
    fun:_ZNSt17_Function_handlerIFbvESt5_BindIFM9UserModelFbvEPS2_EEE9_M_invokeERKSt9_Any_data
    fun:_ZNKSt8functionIFbvEEclEv
-   fun:_ZNK9UserModel19reportMissingFieldsB5cxx11Ev
+   fun:_ZN16ModelDBInterface19reportMissingFieldsEv
 }
 {
-   <neg2ExpectedError>
+   <User2DateMissing>
    Memcheck:Cond
    fun:_ZNKSt6chrono4year2okEv
    fun:_ZNKSt6chrono14year_month_day2okEv
@@ -28,10 +28,10 @@
    fun:_ZSt10__invoke_rIbRSt5_BindIFM9UserModelFbvEPS1_EEJEENSt9enable_ifIX16is_invocable_r_vIT_T0_JDpT1_EEES9_E4typeEOSA_DpOSB_
    fun:_ZNSt17_Function_handlerIFbvESt5_BindIFM9UserModelFbvEPS2_EEE9_M_invokeERKSt9_Any_data
    fun:_ZNKSt8functionIFbvEEclEv
-   fun:_ZNK9UserModel19reportMissingFieldsB5cxx11Ev
+   fun:_ZN16ModelDBInterface19reportMissingFieldsEv
 }
 {
-   <neg3ExpectedError>
+   <User3DateMissing>
    Memcheck:Cond
    fun:_ZNKSt6chrono5month2okEv
    fun:_ZNKSt6chrono14year_month_day2okEv
@@ -44,10 +44,26 @@
    fun:_ZSt10__invoke_rIbRSt5_BindIFM9UserModelFbvEPS1_EEJEENSt9enable_ifIX16is_invocable_r_vIT_T0_JDpT1_EEES9_E4typeEOSA_DpOSB_
    fun:_ZNSt17_Function_handlerIFbvESt5_BindIFM9UserModelFbvEPS2_EEE9_M_invokeERKSt9_Any_data
    fun:_ZNKSt8functionIFbvEEclEv
-   fun:_ZNK9UserModel19reportMissingFieldsB5cxx11Ev
+   fun:_ZN16ModelDBInterface19reportMissingFieldsEv
 }
 {
-   <neg4ExpectedError>
+   <User4DateMissing>
+   Memcheck:Cond
+   fun:_ZNKSt6chrono5month2okEv
+   fun:_ZNKSt6chrono14year_month_day2okEv
+   fun:_ZN9UserModel18isMissingDateAddedEv
+   fun:_ZSt13__invoke_implIbRM9UserModelFbvERPS0_JEET_St21__invoke_memfun_derefOT0_OT1_DpOT2_
+   fun:_ZSt8__invokeIRM9UserModelFbvEJRPS0_EENSt15__invoke_resultIT_JDpT0_EE4typeEOS7_DpOS8_
+   fun:_ZNSt5_BindIFM9UserModelFbvEPS0_EE6__callIbJEJLm0EEEET_OSt5tupleIJDpT0_EESt12_Index_tupleIJXspT1_EEE
+   fun:_ZNSt5_BindIFM9UserModelFbvEPS0_EEclIJEbEET0_DpOT_
+   fun:_ZSt13__invoke_implIbRSt5_BindIFM9UserModelFbvEPS1_EEJEET_St14__invoke_otherOT0_DpOT1_
+   fun:_ZSt10__invoke_rIbRSt5_BindIFM9UserModelFbvEPS1_EEJEENSt9enable_ifIX16is_invocable_r_vIT_T0_JDpT1_EEES9_E4typeEOSA_DpOSB_
+   fun:_ZNSt17_Function_handlerIFbvESt5_BindIFM9UserModelFbvEPS2_EEE9_M_invokeERKSt9_Any_data
+   fun:_ZNKSt8functionIFbvEEclEv
+   fun:_ZN16ModelDBInterface19reportMissingFieldsEv
+}
+{
+   <Task1DateMissing>
    Memcheck:Cond
    fun:_ZNKSt6chrono4year2okEv
    fun:_ZNKSt6chrono14year_month_day2okEv
@@ -60,10 +76,10 @@
    fun:_ZSt10__invoke_rIbRSt5_BindIFM9TaskModelFbvEPS1_EEJEENSt9enable_ifIX16is_invocable_r_vIT_T0_JDpT1_EEES9_E4typeEOSA_DpOSB_
    fun:_ZNSt17_Function_handlerIFbvESt5_BindIFM9TaskModelFbvEPS2_EEE9_M_invokeERKSt9_Any_data
    fun:_ZNKSt8functionIFbvEEclEv
-   fun:_ZN9TaskModel19reportMissingValuesB5cxx11Ev
+   fun:_ZN16ModelDBInterface19reportMissingFieldsEv
 }
 {
-   <neg5ExpectedError>
+   <Task2DateMissing>
    Memcheck:Cond
    fun:_ZNKSt6chrono4year2okEv
    fun:_ZNKSt6chrono14year_month_day2okEv
@@ -76,10 +92,10 @@
    fun:_ZSt10__invoke_rIbRSt5_BindIFM9TaskModelFbvEPS1_EEJEENSt9enable_ifIX16is_invocable_r_vIT_T0_JDpT1_EEES9_E4typeEOSA_DpOSB_
    fun:_ZNSt17_Function_handlerIFbvESt5_BindIFM9TaskModelFbvEPS2_EEE9_M_invokeERKSt9_Any_data
    fun:_ZNKSt8functionIFbvEEclEv
-   fun:_ZN9TaskModel19reportMissingValuesB5cxx11Ev
+   fun:_ZN16ModelDBInterface19reportMissingFieldsEv
 }
 {
-   <neg6ExpectedError>
+   <Task3DateMissing>
    Memcheck:Cond
    fun:_ZNKSt6chrono5month2okEv
    fun:_ZNKSt6chrono14year_month_day2okEv
@@ -92,26 +108,10 @@
    fun:_ZSt10__invoke_rIbRSt5_BindIFM9TaskModelFbvEPS1_EEJEENSt9enable_ifIX16is_invocable_r_vIT_T0_JDpT1_EEES9_E4typeEOSA_DpOSB_
    fun:_ZNSt17_Function_handlerIFbvESt5_BindIFM9TaskModelFbvEPS2_EEE9_M_invokeERKSt9_Any_data
    fun:_ZNKSt8functionIFbvEEclEv
-   fun:_ZN9TaskModel19reportMissingValuesB5cxx11Ev
+   fun:_ZN16ModelDBInterface19reportMissingFieldsEv
 }
 {
-   <neg7ExpectedError>
-   Memcheck:Cond
-   fun:_ZNKSt6chrono5month2okEv
-   fun:_ZNKSt6chrono14year_month_day2okEv
-   fun:_ZN9TaskModel21isMissingCreationDateEv
-   fun:_ZSt13__invoke_implIbRM9TaskModelFbvERPS0_JEET_St21__invoke_memfun_derefOT0_OT1_DpOT2_
-   fun:_ZSt8__invokeIRM9TaskModelFbvEJRPS0_EENSt15__invoke_resultIT_JDpT0_EE4typeEOS7_DpOS8_
-   fun:_ZNSt5_BindIFM9TaskModelFbvEPS0_EE6__callIbJEJLm0EEEET_OSt5tupleIJDpT0_EESt12_Index_tupleIJXspT1_EEE
-   fun:_ZNSt5_BindIFM9TaskModelFbvEPS0_EEclIJEbEET0_DpOT_
-   fun:_ZSt13__invoke_implIbRSt5_BindIFM9TaskModelFbvEPS1_EEJEET_St14__invoke_otherOT0_DpOT1_
-   fun:_ZSt10__invoke_rIbRSt5_BindIFM9TaskModelFbvEPS1_EEJEENSt9enable_ifIX16is_invocable_r_vIT_T0_JDpT1_EEES9_E4typeEOSA_DpOSB_
-   fun:_ZNSt17_Function_handlerIFbvESt5_BindIFM9TaskModelFbvEPS2_EEE9_M_invokeERKSt9_Any_data
-   fun:_ZNKSt8functionIFbvEEclEv
-   fun:_ZN9TaskModel19reportMissingValuesB5cxx11Ev
-}
-{
-   <neg8ExpectedError>
+   <Task4DateMissing>
    Memcheck:Cond
    fun:_ZNKSt6chrono4year2okEv
    fun:_ZNKSt6chrono14year_month_day2okEv
@@ -124,10 +124,10 @@
    fun:_ZSt10__invoke_rIbRSt5_BindIFM9TaskModelFbvEPS1_EEJEENSt9enable_ifIX16is_invocable_r_vIT_T0_JDpT1_EEES9_E4typeEOSA_DpOSB_
    fun:_ZNSt17_Function_handlerIFbvESt5_BindIFM9TaskModelFbvEPS2_EEE9_M_invokeERKSt9_Any_data
    fun:_ZNKSt8functionIFbvEEclEv
-   fun:_ZN9TaskModel19reportMissingValuesB5cxx11Ev
+   fun:_ZN16ModelDBInterface19reportMissingFieldsEv
 }
 {
-   <neg9ExpectedError>
+   <Task4DateMissing>
    Memcheck:Cond
    fun:_ZNKSt6chrono4year2okEv
    fun:_ZNKSt6chrono14year_month_day2okEv
@@ -140,10 +140,10 @@
    fun:_ZSt10__invoke_rIbRSt5_BindIFM9TaskModelFbvEPS1_EEJEENSt9enable_ifIX16is_invocable_r_vIT_T0_JDpT1_EEES9_E4typeEOSA_DpOSB_
    fun:_ZNSt17_Function_handlerIFbvESt5_BindIFM9TaskModelFbvEPS2_EEE9_M_invokeERKSt9_Any_data
    fun:_ZNKSt8functionIFbvEEclEv
-   fun:_ZN9TaskModel19reportMissingValuesB5cxx11Ev
+   fun:_ZN16ModelDBInterface19reportMissingFieldsEv
 }
 {
-   <neg10ExpectedError>
+   <Task5DateMissing>
    Memcheck:Cond
    fun:_ZNKSt6chrono5month2okEv
    fun:_ZNKSt6chrono14year_month_day2okEv
@@ -156,10 +156,10 @@
    fun:_ZSt10__invoke_rIbRSt5_BindIFM9TaskModelFbvEPS1_EEJEENSt9enable_ifIX16is_invocable_r_vIT_T0_JDpT1_EEES9_E4typeEOSA_DpOSB_
    fun:_ZNSt17_Function_handlerIFbvESt5_BindIFM9TaskModelFbvEPS2_EEE9_M_invokeERKSt9_Any_data
    fun:_ZNKSt8functionIFbvEEclEv
-   fun:_ZN9TaskModel19reportMissingValuesB5cxx11Ev
+   fun:_ZN16ModelDBInterface19reportMissingFieldsEv
 }
 {
-   <neg11ExpectedError>
+   <Task6DateMissing>
    Memcheck:Cond
    fun:_ZNKSt6chrono4year2okEv
    fun:_ZNKSt6chrono14year_month_day2okEv
@@ -172,10 +172,10 @@
    fun:_ZSt10__invoke_rIbRSt5_BindIFM9TaskModelFbvEPS1_EEJEENSt9enable_ifIX16is_invocable_r_vIT_T0_JDpT1_EEES9_E4typeEOSA_DpOSB_
    fun:_ZNSt17_Function_handlerIFbvESt5_BindIFM9TaskModelFbvEPS2_EEE9_M_invokeERKSt9_Any_data
    fun:_ZNKSt8functionIFbvEEclEv
-   fun:_ZN9TaskModel19reportMissingValuesB5cxx11Ev
+   fun:_ZN16ModelDBInterface19reportMissingFieldsEv
 }
 {
-   <neg12ExpectedError>
+   <Task7DateMissing>
    Memcheck:Cond
    fun:_ZNKSt6chrono4year2okEv
    fun:_ZNKSt6chrono14year_month_day2okEv
@@ -188,10 +188,10 @@
    fun:_ZSt10__invoke_rIbRSt5_BindIFM9TaskModelFbvEPS1_EEJEENSt9enable_ifIX16is_invocable_r_vIT_T0_JDpT1_EEES9_E4typeEOSA_DpOSB_
    fun:_ZNSt17_Function_handlerIFbvESt5_BindIFM9TaskModelFbvEPS2_EEE9_M_invokeERKSt9_Any_data
    fun:_ZNKSt8functionIFbvEEclEv
-   fun:_ZN9TaskModel19reportMissingValuesB5cxx11Ev
+   fun:_ZN16ModelDBInterface19reportMissingFieldsEv
 }
 {
-   <neg13ExpectedError>
+   <Task8DateMissing>
    Memcheck:Cond
    fun:_ZNKSt6chrono5month2okEv
    fun:_ZNKSt6chrono14year_month_day2okEv
@@ -204,6 +204,5 @@
    fun:_ZSt10__invoke_rIbRSt5_BindIFM9TaskModelFbvEPS1_EEJEENSt9enable_ifIX16is_invocable_r_vIT_T0_JDpT1_EEES9_E4typeEOSA_DpOSB_
    fun:_ZNSt17_Function_handlerIFbvESt5_BindIFM9TaskModelFbvEPS2_EEE9_M_invokeERKSt9_Any_data
    fun:_ZNKSt8functionIFbvEEclEv
-   fun:_ZN9TaskModel19reportMissingValuesB5cxx11Ev
+   fun:_ZN16ModelDBInterface19reportMissingFieldsEv
 }
-
