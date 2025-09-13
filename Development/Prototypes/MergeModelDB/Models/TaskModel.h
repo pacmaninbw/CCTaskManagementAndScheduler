@@ -2,16 +2,17 @@
 #define TASKMODEL_H_
 
 #include <chrono>
+#include "commonUtilities.h"
 #include <format>
 #include <functional>
 #include <iostream>
 #include <memory>
+#include "ModelDBInterface.h"
 #include <optional>
 #include <string>
-#include "UserModel.h"
 #include <vector>
 
-class TaskModel
+class TaskModel : public ModelDBInterface
 {
 public:
     enum class TaskStatus
@@ -20,22 +21,17 @@ public:
     };
 
     TaskModel();
-    TaskModel(UserModel_shp creator);
-    TaskModel(UserModel_shp creator, std::string descriptionIn);
+    TaskModel(std::size_t creatorID);
+    TaskModel(std::size_t creatorID, std::string descriptionIn);
     virtual ~TaskModel() = default;
 
-    bool isInDatabase() const { return taskID > 0; };
-    bool isModified() const { return modified; };
-    bool hasRequiredValues();
-    std::string reportMissingValues();
-    void clearModified() { modified = false; };
     void addEffortHours(double hours);
     void markComplete()
     {
         setCompletionDate(getTodaysDate());
         setStatus(TaskModel::TaskStatus::Complete);
     }
-    std::size_t getTaskID() const { return taskID; };
+    std::size_t getTaskID() const { return primaryKey; };
     std::size_t getCreatorID() const { return creatorID; };
     std::size_t getAssignToID() const { return assignToID; };
     std::string getDescription() const { return description; };
@@ -60,9 +56,7 @@ public:
     std::vector<std::size_t> getDependencies() { return dependencies; };
     bool isPersonal() const { return personal; };
     void setCreatorID(std::size_t creatorID);
-    void setCreatorID(UserModel_shp creator) { setCreatorID(creator->getUserID()); };
     void setAssignToID(std::size_t assignedID);
-    void setAssignToID(UserModel_shp assignedUser) { setAssignToID(assignedUser->getUserID()); };
     void setDescription(std::string description);
     void setStatus(TaskModel::TaskStatus status);
     void setStatus(std::string statusStr) { setStatus(stringToStatus(statusStr)); };
@@ -87,6 +81,14 @@ public:
     void setTaskID(std::size_t newID);
     std::string taskStatusString() const;
     TaskModel::TaskStatus stringToStatus(std::string statusName) const;
+/*
+ * Select with arguments
+ */
+    bool selectByDescriptionAndAssignedUser(std::string_view description, std::size_t assignedUserID);
+
+/*
+ * Required fields.
+ */
     bool isMissingDescription() { return (description.empty() || description.length() < MinimumDescriptionLength); };
     bool isMissingCreatorID() { return creatorID == 0; };
     bool isMissingAssignedID() { return assignToID == 0; };
@@ -95,6 +97,7 @@ public:
     bool isMissingCreationDate() { return !creationDate.ok(); };
     bool isMissingScheduledStart() { return !scheduledStart.ok(); };
     bool isMissingDueDate() { return !dueDate.ok(); };
+
 
     bool operator==(TaskModel& other)
     {
@@ -109,7 +112,7 @@ public:
     {
         constexpr const char* outFmtStr = "\t{}: {}\n";
         os << "TaskModel:\n";
-        os << std::format(outFmtStr, "Task ID", task.taskID);
+        os << std::format(outFmtStr, "Task ID", task.primaryKey);
         os << std::format(outFmtStr, "Creator ID", task.creatorID);
         os << std::format(outFmtStr, "Assigned To ID", task.assignToID);
         os << std::format(outFmtStr, "Description", task.description);
@@ -151,10 +154,14 @@ public:
 private:
     TaskStatus statusFromInt(unsigned int statusI) const { return static_cast<TaskModel::TaskStatus>(statusI); };
     bool diffTask(TaskModel& other);
-    void initMissingFieldsTests();
+    std::string formatInsertStatement() override;
+    std::string formatUpdateStatement() override;
+    std::string formatSelectStatement() override;
+    void initRequiredFields() override;
+    void addDependencies(const std::string& dependenciesText);
+    std::string buildDependenciesText(std::vector<std::size_t>& dependencyList) noexcept;
+    void processResultRow(NSBM::row_view rv) override;
 
-    bool modified;
-    std::size_t taskID;
     std::size_t creatorID;
     std::size_t assignToID;
     std::string description;
@@ -174,13 +181,36 @@ private:
     bool personal;
     const std::size_t MinimumDescriptionLength = 10;
     std::vector<std::size_t> dependencies;
-    struct TmissingFieldReportor
-    {
-        std::function<bool(void)>errorCondition;
-        std::string errorReport;
-    };
-    std::vector<TmissingFieldReportor> missingRequiredFieldsTests;
 
+/*
+ * The indexes below are based on the following select statement, maintain this order
+ * baseQuery could be SELECT * FROM Tasks, but this way the order of the columns
+ * returned are known.
+ */
+    NSBM::constant_string_view baseQuery = "SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
+            "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
+            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies FROM Tasks ";
+
+    const std::size_t taskIdIdx = 0;
+    const std::size_t createdByIdx = 1;
+    const std::size_t assignedToIdx = 2;
+    const std::size_t descriptionIdx = 3;
+    const std::size_t parentTaskIdx = 4;
+    const std::size_t statusIdx = 5;
+    const std::size_t percentageCompleteIdx = 6;
+    const std::size_t createdOnIdx = 7;
+    const std::size_t requiredDeliveryIdx = 8;
+    const std::size_t scheduledStartIdx = 9;
+    const std::size_t actualStartIdx = 10;
+    const std::size_t estimatedCompletionIdx = 11;
+    const std::size_t completedIdx = 12;
+    const std::size_t estimatedEffortHoursIdx = 13;
+    const std::size_t actualEffortHoursIdx = 14;
+    const std::size_t schedulePriorityGroupIdx = 15;
+    const std::size_t priorityInGroupIdx = 16;
+    const std::size_t personalIdx = 17;
+    const std::size_t dependencyCountIdx = 18;
+    const std::size_t depenedenciesTextIdx = 19;
 };
 
 using TaskModel_shp = std::shared_ptr<TaskModel>;

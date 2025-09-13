@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 #include "TaskModel.h"
-#include "UserModel.h"
+//#include "UserModel.h"
 #include <vector>
 
 static const TaskModel::TaskStatus UnknowStatus = static_cast<TaskModel::TaskStatus>(-1);
@@ -22,65 +22,33 @@ static std::vector<GenericDictionary<TaskModel::TaskStatus, std::string>::DictTy
 static GenericDictionary<TaskModel::TaskStatus, std::string> taskStatusConversionTable(statusConversionsDefs);
 
 TaskModel::TaskModel()
-: modified{false},
-  taskID{0},
-  creatorID{0},
-  assignToID{0},
-  description{""},
-  percentageComplete{0.0},
-  estimatedEffort{0},
-  actualEffortToDate{0.0},
-  priorityGroup{0},
-  priority{0},
-  personal{false}
+: ModelDBInterface("Task")
 {
+  creatorID = 0;
+  assignToID = 0;
+  description = "";
+  percentageComplete = 0.0;
+  estimatedEffort = 0;
+  actualEffortToDate = 0.0;
+  priorityGroup = 0;
+  priority = 0;
+  personal = false;
 }
 
-TaskModel::TaskModel(UserModel_shp creator)
+TaskModel::TaskModel(std::size_t creatorID)
 : TaskModel()
 {
-    setCreatorID(creator->getUserID());
-    setAssignToID(creator->getUserID());
+    setCreatorID(creatorID);
+    setAssignToID(creatorID);
 }
 
-TaskModel::TaskModel(UserModel_shp creator, std::string description)
+TaskModel::TaskModel(std::size_t creatorID, std::string description)
 : TaskModel()
 {
-    setCreatorID(creator->getUserID());
-    setAssignToID(creator->getUserID());
+    setCreatorID(creatorID);
+    setAssignToID(creatorID);
     setDescription(description);
 }
-
-bool TaskModel::hasRequiredValues()
-{
-    initMissingFieldsTests();
-
-    for (auto fieldTest: missingRequiredFieldsTests)
-    {
-        if (fieldTest.errorCondition())
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-std::string TaskModel::reportMissingValues()
-{
-    std::string missingFieldsReport;
-
-    for (auto testAndReport: missingRequiredFieldsTests)
-    {
-        if (testAndReport.errorCondition())
-        {
-            missingFieldsReport.append(std::format("Task is missing required {}!\n", testAndReport.errorReport));
-        }
-    }
-
-    return missingFieldsReport;
-}
-
 
 void TaskModel::addEffortHours(double hours)
 {
@@ -221,7 +189,29 @@ void TaskModel::addDependency(std::size_t taskId)
 void TaskModel::setTaskID(std::size_t newID)
 {
     modified = true;
-    taskID = newID;
+    primaryKey = newID;
+}
+
+bool TaskModel::selectByDescriptionAndAssignedUser(std::string_view description, std::size_t assignedUserID)
+{
+    prepareForRunQueryAsync();
+
+    try
+    {
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, baseQuery);
+        NSBM::format_sql_to(fctx, " WHERE Description = {} AND AsignedTo = {}", description, assignedUserID);
+
+        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+
+        return processResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In TaskModel::selectByDescriptionAndAssignedUser({}) : {}", description, e.what()));
+        return false;
+    }
 }
 
 std::string TaskModel::taskStatusString() const
@@ -240,7 +230,7 @@ TaskModel::TaskStatus TaskModel::stringToStatus(std::string statusName) const
 bool TaskModel::diffTask(TaskModel& other)
 {
     // Ignoring optional fields
-    return (taskID == other.taskID &&
+    return (primaryKey == other.primaryKey &&
         description == other.description &&
         other.creatorID == creatorID &&
         assignToID == other.assignToID &&
@@ -257,7 +247,109 @@ bool TaskModel::diffTask(TaskModel& other)
     );
 }
 
-void TaskModel::initMissingFieldsTests()
+std::string TaskModel::formatInsertStatement()
+{
+    std::size_t dependencyCount = getDependencies().size();
+    std::optional<std::string> depenenciesText;
+    if (dependencyCount)
+    {
+        std::vector<std::size_t> dependencyList = getDependencies();
+        depenenciesText = buildDependenciesText(dependencyList);
+    }
+
+    return NSBM::format_sql(format_opts.value(),
+        "INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
+            "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
+            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies)"
+            " VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, {18})",
+            creatorID,
+            assignToID,
+            description,
+            parentTaskID,
+            getStatusIntVal(),
+            percentageComplete,
+            stdchronoDateToBoostMySQLDate(creationDate),
+            stdchronoDateToBoostMySQLDate(dueDate),
+            stdchronoDateToBoostMySQLDate(scheduledStart),
+            optionalDateConversion(actualStartDate),
+            optionalDateConversion(estimatedCompletion),
+            optionalDateConversion(completionDate),
+            estimatedEffort,
+            actualEffortToDate,
+            priorityGroup,
+            priority,
+            personal,
+            dependencyCount,
+            depenenciesText
+    );
+}
+
+std::string TaskModel::formatUpdateStatement()
+{
+    std::size_t dependencyCount = getDependencies().size();
+    std::optional<std::string> depenenciesText;
+    if (dependencyCount)
+    {
+        std::vector<std::size_t> dependencyList = getDependencies();
+        depenenciesText = buildDependenciesText(dependencyList);
+    }
+
+    return NSBM::format_sql(format_opts.value(),
+        "UPDATE Tasks SET"
+            " CreatedBy = {0},"
+            " AsignedTo = {1},"
+            " Description = {2},"
+            " ParentTask = {3},"
+            " Status = {4},"
+            " PercentageComplete = {5},"
+            " CreatedOn = {6},"
+            " RequiredDelivery = {7},"
+            " ScheduledStart = {8},"
+            " ActualStart = {9},"
+            " EstimatedCompletion = {10},"
+            " Completed = {11},"
+            " EstimatedEffortHours = {12},"
+            " ActualEffortHours = {13},"
+            " SchedulePriorityGroup = {14},"
+            " PriorityInGroup = {15},"
+            " Personal = {16},"
+            " DependencyCount = {17},"
+            "Dependencies = {18}"
+        " WHERE TaskID = {19} ",
+            creatorID,
+            assignToID,
+            description,
+            parentTaskID,
+            getStatusIntVal(),
+            percentageComplete,
+            stdchronoDateToBoostMySQLDate(creationDate),
+            stdchronoDateToBoostMySQLDate(dueDate),
+            stdchronoDateToBoostMySQLDate(scheduledStart),
+            optionalDateConversion(actualStartDate),
+            optionalDateConversion(estimatedCompletion),
+            optionalDateConversion(completionDate),
+            estimatedEffort,
+            actualEffortToDate,
+            priorityGroup,
+            priority,
+            personal,
+            dependencyCount,
+            depenenciesText,
+        primaryKey
+    );}
+
+std::string TaskModel::formatSelectStatement()
+{
+    prepareForRunQueryAsync();
+
+    NSBM::format_context fctx(format_opts.value());
+    NSBM::format_sql_to(fctx, baseQuery);
+    NSBM::format_sql_to(fctx, " WHERE TaskID = {}", primaryKey);
+
+    return std::move(fctx).get().value();
+}
+
+void TaskModel::initRequiredFields()
 {
     missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingDescription, this), "description"});
     missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingCreatorID, this), "user ID for creator"});
@@ -269,3 +361,91 @@ void TaskModel::initMissingFieldsTests()
     missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingDueDate, this), "due date (deadline)"});
 }
 
+void TaskModel::addDependencies(const std::string & dependenciesText)
+{
+    std::vector<std::string> dependencyStrings = explodeTextField(dependenciesText);
+
+    if (!dependencyStrings.empty())
+    {
+        for (auto dependencyStr: dependencyStrings)
+        {
+            dependencies.push_back(static_cast<std::size_t>(std::stol(dependencyStr)));
+        }
+    }
+    else
+    {
+        std::runtime_error NoExpectedDependencies("Dependencies expected but not found!");
+        throw NoExpectedDependencies;
+    }
+}
+
+std::string TaskModel::buildDependenciesText(std::vector<std::size_t>& dependencyList) noexcept
+{
+    if (dependencyList.size() > 1)
+    {
+        std::sort(dependencyList.begin(), dependencyList.end());
+    }
+
+    std::vector<std::string> dependencyStrings;
+    for (auto dependency: dependencyList)
+    {
+        dependencyStrings.push_back(std::to_string(dependency));
+    }
+
+    return implodeTextField(dependencyStrings);
+}
+
+void TaskModel::processResultRow(NSBM::row_view rv)
+{
+    // Required fields.
+    primaryKey = rv.at(taskIdIdx).as_uint64();
+    creatorID = rv.at(createdByIdx).as_uint64();
+    assignToID = rv.at(assignedToIdx).as_uint64();
+    description = rv.at(descriptionIdx).as_string();
+    percentageComplete = rv.at(percentageCompleteIdx).as_double();
+    creationDate = boostMysqlDateTimeToChronoTimePoint(rv.at(createdOnIdx).as_date());
+    dueDate = boostMysqlDateTimeToChronoTimePoint(rv.at(requiredDeliveryIdx).as_date());
+    scheduledStart = boostMysqlDateTimeToChronoTimePoint(rv.at(scheduledStartIdx).as_date());
+    estimatedEffort = rv.at(estimatedEffortHoursIdx).as_uint64();
+    actualEffortToDate = rv.at(actualEffortHoursIdx).as_double();
+    priorityGroup = rv.at(schedulePriorityGroupIdx).as_uint64();
+    priority = rv.at(priorityInGroupIdx).as_uint64();
+    personal = rv.at(personalIdx).as_int64();
+
+    // Optional fields.
+    if (!rv.at(parentTaskIdx).is_null())
+    {
+        parentTaskID = rv.at(parentTaskIdx).as_uint64();
+    }
+
+    if (!rv.at(statusIdx).is_null())
+    {
+        setStatus(static_cast<TaskModel::TaskStatus>(rv.at(statusIdx).as_uint64()));
+    }
+
+    if (!rv.at(actualStartIdx).is_null())
+    {
+        actualStartDate = boostMysqlDateTimeToChronoTimePoint(rv.at(actualStartIdx).as_date());
+    }
+
+    if (!rv.at(estimatedCompletionIdx).is_null())
+    {
+        estimatedCompletion = boostMysqlDateTimeToChronoTimePoint(rv.at(estimatedCompletionIdx).as_date());
+    }
+
+    if (!rv.at(completedIdx).is_null())
+    {
+        completionDate = boostMysqlDateTimeToChronoTimePoint(rv.at(completedIdx).as_date());
+    }
+
+    std::size_t dependencyCount = rv.at(dependencyCountIdx).as_uint64();
+    if (dependencyCount > 0)
+    {
+        std::string dependenciesText = rv.at(depenedenciesTextIdx).as_string();
+        addDependencies(dependenciesText);
+    }
+
+    // All the set functions set modified, since this user is new in memory it is not modified.
+    modified = false;
+
+}
