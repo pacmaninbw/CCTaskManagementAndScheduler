@@ -13,11 +13,11 @@ add_executable(protoPersonalPlanner
     common/commonUtilities.cpp
     CommandLineParser.cpp
     Models/UserModel.cpp
-#    Models/TaskModel.cpp
+    Models/TaskModel.cpp
     Models/ModelDBInterface.cpp
     UnitTests/TestDBInterfaceCore.cpp
     UnitTests/TestUserDBInterface.cpp
-#    UnitTests/TestTaskDBInterface.cpp
+    UnitTests/TestTaskDBInterface.cpp
 )
 
 target_include_directories(protoPersonalPlanner PRIVATE
