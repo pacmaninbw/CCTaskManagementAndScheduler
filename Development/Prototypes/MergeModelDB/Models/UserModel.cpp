@@ -262,7 +262,7 @@ void UserModel::processResultRow(NSBM::row_view rv)
     email = rv.at(EmailAddressIdx).as_string();
     loginName = rv.at(LoginNameIdx).as_string();
     password = rv.at(PasswordIdx).as_string();
-    created = (boostMysqlDateTimeToChronoTimePoint(rv.at(UserAddedIdx).as_date()));
+    created = (boostMysqlDateToChronoDate(rv.at(UserAddedIdx).as_date()));
     if (!rv.at(LastLoginIdx).is_null())
     {
         lastLogin = boostMysqlDateTimeToChronoTimePoint(rv.at(LastLoginIdx).as_datetime());

@@ -403,9 +403,9 @@ void TaskModel::processResultRow(NSBM::row_view rv)
     assignToID = rv.at(assignedToIdx).as_uint64();
     description = rv.at(descriptionIdx).as_string();
     percentageComplete = rv.at(percentageCompleteIdx).as_double();
-    creationDate = boostMysqlDateTimeToChronoTimePoint(rv.at(createdOnIdx).as_date());
-    dueDate = boostMysqlDateTimeToChronoTimePoint(rv.at(requiredDeliveryIdx).as_date());
-    scheduledStart = boostMysqlDateTimeToChronoTimePoint(rv.at(scheduledStartIdx).as_date());
+    creationDate = boostMysqlDateToChronoDate(rv.at(createdOnIdx).as_date());
+    dueDate = boostMysqlDateToChronoDate(rv.at(requiredDeliveryIdx).as_date());
+    scheduledStart = boostMysqlDateToChronoDate(rv.at(scheduledStartIdx).as_date());
     estimatedEffort = rv.at(estimatedEffortHoursIdx).as_uint64();
     actualEffortToDate = rv.at(actualEffortHoursIdx).as_double();
     priorityGroup = rv.at(schedulePriorityGroupIdx).as_uint64();
@@ -425,17 +425,17 @@ void TaskModel::processResultRow(NSBM::row_view rv)
 
     if (!rv.at(actualStartIdx).is_null())
     {
-        actualStartDate = boostMysqlDateTimeToChronoTimePoint(rv.at(actualStartIdx).as_date());
+        actualStartDate = boostMysqlDateToChronoDate(rv.at(actualStartIdx).as_date());
     }
 
     if (!rv.at(estimatedCompletionIdx).is_null())
     {
-        estimatedCompletion = boostMysqlDateTimeToChronoTimePoint(rv.at(estimatedCompletionIdx).as_date());
+        estimatedCompletion = boostMysqlDateToChronoDate(rv.at(estimatedCompletionIdx).as_date());
     }
 
     if (!rv.at(completedIdx).is_null())
     {
-        completionDate = boostMysqlDateTimeToChronoTimePoint(rv.at(completedIdx).as_date());
+        completionDate = boostMysqlDateToChronoDate(rv.at(completedIdx).as_date());
     }
 
     std::size_t dependencyCount = rv.at(dependencyCountIdx).as_uint64();

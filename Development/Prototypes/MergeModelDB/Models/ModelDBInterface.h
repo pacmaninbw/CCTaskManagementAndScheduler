@@ -77,7 +77,7 @@ protected:
         return NSBM::date(tp);
     };
 
-    std::chrono::year_month_day boostMysqlDateTimeToChronoTimePoint(const NSBM::date& source) noexcept
+    std::chrono::year_month_day boostMysqlDateToChronoDate(const NSBM::date& source) noexcept
     {
         const std::chrono::year year{source.year()};
         const std::chrono::month month{source.month()};
