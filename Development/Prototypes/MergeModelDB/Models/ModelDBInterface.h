@@ -48,7 +48,6 @@ protected:
     virtual std::string formatInsertStatement() = 0;
     virtual std::string formatUpdateStatement() = 0;
     virtual std::string formatSelectStatement() = 0;
-    bool selectWithArguments(std::string formattedSelectStatement);
     virtual bool processResult(NSBM::results& results);
 /*
  * Each model must provide the process by which the database information will

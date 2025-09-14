@@ -134,22 +134,6 @@ bool ModelDBInterface::retrieve()
     }
 }
 
-bool ModelDBInterface::selectWithArguments(std::string formattedSelectStatement)
-{
-    try
-    {
-        NSBM::results localResult = runQueryAsync(formattedSelectStatement);
-
-        return processResult(localResult);
-    }
-
-    catch(const std::exception& e)
-    {
-        appendErrorMessage(std::format("In {}.retrieve() : {}", modelName, e.what()));
-        return false;
-    }
-}
-
 bool ModelDBInterface::hasRequiredValues()
 {
     initRequiredFields();
