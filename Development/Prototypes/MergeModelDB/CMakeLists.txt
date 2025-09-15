@@ -9,12 +9,13 @@ endif()
 find_package(Boost 1.87.0 REQUIRED COMPONENTS system charconv program_options)
 
 add_executable(protoPersonalPlanner
-    main.cpp
     common/commonUtilities.cpp
     CommandLineParser.cpp
+    Models/CoreDBInterface.cpp
+    Models/ModelDBInterface.cpp
     Models/UserModel.cpp
     Models/TaskModel.cpp
-    Models/ModelDBInterface.cpp
+    main.cpp
     UnitTests/TestDBInterfaceCore.cpp
     UnitTests/TestUserDBInterface.cpp
     UnitTests/TestTaskDBInterface.cpp
