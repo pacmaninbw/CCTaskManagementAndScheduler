@@ -4,7 +4,6 @@
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
 #include <chrono>
-#include "CommandLineParser.h"
 #include "CoreDBInterface.h"
 #include <functional>
 #include <iostream>
