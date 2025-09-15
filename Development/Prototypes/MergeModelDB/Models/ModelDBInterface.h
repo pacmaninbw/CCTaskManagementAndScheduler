@@ -5,6 +5,7 @@
 #include <boost/mysql.hpp>
 #include <chrono>
 #include "CommandLineParser.h"
+#include "CoreDBInterface.h"
 #include <functional>
 #include <iostream>
 #include <optional>
@@ -12,15 +13,11 @@
 #include <string_view>
 #include <vector>
 
-namespace NSBA = boost::asio;
-namespace NSBM = boost::mysql;
-
-class ModelDBInterface
+class ModelDBInterface : public CoreDBInterface
 {
 public:
     ModelDBInterface(std::string_view modelNameIn);
     virtual ~ModelDBInterface() = default;
-    std::string getAllErrorMessages() const noexcept { return errorMessages; };
     bool save();
     bool insert();
     bool update();
@@ -33,14 +30,11 @@ public:
     std::string_view getModelName() const { return modelName; };
 
 protected:
-    void initFormatOptions();
 /*
  * Each model will have 1 or more required fields, the model must specify what those
  * fields are.
  */
     virtual void initRequiredFields() = 0;
-    void prepareForRunQueryAsync();
-    void appendErrorMessage(const std::string& newError) { errorMessages.append(newError); errorMessages.append("\n");};
 /*
  * Each model must provide formating for Insert, Update and Select by object ID.
  * Additional select statements will be handled by each model as necessary.
@@ -55,15 +49,6 @@ protected:
  */
     virtual void processResultRow(NSBM::row_view rv) = 0;
 
-
-/*
- * All calls to runQueryAsync and getConnectionFormatOptsAsync should be
- * implemented within try blocks.
- */
-    NSBM::results runQueryAsync(const std::string& query);
-    NSBM::format_options getConnectionFormatOptsAsync();
-    NSBA::awaitable<NSBM::results> coRoutineExecuteSqlStatement(const std::string& query);
-    NSBA::awaitable<NSBM::format_options> coRoutineGetFormatOptions();
 /*
  * To process TEXT fields that contain model fields.
  */
@@ -119,20 +104,14 @@ protected:
 protected:
     std::size_t primaryKey;
     std::string_view modelName;
-    std::string errorMessages;
     bool modified;
-    NSBM::connect_params dbConnectionParameters;
-    bool verboseOutput;
     char delimiter;
-    std::optional<NSBM::format_options> format_opts;
-
     struct RequireField
     {
         std::function<bool(void)>errorCondition;
         std::string fieldName;
     };
     std::vector<RequireField> missingRequiredFieldsTests;
-
 };
 
 #endif // MODELDBINTERFACECORE_H_

@@ -10,19 +10,13 @@
 #include <utility>
 #include <vector>
 
-
 ModelDBInterface::ModelDBInterface(std::string_view modelNameIn)
-: primaryKey{0},
-  modelName{modelNameIn},
-  errorMessages{""},
-  modified{false},
-  verboseOutput{programOptions.verboseOutput},
-  delimiter{';'}  
+: CoreDBInterface()
 {
-    dbConnectionParameters.server_address.emplace_host_and_port(programOptions.mySqlUrl, programOptions.mySqlPort);
-    dbConnectionParameters.username = programOptions.mySqlUser;
-    dbConnectionParameters.password = programOptions.mySqlPassword;
-    dbConnectionParameters.database = programOptions.mySqlDBName;
+    primaryKey = 0;
+    modelName = modelNameIn;
+    modified = false;
+    delimiter = ';';  
 }
 
 bool ModelDBInterface::save()
@@ -163,20 +157,6 @@ void ModelDBInterface::reportMissingFields() noexcept
     }
 }
 
-void ModelDBInterface::initFormatOptions()
-{
-    try {
-        if (!format_opts.has_value())
-        {
-            format_opts = getConnectionFormatOptsAsync();
-        }
-    }
-    catch (const std::exception& e)
-    {
-        std::cerr << "ERROR: initFormatOptions() FAILED: " << e.what() << "\n";
-    }
-}
-
 bool ModelDBInterface::processResult(NSBM::results& results)
 {
     if (results.rows().empty())
@@ -196,55 +176,6 @@ bool ModelDBInterface::processResult(NSBM::results& results)
 
     return true;
 }
-/*
- * All calls to runQueryAsync should be implemented within try blocks.
- */
-NSBM::results ModelDBInterface::runQueryAsync(const std::string& query)
-{
-    NSBM::results localResult;
-    NSBA::io_context ctx;
-
-    NSBA::co_spawn(ctx, coRoutineExecuteSqlStatement(query),
-        [&localResult, this](std::exception_ptr ptr, NSBM::results result)
-        {
-            if (ptr)
-            {
-                std::rethrow_exception(ptr);
-            }
-            localResult = std::move(result);
-        }
-    );
-
-    ctx.run();
-
-    return localResult;
-}
-
-NSBA::awaitable<NSBM::results> ModelDBInterface::coRoutineExecuteSqlStatement(const std::string& query)
-{
-    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-    
-    NSBM::results selectResult;
-
-    if (verboseOutput)
-    {
-        std::clog << "Running: \n\t" << query << "\n";
-    }
-
-    co_await conn.async_execute(query, selectResult);
-
-    co_await conn.async_close();
-
-    co_return selectResult;
-}
-
-void ModelDBInterface::prepareForRunQueryAsync()
-{
-    errorMessages.clear();
-    initFormatOptions();
-};
 
 std::vector<std::string> ModelDBInterface::explodeTextField(std::string const& textField) noexcept
 {
@@ -271,37 +202,4 @@ std::string ModelDBInterface::implodeTextField(std::vector<std::string> &fields)
     return textField;
 }
 
-NSBM::format_options ModelDBInterface::getConnectionFormatOptsAsync()
-{
-    NSBM::format_options options;
-    NSBA::io_context ctx;
-
-    NSBA::co_spawn(ctx, coRoutineGetFormatOptions(),
-        [&options, this](std::exception_ptr ptr, NSBM::format_options result)
-        {
-            if (ptr)
-            {
-                std::rethrow_exception(ptr);
-            }
-            options = std::move(result);
-        }
-    );
-
-    ctx.run();
-
-    return options;
-}
-
-NSBA::awaitable<NSBM::format_options> ModelDBInterface::coRoutineGetFormatOptions()
-{
-    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
-
-    co_await conn.async_connect(dbConnectionParameters);
-
-    NSBM::format_options options = conn.format_opts().value();
-
-    co_await conn.async_close();
-
-    co_return options;
-}
 
