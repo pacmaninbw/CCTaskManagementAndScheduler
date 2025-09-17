@@ -85,6 +85,12 @@ public:
  * Select with arguments
  */
     bool selectByDescriptionAndAssignedUser(std::string_view description, std::size_t assignedUserID);
+    bool selectByTaskID(std::size_t taskID);
+    // Return multiple Tasks.
+    std::string formatSelectActiveTasksForAssignedUser(std::size_t assignedUserID);
+    std::string formatSelectUnstartedDueForStartForAssignedUser(std::size_t assignedUserID);
+    std::string formatSelectTasksCompletedByAssignedAfterDate(std::size_t assignedUserID,
+        std::chrono::year_month_day& searchStartDate);
 
 /*
  * Required fields.
@@ -211,10 +217,11 @@ private:
     const std::size_t personalIdx = 17;
     const std::size_t dependencyCountIdx = 18;
     const std::size_t depenedenciesTextIdx = 19;
+
+    NSBM::constant_string_view listQueryBase = "SELECT TaskID FROM Tasks ";
 };
 
 using TaskModel_shp = std::shared_ptr<TaskModel>;
-using TaskList = std::vector<TaskModel_shp>;
 
 #endif // TASKMODEL_H_
 

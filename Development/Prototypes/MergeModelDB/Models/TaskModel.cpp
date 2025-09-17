@@ -214,6 +214,95 @@ bool TaskModel::selectByDescriptionAndAssignedUser(std::string_view description,
     }
 }
 
+bool TaskModel::selectByTaskID(std::size_t taskID)
+{
+    prepareForRunQueryAsync();
+
+    try
+    {
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, baseQuery);
+        NSBM::format_sql_to(fctx, " WHERE TaskID = {}", taskID);
+
+        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+
+        return processResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In TaskModel::selectByTaskID({}) : {}", taskID, e.what()));
+        return false;
+    }
+}
+
+std::string TaskModel::formatSelectActiveTasksForAssignedUser(std::size_t assignedUserID)
+{
+    prepareForRunQueryAsync();
+
+    try {
+        constexpr unsigned int notStarted = static_cast<unsigned int>(TaskModel::TaskStatus::Not_Started);
+
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, listQueryBase);
+        NSBM::format_sql_to(fctx, " WHERE AsignedTo = {} AND Completed IS NULL AND (Status IS NOT NULL AND Status <> {})",
+            assignedUserID, stdchronoDateToBoostMySQLDate(getTodaysDatePlus(OneWeek)), notStarted);
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In TaskModel::formatSelectUnstartedDueForStartForAssignedUser({}) : {}", assignedUserID, e.what()));
+    }
+
+    return std::string();
+}
+
+std::string TaskModel::formatSelectUnstartedDueForStartForAssignedUser(std::size_t assignedUserID)
+{
+    prepareForRunQueryAsync();
+
+    try {
+        constexpr unsigned int notStarted = static_cast<unsigned int>(TaskModel::TaskStatus::Not_Started);
+
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, listQueryBase);
+        NSBM::format_sql_to(fctx, " WHERE AsignedTo = {} AND ScheduledStart < {} AND (Status IS NULL OR Status = {})",
+            assignedUserID, stdchronoDateToBoostMySQLDate(getTodaysDatePlus(OneWeek)), notStarted);
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In TaskModel::formatSelectUnstartedDueForStartForAssignedUser({}) : {}", assignedUserID, e.what()));
+    }
+
+    return std::string();
+}
+
+std::string TaskModel::formatSelectTasksCompletedByAssignedAfterDate(std::size_t assignedUserID, std::chrono::year_month_day& searchStartDate)
+{
+    prepareForRunQueryAsync();
+
+    try {
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, listQueryBase);
+        NSBM::format_sql_to(fctx, " WHERE AsignedTo = {} AND Completed >= {}",
+            assignedUserID, stdchronoDateToBoostMySQLDate(searchStartDate));
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In TaskModel::formatSelectTasksCompletedByAssignedAfterDate({}) : {}", assignedUserID, e.what()));
+    }
+
+    return std::string();
+}
+
 std::string TaskModel::taskStatusString() const
 {
     TaskModel::TaskStatus status = getStatus();
