@@ -290,8 +290,8 @@ UserList UserDbInterface::processResults(NSBM::results& results)
         UserModel_shp newUser = std::make_shared<UserModel>(UserModel());
         processResultRow(row, newUser);
         users.push_back(newUser);
-\
     }
+    
     return users;
 }
 
