@@ -17,6 +17,7 @@ add_executable(protoPersonalPlanner
     Models/TaskModel.cpp
     Models/ListDBInterface.h
     Models/UserList.cpp
+    Models/TaskList.cpp
     main.cpp
     UnitTests/TestDBInterfaceCore.cpp
     UnitTests/TestUserDBInterface.cpp
