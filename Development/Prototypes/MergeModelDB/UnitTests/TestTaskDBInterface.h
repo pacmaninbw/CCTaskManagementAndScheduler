@@ -5,11 +5,11 @@
 #include "CSVReader.h"
 #include <functional>
 #include <string>
+#include "TaskList.h"
 #include "TaskModel.h"
 #include "TestDBInterfaceCore.h"
 #include "UserModel.h"
 #include <vector>
-
 class TestTaskDBInterface : public TestDBInterfaceCore
 {
 public:
@@ -20,11 +20,12 @@ public:
 private:
     bool testGetTaskByDescription(TaskModel_shp task);
     bool testGetTaskByID(TaskModel_shp task);
-    TaskList loadTasksFromDataFile();
+    TaskListValues loadTasksFromDataFile();
     void commonTaskInit(TaskModel_shp newTask, CSVRow taskData);
     TaskModel_shp creatOddTask(CSVRow taskData);
     TaskModel_shp creatEvenTask(CSVRow taskData);
     TestDBInterfaceCore::TestStatus testGetUnstartedTasks();
+    TestDBInterfaceCore::TestStatus testGetActiveTasks();
     TestDBInterfaceCore::TestStatus testTaskUpdates();
     bool testTaskUpdate(TaskModel_shp changedTask);
     bool testAddDepenedcies();

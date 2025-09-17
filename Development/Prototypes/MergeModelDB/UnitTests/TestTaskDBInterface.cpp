@@ -22,6 +22,7 @@ TestTaskDBInterface::TestTaskDBInterface(std::string taskFileName)
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testTasksFromDataFile, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetUnstartedTasks, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testTaskUpdates, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetActiveTasks, this));
 
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testNegativePathAlreadyInDataBase, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testnegativePathNotModified, this));
@@ -106,10 +107,10 @@ bool TestTaskDBInterface::testGetTaskByID(TaskModel_shp insertedTask)
     }
 }
 
-TaskList TestTaskDBInterface::loadTasksFromDataFile()
+TaskListValues TestTaskDBInterface::loadTasksFromDataFile()
 {
     std::size_t lCount = 0;
-    TaskList inputTaskData;
+    TaskListValues inputTaskData;
 
     std::ifstream taskDataFile(dataFileName);
     
@@ -193,11 +194,8 @@ TaskModel_shp TestTaskDBInterface::creatEvenTask(CSVRow taskData)
 
 TestDBInterfaceCore::TestStatus TestTaskDBInterface::testGetUnstartedTasks()
 {
-#if 1
-    std::clog << "testGetUnstartedTasks() NOT IMPLEMENTED!!!\n";
-    return TESTPASSED;
-#else
-    TaskList notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(userOne);
+    TaskList taskDBInteface;
+    TaskListValues notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(userOne->getUserID());
     if (!notStartedList.empty())
     {    
         if (verboseOutput)
@@ -217,7 +215,31 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testGetUnstartedTasks()
         taskDBInteface.getAllErrorMessages() << "\n";
 
     return TESTFAILED;
-#endif
+}
+
+TestDBInterfaceCore::TestStatus TestTaskDBInterface::testGetActiveTasks()
+{
+    TaskList taskDBInteface;
+    TaskListValues activeTasks = taskDBInteface.getActiveTasksForAssignedUser(userOne->getUserID());
+    if (!activeTasks.empty())
+    {    
+        if (verboseOutput)
+        {
+            std::clog << std::format("Find active tasks for user({}) PASSED!\n", userOne->getUserID());
+            std::clog << std::format("User {} has {} unstarted tasks\n",
+                userOne->getUserID(), activeTasks.size());
+            for (auto task: activeTasks)
+            {
+                std::clog << *task << "\n";
+            }
+        }
+        return TESTPASSED; 
+    }
+
+    std::cerr << std::format("taskDBInterface.getUnstartedDueForStartForAssignedUser({}) FAILED!\n", userOne->getUserID()) <<
+        taskDBInteface.getAllErrorMessages() << "\n";
+
+    return TESTFAILED;
 }
 
 TestDBInterfaceCore::TestStatus TestTaskDBInterface::testTaskUpdates()
@@ -435,7 +457,7 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testNegativePathMissingRequ
 TestDBInterfaceCore::TestStatus TestTaskDBInterface::testTasksFromDataFile()
 {
     TestDBInterfaceCore::TestStatus allTestsPassed = TESTPASSED;
-    TaskList userTaskTestData = loadTasksFromDataFile();
+    TaskListValues userTaskTestData = loadTasksFromDataFile();
 
     for (auto testTask: userTaskTestData)
     {
@@ -518,3 +540,4 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::insertShouldPass(TaskModel_
         return TESTFAILED;
     }
 }
+
