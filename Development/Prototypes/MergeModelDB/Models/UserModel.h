@@ -73,6 +73,8 @@ public:
     bool selectByLoginAndPassword(const std::string_view& loginName, const std::string_view& password);
     bool selectByFullName(const std::string_view& lastName, const std::string_view& firstName,
         const std::string_view& middleI);
+    std::string formatGetAllUsersQuery();
+    bool selectByUserID(std::size_t UserID);
 
 /*
  * Required fields.
@@ -166,6 +168,5 @@ private:
 };
 
 using UserModel_shp = std::shared_ptr<UserModel>;
-using UserList = std::vector<UserModel_shp>;
 
 #endif // USERMODEL_H_

@@ -371,3 +371,44 @@ bool UserModel::selectByFullName(const std::string_view &lastName, const std::st
         return false;
     }
 }
+
+std::string UserModel::formatGetAllUsersQuery()
+{
+    prepareForRunQueryAsync();
+
+    try
+    {
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, "SELECT UserID FROM UserProfile ");
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserModel::formatGetAllUsersQuery : {}", e.what()));
+        return std::string();
+    }
+}
+
+bool UserModel::selectByUserID(std::size_t UserID)
+{
+    prepareForRunQueryAsync();
+
+    try
+    {
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, baseQuery);
+        NSBM::format_sql_to(fctx, " WHERE UserID = {}", UserID);
+
+        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+
+        return processResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserModel::selectByUserID : {}", e.what()));
+        return false;
+    }
+}
