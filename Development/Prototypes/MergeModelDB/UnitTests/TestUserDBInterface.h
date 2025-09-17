@@ -4,6 +4,7 @@
 #include <functional>
 #include <string>
 #include "TestDBInterfaceCore.h"
+#include "UserList.h"
 #include "UserModel.h"
 #include <vector>
 
@@ -19,10 +20,10 @@ private:
     bool testGetUserByLoginAndPassword(UserModel_shp insertedUser);
     bool testGetUserByFullName(UserModel_shp insertedUser);
     bool testUpdateUserPassword(UserModel_shp insertedUser);
-    bool loadTestUsersFromFile(UserList& userProfileTestData);
-    bool testGetAllUsers(UserList userProfileTestData);
+    bool loadTestUsersFromFile(UserListValues& userProfileTestData);
+    bool testGetAllUsers(UserListValues userProfileTestData);
     TestDBInterfaceCore::TestStatus negativePathMissingRequiredFields();
-    void addFirstUser(UserList& TestUsers);
+    void addFirstUser(UserListValues& TestUsers);
     TestDBInterfaceCore::TestStatus testnegativePathNotModified();
     TestDBInterfaceCore::TestStatus testNegativePathAlreadyInDataBase();
 

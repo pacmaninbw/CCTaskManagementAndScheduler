@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <string>
 #include "TestUserDBInterface.h"
+#include "UserList.h"
 #include "UserModel.h"
 #include <vector>
 
@@ -27,7 +28,7 @@ TestUserDBInterface::TestUserDBInterface(std::string userFileName)
 
 TestDBInterfaceCore::TestStatus TestUserDBInterface::runPositivePathTests()
 {
-    UserList userProfileTestData;
+    UserListValues userProfileTestData;
     addFirstUser(userProfileTestData);
 
     if (!loadTestUsersFromFile(userProfileTestData))
@@ -180,7 +181,7 @@ bool TestUserDBInterface::testUpdateUserPassword(UserModel_shp insertedUser)
     return testPassed;
 }
 
-bool TestUserDBInterface::loadTestUsersFromFile(UserList &userProfileTestData)
+bool TestUserDBInterface::loadTestUsersFromFile(UserListValues& userProfileTestData)
 {
     std::ifstream userData(dataFileName);
 
@@ -211,12 +212,11 @@ bool TestUserDBInterface::loadTestUsersFromFile(UserList &userProfileTestData)
     return true;
 }
 
-bool TestUserDBInterface::testGetAllUsers(UserList userProfileTestData)
+bool TestUserDBInterface::testGetAllUsers(UserListValues userProfileTestData)
 {
-    return (userProfileTestData.size() > 0);
-#if 0
     bool testPassed = false;
-    UserList allUsers = userDBInterface.getAllUsers();
+    UserList testULists;
+    UserListValues allUsers = testULists.getAllUsers();
 
     if ((userProfileTestData.size() == allUsers.size()) &&
         std::equal(userProfileTestData.begin(), userProfileTestData.end(), allUsers.begin(),
@@ -249,7 +249,6 @@ bool TestUserDBInterface::testGetAllUsers(UserList userProfileTestData)
     allUsers.clear();
 
     return testPassed;
-#endif
 }
 
 TestDBInterfaceCore::TestStatus TestUserDBInterface::negativePathMissingRequiredFields()
@@ -299,7 +298,7 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::negativePathMissingRequired
     return TESTPASSED;
 }
 
-void TestUserDBInterface::addFirstUser(UserList &TestUsers)
+void TestUserDBInterface::addFirstUser(UserListValues& TestUsers)
 {
     // Test one case of the alternate constructor.
     UserModel_shp firstUser = std::make_shared<UserModel>("PacMan", "IN", "BW", "pacmaninbw@gmail.com");
