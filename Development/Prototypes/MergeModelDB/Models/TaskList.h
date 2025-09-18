@@ -19,6 +19,7 @@ public:
     TaskListValues getUnstartedDueForStartForAssignedUser(std::size_t assignedUserID);
     TaskListValues getTasksCompletedByAssignedAfterDate(std::size_t assignedUserID,
         std::chrono::year_month_day& searchStartDate);
+    TaskListValues getTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID);
 
 private:
     TaskListValues fillTaskList();
