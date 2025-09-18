@@ -91,6 +91,7 @@ public:
     std::string formatSelectUnstartedDueForStartForAssignedUser(std::size_t assignedUserID);
     std::string formatSelectTasksCompletedByAssignedAfterDate(std::size_t assignedUserID,
         std::chrono::year_month_day& searchStartDate);
+    std::string formatSelectTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID);
 
 /*
  * Required fields.

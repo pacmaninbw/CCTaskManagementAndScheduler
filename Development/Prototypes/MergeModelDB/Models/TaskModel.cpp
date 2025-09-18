@@ -64,12 +64,12 @@ std::chrono::year_month_day TaskModel::getactualStartDate() const
 
 std::chrono::year_month_day TaskModel::getEstimatedCompletion() const
 {
-    return std::chrono::year_month_day();
+    return estimatedCompletion.value_or(std::chrono::year_month_day());
 }
 
 std::chrono::year_month_day TaskModel::getCompletionDate() const
 {
-    return std::chrono::year_month_day();
+    return completionDate.value_or(std::chrono::year_month_day());
 }
 
 void TaskModel::setCreatorID(std::size_t inCreatorID)
@@ -298,6 +298,26 @@ std::string TaskModel::formatSelectTasksCompletedByAssignedAfterDate(std::size_t
     catch(const std::exception& e)
     {
         appendErrorMessage(std::format("In TaskModel::formatSelectTasksCompletedByAssignedAfterDate({}) : {}", assignedUserID, e.what()));
+    }
+
+    return std::string();
+}
+
+std::string TaskModel::formatSelectTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID)
+{
+    prepareForRunQueryAsync();
+
+    try {
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, listQueryBase);
+        NSBM::format_sql_to(fctx, " WHERE AsignedTo = {} AND ParentTask = {}", assignedUserID, parentID);
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In TaskModel::formatSelectTasksByAssignedIDandParentID({}) : {}", assignedUserID, e.what()));
     }
 
     return std::string();
@@ -538,3 +558,4 @@ void TaskModel::processResultRow(NSBM::row_view rv)
     modified = false;
 
 }
+
