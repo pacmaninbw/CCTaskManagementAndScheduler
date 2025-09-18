@@ -258,6 +258,11 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testTaskUpdates()
         return TESTFAILED;
     }
 
+    if (!testGetCompletedList())
+    {
+        return TESTFAILED;
+    }
+
     return TESTPASSED;
 }
 
@@ -340,6 +345,50 @@ bool TestTaskDBInterface::testAddDepenedcies()
 
     return true;
 }
+
+bool TestTaskDBInterface::testGetCompletedList()
+{
+    std::size_t user1ID = userOne->getUserID();
+
+    TaskModel_shp parentTask = std::make_shared<TaskModel>();
+    parentTask->selectByDescriptionAndAssignedUser("Archive BHHS74Reunion website to external SSD", user1ID);
+    TaskModel::TaskStatus newStatus = TaskModel::TaskStatus::Complete;
+
+    std::chrono::year_month_day completedDate = parentTask->getCompletionDate();
+
+    if (!completedDate.ok())
+    {
+        std::cerr << "Parent Completion Date Not set\n" << *parentTask << "\n" << "completedDate " << completedDate << "\n";
+        return false;
+    }
+
+    TaskList taskSearch;
+
+    TaskListValues tasksToMarkComplete = taskSearch.getTasksByAssignedIDandParentID(user1ID, parentTask->getTaskID());
+    for (auto task: tasksToMarkComplete)
+    {
+        task->setCompletionDate(completedDate);
+        task->setStatus(newStatus);
+        if (!task->update())
+        {
+            std::cerr << std::format("In testGetCompletedList Task Update Failed: \n{}\n", task->getAllErrorMessages());
+            return false;
+        }
+    }
+
+    std::chrono::year_month_day searchAfter = stringToDate("2025-5-11");
+    TaskListValues completedTasks = taskSearch.getTasksCompletedByAssignedAfterDate(user1ID, searchAfter);
+
+    if (completedTasks.size() != (tasksToMarkComplete.size() + 1))
+    {
+        std::clog << std::format("Test FAILED: completedTasks.size() {} != expected value {}\n",
+            completedTasks.size(), tasksToMarkComplete.size() + 1);
+        return false;
+    }
+
+    return true;;
+}
+
 
 std::chrono::year_month_day TestTaskDBInterface::stringToDate(std::string dateString)
 {

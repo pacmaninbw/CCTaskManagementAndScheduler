@@ -29,6 +29,7 @@ private:
     TestDBInterfaceCore::TestStatus testTaskUpdates();
     bool testTaskUpdate(TaskModel_shp changedTask);
     bool testAddDepenedcies();
+    bool testGetCompletedList();
     std::chrono::year_month_day stringToDate(std::string dateString);
     TestDBInterfaceCore::TestStatus testnegativePathNotModified();
     TestDBInterfaceCore::TestStatus testNegativePathAlreadyInDataBase();
