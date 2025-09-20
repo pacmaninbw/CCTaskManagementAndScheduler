@@ -70,7 +70,8 @@ std::string NoteModel::formatInsertStatement()
 
     std::string insertStatement = NSBM::format_sql(format_opts.value(),
         "INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES ({0}, {1}, {2}, {3})",
-        userID, stdChronoTimePointToBoostDateTime(creationDate), content, stdChronoTimePointToBoostDateTime(lastUpdate));
+        userID, stdChronoTimePointToBoostDateTime(creationDate),
+        content, stdChronoTimePointToBoostDateTime(lastUpdate));
 
     return insertStatement;
 }
@@ -86,7 +87,8 @@ std::string NoteModel::formatUpdateStatement()
             " UserNotes.Content = {2},"
             " UserNotes.LastUpdate = {3}" 
         " WHERE UserNotes.idUserNotes = {4}",
-            userID, stdChronoTimePointToBoostDateTime(creationDate), content, stdChronoTimePointToBoostDateTime(lastUpdate));
+            userID, stdChronoTimePointToBoostDateTime(creationDate),
+            content, stdChronoTimePointToBoostDateTime(lastUpdate));
         
     return updateStatement;
 }
