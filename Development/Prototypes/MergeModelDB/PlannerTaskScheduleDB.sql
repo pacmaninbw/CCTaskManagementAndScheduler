@@ -36,8 +36,12 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserGoals` (
     `Description` TINYTEXT NOT NULL,
     `Priority` INT DEFAULT NULL,
     `ParentGoal` INT UNSIGNED DEFAULT NULL,
+    `CreationTS` DATETIME NOT NULL,
+    `LastUpdateTS` DATETIME NOT NULL,
     PRIMARY KEY (`idUserGoals`, `UserID`),
-    UNIQUE INDEX `idUserGoals_UNIQUE` (`idUserGoals`),
+    UNIQUE INDEX `idUserGoals_UNIQUE` (`idUserGoals` ASC),
+    INDEX `CreationTS_idx` (`CreationTS` DESC),
+    INDEX `LastUpdateTS_idx` (`LastUpdateTS` DESC),
     CONSTRAINT `fk_UserGoals_UserID`
         FOREIGN KEY (`UserID`)
         REFERENCES `UserProfile` (`UserID`)
@@ -115,7 +119,11 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskGoals` (
     `UserID` INT UNSIGNED NOT NULL,
     `TaskID`  INT UNSIGNED NOT NULL,
     `TaskGoalList` VARCHAR(45) NOT NULL,
+    `CreationTS` DATETIME NOT NULL,
+    `LastUpdateTS` DATETIME NOT NULL,
     PRIMARY KEY (`UserID`,`TaskID`),
+    INDEX `CreationTS_idx` (`CreationTS` DESC),
+    INDEX `LastUpdateTS_idx` (`LastUpdateTS` DESC),
     CONSTRAINT `fk_UserTaskGoals_AsignedTo`
         FOREIGN KEY (`UserID`)
         REFERENCES `UserProfile` (`UserID`)
