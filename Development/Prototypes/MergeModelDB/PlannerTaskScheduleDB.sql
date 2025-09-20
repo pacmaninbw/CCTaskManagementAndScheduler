@@ -170,6 +170,7 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserDaySchedule` (
     PRIMARY KEY (`idUserDaySchedule`, `UserID`),
     UNIQUE INDEX `idUserDaySchedule_UNIQUE` (`idUserDaySchedule` ASC),
     INDEX `fk_UserDaySchedule_UserID_idx` (`UserID` ASC),
+    INDEX `DateOfSchedule_idx` (`DateOfSchedule` DESC),
     CONSTRAINT `fk_UserDaySchedule_UserID`
       FOREIGN KEY (`UserID`)
       REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`UserID`)
