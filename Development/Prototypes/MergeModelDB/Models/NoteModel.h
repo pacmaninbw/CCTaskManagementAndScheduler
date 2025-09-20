@@ -71,8 +71,6 @@ private:
     std::string formatUpdateStatement() override;
     std::string formatSelectStatement() override;
 
-    std::string buildPreferenceText() noexcept;
-    void parsePrefenceText(std::string preferences) noexcept;
     void processResultRow(NSBM::row_view rv) override;
     
     std::size_t userID;

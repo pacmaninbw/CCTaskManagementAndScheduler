@@ -61,7 +61,7 @@ void NoteModel::initRequiredFields()
     missingRequiredFieldsTests.push_back({std::bind(&NoteModel::isMissingUserID, this), "User ID"});
     missingRequiredFieldsTests.push_back({std::bind(&NoteModel::isMissingContent, this), "Content"});
     missingRequiredFieldsTests.push_back({std::bind(&NoteModel::isMissingCreationDate, this), "Date Created"});
-    missingRequiredFieldsTests.push_back({std::bind(&NoteModel::isMissingLastUpdate, this), "Password"});
+    missingRequiredFieldsTests.push_back({std::bind(&NoteModel::isMissingLastUpdate, this), "Last Update"});
 }
 
 std::string NoteModel::formatInsertStatement()
