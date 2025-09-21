@@ -37,7 +37,7 @@ public:
 /*
  * Select with arguments
  */
-    bool selectByNoteID(std::size_t noteID);
+    bool selectByGoalID(std::size_t noteID);
 
 /*
  * Required fields.

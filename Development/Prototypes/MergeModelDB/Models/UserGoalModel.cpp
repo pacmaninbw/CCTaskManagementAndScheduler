@@ -133,7 +133,7 @@ void UserGoalModel::processResultRow(NSBM::row_view rv)
     }
 }
 
-bool UserGoalModel::selectByNoteID(std::size_t noteID)
+bool UserGoalModel::selectByGoalID(std::size_t noteID)
 {
     prepareForRunQueryAsync();
 
@@ -150,7 +150,7 @@ bool UserGoalModel::selectByNoteID(std::size_t noteID)
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In UserGoalModel::selectByUserID : {}", e.what()));
+        appendErrorMessage(std::format("In UserGoalModel::selectByGoalID : {}", e.what()));
         return false;
     }
 }
