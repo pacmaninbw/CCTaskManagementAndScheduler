@@ -5,9 +5,12 @@
 #include <boost/mysql.hpp>
 #include <concepts>
 #include "CoreDBInterface.h"
+#include <exception>
+#include <format>
 #include <iostream>
 #include <memory>
 #include "ModelDBInterface.h"
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <vector>
