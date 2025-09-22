@@ -7,11 +7,11 @@
 #include "UserModel.h"
 #include <vector>
 
-class TestUserDBInterface : public TestDBInterfaceCore
+class TestGoalDBInterface : public TestDBInterfaceCore
 {
 public:
-    TestUserDBInterface(std::string userFileName);
-    ~TestUserDBInterface() = default;
+    TestGoalDBInterface();
+    ~TestGoalDBInterface() = default;
     virtual TestDBInterfaceCore::TestStatus runPositivePathTests() override;
 
 private:
