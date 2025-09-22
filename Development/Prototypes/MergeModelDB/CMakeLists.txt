@@ -24,6 +24,7 @@ add_executable(protoPersonalPlanner
     UnitTests/TestDBInterfaceCore.cpp
     UnitTests/TestUserDBInterface.cpp
     UnitTests/TestTaskDBInterface.cpp
+    UnitTests/TestGoal.cpp
 )
 
 target_include_directories(protoPersonalPlanner PRIVATE
