@@ -1,11 +1,14 @@
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
 #include <chrono>
+#include <exception>
 #include "ModelDBInterface.h"
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 ModelDBInterface::ModelDBInterface(std::string_view modelNameIn)
