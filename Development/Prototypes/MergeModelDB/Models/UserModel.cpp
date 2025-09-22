@@ -1,6 +1,6 @@
-#include <exception>
 #include <chrono>
 #include "commonUtilities.h"
+#include <exception>
 #include <format>
 #include <functional>
 #include <iostream>
@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <string>
 #include "UserModel.h"
+#include <utility>
 #include <vector>
 
 UserModel::UserModel()
