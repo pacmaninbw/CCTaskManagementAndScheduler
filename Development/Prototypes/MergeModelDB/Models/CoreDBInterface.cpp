@@ -2,8 +2,11 @@
 #include <boost/mysql.hpp>
 #include "CommandLineParser.h"
 #include "CoreDBInterface.h"
+#include <exception>
 #include <iostream>
+#include <stdexcept>
 #include <string>
+#include <utility>
 
 CoreDBInterface::CoreDBInterface()
 :   errorMessages{""},
