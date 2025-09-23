@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include "TestTaskDBInterface.h"
 #include "TestUserDBInterface.h"
-#include "TestGoal.h"
+#include "TestGoalModel.h"
 #include "UtilityTimer.h"
 
 /*
