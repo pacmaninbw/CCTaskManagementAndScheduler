@@ -7,7 +7,7 @@
 #include "UserGoalModel.h"
 #include <vector>
 
-class TestGoalDBInterface : public TestDBInterfaceCore
+class TestGoalModel : public TestDBInterfaceCore
 {
 public:
     struct TestGoalInput
@@ -17,8 +17,8 @@ public:
         std::string parentDescription;
     };
 
-    TestGoalDBInterface();
-    ~TestGoalDBInterface() = default;
+    TestGoalModel();
+    ~TestGoalModel() = default;
     virtual TestDBInterfaceCore::TestStatus runPositivePathTests() override;
 
 private:

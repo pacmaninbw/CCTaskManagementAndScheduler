@@ -1,11 +1,12 @@
 #include <functional>
 #include <string>
-#include "TestGoal.h"
+#include "TestGoalModel.h"
 #include "TestDBInterfaceCore.h"
 #include "UserGoalModel.h"
+#include "UserModel.h"
 #include <vector>
 
-TestGoalDBInterface::TestGoalDBInterface()
+TestGoalModel::TestGoalModel()
 : TestDBInterfaceCore(programOptions.verboseOutput, "user")
 {
     std::vector<TestGoalInput> testGoalInput =
@@ -17,17 +18,16 @@ TestGoalDBInterface::TestGoalDBInterface()
         {"Maintain or archive the BHHS 74 Reunion website", 2, ""},
         {"Maintain and improve my SQL skills", 3, "Get a Job in Software Engineering"},
         {"Learn QT graphic system", 4, "Get a Job in Software Engineering"},
-        {"", 0, ""},
-        {"", 0, ""},
-        {"", 0, ""},
-        {"", 0, ""},
-        {"", 0, ""},
-        {"", 0, ""},
-        {"", 0, ""},
-        {"", 0, ""},
-        {"", 0, ""},
-        {"", 0, ""},
-        {"", 0, ""},
+        {"Improve my Linux Programming skills", 5, "Get a Job in Software Engineering"},
+        {"Get an embedded programming certificate", 4, "Get a Job in Software Engineering"},
+        {"Learn open source Linux Core Programming", 4, "Get a Job in Software Engineering"},
+        {"Maintain my health", 2, ""},
+        {"Eat as healthy as possible", 3, "Maintain my health"},
+        {"Walk 30 minutes a day", 4, "Maintain my health"},
+        {"Track my vital signs", 3, "Maintain my health"},
+        {"Get my weight down to 190 pounds", 4, "Maintain my health"},
+        {"Be more organized", 1, ""},
+        {"Effectively moderate the code review site on stack exchange", 1, ""}
     };
 
 #if 0
@@ -42,7 +42,7 @@ TestGoalDBInterface::TestGoalDBInterface()
 #endif
 }
 
-TestDBInterfaceCore::TestStatus TestGoalDBInterface::runPositivePathTests()
+TestDBInterfaceCore::TestStatus TestGoalModel::runPositivePathTests()
 {
     return TESTFAILED;
 }
