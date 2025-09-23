@@ -38,6 +38,7 @@ public:
  * Select with arguments
  */
     bool selectByGoalID(std::size_t noteID);
+    bool selectByUserIDAndDescription(std::size_t userID, std::string targetDesciption);
 
 /*
  * Required fields.

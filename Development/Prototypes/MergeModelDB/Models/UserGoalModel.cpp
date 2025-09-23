@@ -55,6 +55,50 @@ void UserGoalModel::setLastUpdateTimeStamp(std::chrono::system_clock::time_point
     lastUpdate = newLastUpdateTS;
 }
 
+bool UserGoalModel::selectByGoalID(std::size_t noteID)
+{
+    prepareForRunQueryAsync();
+
+    try
+    {
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, baseQuery);
+        NSBM::format_sql_to(fctx, " WHERE idUserGoals = {}", noteID);
+
+        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+
+        return processResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserGoalModel::selectByGoalID : {}", e.what()));
+        return false;
+    }
+}
+
+bool UserGoalModel::selectByUserIDAndDescription(std::size_t userID, std::string targetDesciption)
+{
+    prepareForRunQueryAsync();
+
+    try
+    {
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, baseQuery);
+        NSBM::format_sql_to(fctx, " WHERE UserID = {} and Description = {}", userID, targetDesciption);
+
+        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+
+        return processResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserGoalModel::selectByGoalID : {}", e.what()));
+        return false;
+    }
+}
+
 bool UserGoalModel::diffGoal(UserGoalModel &other)
 {
     return (primaryKey == other.primaryKey && userID == other.userID &&
@@ -133,24 +177,4 @@ void UserGoalModel::processResultRow(NSBM::row_view rv)
     }
 }
 
-bool UserGoalModel::selectByGoalID(std::size_t noteID)
-{
-    prepareForRunQueryAsync();
 
-    try
-    {
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, baseQuery);
-        NSBM::format_sql_to(fctx, " WHERE idUserGoals = {}", noteID);
-
-        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
-
-        return processResult(localResult);
-    }
-
-    catch(const std::exception& e)
-    {
-        appendErrorMessage(std::format("In UserGoalModel::selectByGoalID : {}", e.what()));
-        return false;
-    }
-}
