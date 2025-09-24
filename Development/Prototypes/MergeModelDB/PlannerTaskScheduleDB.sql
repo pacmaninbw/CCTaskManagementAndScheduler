@@ -33,7 +33,7 @@ DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserGoals`;
 CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserGoals` (
     `idUserGoals` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserID` INT UNSIGNED NOT NULL,
-    `Description` TINYTEXT NOT NULL,
+    `Description` VARCHAR(1024) NOT NULL,
     `Priority` INT DEFAULT NULL,
     `ParentGoal` INT UNSIGNED DEFAULT NULL,
     `CreationTS` DATETIME NOT NULL,
