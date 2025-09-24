@@ -29,6 +29,14 @@ int main(int argc, char* argv[])
                 {
                     return EXIT_FAILURE;
                 }
+                else
+                {
+                    TestGoalModel goalTests;
+                    if (goalTests.runAllTests() != TestDBInterfaceCore::TestStatus::TestPassed)
+                    {
+                        return EXIT_FAILURE;
+                    }
+                }
             }
             else
             {
