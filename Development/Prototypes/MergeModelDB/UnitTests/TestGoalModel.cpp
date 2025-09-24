@@ -1,3 +1,4 @@
+#include <chrono>
 #include <functional>
 #include <string>
 #include "TestGoalModel.h"
@@ -7,7 +8,7 @@
 #include <vector>
 
 TestGoalModel::TestGoalModel()
-: TestDBInterfaceCore(programOptions.verboseOutput, "user")
+: TestDBInterfaceCore(programOptions.verboseOutput, "Goal")
 {
     std::vector<TestGoalInput> testGoalInput =
     {
@@ -30,8 +31,13 @@ TestGoalModel::TestGoalModel()
         {"Effectively moderate the code review site on stack exchange", 1, ""}
     };
 
+    for (auto testGoal: testGoalInput)
+    {
+        testInput.push_back(testGoal);
+    }
+
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testPositivePathGoalInsertions, this));
 #if 0
-    positiveTestFuncs.push_back(std::bind(&TestGoalDBInterface::testGetUserByLoginName, this, std::placeholders::_1));
     positiveTestFuncs.push_back(std::bind(&TestGoalDBInterface::testGetUserByLoginAndPassword, this, std::placeholders::_1));
     positiveTestFuncs.push_back(std::bind(&TestGoalDBInterface::testGetUserByFullName, this, std::placeholders::_1));
     positiveTestFuncs.push_back(std::bind(&TestGoalDBInterface::testUpdateUserPassword, this, std::placeholders::_1));
@@ -42,7 +48,55 @@ TestGoalModel::TestGoalModel()
 #endif
 }
 
-TestDBInterfaceCore::TestStatus TestGoalModel::runPositivePathTests()
+TestDBInterfaceCore::TestStatus TestGoalModel::testInsertAndGetParent(TestGoalInput testGoal)
 {
-    return TESTFAILED;
+    UserModel_shp userOne = std::make_shared<UserModel>();
+    userOne->selectByUserID(1);
+    UserGoalModel newGoal;
+    newGoal.setUserId(userOne->getUserID());
+    newGoal.setDescription(testGoal.description);
+    newGoal.setPriority(testGoal.priority);
+    newGoal.setCreationTimeStamp(std::chrono::system_clock::now());
+    newGoal.setLastUpdateTimeStamp(std::chrono::system_clock::now());
+    if (!testGoal.parentDescription.empty())
+    {
+        UserGoalModel parentGoal;
+        if (!parentGoal.selectByUserIDAndDescription(userOne->getUserID(), testGoal.parentDescription))
+        {
+            std::clog << "Failed to find Parent Goal! Test FAILED\n";
+            std::clog << parentGoal.getAllErrorMessages() << "\n";
+            return TESTFAILED;
+        }
+        newGoal.setParentID(parentGoal.getGoalId());
+    }
+
+    if (!newGoal.insert())
+    {
+        std::clog << "Insertion failed for Goal: " << newGoal << " :\n";
+        std::clog << newGoal.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
+}
+
+TestDBInterfaceCore::TestStatus TestGoalModel::testPositivePathGoalInsertions()
+{
+    TestDBInterfaceCore::TestStatus testStatus = TESTPASSED;
+
+    for (auto testGoal: testInput)
+    {
+        TestDBInterfaceCore::TestStatus currentResult = testInsertAndGetParent(testGoal);
+        if (testStatus == TESTPASSED)
+        {
+            testStatus = currentResult;
+        }
+    }
+
+    if (testStatus == TESTFAILED)
+    {
+        std::clog << "Some or all Goal Insertions FAILED\n";
+    }
+
+    return testStatus;
 }

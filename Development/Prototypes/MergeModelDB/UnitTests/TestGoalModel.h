@@ -19,13 +19,15 @@ public:
 
     TestGoalModel();
     ~TestGoalModel() = default;
-    virtual TestDBInterfaceCore::TestStatus runPositivePathTests() override;
 
 private:
+    TestDBInterfaceCore::TestStatus testInsertAndGetParent(TestGoalInput testGoal);
+    TestDBInterfaceCore::TestStatus testPositivePathGoalInsertions();
 
     bool verboseOutput;
     std::vector<std::function<bool(UserGoalModel_shp)>>positiveTestFuncs;
     std::vector<std::function<bool(void)>> negativePathTestFuncs;
+    std::vector<TestGoalInput> testInput;
 };
 
 #endif // TESTGOALMODEL_H_
