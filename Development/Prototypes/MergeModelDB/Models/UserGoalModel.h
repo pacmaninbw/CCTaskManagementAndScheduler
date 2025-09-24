@@ -21,6 +21,7 @@ public:
 
 // get access methods
     std::size_t getGoalId() const noexcept { return primaryKey; };
+    std::size_t getUserId() const noexcept { return userID; };
     std::string getDescription() const noexcept { return description; };
     unsigned int getPriority() const noexcept { return priority.value_or(0); };
     std::size_t getParentId() const noexcept { return parentID.value_or(0); };
@@ -29,6 +30,7 @@ public:
 
 // set access methods
     void setGoalId(std::size_t userGoalId);
+    void setUserId(std::size_t userId);
     void setDescription(std::string newDescription);
     void setPriority(unsigned int newPriority);
     void setParentID(std::size_t newParentID);
@@ -37,7 +39,7 @@ public:
 /*
  * Select with arguments
  */
-    bool selectByGoalID(std::size_t noteID);
+    bool selectByGoalID(std::size_t goalID);
     bool selectByUserIDAndDescription(std::size_t userID, std::string targetDesciption);
 
 /*
@@ -45,8 +47,8 @@ public:
  */
     bool isMissingUserID()  { return userID == 0; };
     bool isMissingDescription() { return (description.empty() || description.size() < 10); };
-    bool isMissingCreationDate() { return creationDate.time_since_epoch() != std::chrono::system_clock::duration::zero(); };
-    bool isMissingLastUpdate() { return lastUpdate.time_since_epoch() != std::chrono::system_clock::duration::zero(); };
+    bool isMissingCreationDate() { return creationDate.time_since_epoch() == std::chrono::system_clock::duration::zero(); };
+    bool isMissingLastUpdate() { return lastUpdate.time_since_epoch() == std::chrono::system_clock::duration::zero(); };
     void initRequiredFields() override;
 
     bool operator==(UserGoalModel& other)
@@ -58,10 +60,16 @@ public:
         return diffGoal(*other);
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const UserGoalModel& note)
+    friend std::ostream& operator<<(std::ostream& os, const UserGoalModel& goal)
     {
         constexpr const char* outFmtStr = "\t{}: {}\n";
-        os << std::format(outFmtStr, "Note ID", note.primaryKey);
+        os << std::format(outFmtStr, "Goal ID", goal.primaryKey);
+        os << std::format(outFmtStr, "User ID", goal.userID);
+        os << std::format(outFmtStr, "Description", goal.description);
+        os << std::format(outFmtStr, "Priority", goal.getPriority());
+        os << std::format(outFmtStr, "Parent ID", goal.getParentId());
+        os << std::format(outFmtStr, "Creation Timestamp", goal.creationDate);
+        os << std::format(outFmtStr, "Last Update Timestamp", goal.lastUpdate);
 
         return os;
     };

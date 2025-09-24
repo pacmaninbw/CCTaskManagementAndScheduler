@@ -25,6 +25,12 @@ void UserGoalModel::setGoalId(std::size_t userGoalId)
     primaryKey = userGoalId;
 }
 
+void UserGoalModel::setUserId(std::size_t userId)
+{
+    modified = true;
+    userID = userId;
+}
+
 void UserGoalModel::setDescription(std::string newDescription)
 {
     modified = true;
@@ -94,7 +100,7 @@ bool UserGoalModel::selectByUserIDAndDescription(std::size_t userID, std::string
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In UserGoalModel::selectByGoalID : {}", e.what()));
+        appendErrorMessage(std::format("In UserGoalModel::selectByUserIDAndDescription : {}", e.what()));
         return false;
     }
 }
@@ -168,7 +174,7 @@ void UserGoalModel::processResultRow(NSBM::row_view rv)
     // Optional fields.
     if (!rv.at(PriorityIdx).is_null())
     {
-        priority = rv.at(PriorityIdx).as_uint64();
+        priority = rv.at(PriorityIdx).as_int64();
     }
 
     if (!rv.at(ParentGoalIDIdx).is_null())
@@ -176,5 +182,4 @@ void UserGoalModel::processResultRow(NSBM::row_view rv)
         parentID = rv.at(ParentGoalIDIdx).as_uint64();
     }
 }
-
 
