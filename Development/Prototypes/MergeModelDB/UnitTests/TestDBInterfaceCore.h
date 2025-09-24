@@ -33,7 +33,6 @@ protected:
     const TestDBInterfaceCore::TestStatus TESTFAILED = TestDBInterfaceCore::TestStatus::TestFailed;
     const TestDBInterfaceCore::TestStatus TESTPASSED = TestDBInterfaceCore::TestStatus::TestPassed;
 
-//    BoostDBInterfaceCore* dbInterfaceUnderTest; 
     bool verboseOutput;
     std::string_view modelUnderTest;
     std::vector<std::function<TestDBInterfaceCore::TestStatus(void)>> negativePathTestFuncsNoArgs;
