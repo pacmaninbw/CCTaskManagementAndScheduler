@@ -21,17 +21,17 @@ add_executable(protoPersonalPlanner
     Models/NoteModel.cpp
     Models/UserGoalModel.cpp
     main.cpp
-    UnitTests/TestDBInterfaceCore.cpp
-    UnitTests/TestUserDBInterface.cpp
-    UnitTests/TestTaskDBInterface.cpp
-    UnitTests/TestGoalModel.cpp
+    Testing/TestDBInterfaceCore.cpp
+    Testing/TestUserDBInterface.cpp
+    Testing/TestTaskDBInterface.cpp
+    Testing/TestGoalModel.cpp
 )
 
 target_include_directories(protoPersonalPlanner PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Models>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/UnitTests>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Testing>
 )
 
 target_compile_options(protoPersonalPlanner PRIVATE -Wall -Wextra -pedantic -Werror)
