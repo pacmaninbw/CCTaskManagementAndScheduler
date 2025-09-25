@@ -4,6 +4,7 @@
 #include <functional>
 #include <string>
 #include "TestDBInterfaceCore.h"
+#include "UserGoalList.h"
 #include "UserGoalModel.h"
 #include <vector>
 

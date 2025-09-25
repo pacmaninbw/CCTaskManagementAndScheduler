@@ -3,6 +3,7 @@
 #include <string>
 #include "TestGoalModel.h"
 #include "TestDBInterfaceCore.h"
+#include "UserGoalList.h"
 #include "UserGoalModel.h"
 #include "UserModel.h"
 #include <vector>
