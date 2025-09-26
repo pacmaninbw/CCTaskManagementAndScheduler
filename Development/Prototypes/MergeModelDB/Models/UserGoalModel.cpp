@@ -7,6 +7,7 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include "UserGoalList.h"
 #include "UserGoalModel.h"
 #include <vector>
 
@@ -108,6 +109,95 @@ bool UserGoalModel::diffGoal(UserGoalModel &other)
 {
     return (primaryKey == other.primaryKey && userID == other.userID &&
         description == other.description);
+}
+
+std::string UserGoalModel::formatSelectAllByUserId(std::size_t userId)
+{
+    prepareForRunQueryAsync();
+
+    try {
+
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, listQueryBase);
+        NSBM::format_sql_to(fctx, " WHERE UserID = {} ", userId);
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In TaskModel::formatSelectUnstartedDueForStartForAssignedUser({}) : {}", userId, e.what()));
+    }
+
+    return std::string();
+}
+
+std::string UserGoalModel::formatSelectAllChildGoalsWithParentFromUser(std::size_t parentId, std::size_t userId)
+{
+    prepareForRunQueryAsync();
+
+    try {
+
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, listQueryBase);
+        NSBM::format_sql_to(fctx, " WHERE UserID = {} AND ParentGoal = {}", userId, parentId);
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In TaskModel::formatSelectAllChildGoalsWithParentFromUser({}) : {}", userId, e.what()));
+    }
+
+    return std::string();
+}
+
+std::string UserGoalModel::formatSelectAllChildGoalsWithParent(UserGoalModel& parentGoal)
+{
+    return formatSelectAllChildGoalsWithParentFromUser(parentGoal.primaryKey, parentGoal.userID);
+}
+
+std::string UserGoalModel::formatSelectByExactDescription(std::string fullDescription, std::size_t userId)
+{
+    prepareForRunQueryAsync();
+
+    try {
+
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, listQueryBase);
+        NSBM::format_sql_to(fctx, " WHERE UserID = {} AND Description = {}", userId, fullDescription);
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In TaskModel::formatSelectByExactDescription({}) : {}", userId, e.what()));
+    }
+
+    return std::string();
+}
+
+std::string UserGoalModel::formatSelectBySimilarDescription(std::string partialDescription, std::size_t userId)
+{
+    prepareForRunQueryAsync();
+
+    try {
+
+        NSBM::format_context fctx(format_opts.value());
+        NSBM::format_sql_to(fctx, listQueryBase);
+        NSBM::format_sql_to(fctx, " WHERE UserID = {} AND Description LIKE {}", userId, partialDescription);
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In TaskModel::formatSelectBySimilarDescription({}) : {}", userId, e.what()));
+    }
+
+    return std::string();
 }
 
 void UserGoalModel::initRequiredFields()

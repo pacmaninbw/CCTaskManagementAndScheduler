@@ -41,6 +41,11 @@ public:
  */
     bool selectByGoalID(std::size_t goalID);
     bool selectByUserIDAndDescription(std::size_t userID, std::string targetDesciption);
+    std::string formatSelectAllByUserId(std::size_t userId);
+    std::string formatSelectAllChildGoalsWithParentFromUser(std::size_t parentId, std::size_t userId);
+    std::string formatSelectAllChildGoalsWithParent(UserGoalModel& parentGoal);
+    std::string formatSelectByExactDescription(std::string fullDescription, std::size_t userId);
+    std::string formatSelectBySimilarDescription(std::string partialDescription, std::size_t userId);
 
 /*
  * Required fields.
@@ -80,7 +85,6 @@ private:
     std::string formatInsertStatement() override;
     std::string formatUpdateStatement() override;
     std::string formatSelectStatement() override;
-
     
     std::size_t userID;
     std::string description;
@@ -88,7 +92,6 @@ private:
     std::optional<std::size_t> parentID;
     std::chrono::system_clock::time_point creationDate;
     std::chrono::system_clock::time_point lastUpdate;
-
 
 private:
 /*
@@ -104,6 +107,8 @@ private:
     const std::size_t LastUpdateIdx = 4;
     const std::size_t PriorityIdx = 5;
     const std::size_t ParentGoalIDIdx = 6;
+
+    NSBM::constant_string_view listQueryBase = "SELECT idUserGoals FROM UserGoals ";
 };
 
 using UserGoalModel_shp = std::shared_ptr<UserGoalModel>;
