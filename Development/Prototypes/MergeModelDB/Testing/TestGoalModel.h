@@ -24,6 +24,17 @@ public:
 private:
     TestDBInterfaceCore::TestStatus testInsertAndGetParent(TestGoalInput testGoal);
     TestDBInterfaceCore::TestStatus testPositivePathGoalInsertions();
+    TestDBInterfaceCore::TestStatus testNegativePathAlreadyInDataBase();
+    TestDBInterfaceCore::TestStatus testnegativePathNotModified();
+    TestDBInterfaceCore::TestStatus negativePathMissingRequiredFields();
+    TestDBInterfaceCore::TestStatus testMissingRequiredFieldsAddUserID(
+        UserGoalModel& testGoal, std::vector<std::string>& expectedErrors);
+    TestDBInterfaceCore::TestStatus testMissingRequiredFieldsAddDescription(
+        UserGoalModel& testGoal, std::vector<std::string>& expectedErrors);
+    TestDBInterfaceCore::TestStatus testMissingRequiredFieldsAddCreationTS(
+        UserGoalModel& testGoal, std::vector<std::string>& expectedErrors);
+    TestDBInterfaceCore::TestStatus testMissingRequiredFieldsAddLastUpdateTS(
+        UserGoalModel& testGoal, std::vector<std::string>& expectedErrors);
 
     bool verboseOutput;
     std::vector<std::function<bool(UserGoalModel_shp)>>positiveTestFuncs;

@@ -38,15 +38,10 @@ TestGoalModel::TestGoalModel()
     }
 
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testPositivePathGoalInsertions, this));
-#if 0
-    positiveTestFuncs.push_back(std::bind(&TestGoalDBInterface::testGetUserByLoginAndPassword, this, std::placeholders::_1));
-    positiveTestFuncs.push_back(std::bind(&TestGoalDBInterface::testGetUserByFullName, this, std::placeholders::_1));
-    positiveTestFuncs.push_back(std::bind(&TestGoalDBInterface::testUpdateUserPassword, this, std::placeholders::_1));
 
-    negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalDBInterface::negativePathMissingRequiredFields, this));
-    negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalDBInterface::testnegativePathNotModified, this));
-    negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalDBInterface::testNegativePathAlreadyInDataBase, this));
-#endif
+    negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::negativePathMissingRequiredFields, this));
+    negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testnegativePathNotModified, this));
+    negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testNegativePathAlreadyInDataBase, this));
 }
 
 TestDBInterfaceCore::TestStatus TestGoalModel::testInsertAndGetParent(TestGoalInput testGoal)
@@ -98,6 +93,129 @@ TestDBInterfaceCore::TestStatus TestGoalModel::testPositivePathGoalInsertions()
     {
         std::clog << "Some or all Goal Insertions FAILED\n";
     }
+
+    return testStatus;
+}
+
+TestDBInterfaceCore::TestStatus TestGoalModel::testNegativePathAlreadyInDataBase()
+{
+    UserGoalModel_shp goalAlreadyInDB = std::make_shared<UserGoalModel>();
+    goalAlreadyInDB->setGoalId(1);
+    if (!goalAlreadyInDB->retrieve())
+    {
+        std::cerr << "Goal 1 not found in database!!\n";
+        return TESTFAILED;
+    }
+
+    std::vector<std::string> expectedErrors = {"already in Database"};
+    return testInsertionFailureMessages(goalAlreadyInDB, expectedErrors);
+}
+
+TestDBInterfaceCore::TestStatus TestGoalModel::testnegativePathNotModified()
+{
+    UserGoalModel_shp goalNotModified = std::make_shared<UserGoalModel>();
+    goalNotModified->setGoalId(1);
+    if (!goalNotModified->retrieve())
+    {
+        std::cerr << "Goal 1 not found in database!!\n";
+        return TESTFAILED;
+    }
+
+    goalNotModified->setGoalId(0); // Force it to check modified rather than Already in DB.
+    goalNotModified->clearModified();
+    std::vector<std::string> expectedErrors = {"not modified!"};
+    return testInsertionFailureMessages(goalNotModified, expectedErrors);
+}
+
+TestDBInterfaceCore::TestStatus TestGoalModel::negativePathMissingRequiredFields()
+{
+    TestDBInterfaceCore::TestStatus testStatus = TESTPASSED;
+
+    std::vector<std::string> expectedErrors =
+    {
+        "User ID", "Description", "missing required values"
+//        "User ID", "Description", "Creation Timestamp", "Last Update", "missing required values"
+    };
+
+    UserGoalModel testGoal;
+    testGoal.setGoalId(0);
+
+    std::vector<std::function<TestDBInterfaceCore::TestStatus(UserGoalModel&, std::vector<std::string>&)>> fieldTestUpdate =
+    {
+        {std::bind(&TestGoalModel::testMissingRequiredFieldsAddUserID, this, std::placeholders::_1, std::placeholders::_2)},
+        {std::bind(&TestGoalModel::testMissingRequiredFieldsAddDescription, this, std::placeholders::_1, std::placeholders::_2)},
+//        {std::bind(&TestGoalModel::testMissingRequiredFieldsAddCreationTS, this, std::placeholders::_1, std::placeholders::_2)},
+//        {std::bind(&TestGoalModel::testMissingRequiredFieldsAddLastUpdateTS, this, std::placeholders::_1, std::placeholders::_2)},
+    };
+
+    for (auto fieldTest: fieldTestUpdate)
+    {
+        TestDBInterfaceCore::TestStatus thisTestStatus = fieldTest(testGoal, expectedErrors);
+        if (testStatus == TESTPASSED)
+        {
+            testStatus = thisTestStatus;
+        }
+    }
+
+    testGoal.save();
+    if (!testGoal.isInDataBase())
+    {
+        std::cerr << testGoal.getAllErrorMessages() << testGoal << "\n";
+        std::clog << "Primary key for user: " << testGoal.getGoalId() << " not set!\n";
+        if (verboseOutput)
+        {
+            std::clog << testGoal << "\n\n";
+        }
+        testStatus = TESTFAILED;
+    }
+
+    return testStatus;
+}
+
+TestDBInterfaceCore::TestStatus TestGoalModel::testMissingRequiredFieldsAddUserID(
+    UserGoalModel &testGoal, std::vector<std::string>& expectedErrors)
+{
+    TestDBInterfaceCore::TestStatus testStatus =
+        testInsertionFailureMessages(&testGoal, expectedErrors);
+
+    expectedErrors.erase(expectedErrors.begin());
+    testGoal.setUserId(1);
+
+    return testStatus;
+}
+
+TestDBInterfaceCore::TestStatus TestGoalModel::testMissingRequiredFieldsAddDescription(
+    UserGoalModel &testGoal, std::vector<std::string>& expectedErrors)
+{
+    TestDBInterfaceCore::TestStatus testStatus =
+        testInsertionFailureMessages(&testGoal, expectedErrors);
+
+    expectedErrors.erase(expectedErrors.begin());
+    testGoal.setDescription("Test missing field Description");
+
+    return testStatus;
+}
+
+TestDBInterfaceCore::TestStatus TestGoalModel::testMissingRequiredFieldsAddCreationTS(
+    UserGoalModel &testGoal, std::vector<std::string>& expectedErrors)
+{
+    TestDBInterfaceCore::TestStatus testStatus =
+        testInsertionFailureMessages(&testGoal, expectedErrors);
+
+    expectedErrors.erase(expectedErrors.begin());
+    testGoal.setCreationTimeStamp(std::chrono::system_clock::now());
+
+    return testStatus;
+}
+
+TestDBInterfaceCore::TestStatus TestGoalModel::testMissingRequiredFieldsAddLastUpdateTS(
+    UserGoalModel &testGoal, std::vector<std::string>& expectedErrors)
+{
+    TestDBInterfaceCore::TestStatus testStatus =
+        testInsertionFailureMessages(&testGoal, expectedErrors);
+        
+    expectedErrors.erase(expectedErrors.begin());
+    testGoal.setLastUpdateTimeStamp(std::chrono::system_clock::now());
 
     return testStatus;
 }
