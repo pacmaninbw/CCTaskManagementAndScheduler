@@ -53,7 +53,6 @@ TestDBInterfaceCore::TestStatus TestGoalModel::testInsertAndGetParent(TestGoalIn
     newGoal.setDescription(testGoal.description);
     newGoal.setPriority(testGoal.priority);
     newGoal.setCreationTimeStamp(std::chrono::system_clock::now());
-    newGoal.setLastUpdateTimeStamp(std::chrono::system_clock::now());
     if (!testGoal.parentDescription.empty())
     {
         UserGoalModel parentGoal;
@@ -134,18 +133,15 @@ TestDBInterfaceCore::TestStatus TestGoalModel::negativePathMissingRequiredFields
     std::vector<std::string> expectedErrors =
     {
         "User ID", "Description", "missing required values"
-//        "User ID", "Description", "Creation Timestamp", "Last Update", "missing required values"
     };
 
     UserGoalModel testGoal;
-    testGoal.setGoalId(0);
+    testGoal.setGoalId(0);  // prevent the not modified error.
 
     std::vector<std::function<TestDBInterfaceCore::TestStatus(UserGoalModel&, std::vector<std::string>&)>> fieldTestUpdate =
     {
         {std::bind(&TestGoalModel::testMissingRequiredFieldsAddUserID, this, std::placeholders::_1, std::placeholders::_2)},
         {std::bind(&TestGoalModel::testMissingRequiredFieldsAddDescription, this, std::placeholders::_1, std::placeholders::_2)},
-//        {std::bind(&TestGoalModel::testMissingRequiredFieldsAddCreationTS, this, std::placeholders::_1, std::placeholders::_2)},
-//        {std::bind(&TestGoalModel::testMissingRequiredFieldsAddLastUpdateTS, this, std::placeholders::_1, std::placeholders::_2)},
     };
 
     for (auto fieldTest: fieldTestUpdate)
@@ -196,26 +192,3 @@ TestDBInterfaceCore::TestStatus TestGoalModel::testMissingRequiredFieldsAddDescr
     return testStatus;
 }
 
-TestDBInterfaceCore::TestStatus TestGoalModel::testMissingRequiredFieldsAddCreationTS(
-    UserGoalModel &testGoal, std::vector<std::string>& expectedErrors)
-{
-    TestDBInterfaceCore::TestStatus testStatus =
-        testInsertionFailureMessages(&testGoal, expectedErrors);
-
-    expectedErrors.erase(expectedErrors.begin());
-    testGoal.setCreationTimeStamp(std::chrono::system_clock::now());
-
-    return testStatus;
-}
-
-TestDBInterfaceCore::TestStatus TestGoalModel::testMissingRequiredFieldsAddLastUpdateTS(
-    UserGoalModel &testGoal, std::vector<std::string>& expectedErrors)
-{
-    TestDBInterfaceCore::TestStatus testStatus =
-        testInsertionFailureMessages(&testGoal, expectedErrors);
-        
-    expectedErrors.erase(expectedErrors.begin());
-    testGoal.setLastUpdateTimeStamp(std::chrono::system_clock::now());
-
-    return testStatus;
-}
