@@ -15,8 +15,6 @@ UserGoalModel::UserGoalModel()
 : ModelDBInterface("UserGoalModel")
 {
     userID = 0;
-    creationDate = std::chrono::system_clock::now();
-    lastUpdate = creationDate;
 }
 
 void UserGoalModel::setGoalId(std::size_t userGoalId)
@@ -53,12 +51,6 @@ void UserGoalModel::setCreationTimeStamp(std::chrono::system_clock::time_point n
 {
     modified = true;
     creationDate = newCreationTS;
-}
-
-void UserGoalModel::setLastUpdateTimeStamp(std::chrono::system_clock::time_point newLastUpdateTS)
-{
-    modified = true;
-    lastUpdate = newLastUpdateTS;
 }
 
 bool UserGoalModel::selectByGoalID(std::size_t noteID)
@@ -204,19 +196,24 @@ void UserGoalModel::initRequiredFields()
 {
     missingRequiredFieldsTests.push_back({std::bind(&UserGoalModel::isMissingUserID, this), "User ID"});
     missingRequiredFieldsTests.push_back({std::bind(&UserGoalModel::isMissingDescription, this), "Description"});
-    missingRequiredFieldsTests.push_back({std::bind(&UserGoalModel::isMissingCreationDate, this), "Creation Timestamp"});
-    missingRequiredFieldsTests.push_back({std::bind(&UserGoalModel::isMissingLastUpdate, this), "Last Update"});
 }
 
 std::string UserGoalModel::formatInsertStatement()
 {
     initFormatOptions();
 
+    if (!creationDate.has_value())
+    {
+        creationDate = std::chrono::system_clock::now();
+    }
+
+    lastUpdate = std::chrono::system_clock::now();
+
     std::string insertStatement = NSBM::format_sql(format_opts.value(),
         "INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, "
             "Priority, ParentGoal) VALUES ({0}, {1}, {2}, {3}, {4}, {5})",
-        userID, description, stdChronoTimePointToBoostDateTime(creationDate),
-        stdChronoTimePointToBoostDateTime(lastUpdate), priority, parentID);
+        userID, description, optionalDateTimeConversion(creationDate),
+        optionalDateTimeConversion(lastUpdate), priority, parentID);
 
     return insertStatement;
 }
@@ -224,6 +221,8 @@ std::string UserGoalModel::formatInsertStatement()
 std::string UserGoalModel::formatUpdateStatement()
 {
     initFormatOptions();
+
+    lastUpdate = std::chrono::system_clock::now();
 
     std::string updateStatement = NSBM::format_sql(format_opts.value(),
         "UPDATE UserGoals SET"
@@ -234,8 +233,8 @@ std::string UserGoalModel::formatUpdateStatement()
             " UserGoals.Priority = {4}" 
             " UserGoals.ParentGoal = {5}" 
         " WHERE UserGoals.idUserGoals = {6}",
-        userID, description, stdChronoTimePointToBoostDateTime(creationDate),
-        stdChronoTimePointToBoostDateTime(lastUpdate), priority, parentID, primaryKey);
+        userID, description, optionalDateTimeConversion(creationDate),
+        optionalDateTimeConversion(lastUpdate), priority, parentID, primaryKey);
         
     return updateStatement;
 }

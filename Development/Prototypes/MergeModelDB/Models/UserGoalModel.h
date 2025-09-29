@@ -2,7 +2,6 @@
 #define USERGOALMODEL_H_
 
 #include <chrono>
-//#include "commonUtilities.h"
 #include <format>
 #include <functional>
 #include <iostream>
@@ -25,7 +24,7 @@ public:
     std::string getDescription() const noexcept { return description; };
     unsigned int getPriority() const noexcept { return priority.value_or(0); };
     std::size_t getParentId() const noexcept { return parentID.value_or(0); };
-    std::chrono::system_clock::time_point getCreationTimeStamp() const noexcept { return creationDate; };
+    std::chrono::system_clock::time_point getCreationTimeStamp() const noexcept { return creationDate.value(); };
     std::chrono::system_clock::time_point getLastUpdateTimeStamp() const noexcept { return lastUpdate; };
 
 // set access methods
@@ -35,7 +34,6 @@ public:
     void setPriority(unsigned int newPriority);
     void setParentID(std::size_t newParentID);
     void setCreationTimeStamp(std::chrono::system_clock::time_point newCreationTS);
-    void setLastUpdateTimeStamp(std::chrono::system_clock::time_point newLastUpdateTS);
 /*
  * Select with arguments
  */
@@ -52,8 +50,6 @@ public:
  */
     bool isMissingUserID()  { return userID == 0; };
     bool isMissingDescription() { return (description.empty() || description.size() < 10); };
-    bool isMissingCreationDate() { return creationDate.time_since_epoch() == std::chrono::system_clock::duration::zero(); };
-    bool isMissingLastUpdate() { return lastUpdate.time_since_epoch() == std::chrono::system_clock::duration::zero(); };
     void initRequiredFields() override;
 
     bool operator==(UserGoalModel& other)
@@ -73,8 +69,8 @@ public:
         os << std::format(outFmtStr, "Description", goal.description);
         os << std::format(outFmtStr, "Priority", goal.getPriority());
         os << std::format(outFmtStr, "Parent ID", goal.getParentId());
-        os << std::format(outFmtStr, "Creation Timestamp", goal.creationDate);
-        os << std::format(outFmtStr, "Last Update Timestamp", goal.lastUpdate);
+        os << std::format(outFmtStr, "Creation Timestamp", goal.getCreationTimeStamp());
+        os << std::format(outFmtStr, "Last Update Timestamp", goal.getLastUpdateTimeStamp());
 
         return os;
     };
@@ -90,7 +86,12 @@ private:
     std::string description;
     std::optional<unsigned int> priority;
     std::optional<std::size_t> parentID;
-    std::chrono::system_clock::time_point creationDate;
+/*
+ * The date of creation can be controlled by the user, if it hasn't been set
+ * inserting it into the database will set it. The last update is automatically
+ * set by insertion or update into the database.
+ */
+    std::optional<std::chrono::system_clock::time_point> creationDate;
     std::chrono::system_clock::time_point lastUpdate;
 
 private:
