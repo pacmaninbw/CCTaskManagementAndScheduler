@@ -28,7 +28,7 @@ public:
     UserModel();
     UserModel(
         std::string lastIn, std::string firstIn, std::string middleIIn, std::string emailIn="",
-        std::size_t uID=0, std::chrono::year_month_day dateAdded=getTodaysDate()
+        std::size_t uID=0, std::chrono::system_clock::time_point dateAdded=std::chrono::system_clock::now()
     );
     ~UserModel() = default;
 
@@ -42,7 +42,7 @@ public:
     std::string getStartTime() const { return preferences.startTime; };
     std::string getEndTime() const { return preferences.endTime; };
     std::size_t getUserID() const { return primaryKey; };
-    std::chrono::year_month_day getCreationDate() const { return created; };
+    std::chrono::system_clock::time_point getCreationDate() const { return created.value(); };
     std::optional<std::chrono::system_clock::time_point> getLastLogin() const { return lastLogin; };
     bool isPriorityInSchedule() const { return preferences.includePriorityInSchedule; };
     bool isMinorPriorityInSchedule() const { return preferences.includeMinorPriorityInSchedule; };
@@ -62,7 +62,7 @@ public:
     void setUsingLettersForMaorPriority(bool usingLetters);
     void setSeparatingPriorityWithDot(bool separate);
     void setUserID(std::size_t UserID);
-    void setCreationDate(std::chrono::year_month_day dateIn);
+    void setCreationDate(std::chrono::system_clock::time_point dateIn);
     void setLastLogin(std::chrono::system_clock::time_point dateAndTime);
 
 /*
@@ -104,7 +104,7 @@ public:
         os << std::format(outFmtStr, "Middle Initial", user.middleInitial);
         os << std::format(outFmtStr, "Email", user.email);
         os << std::format(outFmtStr, "Login Name", user.loginName);
-        os << std::format(outFmtStr, "User Added", user.created);
+        os << std::format(outFmtStr, "User Added", user.created.value());
         if (user.lastLogin.has_value())
         {
             os << std::format(outFmtStr, "Last Login", user.lastLogin.value());
@@ -132,7 +132,7 @@ private:
     std::string loginName;
     std::string password;
     UserPreferences preferences;
-    std::chrono::year_month_day created;
+    std::optional<std::chrono::system_clock::time_point> created;
     std::optional<std::chrono::system_clock::time_point> lastLogin;
 
     const std::size_t minNameLenght = 2;

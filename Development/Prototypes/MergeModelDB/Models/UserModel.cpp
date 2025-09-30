@@ -25,7 +25,7 @@ UserModel::UserModel()
 
 UserModel::UserModel(
     std::string lastIn, std::string firstIn, std::string middleIIn, std::string emailIn,
-    std::size_t uID, std::chrono::year_month_day dateAdded)
+    std::size_t uID, std::chrono::system_clock::time_point dateAdded)
 : UserModel()
 {
     if (uID > 0)
@@ -139,10 +139,10 @@ void UserModel::setUserID(std::size_t UserID)
     primaryKey = UserID;
 }
 
-void UserModel::setCreationDate(std::chrono::year_month_day dateIn)
+void UserModel::setCreationDate(std::chrono::system_clock::time_point dateAndTime)
 {
     modified = true;
-    created = dateIn;
+    created = dateAndTime;
 }
 
 void UserModel::setLastLogin(std::chrono::system_clock::time_point dateAndTime)
@@ -173,15 +173,14 @@ bool UserModel::isMissingPassword()
 
 bool UserModel::isMissingDateAdded()
 {
-    return !created.ok();
+    return !created.has_value();
 }
 
 bool UserModel::diffUser(UserModel &other)
 {
     // Ignore user preferences
     return (primaryKey == other.primaryKey && loginName == other.loginName && password == other.password &&
-        lastName == other.lastName && firstName == other.firstName &&middleInitial == other.middleInitial &&
-        created == other.created);
+        lastName == other.lastName && firstName == other.firstName &&middleInitial == other.middleInitial);
 }
 
 void UserModel::initRequiredFields()
@@ -190,18 +189,21 @@ void UserModel::initRequiredFields()
     missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingFirstName, this), "First Name"});
     missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingLoginName, this), "Login Name"});
     missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingPassword, this), "Password"});
-    missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingDateAdded, this), "Date Added"});
 }
 
 std::string UserModel::formatInsertStatement()
 {
     initFormatOptions();
 
+    if (isMissingDateAdded())
+    {
+        created = std::chrono::system_clock::now();
+    }
     std::string insertStatement = NSBM::format_sql(format_opts.value(),
         "INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
         "HashedPassWord, UserAdded, LastLogin, Preferences) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8})",
         lastName, firstName, middleInitial, email, loginName, password,
-        stdchronoDateToBoostMySQLDate(created),
+        optionalDateTimeConversion(created),
         optionalDateTimeConversion(lastLogin), buildPreferenceText()
     );
 
@@ -263,7 +265,7 @@ void UserModel::processResultRow(NSBM::row_view rv)
     email = rv.at(EmailAddressIdx).as_string();
     loginName = rv.at(LoginNameIdx).as_string();
     password = rv.at(PasswordIdx).as_string();
-    created = (boostMysqlDateToChronoDate(rv.at(UserAddedIdx).as_date()));
+    created = (boostMysqlDateTimeToChronoTimePoint(rv.at(UserAddedIdx).as_datetime()));
     if (!rv.at(LastLoginIdx).is_null())
     {
         lastLogin = boostMysqlDateTimeToChronoTimePoint(rv.at(LastLoginIdx).as_datetime());
