@@ -41,8 +41,8 @@ public:
     std::optional<std::size_t> rawParentTaskID() const { return parentTaskID; };
     double getPercentageComplete() const { return percentageComplete; };
     std::chrono::system_clock::time_point getCreationDate() const { return creationTimeStamp.value(); };
-    std::chrono::year_month_day getDueDate() const { return dueDate; };
-    std::chrono::year_month_day getScheduledStart() const { return scheduledStart; };
+    std::chrono::year_month_day getDueDate() const { return dueDate.value(); };
+    std::chrono::year_month_day getScheduledStart() const { return scheduledStart.value(); };
     std::chrono::year_month_day getactualStartDate() const;
     std::optional<std::chrono::year_month_day> rawActualStartDate() const { return actualStartDate; };
     std::chrono::year_month_day getEstimatedCompletion() const;
@@ -102,8 +102,8 @@ public:
     bool isMissingEffortEstimate() { return estimatedEffort == 0; };
     bool isMissingPriorityGroup() { return priorityGroup == 0; };
     bool isMissingCreationDate() { return !creationTimeStamp.has_value(); };
-    bool isMissingScheduledStart() { return !scheduledStart.ok(); };
-    bool isMissingDueDate() { return !dueDate.ok(); };
+    bool isMissingScheduledStart() { return !scheduledStart.has_value(); };
+    bool isMissingDueDate() { return !dueDate.has_value(); };
 
 
     bool operator==(TaskModel& other)
@@ -125,8 +125,8 @@ public:
         os << std::format(outFmtStr, "Description", task.description);
         os << std::format(outFmtStr, "Percentage Complete", task.percentageComplete);
         os << std::format(outFmtStr, "Creation Date", task.creationTimeStamp.value());
-        os << std::format(outFmtStr, "Scheduled Start Date", task.scheduledStart);
-        os << std::format(outFmtStr, "Due Date", task.dueDate);
+        os << std::format(outFmtStr, "Scheduled Start Date", task.scheduledStart.value());
+        os << std::format(outFmtStr, "Due Date", task.dueDate.value());
         os << std::format(outFmtStr, "Estimated Effort Hours", task.estimatedEffort);
         os << std::format(outFmtStr, "Actual Effort Hours", task.actualEffortToDate);
         os << std::format(outFmtStr, "Priority Group", task.priorityGroup);
@@ -176,8 +176,8 @@ private:
     std::optional<std::size_t> parentTaskID;
     double percentageComplete;
     std::optional<std::chrono::system_clock::time_point> creationTimeStamp;
-    std::chrono::year_month_day dueDate;
-    std::chrono::year_month_day scheduledStart;
+    std::optional<std::chrono::year_month_day> dueDate;
+    std::optional<std::chrono::year_month_day> scheduledStart;
     std::optional<std::chrono::year_month_day> actualStartDate;
     std::optional<std::chrono::year_month_day> estimatedCompletion;
     std::optional<std::chrono::year_month_day> completionDate;
