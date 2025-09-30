@@ -198,7 +198,6 @@ bool TestUserDBInterface::loadTestUsersFromFile(UserListValues& userProfileTestD
         userIn->setFirstName(row[1]);
         userIn->setMiddleInitial(row[2]);
         userIn->setEmail(row[3]);
-        userIn->setCreationDate(getTodaysDate());
         userIn->autoGenerateLoginAndPassword();
         userProfileTestData.push_back(userIn);
     }
@@ -255,7 +254,7 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::negativePathMissingRequired
 {
     std::vector<std::string> expectedErrors =
     {
-        "Last Name", "First Name", "Login Name", "Password", "Date Added", "User is missing required values"
+        "Last Name", "First Name", "Login Name", "Password", "User is missing required values"
     };
 
     UserModel newuser;
@@ -280,8 +279,6 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::negativePathMissingRequired
     }
 
     expectedErrors.clear();
-
-    newuser.setCreationDate(getTodaysDate());
 
     newuser.save();
     if (!newuser.isInDataBase())
