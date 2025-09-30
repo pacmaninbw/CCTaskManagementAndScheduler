@@ -40,7 +40,7 @@ public:
     std::size_t getParentTaskID() const { return parentTaskID.value_or(0); };
     std::optional<std::size_t> rawParentTaskID() const { return parentTaskID; };
     double getPercentageComplete() const { return percentageComplete; };
-    std::chrono::year_month_day getCreationDate() const { return creationDate; };
+    std::chrono::system_clock::time_point getCreationDate() const { return creationTimeStamp.value(); };
     std::chrono::year_month_day getDueDate() const { return dueDate; };
     std::chrono::year_month_day getScheduledStart() const { return scheduledStart; };
     std::chrono::year_month_day getactualStartDate() const;
@@ -63,7 +63,7 @@ public:
     void setParentTaskID(std::size_t parentTaskID);
     void setParentTaskID(std::shared_ptr<TaskModel> parentTask) { setParentTaskID(parentTask->getTaskID()); };
     void setPercentageComplete(double percentComplete);
-    void setCreationDate(std::chrono::year_month_day creationDate);
+    void setCreationDate(std::chrono::system_clock::time_point creationDate);
     void setDueDate(std::chrono::year_month_day dueDate);
     void setScheduledStart(std::chrono::year_month_day startDate);
     void setactualStartDate(std::chrono::year_month_day startDate);
@@ -101,7 +101,7 @@ public:
     bool isMissingAssignedID() { return assignToID == 0; };
     bool isMissingEffortEstimate() { return estimatedEffort == 0; };
     bool isMissingPriorityGroup() { return priorityGroup == 0; };
-    bool isMissingCreationDate() { return !creationDate.ok(); };
+    bool isMissingCreationDate() { return !creationTimeStamp.has_value(); };
     bool isMissingScheduledStart() { return !scheduledStart.ok(); };
     bool isMissingDueDate() { return !dueDate.ok(); };
 
@@ -124,7 +124,7 @@ public:
         os << std::format(outFmtStr, "Assigned To ID", task.assignToID);
         os << std::format(outFmtStr, "Description", task.description);
         os << std::format(outFmtStr, "Percentage Complete", task.percentageComplete);
-        os << std::format(outFmtStr, "Creation Date", task.creationDate);
+        os << std::format(outFmtStr, "Creation Date", task.creationTimeStamp.value());
         os << std::format(outFmtStr, "Scheduled Start Date", task.scheduledStart);
         os << std::format(outFmtStr, "Due Date", task.dueDate);
         os << std::format(outFmtStr, "Estimated Effort Hours", task.estimatedEffort);
@@ -175,7 +175,7 @@ private:
     std::optional<TaskStatus> status;
     std::optional<std::size_t> parentTaskID;
     double percentageComplete;
-    std::chrono::year_month_day creationDate;
+    std::optional<std::chrono::system_clock::time_point> creationTimeStamp;
     std::chrono::year_month_day dueDate;
     std::chrono::year_month_day scheduledStart;
     std::optional<std::chrono::year_month_day> actualStartDate;
@@ -188,6 +188,7 @@ private:
     bool personal;
     const std::size_t MinimumDescriptionLength = 10;
     std::vector<std::size_t> dependencies;
+    std::optional<std::chrono::system_clock::time_point> lastUpdate;
 
 /*
  * The indexes below are based on the following select statement, maintain this order
@@ -196,7 +197,7 @@ private:
  */
     NSBM::constant_string_view baseQuery = "SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
-            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies FROM Tasks ";
+            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks ";
 
     const std::size_t taskIdIdx = 0;
     const std::size_t createdByIdx = 1;
@@ -218,6 +219,7 @@ private:
     const std::size_t personalIdx = 17;
     const std::size_t dependencyCountIdx = 18;
     const std::size_t depenedenciesTextIdx = 19;
+    const std::size_t lastUpdate_Idx = 20;
 
     NSBM::constant_string_view listQueryBase = "SELECT TaskID FROM Tasks ";
 };

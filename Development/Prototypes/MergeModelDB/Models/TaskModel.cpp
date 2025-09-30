@@ -111,10 +111,10 @@ void TaskModel::setPercentageComplete(double inPercentComplete)
     percentageComplete = inPercentComplete;
 }
 
-void TaskModel::setCreationDate(std::chrono::year_month_day inCreationDate)
+void TaskModel::setCreationDate(std::chrono::system_clock::time_point inCreationDate)
 {
     modified = true;
-    creationDate = inCreationDate;
+    creationTimeStamp = inCreationDate;
 }
 
 void TaskModel::setDueDate(std::chrono::year_month_day inDueDate)
@@ -347,7 +347,6 @@ bool TaskModel::diffTask(TaskModel& other)
         other.creatorID == creatorID &&
         assignToID == other.assignToID &&
         percentageComplete == other.percentageComplete &&
-        creationDate == other.creationDate &&
         dueDate == other.dueDate &&
         scheduledStart == other.scheduledStart &&
         scheduledStart == other.scheduledStart &&
@@ -369,18 +368,24 @@ std::string TaskModel::formatInsertStatement()
         depenenciesText = buildDependenciesText(dependencyList);
     }
 
+    if (isMissingCreationDate())
+    {
+        creationTimeStamp = std::chrono::system_clock::now();
+    }
+    lastUpdate = std::chrono::system_clock::now();
+
     return NSBM::format_sql(format_opts.value(),
-        "INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
+        "INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, "
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
-            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies)"
-            " VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, {18})",
+            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS)"
+            " VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, {18}, {19})",
             creatorID,
             assignToID,
             description,
             parentTaskID,
             getStatusIntVal(),
             percentageComplete,
-            stdchronoDateToBoostMySQLDate(creationDate),
+            optionalDateTimeConversion(creationTimeStamp),
             stdchronoDateToBoostMySQLDate(dueDate),
             stdchronoDateToBoostMySQLDate(scheduledStart),
             optionalDateConversion(actualStartDate),
@@ -392,7 +397,8 @@ std::string TaskModel::formatInsertStatement()
             priority,
             personal,
             dependencyCount,
-            depenenciesText
+            depenenciesText,
+            optionalDateTimeConversion(lastUpdate)
     );
 }
 
@@ -434,7 +440,7 @@ std::string TaskModel::formatUpdateStatement()
             parentTaskID,
             getStatusIntVal(),
             percentageComplete,
-            stdchronoDateToBoostMySQLDate(creationDate),
+            optionalDateTimeConversion(creationTimeStamp),
             stdchronoDateToBoostMySQLDate(dueDate),
             stdchronoDateToBoostMySQLDate(scheduledStart),
             optionalDateConversion(actualStartDate),
@@ -468,7 +474,6 @@ void TaskModel::initRequiredFields()
     missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingAssignedID, this), "user ID for assigned user"});
     missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingEffortEstimate, this), "estimated effort in hours"});
     missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingPriorityGroup, this), "priority"});
-    missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingCreationDate, this), "date of creation"});
     missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingScheduledStart, this), "scheduled start date"});
     missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingDueDate, this), "due date (deadline)"});
 }
@@ -515,7 +520,7 @@ void TaskModel::processResultRow(NSBM::row_view rv)
     assignToID = rv.at(assignedToIdx).as_uint64();
     description = rv.at(descriptionIdx).as_string();
     percentageComplete = rv.at(percentageCompleteIdx).as_double();
-    creationDate = boostMysqlDateToChronoDate(rv.at(createdOnIdx).as_date());
+    creationTimeStamp = boostMysqlDateTimeToChronoTimePoint(rv.at(createdOnIdx).as_datetime());
     dueDate = boostMysqlDateToChronoDate(rv.at(requiredDeliveryIdx).as_date());
     scheduledStart = boostMysqlDateToChronoDate(rv.at(scheduledStartIdx).as_date());
     estimatedEffort = rv.at(estimatedEffortHoursIdx).as_uint64();
@@ -523,6 +528,8 @@ void TaskModel::processResultRow(NSBM::row_view rv)
     priorityGroup = rv.at(schedulePriorityGroupIdx).as_uint64();
     priority = rv.at(priorityInGroupIdx).as_uint64();
     personal = rv.at(personalIdx).as_int64();
+    lastUpdate = boostMysqlDateTimeToChronoTimePoint(rv.at(lastUpdate_Idx).as_datetime());
+
 
     // Optional fields.
     if (!rv.at(parentTaskIdx).is_null())
