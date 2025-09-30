@@ -150,7 +150,6 @@ void TestTaskDBInterface::commonTaskInit(TaskModel_shp newTask, CSVRow taskData)
     newTask->setPriorityGroup(taskData[CSV_MajorPriorityColIdx][0]);
     newTask->setPriority(std::stoi(taskData[CSV_MinorPriorityColIdx]));
     newTask->setPercentageComplete(0.0);
-    newTask->setCreationDate(getTodaysDateMinus(5));
 
     // Optional fields
     if (!taskData[CSV_ParentTaskColIdx].empty())
@@ -166,13 +165,7 @@ void TestTaskDBInterface::commonTaskInit(TaskModel_shp newTask, CSVRow taskData)
     if (taskData.size() > CSV_EstimatedCompletionDateColIdx)
     {
         newTask->setEstimatedCompletion(stringToDate(taskData[CSV_EstimatedCompletionDateColIdx]));
-    }
-    
-    if (!taskData[CSV_CreatedDateColIdx].empty())
-    {
-        // Override the auto date creation with the actual creation date.
-        newTask->setCreationDate(stringToDate(taskData[CSV_CreatedDateColIdx]));
-    }
+    }    
 }
 
 TaskModel_shp TestTaskDBInterface::creatOddTask(CSVRow taskData)
@@ -479,12 +472,6 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testNegativePathMissingRequ
         return TESTFAILED;
     }
 
-    newTask.setCreationDate(getTodaysDateMinus(2));
-    if (testMissingReuqiredField(newTask) != TESTPASSED)
-    {
-        return TESTFAILED;
-    }
-
     newTask.setScheduledStart(getTodaysDate());
     if (testMissingReuqiredField(newTask) != TESTPASSED)
     {
@@ -543,12 +530,6 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testSharedPointerInteractio
     }
 
     newTask->setEstimatedEffort(3);
-    if (testMissingReuqiredField(*newTask) != TESTPASSED)
-    {
-        return TESTFAILED;
-    }
-
-    newTask->setCreationDate(getTodaysDateMinus(2));
     if (testMissingReuqiredField(*newTask) != TESTPASSED)
     {
         return TESTFAILED;
