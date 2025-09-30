@@ -73,6 +73,7 @@ TestDBInterfaceCore::TestStatus TestDBInterfaceCore::wrongErrorMessage(std::stri
     {
         std::clog << "Wrong message generated! TEST FAILED!\n";
         std::clog << errorMessage << "\n";
+        std::clog << "Missing expected: " << expectedString << "\n";
         return TESTFAILED;
     }
 
