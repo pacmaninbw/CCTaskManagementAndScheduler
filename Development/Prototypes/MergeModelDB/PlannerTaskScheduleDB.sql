@@ -7,9 +7,28 @@ CREATE DATABASE `PlannerTaskScheduleDB`;
 
 -- --------------------------------------------------------
 
+DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`OrganizationProfile`;
+CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`OrganizationProfile` (
+	`OrganizationID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `Organization_Name` VARCHAR(256) NOT NULL,
+    `EmailAddress` VARCHAR(256) NOT NULL,
+    `PhoneNumber` VARCHAR(32) NOT NULL,
+    `PrimaryContactUser` INT UNSIGNED NOT NULL,
+    `SecondaryContactUser` INT UNSIGNED,
+    `Street_Address` VARCHAR(256),
+    `City_Address` VARCHAR(64),
+    `Postal_Code` VARCHAR(32),
+    `State_or_Province` VARCHAR(256),
+    `Nation` VARCHAR(64),
+    PRIMARY KEY (`OrganizationID`),
+    UNIQUE INDEX `OrgName_idx` (`Organization_Name` ASC)
+);
+-- --------------------------------------------------------
+
 DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserProfile`;
 CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserProfile` (
     `UserID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `Organization_ID` INT UNSIGNED,
     `LastName` VARCHAR(45) NOT NULL,
     `FirstName` VARCHAR(45) NOT NULL,
     `MiddleInitial` VARCHAR(45),
@@ -17,14 +36,15 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserProfile` (
     `LoginName` VARCHAR(45) NOT NULL,
     `HashedPassWord` VARCHAR(45) NOT NULL,
     `Preferences` MEDIUMTEXT NOT NULL,
-    `UserAdded` DATE NOT NULL,
+    `UserAdded` DATETIME NOT NULL,
     `LastLogin` DATETIME,
     PRIMARY KEY (`UserID`, `LastName`, `LoginName`),
-    UNIQUE INDEX `UserID_UNIQUE` (`UserID` ASC),
-    UNIQUE INDEX `FullName_UNIQUE` (`LastName`, `FirstName`, `MiddleInitial`),
-    UNIQUE INDEX `LoginName_UNIQUE` (`LoginName` ASC),
-    UNIQUE INDEX `Email_UNIQUE` (`EmailAddress` ASC),
-    UNIQUE INDEX `LastLogin_UNIQUE` (`LastLogin` DESC)
+    UNIQUE INDEX `UP_UserID_UNIQUE` (`UserID` ASC),
+    UNIQUE INDEX `UP_FullName_UNIQUE` (`LastName`, `FirstName`, `MiddleInitial`),
+    UNIQUE INDEX `UP_LoginName_UNIQUE` (`LoginName` ASC),
+    UNIQUE INDEX `UP_Email_UNIQUE` (`EmailAddress` ASC),
+    INDEX `UP_LastLogin` (`LastLogin` DESC),
+    INDEX `UP_OrgID_idx` (`Organization_ID` ASC)
 );
 
 -- --------------------------------------------------------
@@ -40,8 +60,9 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserGoals` (
     `LastUpdateTS` DATETIME NOT NULL,
     PRIMARY KEY (`idUserGoals`, `UserID`),
     UNIQUE INDEX `idUserGoals_UNIQUE` (`idUserGoals` ASC),
-    INDEX `CreationTS_idx` (`CreationTS` DESC),
-    INDEX `LastUpdateTS_idx` (`LastUpdateTS` DESC),
+    INDEX `UG_Description_idx` (`Description` ASC),
+    INDEX `UG_CreationTS_idx` (`CreationTS` DESC),
+    INDEX `UG_LastUpdateTS_idx` (`LastUpdateTS` DESC),
     CONSTRAINT `fk_UserGoals_UserID`
         FOREIGN KEY (`UserID`)
         REFERENCES `UserProfile` (`UserID`)
@@ -59,10 +80,11 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserNotes` (
     `NotationDateTime` DATETIME NOT NULL,
     `Content` VARCHAR(1024) NOT NULL,
     `LastUpdate` DATETIME NOT NULL,
-    UNIQUE INDEX `NotationDateTime_UNIQUE` (`NotationDateTime` DESC),
-    UNIQUE INDEX `LastUpdate_UNIQUE` (`LastUpdate` DESC),
     PRIMARY KEY (`idUserNotes`, `UserID`),
+    UNIQUE INDEX `NotationDateTime_UNIQUE` (`NotationDateTime` DESC),
+    UNIQUE INDEX `UserNotesLastUpdate_UNIQUE` (`LastUpdate` DESC),
     UNIQUE INDEX `idUserNotes_UNIQUE` (`idUserNotes` ASC),
+    INDEX `UN_Content_idx` (`Content` ASC),
     INDEX `fk_UserNotes_UserID_idx` (`UserID` ASC),
     CONSTRAINT `fk_UserNotes_UserID`
       FOREIGN KEY (`UserID`)
@@ -82,7 +104,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Tasks` (
     `ParentTask` INT UNSIGNED DEFAULT NULL,
     `Status` INT UNSIGNED DEFAULT NULL,
     `PercentageComplete` double NOT NULL,
-    `CreatedOn` date NOT NULL,
+    `CreatedOn` DATETIME NOT NULL,
     `RequiredDelivery` date NOT NULL,
     `ScheduledStart` date NOT NULL,
     `ActualStart` date DEFAULT NULL,
@@ -95,11 +117,13 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Tasks` (
     `Personal` BOOLEAN,
     `DependencyCount` INT UNSIGNED,
     `Dependencies` MEDIUMTEXT,
+    `LastUpdateTS` DATETIME NOT NULL,
     PRIMARY KEY (`TaskID`, `CreatedBy`),
     UNIQUE INDEX `TaskID_UNIQUE` (`TaskID` ASC),
     INDEX `fk_Tasks_CreatedBy_idx` (`CreatedBy` ASC),
     INDEX `fk_Tasks_AsignedTo_idx` (`AsignedTo` ASC),
-    INDEX `Description_idx` (`Description` ASC),
+    INDEX `Task_Description_idx` (`Description` ASC),
+    INDEX `Task_LastUpdateTS_idx` (`LastUpdateTS` DESC),
     CONSTRAINT `fk_Tasks_CreatedBy`
         FOREIGN KEY (`CreatedBy`)
         REFERENCES `UserProfile` (`UserID`)
@@ -122,8 +146,9 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskGoals` (
     `CreationTS` DATETIME NOT NULL,
     `LastUpdateTS` DATETIME NOT NULL,
     PRIMARY KEY (`UserID`,`TaskID`),
-    INDEX `CreationTS_idx` (`CreationTS` DESC),
-    INDEX `LastUpdateTS_idx` (`LastUpdateTS` DESC),
+    INDEX `UTG_Task_idx` (`TaskID` ASC),
+    INDEX `UTG_CreationTS_idx` (`CreationTS` DESC),
+    INDEX `UTG_LastUpdateTS_idx` (`LastUpdateTS` DESC),
     CONSTRAINT `fk_UserTaskGoals_AsignedTo`
         FOREIGN KEY (`UserID`)
         REFERENCES `UserProfile` (`UserID`)
