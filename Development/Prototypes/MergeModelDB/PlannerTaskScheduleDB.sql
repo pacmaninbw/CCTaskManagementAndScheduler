@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`OrganizationProfile` (
     `Organization_Name` VARCHAR(256) NOT NULL,
     `EmailAddress` VARCHAR(256) NOT NULL,
     `PhoneNumber` VARCHAR(32) NOT NULL,
-    `PrimaryContactUser` INT UNSIGNED NOT NULL,
+    `PrimaryContactUser` INT UNSIGNED,
     `SecondaryContactUser` INT UNSIGNED,
     `Street_Address` VARCHAR(256),
     `City_Address` VARCHAR(64),
