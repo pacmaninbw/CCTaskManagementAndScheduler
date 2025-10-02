@@ -20,8 +20,11 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`OrganizationProfile` (
     `Postal_Code` VARCHAR(32),
     `State_or_Province` VARCHAR(256),
     `Nation` VARCHAR(64),
+    `CreatedTS` DATETIME NOT NULL,
+    `LastUpdateTS` DATETIME NOT NULL,
     PRIMARY KEY (`OrganizationID`),
-    UNIQUE INDEX `OrgName_idx` (`Organization_Name` ASC)
+    UNIQUE INDEX `OrgName_idx` (`Organization_Name` ASC),
+    INDEX `fk_OrganizationProfile_PrimaryContact_idx` (`PrimaryContactUser` ASC)
 );
 -- --------------------------------------------------------
 
@@ -44,7 +47,12 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserProfile` (
     UNIQUE INDEX `UP_LoginName_UNIQUE` (`LoginName` ASC),
     UNIQUE INDEX `UP_Email_UNIQUE` (`EmailAddress` ASC),
     INDEX `UP_LastLogin` (`LastLogin` DESC),
-    INDEX `UP_OrgID_idx` (`Organization_ID` ASC)
+    CONSTRAINT `fk_UserProfile_OrgID`
+        FOREIGN KEY (`Organization_ID`)
+        REFERENCES `OrganizationProfile` (`OrganizationID`)
+        ON DELETE RESTRICT
+        ON UPDATE RESTRICT,
+    INDEX `fk_UserProfile_OrgID_idx` (`Organization_ID`)
 );
 
 -- --------------------------------------------------------
