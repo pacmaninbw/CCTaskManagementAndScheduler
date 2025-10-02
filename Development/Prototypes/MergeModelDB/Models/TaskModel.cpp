@@ -563,9 +563,5 @@ void TaskModel::processResultRow(NSBM::row_view rv)
         std::string dependenciesText = rv.at(depenedenciesTextIdx).as_string();
         addDependencies(dependenciesText);
     }
-
-    // All the set functions set modified, since this user is new in memory it is not modified.
-    modified = false;
-
 }
 
