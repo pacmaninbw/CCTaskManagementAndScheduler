@@ -176,6 +176,11 @@ private:
     std::optional<std::size_t> parentTaskID;
     double percentageComplete;
     std::optional<std::chrono::system_clock::time_point> creationTimeStamp;
+/*
+ * dueDate and scheduledStart are not optional in the database, We are using
+ * std::optional for those 2 fields to remove errors in valgrind and possible
+ * exceptions in some compilers.
+ */
     std::optional<std::chrono::year_month_day> dueDate;
     std::optional<std::chrono::year_month_day> scheduledStart;
     std::optional<std::chrono::year_month_day> actualStartDate;
