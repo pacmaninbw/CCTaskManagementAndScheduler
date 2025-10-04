@@ -68,6 +68,7 @@ TestTableMap
 *.gcno
 *Out.txt
 *.jpg
+TestCoverage
 
 # Non-sql database files and models.
 *.mwb
