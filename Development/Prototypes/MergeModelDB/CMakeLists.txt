@@ -35,8 +35,11 @@ target_include_directories(protoPersonalPlanner PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Testing>
 )
 
-target_compile_options(protoPersonalPlanner PRIVATE -Wall -Wextra -pedantic -Werror)
+# target_compile_options(protoPersonalPlanner PRIVATE -Wall -Wextra -pedantic -Werror -pg -fprofile-arcs -ftest-coverage -lgcov)
+target_compile_options(protoPersonalPlanner PRIVATE -Wall -Wextra -pedantic -Werror -fprofile-arcs -ftest-coverage -lgcov)
 
 target_compile_features(protoPersonalPlanner PRIVATE cxx_std_23)
 
-target_link_libraries(protoPersonalPlanner  ${Boost_LIBRARIES} ssl crypto)
+# target_link_options(protoPersonalPlanner PRIVATE -pg)
+
+target_link_libraries(protoPersonalPlanner  ${Boost_LIBRARIES} ssl crypto gcov)
