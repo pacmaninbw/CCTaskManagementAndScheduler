@@ -27,6 +27,7 @@ public:
     bool hasRequiredValues();
     void reportMissingFields() noexcept;
     std::string_view getModelName() const { return modelName; };
+    virtual std::size_t runSelfTest();
 
 protected:
 /*
@@ -103,6 +104,7 @@ protected:
 protected:
     std::size_t primaryKey;
     std::string_view modelName;
+    std::size_t failureCount;
     bool modified;
     char delimiter;
     struct RequireField

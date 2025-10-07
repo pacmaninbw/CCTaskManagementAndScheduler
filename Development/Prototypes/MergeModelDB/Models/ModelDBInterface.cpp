@@ -16,6 +16,7 @@ ModelDBInterface::ModelDBInterface(std::string_view modelNameIn)
 {
     primaryKey = 0;
     modelName = modelNameIn;
+    failureCount = 0;
     modified = false;
     delimiter = ';';  
 }
@@ -203,4 +204,12 @@ std::string ModelDBInterface::implodeTextField(std::vector<std::string> &fields)
     return textField;
 }
 
+std::size_t ModelDBInterface::runSelfTest()
+{
+    std::string notImplementedStr("Self test for ");
+    notImplementedStr.append(modelName);
+    notImplementedStr.append(" NOT IMPLEMENTED!!!");
+    throw std::domain_error(notImplementedStr);
 
+    return std::size_t();
+}
