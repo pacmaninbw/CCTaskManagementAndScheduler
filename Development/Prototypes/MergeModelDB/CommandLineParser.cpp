@@ -36,6 +36,9 @@ static po::options_description addOptions()
 		("task-data-file", po::value<std::string>()->default_value("Testing/testData/planData.txt"), "File path including file name to task test data")
 		("time-tests", "Time the execution of the tests")
 		("verbose", "Output additional information for testing and debugging.")
+		("run-self-test", "Execute model self test")
+		("force-errors,e", "Force error conditions during negative test path")
+		("force-exceptions,x", "Force exceptions in model tests")
 	;
 
 	return options;
@@ -149,6 +152,21 @@ static auto processProgramOptions(po::variables_map& inputOptions,
 
 	if (inputOptions.count("verbose")) {
 		programOptions.verboseOutput = true;
+	}
+
+	if (inputOptions.count("run-self-test"))
+	{
+		programOptions.runSelfTest = true;
+	}
+
+	if (inputOptions.count("force-errors"))
+	{
+		programOptions.forceErrors = true;
+	}
+
+	if (inputOptions.count("force-exceptions"))
+	{
+		programOptions.forceExceptions = true;
 	}
 
 	return programOptions;

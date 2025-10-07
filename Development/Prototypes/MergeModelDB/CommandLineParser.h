@@ -16,6 +16,9 @@ struct ProgramOptions
     std::string taskTestDataFile;
 	bool enableExecutionTime = false;
     bool verboseOutput = false;
+    bool runSelfTest = false;
+    bool forceErrors = false;
+    bool forceExceptions = false;
 };
 
 enum class CommandLineStatus
