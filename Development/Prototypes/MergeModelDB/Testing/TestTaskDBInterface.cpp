@@ -37,7 +37,7 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::runAllTests()
     userOne->retrieve();
     if (!userOne->isInDataBase())
     {
-        std::cerr << "Failed to retrieve userOne from DataBase!\n";
+        std::clog << "Failed to retrieve userOne from DataBase!\n";
         return TESTFAILED;
     }
 
@@ -73,7 +73,7 @@ bool TestTaskDBInterface::testGetTaskByDescription(TaskModel_shp insertedTask)
     }
     else
     {
-        std::cerr << "getTaskByDescription(task.getDescription())) FAILED!\n" 
+        std::clog << "getTaskByDescription(task.getDescription())) FAILED!\n" 
             << retrievedTask->getAllErrorMessages() << "\n";
         return false;
     }
@@ -101,7 +101,7 @@ bool TestTaskDBInterface::testGetTaskByID(TaskModel_shp insertedTask)
     }
     else
     {
-        std::cerr << "getTaskByDescription(task.getTaskByTaskID())) FAILED!\n" 
+        std::clog << "task.getTaskByTaskID()) FAILED!\n" 
             << retrievedTask->getAllErrorMessages() << "\n";
         return false;
     }
@@ -204,7 +204,7 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testGetUnstartedTasks()
         return TESTPASSED; 
     }
 
-    std::cerr << std::format("taskDBInterface.getUnstartedDueForStartForAssignedUser({}) FAILED!\n", userOne->getUserID()) <<
+    std::clog << std::format("taskDBInterface.getUnstartedDueForStartForAssignedUser({}) FAILED!\n", userOne->getUserID()) <<
         taskDBInteface.getAllErrorMessages() << "\n";
 
     return TESTFAILED;
@@ -229,7 +229,7 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testGetActiveTasks()
         return TESTPASSED; 
     }
 
-    std::cerr << std::format("taskDBInterface.getUnstartedDueForStartForAssignedUser({}) FAILED!\n", userOne->getUserID()) <<
+    std::clog << std::format("taskDBInterface.getActiveTasksForAssignedUser({}) FAILED!\n", userOne->getUserID()) <<
         taskDBInteface.getAllErrorMessages() << "\n";
 
     return TESTFAILED;
@@ -269,7 +269,7 @@ bool TestTaskDBInterface::testTaskUpdate(TaskModel_shp changedTask)
 
     if (!changedTask->update())
     {
-        std::cerr << std::format("taskDBInteface.update({}) failed execution!\n: {}\n",
+        std::clog << std::format("taskDBInteface.update({}) failed execution!\n: {}\n",
             taskID, changedTask->getAllErrorMessages());
         return false;
     }
@@ -332,7 +332,7 @@ bool TestTaskDBInterface::testAddDepenedcies()
     std::vector<std::size_t> dbValue = testDepenedenciesInDB->getDependencies();
     if (comparison != dbValue)
     {
-        std::cerr << "Retrival of task dependencies differ, Test FAILED\n";
+        std::clog << "Retrival of task dependencies differ, Test FAILED\n";
         return false;
     }
 
@@ -351,7 +351,7 @@ bool TestTaskDBInterface::testGetCompletedList()
 
     if (!completedDate.ok())
     {
-        std::cerr << "Parent Completion Date Not set\n" << *parentTask << "\n" << "completedDate " << completedDate << "\n";
+        std::clog << "Parent Completion Date Not set\n" << *parentTask << "\n" << "completedDate " << completedDate << "\n";
         return false;
     }
 
@@ -364,7 +364,7 @@ bool TestTaskDBInterface::testGetCompletedList()
         task->setStatus(newStatus);
         if (!task->update())
         {
-            std::cerr << std::format("In testGetCompletedList Task Update Failed: \n{}\n", task->getAllErrorMessages());
+            std::clog << std::format("In testGetCompletedList Task Update Failed: \n{}\n", task->getAllErrorMessages());
             return false;
         }
     }
@@ -422,7 +422,7 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testnegativePathNotModified
     taskNotModified->setTaskID(1);
     if (!taskNotModified->retrieve())
     {
-        std::cerr << "Task 1 not found in database!!\n";
+        std::clog << "Task 1 not found in database!!\n";
         return TESTFAILED;
     }
 
@@ -438,7 +438,7 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testNegativePathAlreadyInDa
     taskAlreadyInDB->setTaskID(1);
     if (!taskAlreadyInDB->retrieve())
     {
-        std::cerr << "Task 1 not found in database!!\n";
+        std::clog << "Task 1 not found in database!!\n";
         return TESTFAILED;
     }
 
@@ -560,7 +560,7 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::insertShouldPass(TaskModel_
     }
     else
     {
-        std::cerr << newTask->getAllErrorMessages() << newTask << "\n";
+        std::clog << newTask->getAllErrorMessages() << newTask << "\n";
         std::clog << "Primary key for task: " << newTask->getTaskID() << ", " << newTask->getDescription() <<
         " not set!\n";
         if (verboseOutput)

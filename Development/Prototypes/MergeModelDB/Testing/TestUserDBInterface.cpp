@@ -86,14 +86,14 @@ bool TestUserDBInterface::testGetUserByLoginName(UserModel_shp insertedUser)
         }
         else
         {
-            std::cerr << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
+            std::clog << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
             *insertedUser << "\n" "Retreived User:\n" << *retrievedUser << "\n";
             return false;
         }
     }
     else
     {
-        std::cerr << "userDBInterface.getUserByLogin(user->getLoginName()) FAILED!\n" <<
+        std::clog << "testGetUserByLoginNamen(user->getLoginName()) FAILED!\n" <<
             retrievedUser->getAllErrorMessages() << "\n";
         return false;
     }
@@ -109,14 +109,14 @@ bool TestUserDBInterface::testGetUserByLoginAndPassword(UserModel_shp insertedUs
     {
         if (*retrievedUser != *insertedUser)
         {
-            std::cerr << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
+            std::clog << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
             *insertedUser << "\n" "Retreived User:\n" << *retrievedUser << "\n";
             return false;
         }
     }
     else
     {
-        std::cerr << "userDBInterface.getUserByLogin(user->getLoginName()) FAILED!\n" <<
+        std::clog << "testGetUserByLoginAndPassword(user->getLoginName()) FAILED!\n" <<
             retrievedUser->getAllErrorMessages() << "\n";
         return false;
     }
@@ -124,7 +124,7 @@ bool TestUserDBInterface::testGetUserByLoginAndPassword(UserModel_shp insertedUs
 
     if (retrievedUser->selectByLoginAndPassword(testName, "NotThePassword"))
     {
-        std::cerr << "retrievedUser->selectByLoginAndPassword(user->getLoginName()) Found user with fake password!\n";
+        std::clog << "retrievedUser->selectByLoginAndPassword(user->getLoginName()) Found user with fake password!\n";
         return false;
     }
 
@@ -143,14 +143,14 @@ bool TestUserDBInterface::testGetUserByFullName(UserModel_shp insertedUser)
         }
         else
         {
-            std::cerr << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
+            std::clog << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
             *insertedUser << "\n" "Retreived User:\n" << *retrievedUser << "\n";
             return false;
         }
     }
     else
     {
-        std::cerr << "retrievedUser->selectByFullName FAILED!\n" <<
+        std::clog << "retrievedUser->selectByFullName FAILED!\n" <<
             retrievedUser->getAllErrorMessages() << "\n";
         return false;
     }
@@ -165,7 +165,7 @@ bool TestUserDBInterface::testUpdateUserPassword(UserModel_shp insertedUser)
     insertedUser->setPassword(newPassword);
     if (!insertedUser->save())
     {
-        std::cerr << "insertedUser->save()() FAILED" << insertedUser->getAllErrorMessages() << "\n";
+        std::clog << "insertedUser->save()() FAILED" << insertedUser->getAllErrorMessages() << "\n";
         return false;
     }
 
@@ -187,7 +187,7 @@ bool TestUserDBInterface::loadTestUsersFromFile(UserListValues& userProfileTestD
 
     if (!userData.is_open())
     {
-        std::cerr << "Can't open \"" << dataFileName << "\" for input!" << std::endl;
+        std::clog << "Can't open \"" << dataFileName << "\" for input!" << std::endl;
         return false;
     }
     
@@ -204,7 +204,7 @@ bool TestUserDBInterface::loadTestUsersFromFile(UserListValues& userProfileTestD
 
     if (userData.bad())
     {
-        std::cerr << "Fatal error with file stream: \"" << dataFileName << "\"" << std::endl;
+        std::clog << "Fatal error with file stream: \"" << dataFileName << "\"" << std::endl;
         return false;
     }
 
@@ -283,7 +283,7 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::negativePathMissingRequired
     newuser.save();
     if (!newuser.isInDataBase())
     {
-        std::cerr << newuser.getAllErrorMessages() << newuser << "\n";
+        std::clog << newuser.getAllErrorMessages() << newuser << "\n";
         std::clog << "Primary key for user: " << newuser.getUserID() << " not set!\n";
         if (verboseOutput)
         {
@@ -309,7 +309,7 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::testnegativePathNotModified
     userNotModified->setUserID(1);
     if (!userNotModified->retrieve())
     {
-        std::cerr << "User 1 not found in database!!\n" << userNotModified->getAllErrorMessages() << "\n";
+        std::clog << "User 1 not found in database!!\n" << userNotModified->getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 
@@ -325,7 +325,7 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::testNegativePathAlreadyInDa
     userAlreadyInDB->setUserID(1);
     if (!userAlreadyInDB->retrieve())
     {
-        std::cerr << "User 1 not found in database!!\n" << userAlreadyInDB->getAllErrorMessages() << "\n";
+        std::clog << "User 1 not found in database!!\n" << userAlreadyInDB->getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 

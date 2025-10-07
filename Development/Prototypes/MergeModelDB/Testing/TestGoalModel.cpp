@@ -102,7 +102,7 @@ TestDBInterfaceCore::TestStatus TestGoalModel::testNegativePathAlreadyInDataBase
     goalAlreadyInDB->setGoalId(1);
     if (!goalAlreadyInDB->retrieve())
     {
-        std::cerr << "Goal 1 not found in database!!\n";
+        std::clog << "Goal 1 not found in database!!\n";
         return TESTFAILED;
     }
 
@@ -116,7 +116,7 @@ TestDBInterfaceCore::TestStatus TestGoalModel::testnegativePathNotModified()
     goalNotModified->setGoalId(1);
     if (!goalNotModified->retrieve())
     {
-        std::cerr << "Goal 1 not found in database!!\n";
+        std::clog << "Goal 1 not found in database!!\n";
         return TESTFAILED;
     }
 
@@ -156,7 +156,7 @@ TestDBInterfaceCore::TestStatus TestGoalModel::negativePathMissingRequiredFields
     testGoal.save();
     if (!testGoal.isInDataBase())
     {
-        std::cerr << testGoal.getAllErrorMessages() << testGoal << "\n";
+        std::clog << testGoal.getAllErrorMessages() << testGoal << "\n";
         std::clog << "Primary key for user: " << testGoal.getGoalId() << " not set!\n";
         if (verboseOutput)
         {
