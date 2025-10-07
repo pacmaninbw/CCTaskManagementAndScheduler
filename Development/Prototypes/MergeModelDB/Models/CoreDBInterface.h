@@ -34,6 +34,8 @@ protected:
     std::string errorMessages;
     NSBM::connect_params dbConnectionParameters;
     bool verboseOutput;
+    bool forceError;
+    bool forceException;
     std::optional<NSBM::format_options> format_opts;
 };
 

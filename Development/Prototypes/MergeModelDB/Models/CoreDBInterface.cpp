@@ -10,7 +10,9 @@
 
 CoreDBInterface::CoreDBInterface()
 :   errorMessages{""},
-    verboseOutput{programOptions.verboseOutput}
+    verboseOutput{programOptions.verboseOutput},
+    forceError{programOptions.forceErrors},
+    forceException{programOptions.forceExceptions}
 {
     dbConnectionParameters.server_address.emplace_host_and_port(programOptions.mySqlUrl, programOptions.mySqlPort);
     dbConnectionParameters.username = programOptions.mySqlUser;
@@ -28,7 +30,9 @@ void CoreDBInterface::initFormatOptions()
     }
     catch (const std::exception& e)
     {
-        std::cerr << "ERROR: initFormatOptions() FAILED: " << e.what() << "\n";
+        std::string formatOptionsFailure("INTERNAL ERROR: initFormatOptions() FAILED: ");
+        formatOptionsFailure.append(e.what());
+        appendErrorMessage(formatOptionsFailure);
     }
 }
 
