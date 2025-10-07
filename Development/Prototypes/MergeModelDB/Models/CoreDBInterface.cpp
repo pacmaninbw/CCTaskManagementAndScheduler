@@ -119,5 +119,3 @@ NSBA::awaitable<NSBM::format_options> CoreDBInterface::coRoutineGetFormatOptions
 
     co_return options;
 }
-
-
