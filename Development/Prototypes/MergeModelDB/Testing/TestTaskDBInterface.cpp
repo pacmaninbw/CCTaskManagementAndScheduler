@@ -1,19 +1,21 @@
-#include "CommandLineParser.h"
+// Project Header Files
 #include "commonUtilities.h"
 #include "CSVReader.h"
+#include "TaskModel.h"
+#include "TestDBInterfaceCore.h"
+#include "TestTaskDBInterface.h"
+#include "UserModel.h"
+
+// Standard C++ Header Files
 #include <exception>
 #include <functional>
 #include <iostream>
 #include <stdexcept>
 #include <string>
-#include "TestDBInterfaceCore.h"
-#include "TestTaskDBInterface.h"
-#include "TaskModel.h"
-#include "UserModel.h"
 #include <vector>
 
 TestTaskDBInterface::TestTaskDBInterface(std::string taskFileName)
-: TestDBInterfaceCore(programOptions.verboseOutput, "task")
+: TestDBInterfaceCore("task")
 {
     dataFileName = taskFileName;
     positiveTestFuncs.push_back(std::bind(&TestTaskDBInterface::testGetTaskByID, this, std::placeholders::_1));

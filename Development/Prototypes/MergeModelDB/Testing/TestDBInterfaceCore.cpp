@@ -1,15 +1,22 @@
+// Project Header Files
+#include "CommandLineParser.h"
+#include "TestDBInterfaceCore.h"
+
+// C++ Header Files
 #include <format>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <string_view>
-#include "TestDBInterfaceCore.h"
 #include <vector>
 
-TestDBInterfaceCore::TestDBInterfaceCore(
-    bool isVerboseOutput, std::string_view modelName)
-: verboseOutput{isVerboseOutput}, modelUnderTest{modelName}
+TestDBInterfaceCore::TestDBInterfaceCore(std::string_view modelName)
+: verboseOutput{programOptions.verboseOutput},
+ forceErrors{programOptions.forceErrors},
+ forceExceptions{programOptions.forceExceptions},
+ runSelfTest{programOptions.runSelfTest},
+  modelUnderTest{modelName}
 {
 }
 

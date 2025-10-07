@@ -1,7 +1,11 @@
 #ifndef TESTDBINTERFACECORE_H_
 #define TESTDBINTERFACECORE_H_
 
+// Project Header Files
+#include "CommandLineParser.h"
 #include "ModelDBInterface.h"
+
+// StandardS C++ Header Files
 #include <functional>
 #include <memory>
 #include <string>
@@ -12,7 +16,7 @@ class TestDBInterfaceCore
 {
 public:
     enum class TestStatus {TestPassed, TestFailed};
-    TestDBInterfaceCore(bool isVerboseOutput, std::string_view modelName);
+    TestDBInterfaceCore(std::string_view modelName);
     virtual ~TestDBInterfaceCore() = default;
     virtual TestDBInterfaceCore::TestStatus runAllTests();
     virtual TestDBInterfaceCore::TestStatus runNegativePathTests();
@@ -34,6 +38,9 @@ protected:
     const TestDBInterfaceCore::TestStatus TESTPASSED = TestDBInterfaceCore::TestStatus::TestPassed;
 
     bool verboseOutput;
+    bool forceErrors;
+    bool forceExceptions;
+    bool runSelfTest;
     std::string_view modelUnderTest;
     std::vector<std::function<TestDBInterfaceCore::TestStatus(void)>> negativePathTestFuncsNoArgs;
     std::vector<std::function<TestDBInterfaceCore::TestStatus(void)>> positiviePathTestFuncsNoArgs;

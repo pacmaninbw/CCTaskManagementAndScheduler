@@ -1,18 +1,21 @@
+// Project Header Files
 #include "CommandLineParser.h"
 #include "commonUtilities.h"
 #include "CSVReader.h"
+#include "TestUserDBInterface.h"
+#include "UserList.h"
+#include "UserModel.h"
+
+// C++ Header Files
 #include <exception>
 #include <functional>
 #include <iostream>
 #include <stdexcept>
 #include <string>
-#include "TestUserDBInterface.h"
-#include "UserList.h"
-#include "UserModel.h"
 #include <vector>
 
 TestUserDBInterface::TestUserDBInterface(std::string userFileName)
-: TestDBInterfaceCore(programOptions.verboseOutput, "user")
+: TestDBInterfaceCore("user")
 {
     dataFileName = userFileName;
     

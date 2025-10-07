@@ -1,15 +1,18 @@
-#include <chrono>
-#include <functional>
-#include <string>
+// Project Header Files
 #include "TestGoalModel.h"
 #include "TestDBInterfaceCore.h"
 #include "UserGoalList.h"
 #include "UserGoalModel.h"
 #include "UserModel.h"
+
+// Standard C++ Header Files
+#include <chrono>
+#include <functional>
+#include <string>
 #include <vector>
 
 TestGoalModel::TestGoalModel()
-: TestDBInterfaceCore(programOptions.verboseOutput, "Goal")
+: TestDBInterfaceCore("Goal")
 {
     std::vector<TestGoalInput> testGoalInput =
     {

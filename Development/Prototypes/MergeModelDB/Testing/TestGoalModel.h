@@ -1,11 +1,14 @@
 #ifndef TESTGOALMODEL_H_
 #define TESTGOALMODEL_H_
 
-#include <functional>
-#include <string>
+// Project Header Files
 #include "TestDBInterfaceCore.h"
 #include "UserGoalList.h"
 #include "UserGoalModel.h"
+
+// Standard C++ Header Files
+#include <functional>
+#include <string>
 #include <vector>
 
 class TestGoalModel : public TestDBInterfaceCore
