@@ -1,13 +1,16 @@
 #ifndef NOTEMODEL_H_
 #define NOTEMODEL_H_
 
-#include <chrono>
+// Project Header Files
 #include "commonUtilities.h"
+#include "ModelDBInterface.h"
+
+// Standard C++ Header Files
+#include <chrono>
 #include <format>
 #include <functional>
 #include <iostream>
 #include <memory>
-#include "ModelDBInterface.h"
 #include <optional>
 #include <string>
 #include <vector>

@@ -1,7 +1,12 @@
-#include <boost/asio.hpp>
-#include <boost/mysql.hpp>
+// Project Header Files
 #include "CommandLineParser.h"
 #include "CoreDBInterface.h"
+
+// External Libraries
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
+// Standard C++ Header Files
 #include <exception>
 #include <iostream>
 #include <stdexcept>

@@ -1,8 +1,13 @@
+// Project Header Files
+#include "ModelDBInterface.h"
+
+// External Libraries
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
+
+// Standard C++ Header Files
 #include <chrono>
 #include <exception>
-#include "ModelDBInterface.h"
 #include <iostream>
 #include <sstream>
 #include <stdexcept>

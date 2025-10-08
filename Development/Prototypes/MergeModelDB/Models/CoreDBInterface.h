@@ -1,9 +1,14 @@
 #ifndef COREDBINTERFACECORE_H_
 #define COREDBINTERFACECORE_H_
 
+// Project Header Files
+#include "CommandLineParser.h"
+
+// External Libraries
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
-#include "CommandLineParser.h"
+
+// Standard C++ Header Files
 #include <iostream>
 #include <optional>
 #include <string>

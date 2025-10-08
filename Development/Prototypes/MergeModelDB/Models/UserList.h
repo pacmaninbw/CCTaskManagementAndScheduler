@@ -1,10 +1,13 @@
 #ifndef USERLIST_H_
 #define USERLIST_H_
 
-#include <format>
-#include <iostream>
+// Project Header Files
 #include "ListDBInterface.h"
 #include "UserModel.h"
+
+// Standard C++ Header Files
+#include <format>
+#include <iostream>
 
 using UserListValues = std::vector<UserModel_shp>;
 

@@ -1,8 +1,11 @@
-#include <format>
-#include <iostream>
+// Project Header Files
 #include "ListDBInterface.h"
 #include "UserList.h"
 #include "UserModel.h"
+
+// Standard C++ Header Files
+#include <format>
+#include <iostream>
 
 UserList::UserList()
 : ListDBInterface<UserModel>()

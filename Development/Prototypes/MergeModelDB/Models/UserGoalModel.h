@@ -1,12 +1,15 @@
 #ifndef USERGOALMODEL_H_
 #define USERGOALMODEL_H_
 
+// Project Header Files
+#include "ModelDBInterface.h"
+
+// Standard C++ Header Files
 #include <chrono>
 #include <format>
 #include <functional>
 #include <iostream>
 #include <memory>
-#include "ModelDBInterface.h"
 #include <optional>
 #include <string>
 #include <vector>

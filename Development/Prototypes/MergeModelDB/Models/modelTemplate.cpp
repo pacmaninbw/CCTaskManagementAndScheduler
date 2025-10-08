@@ -1,6 +1,9 @@
+// Project Header Files
+#include "modelTemplate.h"
+
+// Standard C++ Header Files
 #include <exception>
 #include <chrono>
-//#include "commonUtilities.h"
 #include <format>
 #include <functional>
 #include <iostream>
@@ -8,7 +11,6 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
-#include "modelTemplate.h"
 #include <vector>
 
 TemplateModel::TemplateModel()

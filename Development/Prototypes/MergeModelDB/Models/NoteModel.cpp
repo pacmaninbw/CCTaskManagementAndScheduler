@@ -1,6 +1,10 @@
+// Project Header Files
+#include "commonUtilities.h"
+#include "NoteModel.h"
+
+// Standard C++ Header Files
 #include <exception>
 #include <chrono>
-#include "commonUtilities.h"
 #include <format>
 #include <functional>
 #include <iostream>
@@ -8,7 +12,6 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
-#include "NoteModel.h"
 #include <vector>
 
 NoteModel::NoteModel()

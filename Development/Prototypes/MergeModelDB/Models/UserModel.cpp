@@ -1,5 +1,9 @@
-#include <chrono>
+// Project Header Files
 #include "commonUtilities.h"
+#include "UserModel.h"
+
+// Standard C++ Header Files
+#include <chrono>
 #include <exception>
 #include <format>
 #include <functional>
@@ -8,7 +12,6 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
-#include "UserModel.h"
 #include <utility>
 #include <vector>
 

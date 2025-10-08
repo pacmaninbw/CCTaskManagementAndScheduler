@@ -1,11 +1,14 @@
 #ifndef TASKLIST_H_
 #define TASKLIST_H_
 
+// Project Header Files
+#include "ListDBInterface.h"
+#include "TaskModel.h"
+
+// Standard C++ Header Files
 #include <chrono>
 #include <format>
 #include <iostream>
-#include "ListDBInterface.h"
-#include "TaskModel.h"
 
 using TaskListValues = std::vector<TaskModel_shp>;
 

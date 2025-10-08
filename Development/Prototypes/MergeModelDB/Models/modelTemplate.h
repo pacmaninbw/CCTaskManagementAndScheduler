@@ -1,13 +1,15 @@
 #ifndef MODELTEMPLACE_H_
 #define MODELTEMPLACE_H_
 
+// Project Header Files
+#include "ModelDBInterface.h"
+
+// Standard C++ Header Files
 #include <chrono>
-//#include "commonUtilities.h"
 #include <format>
 #include <functional>
 #include <iostream>
 #include <memory>
-#include "ModelDBInterface.h"
 #include <optional>
 #include <string>
 #include <vector>

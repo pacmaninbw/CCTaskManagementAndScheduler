@@ -1,9 +1,12 @@
-#include <chrono>
-#include <format>
-#include <iostream>
+// Project Header Files
 #include "ListDBInterface.h"
 #include "UserGoalList.h"
 #include "UserGoalModel.h"
+
+// Standard C++ Header Files
+#include <chrono>
+#include <format>
+#include <iostream>
 
 UserGoalList::UserGoalList()
 : ListDBInterface<UserGoalModel>()

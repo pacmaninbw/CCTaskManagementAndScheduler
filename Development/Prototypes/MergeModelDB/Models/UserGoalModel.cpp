@@ -1,3 +1,8 @@
+// Project Header Files
+#include "UserGoalList.h"
+#include "UserGoalModel.h"
+
+// Standard C++ Header Files
 #include <exception>
 #include <chrono>
 #include <format>
@@ -7,8 +12,6 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
-#include "UserGoalList.h"
-#include "UserGoalModel.h"
 #include <vector>
 
 UserGoalModel::UserGoalModel()

@@ -1,10 +1,15 @@
 #ifndef MODELDBINTERFACECORE_H_
 #define MODELDBINTERFACECORE_H_
 
+// Project Header Files
+#include "CoreDBInterface.h"
+
+// External Libraries
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
+
+// Standard C++ Header Files
 #include <chrono>
-#include "CoreDBInterface.h"
 #include <functional>
 #include <iostream>
 #include <optional>

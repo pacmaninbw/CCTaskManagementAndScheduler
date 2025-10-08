@@ -1,11 +1,14 @@
 #ifndef USERGOALLIST_H_
 #define USERGOALLIST_H_
 
+// Project Header Files
+#include "ListDBInterface.h"
+#include "UserGoalModel.h"
+
+// Standard C++ Header Files
 #include <chrono>
 #include <format>
 #include <iostream>
-#include "ListDBInterface.h"
-#include "UserGoalModel.h"
 
 using UserGoalListValues = std::vector<UserGoalModel_shp>;
 
