@@ -1,11 +1,14 @@
+// Project Header Files
 #include "CommandLineParser.h"
-#include <exception>
-#include <iostream>
-#include <stdexcept>
 #include "TestTaskDBInterface.h"
 #include "TestUserDBInterface.h"
 #include "TestGoalModel.h"
 #include "UtilityTimer.h"
+
+// Standard C++ Header Files
+#include <exception>
+#include <iostream>
+#include <stdexcept>
 
 /*
  * All of the DBInterface classes need access to the programOptions global variable for the

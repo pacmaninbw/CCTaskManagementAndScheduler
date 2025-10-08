@@ -1,6 +1,11 @@
-#include <algorithm>
-#include <boost/program_options.hpp>
+// Project Header Files
 #include "CommandLineParser.h"
+
+// External Libraries
+#include <boost/program_options.hpp>
+
+// Standard C++ Header Files
+#include <algorithm>
 #include <expected>
 #include <filesystem>
 #include <iostream>
