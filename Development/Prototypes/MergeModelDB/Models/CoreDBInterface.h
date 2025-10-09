@@ -13,9 +13,6 @@
 #include <optional>
 #include <string>
 
-namespace NSBA = boost::asio;
-namespace NSBM = boost::mysql;
-
 class CoreDBInterface
 {
 public:
@@ -31,17 +28,17 @@ protected:
  * All calls to runQueryAsync and getConnectionFormatOptsAsync should be
  * implemented within try blocks.
  */
-    NSBM::results runQueryAsync(const std::string& query);
-    NSBM::format_options getConnectionFormatOptsAsync();
-    NSBA::awaitable<NSBM::results> coRoutineExecuteSqlStatement(const std::string& query);
-    NSBA::awaitable<NSBM::format_options> coRoutineGetFormatOptions();
+    boost::mysql::results runQueryAsync(const std::string& query);
+    boost::mysql::format_options getConnectionFormatOptsAsync();
+    boost::asio::awaitable<boost::mysql::results> coRoutineExecuteSqlStatement(const std::string& query);
+    boost::asio::awaitable<boost::mysql::format_options> coRoutineGetFormatOptions();
 
     std::string errorMessages;
-    NSBM::connect_params dbConnectionParameters;
+    boost::mysql::connect_params dbConnectionParameters;
     bool verboseOutput;
     bool forceError;
     bool forceException;
-    std::optional<NSBM::format_options> format_opts;
+    std::optional<boost::mysql::format_options> format_opts;
 };
 
 #endif // COREDBINTERFACECORE_H_

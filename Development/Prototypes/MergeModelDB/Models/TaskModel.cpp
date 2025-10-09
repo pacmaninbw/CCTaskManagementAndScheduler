@@ -204,11 +204,11 @@ bool TaskModel::selectByDescriptionAndAssignedUser(std::string_view description,
 
     try
     {
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, baseQuery);
-        NSBM::format_sql_to(fctx, " WHERE Description = {} AND AsignedTo = {}", description, assignedUserID);
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, baseQuery);
+        boost::mysql::format_sql_to(fctx, " WHERE Description = {} AND AsignedTo = {}", description, assignedUserID);
 
-        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
 
         return processResult(localResult);
     }
@@ -226,11 +226,11 @@ bool TaskModel::selectByTaskID(std::size_t taskID)
 
     try
     {
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, baseQuery);
-        NSBM::format_sql_to(fctx, " WHERE TaskID = {}", taskID);
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, baseQuery);
+        boost::mysql::format_sql_to(fctx, " WHERE TaskID = {}", taskID);
 
-        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
 
         return processResult(localResult);
     }
@@ -249,9 +249,9 @@ std::string TaskModel::formatSelectActiveTasksForAssignedUser(std::size_t assign
     try {
         constexpr unsigned int notStarted = static_cast<unsigned int>(TaskModel::TaskStatus::Not_Started);
 
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, listQueryBase);
-        NSBM::format_sql_to(fctx, " WHERE AsignedTo = {} AND Completed IS NULL AND (Status IS NOT NULL AND Status <> {})",
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, listQueryBase);
+        boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND Completed IS NULL AND (Status IS NOT NULL AND Status <> {})",
             assignedUserID, stdchronoDateToBoostMySQLDate(getTodaysDatePlus(OneWeek)), notStarted);
 
         return std::move(fctx).get().value();
@@ -272,9 +272,9 @@ std::string TaskModel::formatSelectUnstartedDueForStartForAssignedUser(std::size
     try {
         constexpr unsigned int notStarted = static_cast<unsigned int>(TaskModel::TaskStatus::Not_Started);
 
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, listQueryBase);
-        NSBM::format_sql_to(fctx, " WHERE AsignedTo = {} AND ScheduledStart < {} AND (Status IS NULL OR Status = {})",
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, listQueryBase);
+        boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND ScheduledStart < {} AND (Status IS NULL OR Status = {})",
             assignedUserID, stdchronoDateToBoostMySQLDate(getTodaysDatePlus(OneWeek)), notStarted);
 
         return std::move(fctx).get().value();
@@ -293,9 +293,9 @@ std::string TaskModel::formatSelectTasksCompletedByAssignedAfterDate(std::size_t
     prepareForRunQueryAsync();
 
     try {
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, listQueryBase);
-        NSBM::format_sql_to(fctx, " WHERE AsignedTo = {} AND Completed >= {}",
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, listQueryBase);
+        boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND Completed >= {}",
             assignedUserID, stdchronoDateToBoostMySQLDate(searchStartDate));
 
         return std::move(fctx).get().value();
@@ -314,9 +314,9 @@ std::string TaskModel::formatSelectTasksByAssignedIDandParentID(std::size_t assi
     prepareForRunQueryAsync();
 
     try {
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, listQueryBase);
-        NSBM::format_sql_to(fctx, " WHERE AsignedTo = {} AND ParentTask = {}", assignedUserID, parentID);
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, listQueryBase);
+        boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND ParentTask = {}", assignedUserID, parentID);
 
         return std::move(fctx).get().value();
     }
@@ -377,7 +377,7 @@ std::string TaskModel::formatInsertStatement()
     }
     lastUpdate = std::chrono::system_clock::now();
 
-    return NSBM::format_sql(format_opts.value(),
+    return boost::mysql::format_sql(format_opts.value(),
         "INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, "
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
             "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS)"
@@ -415,7 +415,7 @@ std::string TaskModel::formatUpdateStatement()
         depenenciesText = buildDependenciesText(dependencyList);
     }
 
-    return NSBM::format_sql(format_opts.value(),
+    return boost::mysql::format_sql(format_opts.value(),
         "UPDATE Tasks SET"
             " CreatedBy = {0},"
             " AsignedTo = {1},"
@@ -463,9 +463,9 @@ std::string TaskModel::formatSelectStatement()
 {
     prepareForRunQueryAsync();
 
-    NSBM::format_context fctx(format_opts.value());
-    NSBM::format_sql_to(fctx, baseQuery);
-    NSBM::format_sql_to(fctx, " WHERE TaskID = {}", primaryKey);
+    boost::mysql::format_context fctx(format_opts.value());
+    boost::mysql::format_sql_to(fctx, baseQuery);
+    boost::mysql::format_sql_to(fctx, " WHERE TaskID = {}", primaryKey);
 
     return std::move(fctx).get().value();
 }
@@ -515,7 +515,7 @@ std::string TaskModel::buildDependenciesText(std::vector<std::size_t>& dependenc
     return implodeTextField(dependencyStrings);
 }
 
-void TaskModel::processResultRow(NSBM::row_view rv)
+void TaskModel::processResultRow(boost::mysql::row_view rv)
 {
     // Required fields.
     primaryKey = rv.at(taskIdIdx).as_uint64();

@@ -59,7 +59,7 @@ public:
         try
         {
             primaryKeyResults.clear();
-            NSBM::results localResult = runQueryAsync(firstFormattedQuery);
+            boost::mysql::results localResult = runQueryAsync(firstFormattedQuery);
             primaryKeyResults = processFirstQueryResults(localResult);
 
             return primaryKeyResults.size() > 0;
@@ -79,7 +79,7 @@ protected:
         firstFormattedQuery = formattedQueryStatement;
     }
     
-    virtual std::vector<std::size_t> processFirstQueryResults(NSBM::results& results)
+    virtual std::vector<std::size_t> processFirstQueryResults(boost::mysql::results& results)
     {
         if (results.rows().empty())
         {

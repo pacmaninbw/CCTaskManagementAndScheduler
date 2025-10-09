@@ -62,11 +62,11 @@ bool UserGoalModel::selectByGoalID(std::size_t noteID)
 
     try
     {
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, baseQuery);
-        NSBM::format_sql_to(fctx, " WHERE idUserGoals = {}", noteID);
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, baseQuery);
+        boost::mysql::format_sql_to(fctx, " WHERE idUserGoals = {}", noteID);
 
-        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
 
         return processResult(localResult);
     }
@@ -84,11 +84,11 @@ bool UserGoalModel::selectByUserIDAndDescription(std::size_t userID, std::string
 
     try
     {
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, baseQuery);
-        NSBM::format_sql_to(fctx, " WHERE UserID = {} and Description = {}", userID, targetDesciption);
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, baseQuery);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} and Description = {}", userID, targetDesciption);
 
-        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
 
         return processResult(localResult);
     }
@@ -112,9 +112,9 @@ std::string UserGoalModel::formatSelectAllByUserId(std::size_t userId)
 
     try {
 
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, listQueryBase);
-        NSBM::format_sql_to(fctx, " WHERE UserID = {} ", userId);
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, listQueryBase);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} ", userId);
 
         return std::move(fctx).get().value();
     }
@@ -133,9 +133,9 @@ std::string UserGoalModel::formatSelectAllChildGoalsWithParentFromUser(std::size
 
     try {
 
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, listQueryBase);
-        NSBM::format_sql_to(fctx, " WHERE UserID = {} AND ParentGoal = {}", userId, parentId);
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, listQueryBase);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND ParentGoal = {}", userId, parentId);
 
         return std::move(fctx).get().value();
     }
@@ -159,9 +159,9 @@ std::string UserGoalModel::formatSelectByExactDescription(std::string fullDescri
 
     try {
 
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, listQueryBase);
-        NSBM::format_sql_to(fctx, " WHERE UserID = {} AND Description = {}", userId, fullDescription);
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, listQueryBase);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Description = {}", userId, fullDescription);
 
         return std::move(fctx).get().value();
     }
@@ -180,9 +180,9 @@ std::string UserGoalModel::formatSelectBySimilarDescription(std::string partialD
 
     try {
 
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, listQueryBase);
-        NSBM::format_sql_to(fctx, " WHERE UserID = {} AND Description LIKE {}", userId, partialDescription);
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, listQueryBase);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Description LIKE {}", userId, partialDescription);
 
         return std::move(fctx).get().value();
     }
@@ -212,7 +212,7 @@ std::string UserGoalModel::formatInsertStatement()
 
     lastUpdate = std::chrono::system_clock::now();
 
-    std::string insertStatement = NSBM::format_sql(format_opts.value(),
+    std::string insertStatement = boost::mysql::format_sql(format_opts.value(),
         "INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, "
             "Priority, ParentGoal) VALUES ({0}, {1}, {2}, {3}, {4}, {5})",
         userID, description, optionalDateTimeConversion(creationDate),
@@ -227,7 +227,7 @@ std::string UserGoalModel::formatUpdateStatement()
 
     lastUpdate = std::chrono::system_clock::now();
 
-    std::string updateStatement = NSBM::format_sql(format_opts.value(),
+    std::string updateStatement = boost::mysql::format_sql(format_opts.value(),
         "UPDATE UserGoals SET"
             " UserGoals.UserID = {0},"
             " UserGoals.Description = {1},"
@@ -246,15 +246,15 @@ std::string UserGoalModel::formatSelectStatement()
 {
     initFormatOptions();
 
-    NSBM::format_context fctx(format_opts.value());
-    NSBM::format_sql_to(fctx, baseQuery);
-    NSBM::format_sql_to(fctx, " WHERE idUserGoals = {}", primaryKey);
+    boost::mysql::format_context fctx(format_opts.value());
+    boost::mysql::format_sql_to(fctx, baseQuery);
+    boost::mysql::format_sql_to(fctx, " WHERE idUserGoals = {}", primaryKey);
 
     return std::move(fctx).get().value();
 }
 
 
-void UserGoalModel::processResultRow(NSBM::row_view rv)
+void UserGoalModel::processResultRow(boost::mysql::row_view rv)
 {
     primaryKey = rv.at(GoalIdIdx).as_uint64();
     userID = rv.at(UserIdIdx).as_uint64();

@@ -71,7 +71,7 @@ std::string NoteModel::formatInsertStatement()
 {
     initFormatOptions();
 
-    std::string insertStatement = NSBM::format_sql(format_opts.value(),
+    std::string insertStatement = boost::mysql::format_sql(format_opts.value(),
         "INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES ({0}, {1}, {2}, {3})",
         userID, stdChronoTimePointToBoostDateTime(creationDate),
         content, stdChronoTimePointToBoostDateTime(lastUpdate));
@@ -83,7 +83,7 @@ std::string NoteModel::formatUpdateStatement()
 {
     initFormatOptions();
 
-    std::string updateStatement = NSBM::format_sql(format_opts.value(),
+    std::string updateStatement = boost::mysql::format_sql(format_opts.value(),
         "UPDATE UserProfile SET"
             " UserNotes.UserID = {0},"
             " UserNotes.NotationDateTime = {1},"
@@ -100,15 +100,15 @@ std::string NoteModel::formatSelectStatement()
 {
     initFormatOptions();
 
-    NSBM::format_context fctx(format_opts.value());
-    NSBM::format_sql_to(fctx, baseQuery);
-    NSBM::format_sql_to(fctx, " WHERE UserID = {}", primaryKey);
+    boost::mysql::format_context fctx(format_opts.value());
+    boost::mysql::format_sql_to(fctx, baseQuery);
+    boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", primaryKey);
 
     return std::move(fctx).get().value();
 }
 
 
-void NoteModel::processResultRow(NSBM::row_view rv)
+void NoteModel::processResultRow(boost::mysql::row_view rv)
 {
     primaryKey = rv.at(NoteIdIdx).as_uint64();
     userID = rv.at(UserIdIdx).as_uint64();
@@ -123,11 +123,11 @@ bool NoteModel::selectByNoteID(std::size_t noteID)
 
     try
     {
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, baseQuery);
-        NSBM::format_sql_to(fctx, " WHERE idUserNotes = {}", noteID);
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, baseQuery);
+        boost::mysql::format_sql_to(fctx, " WHERE idUserNotes = {}", noteID);
 
-        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
 
         return processResult(localResult);
     }

@@ -126,7 +126,7 @@ private:
 
     std::string buildPreferenceText() noexcept;
     void parsePrefenceText(std::string preferences) noexcept;
-    void processResultRow(NSBM::row_view rv) override;
+    void processResultRow(boost::mysql::row_view rv) override;
     
     std::string lastName;
     std::string firstName;
@@ -147,7 +147,7 @@ private:
  * baseQuery could be SELECT * FROM UserProfile, but this way the order of the columns
  * returned are known.
  */
-    NSBM::constant_string_view baseQuery = 
+    boost::mysql::constant_string_view baseQuery = 
         "SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
             "HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile ";
 

@@ -202,7 +202,7 @@ std::string UserModel::formatInsertStatement()
     {
         created = std::chrono::system_clock::now();
     }
-    std::string insertStatement = NSBM::format_sql(format_opts.value(),
+    std::string insertStatement = boost::mysql::format_sql(format_opts.value(),
         "INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
         "HashedPassWord, UserAdded, LastLogin, Preferences) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8})",
         lastName, firstName, middleInitial, email, loginName, password,
@@ -217,7 +217,7 @@ std::string UserModel::formatUpdateStatement()
 {
     initFormatOptions();
 
-    std::string updateStatement = NSBM::format_sql(format_opts.value(),
+    std::string updateStatement = boost::mysql::format_sql(format_opts.value(),
         "UPDATE UserProfile SET"
             " UserProfile.LastName = {0},"
             " UserProfile.FirstName = {1},"
@@ -238,9 +238,9 @@ std::string UserModel::formatSelectStatement()
 {
     initFormatOptions();
 
-    NSBM::format_context fctx(format_opts.value());
-    NSBM::format_sql_to(fctx, baseQuery);
-    NSBM::format_sql_to(fctx, " WHERE UserID = {}", primaryKey);
+    boost::mysql::format_context fctx(format_opts.value());
+    boost::mysql::format_sql_to(fctx, baseQuery);
+    boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", primaryKey);
 
     return std::move(fctx).get().value();
 }
@@ -259,7 +259,7 @@ std::string UserModel::buildPreferenceText() noexcept
     return implodeTextField(preferences);
 }
 
-void UserModel::processResultRow(NSBM::row_view rv)
+void UserModel::processResultRow(boost::mysql::row_view rv)
 {
     primaryKey = rv.at(UserIdIdx).as_uint64();
     lastName = rv.at(LastNameIdx).as_string();
@@ -296,11 +296,11 @@ bool UserModel::selectByLoginName(const std::string_view &loginName)
 
     try
     {
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, baseQuery);
-        NSBM::format_sql_to(fctx, " WHERE LoginName = {}", loginName);
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, baseQuery);
+        boost::mysql::format_sql_to(fctx, " WHERE LoginName = {}", loginName);
 
-        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
 
         return processResult(localResult);
     }
@@ -318,11 +318,11 @@ bool UserModel::selectByEmail(const std::string_view &emailAddress)
 
     try
     {
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, baseQuery);
-        NSBM::format_sql_to(fctx, " WHERE EmailAddress = {}", emailAddress);
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, baseQuery);
+        boost::mysql::format_sql_to(fctx, " WHERE EmailAddress = {}", emailAddress);
 
-        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
 
         return processResult(localResult);
     }
@@ -340,11 +340,11 @@ bool UserModel::selectByLoginAndPassword(const std::string_view &loginName, cons
 
     try
     {
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, baseQuery);
-        NSBM::format_sql_to(fctx, " WHERE LoginName = {} AND HashedPassWord = {}", loginName, password);
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, baseQuery);
+        boost::mysql::format_sql_to(fctx, " WHERE LoginName = {} AND HashedPassWord = {}", loginName, password);
 
-        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
 
         return processResult(localResult);
     }
@@ -362,11 +362,11 @@ bool UserModel::selectByFullName(const std::string_view &lastName, const std::st
 
     try
     {
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, baseQuery);
-        NSBM::format_sql_to(fctx, " WHERE LastName = {} AND FirstName = {} AND MiddleInitial = {}", lastName, firstName, middleI);
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, baseQuery);
+        boost::mysql::format_sql_to(fctx, " WHERE LastName = {} AND FirstName = {} AND MiddleInitial = {}", lastName, firstName, middleI);
 
-        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
 
         return processResult(localResult);
     }
@@ -384,8 +384,8 @@ std::string UserModel::formatGetAllUsersQuery()
 
     try
     {
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, "SELECT UserID FROM UserProfile ");
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "SELECT UserID FROM UserProfile ");
 
         return std::move(fctx).get().value();
     }
@@ -403,11 +403,11 @@ bool UserModel::selectByUserID(std::size_t UserID)
 
     try
     {
-        NSBM::format_context fctx(format_opts.value());
-        NSBM::format_sql_to(fctx, baseQuery);
-        NSBM::format_sql_to(fctx, " WHERE UserID = {}", UserID);
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, baseQuery);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", UserID);
 
-        NSBM::results localResult = runQueryAsync(std::move(fctx).get().value());
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
 
         return processResult(localResult);
     }

@@ -50,13 +50,13 @@ void CoreDBInterface::prepareForRunQueryAsync()
 /*
  * All calls to runQueryAsync should be implemented within try blocks.
  */
-NSBM::results CoreDBInterface::runQueryAsync(const std::string& query)
+boost::mysql::results CoreDBInterface::runQueryAsync(const std::string& query)
 {
-    NSBM::results localResult;
-    NSBA::io_context ctx;
+    boost::mysql::results localResult;
+    boost::asio::io_context ctx;
 
-    NSBA::co_spawn(ctx, coRoutineExecuteSqlStatement(query),
-        [&localResult, this](std::exception_ptr ptr, NSBM::results result)
+    boost::asio::co_spawn(ctx, coRoutineExecuteSqlStatement(query),
+        [&localResult, this](std::exception_ptr ptr, boost::mysql::results result)
         {
             if (ptr)
             {
@@ -71,13 +71,13 @@ NSBM::results CoreDBInterface::runQueryAsync(const std::string& query)
     return localResult;
 }
 
-NSBA::awaitable<NSBM::results> CoreDBInterface::coRoutineExecuteSqlStatement(const std::string& query)
+boost::asio::awaitable<boost::mysql::results> CoreDBInterface::coRoutineExecuteSqlStatement(const std::string& query)
 {
-    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
+    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
     
-    NSBM::results selectResult;
+    boost::mysql::results selectResult;
 
     if (verboseOutput)
     {
@@ -91,13 +91,13 @@ NSBA::awaitable<NSBM::results> CoreDBInterface::coRoutineExecuteSqlStatement(con
     co_return selectResult;
 }
 
-NSBM::format_options CoreDBInterface::getConnectionFormatOptsAsync()
+boost::mysql::format_options CoreDBInterface::getConnectionFormatOptsAsync()
 {
-    NSBM::format_options options;
-    NSBA::io_context ctx;
+    boost::mysql::format_options options;
+    boost::asio::io_context ctx;
 
-    NSBA::co_spawn(ctx, coRoutineGetFormatOptions(),
-        [&options, this](std::exception_ptr ptr, NSBM::format_options result)
+    boost::asio::co_spawn(ctx, coRoutineGetFormatOptions(),
+        [&options, this](std::exception_ptr ptr, boost::mysql::format_options result)
         {
             if (ptr)
             {
@@ -112,13 +112,13 @@ NSBM::format_options CoreDBInterface::getConnectionFormatOptsAsync()
     return options;
 }
 
-NSBA::awaitable<NSBM::format_options> CoreDBInterface::coRoutineGetFormatOptions()
+boost::asio::awaitable<boost::mysql::format_options> CoreDBInterface::coRoutineGetFormatOptions()
 {
-    NSBM::any_connection conn(co_await NSBA::this_coro::executor);
+    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
 
-    NSBM::format_options options = conn.format_opts().value();
+    boost::mysql::format_options options = conn.format_opts().value();
 
     co_await conn.async_close();
 

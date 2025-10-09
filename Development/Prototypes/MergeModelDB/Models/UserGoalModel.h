@@ -80,7 +80,7 @@ public:
 
 private:
     bool diffGoal(UserGoalModel& other);
-    void processResultRow(NSBM::row_view rv) override;
+    void processResultRow(boost::mysql::row_view rv) override;
     std::string formatInsertStatement() override;
     std::string formatUpdateStatement() override;
     std::string formatSelectStatement() override;
@@ -101,7 +101,7 @@ private:
 /*
  * The indexes below are based on the following select statement, maintain this order.
  */
-    NSBM::constant_string_view baseQuery = 
+    boost::mysql::constant_string_view baseQuery = 
         "SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals ";
 
     const std::size_t GoalIdIdx = 0;
@@ -112,7 +112,7 @@ private:
     const std::size_t PriorityIdx = 5;
     const std::size_t ParentGoalIDIdx = 6;
 
-    NSBM::constant_string_view listQueryBase = "SELECT idUserGoals FROM UserGoals ";
+    boost::mysql::constant_string_view listQueryBase = "SELECT idUserGoals FROM UserGoals ";
 };
 
 using UserGoalModel_shp = std::shared_ptr<UserGoalModel>;

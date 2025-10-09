@@ -170,7 +170,7 @@ private:
     void initRequiredFields() override;
     void addDependencies(const std::string& dependenciesText);
     std::string buildDependenciesText(std::vector<std::size_t>& dependencyList) noexcept;
-    void processResultRow(NSBM::row_view rv) override;
+    void processResultRow(boost::mysql::row_view rv) override;
 
     std::size_t creatorID;
     std::size_t assignToID;
@@ -203,7 +203,7 @@ private:
  * baseQuery could be SELECT * FROM Tasks, but this way the order of the columns
  * returned are known.
  */
-    NSBM::constant_string_view baseQuery = "SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
+    boost::mysql::constant_string_view baseQuery = "SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
             "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks ";
 
@@ -229,7 +229,7 @@ private:
     const std::size_t depenedenciesTextIdx = 19;
     const std::size_t lastUpdate_Idx = 20;
 
-    NSBM::constant_string_view listQueryBase = "SELECT TaskID FROM Tasks ";
+    boost::mysql::constant_string_view listQueryBase = "SELECT TaskID FROM Tasks ";
 };
 
 using TaskModel_shp = std::shared_ptr<TaskModel>;

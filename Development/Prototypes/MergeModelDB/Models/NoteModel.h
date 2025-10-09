@@ -74,7 +74,7 @@ private:
     std::string formatUpdateStatement() override;
     std::string formatSelectStatement() override;
 
-    void processResultRow(NSBM::row_view rv) override;
+    void processResultRow(boost::mysql::row_view rv) override;
     
     std::size_t userID;
     std::string content;
@@ -88,7 +88,7 @@ private:
  * baseQuery could be SELECT * FROM UserProfile, but this way the order of the columns
  * returned are known.
  */
-    NSBM::constant_string_view baseQuery = 
+    boost::mysql::constant_string_view baseQuery = 
         "SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes ";
 
     const std::size_t NoteIdIdx = 0;

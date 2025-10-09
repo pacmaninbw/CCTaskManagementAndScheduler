@@ -71,7 +71,7 @@ bool ModelDBInterface::insert()
 
     try
     {
-        NSBM::results localResult = runQueryAsync(formatInsertStatement());
+        boost::mysql::results localResult = runQueryAsync(formatInsertStatement());
         primaryKey = localResult.last_insert_id();
         modified = false;
     }
@@ -104,7 +104,7 @@ bool ModelDBInterface::update()
     try
     {
 
-        NSBM::results localResult = runQueryAsync(formatUpdateStatement());
+        boost::mysql::results localResult = runQueryAsync(formatUpdateStatement());
         modified = false;
             
         return true;
@@ -123,7 +123,7 @@ bool ModelDBInterface::retrieve()
 
     try
     {
-        NSBM::results localResult = runQueryAsync(formatSelectStatement());
+        boost::mysql::results localResult = runQueryAsync(formatSelectStatement());
 
         return processResult(localResult);
     }
@@ -164,7 +164,7 @@ void ModelDBInterface::reportMissingFields() noexcept
     }
 }
 
-bool ModelDBInterface::processResult(NSBM::results& results)
+bool ModelDBInterface::processResult(boost::mysql::results& results)
 {
     if (results.rows().empty())
     {
@@ -178,7 +178,7 @@ bool ModelDBInterface::processResult(NSBM::results& results)
         return false;
     }
 
-    NSBM::row_view rv = results.rows().at(0);
+    boost::mysql::row_view rv = results.rows().at(0);
     processResultRow(rv);
 
     return true;

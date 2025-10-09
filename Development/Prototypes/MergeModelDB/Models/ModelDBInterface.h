@@ -47,12 +47,12 @@ protected:
     virtual std::string formatInsertStatement() = 0;
     virtual std::string formatUpdateStatement() = 0;
     virtual std::string formatSelectStatement() = 0;
-    virtual bool processResult(NSBM::results& results);
+    virtual bool processResult(boost::mysql::results& results);
 /*
  * Each model must provide the process by which the database information will
  * be translated into the specific model.
  */
-    virtual void processResultRow(NSBM::row_view rv) = 0;
+    virtual void processResultRow(boost::mysql::row_view rv) = 0;
 
 /*
  * To process TEXT fields that contain model fields.
@@ -60,13 +60,13 @@ protected:
     std::vector<std::string> explodeTextField(std::string const& textField) noexcept;
     std::string implodeTextField(std::vector<std::string>& fields) noexcept;
 
-    NSBM::date stdchronoDateToBoostMySQLDate(const std::chrono::year_month_day& source) noexcept
+    boost::mysql::date stdchronoDateToBoostMySQLDate(const std::chrono::year_month_day& source) noexcept
     {
         std::chrono::sys_days tp = source;
-        return NSBM::date(tp);
+        return boost::mysql::date(tp);
     };
 
-    std::chrono::year_month_day boostMysqlDateToChronoDate(const NSBM::date& source) noexcept
+    std::chrono::year_month_day boostMysqlDateToChronoDate(const boost::mysql::date& source) noexcept
     {
         const std::chrono::year year{source.year()};
         const std::chrono::month month{source.month()};
@@ -74,19 +74,19 @@ protected:
         return std::chrono::year_month_day{year, month, day};
     };
 
-    NSBM::datetime stdChronoTimePointToBoostDateTime(std::chrono::system_clock::time_point source) noexcept
+    boost::mysql::datetime stdChronoTimePointToBoostDateTime(std::chrono::system_clock::time_point source) noexcept
     {
-        return NSBM::datetime(std::chrono::time_point_cast<boost::mysql::datetime::time_point::duration>(source));
+        return boost::mysql::datetime(std::chrono::time_point_cast<boost::mysql::datetime::time_point::duration>(source));
     };
 
-    std::chrono::system_clock::time_point boostMysqlDateTimeToChronoTimePoint(NSBM::datetime dbDateTime)
+    std::chrono::system_clock::time_point boostMysqlDateTimeToChronoTimePoint(boost::mysql::datetime dbDateTime)
     {
         return std::chrono::time_point_cast<std::chrono::system_clock::time_point::duration>(dbDateTime.as_time_point());
     }
 
-    std::optional<NSBM::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate)
+    std::optional<boost::mysql::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate)
     {
-        std::optional<NSBM::date> mySqlDate;
+        std::optional<boost::mysql::date> mySqlDate;
 
         if (optDate.has_value())
         {
@@ -95,9 +95,9 @@ protected:
         return mySqlDate;
     };
 
-    std::optional<NSBM::datetime> optionalDateTimeConversion(std::optional<std::chrono::system_clock::time_point> optDateTime)
+    std::optional<boost::mysql::datetime> optionalDateTimeConversion(std::optional<std::chrono::system_clock::time_point> optDateTime)
     {
-        std::optional<NSBM::datetime> timeStamp;
+        std::optional<boost::mysql::datetime> timeStamp;
 
         if (optDateTime.has_value())
         {
