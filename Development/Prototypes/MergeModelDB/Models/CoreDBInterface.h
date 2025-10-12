@@ -19,6 +19,7 @@ public:
     CoreDBInterface();
     virtual ~CoreDBInterface() = default;
     std::string getAllErrorMessages() const noexcept { return errorMessages; };
+    void setForceExceptions(bool forceIt) { forceException = forceIt; };
 
 protected:
     void initFormatOptions();

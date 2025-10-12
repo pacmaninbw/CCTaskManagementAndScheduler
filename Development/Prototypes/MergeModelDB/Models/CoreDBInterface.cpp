@@ -73,6 +73,13 @@ boost::mysql::results CoreDBInterface::runQueryAsync(const std::string& query)
 
 boost::asio::awaitable<boost::mysql::results> CoreDBInterface::coRoutineExecuteSqlStatement(const std::string& query)
 {
+    if (forceException)
+    {
+        std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineExecuteSqlStatement");
+        std::domain_error forcedException(forcingException);
+        throw forcedException;
+    }
+
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
@@ -97,11 +104,11 @@ boost::mysql::format_options CoreDBInterface::getConnectionFormatOptsAsync()
     boost::asio::io_context ctx;
 
     boost::asio::co_spawn(ctx, coRoutineGetFormatOptions(),
-        [&options, this](std::exception_ptr ptr, boost::mysql::format_options result)
+        [&options, this](std::exception_ptr getFormatOptsExceptionPtr, boost::mysql::format_options result)
         {
-            if (ptr)
+            if (getFormatOptsExceptionPtr)
             {
-                std::rethrow_exception(ptr);
+                std::rethrow_exception(getFormatOptsExceptionPtr);
             }
             options = std::move(result);
         }
@@ -114,6 +121,13 @@ boost::mysql::format_options CoreDBInterface::getConnectionFormatOptsAsync()
 
 boost::asio::awaitable<boost::mysql::format_options> CoreDBInterface::coRoutineGetFormatOptions()
 {
+    if (forceException)
+    {
+        std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions");
+        std::domain_error forcedException(forcingException);
+        throw forcedException;
+    }
+
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
