@@ -25,6 +25,14 @@ int main(int argc, char* argv[])
             UtilityTimer stopWatch;
             TestUserDBInterface userTests(programOptions.userTestDataFile);
 
+            UserModel selfTester;
+            selfTester.runSelfTest();
+            if (!selfTester.runSelfTest())
+            {
+                std::clog << "*** UserModel FAILED Self Test: ***\n";
+                return EXIT_FAILURE;
+            }
+
             if (userTests.runAllTests() == TestDBInterfaceCore::TestStatus::TestPassed)
             {
                 TestTaskDBInterface tasktests(programOptions.taskTestDataFile);
