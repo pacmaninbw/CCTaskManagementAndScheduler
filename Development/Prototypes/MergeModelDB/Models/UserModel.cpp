@@ -51,7 +51,7 @@ void UserModel::autoGenerateLoginAndPassword()
 }
 
 void UserModel::createLoginBasedOnUserName(
-    const std::string& lastName, const std::string& firstName, const std::string& middleInitial)
+    const std::string &lastName, const std::string &firstName, const std::string &middleInitial)
 {
     std::string tempLoginName(lastName);
     tempLoginName += firstName;
@@ -192,6 +192,36 @@ void UserModel::initRequiredFields()
     missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingFirstName, this), "First Name"});
     missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingLoginName, this), "Login Name"});
     missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingPassword, this), "Password"});
+}
+
+bool UserModel::runSelfTest()
+{
+    bool allSelfTestsPassed = true;
+
+    if (verboseOutput)
+    {
+        std::clog << "Running UserModel Self Test\n";
+    }
+
+    if (!testAccessorFunctionsPassed())
+    {
+        std::clog << "One or more get or set functions FAILED!\n";
+        allSelfTestsPassed = false;
+    }
+
+    if (verboseOutput)
+    {
+        std::clog << "Test Ouput: " << *this << "\n";
+    }
+
+    bool exceptionsPassed = testExceptionHandling();
+    if (!exceptionsPassed)
+    {
+        std::clog << "Exception handling FAILED!\n";
+        allSelfTestsPassed = false;
+    }
+    
+    return allSelfTestsPassed;
 }
 
 std::string UserModel::formatInsertStatement()
@@ -417,4 +447,122 @@ bool UserModel::selectByUserID(std::size_t UserID)
         appendErrorMessage(std::format("In UserModel::selectByUserID : {}", e.what()));
         return false;
     }
+}
+
+bool UserModel::testAccessorFunctionsPassed()
+{
+    bool allAccessorFunctionsPassed = true;
+    std::vector<std::function<bool(void)>> accessTests = 
+    {
+        {std::bind(&UserModel::testUserIdAccesss, this)},
+        {std::bind(&UserModel::testLastNameAccess, this)},
+        {std::bind(&UserModel::testFirstNameAccess, this)},
+        {std::bind(&UserModel::testMiddleInitialAccess, this)},
+        {std::bind(&UserModel::testEmailAccess, this)},
+        {std::bind(&UserModel::testLoginNameAccess, this)},
+        {std::bind(&UserModel::testPassWordAccess, this)},
+        {std::bind(&UserModel::testCreatedDateAcfcess, this)},
+        {std::bind(&UserModel::testLastLoginAccess, this)},
+        {std::bind(&UserModel::testPreferencesAccess, this)}
+    };
+
+    for (auto accessTest: accessTests)
+    {
+        if (!accessTest())
+        {
+            allAccessorFunctionsPassed = false;
+        }
+    }
+
+    return allAccessorFunctionsPassed;
+}
+
+
+bool UserModel::testUserIdAccesss()
+{
+    std::size_t testPrimaryKey = 31;
+
+    return testAccessorFunctions<std::size_t>(testPrimaryKey, &primaryKey, "Primary Key",
+        std::bind(&UserModel::setUserID, this, std::placeholders::_1),
+        std::bind(&UserModel::getUserID, this));
+}
+
+bool UserModel::testLastNameAccess()
+{
+    std::string testValue("AnyLastName");
+    return testAccessorFunctions<std::string>(testValue, &lastName, "Last Name",
+        std::bind(&UserModel::setLastName, this, std::placeholders::_1),
+        std::bind(&UserModel::getLastName, this));
+}
+
+bool UserModel::testFirstNameAccess()
+{
+    std::string testValue("AnyFirstName");
+    return testAccessorFunctions<std::string>(testValue, &firstName, "First Name",
+        std::bind(&UserModel::setFirstName, this, std::placeholders::_1),
+        std::bind(&UserModel::getFirstName, this));
+}
+
+bool UserModel::testMiddleInitialAccess()
+{
+    std::string testValue("A");
+    return testAccessorFunctions<std::string>(testValue, &middleInitial, "Middle Initial",
+        std::bind(&UserModel::setMiddleInitial, this, std::placeholders::_1),
+        std::bind(&UserModel::getMiddleInitial, this));
+}
+
+bool UserModel::testLoginNameAccess()
+{
+    std::string testValue("AnyLoginName");
+    return testAccessorFunctions<std::string>(testValue, &loginName, "LoginName",
+        std::bind(&UserModel::setLoginName, this, std::placeholders::_1),
+        std::bind(&UserModel::getLoginName, this));
+}
+
+bool UserModel::testPassWordAccess()
+{
+    std::string testValue("AnyPassword");
+    return testAccessorFunctions<std::string>(testValue, &password, "Password",
+        std::bind(&UserModel::setPassword, this, std::placeholders::_1),
+        std::bind(&UserModel::getPassword, this));
+}
+
+bool UserModel::testPreferencesAccess()
+{
+    std::clog << "testPreferencesAccess NOT IMPLEMENTED\n";
+    return true;
+}
+
+bool UserModel::testCreatedDateAcfcess()
+{
+    std::chrono::system_clock::time_point testValue = std::chrono::system_clock::now();
+    return testTimeStampAccessorFunctions(testValue, &created, "Creation TimeStamp",
+        std::bind(&UserModel::setCreationDate, this, std::placeholders::_1),
+        std::bind(&UserModel::getCreationDate, this));
+}
+
+bool UserModel::testLastLoginAccess()
+{
+    std::chrono::system_clock::time_point testValue = std::chrono::system_clock::now();
+    return testOptionalAccessorFunctions<std::chrono::system_clock::time_point>(testValue, &lastLogin, "Last Login TimeStamp",
+        std::bind(&UserModel::setLastLogin, this, std::placeholders::_1),
+        std::bind(&UserModel::getLastLogin, this));
+}
+
+bool UserModel::testEmailAccess()
+{
+    std::string testValue("AnyEmail");
+    return testAccessorFunctions<std::string>(testValue, &email, "Email",
+        std::bind(&UserModel::setEmail, this, std::placeholders::_1),
+        std::bind(&UserModel::getEmail, this));
+}
+
+bool UserModel::testExceptionHandling()
+{
+    bool exceptionHandlingPassed = true;
+    bool globalForceException = forceException;
+    forceException = true;
+
+    forceException = globalForceException;
+    return exceptionHandlingPassed;
 }

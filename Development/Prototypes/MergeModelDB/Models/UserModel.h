@@ -89,6 +89,8 @@ public:
     bool isMissingDateAdded();
     void initRequiredFields() override;
 
+    virtual bool runSelfTest() override;
+
     bool operator==(UserModel& other)
     {
         return diffUser(other);
@@ -128,6 +130,20 @@ private:
     void parsePrefenceText(std::string preferences) noexcept;
     void processResultRow(boost::mysql::row_view rv) override;
     
+// Unit test functions
+    virtual bool testAccessorFunctionsPassed() override;
+    bool testUserIdAccesss();
+    bool testLastNameAccess();
+    bool testFirstNameAccess();
+    bool testMiddleInitialAccess();
+    bool testLoginNameAccess();
+    bool testPassWordAccess();
+    bool testPreferencesAccess();
+    bool testCreatedDateAcfcess();
+    bool testLastLoginAccess();
+    bool testEmailAccess();
+    bool testExceptionHandling();
+
     std::string lastName;
     std::string firstName;
     std::string middleInitial;
