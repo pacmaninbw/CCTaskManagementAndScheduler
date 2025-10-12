@@ -22,6 +22,7 @@ private:
     bool testGetUserByLoginName(UserModel_shp insertedUser);
     bool testGetUserByLoginAndPassword(UserModel_shp insertedUser);
     bool testGetUserByFullName(UserModel_shp insertedUser);
+    bool testGetUserByEmail(UserModel_shp insertedUser);
     bool testUpdateUserPassword(UserModel_shp insertedUser);
     bool loadTestUsersFromFile(UserListValues& userProfileTestData);
     bool testGetAllUsers(UserListValues userProfileTestData);

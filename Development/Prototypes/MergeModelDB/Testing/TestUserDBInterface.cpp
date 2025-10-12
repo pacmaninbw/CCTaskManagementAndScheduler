@@ -22,6 +22,7 @@ TestUserDBInterface::TestUserDBInterface(std::string userFileName)
     positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByLoginName, this, std::placeholders::_1));
     positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByLoginAndPassword, this, std::placeholders::_1));
     positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByFullName, this, std::placeholders::_1));
+    positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByEmail, this, std::placeholders::_1));
     positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testUpdateUserPassword, this, std::placeholders::_1));
 
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestUserDBInterface::negativePathMissingRequiredFields, this));
@@ -158,6 +159,31 @@ bool TestUserDBInterface::testGetUserByFullName(UserModel_shp insertedUser)
         return false;
     }
 }
+
+bool TestUserDBInterface::testGetUserByEmail(UserModel_shp insertedUser)
+{
+    UserModel_shp retrievedUser = std::make_shared<UserModel>();
+    if (retrievedUser->selectByEmail(insertedUser->getEmail()))
+    {
+        if (*retrievedUser == *insertedUser)
+        {
+            return true;
+        }
+        else
+        {
+            std::clog << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
+            *insertedUser << "\n" "Retreived User:\n" << *retrievedUser << "\n";
+            return false;
+        }
+    }
+    else
+    {
+        std::clog << "retrievedUser->selectByFullName FAILED!\n" <<
+            retrievedUser->getAllErrorMessages() << "\n";
+        return false;
+    }
+}
+
 
 bool TestUserDBInterface::testUpdateUserPassword(UserModel_shp insertedUser)
 {
@@ -335,3 +361,4 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::testNegativePathAlreadyInDa
     std::vector<std::string> expectedErrors = {"already in Database"};
     return testInsertionFailureMessages(userAlreadyInDB, expectedErrors);
 }
+
