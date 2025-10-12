@@ -21,7 +21,6 @@ ModelDBInterface::ModelDBInterface(std::string_view modelNameIn)
 {
     primaryKey = 0;
     modelName = modelNameIn;
-    failureCount = 0;
     modified = false;
     delimiter = ';';  
 }
@@ -209,12 +208,39 @@ std::string ModelDBInterface::implodeTextField(std::vector<std::string> &fields)
     return textField;
 }
 
-std::size_t ModelDBInterface::runSelfTest()
+bool ModelDBInterface::runSelfTest()
 {
-    std::string notImplementedStr("Self test for ");
-    notImplementedStr.append(modelName);
-    notImplementedStr.append(" NOT IMPLEMENTED!!!");
-    throw std::domain_error(notImplementedStr);
+    bool allSelfTestsPassed = true;
 
-    return std::size_t();
+    if (verboseOutput)
+    {
+        std::clog << "Running " << modelName << " Self Test\n";
+    }
+
+    if (!testAccessorFunctionsPassed())
+    {
+        std::clog << modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
+        allSelfTestsPassed = false;
+    }
+
+    bool exceptionsPassed = testExceptionHandling();
+    if (!exceptionsPassed)
+    {
+        std::clog  << modelName << "::runSelfTest: Exception handling FAILED!\n";
+        allSelfTestsPassed = false;
+    }
+    
+    return allSelfTestsPassed;
+}
+
+bool ModelDBInterface::testAccessorFunctionsPassed()
+{
+    std::clog << modelName << "::testAccessorFunctionsPassed() NOT IMPLEMENTED Forced FAIL!\n";
+    return false;
+}
+
+bool ModelDBInterface::testExceptionHandling()
+{
+    std::clog << modelName << "::testExceptionHandling() NOT IMPLEMENTED Forced FAIL!\n";
+    return false;
 }

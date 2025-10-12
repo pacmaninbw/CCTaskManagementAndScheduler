@@ -32,7 +32,7 @@ public:
     bool hasRequiredValues();
     void reportMissingFields() noexcept;
     std::string_view getModelName() const { return modelName; };
-    virtual std::size_t runSelfTest();
+    virtual bool runSelfTest();
 
 protected:
 /*
@@ -106,10 +106,129 @@ protected:
         return timeStamp;
     };
 
+// Unit Test Functions
+    virtual bool testAccessorFunctionsPassed();
+    virtual bool testExceptionHandling();
+    
+    template <typename T>
+    bool testAccessorFunctions(T testValue, T* member, std::string_view memberName, std::function<void(T)>setFunct, std::function<T(void)>getFunct)
+    {
+        if (verboseOutput)
+        {
+            std::clog << "Running self test on set and get functions for " << modelName << "::" << memberName << "\n";
+        }
+
+        modified = false;
+
+        setFunct(testValue);
+        if (!isModified())
+        {
+            std::clog << "In self test for: " << modelName << " set function for " << memberName << " FAILED to set modified\n";
+            return false;
+        }
+
+        if (*member != testValue)
+        {
+            std::clog  << "In self test for: " << modelName << "Set function for " << memberName << " FAILED to set member value\n";
+            return false;
+        }
+
+        if (getFunct() != testValue)
+        {
+            std::clog  << "In self test for: " << modelName << "Get function for " << memberName << " FAILED\n";
+            return false;
+        }
+
+        if (verboseOutput)
+        {
+            std::clog << "Self test on set and get functions for " << modelName << "::" << memberName << " PASSED\n";
+        }
+
+        return true;
+    }
+
+    template <typename T>
+    bool testOptionalAccessorFunctions(T testValue, std::optional<T>* member, std::string_view memberName,
+        std::function<void(T)>setFunct, std::function<std::optional<T>(void)>getFunct)
+    {
+        if (verboseOutput)
+        {
+            std::clog << "Running self test on set and get functions for " << modelName << "::" << memberName << "\n";
+        }
+
+        modified = false;
+
+        setFunct(testValue);
+        if (!isModified())
+        {
+            std::clog << "In self test for: " << modelName << " set function for " << memberName << " FAILED to set modified\n";
+            return false;
+        }
+
+        if (!member->has_value() || member->value() != testValue)
+        {
+            std::clog  << "In self test for: " << modelName << "Set function for " << memberName << " FAILED to set member value\n";
+            return false;
+        }
+
+        std::optional<T> returnValue = getFunct();
+        if (!returnValue.has_value() || returnValue.value() != testValue)
+        {
+            std::clog  << "In self test for: " << modelName << "Get function for " << memberName << " FAILED\n";
+            return false;
+        }
+
+        if (verboseOutput)
+        {
+            std::clog << "Self test on set and get functions for " << modelName << "::" << memberName << " PASSED\n";
+        }
+
+        return true;
+    }
+
+    bool testTimeStampAccessorFunctions(std::chrono::system_clock::time_point testValue,
+        std::optional<std::chrono::system_clock::time_point>* member,
+        std::string_view memberName,
+        std::function<void(std::chrono::system_clock::time_point)>setFunct,
+        std::function<std::chrono::system_clock::time_point(void)>getFunct)
+    {
+        if (verboseOutput)
+        {
+            std::clog << "Running self test on set and get functions for " << modelName << "::" << memberName << "\n";
+        }
+
+        modified = false;
+
+        setFunct(testValue);
+        if (!isModified())
+        {
+            std::clog << "In self test for: " << modelName << " set function for " << memberName << " FAILED to set modified\n";
+            return false;
+        }
+
+        if (!member->has_value() || member->value() != testValue)
+        {
+            std::clog  << "In self test for: " << modelName << "Set function for " << memberName << " FAILED to set member value\n";
+            return false;
+        }
+
+        if (getFunct() != testValue)
+        {
+            std::clog  << "In self test for: " << modelName << "Get function for " << memberName << " FAILED\n";
+            return false;
+        }
+
+        if (verboseOutput)
+        {
+            std::clog << "Self test on set and get functions for " << modelName << "::" << memberName << " PASSED\n";
+        }
+
+        return true;
+    }
+
 protected:
     std::size_t primaryKey;
     std::string_view modelName;
-    std::size_t failureCount;
     bool modified;
     char delimiter;
     struct RequireField
