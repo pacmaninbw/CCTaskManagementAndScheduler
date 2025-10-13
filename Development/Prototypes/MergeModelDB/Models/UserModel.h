@@ -151,6 +151,7 @@ private:
     bool testExceptionFormatGetAllUsersQuery() { return formatGetAllUsersQuery() == std::string(); };
     bool testExceptionInsert();
     bool testExceptionUpdate();
+    virtual ModelDBInterface::ModelTestStatus testAllInsertFailures() override;
 
     std::string lastName;
     std::string firstName;

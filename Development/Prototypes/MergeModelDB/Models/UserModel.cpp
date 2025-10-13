@@ -221,6 +221,11 @@ bool UserModel::runSelfTest()
         allSelfTestsPassed = false;
     }
     
+    if (testAllInsertFailures() != TESTPASSED)
+    {
+        std::clog << "Test of all insertion failures FAILED!\n";
+    }
+
     return allSelfTestsPassed;
 }
 
@@ -629,4 +634,50 @@ bool UserModel::testExceptionUpdate()
     setLastLogin(timeStamp);
 
     return update() != true;
+}
+
+ModelDBInterface::ModelTestStatus UserModel::testAllInsertFailures()
+{
+    modified = false;
+    primaryKey = 0;
+    lastName = "";
+    firstName = "";
+    middleInitial = "";
+    password = "";
+    loginName = "";
+
+    std::vector<std::string> notModified = {"not modified!"};
+    if (testInsertionFailureMessages(notModified) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    std::vector<std::string> expectedErrors =
+    {
+        "Last Name", "First Name", "Login Name", "Password", "User is missing required values"
+    };
+
+    setUserID(0);   // Force a modification so that missing fields can be tested.
+
+    std::vector<std::function<void(std::string)>> fieldSettings = 
+    {
+        std::bind(&UserModel::setLastName, this, std::placeholders::_1),
+        std::bind(&UserModel::setFirstName, this, std::placeholders::_1),
+        std::bind(&UserModel::setLoginName, this, std::placeholders::_1),
+        std::bind(&UserModel::setPassword, this, std::placeholders::_1)
+    };
+
+    for (auto setField: fieldSettings)
+    {
+        if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+        {
+            return TESTFAILED;
+        }
+        expectedErrors.erase(expectedErrors.begin());
+        setField("teststringvalue");
+    }
+
+    expectedErrors.clear();
+
+    return TESTPASSED;
 }
