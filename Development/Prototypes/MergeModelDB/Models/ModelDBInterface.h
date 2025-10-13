@@ -12,6 +12,7 @@
 #include <chrono>
 #include <functional>
 #include <iostream>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -20,6 +21,7 @@
 class ModelDBInterface : public CoreDBInterface
 {
 public:
+    enum class ModelTestStatus {ModelTestPassed, ModelTestFailed};
     ModelDBInterface(std::string_view modelNameIn);
     virtual ~ModelDBInterface() = default;
     bool save();
@@ -226,6 +228,11 @@ protected:
         return true;
     }
 
+    bool hasErrorMessage();
+    ModelDBInterface::ModelTestStatus wrongErrorMessage(std::string expectedString);
+    virtual ModelDBInterface::ModelTestStatus testInsertionFailureMessages(std::vector<std::string> expectedErrors);
+    virtual ModelDBInterface::ModelTestStatus testAllInsertFailures();
+
 protected:
     std::size_t primaryKey;
     std::string_view modelName;
@@ -237,7 +244,13 @@ protected:
         std::string fieldName;
     };
     std::vector<RequireField> missingRequiredFieldsTests;
+
+    const ModelDBInterface::ModelTestStatus TESTFAILED = ModelDBInterface::ModelTestStatus::ModelTestFailed;
+    const ModelDBInterface::ModelTestStatus TESTPASSED = ModelDBInterface::ModelTestStatus::ModelTestPassed;
+
 };
+
+using AnyModel_shp = std::shared_ptr<ModelDBInterface>;
 
 #endif // MODELDBINTERFACECORE_H_
 

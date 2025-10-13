@@ -244,3 +244,63 @@ bool ModelDBInterface::testExceptionHandling()
     std::clog << modelName << "::testExceptionHandling() NOT IMPLEMENTED Forced FAIL!\n";
     return false;
 }
+
+bool ModelDBInterface::hasErrorMessage()
+{
+    if (errorMessages.empty())
+    {
+        std::clog << "No error message generated! TEST FAILED!\n";
+        return false;
+    }
+
+    if (verboseOutput)
+    {
+        std::clog << "Expected error was; " << errorMessages << "\n";
+    }
+
+    return true;
+}
+
+ModelDBInterface::ModelTestStatus ModelDBInterface::wrongErrorMessage(std::string expectedString)
+{
+    std::size_t found = errorMessages.find(expectedString);
+    if (found == std::string::npos)
+    {
+        std::clog << "Wrong message generated! TEST FAILED!\n";
+        std::clog << errorMessages << "\n";
+        std::clog << "Missing expected: " << expectedString << "\n";
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
+}
+
+ModelDBInterface::ModelTestStatus ModelDBInterface::testInsertionFailureMessages(std::vector<std::string> expectedErrors)
+{
+    if (insert())
+    {
+        std::clog << std::format("Inserted {} missing required fields!  TEST FAILED\n", modelName);
+        return TESTFAILED;
+    }
+
+    if (!hasErrorMessage())
+    {
+        return TESTFAILED;
+    }
+
+    for (auto expectedError: expectedErrors)
+    {
+        if (wrongErrorMessage(expectedError) == TESTFAILED)
+        {
+            return TESTFAILED;
+        }
+    }
+
+    return TESTPASSED;
+}
+
+ModelDBInterface::ModelTestStatus ModelDBInterface::testAllInsertFailures()
+{
+    std::clog << std::format("{}::testAllInsertFailures() NOT IMPLEMENTED! Test FAILED\n", modelName);
+    return TESTFAILED;
+}
