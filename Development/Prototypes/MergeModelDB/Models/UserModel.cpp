@@ -557,12 +557,76 @@ bool UserModel::testEmailAccess()
         std::bind(&UserModel::getEmail, this));
 }
 
+struct ExceptionTestElement
+{
+    std::function<bool(void)> testExceptionFunction;
+    std::string_view functionUnderTest;
+};
+
 bool UserModel::testExceptionHandling()
 {
     bool exceptionHandlingPassed = true;
     bool globalForceException = forceException;
     forceException = true;
 
+    std::vector<ExceptionTestElement> exceptionTests =
+    {
+        {std::bind(&UserModel::testExceptionSelectByUserID, this), "selectByUserID"},
+        {std::bind(&UserModel::testExceptionSelectByFullName, this), "selectByFullName"},
+        {std::bind(&UserModel::testExceptionSelectByLoginName, this), "selectByLoginName"},
+        {std::bind(&UserModel::testExceptionSelectByEmail, this), "selectByEmail"},
+        {std::bind(&UserModel::testExceptionSelectByLoginAndPassword, this), "selectByLoginAndPassword"},
+        {std::bind(&UserModel::testExceptionFormatGetAllUsersQuery, this), "formatGetAllUsersQuery"},
+        {std::bind(&UserModel::testExceptionInsert, this), "testExceeptionInsert"},
+        {std::bind(&UserModel::testExceptionUpdate, this), "testExceptionUpdate"}
+    };
+
+    try
+    {
+        for (auto exceptionTest: exceptionTests)
+        {
+            if (!exceptionTest.testExceptionFunction())
+            {
+                std::clog << std::format("UserModel::{} returned true with exception: Exception Test Failed",
+                    exceptionTest.functionUnderTest);
+                exceptionHandlingPassed = false;
+            }
+        }
+    }
+    catch (std::exception &uncaughtException)
+    {
+        std::clog << "UserModel::testExceptionHandling():: Caught Unhandled Exception!! Test FAILED!\n";
+        std::clog << uncaughtException.what() << "\n";
+        exceptionHandlingPassed = false;
+    }
+
     forceException = globalForceException;
     return exceptionHandlingPassed;
+}
+
+bool UserModel::testExceptionInsert()
+{
+    std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();
+    setLastName("LastName");
+    setFirstName("FirstName");
+    setMiddleInitial("M");
+    autoGenerateLoginAndPassword();
+    setCreationDate(timeStamp);
+    setLastLogin(timeStamp);
+
+    return insert() != true;
+}
+
+bool UserModel::testExceptionUpdate()
+{
+    std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();
+    setUserID(1);
+    setLastName("LastName");
+    setFirstName("FirstName");
+    setMiddleInitial("M");
+    autoGenerateLoginAndPassword();
+    setCreationDate(timeStamp);
+    setLastLogin(timeStamp);
+
+    return update() != true;
 }

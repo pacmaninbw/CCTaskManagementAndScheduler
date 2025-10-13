@@ -143,6 +143,14 @@ private:
     bool testLastLoginAccess();
     bool testEmailAccess();
     bool testExceptionHandling();
+    bool testExceptionSelectByLoginName( ) { return selectByLoginName("") != true; };
+    bool testExceptionSelectByEmail() { return selectByEmail("") != true; };
+    bool testExceptionSelectByLoginAndPassword() { return selectByLoginAndPassword("", "") != true; };
+    bool testExceptionSelectByFullName() { return selectByFullName("", "", "") != true; };
+    bool testExceptionSelectByUserID() { return selectByUserID(1) != true; };
+    bool testExceptionFormatGetAllUsersQuery() { return formatGetAllUsersQuery() == std::string(); };
+    bool testExceptionInsert();
+    bool testExceptionUpdate();
 
     std::string lastName;
     std::string firstName;
