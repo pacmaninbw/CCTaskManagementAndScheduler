@@ -1,13 +1,19 @@
 // Project Header Files
 #include "CommandLineParser.h"
+#include "NoteModel.h"
+#include "TaskModel.h"
 #include "TestTaskDBInterface.h"
 #include "TestUserDBInterface.h"
 #include "TestGoalModel.h"
+#include "UserGoalModel.h"
+#include "UserModel.h"
 #include "UtilityTimer.h"
 
 // Standard C++ Header Files
 #include <exception>
+#include <format>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 
 /*
@@ -16,6 +22,36 @@
  */
 ProgramOptions programOptions;
 
+static bool runUnitTests()
+{
+    std::vector<AnyModel_shp> modelsToUnitTest = {
+        std::make_shared<UserModel>(),
+        std::make_shared<TaskModel>(),
+        std::make_shared<NoteModel>(),
+        std::make_shared<UserGoalModel>()
+    };
+
+    for (auto modelUnderTest: modelsToUnitTest)
+    {
+        if (!modelUnderTest->runSelfTest())
+        {
+            std::clog << std::format("*** {} FAILED Self Test ***\n", modelUnderTest->getModelName());
+            return false;
+        }
+        else
+        {
+            if (programOptions.verboseOutput)
+            {
+                std::clog << std::format("{} PASSED Self Test\n", modelUnderTest->getModelName());
+            }
+        }
+    }
+
+    modelsToUnitTest.clear();
+    
+    return true;
+}
+
 int main(int argc, char* argv[])
 {
     try {
@@ -23,16 +59,13 @@ int main(int argc, char* argv[])
 		{
 			programOptions = *progOptions;
             UtilityTimer stopWatch;
-            TestUserDBInterface userTests(programOptions.userTestDataFile);
 
-            UserModel selfTester;
-            selfTester.runSelfTest();
-            if (!selfTester.runSelfTest())
+            if (!runUnitTests())
             {
-                std::clog << "*** UserModel FAILED Self Test: ***\n";
                 return EXIT_FAILURE;
             }
 
+            TestUserDBInterface userTests(programOptions.userTestDataFile);
             if (userTests.runAllTests() == TestDBInterfaceCore::TestStatus::TestPassed)
             {
                 TestTaskDBInterface tasktests(programOptions.taskTestDataFile);
