@@ -562,34 +562,7 @@ bool UserModel::testEmailAccess()
         std::bind(&UserModel::getEmail, this));
 }
 
-struct ExceptionTestElement
-{
-    std::function<bool(void)> testExceptionFunction;
-    std::string_view functionUnderTest;
-};
-
 bool UserModel::testExceptionHandling()
-{
-    bool exceptionHandlingPassed = true;
-
-    forceFormatException = true;
-    if (!forceExceptionsLoop())
-    {
-        exceptionHandlingPassed = false;
-    }
-    forceFormatException = false;
-
-    forceSQLExecutionException = true;
-    if (!forceExceptionsLoop())
-    {
-        exceptionHandlingPassed = false;
-    }
-    forceSQLExecutionException = false;
-
-    return exceptionHandlingPassed;
-}
-
-bool UserModel::forceExceptionsLoop()
 {
     bool exceptionHandlingPassed = true;
     std::vector<ExceptionTestElement> exceptionTests =
@@ -599,10 +572,32 @@ bool UserModel::forceExceptionsLoop()
         {std::bind(&UserModel::testExceptionSelectByLoginName, this), "selectByLoginName"},
         {std::bind(&UserModel::testExceptionSelectByEmail, this), "selectByEmail"},
         {std::bind(&UserModel::testExceptionSelectByLoginAndPassword, this), "selectByLoginAndPassword"},
-        {std::bind(&UserModel::testExceptionFormatGetAllUsersQuery, this), "formatGetAllUsersQuery"},
         {std::bind(&UserModel::testExceptionInsert, this), "testExceeptionInsert"},
         {std::bind(&UserModel::testExceptionUpdate, this), "testExceptionUpdate"}
     };
+
+    forceSQLExecutionException = true;
+    if (!forceExceptionsLoop(exceptionTests))
+    {
+        exceptionHandlingPassed = false;
+    }
+    forceSQLExecutionException = false;
+
+    exceptionTests.push_back({std::bind(&UserModel::testExceptionFormatGetAllUsersQuery, this), "formatGetAllUsersQuery"});
+    
+    forceFormatException = true;
+    if (!forceExceptionsLoop(exceptionTests))
+    {
+        exceptionHandlingPassed = false;
+    }
+    forceFormatException = false;
+
+    return exceptionHandlingPassed;
+}
+
+bool UserModel::forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests)
+{
+    bool exceptionHandlingPassed = true;
     
     try
     {
