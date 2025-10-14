@@ -44,6 +44,7 @@ static po::options_description addOptions()
 		("run-self-test", "Execute model self test")
 		("force-errors,e", "Force error conditions during negative test path")
 		("force-exceptions,x", "Force exceptions in model tests")
+		("quit-first-fail,q", "Stop execution on first failure")
 	;
 
 	return options;
@@ -172,6 +173,11 @@ static auto processProgramOptions(po::variables_map& inputOptions,
 	if (inputOptions.count("force-exceptions"))
 	{
 		programOptions.forceExceptions = true;
+	}
+
+	if (inputOptions.count("quit-first-fail"))
+	{
+		programOptions.quitFirstFail = true;
 	}
 
 	return programOptions;

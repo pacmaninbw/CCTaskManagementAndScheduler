@@ -36,7 +36,10 @@ static bool runUnitTests()
         if (!modelUnderTest->runSelfTest())
         {
             std::clog << std::format("*** {} FAILED Self Test ***\n", modelUnderTest->getModelName());
-            return false;
+            if (programOptions.quitFirstFail)
+            {
+                return false;
+            }
         }
         else
         {
@@ -62,7 +65,10 @@ int main(int argc, char* argv[])
 
             if (!runUnitTests())
             {
-                return EXIT_FAILURE;
+                if (programOptions.quitFirstFail)
+                {
+                    return EXIT_FAILURE;
+                }
             }
 
             TestUserDBInterface userTests(programOptions.userTestDataFile);

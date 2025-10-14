@@ -20,6 +20,7 @@ struct ProgramOptions
     bool runSelfTest = false;
     bool forceErrors = false;
     bool forceExceptions = false;
+    bool quitFirstFail = false;
 };
 
 enum class CommandLineStatus
