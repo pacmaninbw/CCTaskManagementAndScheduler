@@ -595,33 +595,6 @@ bool UserModel::testExceptionHandling()
     return exceptionHandlingPassed;
 }
 
-bool UserModel::forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests)
-{
-    bool exceptionHandlingPassed = true;
-    
-    try
-    {
-        for (auto exceptionTest: exceptionTests)
-        {
-            if (!exceptionTest.testExceptionFunction())
-            {
-                std::clog << std::format("UserModel::{} returned true with exception: Exception Test Failed",
-                    exceptionTest.functionUnderTest);
-                exceptionHandlingPassed = false;
-            }
-        }
-    }
-
-    catch (std::exception &uncaughtException)
-    {
-        std::clog << "UserModel::testExceptionHandling():: Caught Unhandled Exception!! Test FAILED!\n";
-        std::clog << uncaughtException.what() << "\n";
-        exceptionHandlingPassed = false;
-    }
-
-    return exceptionHandlingPassed;
-}
-
 bool UserModel::testExceptionInsert()
 {
     std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();

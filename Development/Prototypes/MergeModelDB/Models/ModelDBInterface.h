@@ -232,6 +232,13 @@ protected:
     ModelDBInterface::ModelTestStatus wrongErrorMessage(std::string expectedString);
     virtual ModelDBInterface::ModelTestStatus testInsertionFailureMessages(std::vector<std::string> expectedErrors);
     virtual ModelDBInterface::ModelTestStatus testAllInsertFailures();
+    struct ExceptionTestElement
+    {
+        std::function<bool(void)> testExceptionFunction;
+        std::string_view functionUnderTest;
+    };
+
+    virtual bool forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests);
 
 protected:
     std::size_t primaryKey;
@@ -244,12 +251,6 @@ protected:
         std::string fieldName;
     };
     std::vector<RequireField> missingRequiredFieldsTests;
-
-    struct ExceptionTestElement
-    {
-        std::function<bool(void)> testExceptionFunction;
-        std::string_view functionUnderTest;
-    };
 
 
     const ModelDBInterface::ModelTestStatus TESTFAILED = ModelDBInterface::ModelTestStatus::ModelTestFailed;

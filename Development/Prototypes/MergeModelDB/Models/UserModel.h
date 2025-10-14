@@ -142,14 +142,13 @@ private:
     bool testCreatedDateAcfcess();
     bool testLastLoginAccess();
     bool testEmailAccess();
-    bool testExceptionHandling();
+    virtual bool testExceptionHandling() override;
     bool testExceptionSelectByLoginName( ) { return selectByLoginName("") != true; };
     bool testExceptionSelectByEmail() { return selectByEmail("") != true; };
     bool testExceptionSelectByLoginAndPassword() { return selectByLoginAndPassword("", "") != true; };
     bool testExceptionSelectByFullName() { return selectByFullName("", "", "") != true; };
     bool testExceptionSelectByUserID() { return selectByUserID(1) != true; };
     bool testExceptionFormatGetAllUsersQuery() { return formatGetAllUsersQuery() == std::string(); };
-    bool forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests);
     bool testExceptionInsert();
     bool testExceptionUpdate();
     virtual ModelDBInterface::ModelTestStatus testAllInsertFailures() override;

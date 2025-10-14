@@ -308,3 +308,30 @@ ModelDBInterface::ModelTestStatus ModelDBInterface::testAllInsertFailures()
     std::clog << std::format("{}::testAllInsertFailures() NOT IMPLEMENTED! Test FAILED\n", modelName);
     return TESTFAILED;
 }
+
+bool ModelDBInterface::forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests)
+{
+    bool exceptionHandlingPassed = true;
+    
+    try
+    {
+        for (auto exceptionTest: exceptionTests)
+        {
+            if (!exceptionTest.testExceptionFunction())
+            {
+                std::clog << std::format("{}::{} returned true with exception: Exception Test Failed",
+                    modelName, exceptionTest.functionUnderTest);
+                exceptionHandlingPassed = false;
+            }
+        }
+    }
+
+    catch (std::exception &uncaughtException)
+    {
+        std::clog << modelName << "::testExceptionHandling():: Caught Unhandled Exception!! Test FAILED!\n";
+        std::clog << uncaughtException.what() << "\n";
+        exceptionHandlingPassed = false;
+    }
+
+    return exceptionHandlingPassed;
+}
