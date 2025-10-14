@@ -223,13 +223,17 @@ bool ModelDBInterface::runSelfTest()
         allSelfTestsPassed = false;
     }
 
-    bool exceptionsPassed = testExceptionHandling();
-    if (!exceptionsPassed)
+    if (!testExceptionHandling())
     {
         std::clog  << modelName << "::runSelfTest: Exception handling FAILED!\n";
         allSelfTestsPassed = false;
     }
     
+    if (testAllInsertFailures() != TESTPASSED)
+    {
+        std::clog << "Test of all insertion failures FAILED!\n";
+    }
+
     return allSelfTestsPassed;
 }
 
