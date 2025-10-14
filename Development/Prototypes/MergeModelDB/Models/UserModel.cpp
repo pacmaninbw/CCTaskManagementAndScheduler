@@ -571,9 +571,27 @@ struct ExceptionTestElement
 bool UserModel::testExceptionHandling()
 {
     bool exceptionHandlingPassed = true;
-    bool globalForceException = forceException;
-    forceException = true;
 
+    forceFormatException = true;
+    if (!forceExceptionsLoop())
+    {
+        exceptionHandlingPassed = false;
+    }
+    forceFormatException = false;
+
+    forceSQLExecutionException = true;
+    if (!forceExceptionsLoop())
+    {
+        exceptionHandlingPassed = false;
+    }
+    forceSQLExecutionException = false;
+
+    return exceptionHandlingPassed;
+}
+
+bool UserModel::forceExceptionsLoop()
+{
+    bool exceptionHandlingPassed = true;
     std::vector<ExceptionTestElement> exceptionTests =
     {
         {std::bind(&UserModel::testExceptionSelectByUserID, this), "selectByUserID"},
@@ -585,7 +603,7 @@ bool UserModel::testExceptionHandling()
         {std::bind(&UserModel::testExceptionInsert, this), "testExceeptionInsert"},
         {std::bind(&UserModel::testExceptionUpdate, this), "testExceptionUpdate"}
     };
-
+    
     try
     {
         for (auto exceptionTest: exceptionTests)
@@ -598,6 +616,7 @@ bool UserModel::testExceptionHandling()
             }
         }
     }
+
     catch (std::exception &uncaughtException)
     {
         std::clog << "UserModel::testExceptionHandling():: Caught Unhandled Exception!! Test FAILED!\n";
@@ -605,7 +624,6 @@ bool UserModel::testExceptionHandling()
         exceptionHandlingPassed = false;
     }
 
-    forceException = globalForceException;
     return exceptionHandlingPassed;
 }
 
@@ -681,3 +699,4 @@ ModelDBInterface::ModelTestStatus UserModel::testAllInsertFailures()
 
     return TESTPASSED;
 }
+

@@ -17,7 +17,9 @@ CoreDBInterface::CoreDBInterface()
 :   errorMessages{""},
     verboseOutput{programOptions.verboseOutput},
     forceError{programOptions.forceErrors},
-    forceException{programOptions.forceExceptions}
+    forceException{programOptions.forceExceptions},
+    forceFormatException{false},
+    forceSQLExecutionException{false}
 {
     dbConnectionParameters.server_address.emplace_host_and_port(programOptions.mySqlUrl, programOptions.mySqlPort);
     dbConnectionParameters.username = programOptions.mySqlUser;
@@ -73,7 +75,7 @@ boost::mysql::results CoreDBInterface::runQueryAsync(const std::string& query)
 
 boost::asio::awaitable<boost::mysql::results> CoreDBInterface::coRoutineExecuteSqlStatement(const std::string& query)
 {
-    if (forceException)
+    if (forceSQLExecutionException)
     {
         std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineExecuteSqlStatement");
         std::domain_error forcedException(forcingException);
@@ -121,7 +123,7 @@ boost::mysql::format_options CoreDBInterface::getConnectionFormatOptsAsync()
 
 boost::asio::awaitable<boost::mysql::format_options> CoreDBInterface::coRoutineGetFormatOptions()
 {
-    if (forceException)
+    if (forceFormatException)
     {
         std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions");
         std::domain_error forcedException(forcingException);

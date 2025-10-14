@@ -39,6 +39,8 @@ protected:
     bool verboseOutput;
     bool forceError;
     bool forceException;
+    bool forceFormatException;
+    bool forceSQLExecutionException;
     std::optional<boost::mysql::format_options> format_opts;
 };
 
