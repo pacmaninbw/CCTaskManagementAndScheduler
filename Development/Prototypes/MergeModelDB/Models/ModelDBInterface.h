@@ -245,6 +245,13 @@ protected:
     };
     std::vector<RequireField> missingRequiredFieldsTests;
 
+    struct ExceptionTestElement
+    {
+        std::function<bool(void)> testExceptionFunction;
+        std::string_view functionUnderTest;
+    };
+
+
     const ModelDBInterface::ModelTestStatus TESTFAILED = ModelDBInterface::ModelTestStatus::ModelTestFailed;
     const ModelDBInterface::ModelTestStatus TESTPASSED = ModelDBInterface::ModelTestStatus::ModelTestPassed;
 
