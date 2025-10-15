@@ -331,6 +331,8 @@ std::string TaskModel::formatSelectTasksByAssignedIDandParentID(std::size_t assi
 
 bool TaskModel::runSelfTest()
 {
+    inSelfTest = true;
+
     bool allSelfTestsPassed = true;
 
     if (verboseOutput)
@@ -365,6 +367,8 @@ bool TaskModel::runSelfTest()
         std::clog << "Test of all insertion failures FAILED!\n";
     }
 
+    inSelfTest = false;
+    
     return allSelfTestsPassed;
 }
 
@@ -674,4 +678,167 @@ bool TaskModel::testExceptionUpdate()
     setCreationDate(timeStamp);
     
     return update() != true;
+}
+
+bool TaskModel::testAccessorFunctionsPassed()
+{
+     bool allAccessorFunctionsPassed = true;
+    std::vector<std::function<bool(void)>> accessTests = 
+    {
+        {std::bind(&TaskModel::testTaskIdAccesss, this)},
+        {std::bind(&TaskModel::testCreatorIDAccess, this)},
+        {std::bind(&TaskModel::testAssignToIDAccess, this)},
+        {std::bind(&TaskModel::testDescriptionAccess, this)},
+//        {std::bind(&TaskModel::testStatusAccess, this)},
+//        {std::bind(&TaskModel::testParentTaskIDAccess, this)},
+        {std::bind(&TaskModel::testPercentageCompleteAccess, this)},
+        {std::bind(&TaskModel::testCreationDateAccess, this)},
+        {std::bind(&TaskModel::testDueDateAccess, this)},
+        {std::bind(&TaskModel::testScheduledStartAccess, this)},
+        {std::bind(&TaskModel::testActualStartDateAccess, this)},
+        {std::bind(&TaskModel::testEstimatedCompletionAccess, this)},
+        {std::bind(&TaskModel::testCompletionDateAccess, this)},
+        {std::bind(&TaskModel::testEstimatedEffortAccess, this)},
+        {std::bind(&TaskModel::testActualEffortToDateAccess, this)},
+        {std::bind(&TaskModel::testPriorityGroupAccess, this)},
+        {std::bind(&TaskModel::testPriorityGroupCAccess, this)},
+        {std::bind(&TaskModel::testPriorityAccess, this)},
+        {std::bind(&TaskModel::testPersonalAccess, this)},
+    };
+
+    for (auto accessTest: accessTests)
+    {
+        if (!accessTest())
+        {
+            allAccessorFunctionsPassed = false;
+        }
+    }
+
+    return allAccessorFunctionsPassed;
+}
+
+bool TaskModel::testTaskIdAccesss()
+{
+    std::size_t testPrimaryKey = 33;
+
+    return testAccessorFunctions<std::size_t>(testPrimaryKey, &primaryKey, "Primary Key",
+        std::bind(&TaskModel::setTaskID, this, std::placeholders::_1),
+        std::bind(&TaskModel::getTaskID, this));
+}
+
+bool TaskModel::testCreatorIDAccess()
+{
+    std::size_t testValue = 1;
+
+    return testAccessorFunctions<std::size_t>(testValue, &creatorID, "Creator User ID",
+        std::bind(&TaskModel::setCreatorID, this, std::placeholders::_1),
+        std::bind(&TaskModel::getCreatorID, this));
+}
+
+bool TaskModel::testAssignToIDAccess()
+{
+    std::size_t testValue = 2;
+
+    return testAccessorFunctions<std::size_t>(testValue, &assignToID, "Assigned User ID",
+        std::bind(&TaskModel::setAssignToID, this, std::placeholders::_1),
+        std::bind(&TaskModel::getAssignToID, this));
+}
+
+bool TaskModel::testDescriptionAccess()
+{
+    std::string testValue("Test task description access");
+    return testAccessorFunctions<std::string>(testValue, &description, "Description",
+        std::bind(&TaskModel::setDescription, this, std::placeholders::_1),
+        std::bind(&TaskModel::getDescription, this));
+}
+
+bool TaskModel::testStatusAccess()
+{
+//    TaskStatus testValue = TaskModel::TaskStatus::On_Hold;
+    return false;
+}
+
+bool TaskModel::testParentTaskIDAccess()
+{
+    return false;
+}
+
+bool TaskModel::testPercentageCompleteAccess()
+{
+    double testValue = 86.5;
+    return testAccessorFunctions<double>(testValue, &percentageComplete, "Percentage Complete",
+        std::bind(&TaskModel::setPercentageComplete, this, std::placeholders::_1),
+        std::bind(&TaskModel::getPercentageComplete, this));
+}
+
+bool TaskModel::testCreationDateAccess()
+{
+    std::chrono::system_clock::time_point testValue = std::chrono::system_clock::now();
+    return testTimeStampAccessorFunctions(testValue, &creationTimeStamp, "Creation TimeStamp",
+        std::bind(&TaskModel::setCreationDate, this, std::placeholders::_1),
+        std::bind(&TaskModel::getCreationDate, this));
+}
+
+bool TaskModel::testDueDateAccess()
+{
+    std::chrono::year_month_day testValue = getTodaysDate();
+    return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &dueDate, "Due Date",
+        std::bind(&TaskModel::setDueDate, this, std::placeholders::_1),
+        std::bind(&TaskModel::getDueDate, this));
+}
+
+bool TaskModel::testScheduledStartAccess()
+{
+    std::chrono::year_month_day testValue = getTodaysDateMinus(OneWeek);
+    return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &dueDate, "Scheduled Start Date",
+        std::bind(&TaskModel::setScheduledStart, this, std::placeholders::_1),
+        std::bind(&TaskModel::getScheduledStart, this));
+}
+
+bool TaskModel::testActualStartDateAccess()
+{
+    std::chrono::year_month_day testValue = getTodaysDateMinus(2);
+    return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &actualStartDate, "Actual Start Date",
+        std::bind(&TaskModel::setactualStartDate, this, std::placeholders::_1),
+        std::bind(&TaskModel::getactualStartDate, this));
+}
+
+bool TaskModel::testEstimatedEffortAccess()
+{
+    return false;
+}
+
+bool TaskModel::testCompletionDateAccess()
+{
+    return false;
+}
+
+bool TaskModel::testEstimatedCompletionAccess()
+{
+    return false;
+}
+
+bool TaskModel::testActualEffortToDateAccess()
+{
+    return false;
+}
+
+bool TaskModel::testPriorityGroupAccess()
+{
+    return false;
+}
+
+bool TaskModel::testPriorityGroupCAccess()
+{
+    return false;
+}
+
+bool TaskModel::testPriorityAccess()
+{
+    return false;
+}
+
+bool TaskModel::testPersonalAccess()
+{
+    return false;
 }

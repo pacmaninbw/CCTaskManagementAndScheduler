@@ -210,6 +210,7 @@ std::string ModelDBInterface::implodeTextField(std::vector<std::string> &fields)
 
 bool ModelDBInterface::runSelfTest()
 {
+    inSelfTest = true;
     bool allSelfTestsPassed = true;
 
     if (verboseOutput)
@@ -239,6 +240,8 @@ bool ModelDBInterface::runSelfTest()
         std::clog << "Test of all insertion failures FAILED!\n";
     }
 
+    inSelfTest = false;
+    
     return allSelfTestsPassed;
 }
 

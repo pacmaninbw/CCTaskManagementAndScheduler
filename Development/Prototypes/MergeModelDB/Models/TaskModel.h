@@ -198,6 +198,27 @@ private:
     virtual bool testExceptionInsert() override;
     virtual bool testExceptionUpdate() override;
 
+    virtual bool testAccessorFunctionsPassed() override;
+    bool testTaskIdAccesss();
+    bool testCreatorIDAccess();
+    bool testAssignToIDAccess();
+    bool testDescriptionAccess();
+    bool testStatusAccess();
+    bool testParentTaskIDAccess();
+    bool testPercentageCompleteAccess();
+    bool testCreationDateAccess();
+    bool testDueDateAccess();
+    bool testScheduledStartAccess();
+    bool testActualStartDateAccess();
+    bool testEstimatedCompletionAccess();
+    bool testCompletionDateAccess();
+    bool testEstimatedEffortAccess();
+    bool testActualEffortToDateAccess();
+    bool testPriorityGroupAccess();
+    bool testPriorityGroupCAccess();
+    bool testPriorityAccess();
+    bool testPersonalAccess();
+
  /*
   * Member Variables
   */
