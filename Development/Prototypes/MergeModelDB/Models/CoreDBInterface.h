@@ -41,6 +41,7 @@ protected:
     bool forceException;
     bool forceFormatException;
     bool forceSQLExecutionException;
+    bool inSelfTest;
     std::optional<boost::mysql::format_options> format_opts;
 };
 

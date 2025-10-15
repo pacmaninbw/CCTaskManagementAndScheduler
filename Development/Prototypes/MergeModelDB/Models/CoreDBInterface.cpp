@@ -19,7 +19,8 @@ CoreDBInterface::CoreDBInterface()
     forceError{programOptions.forceErrors},
     forceException{programOptions.forceExceptions},
     forceFormatException{false},
-    forceSQLExecutionException{false}
+    forceSQLExecutionException{false},
+    inSelfTest{false}
 {
     dbConnectionParameters.server_address.emplace_host_and_port(programOptions.mySqlUrl, programOptions.mySqlPort);
     dbConnectionParameters.username = programOptions.mySqlUser;
@@ -29,6 +30,13 @@ CoreDBInterface::CoreDBInterface()
 
 void CoreDBInterface::initFormatOptions()
 {
+    // If we are in self test mode and testing execution rather than formatting delay the exception.
+    if (inSelfTest && forceSQLExecutionException && !forceFormatException)
+    {
+        forceFormatException = true;
+        return;
+    }
+
     try {
         if (!format_opts.has_value())
         {
@@ -37,6 +45,10 @@ void CoreDBInterface::initFormatOptions()
     }
     catch (const std::exception& e)
     {
+        if (inSelfTest && forceSQLExecutionException)
+        {
+            forceFormatException = false;
+        }
         std::string formatOptionsFailure("INTERNAL ERROR: initFormatOptions() FAILED: ");
         formatOptionsFailure.append(e.what());
         appendErrorMessage(formatOptionsFailure);
