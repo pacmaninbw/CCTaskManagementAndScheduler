@@ -1,6 +1,8 @@
 # CCTaskManagementAndScheduler
 Personal planner and scheduler task management system using C++, CMake, QT and MySQL
 
+[Current Test Coverage](https://github.com/pacmaninbw/CCTaskManagementAndScheduler/blob/master/Documentation/PublicTestCoverage/index.html)
+
 Over my career as a software engineer, I have found it helpful to use personal planners to schedule my time. First there were the paper planner from Daytimer. This was helpful to plan my time around meetings and appointments as well as keep some very brief notes. The drawback with this system was that I could not record goals or prioritize tasks.
 
 I moved on to the Franklin Covey planner system which provided a system for laying out goals, prioritizing tasks on a daily basis and managing meetings and appointments as well as more space for notes. The drawback with this system was that it did not easily provide for multi-person software development projects when I had to manage projects. It was also not electronic in the era of PDAs and cell phones. I continued to use the Franklin Covey system but also to use Microsoft Project and Microsoft Outlook.
