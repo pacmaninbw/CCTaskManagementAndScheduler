@@ -217,6 +217,11 @@ bool ModelDBInterface::runSelfTest()
         std::clog << "Running " << modelName << " Self Test\n";
     }
 
+    if (!testSave())
+    {
+        allSelfTestsPassed = false;
+    }
+
     if (!testAccessorFunctionsPassed())
     {
         std::clog << modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
@@ -246,6 +251,47 @@ bool ModelDBInterface::testAccessorFunctionsPassed()
 bool ModelDBInterface::testExceptionHandling()
 {
     std::clog << modelName << "::testExceptionHandling() NOT IMPLEMENTED Forced FAIL!\n";
+    return false;
+}
+
+bool ModelDBInterface::testSave()
+{
+    bool testPassed = true;
+    modified = false;
+    primaryKey = 0;
+
+    if (save())
+    {
+        std::clog << modelName << "::save worked without being modified\n";
+        testPassed = false;
+    }
+    else
+    {
+        if (!hasErrorMessage())
+        {
+            testPassed = false;
+        }
+        else
+        {
+            if (wrongErrorMessage("not modified, no changes to save") != TESTPASSED)
+            {
+                testPassed = false;
+            }
+        }
+    }
+
+    return testPassed;
+}
+
+bool ModelDBInterface::testExceptionInsert()
+{
+    std::clog << std::format("{}::testExceptionInsert() NOT IMPLEMENTED! Test FAILED\n", modelName);
+    return false;
+}
+
+bool ModelDBInterface::testExceptionUpdate()
+{
+    std::clog << std::format("{}::testExceptionUpdate() NOT IMPLEMENTED! Test FAILED\n", modelName);
     return false;
 }
 
@@ -335,3 +381,4 @@ bool ModelDBInterface::forceExceptionsLoop(std::vector<ExceptionTestElement> exc
 
     return exceptionHandlingPassed;
 }
+

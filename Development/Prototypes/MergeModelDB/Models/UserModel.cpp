@@ -203,6 +203,11 @@ bool UserModel::runSelfTest()
         std::clog << "Running UserModel Self Test\n";
     }
 
+    if (!testSave())
+    {
+        allSelfTestsPassed = false;
+    }
+
     if (!testAccessorFunctionsPassed())
     {
         std::clog << "One or more get or set functions FAILED!\n";

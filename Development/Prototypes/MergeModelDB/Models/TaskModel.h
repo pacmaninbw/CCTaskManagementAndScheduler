@@ -108,7 +108,14 @@ public:
     bool isMissingScheduledStart() { return !scheduledStart.has_value(); };
     bool isMissingDueDate() { return !dueDate.has_value(); };
 
+/*
+ * Unit Testing
+ */
+    virtual bool runSelfTest() override;
 
+/*
+ * Operators
+ */
     bool operator==(TaskModel& other)
     {
         return diffTask(other);
@@ -127,9 +134,9 @@ public:
         os << std::format(outFmtStr, "Assigned To ID", task.assignToID);
         os << std::format(outFmtStr, "Description", task.description);
         os << std::format(outFmtStr, "Percentage Complete", task.percentageComplete);
-        os << std::format(outFmtStr, "Creation Date", task.creationTimeStamp.value());
-        os << std::format(outFmtStr, "Scheduled Start Date", task.scheduledStart.value());
-        os << std::format(outFmtStr, "Due Date", task.dueDate.value());
+        os << std::format(outFmtStr, "Creation Date", task.creationTimeStamp.value_or(std::chrono::system_clock::now()));
+        os << std::format(outFmtStr, "Scheduled Start Date", task.scheduledStart.value_or(getTodaysDate()));
+        os << std::format(outFmtStr, "Due Date", task.dueDate.value_or(getTodaysDate()));
         os << std::format(outFmtStr, "Estimated Effort Hours", task.estimatedEffort);
         os << std::format(outFmtStr, "Actual Effort Hours", task.actualEffortToDate);
         os << std::format(outFmtStr, "Priority Group", task.priorityGroup);
@@ -162,6 +169,9 @@ public:
 
 
 private:
+/*
+ * Implementation
+ */
     TaskStatus statusFromInt(unsigned int statusI) const { return static_cast<TaskModel::TaskStatus>(statusI); };
     bool diffTask(TaskModel& other);
     std::string formatInsertStatement() override;
@@ -172,6 +182,25 @@ private:
     std::string buildDependenciesText(std::vector<std::size_t>& dependencyList) noexcept;
     void processResultRow(boost::mysql::row_view rv) override;
 
+/*
+ * Unit Testing
+ */
+    virtual bool testExceptionHandling() override;
+    bool testExceptionSelectByTaskID() { return selectByTaskID(0) != true; };
+    bool testExceptionSelectByDescriptionAndAssignedUser() { return selectByDescriptionAndAssignedUser("", 0) != true; };
+    bool testExceptionFormatSelectActiveTasksForAssignedUser() { return formatSelectActiveTasksForAssignedUser(0) != std::string(); };
+    bool testExceptionFormatSelectUnstartedDueForStartForAssignedUser() { return formatSelectUnstartedDueForStartForAssignedUser(0) != std::string(); };
+    bool testExceptionFormatSelectTasksCompletedByAssignedAfterDate() {
+        std::chrono::year_month_day searchStartDate = getTodaysDate();
+        return formatSelectTasksCompletedByAssignedAfterDate(0, searchStartDate) != std::string();
+    };
+    bool testExceptionFormatSelectTasksByAssignedIDandParentID() { return formatSelectTasksByAssignedIDandParentID(0, 0) != std::string(); };
+    virtual bool testExceptionInsert() override;
+    virtual bool testExceptionUpdate() override;
+
+ /*
+  * Member Variables
+  */
     std::size_t creatorID;
     std::size_t assignToID;
     std::string description;

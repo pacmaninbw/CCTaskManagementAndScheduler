@@ -329,6 +329,45 @@ std::string TaskModel::formatSelectTasksByAssignedIDandParentID(std::size_t assi
     return std::string();
 }
 
+bool TaskModel::runSelfTest()
+{
+    bool allSelfTestsPassed = true;
+
+    if (verboseOutput)
+    {
+        std::clog << "Running TaskModel Self Test\n";
+    }
+
+    if (!testSave())
+    {
+        allSelfTestsPassed = false;
+    }
+
+    if (!testAccessorFunctionsPassed())
+    {
+        std::clog << "One or more get or set functions FAILED!\n";
+        allSelfTestsPassed = false;
+    }
+
+    if (verboseOutput)
+    {
+        std::clog << "Test Ouput: " << *this << "\n";
+    }
+
+    if (!testExceptionHandling())
+    {
+        std::clog << "Exception handling FAILED!\n";
+        allSelfTestsPassed = false;
+    }
+    
+    if (testAllInsertFailures() != TESTPASSED)
+    {
+        std::clog << "Test of all insertion failures FAILED!\n";
+    }
+
+    return allSelfTestsPassed;
+}
+
 std::string TaskModel::taskStatusString() const
 {
     TaskModel::TaskStatus status = getStatus();
@@ -568,3 +607,71 @@ void TaskModel::processResultRow(boost::mysql::row_view rv)
     }
 }
 
+bool TaskModel::testExceptionHandling()
+{
+    bool exceptionHandlingPassed = true;
+    std::vector<ExceptionTestElement> exceptionTests =
+    {
+        {std::bind(&TaskModel::testExceptionSelectByTaskID, this), "selectByTaskID"},
+        {std::bind(&TaskModel::testExceptionSelectByDescriptionAndAssignedUser, this), "selectByDescriptionAndAssignedUser"},
+        {std::bind(&TaskModel::testExceptionInsert, this), "testExceeptionInsert"},
+        {std::bind(&TaskModel::testExceptionUpdate, this), "testExceptionUpdate"}
+
+    };
+
+    forceSQLExecutionException = true;
+    if (!forceExceptionsLoop(exceptionTests))
+    {
+        exceptionHandlingPassed = false;
+    }
+    forceSQLExecutionException = false;
+
+    exceptionTests.push_back({std::bind(&TaskModel::testExceptionFormatSelectActiveTasksForAssignedUser, this),
+        "selectByDescriptionAndAssignedUser"});
+    exceptionTests.push_back({std::bind(&TaskModel::testExceptionFormatSelectUnstartedDueForStartForAssignedUser, this),
+        "formatSelectActiveTasksForAssignedUser"});
+    exceptionTests.push_back({std::bind(&TaskModel::testExceptionFormatSelectTasksCompletedByAssignedAfterDate, this),
+        "formatSelectTasksCompletedByAssignedAfterDate"});
+    exceptionTests.push_back({std::bind(&TaskModel::testExceptionFormatSelectTasksByAssignedIDandParentID, this),
+        "formatSelectTasksByAssignedIDandParentID"});
+    
+    forceFormatException = true;
+    if (!forceExceptionsLoop(exceptionTests))
+    {
+        exceptionHandlingPassed = false;
+    }
+    forceFormatException = false;
+
+    return exceptionHandlingPassed;
+}
+
+bool TaskModel::testExceptionInsert()
+{
+    std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();
+
+    setDescription("Testing Exception handling");
+    setEstimatedEffort(6);
+    setScheduledStart(getTodaysDate());
+    setDueDate(getTodaysDatePlus(2));
+    setPriorityGroup('A');
+    setPriority(1);
+    setCreationDate(timeStamp);
+    
+    return insert() != true;
+}
+
+bool TaskModel::testExceptionUpdate()
+{
+    std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();
+
+    setTaskID(1);
+    setDescription("Testing Exception handling");
+    setEstimatedEffort(6);
+    setScheduledStart(getTodaysDate());
+    setDueDate(getTodaysDatePlus(2));
+    setPriorityGroup('A');
+    setPriority(1);
+    setCreationDate(timeStamp);
+    
+    return update() != true;
+}

@@ -1,0 +1,1 @@
+genhtml TestCoverage/protoPersonalPlanner_filtered.info --output-directory TestCoverage

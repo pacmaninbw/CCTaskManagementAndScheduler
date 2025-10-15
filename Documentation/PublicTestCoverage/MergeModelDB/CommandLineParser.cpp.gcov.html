@@ -1,0 +1,337 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - protoPersonalPlanner_filtered.info - MergeModelDB/CommandLineParser.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">MergeModelDB</a> - CommandLineParser.cpp<span style="font-size: 80%;"> (source / <a href="CommandLineParser.cpp.func-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">protoPersonalPlanner_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryLo">66.4&nbsp;%</td>
+            <td class="headerCovTableEntry">107</td>
+            <td class="headerCovTableEntry">71</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2025-10-14 12:25:18</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryLo">66.7&nbsp;%</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntry">6</td>
+          </tr>
+                  <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">            Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>              : // Project Header Files</span>
+<span id="L2"><span class="lineNum">       2</span>              : #include &quot;CommandLineParser.h&quot;</span>
+<span id="L3"><span class="lineNum">       3</span>              : </span>
+<span id="L4"><span class="lineNum">       4</span>              : // External Libraries</span>
+<span id="L5"><span class="lineNum">       5</span>              : #include &lt;boost/program_options.hpp&gt;</span>
+<span id="L6"><span class="lineNum">       6</span>              : </span>
+<span id="L7"><span class="lineNum">       7</span>              : // Standard C++ Header Files</span>
+<span id="L8"><span class="lineNum">       8</span>              : #include &lt;algorithm&gt;</span>
+<span id="L9"><span class="lineNum">       9</span>              : #include &lt;expected&gt;</span>
+<span id="L10"><span class="lineNum">      10</span>              : #include &lt;filesystem&gt;</span>
+<span id="L11"><span class="lineNum">      11</span>              : #include &lt;iostream&gt;</span>
+<span id="L12"><span class="lineNum">      12</span>              : #include &lt;string&gt;</span>
+<span id="L13"><span class="lineNum">      13</span>              : #include &lt;vector&gt;</span>
+<span id="L14"><span class="lineNum">      14</span>              : </span>
+<span id="L15"><span class="lineNum">      15</span> <span class="tlaGNC tlaBgGNC">           2 : static std::string simplifyName(char *path)</span></span>
+<span id="L16"><span class="lineNum">      16</span>              : {</span>
+<span id="L17"><span class="lineNum">      17</span> <span class="tlaGNC">           2 :         return std::filesystem::path{path ? path : &quot;protoPersonalPlanner&quot;}.filename().string();</span></span>
+<span id="L18"><span class="lineNum">      18</span>              : }</span>
+<span id="L19"><span class="lineNum">      19</span>              : </span>
+<span id="L20"><span class="lineNum">      20</span>              : namespace po = boost::program_options;</span>
+<span id="L21"><span class="lineNum">      21</span>              : </span>
+<span id="L22"><span class="lineNum">      22</span>              : static const char optionStarter = '-';</span>
+<span id="L23"><span class="lineNum">      23</span>              : </span>
+<span id="L24"><span class="lineNum">      24</span>              : enum class ProgOptStatus</span>
+<span id="L25"><span class="lineNum">      25</span>              : {</span>
+<span id="L26"><span class="lineNum">      26</span>              :         NoErrors,</span>
+<span id="L27"><span class="lineNum">      27</span>              :         MissingArgument</span>
+<span id="L28"><span class="lineNum">      28</span>              : };</span>
+<span id="L29"><span class="lineNum">      29</span>              : </span>
+<span id="L30"><span class="lineNum">      30</span> <span class="tlaGNC">          14 : static po::options_description addOptions()</span></span>
+<span id="L31"><span class="lineNum">      31</span>              : {</span>
+<span id="L32"><span class="lineNum">      32</span> <span class="tlaGNC">          28 :         po::options_description options(&quot;Options and arguments&quot;);</span></span>
+<span id="L33"><span class="lineNum">      33</span> <span class="tlaGNC">          14 :         options.add_options()</span></span>
+<span id="L34"><span class="lineNum">      34</span> <span class="tlaGNC">          14 :                 (&quot;help,h&quot;, &quot;Show this help message&quot;)</span></span>
+<span id="L35"><span class="lineNum">      35</span> <span class="tlaGNC">          14 :                 (&quot;mysql-user,u&quot;, po::value&lt;std::string&gt;()-&gt;required(), &quot;Existing MySQL user with sufficient privilege to insert and query&quot;)</span></span>
+<span id="L36"><span class="lineNum">      36</span> <span class="tlaGNC">          14 :                 (&quot;mysql-password,p&quot;, po::value&lt;std::string&gt;()-&gt;required(), &quot;password for the MySQL user&quot;)</span></span>
+<span id="L37"><span class="lineNum">      37</span> <span class="tlaGNC">          28 :                 (&quot;mysql-URL&quot;, po::value&lt;std::string&gt;()-&gt;default_value(&quot;127.0.0.1&quot;), &quot;IP address for the MySQL server&quot;)</span></span>
+<span id="L38"><span class="lineNum">      38</span> <span class="tlaGNC">          14 :                 (&quot;mysql-port&quot;, po::value&lt;unsigned int&gt;(), &quot;The port value for the MySQL server. A default of 3306 is provided.&quot;)</span></span>
+<span id="L39"><span class="lineNum">      39</span> <span class="tlaGNC">          42 :                 (&quot;mysql-dbname&quot;, po::value&lt;std::string&gt;()-&gt;default_value(&quot;PlannerTaskScheduleDB&quot;), &quot;The name of the database that contains the tables&quot;)</span></span>
+<span id="L40"><span class="lineNum">      40</span> <span class="tlaGNC">          42 :                 (&quot;user-data-file&quot;, po::value&lt;std::string&gt;()-&gt;default_value(&quot;Testing/testData/userData.txt&quot;), &quot;File path including file name to user test data&quot;)</span></span>
+<span id="L41"><span class="lineNum">      41</span> <span class="tlaGNC">          56 :                 (&quot;task-data-file&quot;, po::value&lt;std::string&gt;()-&gt;default_value(&quot;Testing/testData/planData.txt&quot;), &quot;File path including file name to task test data&quot;)</span></span>
+<span id="L42"><span class="lineNum">      42</span> <span class="tlaGNC">          14 :                 (&quot;time-tests&quot;, &quot;Time the execution of the tests&quot;)</span></span>
+<span id="L43"><span class="lineNum">      43</span> <span class="tlaGNC">          14 :                 (&quot;verbose&quot;, &quot;Output additional information for testing and debugging.&quot;)</span></span>
+<span id="L44"><span class="lineNum">      44</span> <span class="tlaGNC">          14 :                 (&quot;run-self-test&quot;, &quot;Execute model self test&quot;)</span></span>
+<span id="L45"><span class="lineNum">      45</span> <span class="tlaGNC">          14 :                 (&quot;force-errors,e&quot;, &quot;Force error conditions during negative test path&quot;)</span></span>
+<span id="L46"><span class="lineNum">      46</span> <span class="tlaGNC">          14 :                 (&quot;force-exceptions,x&quot;, &quot;Force exceptions in model tests&quot;)</span></span>
+<span id="L47"><span class="lineNum">      47</span> <span class="tlaGNC">          14 :                 (&quot;quit-first-fail,q&quot;, &quot;Stop execution on first failure&quot;)</span></span>
+<span id="L48"><span class="lineNum">      48</span>              :         ;</span>
+<span id="L49"><span class="lineNum">      49</span>              : </span>
+<span id="L50"><span class="lineNum">      50</span> <span class="tlaGNC">          14 :         return options;</span></span>
+<span id="L51"><span class="lineNum">      51</span> <span class="tlaUNC tlaBgUNC">           0 : }</span></span>
+<span id="L52"><span class="lineNum">      52</span>              : </span>
+<span id="L53"><span class="lineNum">      53</span>              : /*</span>
+<span id="L54"><span class="lineNum">      54</span>              :  * hasArgument is a workaround for the fact that the boost::program_options</span>
+<span id="L55"><span class="lineNum">      55</span>              :  * doesn't or can't check to see if the string following an option is another</span>
+<span id="L56"><span class="lineNum">      56</span>              :  * option. </span>
+<span id="L57"><span class="lineNum">      57</span>              :  */</span>
+<span id="L58"><span class="lineNum">      58</span> <span class="tlaGNC tlaBgGNC">          12 : static auto hasArgument(po::variables_map&amp; inputOptions, const std::string&amp; option) -&gt; </span></span>
+<span id="L59"><span class="lineNum">      59</span>              :         std::expected&lt;std::string, ProgOptStatus&gt;</span>
+<span id="L60"><span class="lineNum">      60</span>              : {</span>
+<span id="L61"><span class="lineNum">      61</span> <span class="tlaGNC">          12 :         std::string argument(&quot;&quot;);</span></span>
+<span id="L62"><span class="lineNum">      62</span> <span class="tlaGNC">          12 :         if (!inputOptions.count(option))</span></span>
+<span id="L63"><span class="lineNum">      63</span>              :         {</span>
+<span id="L64"><span class="lineNum">      64</span> <span class="tlaUNC tlaBgUNC">           0 :                 return argument;        // No argument to check</span></span>
+<span id="L65"><span class="lineNum">      65</span>              :         }</span>
+<span id="L66"><span class="lineNum">      66</span>              : </span>
+<span id="L67"><span class="lineNum">      67</span> <span class="tlaGNC tlaBgGNC">          12 :         argument = inputOptions[option].as&lt;std::string&gt;();</span></span>
+<span id="L68"><span class="lineNum">      68</span> <span class="tlaGNC">          12 :         po::options_description options = addOptions();</span></span>
+<span id="L69"><span class="lineNum">      69</span>              : </span>
+<span id="L70"><span class="lineNum">      70</span> <span class="tlaGNC">          12 :         if (argument[0] == optionStarter)</span></span>
+<span id="L71"><span class="lineNum">      71</span>              :         {</span>
+<span id="L72"><span class="lineNum">      72</span>              :                 /*</span>
+<span id="L73"><span class="lineNum">      73</span>              :                  * Remove any preceeding optionStarter, boost::program_options does not store</span>
+<span id="L74"><span class="lineNum">      74</span>              :                  * the option start.</span>
+<span id="L75"><span class="lineNum">      75</span>              :                  */</span>
+<span id="L76"><span class="lineNum">      76</span> <span class="tlaUNC tlaBgUNC">           0 :                 auto startOptionText = std::find_if_not(argument.begin(), argument.end(),</span></span>
+<span id="L77"><span class="lineNum">      77</span> <span class="tlaUNC">           0 :                         [](char c) { return c == optionStarter; });</span></span>
+<span id="L78"><span class="lineNum">      78</span> <span class="tlaUNC">           0 :                 if (startOptionText != argument.end())</span></span>
+<span id="L79"><span class="lineNum">      79</span>              :                 {</span>
+<span id="L80"><span class="lineNum">      80</span> <span class="tlaUNC">           0 :                         if (options.find_nothrow(std::string(startOptionText, argument.end()), true))</span></span>
+<span id="L81"><span class="lineNum">      81</span>              :                         {</span>
+<span id="L82"><span class="lineNum">      82</span> <span class="tlaUNC">           0 :                                 std::cerr &lt;&lt; &quot;The option \'--&quot; &lt;&lt; option &lt;&lt; &quot;\' is missing the required argument!\n&quot;;</span></span>
+<span id="L83"><span class="lineNum">      83</span> <span class="tlaUNC">           0 :                                 return std::unexpected(ProgOptStatus::MissingArgument);</span></span>
+<span id="L84"><span class="lineNum">      84</span>              :                         }</span>
+<span id="L85"><span class="lineNum">      85</span>              :                 }</span>
+<span id="L86"><span class="lineNum">      86</span>              :         }</span>
+<span id="L87"><span class="lineNum">      87</span>              : </span>
+<span id="L88"><span class="lineNum">      88</span> <span class="tlaGNC tlaBgGNC">          12 :         return argument;</span></span>
+<span id="L89"><span class="lineNum">      89</span> <span class="tlaGNC">          12 : }</span></span>
+<span id="L90"><span class="lineNum">      90</span>              : </span>
+<span id="L91"><span class="lineNum">      91</span>              : struct ProgOptionValuePair</span>
+<span id="L92"><span class="lineNum">      92</span>              : {</span>
+<span id="L93"><span class="lineNum">      93</span>              :         std::string option;</span>
+<span id="L94"><span class="lineNum">      94</span>              :         std::string *value;</span>
+<span id="L95"><span class="lineNum">      95</span>              : };</span>
+<span id="L96"><span class="lineNum">      96</span>              : </span>
+<span id="L97"><span class="lineNum">      97</span> <span class="tlaGNC">           2 : static auto checkOptionsWithStringArguments(po::variables_map&amp; inputOptions) -&gt; </span></span>
+<span id="L98"><span class="lineNum">      98</span>              :         std::expected&lt;ProgramOptions, ProgOptStatus&gt;</span>
+<span id="L99"><span class="lineNum">      99</span>              : {</span>
+<span id="L100"><span class="lineNum">     100</span> <span class="tlaGNC">           2 :         ProgramOptions progOptions;</span></span>
+<span id="L101"><span class="lineNum">     101</span>              :         std::vector&lt;ProgOptionValuePair&gt; optionsAndValuesForArgCheck = </span>
+<span id="L102"><span class="lineNum">     102</span>              :         {</span>
+<span id="L103"><span class="lineNum">     103</span> <span class="tlaUNC tlaBgUNC">           0 :                 {&quot;mysql-user&quot;, &amp;progOptions.mySqlUser},</span></span>
+<span id="L104"><span class="lineNum">     104</span>              :                 {&quot;mysql-password&quot;, &amp;progOptions.mySqlPassword},</span>
+<span id="L105"><span class="lineNum">     105</span>              :                 {&quot;mysql-URL&quot;, &amp;progOptions.mySqlUrl},</span>
+<span id="L106"><span class="lineNum">     106</span>              :                 {&quot;mysql-dbname&quot;, &amp;progOptions.mySqlDBName},</span>
+<span id="L107"><span class="lineNum">     107</span>              :                 {&quot;user-data-file&quot;, &amp;progOptions.userTestDataFile},</span>
+<span id="L108"><span class="lineNum">     108</span>              :                 {&quot;task-data-file&quot;, &amp;progOptions.taskTestDataFile}</span>
+<span id="L109"><span class="lineNum">     109</span> <span class="tlaGNC tlaBgGNC">          16 :         };</span></span>
+<span id="L110"><span class="lineNum">     110</span> <span class="tlaGNC">           2 :         ProgOptStatus hasArguments = ProgOptStatus::NoErrors;</span></span>
+<span id="L111"><span class="lineNum">     111</span>              :         </span>
+<span id="L112"><span class="lineNum">     112</span>              :         // Process as many options as possible.</span>
+<span id="L113"><span class="lineNum">     113</span> <span class="tlaGNC">          14 :         for (auto optionToCheck: optionsAndValuesForArgCheck)</span></span>
+<span id="L114"><span class="lineNum">     114</span>              :         {</span>
+<span id="L115"><span class="lineNum">     115</span> <span class="tlaGNC">          12 :                 const auto argCheck = hasArgument(inputOptions, optionToCheck.option);</span></span>
+<span id="L116"><span class="lineNum">     116</span> <span class="tlaGNC">          12 :                 if (argCheck.has_value())</span></span>
+<span id="L117"><span class="lineNum">     117</span>              :                 {</span>
+<span id="L118"><span class="lineNum">     118</span> <span class="tlaGNC">          12 :                         *optionToCheck.value = *argCheck;</span></span>
+<span id="L119"><span class="lineNum">     119</span>              :                 }</span>
+<span id="L120"><span class="lineNum">     120</span>              :                 else</span>
+<span id="L121"><span class="lineNum">     121</span>              :                 {</span>
+<span id="L122"><span class="lineNum">     122</span> <span class="tlaUNC tlaBgUNC">           0 :                         hasArguments = (hasArguments == ProgOptStatus::NoErrors)?</span></span>
+<span id="L123"><span class="lineNum">     123</span> <span class="tlaUNC">           0 :                                 argCheck.error() : hasArguments;</span></span>
+<span id="L124"><span class="lineNum">     124</span>              :                 }</span>
+<span id="L125"><span class="lineNum">     125</span> <span class="tlaGNC tlaBgGNC">          12 :         }</span></span>
+<span id="L126"><span class="lineNum">     126</span>              : </span>
+<span id="L127"><span class="lineNum">     127</span> <span class="tlaGNC">           2 :         if (hasArguments != ProgOptStatus::NoErrors)</span></span>
+<span id="L128"><span class="lineNum">     128</span>              :         {</span>
+<span id="L129"><span class="lineNum">     129</span> <span class="tlaUNC tlaBgUNC">           0 :                 return std::unexpected(hasArguments);</span></span>
+<span id="L130"><span class="lineNum">     130</span>              :         }</span>
+<span id="L131"><span class="lineNum">     131</span>              : </span>
+<span id="L132"><span class="lineNum">     132</span> <span class="tlaGNC tlaBgGNC">           2 :         return progOptions;</span></span>
+<span id="L133"><span class="lineNum">     133</span> <span class="tlaGNC">           6 : }</span></span>
+<span id="L134"><span class="lineNum">     134</span>              : </span>
+<span id="L135"><span class="lineNum">     135</span> <span class="tlaGNC">           2 : static auto processProgramOptions(po::variables_map&amp; inputOptions,</span></span>
+<span id="L136"><span class="lineNum">     136</span>              :         const std::string&amp; progName) -&gt; std::expected&lt;ProgramOptions, ProgOptStatus&gt;</span>
+<span id="L137"><span class="lineNum">     137</span>              : {</span>
+<span id="L138"><span class="lineNum">     138</span> <span class="tlaGNC">           2 :         ProgramOptions programOptions;</span></span>
+<span id="L139"><span class="lineNum">     139</span>              : </span>
+<span id="L140"><span class="lineNum">     140</span> <span class="tlaGNC">           2 :         programOptions.progName = progName;</span></span>
+<span id="L141"><span class="lineNum">     141</span>              : </span>
+<span id="L142"><span class="lineNum">     142</span> <span class="tlaGNC">           2 :         const auto argCheck = checkOptionsWithStringArguments(inputOptions);</span></span>
+<span id="L143"><span class="lineNum">     143</span> <span class="tlaGNC">           2 :         if (argCheck.has_value())</span></span>
+<span id="L144"><span class="lineNum">     144</span>              :         {</span>
+<span id="L145"><span class="lineNum">     145</span> <span class="tlaGNC">           2 :                 programOptions = *argCheck;</span></span>
+<span id="L146"><span class="lineNum">     146</span>              :         }</span>
+<span id="L147"><span class="lineNum">     147</span>              :         else</span>
+<span id="L148"><span class="lineNum">     148</span>              :         {</span>
+<span id="L149"><span class="lineNum">     149</span> <span class="tlaUNC tlaBgUNC">           0 :                 return std::unexpected(argCheck.error());</span></span>
+<span id="L150"><span class="lineNum">     150</span>              :         }</span>
+<span id="L151"><span class="lineNum">     151</span>              : </span>
+<span id="L152"><span class="lineNum">     152</span> <span class="tlaGNC tlaBgGNC">           4 :         programOptions.mySqlPort = (inputOptions.count(&quot;mysql-port&quot;)) ?</span></span>
+<span id="L153"><span class="lineNum">     153</span> <span class="tlaGNC">           2 :                         inputOptions[&quot;scale-factor&quot;].as&lt;unsigned int&gt;() : 3306;</span></span>
+<span id="L154"><span class="lineNum">     154</span>              : </span>
+<span id="L155"><span class="lineNum">     155</span> <span class="tlaGNC">           6 :         if (inputOptions.count(&quot;time-tests&quot;)) {</span></span>
+<span id="L156"><span class="lineNum">     156</span> <span class="tlaUNC tlaBgUNC">           0 :                 programOptions.enableExecutionTime = true;</span></span>
+<span id="L157"><span class="lineNum">     157</span>              :         }</span>
+<span id="L158"><span class="lineNum">     158</span>              : </span>
+<span id="L159"><span class="lineNum">     159</span> <span class="tlaGNC tlaBgGNC">           6 :         if (inputOptions.count(&quot;verbose&quot;)) {</span></span>
+<span id="L160"><span class="lineNum">     160</span> <span class="tlaGNC">           2 :                 programOptions.verboseOutput = true;</span></span>
+<span id="L161"><span class="lineNum">     161</span>              :         }</span>
+<span id="L162"><span class="lineNum">     162</span>              : </span>
+<span id="L163"><span class="lineNum">     163</span> <span class="tlaGNC">           6 :         if (inputOptions.count(&quot;run-self-test&quot;))</span></span>
+<span id="L164"><span class="lineNum">     164</span>              :         {</span>
+<span id="L165"><span class="lineNum">     165</span> <span class="tlaUNC tlaBgUNC">           0 :                 programOptions.runSelfTest = true;</span></span>
+<span id="L166"><span class="lineNum">     166</span>              :         }</span>
+<span id="L167"><span class="lineNum">     167</span>              : </span>
+<span id="L168"><span class="lineNum">     168</span> <span class="tlaGNC tlaBgGNC">           6 :         if (inputOptions.count(&quot;force-errors&quot;))</span></span>
+<span id="L169"><span class="lineNum">     169</span>              :         {</span>
+<span id="L170"><span class="lineNum">     170</span> <span class="tlaUNC tlaBgUNC">           0 :                 programOptions.forceErrors = true;</span></span>
+<span id="L171"><span class="lineNum">     171</span>              :         }</span>
+<span id="L172"><span class="lineNum">     172</span>              : </span>
+<span id="L173"><span class="lineNum">     173</span> <span class="tlaGNC tlaBgGNC">           6 :         if (inputOptions.count(&quot;force-exceptions&quot;))</span></span>
+<span id="L174"><span class="lineNum">     174</span>              :         {</span>
+<span id="L175"><span class="lineNum">     175</span> <span class="tlaUNC tlaBgUNC">           0 :                 programOptions.forceExceptions = true;</span></span>
+<span id="L176"><span class="lineNum">     176</span>              :         }</span>
+<span id="L177"><span class="lineNum">     177</span>              : </span>
+<span id="L178"><span class="lineNum">     178</span> <span class="tlaGNC tlaBgGNC">           6 :         if (inputOptions.count(&quot;quit-first-fail&quot;))</span></span>
+<span id="L179"><span class="lineNum">     179</span>              :         {</span>
+<span id="L180"><span class="lineNum">     180</span> <span class="tlaUNC tlaBgUNC">           0 :                 programOptions.quitFirstFail = true;</span></span>
+<span id="L181"><span class="lineNum">     181</span>              :         }</span>
+<span id="L182"><span class="lineNum">     182</span>              : </span>
+<span id="L183"><span class="lineNum">     183</span> <span class="tlaGNC tlaBgGNC">           2 :         return programOptions;</span></span>
+<span id="L184"><span class="lineNum">     184</span> <span class="tlaGNC">           2 : }</span></span>
+<span id="L185"><span class="lineNum">     185</span>              : </span>
+<span id="L186"><span class="lineNum">     186</span>              : static const int MinArgCount = 3;</span>
+<span id="L187"><span class="lineNum">     187</span>              : </span>
+<span id="L188"><span class="lineNum">     188</span> <span class="tlaUNC tlaBgUNC">           0 : static CommandLineStatus usage(const std::string&amp; progName,</span></span>
+<span id="L189"><span class="lineNum">     189</span>              :         const po::options_description&amp; options,</span>
+<span id="L190"><span class="lineNum">     190</span>              :         const std::string errorMessage</span>
+<span id="L191"><span class="lineNum">     191</span>              :         )</span>
+<span id="L192"><span class="lineNum">     192</span>              : {</span>
+<span id="L193"><span class="lineNum">     193</span>              :         std::string usageStr =</span>
+<span id="L194"><span class="lineNum">     194</span>              :         &quot; :\n\tTest storing and retrieving user profiles and tasks in a MySQL database.\n&quot;</span>
+<span id="L195"><span class="lineNum">     195</span>              :         &quot;\tThe connection data must be listed with the appropriate flags. Default MySQL\n&quot;</span>
+<span id="L196"><span class="lineNum">     196</span>              :         &quot;\tIP address is 127.0.0.1 and a default MySQL port 3306 are provided. Default\n&quot;</span>
+<span id="L197"><span class="lineNum">     197</span> <span class="tlaUNC">           0 :         &quot;\tvalues for the user data file name and task data file name are also provided\n&quot;</span></span>
+<span id="L198"><span class="lineNum">     198</span>              : ;</span>
+<span id="L199"><span class="lineNum">     199</span> <span class="tlaUNC">           0 :         if (errorMessage.length())</span></span>
+<span id="L200"><span class="lineNum">     200</span>              :         {</span>
+<span id="L201"><span class="lineNum">     201</span> <span class="tlaUNC">           0 :                 std::cerr &lt;&lt; errorMessage &lt;&lt; &quot;\n&quot;;</span></span>
+<span id="L202"><span class="lineNum">     202</span> <span class="tlaUNC">           0 :                 std::cerr &lt;&lt; progName &lt;&lt; usageStr &lt;&lt; &quot;\n&quot; &lt;&lt; options &lt;&lt; &quot;\n&quot;;</span></span>
+<span id="L203"><span class="lineNum">     203</span>              :         }</span>
+<span id="L204"><span class="lineNum">     204</span>              :         else</span>
+<span id="L205"><span class="lineNum">     205</span>              :         {</span>
+<span id="L206"><span class="lineNum">     206</span> <span class="tlaUNC">           0 :                 std::cerr &lt;&lt; progName &lt;&lt; &quot;:\n&quot; &lt;&lt; options &lt;&lt; &quot;\n&quot;;</span></span>
+<span id="L207"><span class="lineNum">     207</span>              :         }</span>
+<span id="L208"><span class="lineNum">     208</span> <span class="tlaUNC">           0 :         return CommandLineStatus::HasErrors;</span></span>
+<span id="L209"><span class="lineNum">     209</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L210"><span class="lineNum">     210</span>              : </span>
+<span id="L211"><span class="lineNum">     211</span> <span class="tlaUNC">           0 : static CommandLineStatus help(const std::string&amp; progName,</span></span>
+<span id="L212"><span class="lineNum">     212</span>              :         const po::options_description&amp; options)</span>
+<span id="L213"><span class="lineNum">     213</span>              : {</span>
+<span id="L214"><span class="lineNum">     214</span> <span class="tlaUNC">           0 :         std::cerr &lt;&lt; progName &lt;&lt; options &lt;&lt; &quot;\n&quot;;</span></span>
+<span id="L215"><span class="lineNum">     215</span> <span class="tlaUNC">           0 :         return CommandLineStatus::HelpRequested;</span></span>
+<span id="L216"><span class="lineNum">     216</span>              : }</span>
+<span id="L217"><span class="lineNum">     217</span>              : </span>
+<span id="L218"><span class="lineNum">     218</span> <span class="tlaGNC tlaBgGNC">           2 : auto parseCommandLine(int argc, char* argv[]) -&gt; </span></span>
+<span id="L219"><span class="lineNum">     219</span>              :         std::expected&lt;ProgramOptions, CommandLineStatus&gt;</span>
+<span id="L220"><span class="lineNum">     220</span>              : {</span>
+<span id="L221"><span class="lineNum">     221</span> <span class="tlaGNC">           2 :         ProgramOptions programOptions;</span></span>
+<span id="L222"><span class="lineNum">     222</span> <span class="tlaGNC">           2 :         std::string progName = simplifyName(argv[0]);</span></span>
+<span id="L223"><span class="lineNum">     223</span> <span class="tlaGNC">           2 :         po::options_description options = addOptions();</span></span>
+<span id="L224"><span class="lineNum">     224</span>              : </span>
+<span id="L225"><span class="lineNum">     225</span> <span class="tlaGNC">           2 :         if (argc &lt; MinArgCount)</span></span>
+<span id="L226"><span class="lineNum">     226</span>              :         {</span>
+<span id="L227"><span class="lineNum">     227</span> <span class="tlaUNC tlaBgUNC">           0 :                 return std::unexpected(usage(progName, options,</span></span>
+<span id="L228"><span class="lineNum">     228</span> <span class="tlaUNC">           0 :                         &quot;Missing MySql User Name and Password&quot;));</span></span>
+<span id="L229"><span class="lineNum">     229</span>              :         }</span>
+<span id="L230"><span class="lineNum">     230</span>              : </span>
+<span id="L231"><span class="lineNum">     231</span> <span class="tlaGNC tlaBgGNC">           2 :         po::variables_map optionMemory;        </span></span>
+<span id="L232"><span class="lineNum">     232</span>              :         try</span>
+<span id="L233"><span class="lineNum">     233</span>              :         {</span>
+<span id="L234"><span class="lineNum">     234</span> <span class="tlaGNC">           2 :                 po::store(po::parse_command_line(argc, argv, options), optionMemory);</span></span>
+<span id="L235"><span class="lineNum">     235</span> <span class="tlaGNC">           2 :                 po::notify(optionMemory);    </span></span>
+<span id="L236"><span class="lineNum">     236</span>              :         }</span>
+<span id="L237"><span class="lineNum">     237</span>              :         /*</span>
+<span id="L238"><span class="lineNum">     238</span>              :          * Handle any exceptions thrown by boost::program_options.</span>
+<span id="L239"><span class="lineNum">     239</span>              :          */</span>
+<span id="L240"><span class="lineNum">     240</span> <span class="tlaUNC tlaBgUNC">           0 :         catch(const std::exception&amp; e)</span></span>
+<span id="L241"><span class="lineNum">     241</span>              :         {</span>
+<span id="L242"><span class="lineNum">     242</span> <span class="tlaUNC">           0 :                 return std::unexpected(usage(progName, options, e.what()));</span></span>
+<span id="L243"><span class="lineNum">     243</span> <span class="tlaUNC">           0 :         }</span></span>
+<span id="L244"><span class="lineNum">     244</span>              :         </span>
+<span id="L245"><span class="lineNum">     245</span> <span class="tlaGNC tlaBgGNC">           4 :         if (optionMemory.count(&quot;help&quot;)) {</span></span>
+<span id="L246"><span class="lineNum">     246</span> <span class="tlaUNC tlaBgUNC">           0 :                 return std::unexpected(help(progName, options));</span></span>
+<span id="L247"><span class="lineNum">     247</span>              :         }</span>
+<span id="L248"><span class="lineNum">     248</span>              : </span>
+<span id="L249"><span class="lineNum">     249</span> <span class="tlaGNC tlaBgGNC">           2 :         if (const auto progOptions = processProgramOptions(optionMemory, progName); progOptions.has_value())</span></span>
+<span id="L250"><span class="lineNum">     250</span>              :         {</span>
+<span id="L251"><span class="lineNum">     251</span> <span class="tlaGNC">           2 :                 programOptions = *progOptions;</span></span>
+<span id="L252"><span class="lineNum">     252</span>              :         }</span>
+<span id="L253"><span class="lineNum">     253</span>              :         else</span>
+<span id="L254"><span class="lineNum">     254</span>              :         {</span>
+<span id="L255"><span class="lineNum">     255</span> <span class="tlaUNC tlaBgUNC">           0 :                 return std::unexpected(usage(progName, options, &quot;&quot;));</span></span>
+<span id="L256"><span class="lineNum">     256</span> <span class="tlaGNC tlaBgGNC">           2 :         }</span></span>
+<span id="L257"><span class="lineNum">     257</span>              : </span>
+<span id="L258"><span class="lineNum">     258</span> <span class="tlaGNC">           2 :         return programOptions;</span></span>
+<span id="L259"><span class="lineNum">     259</span> <span class="tlaGNC">           2 : }</span></span>
+<span id="L260"><span class="lineNum">     260</span>              : </span>
+<span id="L261"><span class="lineNum">     261</span>              : </span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.0-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>

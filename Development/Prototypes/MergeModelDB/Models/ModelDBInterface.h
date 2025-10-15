@@ -111,6 +111,10 @@ protected:
 // Unit Test Functions
     virtual bool testAccessorFunctionsPassed();
     virtual bool testExceptionHandling();
+    virtual bool testSave();
+    virtual bool testExceptionInsert();
+    virtual bool testExceptionUpdate();
+
     
     template <typename T>
     bool testAccessorFunctions(T testValue, T* member, std::string_view memberName, std::function<void(T)>setFunct, std::function<T(void)>getFunct)

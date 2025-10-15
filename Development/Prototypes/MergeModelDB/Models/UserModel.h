@@ -149,8 +149,8 @@ private:
     bool testExceptionSelectByFullName() { return selectByFullName("", "", "") != true; };
     bool testExceptionSelectByUserID() { return selectByUserID(1) != true; };
     bool testExceptionFormatGetAllUsersQuery() { return formatGetAllUsersQuery() == std::string(); };
-    bool testExceptionInsert();
-    bool testExceptionUpdate();
+    virtual bool testExceptionInsert() override;
+    virtual bool testExceptionUpdate() override;
     virtual ModelDBInterface::ModelTestStatus testAllInsertFailures() override;
 
     std::string lastName;
