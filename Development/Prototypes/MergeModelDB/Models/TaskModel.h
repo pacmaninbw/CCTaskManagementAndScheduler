@@ -185,6 +185,7 @@ private:
 /*
  * Unit Testing
  */
+    virtual void selfTestResetAllValues() override;
     virtual bool testExceptionHandling() override;
     bool testExceptionSelectByTaskID() { return selectByTaskID(0) != true; };
     bool testExceptionSelectByDescriptionAndAssignedUser() { return selectByDescriptionAndAssignedUser("", 0) != true; };

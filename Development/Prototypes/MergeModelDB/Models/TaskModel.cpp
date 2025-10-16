@@ -423,8 +423,10 @@ std::string TaskModel::formatInsertStatement()
     if (isMissingCreationDate())
     {
         creationTimeStamp = std::chrono::system_clock::now();
+        lastUpdate = std::chrono::system_clock::now();
     }
-    lastUpdate = std::chrono::system_clock::now();
+
+    initFormatOptions();
 
     return boost::mysql::format_sql(format_opts.value(),
         "INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, "
@@ -463,6 +465,8 @@ std::string TaskModel::formatUpdateStatement()
         std::vector<std::size_t> dependencyList = getDependencies();
         depenenciesText = buildDependenciesText(dependencyList);
     }
+
+    initFormatOptions();
 
     return boost::mysql::format_sql(format_opts.value(),
         "UPDATE Tasks SET"
@@ -618,8 +622,36 @@ void TaskModel::processResultRow(boost::mysql::row_view rv)
     }
 }
 
+void TaskModel::selfTestResetAllValues()
+{
+    modified = false;
+    primaryKey = 0;
+    creatorID = 0;
+    assignToID = 0;
+    description.clear();
+    status.reset();
+    parentTaskID.reset();
+    percentageComplete = 0.0;
+    creationTimeStamp.reset();
+    dueDate.reset();
+    scheduledStart.reset();
+    actualStartDate.reset();
+    estimatedCompletion.reset();
+    completionDate.reset();
+    estimatedEffort = 0;
+    actualEffortToDate = 0.0;
+    priorityGroup = 0;
+    priority = 0;
+    personal = false;
+    dependencies.clear();
+    lastUpdate.reset();
+
+}
+
 bool TaskModel::testExceptionHandling()
 {
+    selfTestResetAllValues();
+
     bool exceptionHandlingPassed = true;
     bool globalForceException = forceException;
     forceException = true;
@@ -651,6 +683,8 @@ bool TaskModel::testExceptionHandling()
 
 bool TaskModel::testExceptionInsert()
 {
+    selfTestResetAllValues();
+
     std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();
 
     setDescription("Testing Exception handling");
@@ -666,6 +700,8 @@ bool TaskModel::testExceptionInsert()
 
 bool TaskModel::testExceptionUpdate()
 {
+    selfTestResetAllValues();
+
     std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();
 
     setTaskID(1);
@@ -682,6 +718,8 @@ bool TaskModel::testExceptionUpdate()
 
 bool TaskModel::testAccessorFunctionsPassed()
 {
+    selfTestResetAllValues();
+
      bool allAccessorFunctionsPassed = true;
     std::vector<std::function<bool(void)>> accessTests = 
     {
@@ -842,3 +880,4 @@ bool TaskModel::testPersonalAccess()
 {
     return false;
 }
+
