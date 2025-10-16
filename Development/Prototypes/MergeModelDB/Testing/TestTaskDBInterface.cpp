@@ -562,12 +562,12 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::insertShouldPass(TaskModel_
     }
     else
     {
-        std::clog << newTask->getAllErrorMessages() << newTask << "\n";
+        std::clog << newTask->getAllErrorMessages() << *newTask << "\n";
         std::clog << "Primary key for task: " << newTask->getTaskID() << ", " << newTask->getDescription() <<
         " not set!\n";
         if (verboseOutput)
         {
-            std::clog << newTask << "\n\n";
+            std::clog << *newTask << "\n\n";
         }
         return TESTFAILED;
     }
