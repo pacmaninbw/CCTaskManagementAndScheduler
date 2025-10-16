@@ -486,19 +486,17 @@ bool UserModel::testAccessorFunctionsPassed()
     selfTestResetAllValues();
 
     bool allAccessorFunctionsPassed = true;
-    std::vector<std::function<bool(void)>> accessTests = 
-    {
-        {std::bind(&UserModel::testUserIdAccesss, this)},
-        {std::bind(&UserModel::testLastNameAccess, this)},
-        {std::bind(&UserModel::testFirstNameAccess, this)},
-        {std::bind(&UserModel::testMiddleInitialAccess, this)},
-        {std::bind(&UserModel::testEmailAccess, this)},
-        {std::bind(&UserModel::testLoginNameAccess, this)},
-        {std::bind(&UserModel::testPassWordAccess, this)},
-        {std::bind(&UserModel::testCreatedDateAcfcess, this)},
-        {std::bind(&UserModel::testLastLoginAccess, this)},
-        {std::bind(&UserModel::testPreferencesAccess, this)}
-    };
+    std::vector<std::function<bool(void)>> accessTests;
+    accessTests.push_back({std::bind(&UserModel::testUserIdAccesss, this)});
+    accessTests.push_back({std::bind(&UserModel::testLastNameAccess, this)});
+    accessTests.push_back({std::bind(&UserModel::testFirstNameAccess, this)});
+    accessTests.push_back({std::bind(&UserModel::testMiddleInitialAccess, this)});
+    accessTests.push_back({std::bind(&UserModel::testEmailAccess, this)});
+    accessTests.push_back({std::bind(&UserModel::testLoginNameAccess, this)});
+    accessTests.push_back({std::bind(&UserModel::testPassWordAccess, this)});
+    accessTests.push_back({std::bind(&UserModel::testCreatedDateAcfcess, this)});
+    accessTests.push_back({std::bind(&UserModel::testLastLoginAccess, this)});
+    accessTests.push_back({std::bind(&UserModel::testPreferencesAccess, this)});
 
     for (auto accessTest: accessTests)
     {
@@ -597,18 +595,16 @@ bool UserModel::testExceptionHandling()
 
     bool exceptionHandlingPassed = true;
     bool globalForceException = forceException;
-    std::vector<ExceptionTestElement> exceptionTests =
-    {
-        {std::bind(&UserModel::testExceptionSelectByUserID, this), "selectByUserID"},
-        {std::bind(&UserModel::testExceptionSelectByFullName, this), "selectByFullName"},
-        {std::bind(&UserModel::testExceptionSelectByLoginName, this), "selectByLoginName"},
-        {std::bind(&UserModel::testExceptionSelectByEmail, this), "selectByEmail"},
-        {std::bind(&UserModel::testExceptionSelectByLoginAndPassword, this), "selectByLoginAndPassword"},
-        {std::bind(&UserModel::testExceptionFormatGetAllUsersQuery, this), "formatGetAllUsersQuery"},
-        {std::bind(&UserModel::testExceptionInsert, this), "testExceptionInsert"},
-        {std::bind(&UserModel::testExceptionUpdate, this), "testExceptionUpdate"},
-        {std::bind(&UserModel::testExceptionRetrieve, this), "testExceptionRetrieve"}
-    };
+    std::vector<ExceptionTestElement> exceptionTests;
+    exceptionTests.push_back({std::bind(&UserModel::testExceptionSelectByUserID, this), "selectByUserID"});
+    exceptionTests.push_back({std::bind(&UserModel::testExceptionSelectByFullName, this), "selectByFullName"});
+    exceptionTests.push_back({std::bind(&UserModel::testExceptionSelectByLoginName, this), "selectByLoginName"});
+    exceptionTests.push_back({std::bind(&UserModel::testExceptionSelectByEmail, this), "selectByEmail"});
+    exceptionTests.push_back({std::bind(&UserModel::testExceptionSelectByLoginAndPassword, this), "selectByLoginAndPassword"});
+    exceptionTests.push_back({std::bind(&UserModel::testExceptionFormatGetAllUsersQuery, this), "formatGetAllUsersQuery"});
+    exceptionTests.push_back({std::bind(&UserModel::testExceptionInsert, this), "testExceptionInsert"});
+    exceptionTests.push_back({std::bind(&UserModel::testExceptionUpdate, this), "testExceptionUpdate"});
+    exceptionTests.push_back({std::bind(&UserModel::testExceptionRetrieve, this), "testExceptionRetrieve"});
 
     forceException = true;
     if (!forceExceptionsLoop(exceptionTests))
@@ -669,13 +665,11 @@ ModelDBInterface::ModelTestStatus UserModel::testAllInsertFailures()
 
     setUserID(0);   // Force a modification so that missing fields can be tested.
 
-    std::vector<std::function<void(std::string)>> fieldSettings = 
-    {
-        std::bind(&UserModel::setLastName, this, std::placeholders::_1),
-        std::bind(&UserModel::setFirstName, this, std::placeholders::_1),
-        std::bind(&UserModel::setLoginName, this, std::placeholders::_1),
-        std::bind(&UserModel::setPassword, this, std::placeholders::_1)
-    };
+    std::vector<std::function<void(std::string)>> fieldSettings;
+    fieldSettings.push_back(std::bind(&UserModel::setLastName, this, std::placeholders::_1));
+    fieldSettings.push_back(std::bind(&UserModel::setFirstName, this, std::placeholders::_1));
+    fieldSettings.push_back(std::bind(&UserModel::setLoginName, this, std::placeholders::_1));
+    fieldSettings.push_back(std::bind(&UserModel::setPassword, this, std::placeholders::_1));
 
     for (auto setField: fieldSettings)
     {
