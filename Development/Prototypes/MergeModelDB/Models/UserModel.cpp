@@ -205,6 +205,12 @@ bool UserModel::runSelfTest()
         std::clog << "Running UserModel Self Test\n";
     }
 
+    if (!testExceptionHandling())
+    {
+        std::clog << "Exception handling FAILED!\n";
+        allSelfTestsPassed = false;
+    }
+    
     if (!testSave())
     {
         allSelfTestsPassed = false;
@@ -221,13 +227,6 @@ bool UserModel::runSelfTest()
         std::clog << "Test Ouput: " << *this << "\n";
     }
 
-    bool exceptionsPassed = testExceptionHandling();
-    if (!exceptionsPassed)
-    {
-        std::clog << "Exception handling FAILED!\n";
-        allSelfTestsPassed = false;
-    }
-    
     if (testAllInsertFailures() != TESTPASSED)
     {
         std::clog << "Test of all insertion failures FAILED!\n";
@@ -336,10 +335,11 @@ void UserModel::parsePrefenceText(std::string preferences) noexcept
 
 bool UserModel::selectByLoginName(const std::string_view &loginName)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try
     {
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, baseQuery);
         boost::mysql::format_sql_to(fctx, " WHERE LoginName = {}", loginName);
@@ -358,10 +358,11 @@ bool UserModel::selectByLoginName(const std::string_view &loginName)
 
 bool UserModel::selectByEmail(const std::string_view &emailAddress)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try
     {
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, baseQuery);
         boost::mysql::format_sql_to(fctx, " WHERE EmailAddress = {}", emailAddress);
@@ -380,10 +381,11 @@ bool UserModel::selectByEmail(const std::string_view &emailAddress)
 
 bool UserModel::selectByLoginAndPassword(const std::string_view &loginName, const std::string_view &password)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try
     {
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, baseQuery);
         boost::mysql::format_sql_to(fctx, " WHERE LoginName = {} AND HashedPassWord = {}", loginName, password);
@@ -402,10 +404,11 @@ bool UserModel::selectByLoginAndPassword(const std::string_view &loginName, cons
 
 bool UserModel::selectByFullName(const std::string_view &lastName, const std::string_view &firstName, const std::string_view &middleI)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try
     {
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, baseQuery);
         boost::mysql::format_sql_to(fctx, " WHERE LastName = {} AND FirstName = {} AND MiddleInitial = {}", lastName, firstName, middleI);
@@ -424,10 +427,11 @@ bool UserModel::selectByFullName(const std::string_view &lastName, const std::st
 
 std::string UserModel::formatGetAllUsersQuery()
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try
     {
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, "SELECT UserID FROM UserProfile ");
 
@@ -443,10 +447,11 @@ std::string UserModel::formatGetAllUsersQuery()
 
 bool UserModel::selectByUserID(std::size_t UserID)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try
     {
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, baseQuery);
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", UserID);
@@ -574,6 +579,7 @@ bool UserModel::testEmailAccess()
 bool UserModel::testExceptionHandling()
 {
     bool exceptionHandlingPassed = true;
+    bool globalForceException = forceException;
     std::vector<ExceptionTestElement> exceptionTests =
     {
         {std::bind(&UserModel::testExceptionSelectByUserID, this), "selectByUserID"},
@@ -581,25 +587,19 @@ bool UserModel::testExceptionHandling()
         {std::bind(&UserModel::testExceptionSelectByLoginName, this), "selectByLoginName"},
         {std::bind(&UserModel::testExceptionSelectByEmail, this), "selectByEmail"},
         {std::bind(&UserModel::testExceptionSelectByLoginAndPassword, this), "selectByLoginAndPassword"},
-        {std::bind(&UserModel::testExceptionInsert, this), "testExceeptionInsert"},
-        {std::bind(&UserModel::testExceptionUpdate, this), "testExceptionUpdate"}
+        {std::bind(&UserModel::testExceptionFormatGetAllUsersQuery, this), "formatGetAllUsersQuery"},
+        {std::bind(&UserModel::testExceptionInsert, this), "testExceptionInsert"},
+        {std::bind(&UserModel::testExceptionUpdate, this), "testExceptionUpdate"},
+        {std::bind(&UserModel::testExceptionRetrieve, this), "testExceptionRetrieve"}
     };
 
-    forceSQLExecutionException = true;
+    forceException = true;
     if (!forceExceptionsLoop(exceptionTests))
     {
         exceptionHandlingPassed = false;
     }
-    forceSQLExecutionException = false;
 
-    exceptionTests.push_back({std::bind(&UserModel::testExceptionFormatGetAllUsersQuery, this), "formatGetAllUsersQuery"});
-    
-    forceFormatException = true;
-    if (!forceExceptionsLoop(exceptionTests))
-    {
-        exceptionHandlingPassed = false;
-    }
-    forceFormatException = false;
+    forceException = globalForceException;
 
     return exceptionHandlingPassed;
 }
