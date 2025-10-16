@@ -468,8 +468,23 @@ bool UserModel::selectByUserID(std::size_t UserID)
     }
 }
 
+void UserModel::selfTestResetAllValues()
+{
+    modified = false;
+    primaryKey = 0;
+    lastName.clear();
+    firstName.clear();
+    middleInitial.clear();
+    email.clear();
+    loginName.clear();
+    created.reset();
+    lastLogin.reset();
+}
+
 bool UserModel::testAccessorFunctionsPassed()
 {
+    selfTestResetAllValues();
+
     bool allAccessorFunctionsPassed = true;
     std::vector<std::function<bool(void)>> accessTests = 
     {
@@ -578,6 +593,8 @@ bool UserModel::testEmailAccess()
 
 bool UserModel::testExceptionHandling()
 {
+    selfTestResetAllValues();
+
     bool exceptionHandlingPassed = true;
     bool globalForceException = forceException;
     std::vector<ExceptionTestElement> exceptionTests =
@@ -606,6 +623,8 @@ bool UserModel::testExceptionHandling()
 
 bool UserModel::testExceptionInsert()
 {
+    selfTestResetAllValues();
+
     std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();
     setLastName("LastName");
     setFirstName("FirstName");
@@ -619,6 +638,8 @@ bool UserModel::testExceptionInsert()
 
 bool UserModel::testExceptionUpdate()
 {
+    selfTestResetAllValues();
+
     std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();
     setUserID(1);
     setLastName("LastName");
@@ -633,13 +654,7 @@ bool UserModel::testExceptionUpdate()
 
 ModelDBInterface::ModelTestStatus UserModel::testAllInsertFailures()
 {
-    modified = false;
-    primaryKey = 0;
-    lastName = "";
-    firstName = "";
-    middleInitial = "";
-    password = "";
-    loginName = "";
+    selfTestResetAllValues();
 
     std::vector<std::string> notModified = {"not modified!"};
     if (testInsertionFailureMessages(notModified) != TESTPASSED)

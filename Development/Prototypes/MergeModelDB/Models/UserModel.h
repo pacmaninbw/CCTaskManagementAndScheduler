@@ -131,6 +131,7 @@ private:
     void processResultRow(boost::mysql::row_view rv) override;
     
 // Unit test functions
+    virtual void selfTestResetAllValues() override;
     virtual bool testAccessorFunctionsPassed() override;
     bool testUserIdAccesss();
     bool testLastNameAccess();
