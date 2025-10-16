@@ -242,20 +242,76 @@ bool ModelDBInterface::runSelfTest()
     return allSelfTestsPassed;
 }
 
+boost::mysql::date ModelDBInterface::stdchronoDateToBoostMySQLDate(const std::chrono::year_month_day &source) noexcept
+{
+    std::chrono::sys_days tp = source;
+    return boost::mysql::date(tp);
+}
+
+std::chrono::year_month_day ModelDBInterface::boostMysqlDateToChronoDate(const boost::mysql::date &source) noexcept
+{
+    const std::chrono::year year{source.year()};
+    const std::chrono::month month{source.month()};
+    const std::chrono::day day{source.day()};
+    return std::chrono::year_month_day{year, month, day};
+}
+
+boost::mysql::datetime ModelDBInterface::stdChronoTimePointToBoostDateTime(std::chrono::system_clock::time_point source) noexcept
+{
+    return boost::mysql::datetime(std::chrono::time_point_cast<boost::mysql::datetime::time_point::duration>(source));
+}
+
+std::chrono::system_clock::time_point ModelDBInterface::boostMysqlDateTimeToChronoTimePoint(boost::mysql::datetime dbDateTime)
+{
+    return std::chrono::time_point_cast<std::chrono::system_clock::time_point::duration>(dbDateTime.as_time_point());
+}
+
+std::optional<boost::mysql::date> ModelDBInterface::optionalDateConversion(std::optional<std::chrono::year_month_day> optDate)
+{
+    std::optional<boost::mysql::date> mySqlDate;
+
+    if (optDate.has_value())
+    {
+        mySqlDate = stdchronoDateToBoostMySQLDate(optDate.value());
+    }
+
+    return mySqlDate;
+}
+std::optional<boost::mysql::datetime> ModelDBInterface::optionalDateTimeConversion(std::optional<std::chrono::system_clock::time_point> optDateTime)
+{
+    std::optional<boost::mysql::datetime> timeStamp;
+
+    if (optDateTime.has_value())
+    {
+        timeStamp = stdChronoTimePointToBoostDateTime(optDateTime.value());
+    }
+
+    return timeStamp;
+};
+
+void ModelDBInterface::selfTestResetAllValues()
+{
+    std::clog << modelName << "::selfTestResetAllValues() NOT IMPLEMENTED!\n";
+}
+
 bool ModelDBInterface::testAccessorFunctionsPassed()
 {
+    selfTestResetAllValues();
     std::clog << modelName << "::testAccessorFunctionsPassed() NOT IMPLEMENTED Forced FAIL!\n";
     return false;
 }
 
 bool ModelDBInterface::testExceptionHandling()
 {
+    selfTestResetAllValues();
     std::clog << modelName << "::testExceptionHandling() NOT IMPLEMENTED Forced FAIL!\n";
     return false;
 }
 
 bool ModelDBInterface::testSave()
 {
+    selfTestResetAllValues();
+
     bool testPassed = true;
     modified = false;
     primaryKey = 0;
@@ -285,12 +341,14 @@ bool ModelDBInterface::testSave()
 
 bool ModelDBInterface::testExceptionInsert()
 {
+    selfTestResetAllValues();
     std::clog << std::format("{}::testExceptionInsert() NOT IMPLEMENTED! Test FAILED\n", modelName);
     return false;
 }
 
 bool ModelDBInterface::testExceptionUpdate()
 {
+    selfTestResetAllValues();
     std::clog << std::format("{}::testExceptionUpdate() NOT IMPLEMENTED! Test FAILED\n", modelName);
     return false;
 }
@@ -327,6 +385,8 @@ ModelDBInterface::ModelTestStatus ModelDBInterface::wrongErrorMessage(std::strin
 
 ModelDBInterface::ModelTestStatus ModelDBInterface::testInsertionFailureMessages(std::vector<std::string> expectedErrors)
 {
+    selfTestResetAllValues();
+
     if (insert())
     {
         std::clog << std::format("Inserted {} missing required fields!  TEST FAILED\n", modelName);
@@ -351,6 +411,7 @@ ModelDBInterface::ModelTestStatus ModelDBInterface::testInsertionFailureMessages
 
 ModelDBInterface::ModelTestStatus ModelDBInterface::testAllInsertFailures()
 {
+    selfTestResetAllValues();
     std::clog << std::format("{}::testAllInsertFailures() NOT IMPLEMENTED! Test FAILED\n", modelName);
     return TESTFAILED;
 }
@@ -384,6 +445,8 @@ bool ModelDBInterface::forceExceptionsLoop(std::vector<ExceptionTestElement> exc
 
 bool ModelDBInterface::testExceptionRetrieve()
 {
+    selfTestResetAllValues();
     primaryKey = 1;
     return retrieve() != true;
 }
+

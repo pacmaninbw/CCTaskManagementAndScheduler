@@ -62,53 +62,18 @@ protected:
     std::vector<std::string> explodeTextField(std::string const& textField) noexcept;
     std::string implodeTextField(std::vector<std::string>& fields) noexcept;
 
-    boost::mysql::date stdchronoDateToBoostMySQLDate(const std::chrono::year_month_day& source) noexcept
-    {
-        std::chrono::sys_days tp = source;
-        return boost::mysql::date(tp);
-    };
-
-    std::chrono::year_month_day boostMysqlDateToChronoDate(const boost::mysql::date& source) noexcept
-    {
-        const std::chrono::year year{source.year()};
-        const std::chrono::month month{source.month()};
-        const std::chrono::day day{source.day()};
-        return std::chrono::year_month_day{year, month, day};
-    };
-
-    boost::mysql::datetime stdChronoTimePointToBoostDateTime(std::chrono::system_clock::time_point source) noexcept
-    {
-        return boost::mysql::datetime(std::chrono::time_point_cast<boost::mysql::datetime::time_point::duration>(source));
-    };
-
-    std::chrono::system_clock::time_point boostMysqlDateTimeToChronoTimePoint(boost::mysql::datetime dbDateTime)
-    {
-        return std::chrono::time_point_cast<std::chrono::system_clock::time_point::duration>(dbDateTime.as_time_point());
-    }
-
-    std::optional<boost::mysql::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate)
-    {
-        std::optional<boost::mysql::date> mySqlDate;
-
-        if (optDate.has_value())
-        {
-            mySqlDate = stdchronoDateToBoostMySQLDate(optDate.value());
-        }
-        return mySqlDate;
-    };
-
-    std::optional<boost::mysql::datetime> optionalDateTimeConversion(std::optional<std::chrono::system_clock::time_point> optDateTime)
-    {
-        std::optional<boost::mysql::datetime> timeStamp;
-
-        if (optDateTime.has_value())
-        {
-            timeStamp = stdChronoTimePointToBoostDateTime(optDateTime.value());
-        }
-        return timeStamp;
-    };
+/*
+ * Conversions from std::chrono to boost::mysql
+ */
+    boost::mysql::date stdchronoDateToBoostMySQLDate(const std::chrono::year_month_day& source) noexcept;
+    std::chrono::year_month_day boostMysqlDateToChronoDate(const boost::mysql::date& source) noexcept;
+    boost::mysql::datetime stdChronoTimePointToBoostDateTime(std::chrono::system_clock::time_point source) noexcept;
+    std::chrono::system_clock::time_point boostMysqlDateTimeToChronoTimePoint(boost::mysql::datetime dbDateTime);
+    std::optional<boost::mysql::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate);
+    std::optional<boost::mysql::datetime> optionalDateTimeConversion(std::optional<std::chrono::system_clock::time_point> optDateTime);
 
 // Unit Test Functions
+    virtual void selfTestResetAllValues();
     virtual bool testAccessorFunctionsPassed();
     virtual bool testExceptionHandling();
     virtual bool testSave();
