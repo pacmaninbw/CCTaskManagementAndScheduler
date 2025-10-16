@@ -18,8 +18,6 @@ CoreDBInterface::CoreDBInterface()
     verboseOutput{programOptions.verboseOutput},
     forceError{programOptions.forceErrors},
     forceException{programOptions.forceExceptions},
-    forceFormatException{false},
-    forceSQLExecutionException{false},
     inSelfTest{false}
 {
     dbConnectionParameters.server_address.emplace_host_and_port(programOptions.mySqlUrl, programOptions.mySqlPort);
@@ -30,36 +28,11 @@ CoreDBInterface::CoreDBInterface()
 
 void CoreDBInterface::initFormatOptions()
 {
-    // If we are in self test mode and testing execution rather than formatting delay the exception.
-    if (inSelfTest && forceSQLExecutionException && !forceFormatException)
+    if (!format_opts.has_value())
     {
-        forceFormatException = true;
-        return;
-    }
-
-    try {
-        if (!format_opts.has_value())
-        {
-            format_opts = getConnectionFormatOptsAsync();
-        }
-    }
-    catch (const std::exception& e)
-    {
-        if (inSelfTest && forceSQLExecutionException)
-        {
-            forceFormatException = false;
-        }
-        std::string formatOptionsFailure("INTERNAL ERROR: initFormatOptions() FAILED: ");
-        formatOptionsFailure.append(e.what());
-        appendErrorMessage(formatOptionsFailure);
+        format_opts = getConnectionFormatOptsAsync();
     }
 }
-
-void CoreDBInterface::prepareForRunQueryAsync()
-{
-    errorMessages.clear();
-    initFormatOptions();
-};
 
 /*
  * All calls to runQueryAsync should be implemented within try blocks.
@@ -87,7 +60,7 @@ boost::mysql::results CoreDBInterface::runQueryAsync(const std::string& query)
 
 boost::asio::awaitable<boost::mysql::results> CoreDBInterface::coRoutineExecuteSqlStatement(const std::string& query)
 {
-    if (forceSQLExecutionException)
+    if (forceException)
     {
         std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineExecuteSqlStatement");
         std::domain_error forcedException(forcingException);
@@ -135,7 +108,7 @@ boost::mysql::format_options CoreDBInterface::getConnectionFormatOptsAsync()
 
 boost::asio::awaitable<boost::mysql::format_options> CoreDBInterface::coRoutineGetFormatOptions()
 {
-    if (forceFormatException)
+    if (forceException)
     {
         std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions");
         std::domain_error forcedException(forcingException);

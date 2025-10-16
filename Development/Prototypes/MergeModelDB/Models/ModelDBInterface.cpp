@@ -66,8 +66,6 @@ bool ModelDBInterface::insert()
         return false;
     }
 
-    prepareForRunQueryAsync();
-
     try
     {
         boost::mysql::results localResult = runQueryAsync(formatInsertStatement());
@@ -86,7 +84,7 @@ bool ModelDBInterface::insert()
 
 bool ModelDBInterface::update()
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     if (!isInDataBase())
     {
@@ -102,7 +100,6 @@ bool ModelDBInterface::update()
 
     try
     {
-
         boost::mysql::results localResult = runQueryAsync(formatUpdateStatement());
         modified = false;
             
@@ -118,7 +115,7 @@ bool ModelDBInterface::update()
 
 bool ModelDBInterface::retrieve()
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try
     {
@@ -368,7 +365,7 @@ bool ModelDBInterface::forceExceptionsLoop(std::vector<ExceptionTestElement> exc
         {
             if (!exceptionTest.testExceptionFunction())
             {
-                std::clog << std::format("{}::{} returned true with exception: Exception Test Failed",
+                std::clog << std::format("{}::{} returned true with exception: Exception Test Failed\n",
                     modelName, exceptionTest.functionUnderTest);
                 exceptionHandlingPassed = false;
             }
@@ -385,3 +382,8 @@ bool ModelDBInterface::forceExceptionsLoop(std::vector<ExceptionTestElement> exc
     return exceptionHandlingPassed;
 }
 
+bool ModelDBInterface::testExceptionRetrieve()
+{
+    primaryKey = 1;
+    return retrieve() != true;
+}

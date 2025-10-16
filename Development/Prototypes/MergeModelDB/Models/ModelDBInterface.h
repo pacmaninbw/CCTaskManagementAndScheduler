@@ -114,6 +114,7 @@ protected:
     virtual bool testSave();
     virtual bool testExceptionInsert();
     virtual bool testExceptionUpdate();
+    virtual bool testExceptionRetrieve();
 
     
     template <typename T>

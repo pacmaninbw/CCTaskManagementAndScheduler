@@ -54,7 +54,7 @@ public:
     
     bool runFirstQuery()
     {
-        prepareForRunQueryAsync();
+        errorMessages.clear();
 
         try
         {

@@ -200,10 +200,11 @@ void TaskModel::setTaskID(std::size_t newID)
 
 bool TaskModel::selectByDescriptionAndAssignedUser(std::string_view description, std::size_t assignedUserID)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try
     {
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, baseQuery);
         boost::mysql::format_sql_to(fctx, " WHERE Description = {} AND AsignedTo = {}", description, assignedUserID);
@@ -222,10 +223,11 @@ bool TaskModel::selectByDescriptionAndAssignedUser(std::string_view description,
 
 bool TaskModel::selectByTaskID(std::size_t taskID)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try
     {
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, baseQuery);
         boost::mysql::format_sql_to(fctx, " WHERE TaskID = {}", taskID);
@@ -244,11 +246,12 @@ bool TaskModel::selectByTaskID(std::size_t taskID)
 
 std::string TaskModel::formatSelectActiveTasksForAssignedUser(std::size_t assignedUserID)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try {
         constexpr unsigned int notStarted = static_cast<unsigned int>(TaskModel::TaskStatus::Not_Started);
 
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND Completed IS NULL AND (Status IS NOT NULL AND Status <> {})",
@@ -267,11 +270,12 @@ std::string TaskModel::formatSelectActiveTasksForAssignedUser(std::size_t assign
 
 std::string TaskModel::formatSelectUnstartedDueForStartForAssignedUser(std::size_t assignedUserID)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try {
         constexpr unsigned int notStarted = static_cast<unsigned int>(TaskModel::TaskStatus::Not_Started);
 
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND ScheduledStart < {} AND (Status IS NULL OR Status = {})",
@@ -290,9 +294,10 @@ std::string TaskModel::formatSelectUnstartedDueForStartForAssignedUser(std::size
 
 std::string TaskModel::formatSelectTasksCompletedByAssignedAfterDate(std::size_t assignedUserID, std::chrono::year_month_day& searchStartDate)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try {
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND Completed >= {}",
@@ -311,9 +316,10 @@ std::string TaskModel::formatSelectTasksCompletedByAssignedAfterDate(std::size_t
 
 std::string TaskModel::formatSelectTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try {
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND ParentTask = {}", assignedUserID, parentID);
@@ -340,6 +346,12 @@ bool TaskModel::runSelfTest()
         std::clog << "Running TaskModel Self Test\n";
     }
 
+    if (!testExceptionHandling())
+    {
+        std::clog << "Exception handling FAILED!\n";
+        allSelfTestsPassed = false;
+    }
+    
     if (!testSave())
     {
         allSelfTestsPassed = false;
@@ -356,12 +368,6 @@ bool TaskModel::runSelfTest()
         std::clog << "Test Ouput: " << *this << "\n";
     }
 
-    if (!testExceptionHandling())
-    {
-        std::clog << "Exception handling FAILED!\n";
-        allSelfTestsPassed = false;
-    }
-    
     if (testAllInsertFailures() != TESTPASSED)
     {
         std::clog << "Test of all insertion failures FAILED!\n";
@@ -504,8 +510,9 @@ std::string TaskModel::formatUpdateStatement()
 
 std::string TaskModel::formatSelectStatement()
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
+    initFormatOptions();
     boost::mysql::format_context fctx(format_opts.value());
     boost::mysql::format_sql_to(fctx, baseQuery);
     boost::mysql::format_sql_to(fctx, " WHERE TaskID = {}", primaryKey);
@@ -614,37 +621,30 @@ void TaskModel::processResultRow(boost::mysql::row_view rv)
 bool TaskModel::testExceptionHandling()
 {
     bool exceptionHandlingPassed = true;
+    bool globalForceException = forceException;
+    forceException = true;
     std::vector<ExceptionTestElement> exceptionTests =
     {
         {std::bind(&TaskModel::testExceptionSelectByTaskID, this), "selectByTaskID"},
         {std::bind(&TaskModel::testExceptionSelectByDescriptionAndAssignedUser, this), "selectByDescriptionAndAssignedUser"},
         {std::bind(&TaskModel::testExceptionInsert, this), "testExceeptionInsert"},
-        {std::bind(&TaskModel::testExceptionUpdate, this), "testExceptionUpdate"}
-
+        {std::bind(&TaskModel::testExceptionUpdate, this), "testExceptionUpdate"},
+        {std::bind(&TaskModel::testExceptionFormatSelectActiveTasksForAssignedUser, this),
+            "selectByDescriptionAndAssignedUser"},
+        {std::bind(&TaskModel::testExceptionFormatSelectUnstartedDueForStartForAssignedUser, this),
+            "formatSelectActiveTasksForAssignedUser"},
+        {std::bind(&TaskModel::testExceptionFormatSelectTasksCompletedByAssignedAfterDate, this),
+            "formatSelectTasksCompletedByAssignedAfterDate"},
+        {std::bind(&TaskModel::testExceptionFormatSelectTasksByAssignedIDandParentID, this),
+            "formatSelectTasksByAssignedIDandParentID"}
     };
 
-    forceSQLExecutionException = true;
     if (!forceExceptionsLoop(exceptionTests))
     {
         exceptionHandlingPassed = false;
     }
-    forceSQLExecutionException = false;
 
-    exceptionTests.push_back({std::bind(&TaskModel::testExceptionFormatSelectActiveTasksForAssignedUser, this),
-        "selectByDescriptionAndAssignedUser"});
-    exceptionTests.push_back({std::bind(&TaskModel::testExceptionFormatSelectUnstartedDueForStartForAssignedUser, this),
-        "formatSelectActiveTasksForAssignedUser"});
-    exceptionTests.push_back({std::bind(&TaskModel::testExceptionFormatSelectTasksCompletedByAssignedAfterDate, this),
-        "formatSelectTasksCompletedByAssignedAfterDate"});
-    exceptionTests.push_back({std::bind(&TaskModel::testExceptionFormatSelectTasksByAssignedIDandParentID, this),
-        "formatSelectTasksByAssignedIDandParentID"});
-    
-    forceFormatException = true;
-    if (!forceExceptionsLoop(exceptionTests))
-    {
-        exceptionHandlingPassed = false;
-    }
-    forceFormatException = false;
+    forceException = globalForceException;
 
     return exceptionHandlingPassed;
 }

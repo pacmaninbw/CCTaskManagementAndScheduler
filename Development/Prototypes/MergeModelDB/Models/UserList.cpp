@@ -15,7 +15,8 @@ UserList::UserList()
 
 UserListValues UserList::getAllUsers()
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
+    
     UserListValues allUsers;
 
     try

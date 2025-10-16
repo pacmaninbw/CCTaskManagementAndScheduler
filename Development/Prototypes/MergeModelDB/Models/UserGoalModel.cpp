@@ -58,10 +58,11 @@ void UserGoalModel::setCreationTimeStamp(std::chrono::system_clock::time_point n
 
 bool UserGoalModel::selectByGoalID(std::size_t noteID)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try
     {
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, baseQuery);
         boost::mysql::format_sql_to(fctx, " WHERE idUserGoals = {}", noteID);
@@ -80,10 +81,11 @@ bool UserGoalModel::selectByGoalID(std::size_t noteID)
 
 bool UserGoalModel::selectByUserIDAndDescription(std::size_t userID, std::string targetDesciption)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try
     {
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, baseQuery);
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {} and Description = {}", userID, targetDesciption);
@@ -108,10 +110,10 @@ bool UserGoalModel::diffGoal(UserGoalModel &other)
 
 std::string UserGoalModel::formatSelectAllByUserId(std::size_t userId)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try {
-
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {} ", userId);
@@ -129,10 +131,10 @@ std::string UserGoalModel::formatSelectAllByUserId(std::size_t userId)
 
 std::string UserGoalModel::formatSelectAllChildGoalsWithParentFromUser(std::size_t parentId, std::size_t userId)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try {
-
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND ParentGoal = {}", userId, parentId);
@@ -155,10 +157,10 @@ std::string UserGoalModel::formatSelectAllChildGoalsWithParent(UserGoalModel& pa
 
 std::string UserGoalModel::formatSelectByExactDescription(std::string fullDescription, std::size_t userId)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try {
-
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Description = {}", userId, fullDescription);
@@ -176,10 +178,10 @@ std::string UserGoalModel::formatSelectByExactDescription(std::string fullDescri
 
 std::string UserGoalModel::formatSelectBySimilarDescription(std::string partialDescription, std::size_t userId)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try {
-
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Description LIKE {}", userId, partialDescription);

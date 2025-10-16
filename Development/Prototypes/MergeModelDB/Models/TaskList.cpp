@@ -16,7 +16,7 @@ TaskList::TaskList()
 
 TaskListValues TaskList::getActiveTasksForAssignedUser(std::size_t assignedUserID)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 /*
  * Prepend function name to any error messages.
  */
@@ -38,7 +38,7 @@ TaskListValues TaskList::getActiveTasksForAssignedUser(std::size_t assignedUserI
 
 TaskListValues TaskList::getUnstartedDueForStartForAssignedUser(std::size_t assignedUserID)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
     appendErrorMessage("In TaskList::getUnstartedDueForStartForAssignedUser : ");
 
     try
@@ -58,7 +58,7 @@ TaskListValues TaskList::getUnstartedDueForStartForAssignedUser(std::size_t assi
 TaskListValues TaskList::getTasksCompletedByAssignedAfterDate(std::size_t assignedUserID,
     std::chrono::year_month_day& searchStartDate)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
     appendErrorMessage("In TaskList::getTasksCompletedByAssignedAfterDate : ");
 
     try
@@ -78,7 +78,7 @@ TaskListValues TaskList::getTasksCompletedByAssignedAfterDate(std::size_t assign
 
 TaskListValues TaskList::getTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
     appendErrorMessage("In TaskList::getTasksByAssignedIDandParentID : ");
 
     try

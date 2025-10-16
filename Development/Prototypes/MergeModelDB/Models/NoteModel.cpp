@@ -119,10 +119,11 @@ void NoteModel::processResultRow(boost::mysql::row_view rv)
 
 bool NoteModel::selectByNoteID(std::size_t noteID)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 
     try
     {
+        initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, baseQuery);
         boost::mysql::format_sql_to(fctx, " WHERE idUserNotes = {}", noteID);

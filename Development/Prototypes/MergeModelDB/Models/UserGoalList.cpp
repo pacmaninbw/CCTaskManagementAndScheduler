@@ -16,7 +16,7 @@ UserGoalList::UserGoalList()
 
 UserGoalListValues UserGoalList::getAllGoalsForUser(std::size_t userID)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 /*
  * Prepend function name to any error messages.
  */
@@ -38,7 +38,7 @@ UserGoalListValues UserGoalList::getAllGoalsForUser(std::size_t userID)
 
 UserGoalListValues UserGoalList::getAllChildrenFromParent(UserGoalModel &parentGoal)
 {
-    prepareForRunQueryAsync();
+    errorMessages.clear();
 /*
  * Prepend function name to any error messages.
  */

@@ -23,7 +23,6 @@ public:
 
 protected:
     void initFormatOptions();
-    void prepareForRunQueryAsync();
     void appendErrorMessage(const std::string& newError) { errorMessages.append(newError); errorMessages.append("\n");};
 /*
  * All calls to runQueryAsync and getConnectionFormatOptsAsync should be
@@ -39,8 +38,6 @@ protected:
     bool verboseOutput;
     bool forceError;
     bool forceException;
-    bool forceFormatException;
-    bool forceSQLExecutionException;
     bool inSelfTest;
     std::optional<boost::mysql::format_options> format_opts;
 };
