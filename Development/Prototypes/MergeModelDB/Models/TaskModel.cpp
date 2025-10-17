@@ -338,6 +338,7 @@ std::string TaskModel::formatSelectTasksByAssignedIDandParentID(std::size_t assi
 bool TaskModel::runSelfTest()
 {
     inSelfTest = true;
+    verboseOutput = true;
 
     bool allSelfTestsPassed = true;
 
@@ -374,6 +375,7 @@ bool TaskModel::runSelfTest()
     }
 
     inSelfTest = false;
+    verboseOutput = false;
     
     return allSelfTestsPassed;
 }
@@ -655,21 +657,19 @@ bool TaskModel::testExceptionHandling()
     bool exceptionHandlingPassed = true;
     bool globalForceException = forceException;
     forceException = true;
-    std::vector<ExceptionTestElement> exceptionTests =
-    {
-        {std::bind(&TaskModel::testExceptionSelectByTaskID, this), "selectByTaskID"},
-        {std::bind(&TaskModel::testExceptionSelectByDescriptionAndAssignedUser, this), "selectByDescriptionAndAssignedUser"},
-        {std::bind(&TaskModel::testExceptionInsert, this), "testExceeptionInsert"},
-        {std::bind(&TaskModel::testExceptionUpdate, this), "testExceptionUpdate"},
-        {std::bind(&TaskModel::testExceptionFormatSelectActiveTasksForAssignedUser, this),
-            "selectByDescriptionAndAssignedUser"},
-        {std::bind(&TaskModel::testExceptionFormatSelectUnstartedDueForStartForAssignedUser, this),
-            "formatSelectActiveTasksForAssignedUser"},
-        {std::bind(&TaskModel::testExceptionFormatSelectTasksCompletedByAssignedAfterDate, this),
-            "formatSelectTasksCompletedByAssignedAfterDate"},
-        {std::bind(&TaskModel::testExceptionFormatSelectTasksByAssignedIDandParentID, this),
-            "formatSelectTasksByAssignedIDandParentID"}
-    };
+    std::vector<ExceptionTestElement> exceptionTests;
+    exceptionTests.push_back({std::bind(&TaskModel::testExceptionSelectByTaskID, this), "selectByTaskID"});
+    exceptionTests.push_back({std::bind(&TaskModel::testExceptionSelectByDescriptionAndAssignedUser, this), "selectByDescriptionAndAssignedUser"});
+    exceptionTests.push_back({std::bind(&TaskModel::testExceptionInsert, this), "testExceeptionInsert"});
+    exceptionTests.push_back({std::bind(&TaskModel::testExceptionUpdate, this), "testExceptionUpdate"});
+    exceptionTests.push_back({std::bind(&TaskModel::testExceptionFormatSelectActiveTasksForAssignedUser, this),
+        "selectByDescriptionAndAssignedUser"});
+    exceptionTests.push_back({std::bind(&TaskModel::testExceptionFormatSelectUnstartedDueForStartForAssignedUser, this),
+        "formatSelectActiveTasksForAssignedUser"});
+    exceptionTests.push_back({std::bind(&TaskModel::testExceptionFormatSelectTasksCompletedByAssignedAfterDate, this),
+        "formatSelectTasksCompletedByAssignedAfterDate"});
+    exceptionTests.push_back({std::bind(&TaskModel::testExceptionFormatSelectTasksByAssignedIDandParentID, this),
+        "formatSelectTasksByAssignedIDandParentID"});
 
     if (!forceExceptionsLoop(exceptionTests))
     {
@@ -721,28 +721,27 @@ bool TaskModel::testAccessorFunctionsPassed()
     selfTestResetAllValues();
 
      bool allAccessorFunctionsPassed = true;
-    std::vector<std::function<bool(void)>> accessTests = 
-    {
-        {std::bind(&TaskModel::testTaskIdAccesss, this)},
-        {std::bind(&TaskModel::testCreatorIDAccess, this)},
-        {std::bind(&TaskModel::testAssignToIDAccess, this)},
-        {std::bind(&TaskModel::testDescriptionAccess, this)},
-//        {std::bind(&TaskModel::testStatusAccess, this)},
-//        {std::bind(&TaskModel::testParentTaskIDAccess, this)},
-        {std::bind(&TaskModel::testPercentageCompleteAccess, this)},
-        {std::bind(&TaskModel::testCreationDateAccess, this)},
-        {std::bind(&TaskModel::testDueDateAccess, this)},
-        {std::bind(&TaskModel::testScheduledStartAccess, this)},
-        {std::bind(&TaskModel::testActualStartDateAccess, this)},
-        {std::bind(&TaskModel::testEstimatedCompletionAccess, this)},
-        {std::bind(&TaskModel::testCompletionDateAccess, this)},
-        {std::bind(&TaskModel::testEstimatedEffortAccess, this)},
-        {std::bind(&TaskModel::testActualEffortToDateAccess, this)},
-        {std::bind(&TaskModel::testPriorityGroupAccess, this)},
-        {std::bind(&TaskModel::testPriorityGroupCAccess, this)},
-        {std::bind(&TaskModel::testPriorityAccess, this)},
-        {std::bind(&TaskModel::testPersonalAccess, this)},
-    };
+    std::vector<std::function<bool(void)>> accessTests; 
+    accessTests.push_back({std::bind(&TaskModel::testTaskIdAccesss, this)});
+    accessTests.push_back({std::bind(&TaskModel::testCreatorIDAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testAssignToIDAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testDescriptionAccess, this)});
+//  accessTests.push_back({std::bind(&TaskModel::testStatusAccess, this)});
+//  accessTests.push_back({std::bind(&TaskModel::testParentTaskIDAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testPercentageCompleteAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testCreationDateAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testDueDateAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testScheduledStartAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testActualStartDateAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testEstimatedCompletionAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testCompletionDateAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testEstimatedEffortAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testActualEffortToDateAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testPriorityGroupAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testPriorityGroupCAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testPriorityAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testPersonalAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testDependenciesAccess, this)});
 
     for (auto accessTest: accessTests)
     {
@@ -828,7 +827,7 @@ bool TaskModel::testDueDateAccess()
 bool TaskModel::testScheduledStartAccess()
 {
     std::chrono::year_month_day testValue = getTodaysDateMinus(OneWeek);
-    return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &dueDate, "Scheduled Start Date",
+    return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &scheduledStart, "Scheduled Start Date",
         std::bind(&TaskModel::setScheduledStart, this, std::placeholders::_1),
         std::bind(&TaskModel::getScheduledStart, this));
 }
@@ -843,41 +842,145 @@ bool TaskModel::testActualStartDateAccess()
 
 bool TaskModel::testEstimatedEffortAccess()
 {
-    return false;
+    unsigned int testValue = 1024;
+
+    return testAccessorFunctions<unsigned int>(testValue, &estimatedEffort, "Estimated Effort",
+        std::bind(&TaskModel::setEstimatedEffort, this, std::placeholders::_1),
+        std::bind(&TaskModel::getEstimatedEffort, this));
 }
 
 bool TaskModel::testCompletionDateAccess()
 {
-    return false;
+    std::chrono::year_month_day testValue = getTodaysDate();
+    return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &completionDate, "Completion Date",
+        std::bind(&TaskModel::setCompletionDate, this, std::placeholders::_1),
+        std::bind(&TaskModel::getCompletionDate, this));
 }
 
 bool TaskModel::testEstimatedCompletionAccess()
 {
-    return false;
+    std::chrono::year_month_day testValue = getTodaysDate();
+    return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &estimatedCompletion, "Completion Date",
+        std::bind(&TaskModel::setEstimatedCompletion, this, std::placeholders::_1),
+        std::bind(&TaskModel::getEstimatedCompletion, this));
 }
 
 bool TaskModel::testActualEffortToDateAccess()
 {
-    return false;
+    double testValue = 752.75;
+    return testAccessorFunctions<double>(testValue, &actualEffortToDate, "Actual Effort to date",
+        std::bind(&TaskModel::setActualEffortToDate, this, std::placeholders::_1),
+        std::bind(&TaskModel::getactualEffortToDate, this));
 }
 
 bool TaskModel::testPriorityGroupAccess()
 {
-    return false;
+    unsigned int testValue = 3;
+
+    return testAccessorFunctions<unsigned int>(testValue, &priorityGroup, "Priority Group Int Value",
+        std::bind(&TaskModel::setPriorityGroup, this, std::placeholders::_1),
+        std::bind(&TaskModel::getPriorityGroup, this));
 }
 
 bool TaskModel::testPriorityGroupCAccess()
 {
-    return false;
+    const char testValue = 'B';
+    unsigned int expectedInternalValue = testValue - 'A' + 1;
+    std::string_view memberName("Priority Group Character");
+
+    if (verboseOutput)
+    {
+        std::clog << "Running self test on set and get functions for " << modelName << "::" << memberName << "\n";
+    }
+
+    modified = false;
+
+    setPriorityGroupC(testValue);
+    if (!isModified())
+    {
+        std::clog << "In self test for: " << modelName << " set function for " << memberName << " FAILED to set modified\n";
+        return false;
+    }
+
+    if (priorityGroup != expectedInternalValue)
+    {
+        std::clog  << "In self test for: " << modelName << "Set function for " << memberName << " FAILED to set member value\n";
+        std::clog << "\tExpected Value: " << expectedInternalValue << "Actual Value: " << priorityGroup << "\n";
+        return false;
+    }
+
+    if (getPriorityGroup() != expectedInternalValue)
+    {
+        std::clog  << "In self test for: " << modelName << " Get function for " << memberName << " FAILED\n";
+        std::clog << "\tExpected Value: " << expectedInternalValue << "Actual Value: " << getPriorityGroup() << "\n";
+        return false;
+    }
+
+    if (verboseOutput)
+    {
+        std::clog << "Self test on set and get functions for " << modelName << "::" << memberName << " PASSED\n";
+    }
+
+    return true;
 }
 
 bool TaskModel::testPriorityAccess()
 {
-    return false;
+    unsigned int testValue = 5;
+
+    return testAccessorFunctions<unsigned int>(testValue, &priority, "Priority",
+        std::bind(&TaskModel::setPriority, this, std::placeholders::_1),
+        std::bind(&TaskModel::getPriority, this));
 }
 
 bool TaskModel::testPersonalAccess()
 {
-    return false;
+    bool testValue = true;
+
+    return testAccessorFunctions<bool>(testValue, &personal, "Personal",
+        std::bind(&TaskModel::setPersonal, this, std::placeholders::_1),
+        std::bind(&TaskModel::isPersonal, this));
 }
 
+bool TaskModel::testDependenciesAccess()
+{
+    modified = false;
+
+    if (verboseOutput)
+    {
+        std::clog << "Running self test on add and get functions for " << modelName << "::dependencies\n";
+    }
+
+    std::vector<std::size_t> testDependencies;
+    testDependencies.push_back(1);
+    testDependencies.push_back(3);
+    testDependencies.push_back(5);
+
+    for (auto dependency: testDependencies)
+    {
+        addDependency(dependency);
+        if (!isModified())
+        {
+            std::clog << "In self test for: " << modelName << "::addDependency()" << " FAILED to set modified\n";
+            return false;
+        }
+    }
+
+    if (dependencies != testDependencies)
+    {
+        std::clog << "Self Test for " << modelName << "::addDependency()" << " FAILED to set values\n";
+        return false;
+    }
+
+    if (getDependencies() != testDependencies)
+    {
+        std::clog << "Self Test for " << modelName << "::getDependencies()" << " FAILED to get values\n";
+    }
+
+    if (verboseOutput)
+    {
+        std::clog << "Self test on set and get functions for " << modelName << "::dependencoies PASSED\n";
+    }
+
+    return true;
+}

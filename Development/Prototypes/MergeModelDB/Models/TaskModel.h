@@ -219,6 +219,7 @@ private:
     bool testPriorityGroupCAccess();
     bool testPriorityAccess();
     bool testPersonalAccess();
+    bool testDependenciesAccess();
 
  /*
   * Member Variables
