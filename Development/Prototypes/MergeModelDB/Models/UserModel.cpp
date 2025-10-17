@@ -197,6 +197,7 @@ void UserModel::initRequiredFields()
 bool UserModel::runSelfTest()
 {
     inSelfTest = true;
+    verboseOutput = true;
 
     bool allSelfTestsPassed = true;
 
@@ -233,6 +234,7 @@ bool UserModel::runSelfTest()
     }
 
     inSelfTest = false;
+    verboseOutput = false;
 
     return allSelfTestsPassed;
 }
@@ -508,7 +510,6 @@ bool UserModel::testAccessorFunctionsPassed()
 
     return allAccessorFunctionsPassed;
 }
-
 
 bool UserModel::testUserIdAccesss()
 {
