@@ -208,6 +208,7 @@ std::string ModelDBInterface::implodeTextField(std::vector<std::string> &fields)
 bool ModelDBInterface::runSelfTest()
 {
     inSelfTest = true;
+    verboseOutput = true;
     bool allSelfTestsPassed = true;
 
     if (verboseOutput)
@@ -238,6 +239,7 @@ bool ModelDBInterface::runSelfTest()
     }
 
     inSelfTest = false;
+    verboseOutput = false;
     
     return allSelfTestsPassed;
 }
