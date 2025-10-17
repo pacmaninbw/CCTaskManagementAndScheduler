@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
                     return EXIT_FAILURE;
                 }
             }
-
+#if 1
             TestUserDBInterface userTests(programOptions.userTestDataFile);
             if (userTests.runAllTests() == TestDBInterfaceCore::TestStatus::TestPassed)
             {
@@ -97,6 +97,7 @@ int main(int argc, char* argv[])
 			{
                 stopWatch.stopTimerAndReport("Testing of Insertion and retrieval of users and tasks in MySQL database\n");
 			}
+#endif
         }
         else
 		{
