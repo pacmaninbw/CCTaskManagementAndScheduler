@@ -139,7 +139,15 @@ protected:
 
         if (!member->has_value() || member->value() != testValue)
         {
-            std::clog  << "In self test for: " << modelName << "Set function for " << memberName << " FAILED to set member value\n";
+            if (!member->has_value())
+            {
+                std::clog  << "In self test for: " << modelName << "Set function for " << memberName << " FAILED to set member value\n";
+            }
+            if (member->value() != testValue)
+            {
+                std::clog  << "In self test for: " << modelName << " expected value: " << testValue
+                         << "actual value: " << member->value() << " FAILED to set member value\n";
+            }
             return false;
         }
 
