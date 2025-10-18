@@ -209,6 +209,7 @@ protected:
     bool hasErrorMessage();
     ModelDBInterface::ModelTestStatus wrongErrorMessage(std::string expectedString);
     virtual ModelDBInterface::ModelTestStatus testInsertionFailureMessages(std::vector<std::string> expectedErrors);
+    virtual ModelDBInterface::ModelTestStatus testUpdateFailureMessages(std::vector<std::string> expectedErrors);
     virtual ModelDBInterface::ModelTestStatus testAllInsertFailures();
     struct ExceptionTestElement
     {
@@ -217,6 +218,8 @@ protected:
     };
 
     virtual bool forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests);
+    ModelDBInterface::ModelTestStatus testCommonInsertFailurePath();
+    ModelDBInterface::ModelTestStatus testCommonUpdateFailurePath();
 
 protected:
     std::size_t primaryKey;

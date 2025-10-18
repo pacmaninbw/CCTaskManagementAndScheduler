@@ -216,6 +216,24 @@ bool ModelDBInterface::runSelfTest()
         std::clog << "Running " << modelName << " Self Test\n";
     }
 
+    if (testCommonInsertFailurePath() != TESTPASSED)
+    {
+        allSelfTestsPassed = false;
+    }
+    else
+    {
+        std::clog << "Common Insertion Failure Test PASSED!\n";
+    }
+
+    if (testCommonUpdateFailurePath() != TESTPASSED)
+    {
+        allSelfTestsPassed = false;
+    }
+    else
+    {
+        std::clog << "Common Update Failure Test PASSED!\n";
+    }
+
     if (!testSave())
     {
         allSelfTestsPassed = false;
@@ -293,6 +311,10 @@ std::optional<boost::mysql::datetime> ModelDBInterface::optionalDateTimeConversi
 
 void ModelDBInterface::selfTestResetAllValues()
 {
+    primaryKey = 0;
+    modified = false;
+    errorMessages.clear();
+
     std::clog << modelName << "::selfTestResetAllValues() NOT IMPLEMENTED!\n";
 }
 
@@ -405,6 +427,30 @@ ModelDBInterface::ModelTestStatus ModelDBInterface::testInsertionFailureMessages
     return TESTPASSED;
 }
 
+ModelDBInterface::ModelTestStatus ModelDBInterface::testUpdateFailureMessages(std::vector<std::string> expectedErrors)
+{
+    if (update())
+    {
+        std::clog << std::format("Update successful with expected errors!  TEST FAILED\n", modelName);
+        return TESTFAILED;
+    }
+
+    if (!hasErrorMessage())
+    {
+        return TESTFAILED;
+    }
+
+    for (auto expectedError: expectedErrors)
+    {
+        if (wrongErrorMessage(expectedError) == TESTFAILED)
+        {
+            return TESTFAILED;
+        }
+    }
+
+    return TESTPASSED;
+}
+
 ModelDBInterface::ModelTestStatus ModelDBInterface::testAllInsertFailures()
 {
     selfTestResetAllValues();
@@ -446,3 +492,46 @@ bool ModelDBInterface::testExceptionRetrieve()
     return retrieve() != true;
 }
 
+ModelDBInterface::ModelTestStatus ModelDBInterface::testCommonInsertFailurePath()
+{
+    selfTestResetAllValues();
+
+    primaryKey = 1;
+    modified = true;
+
+    std::vector<std::string> alreadyInDB = {"already in Database"};
+    if (testInsertionFailureMessages(alreadyInDB) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    selfTestResetAllValues();
+
+    std::vector<std::string> notModified = {"not modified!"};
+    if (testInsertionFailureMessages(notModified) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
+}
+
+ModelDBInterface::ModelTestStatus ModelDBInterface::testCommonUpdateFailurePath()
+{
+    selfTestResetAllValues();
+
+    std::vector<std::string> notInDB = {"not in Database"};
+    if (testUpdateFailureMessages(notInDB) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    primaryKey = 1;
+    std::vector<std::string> notModified = {"not modified!"};
+    if (testUpdateFailureMessages(notModified) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
+}
