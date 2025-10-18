@@ -155,7 +155,7 @@ void ModelDBInterface::reportMissingFields() noexcept
     {
         if (testAndReport.errorCondition())
         {
-            appendErrorMessage(std::format("Missing {} required {}!\n", modelName, testAndReport.fieldName));
+            appendErrorMessage(std::format("Missing {} required {}!", modelName, testAndReport.fieldName));
         }
     }
 }
@@ -363,11 +363,6 @@ bool ModelDBInterface::hasErrorMessage()
         return false;
     }
 
-    if (verboseOutput)
-    {
-        std::clog << "Expected error was; " << errorMessages << "\n";
-    }
-
     return true;
 }
 
@@ -379,6 +374,7 @@ ModelDBInterface::ModelTestStatus ModelDBInterface::wrongErrorMessage(std::strin
         std::clog << "Wrong message generated! TEST FAILED!\n";
         std::clog << errorMessages << "\n";
         std::clog << "Missing expected: " << expectedString << "\n";
+        std::clog << "Error Messages:" << errorMessages << "\n";
         return TESTFAILED;
     }
 
@@ -387,8 +383,6 @@ ModelDBInterface::ModelTestStatus ModelDBInterface::wrongErrorMessage(std::strin
 
 ModelDBInterface::ModelTestStatus ModelDBInterface::testInsertionFailureMessages(std::vector<std::string> expectedErrors)
 {
-    selfTestResetAllValues();
-
     if (insert())
     {
         std::clog << std::format("Inserted {} missing required fields!  TEST FAILED\n", modelName);
