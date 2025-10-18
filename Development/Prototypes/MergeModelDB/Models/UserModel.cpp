@@ -479,8 +479,10 @@ void UserModel::selfTestResetAllValues()
     middleInitial.clear();
     email.clear();
     loginName.clear();
+    password.clear();
     created.reset();
     lastLogin.reset();
+    errorMessages.clear();
 }
 
 bool UserModel::testAccessorFunctionsPassed()
@@ -651,6 +653,15 @@ bool UserModel::testExceptionUpdate()
 
 ModelDBInterface::ModelTestStatus UserModel::testAllInsertFailures()
 {
+    selfTestResetAllValues();
+
+    setUserID(1);
+    std::vector<std::string> alreadyInDB = {"already in Database"};
+    if (testInsertionFailureMessages(alreadyInDB) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
     selfTestResetAllValues();
 
     std::vector<std::string> notModified = {"not modified!"};
