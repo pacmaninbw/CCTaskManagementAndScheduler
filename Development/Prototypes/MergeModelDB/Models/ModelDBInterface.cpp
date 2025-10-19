@@ -9,6 +9,7 @@
 #include <chrono>
 #include <exception>
 #include <iostream>
+#include <ranges>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -256,6 +257,11 @@ bool ModelDBInterface::runSelfTest()
         std::clog << "Test of all insertion failures FAILED!\n";
     }
 
+    if (!testTextFieldManipulation())
+    {
+        allSelfTestsPassed = false;
+    }
+
     inSelfTest = false;
     verboseOutput = false;
     
@@ -492,6 +498,43 @@ bool ModelDBInterface::testExceptionRetrieve()
     return retrieve() != true;
 }
 
+bool ModelDBInterface::testTextFieldManipulation()
+{
+    bool textFieldManipulationPassed = true;
+    int testFieldCount = 31;
+    std::vector<std::string> testInputFields;
+    std::string expectedImplodeOutput;
+
+    for (std::size_t i : std::views::iota(1, testFieldCount))
+    {
+        std::string fieldName = std::format("InputField{}", i);
+        testInputFields.push_back(fieldName);
+        expectedImplodeOutput.append(fieldName);
+        expectedImplodeOutput += delimiter;
+    }
+
+    std::string implodeOutput = implodeTextField(testInputFields);
+    if (implodeOutput != expectedImplodeOutput)
+    {
+        textFieldManipulationPassed = false;
+        std::clog << std::format("Unit test of implodeTextField() FAILED!\nExpected Output = {}\nActual Output ={}\n",
+            expectedImplodeOutput, implodeOutput);
+    }
+
+    if (textFieldManipulationPassed)
+    {
+        std::vector<std::string> explodeOutput = explodeTextField(implodeOutput);
+        if (explodeOutput != testInputFields)
+        {
+            textFieldManipulationPassed = false;
+            std::clog << "Unit test of explodeTextField() FAILED!\n";
+        }
+    }
+
+    return textFieldManipulationPassed;
+}
+
+
 ModelDBInterface::ModelTestStatus ModelDBInterface::testCommonInsertFailurePath()
 {
     selfTestResetAllValues();
@@ -535,3 +578,4 @@ ModelDBInterface::ModelTestStatus ModelDBInterface::testCommonUpdateFailurePath(
 
     return TESTPASSED;
 }
+

@@ -80,6 +80,7 @@ protected:
     virtual bool testExceptionInsert();
     virtual bool testExceptionUpdate();
     virtual bool testExceptionRetrieve();
+    virtual bool testTextFieldManipulation();
 
     
     template <typename T>
