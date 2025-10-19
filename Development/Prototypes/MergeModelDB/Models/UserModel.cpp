@@ -230,7 +230,13 @@ bool UserModel::runSelfTest()
 
     if (testAllInsertFailures() != TESTPASSED)
     {
+        allSelfTestsPassed = false;
         std::clog << "Test of all insertion failures FAILED!\n";
+    }
+
+    if (!testTextFieldManipulation())
+    {
+        allSelfTestsPassed = false;
     }
 
     inSelfTest = false;
@@ -655,17 +661,7 @@ ModelDBInterface::ModelTestStatus UserModel::testAllInsertFailures()
 {
     selfTestResetAllValues();
 
-    setUserID(1);
-    std::vector<std::string> alreadyInDB = {"already in Database"};
-    if (testInsertionFailureMessages(alreadyInDB) != TESTPASSED)
-    {
-        return TESTFAILED;
-    }
-
-    selfTestResetAllValues();
-
-    std::vector<std::string> notModified = {"not modified!"};
-    if (testInsertionFailureMessages(notModified) != TESTPASSED)
+    if (testCommonInsertFailurePath() != TESTPASSED)
     {
         return TESTFAILED;
     }
