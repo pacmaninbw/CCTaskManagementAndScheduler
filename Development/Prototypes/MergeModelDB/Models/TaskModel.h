@@ -187,15 +187,12 @@ private:
  */
     virtual void selfTestResetAllValues() override;
     virtual bool testExceptionHandling() override;
-    bool testExceptionSelectByTaskID() { return selectByTaskID(0) != true; };
-    bool testExceptionSelectByDescriptionAndAssignedUser() { return selectByDescriptionAndAssignedUser("", 0) != true; };
-    bool testExceptionFormatSelectActiveTasksForAssignedUser() { return formatSelectActiveTasksForAssignedUser(0) != std::string(); };
-    bool testExceptionFormatSelectUnstartedDueForStartForAssignedUser() { return formatSelectUnstartedDueForStartForAssignedUser(0) != std::string(); };
-    bool testExceptionFormatSelectTasksCompletedByAssignedAfterDate() {
-        std::chrono::year_month_day searchStartDate = getTodaysDate();
-        return formatSelectTasksCompletedByAssignedAfterDate(0, searchStartDate) != std::string();
-    };
-    bool testExceptionFormatSelectTasksByAssignedIDandParentID() { return formatSelectTasksByAssignedIDandParentID(0, 0) != std::string(); };
+    bool testExceptionSelectByTaskID();
+    bool testExceptionSelectByDescriptionAndAssignedUser();
+    bool testExceptionFormatSelectActiveTasksForAssignedUser();
+    bool testExceptionFormatSelectUnstartedDueForStartForAssignedUser();
+    bool testExceptionFormatSelectTasksCompletedByAssignedAfterDate();
+    bool testExceptionFormatSelectTasksByAssignedIDandParentID();
     virtual bool testExceptionInsert() override;
     virtual bool testExceptionUpdate() override;
     virtual ModelDBInterface::ModelTestStatus testAllInsertFailures() override;
@@ -225,6 +222,7 @@ private:
     bool testPersonalAccess();
     bool testDependenciesAccess();
     bool testMarkComplete();
+    bool testAddEffort();
 
  /*
   * Member Variables
