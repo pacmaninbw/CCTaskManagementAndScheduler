@@ -364,6 +364,11 @@ bool TaskModel::runSelfTest()
         allSelfTestsPassed = false;
     }
 
+    if (!testDiff())
+    {
+        allSelfTestsPassed = false;
+    }
+
     if (verboseOutput)
     {
         std::clog << "Test Ouput: " << *this << "\n";
@@ -722,6 +727,32 @@ ModelDBInterface::ModelTestStatus TaskModel::testAllInsertFailures()
 
     std::clog << std::format("{}::testAllInsertFailures() NOT IMPLEMENTED! Test FAILED\n", modelName);
     return TESTFAILED;
+}
+
+bool TaskModel::testDiff()
+{
+    TaskModel other;
+
+    if (*this == other)
+    {
+        std::clog << "TaskModel Equal test FAILED";
+    }
+
+    other.primaryKey = primaryKey;
+    other.description = description;
+    other.creatorID = creatorID;
+    other.assignToID = assignToID;
+    other.percentageComplete = percentageComplete;
+    other.dueDate = dueDate;
+    other.scheduledStart = scheduledStart;
+    other.actualEffortToDate = actualEffortToDate;
+    other.priorityGroup = priorityGroup;
+    other.priority = priority;
+    other.personal = personal;
+    other.dependencies = dependencies;
+
+    return *this == other;
+
 }
 
 bool TaskModel::testAccessorFunctionsPassed()
@@ -1165,3 +1196,5 @@ bool TaskModel::testMarkComplete()
 
     return true;
 }
+
+

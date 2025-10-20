@@ -223,6 +223,11 @@ bool UserModel::runSelfTest()
         allSelfTestsPassed = false;
     }
 
+    if (!diffTest())
+    {
+        allSelfTestsPassed = false;
+    }
+    
     if (verboseOutput)
     {
         std::clog << "Test Ouput: " << *this << "\n";
@@ -694,3 +699,22 @@ ModelDBInterface::ModelTestStatus UserModel::testAllInsertFailures()
     return TESTPASSED;
 }
 
+bool UserModel::diffTest()
+{
+    UserModel other;
+
+    if (*this == other)
+    {
+        std::clog << "UserModel Diff FAILED!\n";
+        return false;
+    }
+
+    other.primaryKey = primaryKey;
+    other.lastName = lastName;
+    other.firstName = firstName;
+    other.middleInitial = middleInitial;
+    other.loginName = loginName;
+    other.password = password;
+
+    return *this == other;
+}

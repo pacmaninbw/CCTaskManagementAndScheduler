@@ -153,6 +153,7 @@ private:
     virtual bool testExceptionInsert() override;
     virtual bool testExceptionUpdate() override;
     virtual ModelDBInterface::ModelTestStatus testAllInsertFailures() override;
+    bool diffTest();
 
     std::string lastName;
     std::string firstName;
