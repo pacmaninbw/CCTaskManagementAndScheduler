@@ -686,6 +686,77 @@ bool TaskModel::testExceptionHandling()
     return exceptionHandlingPassed;
 }
 
+bool TaskModel::testExceptionSelectByTaskID()
+{
+    if (selectByTaskID(0))
+    {
+        std::clog << "TaskModel::selectByTaskID returned true in Exception Test\n";
+        return false;
+    }
+
+    return true;
+}
+
+bool TaskModel::testExceptionSelectByDescriptionAndAssignedUser()
+{
+    if (selectByDescriptionAndAssignedUser("", 0))
+    {
+        std::clog << "TaskModel::selectByDescriptionAndAssignedUser returned true in Exception Test\n";
+        return false;
+    } 
+
+    return true;
+}
+
+bool TaskModel::testExceptionFormatSelectActiveTasksForAssignedUser()
+{
+    std::string formattedSelect = formatSelectActiveTasksForAssignedUser(0);
+    if (!formattedSelect.empty())
+    {
+        std::clog << "TaskModel::formatSelectActiveTasksForAssignedUser returned formatted string in Exception Test\n";
+        return false;
+    }
+
+    return true;
+}
+
+bool TaskModel::testExceptionFormatSelectUnstartedDueForStartForAssignedUser()
+{
+    std::string formattedSelect = formatSelectUnstartedDueForStartForAssignedUser(0);
+    if (!formattedSelect.empty())
+    {
+        std::clog << "TaskModel::formatSelectActiveTasksForAssignedUser returned formatted string in Exception Test\n";
+        return false;
+    }
+    
+    return true;
+}
+
+bool TaskModel::testExceptionFormatSelectTasksCompletedByAssignedAfterDate()
+{
+    std::chrono::year_month_day searchStartDate = getTodaysDate();
+    std::string formattedSelect = formatSelectTasksCompletedByAssignedAfterDate(0, searchStartDate);
+    if (!formattedSelect.empty())
+    {
+        std::clog << "TaskModel::formatSelectTasksCompletedByAssignedAfterDate returned formatted string in Exception Test\n";
+        return false;
+    }
+
+    return true;
+}
+
+bool TaskModel::testExceptionFormatSelectTasksByAssignedIDandParentID()
+{
+    std::string formattedSelect = formatSelectTasksByAssignedIDandParentID(0, 0);
+    if (!formattedSelect.empty())
+    {
+        std::clog << "TaskModel::formatSelectTasksCompletedByAssignedAfterDate returned formatted string in Exception Test\n";
+        return false;
+    }
+
+    return true;
+}
+
 bool TaskModel::testExceptionInsert()
 {
     selfTestResetAllValues();
@@ -699,8 +770,28 @@ bool TaskModel::testExceptionInsert()
     setPriorityGroup('A');
     setPriority(1);
     setCreationDate(timeStamp);
-    
-    return insert() != true;
+
+    try {
+        std::string shouldBeNoValue = formatInsertStatement();
+        std::clog << "TaskModel::formatInsertStatement() returned a string in Exception Test, FAILED\n";
+        return false;
+    }
+    catch (std::exception& formatException)
+    {
+        if (verboseOutput)
+        {
+            std::clog << "TaskModel::formatInsertStatement() threw expected exception in exception test.\n";
+        }
+
+    }
+
+    if (insert())
+    {
+        std::clog << "TaskModel::insert() returned true in exception test, TEST FAILED!\n";
+        return false;
+    }
+
+    return true;
 }
 
 bool TaskModel::testExceptionUpdate()
@@ -718,7 +809,27 @@ bool TaskModel::testExceptionUpdate()
     setPriority(1);
     setCreationDate(timeStamp);
     
-    return update() != true;
+    try {
+        std::string shouldBeNoValue = formatUpdateStatement();
+        std::clog << "TaskModel::formatUpdateStatement() returned a string in Exception Test, FAILED\n";
+        return false;
+    }
+    catch (std::exception& formatException)
+    {
+        if (verboseOutput)
+        {
+            std::clog << "TaskModel::formatUpdateStatement() threw expected exception in exception test.\n";
+        }
+
+    }
+
+    if (update())
+    {
+        std::clog << "TaskModel::update() returned true in exception test, TEST FAILED!\n";
+        return false;
+    }
+
+    return true;
 }
 
 ModelDBInterface::ModelTestStatus TaskModel::testAllInsertFailures()
@@ -1036,9 +1147,14 @@ bool TaskModel::testEstimatedCompletionAccess()
 bool TaskModel::testActualEffortToDateAccess()
 {
     double testValue = 752.75;
-    return testAccessorFunctions<double>(testValue, &actualEffortToDate, "Actual Effort to date",
+    if (!testAccessorFunctions<double>(testValue, &actualEffortToDate, "Actual Effort to date",
         std::bind(&TaskModel::setActualEffortToDate, this, std::placeholders::_1),
-        std::bind(&TaskModel::getactualEffortToDate, this));
+        std::bind(&TaskModel::getactualEffortToDate, this)))
+    {
+        return false;
+    }
+
+    return testAddEffort();
 }
 
 bool TaskModel::testPriorityGroupAccess()
@@ -1197,4 +1313,32 @@ bool TaskModel::testMarkComplete()
     return true;
 }
 
+bool TaskModel::testAddEffort()
+{
+    double addedHours = 7.25;
+    double expectedHours = actualEffortToDate + addedHours;
 
+    modified = false;
+    addEffortHours(addedHours);
+
+    if (!isModified())
+    {
+        std::clog << "TaskModel::addEffortHours() failed to set modified! test FAILED;\n";
+        return false;
+    }
+
+    if (actualEffortToDate != expectedHours)
+    {
+        std::clog << "TaskModel::actualEffortToDate does not show additional hours! test FAILED;\n";
+        return false;
+
+    }
+
+    if (getactualEffortToDate() != expectedHours)
+    {
+        std::clog << "TaskModel::getactualEffortToDate() does not show additional hours! test FAILED;\n";
+        return false;
+    }
+
+    return true;
+}
