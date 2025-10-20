@@ -198,6 +198,7 @@ private:
     bool testExceptionFormatSelectTasksByAssignedIDandParentID() { return formatSelectTasksByAssignedIDandParentID(0, 0) != std::string(); };
     virtual bool testExceptionInsert() override;
     virtual bool testExceptionUpdate() override;
+    virtual ModelDBInterface::ModelTestStatus testAllInsertFailures() override;
 
     virtual bool testAccessorFunctionsPassed() override;
     bool testTaskIdAccesss();
@@ -205,7 +206,9 @@ private:
     bool testAssignToIDAccess();
     bool testDescriptionAccess();
     bool testStatusAccess();
+    bool testStatusVerifyValueAndGetStatus(TaskStatus testValue);
     bool testParentTaskIDAccess();
+    bool testParentTaskIDVerifyValueAndGetParentTaskID(std::size_t testValue);
     bool testPercentageCompleteAccess();
     bool testCreationDateAccess();
     bool testDueDateAccess();
@@ -220,6 +223,7 @@ private:
     bool testPriorityAccess();
     bool testPersonalAccess();
     bool testDependenciesAccess();
+    bool testMarkComplete();
 
  /*
   * Member Variables
