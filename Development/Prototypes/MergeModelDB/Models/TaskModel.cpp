@@ -716,6 +716,14 @@ bool TaskModel::testExceptionUpdate()
     return update() != true;
 }
 
+ModelDBInterface::ModelTestStatus TaskModel::testAllInsertFailures()
+{
+    selfTestResetAllValues();
+
+    std::clog << std::format("{}::testAllInsertFailures() NOT IMPLEMENTED! Test FAILED\n", modelName);
+    return TESTFAILED;
+}
+
 bool TaskModel::testAccessorFunctionsPassed()
 {
     selfTestResetAllValues();
@@ -726,8 +734,8 @@ bool TaskModel::testAccessorFunctionsPassed()
     accessTests.push_back({std::bind(&TaskModel::testCreatorIDAccess, this)});
     accessTests.push_back({std::bind(&TaskModel::testAssignToIDAccess, this)});
     accessTests.push_back({std::bind(&TaskModel::testDescriptionAccess, this)});
-//  accessTests.push_back({std::bind(&TaskModel::testStatusAccess, this)});
-//  accessTests.push_back({std::bind(&TaskModel::testParentTaskIDAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testStatusAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testParentTaskIDAccess, this)});
     accessTests.push_back({std::bind(&TaskModel::testPercentageCompleteAccess, this)});
     accessTests.push_back({std::bind(&TaskModel::testCreationDateAccess, this)});
     accessTests.push_back({std::bind(&TaskModel::testDueDateAccess, this)});
@@ -742,6 +750,7 @@ bool TaskModel::testAccessorFunctionsPassed()
     accessTests.push_back({std::bind(&TaskModel::testPriorityAccess, this)});
     accessTests.push_back({std::bind(&TaskModel::testPersonalAccess, this)});
     accessTests.push_back({std::bind(&TaskModel::testDependenciesAccess, this)});
+    accessTests.push_back({std::bind(&TaskModel::testMarkComplete, this)});
 
     for (auto accessTest: accessTests)
     {
@@ -791,14 +800,142 @@ bool TaskModel::testDescriptionAccess()
 
 bool TaskModel::testStatusAccess()
 {
-//    TaskStatus testValue = TaskModel::TaskStatus::On_Hold;
-    return false;
+    bool testStatusAccessPassed = true;
+    TaskStatus testValue = TaskModel::TaskStatus::On_Hold;
+    if (verboseOutput)
+    {
+        std::clog << "Running self test on set and get functions for TaskModel::status\n";
+    }
+
+    modified = false;
+    setStatus(testValue);
+    if (!testStatusVerifyValueAndGetStatus(testValue))
+    {
+        testStatusAccessPassed = false;
+    }
+
+    modified = false;
+    testValue = TaskModel::TaskStatus::Complete;
+    auto statusName = taskStatusConversionTable.lookupName(testValue);
+    setStatus(*statusName);
+    if (!testStatusVerifyValueAndGetStatus(testValue))
+    {
+        testStatusAccessPassed = false;
+    }
+
+    if (verboseOutput)
+    {
+        std::clog << "Self test on set and get functions for TaskModel::status PASSED\n";
+    }
+
+    return testStatusAccessPassed;
 }
+
+bool TaskModel::testStatusVerifyValueAndGetStatus(TaskStatus testValue)
+{
+    if (!isModified())
+    {
+        std::clog << "In self test for: TaskModel::status set function for status FAILED to set modified\n";
+        return false;
+    }
+
+    if (!status.has_value() || status.value() != testValue)
+    {
+        if (!status.has_value())
+        {
+            std::clog  << "In self test for: TaskModel::status Set function for status FAILED to set member value\n";
+        }
+        if (status.value() != testValue)
+        {
+            std::clog  << "In self test for: TaskModel::status expected value: " << static_cast<unsigned int>(testValue)
+                        << "actual value: " << static_cast<unsigned int>(status.value()) << " FAILED to set member value\n";
+        }
+        return false;
+    }
+
+    std::optional<TaskModel::TaskStatus> returnValue = getStatus();
+    if (!returnValue.has_value() || returnValue.value() != testValue)
+    {
+        std::clog  << "In self test for: TaskModel::status Get function for status FAILED\n";
+        return false;
+    }
+
+    if (getStatusIntVal() != static_cast<unsigned int>(returnValue.value()))
+    {
+        std::clog  << "In self test for: TaskModel::getStatusIntVal() FAILED\n";
+        return false;
+    }
+
+    return true;
+}
+
 
 bool TaskModel::testParentTaskIDAccess()
 {
-    return false;
+    bool testParentTaskIDAccessPassed = true;
+    std::size_t testValue = 37;
+    if (verboseOutput)
+    {
+        std::clog << "Running self test on set and get functions for TaskModel::parentTaskID\n";
+    }
+
+    modified = false;
+    setParentTaskID(testValue);
+    if (!testParentTaskIDVerifyValueAndGetParentTaskID(testValue))
+    {
+        testParentTaskIDAccessPassed = false;
+    }
+
+    testValue = 42;
+    TaskModel_shp parent = std::make_shared<TaskModel>(TaskModel());
+    parent->setTaskID(testValue);
+    modified = false;
+    setParentTaskID(parent);
+    if (!testParentTaskIDVerifyValueAndGetParentTaskID(testValue))
+    {
+        testParentTaskIDAccessPassed = false;
+    }
+
+    if (verboseOutput)
+    {
+        std::clog << "Self test on set and get functions for TaskModel::parentTaskID PASSED\n";
+    }
+
+    return testParentTaskIDAccessPassed;
 }
+
+bool TaskModel::testParentTaskIDVerifyValueAndGetParentTaskID(std::size_t testValue)
+{
+    if (!isModified())
+    {
+        std::clog << "In self test for: TaskModel::parentID set function for parentID FAILED to set modified\n";
+        return false;
+    }
+
+    if (!parentTaskID.has_value() || parentTaskID.value() != testValue)
+    {
+        if (!parentTaskID.has_value())
+        {
+            std::clog  << "In self test for: TaskModel::parentTaskID Set function for parentTaskID FAILED to set member value\n";
+        }
+        if (parentTaskID.value() != testValue)
+        {
+            std::clog  << "In self test for: TaskModel::parentTaskID expected value: " << testValue <<
+                "actual value: " << parentTaskID.value() << " FAILED to set member value\n";
+        }
+        return false;
+    }
+
+    std::optional<std::size_t> returnValue = getParentTaskID();
+    if (!returnValue.has_value() || returnValue.value() != testValue)
+    {
+        std::clog  << "In self test for: TaskModel::parentTaskID Get function for parentTaskID FAILED\n";
+        return false;
+    }
+
+    return true;
+}
+
 
 bool TaskModel::testPercentageCompleteAccess()
 {
@@ -980,6 +1117,50 @@ bool TaskModel::testDependenciesAccess()
     if (verboseOutput)
     {
         std::clog << "Self test on set and get functions for " << modelName << "::dependencoies PASSED\n";
+    }
+
+    return true;
+}
+
+/*
+ * This test assumes that getStatus() and getCompletionDate() are tested elsewhere.
+ */
+bool TaskModel::testMarkComplete()
+{
+    if (verboseOutput)
+    {
+        std::clog << "Running self test for TaskModel::markComplete\n";
+    }
+
+    modified = false;
+    status.reset();
+    completionDate.reset();
+
+    markComplete();
+
+    if (!status.has_value() || status.value() != TaskStatus::Complete)
+    {
+        if (!status.has_value())
+        {
+            std::clog  << "In self test for: TaskModel::markComplete FAILED to set status member value\n";
+        }
+        if (status.value() != TaskStatus::Complete)
+        {
+            std::clog  << "In self test for: TaskModel::markComplete expected value: " << static_cast<unsigned int>(TaskStatus::Complete)
+                << "actual value: " << static_cast<unsigned int>(status.value()) << " FAILED to set status member value\n";
+        }
+        return false;
+    }
+
+    if (!completionDate.has_value())
+    {
+        std::clog  << "In self test for: TaskModel::markComplete FAILED to set completionDate member value\n";
+        return false;
+    }
+
+    if (verboseOutput)
+    {
+        std::clog << "Self test for TaskModel::markComplete PASSED\n";
     }
 
     return true;
