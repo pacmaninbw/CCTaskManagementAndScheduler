@@ -67,6 +67,13 @@ boost::asio::awaitable<boost::mysql::results> CoreDBInterface::coRoutineExecuteS
         throw forcedException;
     }
 
+    if (inSelfTest)
+    {
+        boost::mysql::results selectResult;
+        std::clog << "In Self Test Query is: \n\t" << query << "\n";
+        co_return selectResult;
+    }
+
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
     co_await conn.async_connect(dbConnectionParameters);
