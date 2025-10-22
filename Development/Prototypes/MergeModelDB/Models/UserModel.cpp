@@ -46,7 +46,7 @@ void UserModel::autoGenerateLoginAndPassword()
 {
     if (loginName.empty() && password.empty())
     {
-        createLoginBasedOnUserName(lastName, firstName, middleInitial);
+        createLoginBasedOnUserName(lastName, firstName, middleInitial.value_or(""));
     }
 }
 
@@ -179,6 +179,11 @@ bool UserModel::isMissingDateAdded()
     return !created.has_value();
 }
 
+bool UserModel::isMissingEmail()
+{
+    return (email.empty() || email.length() < minEmailLength);
+}
+
 bool UserModel::diffUser(UserModel &other)
 {
     // Ignore user preferences
@@ -190,6 +195,7 @@ void UserModel::initRequiredFields()
 {
     missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingLastName, this), "Last Name"});
     missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingFirstName, this), "First Name"});
+    missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingEmail, this), "Email"});
     missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingLoginName, this), "Login Name"});
     missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingPassword, this), "Password"});
 }
@@ -487,7 +493,7 @@ void UserModel::selfTestResetAllValues()
     primaryKey = 0;
     lastName.clear();
     firstName.clear();
-    middleInitial.clear();
+    middleInitial.reset();
     email.clear();
     loginName.clear();
     password.clear();
@@ -552,7 +558,7 @@ bool UserModel::testFirstNameAccess()
 bool UserModel::testMiddleInitialAccess()
 {
     std::string testValue("A");
-    return testAccessorFunctions<std::string>(testValue, &middleInitial, "Middle Initial",
+    return testOptionalAccessorFunctions<std::string>(testValue, &middleInitial, "Middle Initial",
         std::bind(&UserModel::setMiddleInitial, this, std::placeholders::_1),
         std::bind(&UserModel::getMiddleInitial, this));
 }
@@ -673,7 +679,7 @@ ModelDBInterface::ModelTestStatus UserModel::testAllInsertFailures()
 
     std::vector<std::string> expectedErrors =
     {
-        "Last Name", "First Name", "Login Name", "Password", "User is missing required values"
+        "Last Name", "First Name", "Email", "Login Name", "Password", "User is missing required values"
     };
 
     setUserID(0);   // Force a modification so that missing fields can be tested.
@@ -681,6 +687,7 @@ ModelDBInterface::ModelTestStatus UserModel::testAllInsertFailures()
     std::vector<std::function<void(std::string)>> fieldSettings;
     fieldSettings.push_back(std::bind(&UserModel::setLastName, this, std::placeholders::_1));
     fieldSettings.push_back(std::bind(&UserModel::setFirstName, this, std::placeholders::_1));
+    fieldSettings.push_back(std::bind(&UserModel::setEmail, this, std::placeholders::_1));
     fieldSettings.push_back(std::bind(&UserModel::setLoginName, this, std::placeholders::_1));
     fieldSettings.push_back(std::bind(&UserModel::setPassword, this, std::placeholders::_1));
 
@@ -695,6 +702,14 @@ ModelDBInterface::ModelTestStatus UserModel::testAllInsertFailures()
     }
 
     expectedErrors.clear();
+
+    std::clog << "UserModel::testAllInsertFailures() before successful insert *this = " << *this << "\n";
+
+    if (!insert())
+    {
+        std::clog << "In  UserModel::testAllInsertFailures() Expected successful insert failed\n" << errorMessages << "\n";
+        return TESTFAILED;
+    }
 
     return TESTPASSED;
 }

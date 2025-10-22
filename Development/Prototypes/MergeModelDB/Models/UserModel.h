@@ -38,7 +38,7 @@ public:
     void autoGenerateLoginAndPassword();
     std::string getLastName() const { return lastName;};
     std::string getFirstName() const { return firstName; };
-    std::string getMiddleInitial() const { return middleInitial; };
+    std::string getMiddleInitial() const { return middleInitial.value_or(""); };
     std::string getEmail() const { return email; };
     std::string getLoginName() const { return loginName; };
     std::string getPassword() const { return password; };
@@ -87,6 +87,7 @@ public:
     bool isMissingLoginName();
     bool isMissingPassword();
     bool isMissingDateAdded();
+    bool isMissingEmail();
     void initRequiredFields() override;
 
     virtual bool runSelfTest() override;
@@ -106,10 +107,17 @@ public:
         os << std::format(outFmtStr, "User ID", user.primaryKey);
         os << std::format(outFmtStr, "Last Name", user.lastName);
         os << std::format(outFmtStr, "First Name", user.firstName);
-        os << std::format(outFmtStr, "Middle Initial", user.middleInitial);
+        os << std::format(outFmtStr, "Middle Initial", user.middleInitial.value_or("N/A"));
         os << std::format(outFmtStr, "Email", user.email);
         os << std::format(outFmtStr, "Login Name", user.loginName);
-        os << std::format(outFmtStr, "User Added", user.created.value());
+        if (user.inSelfTest)
+        {
+            os << std::format(outFmtStr, "PassWord", user.password);
+        }
+        if (user.created.has_value())
+        {
+            os << std::format(outFmtStr, "User Added", user.created.value());
+        }
         if (user.lastLogin.has_value())
         {
             os << std::format(outFmtStr, "Last Login", user.lastLogin.value());
@@ -157,7 +165,7 @@ private:
 
     std::string lastName;
     std::string firstName;
-    std::string middleInitial;
+    std::optional<std::string> middleInitial;
     std::string email;
     std::string loginName;
     std::string password;
@@ -167,6 +175,7 @@ private:
 
     const std::size_t minNameLenght = 2;
     const std::size_t minPasswordLenght = 8;
+    const std::size_t minEmailLength = 10;
 
 private:
 /*
