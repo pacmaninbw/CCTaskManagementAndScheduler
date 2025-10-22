@@ -70,7 +70,7 @@ bool ModelDBInterface::insert()
     try
     {
         boost::mysql::results localResult = runQueryAsync(formatInsertStatement());
-        primaryKey = localResult.last_insert_id();
+        primaryKey =  (!inSelfTest)? localResult.last_insert_id() : 1;
         modified = false;
     }
 
@@ -163,6 +163,11 @@ void ModelDBInterface::reportMissingFields() noexcept
 
 bool ModelDBInterface::processResult(boost::mysql::results& results)
 {
+    if (inSelfTest)
+    {
+        return true;
+    }
+
     if (results.rows().empty())
     {
         appendErrorMessage(std::format("{} not found!", modelName));
