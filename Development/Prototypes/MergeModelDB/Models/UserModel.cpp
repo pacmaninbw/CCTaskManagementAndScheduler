@@ -290,7 +290,7 @@ std::string UserModel::formatUpdateStatement()
             " UserProfile.Preferences = {6},"
             " UserProfile.LastLogin = {7}"
         " WHERE UserProfile.UserID = {8}",
-            lastName, firstName,middleInitial, email, loginName,password, 
+            lastName, firstName, middleInitial, email, loginName,password, 
             buildPreferenceText(), optionalDateTimeConversion(lastLogin), primaryKey);
         
     return updateStatement;
@@ -500,6 +500,7 @@ void UserModel::selfTestResetAllValues()
     created.reset();
     lastLogin.reset();
     errorMessages.clear();
+    format_opts.reset();
 }
 
 bool UserModel::testAccessorFunctionsPassed()
@@ -517,7 +518,12 @@ bool UserModel::testAccessorFunctionsPassed()
     accessTests.push_back({std::bind(&UserModel::testPassWordAccess, this)});
     accessTests.push_back({std::bind(&UserModel::testCreatedDateAcfcess, this)});
     accessTests.push_back({std::bind(&UserModel::testLastLoginAccess, this)});
-    accessTests.push_back({std::bind(&UserModel::testPreferencesAccess, this)});
+    accessTests.push_back({std::bind(&UserModel::testStartTimeAccess, this)});
+    accessTests.push_back({std::bind(&UserModel::testEndTimeAccesss, this)});
+    accessTests.push_back({std::bind(&UserModel::testIncludePriorityInScheduleAccess, this)});
+    accessTests.push_back({std::bind(&UserModel::testIncludeMinorPriorityInScheduleAccess, this)});
+    accessTests.push_back({std::bind(&UserModel::testUseLetterForMajorPriorityAccess, this)});
+    accessTests.push_back({std::bind(&UserModel::testSeparateMajorAndMinorWithDotAccess, this)});
 
     for (auto accessTest: accessTests)
     {
@@ -579,12 +585,6 @@ bool UserModel::testPassWordAccess()
         std::bind(&UserModel::getPassword, this));
 }
 
-bool UserModel::testPreferencesAccess()
-{
-    std::clog << "testPreferencesAccess NOT IMPLEMENTED\n";
-    return true;
-}
-
 bool UserModel::testCreatedDateAcfcess()
 {
     std::chrono::system_clock::time_point testValue = std::chrono::system_clock::now();
@@ -609,6 +609,54 @@ bool UserModel::testEmailAccess()
         std::bind(&UserModel::getEmail, this));
 }
 
+bool UserModel::testStartTimeAccess()
+{
+    std::string testValue("4:30 AM");
+    return testAccessorFunctions<std::string>(testValue, &preferences.startTime, "Start Time Preference",
+        std::bind(&UserModel::setStartTime, this, std::placeholders::_1),
+        std::bind(&UserModel::getStartTime, this));
+}
+
+bool UserModel::testEndTimeAccesss()
+{
+    std::string testValue("4:15 PM");
+    return testAccessorFunctions<std::string>(testValue, &preferences.endTime, "End Time Preference",
+        std::bind(&UserModel::setEndTime, this, std::placeholders::_1),
+        std::bind(&UserModel::getEndTime, this));
+}
+
+bool UserModel::testIncludePriorityInScheduleAccess()
+{
+    bool testValue = true;
+    return testAccessorFunctions<bool>(testValue, &preferences.includePriorityInSchedule, "Include Priority In Schedule",
+        std::bind(&UserModel::setPriorityInSchedule, this, std::placeholders::_1),
+        std::bind(&UserModel::isPriorityInSchedule, this));
+}
+
+bool UserModel::testIncludeMinorPriorityInScheduleAccess()
+{
+    bool testValue = true;
+    return testAccessorFunctions<bool>(testValue, &preferences.includeMinorPriorityInSchedule, "Include Minor Priority In Schedule",
+        std::bind(&UserModel::setMinorPriorityInSchedule, this, std::placeholders::_1),
+        std::bind(&UserModel::isMinorPriorityInSchedule, this));
+}
+
+bool UserModel::testUseLetterForMajorPriorityAccess()
+{
+    bool testValue = true;
+    return testAccessorFunctions<bool>(testValue, &preferences.userLetterForMajorPriority, "Use Letter For Major Priority Access",
+        std::bind(&UserModel::setUsingLettersForMaorPriority, this, std::placeholders::_1),
+        std::bind(&UserModel::isUsingLettersForMaorPriority, this));
+}
+
+bool UserModel::testSeparateMajorAndMinorWithDotAccess()
+{
+    bool testValue = true;
+    return testAccessorFunctions<bool>(testValue, &preferences.separateMajorAndMinorWithDot, "Separate Major And Minor With Dot Access",
+        std::bind(&UserModel::setSeparatingPriorityWithDot, this, std::placeholders::_1),
+        std::bind(&UserModel::isSeparatingPriorityWithDot, this));
+}
+
 bool UserModel::testExceptionHandling()
 {
     selfTestResetAllValues();
@@ -626,7 +674,6 @@ bool UserModel::testExceptionHandling()
     exceptionTests.push_back({std::bind(&UserModel::testExceptionUpdate, this), "testExceptionUpdate"});
     exceptionTests.push_back({std::bind(&UserModel::testExceptionRetrieve, this), "testExceptionRetrieve"});
 
-    forceException = true;
     if (!forceExceptionsLoop(exceptionTests))
     {
         exceptionHandlingPassed = false;
@@ -637,6 +684,96 @@ bool UserModel::testExceptionHandling()
     return exceptionHandlingPassed;
 }
 
+bool UserModel::testExceptionSelectByLoginName()
+{
+    selfTestResetAllValues();
+    std::string testLoginName("testValue");
+
+    forceException = true;
+    if (selectByLoginName(testLoginName))
+    {
+        return false;
+    }
+
+    forceException = false;
+    return selectByLoginName(testLoginName);
+}
+bool UserModel::testExceptionSelectByEmail()
+{
+    selfTestResetAllValues();
+    std::string testEmail("testValue@testValue.com");
+
+    forceException = true;
+    if (selectByEmail(testEmail))
+    {
+        return false;
+    }
+
+    forceException = false;
+    return selectByEmail(testEmail);
+}
+
+bool UserModel::testExceptionSelectByLoginAndPassword()
+{
+    selfTestResetAllValues();
+    forceException = true;
+    if (selectByLoginAndPassword("TestValue", "TestValue"))
+    {
+        return false;
+    }
+
+    forceException = false;
+    return selectByLoginAndPassword("TestValue", "TestValue");
+}
+
+bool UserModel::testExceptionSelectByFullName()
+{
+    selfTestResetAllValues();
+    forceException = true;
+    if (selectByFullName("TestLastName", "TestFirstName", "MI"))
+    {
+        return false;
+    }
+
+    forceException = false;
+    return selectByFullName("TestLastName", "TestFirstName", "MI");
+}
+
+bool UserModel::testExceptionSelectByUserID()
+{
+    selfTestResetAllValues();
+    forceException = true;
+    if (selectByUserID(1))
+    {
+        return false;
+    }
+
+    forceException = false;
+    return selectByUserID(1);
+}
+
+bool UserModel::testExceptionFormatGetAllUsersQuery()
+{
+    selfTestResetAllValues();
+    
+    forceException = true;
+    std::string formattedQuery = formatGetAllUsersQuery();
+    if (!formattedQuery.empty())
+    {
+        return false;
+    }
+
+    forceException = false;
+    formattedQuery.clear();
+    formattedQuery = formatGetAllUsersQuery();
+    if (formattedQuery.empty())
+    {
+        return false;
+    }
+
+    return true;
+}
+
 bool UserModel::testExceptionInsert()
 {
     selfTestResetAllValues();
@@ -645,11 +782,19 @@ bool UserModel::testExceptionInsert()
     setLastName("LastName");
     setFirstName("FirstName");
     setMiddleInitial("M");
+    setEmail("FirstName.LastName@LastName.com");
     autoGenerateLoginAndPassword();
     setCreationDate(timeStamp);
     setLastLogin(timeStamp);
 
-    return insert() != true;
+    forceException = true;
+    if (insert())
+    {
+        return false;
+    }
+
+    forceException = false;
+    return insert();
 }
 
 bool UserModel::testExceptionUpdate()
@@ -661,11 +806,35 @@ bool UserModel::testExceptionUpdate()
     setLastName("LastName");
     setFirstName("FirstName");
     setMiddleInitial("M");
+    setEmail("FirstName.LastName@LastName.com");
     autoGenerateLoginAndPassword();
     setCreationDate(timeStamp);
     setLastLogin(timeStamp);
 
-    return update() != true;
+    forceException = true;
+    if (update())
+    {
+        return false;
+    }
+
+    forceException = false;
+    return update();
+}
+
+bool UserModel::testExceptionRetrieve()
+{
+    selfTestResetAllValues();
+
+    setUserID(1);
+
+    forceException = true;
+    if (retrieve())
+    {
+        return false;
+    }
+
+    forceException = false;
+    return retrieve();
 }
 
 ModelDBInterface::ModelTestStatus UserModel::testAllInsertFailures()
