@@ -120,12 +120,14 @@ protected:
         return true;
     }
 
+    bool testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName);
+
     bool testExceptionAndSuccess(std::function<bool()>funcUnderTest)
     {
         forceException = true;
         if (funcUnderTest())
         {
-            return false;
+            return testExceptionReportFailure(false, true, "testExceptionAndSuccess");
         }
 
         forceException = false;
@@ -138,7 +140,7 @@ protected:
         forceException = true;
         if (funcUnderTest(arg1))
         {
-            return false;
+            return testExceptionReportFailure(false, true, "testExceptionAndSuccess1Arg");
         }
 
         forceException = false;
@@ -151,7 +153,7 @@ protected:
         forceException = true;
         if (funcUnderTest(arg1, arg2))
         {
-            return false;
+            return testExceptionReportFailure(false, true, "testExceptionAndSuccess2Arg");
         }
 
         forceException = false;
@@ -164,7 +166,7 @@ protected:
         forceException = true;
         if (funcUnderTest(arg1, arg2, arg3))
         {
-            return false;
+            return testExceptionReportFailure(false, true, "testExceptionAndSuccess3Arg");
         }
 
         forceException = false;
@@ -177,7 +179,7 @@ protected:
         std::string formattedQuery = funcUnderTest();
         if (!formattedQuery.empty())
         {
-            return false;
+            return testExceptionReportFailure(false, false, "testFormatExceptionAndSuccess");
         }
 
         forceException = false;
@@ -185,7 +187,7 @@ protected:
         formattedQuery = funcUnderTest();
         if (formattedQuery.empty())
         {
-            return false;
+            return testExceptionReportFailure(true, false, "testFormatExceptionAndSuccess");
         }
 
         return true;
@@ -198,7 +200,7 @@ protected:
         std::string formattedQuery = funcUnderTest(arg1);
         if (!formattedQuery.empty())
         {
-            return false;
+            return testExceptionReportFailure(false, false, "testFormatExceptionAndSuccess1Arg");
         }
 
         forceException = false;
@@ -206,7 +208,7 @@ protected:
         formattedQuery = funcUnderTest(arg1);
         if (formattedQuery.empty())
         {
-            return false;
+            return testExceptionReportFailure(true, false, "testFormatExceptionAndSuccess1Arg");
         }
 
         return true;
@@ -219,7 +221,7 @@ protected:
         std::string formattedQuery = funcUnderTest(arg1, arg2);
         if (!formattedQuery.empty())
         {
-            return false;
+            return testExceptionReportFailure(false, false, "testFormatExceptionAndSuccess2Arg");
         }
 
         forceException = false;
@@ -227,7 +229,7 @@ protected:
         formattedQuery = funcUnderTest(arg1, arg2);
         if (formattedQuery.empty())
         {
-            return false;
+            return testExceptionReportFailure(true, false, "testFormatExceptionAndSuccess2Arg");
         }
 
         return true;

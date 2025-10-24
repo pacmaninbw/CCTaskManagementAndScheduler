@@ -539,6 +539,26 @@ bool ModelDBInterface::testTextFieldManipulation()
     return textFieldManipulationPassed;
 }
 
+bool ModelDBInterface::testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName)
+{
+    std::string reportFailure = std::format("In {}::{}: ", modelName, testExceptionFuncName);
+
+    if (verboseOutput)
+    {
+        if (expectSuccess)
+        {
+            reportFailure.append(std::format("expected success {} returned ", isBool? "false" : "empty string"));
+        }
+        else
+        {
+            reportFailure.append(std::format("expected failure {} returned ", isBool? "true" : "formatted string"));
+        }
+    }
+
+    std::clog << reportFailure << "\n";
+
+    return false;
+}
 
 ModelDBInterface::ModelTestStatus ModelDBInterface::testCommonInsertFailurePath()
 {
