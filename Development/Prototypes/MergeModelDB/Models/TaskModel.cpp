@@ -632,6 +632,7 @@ void TaskModel::processResultRow(boost::mysql::row_view rv)
 void TaskModel::selfTestResetAllValues()
 {
     modified = false;
+    format_opts.reset();
     primaryKey = 0;
     creatorID = 0;
     assignToID = 0;
@@ -661,7 +662,7 @@ bool TaskModel::testExceptionHandling()
 
     bool exceptionHandlingPassed = true;
     bool globalForceException = forceException;
-    forceException = true;
+
     std::vector<ExceptionTestElement> exceptionTests;
     exceptionTests.push_back({std::bind(&TaskModel::testExceptionSelectByTaskID, this), "selectByTaskID"});
     exceptionTests.push_back({std::bind(&TaskModel::testExceptionSelectByDescriptionAndAssignedUser, this), "selectByDescriptionAndAssignedUser"});
@@ -688,81 +689,66 @@ bool TaskModel::testExceptionHandling()
 
 bool TaskModel::testExceptionSelectByTaskID()
 {
-    if (selectByTaskID(0))
-    {
-        std::clog << "TaskModel::selectByTaskID returned true in Exception Test\n";
-        return false;
-    }
+    selfTestResetAllValues();
 
-    return true;
+    return testExceptionAndSuccess1Arg<std::size_t>(std::bind(&TaskModel::selectByTaskID, this, std::placeholders::_1), 0);
 }
 
 bool TaskModel::testExceptionSelectByDescriptionAndAssignedUser()
 {
-    if (selectByDescriptionAndAssignedUser("", 0))
-    {
-        std::clog << "TaskModel::selectByDescriptionAndAssignedUser returned true in Exception Test\n";
-        return false;
-    } 
-
-    return true;
+    selfTestResetAllValues();
+    return testExceptionAndSuccess2Arg<std::string, std::size_t>
+        (std::bind(&TaskModel::selectByDescriptionAndAssignedUser, this, std::placeholders::_1, std::placeholders::_2),
+         "A task description", 1);
 }
 
 bool TaskModel::testExceptionFormatSelectActiveTasksForAssignedUser()
 {
-    std::string formattedSelect = formatSelectActiveTasksForAssignedUser(0);
-    if (!formattedSelect.empty())
-    {
-        std::clog << "TaskModel::formatSelectActiveTasksForAssignedUser returned formatted string in Exception Test\n";
-        return false;
-    }
-
-    return true;
+    selfTestResetAllValues();
+    return testFormatExceptionAndSuccess1Arg<std::size_t>
+        (std::bind(&TaskModel::formatSelectActiveTasksForAssignedUser, this, std::placeholders::_1), 1);
 }
 
 bool TaskModel::testExceptionFormatSelectUnstartedDueForStartForAssignedUser()
 {
-    std::string formattedSelect = formatSelectUnstartedDueForStartForAssignedUser(0);
-    if (!formattedSelect.empty())
-    {
-        std::clog << "TaskModel::formatSelectActiveTasksForAssignedUser returned formatted string in Exception Test\n";
-        return false;
-    }
-    
-    return true;
+    selfTestResetAllValues();
+    return testFormatExceptionAndSuccess1Arg<std::size_t>
+        (std::bind(&TaskModel::formatSelectUnstartedDueForStartForAssignedUser, this, std::placeholders::_1), 1);
 }
 
 bool TaskModel::testExceptionFormatSelectTasksCompletedByAssignedAfterDate()
 {
-    std::chrono::year_month_day searchStartDate = getTodaysDate();
-    std::string formattedSelect = formatSelectTasksCompletedByAssignedAfterDate(0, searchStartDate);
-    if (!formattedSelect.empty())
-    {
-        std::clog << "TaskModel::formatSelectTasksCompletedByAssignedAfterDate returned formatted string in Exception Test\n";
-        return false;
-    }
+    selfTestResetAllValues();
 
-    return true;
+    std::chrono::year_month_day searchStartDate = getTodaysDate();
+    std::size_t assignedUser = 1;
+
+    return testFormatExceptionAndSuccess2Arg<std::size_t, std::chrono::year_month_day&>
+        (std::bind(&TaskModel::formatSelectTasksCompletedByAssignedAfterDate, this, std::placeholders::_1, std::placeholders::_2),
+        assignedUser, searchStartDate);
 }
 
 bool TaskModel::testExceptionFormatSelectTasksByAssignedIDandParentID()
 {
-    std::string formattedSelect = formatSelectTasksByAssignedIDandParentID(0, 0);
-    if (!formattedSelect.empty())
-    {
-        std::clog << "TaskModel::formatSelectTasksCompletedByAssignedAfterDate returned formatted string in Exception Test\n";
-        return false;
-    }
+    selfTestResetAllValues();
 
-    return true;
+    std::size_t assignedUser = 1;
+    std::size_t parentid = 1;
+
+    return testFormatExceptionAndSuccess2Arg<std::size_t, std::size_t>
+        (std::bind(&TaskModel::formatSelectTasksByAssignedIDandParentID, this, std::placeholders::_1, std::placeholders::_2),
+        assignedUser, parentid);
 }
 
 bool TaskModel::testExceptionInsert()
 {
     selfTestResetAllValues();
+    forceException = true;
 
     std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();
 
+    setCreatorID(1);
+    setAssignToID(2);
     setDescription("Testing Exception handling");
     setEstimatedEffort(6);
     setScheduledStart(getTodaysDate());
@@ -770,6 +756,10 @@ bool TaskModel::testExceptionInsert()
     setPriorityGroup('A');
     setPriority(1);
     setCreationDate(timeStamp);
+    setParentTaskID(1);
+    addDependency(3);
+    addDependency(5);
+    addDependency(7);
 
     try {
         std::string shouldBeNoValue = formatInsertStatement();
@@ -791,6 +781,14 @@ bool TaskModel::testExceptionInsert()
         return false;
     }
 
+    forceException = false;
+    if (!insert())
+    {
+        std::clog << "TaskModel::insert() returned false expected success in exception test, TEST FAILED!\n";
+        std::clog << "Error Messages" << errorMessages << "\n";
+        return false;
+    }
+
     return true;
 }
 
@@ -798,10 +796,13 @@ bool TaskModel::testExceptionUpdate()
 {
     selfTestResetAllValues();
 
+    forceException = true;
     std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();
 
     setTaskID(1);
     setDescription("Testing Exception handling");
+    setCreatorID(1);
+    setAssignToID(2);
     setEstimatedEffort(6);
     setScheduledStart(getTodaysDate());
     setDueDate(getTodaysDatePlus(2));
@@ -828,6 +829,14 @@ bool TaskModel::testExceptionUpdate()
         std::clog << "TaskModel::update() returned true in exception test, TEST FAILED!\n";
         return false;
     }
+
+    forceException = false;
+    if (!update())
+    {
+        std::clog << "TaskModel::update() returned false expected success in exception test, TEST FAILED!\n";
+        return false;
+    }
+
 
     return true;
 }
