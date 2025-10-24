@@ -687,91 +687,46 @@ bool UserModel::testExceptionHandling()
 bool UserModel::testExceptionSelectByLoginName()
 {
     selfTestResetAllValues();
-    std::string testLoginName("testValue");
 
-    forceException = true;
-    if (selectByLoginName(testLoginName))
-    {
-        return false;
-    }
-
-    forceException = false;
-    return selectByLoginName(testLoginName);
+    return testExceptionAndSuccess1Arg<std::string>(std::bind(&UserModel::selectByLoginName, this, std::placeholders::_1), "testValue");
 }
 bool UserModel::testExceptionSelectByEmail()
 {
     selfTestResetAllValues();
     std::string testEmail("testValue@testValue.com");
 
-    forceException = true;
-    if (selectByEmail(testEmail))
-    {
-        return false;
-    }
-
-    forceException = false;
-    return selectByEmail(testEmail);
+    return testExceptionAndSuccess1Arg<std::string>(std::bind(&UserModel::selectByEmail, this, std::placeholders::_1), testEmail);
 }
 
 bool UserModel::testExceptionSelectByLoginAndPassword()
 {
     selfTestResetAllValues();
-    forceException = true;
-    if (selectByLoginAndPassword("TestValue", "TestValue"))
-    {
-        return false;
-    }
 
-    forceException = false;
-    return selectByLoginAndPassword("TestValue", "TestValue");
+    return testExceptionAndSuccess2Arg<std::string, std::string>(
+        std::bind(&UserModel::selectByLoginAndPassword, this, std::placeholders::_1, std::placeholders::_2), "TestValue", "TestValue");
 }
 
 bool UserModel::testExceptionSelectByFullName()
 {
     selfTestResetAllValues();
-    forceException = true;
-    if (selectByFullName("TestLastName", "TestFirstName", "MI"))
-    {
-        return false;
-    }
 
-    forceException = false;
-    return selectByFullName("TestLastName", "TestFirstName", "MI");
+        return testExceptionAndSuccess3Arg<std::string, std::string, std::string>(
+        std::bind(&UserModel::selectByFullName, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
+            "TestLastName", "TestFirstName", "MI");
 }
 
 bool UserModel::testExceptionSelectByUserID()
 {
     selfTestResetAllValues();
-    forceException = true;
-    if (selectByUserID(1))
-    {
-        return false;
-    }
 
-    forceException = false;
-    return selectByUserID(1);
+    return testExceptionAndSuccess1Arg<std::size_t>(std::bind(&UserModel::selectByUserID, this, std::placeholders::_1), 1);
 }
 
 bool UserModel::testExceptionFormatGetAllUsersQuery()
 {
     selfTestResetAllValues();
     
-    forceException = true;
-    std::string formattedQuery = formatGetAllUsersQuery();
-    if (!formattedQuery.empty())
-    {
-        return false;
-    }
-
-    forceException = false;
-    formattedQuery.clear();
-    formattedQuery = formatGetAllUsersQuery();
-    if (formattedQuery.empty())
-    {
-        return false;
-    }
-
-    return true;
+    return testFormatExceptionAndSuccess(std::bind(&UserModel::formatGetAllUsersQuery, this));
 }
 
 bool UserModel::testExceptionInsert()
@@ -787,14 +742,7 @@ bool UserModel::testExceptionInsert()
     setCreationDate(timeStamp);
     setLastLogin(timeStamp);
 
-    forceException = true;
-    if (insert())
-    {
-        return false;
-    }
-
-    forceException = false;
-    return insert();
+    return testExceptionAndSuccess(std::bind(&UserModel::insert, this));
 }
 
 bool UserModel::testExceptionUpdate()
@@ -811,14 +759,7 @@ bool UserModel::testExceptionUpdate()
     setCreationDate(timeStamp);
     setLastLogin(timeStamp);
 
-    forceException = true;
-    if (update())
-    {
-        return false;
-    }
-
-    forceException = false;
-    return update();
+    return testExceptionAndSuccess(std::bind(&UserModel::update, this));
 }
 
 bool UserModel::testExceptionRetrieve()
@@ -827,14 +768,7 @@ bool UserModel::testExceptionRetrieve()
 
     setUserID(1);
 
-    forceException = true;
-    if (retrieve())
-    {
-        return false;
-    }
-
-    forceException = false;
-    return retrieve();
+    return testExceptionAndSuccess(std::bind(&UserModel::retrieve, this));
 }
 
 ModelDBInterface::ModelTestStatus UserModel::testAllInsertFailures()

@@ -120,6 +120,119 @@ protected:
         return true;
     }
 
+    bool testExceptionAndSuccess(std::function<bool()>funcUnderTest)
+    {
+        forceException = true;
+        if (funcUnderTest())
+        {
+            return false;
+        }
+
+        forceException = false;
+        return funcUnderTest();
+    }
+
+    template <typename T>
+    bool testExceptionAndSuccess1Arg(std::function<bool(T)>funcUnderTest, T arg1)
+    {
+        forceException = true;
+        if (funcUnderTest(arg1))
+        {
+            return false;
+        }
+
+        forceException = false;
+        return funcUnderTest(arg1);
+    }
+
+    template <typename T, typename U>
+    bool testExceptionAndSuccess2Arg(std::function<bool(T, U)>funcUnderTest, T arg1, U arg2)
+    {
+        forceException = true;
+        if (funcUnderTest(arg1, arg2))
+        {
+            return false;
+        }
+
+        forceException = false;
+        return funcUnderTest(arg1, arg2);
+    }
+
+    template <typename T, typename U, typename V>
+    bool testExceptionAndSuccess3Arg(std::function<bool(T, U, V)>funcUnderTest, T arg1, U arg2, V arg3)
+    {
+        forceException = true;
+        if (funcUnderTest(arg1, arg2, arg3))
+        {
+            return false;
+        }
+
+        forceException = false;
+        return funcUnderTest(arg1, arg2, arg3);
+    }
+
+    bool testFormatExceptionAndSuccess(std::function<std::string()>funcUnderTest)
+    {
+        forceException = true;
+        std::string formattedQuery = funcUnderTest();
+        if (!formattedQuery.empty())
+        {
+            return false;
+        }
+
+        forceException = false;
+        formattedQuery.clear();
+        formattedQuery = funcUnderTest();
+        if (formattedQuery.empty())
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    template <typename T>
+    bool testFormatExceptionAndSuccess1Arg(std::function<std::string(T)>funcUnderTest, T arg1)
+    {
+        forceException = true;
+        std::string formattedQuery = funcUnderTest(arg1);
+        if (!formattedQuery.empty())
+        {
+            return false;
+        }
+
+        forceException = false;
+        formattedQuery.clear();
+        formattedQuery = funcUnderTest(arg1);
+        if (formattedQuery.empty())
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    template <typename T, typename U>
+    bool testFormatExceptionAndSuccess2Arg(std::function<std::string(T, U)>funcUnderTest, T arg1, U arg2)
+    {
+        forceException = true;
+        std::string formattedQuery = funcUnderTest(arg1, arg2);
+        if (!formattedQuery.empty())
+        {
+            return false;
+        }
+
+        forceException = false;
+        formattedQuery.clear();
+        formattedQuery = funcUnderTest(arg1, arg2);
+        if (formattedQuery.empty())
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     template <typename T>
     bool testOptionalAccessorFunctions(T testValue, std::optional<T>* member, std::string_view memberName,
         std::function<void(T)>setFunct, std::function<std::optional<T>(void)>getFunct)
