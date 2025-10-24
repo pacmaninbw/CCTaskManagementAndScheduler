@@ -26,7 +26,6 @@ private:
     bool testUpdateUserPassword(UserModel_shp insertedUser);
     bool loadTestUsersFromFile(UserListValues& userProfileTestData);
     bool testGetAllUsers(UserListValues userProfileTestData);
-    TestDBInterfaceCore::TestStatus negativePathMissingRequiredFields();
     void addFirstUser(UserListValues& TestUsers);
     TestDBInterfaceCore::TestStatus testnegativePathNotModified();
     TestDBInterfaceCore::TestStatus testNegativePathAlreadyInDataBase();

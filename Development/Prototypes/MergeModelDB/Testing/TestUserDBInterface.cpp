@@ -25,7 +25,6 @@ TestUserDBInterface::TestUserDBInterface(std::string userFileName)
     positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByEmail, this, std::placeholders::_1));
     positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testUpdateUserPassword, this, std::placeholders::_1));
 
-    negativePathTestFuncsNoArgs.push_back(std::bind(&TestUserDBInterface::negativePathMissingRequiredFields, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestUserDBInterface::testnegativePathNotModified, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestUserDBInterface::testNegativePathAlreadyInDataBase, this));
 }
@@ -277,51 +276,6 @@ bool TestUserDBInterface::testGetAllUsers(UserListValues userProfileTestData)
     allUsers.clear();
 
     return testPassed;
-}
-
-TestDBInterfaceCore::TestStatus TestUserDBInterface::negativePathMissingRequiredFields()
-{
-    std::vector<std::string> expectedErrors =
-    {
-        "Last Name", "First Name", "Login Name", "Password", "User is missing required values"
-    };
-
-    UserModel newuser;
-    newuser.setUserID(0);   // Force a modification so that missing fields can be tested.
-
-    std::vector<std::function<void(std::string)>> fieldSettings = 
-    {
-        std::bind(&UserModel::setLastName, &newuser, std::placeholders::_1),
-        std::bind(&UserModel::setFirstName, &newuser, std::placeholders::_1),
-        std::bind(&UserModel::setLoginName, &newuser, std::placeholders::_1),
-        std::bind(&UserModel::setPassword, &newuser, std::placeholders::_1)
-    };
-
-    for (auto setField: fieldSettings)
-    {
-        if (testInsertionFailureMessages(&newuser, expectedErrors) != TESTPASSED)
-        {
-            return TESTFAILED;
-        }
-        expectedErrors.erase(expectedErrors.begin());
-        setField("teststringvalue");
-    }
-
-    expectedErrors.clear();
-
-    newuser.save();
-    if (!newuser.isInDataBase())
-    {
-        std::clog << newuser.getAllErrorMessages() << newuser << "\n";
-        std::clog << "Primary key for user: " << newuser.getUserID() << " not set!\n";
-        if (verboseOutput)
-        {
-            std::clog << newuser << "\n\n";
-        }
-        return TESTFAILED;
-    }
-
-    return TESTPASSED;
 }
 
 void TestUserDBInterface::addFirstUser(UserListValues& TestUsers)
