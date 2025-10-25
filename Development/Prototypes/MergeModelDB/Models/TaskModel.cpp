@@ -668,6 +668,7 @@ bool TaskModel::testExceptionHandling()
     exceptionTests.push_back({std::bind(&TaskModel::testExceptionSelectByDescriptionAndAssignedUser, this), "selectByDescriptionAndAssignedUser"});
     exceptionTests.push_back({std::bind(&TaskModel::testExceptionInsert, this), "testExceeptionInsert"});
     exceptionTests.push_back({std::bind(&TaskModel::testExceptionUpdate, this), "testExceptionUpdate"});
+    exceptionTests.push_back({std::bind(&TaskModel::testExceptionRetrieve, this), "testExceptionRetrieve"});
     exceptionTests.push_back({std::bind(&TaskModel::testExceptionFormatSelectActiveTasksForAssignedUser, this),
         "selectByDescriptionAndAssignedUser"});
     exceptionTests.push_back({std::bind(&TaskModel::testExceptionFormatSelectUnstartedDueForStartForAssignedUser, this),
@@ -691,29 +692,30 @@ bool TaskModel::testExceptionSelectByTaskID()
 {
     selfTestResetAllValues();
 
-    return testExceptionAndSuccess1Arg<std::size_t>(std::bind(&TaskModel::selectByTaskID, this, std::placeholders::_1), 0);
+    return testExceptionAndSuccessNArgs("TaskModel::selectByTaskID", std::bind(&TaskModel::selectByTaskID, this, std::placeholders::_1), 0);
 }
 
 bool TaskModel::testExceptionSelectByDescriptionAndAssignedUser()
 {
     selfTestResetAllValues();
-    return testExceptionAndSuccess2Arg<std::string, std::size_t>
-        (std::bind(&TaskModel::selectByDescriptionAndAssignedUser, this, std::placeholders::_1, std::placeholders::_2),
-         "A task description", 1);
+    return testExceptionAndSuccessNArgs
+        ("TaskModel::selectByDescriptionAndAssignedUser",
+            std::bind(&TaskModel::selectByDescriptionAndAssignedUser, this, std::placeholders::_1, std::placeholders::_2),
+            "A task description", 1);
 }
 
 bool TaskModel::testExceptionFormatSelectActiveTasksForAssignedUser()
 {
     selfTestResetAllValues();
-    return testFormatExceptionAndSuccess1Arg<std::size_t>
-        (std::bind(&TaskModel::formatSelectActiveTasksForAssignedUser, this, std::placeholders::_1), 1);
+    return testFormatExceptionAndSuccessNArgs("TaskModel::formatSelectActiveTasksForAssignedUser",
+        std::bind(&TaskModel::formatSelectActiveTasksForAssignedUser, this, std::placeholders::_1), 1);
 }
 
 bool TaskModel::testExceptionFormatSelectUnstartedDueForStartForAssignedUser()
 {
     selfTestResetAllValues();
-    return testFormatExceptionAndSuccess1Arg<std::size_t>
-        (std::bind(&TaskModel::formatSelectUnstartedDueForStartForAssignedUser, this, std::placeholders::_1), 1);
+    return testFormatExceptionAndSuccessNArgs("TaskModel::formatSelectUnstartedDueForStartForAssignedUser",
+        std::bind(&TaskModel::formatSelectUnstartedDueForStartForAssignedUser, this, std::placeholders::_1), 1);
 }
 
 bool TaskModel::testExceptionFormatSelectTasksCompletedByAssignedAfterDate()
@@ -723,11 +725,24 @@ bool TaskModel::testExceptionFormatSelectTasksCompletedByAssignedAfterDate()
     std::chrono::year_month_day searchStartDate = getTodaysDate();
     std::size_t assignedUser = 1;
 
-    return testFormatExceptionAndSuccess2Arg<std::size_t, std::chrono::year_month_day&>
-        (std::bind(&TaskModel::formatSelectTasksCompletedByAssignedAfterDate, this, std::placeholders::_1, std::placeholders::_2),
-        assignedUser, searchStartDate);
-}
+    forceException = true;
+    std::string formattedQuery = formatSelectTasksCompletedByAssignedAfterDate(assignedUser, searchStartDate);
+    if (!formattedQuery.empty())
+    {
+        return testExceptionReportFailure(false, false, "testFormatExceptionAndSuccess2Arg");
+    }
 
+    forceException = false;
+    formattedQuery.clear();
+    formattedQuery = formatSelectTasksCompletedByAssignedAfterDate(assignedUser, searchStartDate);
+    if (formattedQuery.empty())
+    {
+        return testExceptionReportFailure(true, false, "testFormatExceptionAndSuccess2Arg");
+    }
+
+    return true;
+}
+ 
 bool TaskModel::testExceptionFormatSelectTasksByAssignedIDandParentID()
 {
     selfTestResetAllValues();
@@ -735,8 +750,8 @@ bool TaskModel::testExceptionFormatSelectTasksByAssignedIDandParentID()
     std::size_t assignedUser = 1;
     std::size_t parentid = 1;
 
-    return testFormatExceptionAndSuccess2Arg<std::size_t, std::size_t>
-        (std::bind(&TaskModel::formatSelectTasksByAssignedIDandParentID, this, std::placeholders::_1, std::placeholders::_2),
+    return testFormatExceptionAndSuccessNArgs("TaskModel::formatSelectTasksByAssignedIDandParentID",
+        std::bind(&TaskModel::formatSelectTasksByAssignedIDandParentID, this, std::placeholders::_1, std::placeholders::_2),
         assignedUser, parentid);
 }
 
@@ -761,35 +776,13 @@ bool TaskModel::testExceptionInsert()
     addDependency(5);
     addDependency(7);
 
-    try {
-        std::string shouldBeNoValue = formatInsertStatement();
+    if (!testFormatExceptionCatchSuccessNArgs("TaskModel::formatInsertStatement", std::bind(&TaskModel::formatInsertStatement, this)))
+    {
         std::clog << "TaskModel::formatInsertStatement() returned a string in Exception Test, FAILED\n";
         return false;
     }
-    catch (std::exception& formatException)
-    {
-        if (verboseOutput)
-        {
-            std::clog << "TaskModel::formatInsertStatement() threw expected exception in exception test.\n";
-        }
 
-    }
-
-    if (insert())
-    {
-        std::clog << "TaskModel::insert() returned true in exception test, TEST FAILED!\n";
-        return false;
-    }
-
-    forceException = false;
-    if (!insert())
-    {
-        std::clog << "TaskModel::insert() returned false expected success in exception test, TEST FAILED!\n";
-        std::clog << "Error Messages" << errorMessages << "\n";
-        return false;
-    }
-
-    return true;
+    return testExceptionAndSuccessNArgs("TaskModel::insert", std::bind(&TaskModel::insert, this));
 }
 
 bool TaskModel::testExceptionUpdate()
@@ -809,37 +802,34 @@ bool TaskModel::testExceptionUpdate()
     setPriorityGroup('A');
     setPriority(1);
     setCreationDate(timeStamp);
+    addDependency(2);
+    addDependency(4);
+    addDependency(6);
     
-    try {
-        std::string shouldBeNoValue = formatUpdateStatement();
-        std::clog << "TaskModel::formatUpdateStatement() returned a string in Exception Test, FAILED\n";
-        return false;
-    }
-    catch (std::exception& formatException)
+    if (!testFormatExceptionCatchSuccessNArgs("TaskModel::formatUpdateStatement", std::bind(&TaskModel::formatUpdateStatement, this)))
     {
-        if (verboseOutput)
-        {
-            std::clog << "TaskModel::formatUpdateStatement() threw expected exception in exception test.\n";
-        }
-
-    }
-
-    if (update())
-    {
-        std::clog << "TaskModel::update() returned true in exception test, TEST FAILED!\n";
+        std::clog << "TaskModel::formatInsertStatement() returned a string in Exception Test, FAILED\n";
         return false;
     }
 
-    forceException = false;
-    if (!update())
-    {
-        std::clog << "TaskModel::update() returned false expected success in exception test, TEST FAILED!\n";
-        return false;
-    }
-
-
-    return true;
+    return testExceptionAndSuccessNArgs("TaskModel::update", std::bind(&TaskModel::update, this));
 }
+
+bool TaskModel::testExceptionRetrieve()
+{
+    selfTestResetAllValues();
+    
+    setTaskID(37);
+
+    if (!testFormatExceptionCatchSuccessNArgs("TaskModel::formatSelectStatement", std::bind(&TaskModel::formatSelectStatement, this)))
+    {
+        std::clog << "TaskModel::formatInsertStatement() returned a string in Exception Test, FAILED\n";
+        return false;
+    }
+
+    return testExceptionAndSuccessNArgs("TaskModel::retrieve", std::bind(&TaskModel::retrieve, this));
+}
+
 
 ModelDBInterface::ModelTestStatus TaskModel::testAllInsertFailures()
 {
@@ -1351,3 +1341,4 @@ bool TaskModel::testAddEffort()
 
     return true;
 }
+
