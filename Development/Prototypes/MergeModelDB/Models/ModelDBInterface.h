@@ -120,121 +120,6 @@ protected:
         return true;
     }
 
-    bool testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName);
-
-    bool testExceptionAndSuccess(std::function<bool()>funcUnderTest)
-    {
-        forceException = true;
-        if (funcUnderTest())
-        {
-            return testExceptionReportFailure(false, true, "testExceptionAndSuccess");
-        }
-
-        forceException = false;
-        return funcUnderTest();
-    }
-
-    template <typename T>
-    bool testExceptionAndSuccess1Arg(std::function<bool(T)>funcUnderTest, T arg1)
-    {
-        forceException = true;
-        if (funcUnderTest(arg1))
-        {
-            return testExceptionReportFailure(false, true, "testExceptionAndSuccess1Arg");
-        }
-
-        forceException = false;
-        return funcUnderTest(arg1);
-    }
-
-    template <typename T, typename U>
-    bool testExceptionAndSuccess2Arg(std::function<bool(T, U)>funcUnderTest, T arg1, U arg2)
-    {
-        forceException = true;
-        if (funcUnderTest(arg1, arg2))
-        {
-            return testExceptionReportFailure(false, true, "testExceptionAndSuccess2Arg");
-        }
-
-        forceException = false;
-        return funcUnderTest(arg1, arg2);
-    }
-
-    template <typename T, typename U, typename V>
-    bool testExceptionAndSuccess3Arg(std::function<bool(T, U, V)>funcUnderTest, T arg1, U arg2, V arg3)
-    {
-        forceException = true;
-        if (funcUnderTest(arg1, arg2, arg3))
-        {
-            return testExceptionReportFailure(false, true, "testExceptionAndSuccess3Arg");
-        }
-
-        forceException = false;
-        return funcUnderTest(arg1, arg2, arg3);
-    }
-
-    bool testFormatExceptionAndSuccess(std::function<std::string()>funcUnderTest)
-    {
-        forceException = true;
-        std::string formattedQuery = funcUnderTest();
-        if (!formattedQuery.empty())
-        {
-            return testExceptionReportFailure(false, false, "testFormatExceptionAndSuccess");
-        }
-
-        forceException = false;
-        formattedQuery.clear();
-        formattedQuery = funcUnderTest();
-        if (formattedQuery.empty())
-        {
-            return testExceptionReportFailure(true, false, "testFormatExceptionAndSuccess");
-        }
-
-        return true;
-    }
-
-    template <typename T>
-    bool testFormatExceptionAndSuccess1Arg(std::function<std::string(T)>funcUnderTest, T arg1)
-    {
-        forceException = true;
-        std::string formattedQuery = funcUnderTest(arg1);
-        if (!formattedQuery.empty())
-        {
-            return testExceptionReportFailure(false, false, "testFormatExceptionAndSuccess1Arg");
-        }
-
-        forceException = false;
-        formattedQuery.clear();
-        formattedQuery = funcUnderTest(arg1);
-        if (formattedQuery.empty())
-        {
-            return testExceptionReportFailure(true, false, "testFormatExceptionAndSuccess1Arg");
-        }
-
-        return true;
-    }
-
-    template <typename T, typename U>
-    bool testFormatExceptionAndSuccess2Arg(std::function<std::string(T, U)>funcUnderTest, T arg1, U arg2)
-    {
-        forceException = true;
-        std::string formattedQuery = funcUnderTest(arg1, arg2);
-        if (!formattedQuery.empty())
-        {
-            return testExceptionReportFailure(false, false, "testFormatExceptionAndSuccess2Arg");
-        }
-
-        forceException = false;
-        formattedQuery.clear();
-        formattedQuery = funcUnderTest(arg1, arg2);
-        if (formattedQuery.empty())
-        {
-            return testExceptionReportFailure(true, false, "testFormatExceptionAndSuccess2Arg");
-        }
-
-        return true;
-    }
-
     template <typename T>
     bool testOptionalAccessorFunctions(T testValue, std::optional<T>* member, std::string_view memberName,
         std::function<void(T)>setFunct, std::function<std::optional<T>(void)>getFunct)
@@ -322,6 +207,81 @@ protected:
         return true;
     }
 
+    bool testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName);
+
+    template <typename F, typename... Ts>
+    requires std::is_invocable_v<F, Ts...>
+    bool testExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args)
+    {
+        forceException = true;
+        if (funcUnderTest(args...))
+        {
+            return testExceptionReportFailure(false, true, funcName);
+        }
+
+        forceException = false;
+        if (!funcUnderTest(args...))
+        {
+            return testExceptionReportFailure(true, true, funcName);
+        }
+
+        return true;
+    }
+
+    template <typename F, typename... Ts>
+    requires std::is_invocable_v<F, Ts...>
+    bool testFormatExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args)
+    {
+        forceException = true;
+        std::string formattedQuery = funcUnderTest(args...);
+        if (!formattedQuery.empty())
+        {
+            return testExceptionReportFailure(false, false, funcName);
+        }
+
+        forceException = false;
+        formattedQuery.clear();
+        formattedQuery = funcUnderTest(args...);
+        if (formattedQuery.empty())
+        {
+            return testExceptionReportFailure(true, false, funcName);
+        }
+
+        return true;
+    }
+
+/*
+ * Used to test formatSQL functions that do not contain a try catch block.
+ */
+    template <typename F, typename... Ts>
+    requires std::is_invocable_v<F, Ts...>
+    bool testFormatExceptionCatchSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args)
+    {
+        std::string formattedQuery;
+
+        try
+        {
+            forceException = true;
+            formattedQuery = funcUnderTest(args...);
+            return testExceptionReportFailure(false, false, funcName);    
+        }
+        catch(const std::exception& e)
+        {
+            if (verboseOutput)
+            {
+                std::clog << "Caught expected exception from " << funcName << "(): " << e.what() << "\n";
+            }
+            forceException = false; 
+            formattedQuery = funcUnderTest(args...);
+            if (formattedQuery.empty())
+            {
+                return testExceptionReportFailure(true, false, funcName);
+            }
+        }        
+
+        return true;
+    }
+
     bool hasErrorMessage();
     ModelDBInterface::ModelTestStatus wrongErrorMessage(std::string expectedString);
     virtual ModelDBInterface::ModelTestStatus testInsertionFailureMessages(std::vector<std::string> expectedErrors);
@@ -352,7 +312,6 @@ protected:
 
     const ModelDBInterface::ModelTestStatus TESTFAILED = ModelDBInterface::ModelTestStatus::ModelTestFailed;
     const ModelDBInterface::ModelTestStatus TESTPASSED = ModelDBInterface::ModelTestStatus::ModelTestPassed;
-
 };
 
 using AnyModel_shp = std::shared_ptr<ModelDBInterface>;
