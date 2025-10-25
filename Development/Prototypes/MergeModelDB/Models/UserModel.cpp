@@ -688,29 +688,30 @@ bool UserModel::testExceptionSelectByLoginName()
 {
     selfTestResetAllValues();
 
-    return testExceptionAndSuccess1Arg<std::string>(std::bind(&UserModel::selectByLoginName, this, std::placeholders::_1), "testValue");
+    return testExceptionAndSuccessNArgs("UserModel::selectByLoginName", std::bind(&UserModel::selectByLoginName, this, std::placeholders::_1), "testValue");
 }
 bool UserModel::testExceptionSelectByEmail()
 {
     selfTestResetAllValues();
     std::string testEmail("testValue@testValue.com");
 
-    return testExceptionAndSuccess1Arg<std::string>(std::bind(&UserModel::selectByEmail, this, std::placeholders::_1), testEmail);
+    return testExceptionAndSuccessNArgs("UserModel::selectByEmail", std::bind(&UserModel::selectByEmail, this, std::placeholders::_1), testEmail);
 }
 
 bool UserModel::testExceptionSelectByLoginAndPassword()
 {
     selfTestResetAllValues();
 
-    return testExceptionAndSuccess2Arg<std::string, std::string>(
-        std::bind(&UserModel::selectByLoginAndPassword, this, std::placeholders::_1, std::placeholders::_2), "TestValue", "TestValue");
+    return testExceptionAndSuccessNArgs("UserModel::selectByLoginAndPassword", 
+        std::bind(&UserModel::selectByLoginAndPassword, this, std::placeholders::_1, std::placeholders::_2),
+        "TestValue", "TestValue");
 }
 
 bool UserModel::testExceptionSelectByFullName()
 {
     selfTestResetAllValues();
 
-        return testExceptionAndSuccess3Arg<std::string, std::string, std::string>(
+        return testExceptionAndSuccessNArgs("UserModel::selectByFullName", 
         std::bind(&UserModel::selectByFullName, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
             "TestLastName", "TestFirstName", "MI");
 }
@@ -719,14 +720,14 @@ bool UserModel::testExceptionSelectByUserID()
 {
     selfTestResetAllValues();
 
-    return testExceptionAndSuccess1Arg<std::size_t>(std::bind(&UserModel::selectByUserID, this, std::placeholders::_1), 1);
+    return testExceptionAndSuccessNArgs("UserModel::selectByUserID", std::bind(&UserModel::selectByUserID, this, std::placeholders::_1), 1);
 }
 
 bool UserModel::testExceptionFormatGetAllUsersQuery()
 {
     selfTestResetAllValues();
     
-    return testFormatExceptionAndSuccess(std::bind(&UserModel::formatGetAllUsersQuery, this));
+    return testFormatExceptionAndSuccessNArgs("UserModel::formatGetAllUsersQuery", std::bind(&UserModel::formatGetAllUsersQuery, this));
 }
 
 bool UserModel::testExceptionInsert()
@@ -742,7 +743,7 @@ bool UserModel::testExceptionInsert()
     setCreationDate(timeStamp);
     setLastLogin(timeStamp);
 
-    return testExceptionAndSuccess(std::bind(&UserModel::insert, this));
+    return testExceptionAndSuccessNArgs("UserModel::insert", std::bind(&UserModel::insert, this));
 }
 
 bool UserModel::testExceptionUpdate()
@@ -759,7 +760,7 @@ bool UserModel::testExceptionUpdate()
     setCreationDate(timeStamp);
     setLastLogin(timeStamp);
 
-    return testExceptionAndSuccess(std::bind(&UserModel::update, this));
+    return testExceptionAndSuccessNArgs("UserModel::update", std::bind(&UserModel::update, this));
 }
 
 bool UserModel::testExceptionRetrieve()
@@ -768,7 +769,7 @@ bool UserModel::testExceptionRetrieve()
 
     setUserID(1);
 
-    return testExceptionAndSuccess(std::bind(&UserModel::retrieve, this));
+    return testExceptionAndSuccessNArgs("UserModel::retrieve", std::bind(&UserModel::retrieve, this));
 }
 
 ModelDBInterface::ModelTestStatus UserModel::testAllInsertFailures()
