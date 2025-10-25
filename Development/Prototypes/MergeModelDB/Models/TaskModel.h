@@ -195,6 +195,7 @@ private:
     bool testExceptionFormatSelectTasksByAssignedIDandParentID();
     virtual bool testExceptionInsert() override;
     virtual bool testExceptionUpdate() override;
+    virtual bool testExceptionRetrieve() override;
     virtual ModelDBInterface::ModelTestStatus testAllInsertFailures() override;
     bool testDiff();
 
