@@ -547,11 +547,13 @@ bool ModelDBInterface::testExceptionReportFailure(bool expectSuccess, bool isBoo
     {
         if (expectSuccess)
         {
-            reportFailure.append(std::format("expected success {} returned ", isBool? "false" : "empty string"));
+            reportFailure.append(std::format("expected success returned {} \n", isBool? "false" : "empty string"));
+            reportFailure.append(errorMessages);
+            reportFailure.append("\n");
         }
         else
         {
-            reportFailure.append(std::format("expected failure {} returned ", isBool? "true" : "formatted string"));
+            reportFailure.append(std::format("expected failure returned {} ", isBool? "true" : "formatted string"));
         }
     }
 
