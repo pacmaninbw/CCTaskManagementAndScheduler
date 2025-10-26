@@ -35,60 +35,60 @@ public:
     );
     ~UserModel() = default;
 
-    void autoGenerateLoginAndPassword();
-    std::string getLastName() const { return lastName;};
-    std::string getFirstName() const { return firstName; };
-    std::string getMiddleInitial() const { return middleInitial.value_or(""); };
-    std::string getEmail() const { return email; };
-    std::string getLoginName() const { return loginName; };
-    std::string getPassword() const { return password; };
-    std::string getStartTime() const { return preferences.startTime; };
-    std::string getEndTime() const { return preferences.endTime; };
-    std::size_t getUserID() const { return primaryKey; };
-    std::chrono::system_clock::time_point getCreationDate() const { return created.value(); };
-    std::optional<std::chrono::system_clock::time_point> getLastLogin() const { return lastLogin; };
-    bool isPriorityInSchedule() const { return preferences.includePriorityInSchedule; };
-    bool isMinorPriorityInSchedule() const { return preferences.includeMinorPriorityInSchedule; };
-    bool isUsingLettersForMaorPriority() const { return preferences.userLetterForMajorPriority; };
-    bool isSeparatingPriorityWithDot() const { return preferences.separateMajorAndMinorWithDot; };
+    void autoGenerateLoginAndPassword() noexcept;
+    std::string getLastName() const noexcept { return lastName;};
+    std::string getFirstName() const noexcept { return firstName; };
+    std::string getMiddleInitial() const noexcept { return middleInitial.value_or(""); };
+    std::string getEmail() const noexcept { return email; };
+    std::string getLoginName() const noexcept { return loginName; };
+    std::string getPassword() const noexcept { return password; };
+    std::string getStartTime() const noexcept { return preferences.startTime; };
+    std::string getEndTime() const noexcept { return preferences.endTime; };
+    std::size_t getUserID() const noexcept { return primaryKey; };
+    std::chrono::system_clock::time_point getCreationDate() const noexcept { return created.value(); };
+    std::optional<std::chrono::system_clock::time_point> getLastLogin() const noexcept { return lastLogin; };
+    bool isPriorityInSchedule() const noexcept { return preferences.includePriorityInSchedule; };
+    bool isMinorPriorityInSchedule() const noexcept { return preferences.includeMinorPriorityInSchedule; };
+    bool isUsingLettersForMaorPriority() const noexcept { return preferences.userLetterForMajorPriority; };
+    bool isSeparatingPriorityWithDot() const noexcept { return preferences.separateMajorAndMinorWithDot; };
 
-    void setLastName(const std::string& lastNameP);
-    void setFirstName(const std::string& firstNameP);
-    void setMiddleInitial(const std::string& middleinitP);
-    void setEmail(const std::string& emailP);
-    void setLoginName(const std::string& loginNameP);
-    void setPassword(const std::string& passwordP);
-    void setStartTime(const std::string& startTime);
-    void setEndTime(const std::string& endTime);
-    void setPriorityInSchedule(bool inSchedule);
-    void setMinorPriorityInSchedule(bool inSchedule);
-    void setUsingLettersForMaorPriority(bool usingLetters);
-    void setSeparatingPriorityWithDot(bool separate);
-    void setUserID(std::size_t UserID);
-    void setCreationDate(std::chrono::system_clock::time_point dateIn);
-    void setLastLogin(std::chrono::system_clock::time_point dateAndTime);
+    void setLastName(const std::string& lastNameP) noexcept;
+    void setFirstName(const std::string& firstNameP) noexcept;
+    void setMiddleInitial(const std::string& middleinitP) noexcept;
+    void setEmail(const std::string& emailP) noexcept;
+    void setLoginName(const std::string& loginNameP) noexcept;
+    void setPassword(const std::string& passwordP) noexcept;
+    void setStartTime(const std::string& startTime) noexcept;
+    void setEndTime(const std::string& endTime) noexcept;
+    void setPriorityInSchedule(bool inSchedule) noexcept;
+    void setMinorPriorityInSchedule(bool inSchedule) noexcept;
+    void setUsingLettersForMaorPriority(bool usingLetters) noexcept;
+    void setSeparatingPriorityWithDot(bool separate) noexcept;
+    void setUserID(std::size_t UserID) noexcept;
+    void setCreationDate(std::chrono::system_clock::time_point dateIn) noexcept;
+    void setLastLogin(std::chrono::system_clock::time_point dateAndTime) noexcept;
 
 /*
  * Select with arguments
  */
-    bool selectByLoginName(const std::string_view& loginName);
-    bool selectByEmail(const std::string_view& emailAddress);
-    bool selectByLoginAndPassword(const std::string_view& loginName, const std::string_view& password);
+    bool selectByLoginName(const std::string_view& loginName) noexcept;
+    bool selectByEmail(const std::string_view& emailAddress) noexcept;
+    bool selectByLoginAndPassword(const std::string_view& loginName, const std::string_view& password) noexcept;
     bool selectByFullName(const std::string_view& lastName, const std::string_view& firstName,
-        const std::string_view& middleI);
-    std::string formatGetAllUsersQuery();
-    bool selectByUserID(std::size_t UserID);
+        const std::string_view& middleI) noexcept;
+    std::string formatGetAllUsersQuery() noexcept;
+    bool selectByUserID(std::size_t UserID)  noexcept;
 
 /*
  * Required fields.
  */
-    bool isMissingLastName();
-    bool isMissingFirstName();
-    bool isMissingLoginName();
-    bool isMissingPassword();
-    bool isMissingDateAdded();
-    bool isMissingEmail();
-    void initRequiredFields() override;
+    bool isMissingLastName() const noexcept;
+    bool isMissingFirstName() const noexcept;
+    bool isMissingLoginName() const noexcept;
+    bool isMissingPassword() const noexcept;
+    bool isMissingDateAdded() const noexcept;
+    bool isMissingEmail() const noexcept;
+    void initRequiredFields() noexcept override;
 
     virtual bool runSelfTest() override;
 
@@ -128,8 +128,8 @@ public:
 
 private:
     void createLoginBasedOnUserName(const std::string& lastName,
-        const std::string& firstName,const std::string& middleInitial);
-    bool diffUser(UserModel& other);
+        const std::string& firstName,const std::string& middleInitial) noexcept;
+    bool diffUser(UserModel& other) const noexcept;
     std::string formatInsertStatement() override;
     std::string formatUpdateStatement() override;
     std::string formatSelectStatement() override;
@@ -141,33 +141,33 @@ private:
 // Unit test functions
     virtual void selfTestResetAllValues() override;
     virtual bool testAccessorFunctionsPassed() override;
-    bool testUserIdAccesss();
-    bool testLastNameAccess();
-    bool testFirstNameAccess();
-    bool testMiddleInitialAccess();
-    bool testLoginNameAccess();
-    bool testPassWordAccess();
-    bool testCreatedDateAcfcess();
-    bool testLastLoginAccess();
-    bool testEmailAccess();
-    bool testStartTimeAccess();
-    bool testEndTimeAccesss();
-    bool testIncludePriorityInScheduleAccess();
-    bool testIncludeMinorPriorityInScheduleAccess();
-    bool testUseLetterForMajorPriorityAccess();
-    bool testSeparateMajorAndMinorWithDotAccess();
+    bool testUserIdAccesss() noexcept;
+    bool testLastNameAccess() noexcept;
+    bool testFirstNameAccess() noexcept;
+    bool testMiddleInitialAccess() noexcept;
+    bool testLoginNameAccess() noexcept;
+    bool testPassWordAccess() noexcept;
+    bool testCreatedDateAcfcess() noexcept;
+    bool testLastLoginAccess() noexcept;
+    bool testEmailAccess() noexcept;
+    bool testStartTimeAccess() noexcept;
+    bool testEndTimeAccesss() noexcept;
+    bool testIncludePriorityInScheduleAccess() noexcept;
+    bool testIncludeMinorPriorityInScheduleAccess() noexcept;
+    bool testUseLetterForMajorPriorityAccess() noexcept;
+    bool testSeparateMajorAndMinorWithDotAccess() noexcept;
 
 
-    virtual bool testExceptionHandling() override;
-    bool testExceptionSelectByLoginName();// { return selectByLoginName("") != true; };
-    bool testExceptionSelectByEmail();// { return selectByEmail("") != true; };
-    bool testExceptionSelectByLoginAndPassword();// { return selectByLoginAndPassword("", "") != true; };
-    bool testExceptionSelectByFullName();// { return selectByFullName("", "", "") != true; };
-    bool testExceptionSelectByUserID();// { return selectByUserID(1) != true; };
-    bool testExceptionFormatGetAllUsersQuery();// { return formatGetAllUsersQuery() == std::string(); };
-    virtual bool testExceptionInsert() override;
-    virtual bool testExceptionUpdate() override;
-    virtual bool testExceptionRetrieve() override;
+    virtual bool testExceptionHandling() noexcept override;
+    bool testExceptionSelectByLoginName() noexcept;
+    bool testExceptionSelectByEmail() noexcept;
+    bool testExceptionSelectByLoginAndPassword() noexcept;
+    bool testExceptionSelectByFullName() noexcept;
+    bool testExceptionSelectByUserID() noexcept;
+    bool testExceptionFormatGetAllUsersQuery() noexcept;
+    virtual bool testExceptionInsert() noexcept override;
+    virtual bool testExceptionUpdate() noexcept override;
+    virtual bool testExceptionRetrieve() noexcept override;
 
     virtual ModelDBInterface::ModelTestStatus testAllInsertFailures() override;
     bool diffTest();

@@ -42,7 +42,7 @@ UserModel::UserModel(
     setCreationDate(dateAdded);
 }
 
-void UserModel::autoGenerateLoginAndPassword()
+void UserModel::autoGenerateLoginAndPassword() noexcept
 {
     if (loginName.empty() && password.empty())
     {
@@ -51,7 +51,7 @@ void UserModel::autoGenerateLoginAndPassword()
 }
 
 void UserModel::createLoginBasedOnUserName(
-    const std::string &lastName, const std::string &firstName, const std::string &middleInitial)
+    const std::string &lastName, const std::string &firstName, const std::string &middleInitial)  noexcept
 {
     std::string tempLoginName(lastName);
     tempLoginName += firstName;
@@ -64,134 +64,134 @@ void UserModel::createLoginBasedOnUserName(
     setPassword(tempLoginName);
 }
 
-void UserModel::setLastName(const std::string &lastNameP)
+void UserModel::setLastName(const std::string &lastNameP) noexcept
 {
     modified = true;
     lastName = lastNameP;
 }
 
-void UserModel::setFirstName(const std::string &firstNameP)
+void UserModel::setFirstName(const std::string &firstNameP) noexcept
 {
     modified = true;
     firstName = firstNameP;
 }
 
-void UserModel::setMiddleInitial(const std::string &middleinitP)
+void UserModel::setMiddleInitial(const std::string &middleinitP) noexcept
 {
     modified = true;
     middleInitial = middleinitP;
 }
 
-void UserModel::setEmail(const std::string &emailP)
+void UserModel::setEmail(const std::string &emailP) noexcept
 {
     modified = true;
     email = emailP;
 }
 
-void UserModel::setLoginName(const std::string &loginNameP)
+void UserModel::setLoginName(const std::string &loginNameP) noexcept
 {
     modified = true;
     loginName = loginNameP;
 }
 
-void UserModel::setPassword(const std::string &passwordP)
+void UserModel::setPassword(const std::string &passwordP) noexcept
 {
     modified = true;
     password = passwordP;
 }
 
-void UserModel::setStartTime(const std::string &startTime)
+void UserModel::setStartTime(const std::string &startTime) noexcept
 {
     modified = true;
     preferences.startTime = startTime;
 }
 
-void UserModel::setEndTime(const std::string &endTime)
+void UserModel::setEndTime(const std::string &endTime) noexcept
 {
     modified = true;
     preferences.endTime = endTime;
 }
 
-void UserModel::setPriorityInSchedule(bool inSchedule)
+void UserModel::setPriorityInSchedule(bool inSchedule) noexcept
 {
     modified = true;
     preferences.includePriorityInSchedule = inSchedule;
 }
 
-void UserModel::setMinorPriorityInSchedule(bool inSchedule)
+void UserModel::setMinorPriorityInSchedule(bool inSchedule) noexcept
 {
     modified = true;
     preferences.includeMinorPriorityInSchedule = inSchedule;
 }
 
-void UserModel::setUsingLettersForMaorPriority(bool usingLetters)
+void UserModel::setUsingLettersForMaorPriority(bool usingLetters) noexcept
 {
     modified = true;
     preferences.userLetterForMajorPriority = usingLetters;
 }
 
-void UserModel::setSeparatingPriorityWithDot(bool separate)
+void UserModel::setSeparatingPriorityWithDot(bool separate) noexcept
 {
     modified = true;
     preferences.separateMajorAndMinorWithDot = separate;
 }
 
-void UserModel::setUserID(std::size_t UserID)
+void UserModel::setUserID(std::size_t UserID) noexcept
 {
     modified = true;
     primaryKey = UserID;
 }
 
-void UserModel::setCreationDate(std::chrono::system_clock::time_point dateAndTime)
+void UserModel::setCreationDate(std::chrono::system_clock::time_point dateAndTime) noexcept
 {
     modified = true;
     created = dateAndTime;
 }
 
-void UserModel::setLastLogin(std::chrono::system_clock::time_point dateAndTime)
+void UserModel::setLastLogin(std::chrono::system_clock::time_point dateAndTime) noexcept
 {
     modified = true;
     lastLogin = dateAndTime;
 }
 
-bool UserModel::isMissingLastName()
+bool UserModel::isMissingLastName() const noexcept
 {
     return (lastName.empty() || lastName.length() < minNameLenght);
 }
 
-bool UserModel::isMissingFirstName()
+bool UserModel::isMissingFirstName() const noexcept
 {
     return (firstName.empty() || firstName.length() < minNameLenght);
 }
 
-bool UserModel::isMissingLoginName()
+bool UserModel::isMissingLoginName()const noexcept
 {
     return (loginName.empty() || loginName.length() < (2 * minNameLenght));
 }
 
-bool UserModel::isMissingPassword()
+bool UserModel::isMissingPassword() const noexcept
 {
     return (password.empty() || password.length() < minPasswordLenght);;
 }
 
-bool UserModel::isMissingDateAdded()
+bool UserModel::isMissingDateAdded() const noexcept
 {
     return !created.has_value();
 }
 
-bool UserModel::isMissingEmail()
+bool UserModel::isMissingEmail() const noexcept
 {
     return (email.empty() || email.length() < minEmailLength);
 }
 
-bool UserModel::diffUser(UserModel &other)
+bool UserModel::diffUser(UserModel &other) const noexcept
 {
     // Ignore user preferences
     return (primaryKey == other.primaryKey && loginName == other.loginName && password == other.password &&
         lastName == other.lastName && firstName == other.firstName &&middleInitial == other.middleInitial);
 }
 
-void UserModel::initRequiredFields()
+void UserModel::initRequiredFields() noexcept
 {
     missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingLastName, this), "Last Name"});
     missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingFirstName, this), "First Name"});
@@ -352,7 +352,7 @@ void UserModel::parsePrefenceText(std::string preferences) noexcept
     clearModified();
 }
 
-bool UserModel::selectByLoginName(const std::string_view &loginName)
+bool UserModel::selectByLoginName(const std::string_view &loginName) noexcept
 {
     errorMessages.clear();
 
@@ -375,7 +375,7 @@ bool UserModel::selectByLoginName(const std::string_view &loginName)
     }
 }
 
-bool UserModel::selectByEmail(const std::string_view &emailAddress)
+bool UserModel::selectByEmail(const std::string_view &emailAddress) noexcept
 {
     errorMessages.clear();
 
@@ -398,7 +398,7 @@ bool UserModel::selectByEmail(const std::string_view &emailAddress)
     }
 }
 
-bool UserModel::selectByLoginAndPassword(const std::string_view &loginName, const std::string_view &password)
+bool UserModel::selectByLoginAndPassword(const std::string_view &loginName, const std::string_view &password) noexcept
 {
     errorMessages.clear();
 
@@ -421,7 +421,7 @@ bool UserModel::selectByLoginAndPassword(const std::string_view &loginName, cons
     }
 }
 
-bool UserModel::selectByFullName(const std::string_view &lastName, const std::string_view &firstName, const std::string_view &middleI)
+bool UserModel::selectByFullName(const std::string_view &lastName, const std::string_view &firstName, const std::string_view &middleI) noexcept
 {
     errorMessages.clear();
 
@@ -444,7 +444,7 @@ bool UserModel::selectByFullName(const std::string_view &lastName, const std::st
     }
 }
 
-std::string UserModel::formatGetAllUsersQuery()
+std::string UserModel::formatGetAllUsersQuery() noexcept
 {
     errorMessages.clear();
 
@@ -464,7 +464,7 @@ std::string UserModel::formatGetAllUsersQuery()
     }
 }
 
-bool UserModel::selectByUserID(std::size_t UserID)
+bool UserModel::selectByUserID(std::size_t UserID) noexcept
 {
     errorMessages.clear();
 
@@ -536,7 +536,7 @@ bool UserModel::testAccessorFunctionsPassed()
     return allAccessorFunctionsPassed;
 }
 
-bool UserModel::testUserIdAccesss()
+bool UserModel::testUserIdAccesss() noexcept
 {
     std::size_t testPrimaryKey = 31;
 
@@ -545,7 +545,7 @@ bool UserModel::testUserIdAccesss()
         std::bind(&UserModel::getUserID, this));
 }
 
-bool UserModel::testLastNameAccess()
+bool UserModel::testLastNameAccess() noexcept
 {
     std::string testValue("AnyLastName");
     return testAccessorFunctions<std::string>(testValue, &lastName, "Last Name",
@@ -553,7 +553,7 @@ bool UserModel::testLastNameAccess()
         std::bind(&UserModel::getLastName, this));
 }
 
-bool UserModel::testFirstNameAccess()
+bool UserModel::testFirstNameAccess() noexcept
 {
     std::string testValue("AnyFirstName");
     return testAccessorFunctions<std::string>(testValue, &firstName, "First Name",
@@ -561,7 +561,7 @@ bool UserModel::testFirstNameAccess()
         std::bind(&UserModel::getFirstName, this));
 }
 
-bool UserModel::testMiddleInitialAccess()
+bool UserModel::testMiddleInitialAccess() noexcept
 {
     std::string testValue("A");
     return testOptionalAccessorFunctions<std::string>(testValue, &middleInitial, "Middle Initial",
@@ -569,7 +569,7 @@ bool UserModel::testMiddleInitialAccess()
         std::bind(&UserModel::getMiddleInitial, this));
 }
 
-bool UserModel::testLoginNameAccess()
+bool UserModel::testLoginNameAccess() noexcept
 {
     std::string testValue("AnyLoginName");
     return testAccessorFunctions<std::string>(testValue, &loginName, "LoginName",
@@ -577,7 +577,7 @@ bool UserModel::testLoginNameAccess()
         std::bind(&UserModel::getLoginName, this));
 }
 
-bool UserModel::testPassWordAccess()
+bool UserModel::testPassWordAccess() noexcept
 {
     std::string testValue("AnyPassword");
     return testAccessorFunctions<std::string>(testValue, &password, "Password",
@@ -585,7 +585,7 @@ bool UserModel::testPassWordAccess()
         std::bind(&UserModel::getPassword, this));
 }
 
-bool UserModel::testCreatedDateAcfcess()
+bool UserModel::testCreatedDateAcfcess() noexcept
 {
     std::chrono::system_clock::time_point testValue = std::chrono::system_clock::now();
     return testTimeStampAccessorFunctions(testValue, &created, "Creation TimeStamp",
@@ -593,7 +593,7 @@ bool UserModel::testCreatedDateAcfcess()
         std::bind(&UserModel::getCreationDate, this));
 }
 
-bool UserModel::testLastLoginAccess()
+bool UserModel::testLastLoginAccess() noexcept
 {
     std::chrono::system_clock::time_point testValue = std::chrono::system_clock::now();
     return testOptionalAccessorFunctions<std::chrono::system_clock::time_point>(testValue, &lastLogin, "Last Login TimeStamp",
@@ -601,7 +601,7 @@ bool UserModel::testLastLoginAccess()
         std::bind(&UserModel::getLastLogin, this));
 }
 
-bool UserModel::testEmailAccess()
+bool UserModel::testEmailAccess() noexcept
 {
     std::string testValue("AnyEmail");
     return testAccessorFunctions<std::string>(testValue, &email, "Email",
@@ -609,7 +609,7 @@ bool UserModel::testEmailAccess()
         std::bind(&UserModel::getEmail, this));
 }
 
-bool UserModel::testStartTimeAccess()
+bool UserModel::testStartTimeAccess() noexcept
 {
     std::string testValue("4:30 AM");
     return testAccessorFunctions<std::string>(testValue, &preferences.startTime, "Start Time Preference",
@@ -617,7 +617,7 @@ bool UserModel::testStartTimeAccess()
         std::bind(&UserModel::getStartTime, this));
 }
 
-bool UserModel::testEndTimeAccesss()
+bool UserModel::testEndTimeAccesss() noexcept
 {
     std::string testValue("4:15 PM");
     return testAccessorFunctions<std::string>(testValue, &preferences.endTime, "End Time Preference",
@@ -625,7 +625,7 @@ bool UserModel::testEndTimeAccesss()
         std::bind(&UserModel::getEndTime, this));
 }
 
-bool UserModel::testIncludePriorityInScheduleAccess()
+bool UserModel::testIncludePriorityInScheduleAccess() noexcept
 {
     bool testValue = true;
     return testAccessorFunctions<bool>(testValue, &preferences.includePriorityInSchedule, "Include Priority In Schedule",
@@ -633,7 +633,7 @@ bool UserModel::testIncludePriorityInScheduleAccess()
         std::bind(&UserModel::isPriorityInSchedule, this));
 }
 
-bool UserModel::testIncludeMinorPriorityInScheduleAccess()
+bool UserModel::testIncludeMinorPriorityInScheduleAccess() noexcept
 {
     bool testValue = true;
     return testAccessorFunctions<bool>(testValue, &preferences.includeMinorPriorityInSchedule, "Include Minor Priority In Schedule",
@@ -641,7 +641,7 @@ bool UserModel::testIncludeMinorPriorityInScheduleAccess()
         std::bind(&UserModel::isMinorPriorityInSchedule, this));
 }
 
-bool UserModel::testUseLetterForMajorPriorityAccess()
+bool UserModel::testUseLetterForMajorPriorityAccess() noexcept
 {
     bool testValue = true;
     return testAccessorFunctions<bool>(testValue, &preferences.userLetterForMajorPriority, "Use Letter For Major Priority Access",
@@ -649,7 +649,7 @@ bool UserModel::testUseLetterForMajorPriorityAccess()
         std::bind(&UserModel::isUsingLettersForMaorPriority, this));
 }
 
-bool UserModel::testSeparateMajorAndMinorWithDotAccess()
+bool UserModel::testSeparateMajorAndMinorWithDotAccess() noexcept
 {
     bool testValue = true;
     return testAccessorFunctions<bool>(testValue, &preferences.separateMajorAndMinorWithDot, "Separate Major And Minor With Dot Access",
@@ -657,7 +657,7 @@ bool UserModel::testSeparateMajorAndMinorWithDotAccess()
         std::bind(&UserModel::isSeparatingPriorityWithDot, this));
 }
 
-bool UserModel::testExceptionHandling()
+bool UserModel::testExceptionHandling() noexcept
 {
     selfTestResetAllValues();
 
@@ -684,13 +684,13 @@ bool UserModel::testExceptionHandling()
     return exceptionHandlingPassed;
 }
 
-bool UserModel::testExceptionSelectByLoginName()
+bool UserModel::testExceptionSelectByLoginName() noexcept
 {
     selfTestResetAllValues();
 
     return testExceptionAndSuccessNArgs("UserModel::selectByLoginName", std::bind(&UserModel::selectByLoginName, this, std::placeholders::_1), "testValue");
 }
-bool UserModel::testExceptionSelectByEmail()
+bool UserModel::testExceptionSelectByEmail() noexcept
 {
     selfTestResetAllValues();
     std::string testEmail("testValue@testValue.com");
@@ -698,7 +698,7 @@ bool UserModel::testExceptionSelectByEmail()
     return testExceptionAndSuccessNArgs("UserModel::selectByEmail", std::bind(&UserModel::selectByEmail, this, std::placeholders::_1), testEmail);
 }
 
-bool UserModel::testExceptionSelectByLoginAndPassword()
+bool UserModel::testExceptionSelectByLoginAndPassword() noexcept
 {
     selfTestResetAllValues();
 
@@ -707,7 +707,7 @@ bool UserModel::testExceptionSelectByLoginAndPassword()
         "TestValue", "TestValue");
 }
 
-bool UserModel::testExceptionSelectByFullName()
+bool UserModel::testExceptionSelectByFullName() noexcept
 {
     selfTestResetAllValues();
 
@@ -716,21 +716,21 @@ bool UserModel::testExceptionSelectByFullName()
             "TestLastName", "TestFirstName", "MI");
 }
 
-bool UserModel::testExceptionSelectByUserID()
+bool UserModel::testExceptionSelectByUserID() noexcept
 {
     selfTestResetAllValues();
 
     return testExceptionAndSuccessNArgs("UserModel::selectByUserID", std::bind(&UserModel::selectByUserID, this, std::placeholders::_1), 1);
 }
 
-bool UserModel::testExceptionFormatGetAllUsersQuery()
+bool UserModel::testExceptionFormatGetAllUsersQuery() noexcept
 {
     selfTestResetAllValues();
     
     return testFormatExceptionAndSuccessNArgs("UserModel::formatGetAllUsersQuery", std::bind(&UserModel::formatGetAllUsersQuery, this));
 }
 
-bool UserModel::testExceptionInsert()
+bool UserModel::testExceptionInsert() noexcept
 {
     selfTestResetAllValues();
 
@@ -746,7 +746,7 @@ bool UserModel::testExceptionInsert()
     return testExceptionAndSuccessNArgs("UserModel::insert", std::bind(&UserModel::insert, this));
 }
 
-bool UserModel::testExceptionUpdate()
+bool UserModel::testExceptionUpdate() noexcept
 {
     selfTestResetAllValues();
 
@@ -763,7 +763,7 @@ bool UserModel::testExceptionUpdate()
     return testExceptionAndSuccessNArgs("UserModel::update", std::bind(&UserModel::update, this));
 }
 
-bool UserModel::testExceptionRetrieve()
+bool UserModel::testExceptionRetrieve() noexcept
 {
     selfTestResetAllValues();
 
