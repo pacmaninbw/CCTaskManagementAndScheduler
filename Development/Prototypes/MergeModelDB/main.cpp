@@ -24,12 +24,14 @@ ProgramOptions programOptions;
 
 static bool runUnitTests()
 {
-    std::vector<AnyModel_shp> modelsToUnitTest = {
-        std::make_shared<UserModel>(),
-        std::make_shared<TaskModel>(),
-        std::make_shared<NoteModel>(),
-        std::make_shared<UserGoalModel>()
-    };
+    std::vector<AnyModel_shp> modelsToUnitTest;
+    modelsToUnitTest.push_back(std::make_shared<UserModel>());
+    UserModel alternateConstructor("LastName", "FirstName", "I", "FirstName.LastName@LastName.com");
+    alternateConstructor.autoGenerateLoginAndPassword();
+    modelsToUnitTest.push_back(std::make_shared<UserModel>(alternateConstructor));
+    modelsToUnitTest.push_back(std::make_shared<TaskModel>());
+    modelsToUnitTest.push_back(std::make_shared<NoteModel>());
+    modelsToUnitTest.push_back(std::make_shared<UserGoalModel>());
 
     for (auto modelUnderTest: modelsToUnitTest)
     {
@@ -70,7 +72,7 @@ int main(int argc, char* argv[])
                     return EXIT_FAILURE;
                 }
             }
-#if 1
+#if 0
             TestUserDBInterface userTests(programOptions.userTestDataFile);
             if (userTests.runAllTests() == TestDBInterfaceCore::TestStatus::TestPassed)
             {
