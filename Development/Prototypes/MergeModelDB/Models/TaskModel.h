@@ -87,26 +87,26 @@ public:
 /*
  * Select with arguments
  */
-    bool selectByDescriptionAndAssignedUser(std::string_view description, std::size_t assignedUserID);
-    bool selectByTaskID(std::size_t taskID);
+    bool selectByDescriptionAndAssignedUser(std::string_view description, std::size_t assignedUserID) noexcept;
+    bool selectByTaskID(std::size_t taskID) noexcept;
     // Return multiple Tasks.
-    std::string formatSelectActiveTasksForAssignedUser(std::size_t assignedUserID);
-    std::string formatSelectUnstartedDueForStartForAssignedUser(std::size_t assignedUserID);
+    std::string formatSelectActiveTasksForAssignedUser(std::size_t assignedUserID) noexcept;
+    std::string formatSelectUnstartedDueForStartForAssignedUser(std::size_t assignedUserID) noexcept;
     std::string formatSelectTasksCompletedByAssignedAfterDate(std::size_t assignedUserID,
-        std::chrono::year_month_day& searchStartDate);
-    std::string formatSelectTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID);
+        std::chrono::year_month_day searchStartDate) noexcept;
+    std::string formatSelectTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID) noexcept;
 
 /*
  * Required fields.
  */
-    bool isMissingDescription() { return (description.empty() || description.length() < MinimumDescriptionLength); };
-    bool isMissingCreatorID() { return creatorID == 0; };
-    bool isMissingAssignedID() { return assignToID == 0; };
-    bool isMissingEffortEstimate() { return estimatedEffort == 0; };
-    bool isMissingPriorityGroup() { return priorityGroup == 0; };
-    bool isMissingCreationDate() { return !creationTimeStamp.has_value(); };
-    bool isMissingScheduledStart() { return !scheduledStart.has_value(); };
-    bool isMissingDueDate() { return !dueDate.has_value(); };
+    bool isMissingDescription() const noexcept { return (description.empty() || description.length() < MinimumDescriptionLength); };
+    bool isMissingCreatorID() const noexcept { return creatorID == 0; };
+    bool isMissingAssignedID() const noexcept { return assignToID == 0; };
+    bool isMissingEffortEstimate() const noexcept { return estimatedEffort == 0; };
+    bool isMissingPriorityGroup() const noexcept { return priorityGroup == 0; };
+    bool isMissingCreationDate() const noexcept { return !creationTimeStamp.has_value(); };
+    bool isMissingScheduledStart() const noexcept { return !scheduledStart.has_value(); };
+    bool isMissingDueDate() const noexcept { return !dueDate.has_value(); };
 
 /*
  * Unit Testing
@@ -186,16 +186,16 @@ private:
  * Unit Testing
  */
     virtual void selfTestResetAllValues() override;
-    virtual bool testExceptionHandling() override;
+    virtual bool testExceptionHandling() noexcept override;
     bool testExceptionSelectByTaskID();
     bool testExceptionSelectByDescriptionAndAssignedUser();
     bool testExceptionFormatSelectActiveTasksForAssignedUser();
     bool testExceptionFormatSelectUnstartedDueForStartForAssignedUser();
     bool testExceptionFormatSelectTasksCompletedByAssignedAfterDate();
     bool testExceptionFormatSelectTasksByAssignedIDandParentID();
-    virtual bool testExceptionInsert() override;
-    virtual bool testExceptionUpdate() override;
-    virtual bool testExceptionRetrieve() override;
+    virtual bool testExceptionInsert() noexcept override;
+    virtual bool testExceptionUpdate() noexcept override;
+    virtual bool testExceptionRetrieve() noexcept override;
     virtual ModelDBInterface::ModelTestStatus testAllInsertFailures() override;
     bool testDiff();
 

@@ -198,7 +198,7 @@ void TaskModel::setTaskID(std::size_t newID)
     primaryKey = newID;
 }
 
-bool TaskModel::selectByDescriptionAndAssignedUser(std::string_view description, std::size_t assignedUserID)
+bool TaskModel::selectByDescriptionAndAssignedUser(std::string_view description, std::size_t assignedUserID) noexcept
 {
     errorMessages.clear();
 
@@ -221,7 +221,7 @@ bool TaskModel::selectByDescriptionAndAssignedUser(std::string_view description,
     }
 }
 
-bool TaskModel::selectByTaskID(std::size_t taskID)
+bool TaskModel::selectByTaskID(std::size_t taskID) noexcept
 {
     errorMessages.clear();
 
@@ -244,7 +244,7 @@ bool TaskModel::selectByTaskID(std::size_t taskID)
     }
 }
 
-std::string TaskModel::formatSelectActiveTasksForAssignedUser(std::size_t assignedUserID)
+std::string TaskModel::formatSelectActiveTasksForAssignedUser(std::size_t assignedUserID) noexcept
 {
     errorMessages.clear();
 
@@ -268,7 +268,7 @@ std::string TaskModel::formatSelectActiveTasksForAssignedUser(std::size_t assign
     return std::string();
 }
 
-std::string TaskModel::formatSelectUnstartedDueForStartForAssignedUser(std::size_t assignedUserID)
+std::string TaskModel::formatSelectUnstartedDueForStartForAssignedUser(std::size_t assignedUserID) noexcept
 {
     errorMessages.clear();
 
@@ -292,7 +292,7 @@ std::string TaskModel::formatSelectUnstartedDueForStartForAssignedUser(std::size
     return std::string();
 }
 
-std::string TaskModel::formatSelectTasksCompletedByAssignedAfterDate(std::size_t assignedUserID, std::chrono::year_month_day& searchStartDate)
+std::string TaskModel::formatSelectTasksCompletedByAssignedAfterDate(std::size_t assignedUserID, std::chrono::year_month_day searchStartDate) noexcept
 {
     errorMessages.clear();
 
@@ -314,7 +314,7 @@ std::string TaskModel::formatSelectTasksCompletedByAssignedAfterDate(std::size_t
     return std::string();
 }
 
-std::string TaskModel::formatSelectTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID)
+std::string TaskModel::formatSelectTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID) noexcept
 {
     errorMessages.clear();
 
@@ -656,7 +656,7 @@ void TaskModel::selfTestResetAllValues()
 
 }
 
-bool TaskModel::testExceptionHandling()
+bool TaskModel::testExceptionHandling() noexcept
 {
     selfTestResetAllValues();
 
@@ -725,22 +725,9 @@ bool TaskModel::testExceptionFormatSelectTasksCompletedByAssignedAfterDate()
     std::chrono::year_month_day searchStartDate = getTodaysDate();
     std::size_t assignedUser = 1;
 
-    forceException = true;
-    std::string formattedQuery = formatSelectTasksCompletedByAssignedAfterDate(assignedUser, searchStartDate);
-    if (!formattedQuery.empty())
-    {
-        return testExceptionReportFailure(false, false, "testFormatExceptionAndSuccess2Arg");
-    }
-
-    forceException = false;
-    formattedQuery.clear();
-    formattedQuery = formatSelectTasksCompletedByAssignedAfterDate(assignedUser, searchStartDate);
-    if (formattedQuery.empty())
-    {
-        return testExceptionReportFailure(true, false, "testFormatExceptionAndSuccess2Arg");
-    }
-
-    return true;
+    return testFormatExceptionAndSuccessNArgs("TaskModel::formatSelectTasksCompletedByAssignedAfterDate",
+        std::bind(&TaskModel::formatSelectTasksCompletedByAssignedAfterDate, this, std::placeholders::_1, std::placeholders::_2),
+        assignedUser, searchStartDate);
 }
  
 bool TaskModel::testExceptionFormatSelectTasksByAssignedIDandParentID()
@@ -755,7 +742,7 @@ bool TaskModel::testExceptionFormatSelectTasksByAssignedIDandParentID()
         assignedUser, parentid);
 }
 
-bool TaskModel::testExceptionInsert()
+bool TaskModel::testExceptionInsert() noexcept
 {
     selfTestResetAllValues();
     forceException = true;
@@ -785,7 +772,7 @@ bool TaskModel::testExceptionInsert()
     return testExceptionAndSuccessNArgs("TaskModel::insert", std::bind(&TaskModel::insert, this));
 }
 
-bool TaskModel::testExceptionUpdate()
+bool TaskModel::testExceptionUpdate() noexcept
 {
     selfTestResetAllValues();
 
@@ -815,7 +802,7 @@ bool TaskModel::testExceptionUpdate()
     return testExceptionAndSuccessNArgs("TaskModel::update", std::bind(&TaskModel::update, this));
 }
 
-bool TaskModel::testExceptionRetrieve()
+bool TaskModel::testExceptionRetrieve() noexcept
 {
     selfTestResetAllValues();
     
