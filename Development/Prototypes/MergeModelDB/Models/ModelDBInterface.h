@@ -10,6 +10,7 @@
 
 // Standard C++ Header Files
 #include <chrono>
+#include <concepts>
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -24,10 +25,10 @@ public:
     enum class ModelTestStatus {ModelTestPassed, ModelTestFailed};
     ModelDBInterface(std::string_view modelNameIn);
     virtual ~ModelDBInterface() = default;
-    bool save();
-    bool insert();
-    bool update();
-    bool retrieve();    // Only select object by object ID.
+    bool save() noexcept;
+    bool insert() noexcept;
+    bool update() noexcept;
+    bool retrieve() noexcept;    // Only select object by object ID.
     bool isInDataBase() const noexcept { return (primaryKey > 0); };
     bool isModified() const noexcept { return modified; };
     void clearModified() { modified = false; };
@@ -84,7 +85,7 @@ protected:
 
     
     template <typename T>
-    bool testAccessorFunctions(T testValue, T* member, std::string_view memberName, std::function<void(T)>setFunct, std::function<T(void)>getFunct)
+    bool testAccessorFunctions(T testValue, T* member, std::string_view memberName, std::function<void(T)>setFunct, std::function<T(void)>getFunct) noexcept
     {
         if (verboseOutput)
         {
@@ -122,7 +123,7 @@ protected:
 
     template <typename T>
     bool testOptionalAccessorFunctions(T testValue, std::optional<T>* member, std::string_view memberName,
-        std::function<void(T)>setFunct, std::function<std::optional<T>(void)>getFunct)
+        std::function<void(T)>setFunct, std::function<std::optional<T>(void)>getFunct) noexcept
     {
         if (verboseOutput)
         {
@@ -171,7 +172,7 @@ protected:
         std::optional<std::chrono::system_clock::time_point>* member,
         std::string_view memberName,
         std::function<void(std::chrono::system_clock::time_point)>setFunct,
-        std::function<std::chrono::system_clock::time_point(void)>getFunct)
+        std::function<std::chrono::system_clock::time_point(void)>getFunct) noexcept
     {
         if (verboseOutput)
         {
@@ -207,11 +208,11 @@ protected:
         return true;
     }
 
-    bool testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName);
+    bool testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName) noexcept;
 
     template <typename F, typename... Ts>
     requires std::is_invocable_v<F, Ts...>
-    bool testExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args)
+    bool testExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
     {
         forceException = true;
         if (funcUnderTest(args...))
@@ -230,7 +231,7 @@ protected:
 
     template <typename F, typename... Ts>
     requires std::is_invocable_v<F, Ts...>
-    bool testFormatExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args)
+    bool testFormatExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
     {
         forceException = true;
         std::string formattedQuery = funcUnderTest(args...);
@@ -255,7 +256,7 @@ protected:
  */
     template <typename F, typename... Ts>
     requires std::is_invocable_v<F, Ts...>
-    bool testFormatExceptionCatchSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args)
+    bool testFormatExceptionCatchSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
     {
         std::string formattedQuery;
 
@@ -293,7 +294,7 @@ protected:
         std::string_view functionUnderTest;
     };
 
-    virtual bool forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests);
+    virtual bool forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) noexcept;
     ModelDBInterface::ModelTestStatus testCommonInsertFailurePath();
     ModelDBInterface::ModelTestStatus testCommonUpdateFailurePath();
 

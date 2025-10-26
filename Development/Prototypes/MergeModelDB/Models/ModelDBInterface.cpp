@@ -26,7 +26,7 @@ ModelDBInterface::ModelDBInterface(std::string_view modelNameIn)
     delimiter = ';';  
 }
 
-bool ModelDBInterface::save()
+bool ModelDBInterface::save() noexcept
 {
     if (!isModified())
     {
@@ -44,7 +44,7 @@ bool ModelDBInterface::save()
     }
 }
 
-bool ModelDBInterface::insert()
+bool ModelDBInterface::insert() noexcept
 {
     errorMessages.clear();
 
@@ -83,7 +83,7 @@ bool ModelDBInterface::insert()
     return true;
 }
 
-bool ModelDBInterface::update()
+bool ModelDBInterface::update() noexcept
 {
     errorMessages.clear();
 
@@ -114,7 +114,7 @@ bool ModelDBInterface::update()
     }
 }
 
-bool ModelDBInterface::retrieve()
+bool ModelDBInterface::retrieve() noexcept
 {
     errorMessages.clear();
 
@@ -469,7 +469,7 @@ ModelDBInterface::ModelTestStatus ModelDBInterface::testAllInsertFailures()
     return TESTFAILED;
 }
 
-bool ModelDBInterface::forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests)
+bool ModelDBInterface::forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) noexcept
 {
     bool exceptionHandlingPassed = true;
     
@@ -539,7 +539,7 @@ bool ModelDBInterface::testTextFieldManipulation()
     return textFieldManipulationPassed;
 }
 
-bool ModelDBInterface::testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName)
+bool ModelDBInterface::testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName) noexcept
 {
     std::string reportFailure = std::format("In {}::{}: ", modelName, testExceptionFuncName);
 
