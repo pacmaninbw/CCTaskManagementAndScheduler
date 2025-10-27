@@ -747,8 +747,6 @@ bool TaskModel::testExceptionInsert() noexcept
     selfTestResetAllValues();
     forceException = true;
 
-    std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();
-
     setCreatorID(1);
     setAssignToID(2);
     setDescription("Testing Exception handling");
@@ -757,7 +755,6 @@ bool TaskModel::testExceptionInsert() noexcept
     setDueDate(getTodaysDatePlus(2));
     setPriorityGroup('A');
     setPriority(1);
-    setCreationDate(timeStamp);
     setParentTaskID(1);
     addDependency(3);
     addDependency(5);
