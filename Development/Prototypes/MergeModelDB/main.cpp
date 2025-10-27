@@ -30,6 +30,8 @@ static bool runUnitTests()
     alternateConstructor.autoGenerateLoginAndPassword();
     modelsToUnitTest.push_back(std::make_shared<UserModel>(alternateConstructor));
     modelsToUnitTest.push_back(std::make_shared<TaskModel>());
+    modelsToUnitTest.push_back(std::make_shared<TaskModel>(1));
+    modelsToUnitTest.push_back(std::make_shared<TaskModel>(1, "Test alternate constructor for TaskModel"));
     modelsToUnitTest.push_back(std::make_shared<NoteModel>());
     modelsToUnitTest.push_back(std::make_shared<UserGoalModel>());
 
