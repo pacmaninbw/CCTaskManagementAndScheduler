@@ -390,7 +390,8 @@ bool ModelDBInterface::testExceptionUpdate()
 
 bool ModelDBInterface::hasErrorMessage()
 {
-    if (errorMessages.empty())
+    std::string testErrorMessage = getAllErrorMessages();
+    if (testErrorMessage.empty())
     {
         std::clog << "No error message generated! TEST FAILED!\n";
         return false;
