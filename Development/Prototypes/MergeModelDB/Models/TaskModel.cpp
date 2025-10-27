@@ -819,8 +819,79 @@ ModelDBInterface::ModelTestStatus TaskModel::testAllInsertFailures()
 {
     selfTestResetAllValues();
 
-    std::clog << std::format("{}::testAllInsertFailures() NOT IMPLEMENTED! Test FAILED\n", modelName);
-    return TESTFAILED;
+    if (testCommonInsertFailurePath() != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    std::vector<std::string> expectedErrors =
+    {
+        "description", "user ID for creator", "user ID for assigned user", "estimated effort in hours",
+            "priority", "scheduled start date", "due date (deadline)", " missing required values"
+    };
+
+    setTaskID(0);
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+    setDescription("Test missing required fields: Set Description");
+
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+    setCreatorID(1);
+
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+    setAssignToID(1);
+
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+    setEstimatedEffort(5);
+
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+    setPriorityGroup(1);
+
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+    setScheduledStart(getTodaysDateMinus(OneWeek));
+
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+    setDueDate(getTodaysDatePlus(1));
+
+    expectedErrors.clear();
+    errorMessages.clear();
+
+    std::clog << "TaskModel::testAllInsertFailures() before successful insert *this = " << *this << "\n";
+
+    if (!insert())
+    {
+        std::clog << "In  TaskModel::testAllInsertFailures() Expected successful insert failed\n" << errorMessages << "\n";
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
 }
 
 bool TaskModel::testDiff()
@@ -846,7 +917,6 @@ bool TaskModel::testDiff()
     other.dependencies = dependencies;
 
     return *this == other;
-
 }
 
 bool TaskModel::testAccessorFunctionsPassed()
