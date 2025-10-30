@@ -29,16 +29,12 @@ public:
     };
 
     UserModel();
-    UserModel(
-        std::string lastIn, std::string firstIn, std::string middleIIn, std::string emailIn="",
-        std::size_t uID=0, std::chrono::system_clock::time_point dateAdded=std::chrono::system_clock::now()
-    );
     ~UserModel() = default;
 
     void autoGenerateLoginAndPassword() noexcept;
     std::string getLastName() const noexcept { return lastName;};
     std::string getFirstName() const noexcept { return firstName; };
-    std::string getMiddleInitial() const noexcept { return middleInitial.value_or(""); };
+    std::string getMiddleInitial() const noexcept { return middleInitial; };
     std::string getEmail() const noexcept { return email; };
     std::string getLoginName() const noexcept { return loginName; };
     std::string getPassword() const noexcept { return password; };
@@ -90,8 +86,6 @@ public:
     bool isMissingEmail() const noexcept;
     void initRequiredFields() noexcept override;
 
-    virtual bool runSelfTest() override;
-
     bool operator==(UserModel& other)
     {
         return diffUser(other);
@@ -107,7 +101,7 @@ public:
         os << std::format(outFmtStr, "User ID", user.primaryKey);
         os << std::format(outFmtStr, "Last Name", user.lastName);
         os << std::format(outFmtStr, "First Name", user.firstName);
-        os << std::format(outFmtStr, "Middle Initial", user.middleInitial.value_or("N/A"));
+        os << std::format(outFmtStr, "Middle Initial", user.middleInitial);
         os << std::format(outFmtStr, "Email", user.email);
         os << std::format(outFmtStr, "Login Name", user.loginName);
         if (user.inSelfTest)
@@ -126,7 +120,7 @@ public:
         return os;
     };
 
-private:
+protected:
     void createLoginBasedOnUserName(const std::string& lastName,
         const std::string& firstName,const std::string& middleInitial) noexcept;
     bool diffUser(UserModel& other) const noexcept;
@@ -138,43 +132,9 @@ private:
     void parsePrefenceText(std::string preferences) noexcept;
     void processResultRow(boost::mysql::row_view rv) override;
     
-// Unit test functions
-    virtual void selfTestResetAllValues() override;
-    virtual bool testAccessorFunctionsPassed() override;
-    bool testUserIdAccesss() noexcept;
-    bool testLastNameAccess() noexcept;
-    bool testFirstNameAccess() noexcept;
-    bool testMiddleInitialAccess() noexcept;
-    bool testLoginNameAccess() noexcept;
-    bool testPassWordAccess() noexcept;
-    bool testCreatedDateAcfcess() noexcept;
-    bool testLastLoginAccess() noexcept;
-    bool testEmailAccess() noexcept;
-    bool testStartTimeAccess() noexcept;
-    bool testEndTimeAccesss() noexcept;
-    bool testIncludePriorityInScheduleAccess() noexcept;
-    bool testIncludeMinorPriorityInScheduleAccess() noexcept;
-    bool testUseLetterForMajorPriorityAccess() noexcept;
-    bool testSeparateMajorAndMinorWithDotAccess() noexcept;
-
-
-    virtual bool testExceptionHandling() noexcept override;
-    bool testExceptionSelectByLoginName() noexcept;
-    bool testExceptionSelectByEmail() noexcept;
-    bool testExceptionSelectByLoginAndPassword() noexcept;
-    bool testExceptionSelectByFullName() noexcept;
-    bool testExceptionSelectByUserID() noexcept;
-    bool testExceptionFormatGetAllUsersQuery() noexcept;
-    virtual bool testExceptionInsert() noexcept override;
-    virtual bool testExceptionUpdate() noexcept override;
-    virtual bool testExceptionRetrieve() noexcept override;
-
-    virtual ModelDBInterface::ModelTestStatus testAllInsertFailures() override;
-    bool diffTest();
-
     std::string lastName;
     std::string firstName;
-    std::optional<std::string> middleInitial;
+    std::string middleInitial;
     std::string email;
     std::string loginName;
     std::string password;
