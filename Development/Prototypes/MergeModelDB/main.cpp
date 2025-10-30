@@ -1,12 +1,16 @@
 // Project Header Files
 #include "CommandLineParser.h"
 #include "NoteModel.h"
+#include "NoteSelfTest.h"
 #include "TaskModel.h"
+#include "TaskSelfTest.h"
 #include "TestTaskDBInterface.h"
 #include "TestUserDBInterface.h"
 #include "TestGoalModel.h"
 #include "UserGoalModel.h"
+#include "UserGoalSelfTest.h"
 #include "UserModel.h"
+#include "UserSelfTest.h"
 #include "UtilityTimer.h"
 
 // Standard C++ Header Files
@@ -24,40 +28,80 @@ ProgramOptions programOptions;
 
 static bool runUnitTests()
 {
-    std::vector<AnyModel_shp> modelsToUnitTest;
-    modelsToUnitTest.push_back(std::make_shared<UserModel>());
-    UserModel alternateConstructor("LastName", "FirstName", "I", "FirstName.LastName@LastName.com");
-    alternateConstructor.autoGenerateLoginAndPassword();
-    modelsToUnitTest.push_back(std::make_shared<UserModel>(alternateConstructor));
-    modelsToUnitTest.push_back(std::make_shared<TaskModel>());
-    modelsToUnitTest.push_back(std::make_shared<TaskModel>(1));
-    modelsToUnitTest.push_back(std::make_shared<TaskModel>(1, "Test alternate constructor for TaskModel"));
-    modelsToUnitTest.push_back(std::make_shared<NoteModel>());
-    modelsToUnitTest.push_back(std::make_shared<UserGoalModel>());
-
-    for (auto modelUnderTest: modelsToUnitTest)
+    UserSelfTest userTest;
+    
+    if (!userTest.runSelfTest())
     {
-        if (!modelUnderTest->runSelfTest())
+        std::clog << std::format("*** {} FAILED Self Test ***\n", userTest.getModelName());
+        if (programOptions.quitFirstFail)
         {
-            std::clog << std::format("*** {} FAILED Self Test ***\n", modelUnderTest->getModelName());
-            if (programOptions.quitFirstFail)
-            {
-                return false;
-            }
+            return false;
         }
-        else
+    }
+    else
+    {
+        if (programOptions.verboseOutput)
         {
-            if (programOptions.verboseOutput)
-            {
-                std::clog << std::format("{} PASSED Self Test\n", modelUnderTest->getModelName());
-            }
+            std::clog << std::format("{} PASSED Self Test\n", userTest.getModelName());
         }
     }
 
-    modelsToUnitTest.clear();
+    TaskSelfTest taskTest;
     
+    if (!taskTest.runSelfTest())
+    {
+        std::clog << std::format("*** {} FAILED Self Test ***\n", taskTest.getModelName());
+        if (programOptions.quitFirstFail)
+        {
+            return false;
+        }
+    }
+    else
+    {
+        if (programOptions.verboseOutput)
+        {
+            std::clog << std::format("{} PASSED Self Test\n", taskTest.getModelName());
+        }
+    }
+
+    UserGoalSelfTest goalTest;
+    
+    if (!goalTest.runSelfTest())
+    {
+        std::clog << std::format("*** {} FAILED Self Test ***\n", goalTest.getModelName());
+        if (programOptions.quitFirstFail)
+        {
+            return false;
+        }
+    }
+    else
+    {
+        if (programOptions.verboseOutput)
+        {
+            std::clog << std::format("{} PASSED Self Test\n", goalTest.getModelName());
+        }
+    }
+
+    NoteSelfTest noteTest;
+    
+    if (!noteTest.runSelfTest())
+    {
+        std::clog << std::format("*** {} FAILED Self Test ***\n", noteTest.getModelName());
+        if (programOptions.quitFirstFail)
+        {
+            return false;
+        }
+    }
+    else
+    {
+        if (programOptions.verboseOutput)
+        {
+            std::clog << std::format("{} PASSED Self Test\n", noteTest.getModelName());
+        }
+    }
     return true;
 }
+
 
 int main(int argc, char* argv[])
 {
