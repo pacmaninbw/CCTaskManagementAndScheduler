@@ -40,6 +40,7 @@ public:
     std::string getDescription() const { return description; };
     TaskModel::TaskStatus getStatus() const { return status.value_or(TaskModel::TaskStatus::Not_Started); };
     unsigned int getStatusIntVal() const { return static_cast<unsigned int>(getStatus()); };
+    std::string getStatusStringVal() const;
     std::size_t getParentTaskID() const { return parentTaskID.value_or(0); };
     std::optional<std::size_t> rawParentTaskID() const { return parentTaskID; };
     double getPercentageComplete() const { return percentageComplete; };
@@ -82,7 +83,7 @@ public:
     void addDependency(TaskModel& dependency) { addDependency(dependency.getTaskID()); };
     void addDependency(std::shared_ptr<TaskModel> dependency) { addDependency(dependency->getTaskID()); };
     void setTaskID(std::size_t newID);
-    std::string taskStatusString() const;
+    std::string taskStatusString(TaskModel::TaskStatus inVal) const;
     TaskModel::TaskStatus stringToStatus(std::string statusName) const;
 /*
  * Select with arguments
@@ -107,11 +108,6 @@ public:
     bool isMissingCreationDate() const noexcept { return !creationTimeStamp.has_value(); };
     bool isMissingScheduledStart() const noexcept { return !scheduledStart.has_value(); };
     bool isMissingDueDate() const noexcept { return !dueDate.has_value(); };
-
-/*
- * Unit Testing
- */
-    virtual bool runSelfTest() override;
 
 /*
  * Operators
@@ -145,7 +141,7 @@ public:
         os << "Optional Fields\n";
         if (task.status.has_value())
         {
-            os << std::format(outFmtStr, "Status", task.taskStatusString());
+            os << std::format(outFmtStr, "Status", task.getStatusStringVal());
         }
         if (task.parentTaskID.has_value())
         {
@@ -168,62 +164,19 @@ public:
     };
 
 
-private:
+protected:
 /*
  * Implementation
  */
     TaskStatus statusFromInt(unsigned int statusI) const { return static_cast<TaskModel::TaskStatus>(statusI); };
     bool diffTask(TaskModel& other);
-    std::string formatInsertStatement() override;
-    std::string formatUpdateStatement() override;
-    std::string formatSelectStatement() override;
+    virtual std::string formatInsertStatement() override;
+    virtual std::string formatUpdateStatement() override;
+    virtual std::string formatSelectStatement() override;
     void initRequiredFields() override;
     void addDependencies(const std::string& dependenciesText);
     std::string buildDependenciesText(std::vector<std::size_t>& dependencyList) noexcept;
     void processResultRow(boost::mysql::row_view rv) override;
-
-/*
- * Unit Testing
- */
-    virtual void selfTestResetAllValues() override;
-    virtual bool testExceptionHandling() noexcept override;
-    bool testExceptionSelectByTaskID();
-    bool testExceptionSelectByDescriptionAndAssignedUser();
-    bool testExceptionFormatSelectActiveTasksForAssignedUser();
-    bool testExceptionFormatSelectUnstartedDueForStartForAssignedUser();
-    bool testExceptionFormatSelectTasksCompletedByAssignedAfterDate();
-    bool testExceptionFormatSelectTasksByAssignedIDandParentID();
-    virtual bool testExceptionInsert() noexcept override;
-    virtual bool testExceptionUpdate() noexcept override;
-    virtual bool testExceptionRetrieve() noexcept override;
-    virtual ModelDBInterface::ModelTestStatus testAllInsertFailures() override;
-    bool testDiff();
-
-    virtual bool testAccessorFunctionsPassed() override;
-    bool testTaskIdAccesss();
-    bool testCreatorIDAccess();
-    bool testAssignToIDAccess();
-    bool testDescriptionAccess();
-    bool testStatusAccess();
-    bool testStatusVerifyValueAndGetStatus(TaskStatus testValue);
-    bool testParentTaskIDAccess();
-    bool testParentTaskIDVerifyValueAndGetParentTaskID(std::size_t testValue);
-    bool testPercentageCompleteAccess();
-    bool testCreationDateAccess();
-    bool testDueDateAccess();
-    bool testScheduledStartAccess();
-    bool testActualStartDateAccess();
-    bool testEstimatedCompletionAccess();
-    bool testCompletionDateAccess();
-    bool testEstimatedEffortAccess();
-    bool testActualEffortToDateAccess();
-    bool testPriorityGroupAccess();
-    bool testPriorityGroupCAccess();
-    bool testPriorityAccess();
-    bool testPersonalAccess();
-    bool testDependenciesAccess();
-    bool testMarkComplete();
-    bool testAddEffort();
 
  /*
   * Member Variables
