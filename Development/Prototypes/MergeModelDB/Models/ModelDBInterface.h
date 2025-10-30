@@ -22,7 +22,6 @@
 class ModelDBInterface : public CoreDBInterface
 {
 public:
-    enum class ModelTestStatus {ModelTestPassed, ModelTestFailed};
     ModelDBInterface(std::string_view modelNameIn);
     virtual ~ModelDBInterface() = default;
     bool save() noexcept;
@@ -35,7 +34,6 @@ public:
     bool hasRequiredValues();
     void reportMissingFields() noexcept;
     std::string_view getModelName() const { return modelName; };
-    virtual bool runSelfTest();
 
 protected:
 /*
@@ -73,231 +71,6 @@ protected:
     std::optional<boost::mysql::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate);
     std::optional<boost::mysql::datetime> optionalDateTimeConversion(std::optional<std::chrono::system_clock::time_point> optDateTime);
 
-// Unit Test Functions
-    virtual void selfTestResetAllValues();
-    virtual bool testAccessorFunctionsPassed();
-    virtual bool testExceptionHandling();
-    virtual bool testSave();
-    virtual bool testExceptionInsert();
-    virtual bool testExceptionUpdate();
-    virtual bool testExceptionRetrieve();
-    virtual bool testTextFieldManipulation();
-
-    
-    template <typename T>
-    bool testAccessorFunctions(T testValue, T* member, std::string_view memberName, std::function<void(T)>setFunct, std::function<T(void)>getFunct) noexcept
-    {
-        if (verboseOutput)
-        {
-            std::clog << "Running self test on set and get functions for " << modelName << "::" << memberName << "\n";
-        }
-
-        modified = false;
-
-        setFunct(testValue);
-        if (!isModified())
-        {
-            std::clog << "In self test for: " << modelName << " set function for " << memberName << " FAILED to set modified\n";
-            return false;
-        }
-
-        if (*member != testValue)
-        {
-            std::clog  << "In self test for: " << modelName << "Set function for " << memberName << " FAILED to set member value\n";
-            return false;
-        }
-
-        if (getFunct() != testValue)
-        {
-            std::clog  << "In self test for: " << modelName << "Get function for " << memberName << " FAILED\n";
-            return false;
-        }
-
-        if (verboseOutput)
-        {
-            std::clog << "Self test on set and get functions for " << modelName << "::" << memberName << " PASSED\n";
-        }
-
-        return true;
-    }
-
-    template <typename T>
-    bool testOptionalAccessorFunctions(T testValue, std::optional<T>* member, std::string_view memberName,
-        std::function<void(T)>setFunct, std::function<std::optional<T>(void)>getFunct) noexcept
-    {
-        if (verboseOutput)
-        {
-            std::clog << "Running self test on set and get functions for " << modelName << "::" << memberName << "\n";
-        }
-
-        modified = false;
-
-        setFunct(testValue);
-        if (!isModified())
-        {
-            std::clog << "In self test for: " << modelName << " set function for " << memberName << " FAILED to set modified\n";
-            return false;
-        }
-
-        if (!member->has_value() || member->value() != testValue)
-        {
-            if (!member->has_value())
-            {
-                std::clog  << "In self test for: " << modelName << "Set function for " << memberName << " FAILED to set member value\n";
-            }
-            if (member->value() != testValue)
-            {
-                std::clog  << "In self test for: " << modelName << " expected value: " << testValue
-                         << "actual value: " << member->value() << " FAILED to set member value\n";
-            }
-            return false;
-        }
-
-        std::optional<T> returnValue = getFunct();
-        if (!returnValue.has_value() || returnValue.value() != testValue)
-        {
-            std::clog  << "In self test for: " << modelName << "Get function for " << memberName << " FAILED\n";
-            return false;
-        }
-
-        if (verboseOutput)
-        {
-            std::clog << "Self test on set and get functions for " << modelName << "::" << memberName << " PASSED\n";
-        }
-
-        return true;
-    }
-
-    bool testTimeStampAccessorFunctions(std::chrono::system_clock::time_point testValue,
-        std::optional<std::chrono::system_clock::time_point>* member,
-        std::string_view memberName,
-        std::function<void(std::chrono::system_clock::time_point)>setFunct,
-        std::function<std::chrono::system_clock::time_point(void)>getFunct) noexcept
-    {
-        if (verboseOutput)
-        {
-            std::clog << "Running self test on set and get functions for " << modelName << "::" << memberName << "\n";
-        }
-
-        modified = false;
-
-        setFunct(testValue);
-        if (!isModified())
-        {
-            std::clog << "In self test for: " << modelName << " set function for " << memberName << " FAILED to set modified\n";
-            return false;
-        }
-
-        if (!member->has_value() || member->value() != testValue)
-        {
-            std::clog  << "In self test for: " << modelName << "Set function for " << memberName << " FAILED to set member value\n";
-            return false;
-        }
-
-        if (getFunct() != testValue)
-        {
-            std::clog  << "In self test for: " << modelName << "Get function for " << memberName << " FAILED\n";
-            return false;
-        }
-
-        if (verboseOutput)
-        {
-            std::clog << "Self test on set and get functions for " << modelName << "::" << memberName << " PASSED\n";
-        }
-
-        return true;
-    }
-
-    bool testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName) noexcept;
-
-    template <typename F, typename... Ts>
-    requires std::is_invocable_v<F, Ts...>
-    bool testExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
-    {
-        forceException = true;
-        if (funcUnderTest(args...))
-        {
-            return testExceptionReportFailure(false, true, funcName);
-        }
-
-        forceException = false;
-        if (!funcUnderTest(args...))
-        {
-            return testExceptionReportFailure(true, true, funcName);
-        }
-
-        return true;
-    }
-
-    template <typename F, typename... Ts>
-    requires std::is_invocable_v<F, Ts...>
-    bool testFormatExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
-    {
-        forceException = true;
-        std::string formattedQuery = funcUnderTest(args...);
-        if (!formattedQuery.empty())
-        {
-            return testExceptionReportFailure(false, false, funcName);
-        }
-
-        forceException = false;
-        formattedQuery.clear();
-        formattedQuery = funcUnderTest(args...);
-        if (formattedQuery.empty())
-        {
-            return testExceptionReportFailure(true, false, funcName);
-        }
-
-        return true;
-    }
-
-/*
- * Used to test formatSQL functions that do not contain a try catch block.
- */
-    template <typename F, typename... Ts>
-    requires std::is_invocable_v<F, Ts...>
-    bool testFormatExceptionCatchSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
-    {
-        std::string formattedQuery;
-
-        try
-        {
-            forceException = true;
-            formattedQuery = funcUnderTest(args...);
-            return testExceptionReportFailure(false, false, funcName);    
-        }
-        catch(const std::exception& e)
-        {
-            if (verboseOutput)
-            {
-                std::clog << "Caught expected exception from " << funcName << "(): " << e.what() << "\n";
-            }
-            forceException = false; 
-            formattedQuery = funcUnderTest(args...);
-            if (formattedQuery.empty())
-            {
-                return testExceptionReportFailure(true, false, funcName);
-            }
-        }        
-
-        return true;
-    }
-
-    bool hasErrorMessage();
-    ModelDBInterface::ModelTestStatus wrongErrorMessage(std::string expectedString);
-    virtual ModelDBInterface::ModelTestStatus testInsertionFailureMessages(std::vector<std::string> expectedErrors);
-    virtual ModelDBInterface::ModelTestStatus testUpdateFailureMessages(std::vector<std::string> expectedErrors);
-    virtual ModelDBInterface::ModelTestStatus testAllInsertFailures();
-    struct ExceptionTestElement
-    {
-        std::function<bool(void)> testExceptionFunction;
-        std::string_view functionUnderTest;
-    };
-
-    virtual bool forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) noexcept;
-    ModelDBInterface::ModelTestStatus testCommonInsertFailurePath();
-    ModelDBInterface::ModelTestStatus testCommonUpdateFailurePath();
-
 protected:
     std::size_t primaryKey;
     std::string_view modelName;
@@ -309,10 +82,6 @@ protected:
         std::string fieldName;
     };
     std::vector<RequireField> missingRequiredFieldsTests;
-
-
-    const ModelDBInterface::ModelTestStatus TESTFAILED = ModelDBInterface::ModelTestStatus::ModelTestFailed;
-    const ModelDBInterface::ModelTestStatus TESTPASSED = ModelDBInterface::ModelTestStatus::ModelTestPassed;
 };
 
 using AnyModel_shp = std::shared_ptr<ModelDBInterface>;
