@@ -32,7 +32,6 @@ TestUserDBInterface::TestUserDBInterface(std::string userFileName)
 TestDBInterfaceCore::TestStatus TestUserDBInterface::runPositivePathTests()
 {
     UserListValues userProfileTestData;
-    addFirstUser(userProfileTestData);
 
     if (!loadTestUsersFromFile(userProfileTestData))
     {
@@ -276,14 +275,6 @@ bool TestUserDBInterface::testGetAllUsers(UserListValues userProfileTestData)
     allUsers.clear();
 
     return testPassed;
-}
-
-void TestUserDBInterface::addFirstUser(UserListValues& TestUsers)
-{
-    // Test one case of the alternate constructor.
-    UserModel_shp firstUser = std::make_shared<UserModel>("PacMan", "IN", "BW", "pacmaninbw@gmail.com");
-    firstUser->autoGenerateLoginAndPassword();
-    TestUsers.push_back(firstUser);
 }
 
 TestDBInterfaceCore::TestStatus TestUserDBInterface::testnegativePathNotModified()
