@@ -21,22 +21,29 @@ class NoteSelfTest : public ModelSelfTest<NoteModel>
 public:
     NoteSelfTest();
     ~NoteSelfTest() = default;
-//    virtual bool runSelfTest() override;
+    virtual bool runSelfTest() override;
 
 
 private:
     
 // Unit test functions
-//    virtual void selfTestResetAllValues() override;
-//    virtual bool testAccessorFunctionsPassed() override;
+    virtual void selfTestResetAllValues() override;
+    virtual bool testAccessorFunctionsPassed() override;
 
-//    virtual bool testExceptionHandling() noexcept override;
-//    virtual bool testExceptionInsert() noexcept override;
-//    virtual bool testExceptionUpdate() noexcept override;
-//    virtual bool testExceptionRetrieve() noexcept override;
+    virtual bool testExceptionHandling() noexcept override;
+    virtual bool testExceptionInsert() noexcept override;
+    virtual bool testExceptionUpdate() noexcept override;
+    virtual bool testExceptionRetrieve() noexcept override;
 
 //    virtual ModelTestStatus testAllInsertFailures() override;
 
+    bool testNoteIdAccesss() noexcept;
+    bool testUserIdAccesss() noexcept;
+    bool testContentAccess() noexcept;
+    bool testDateAddedAccess() noexcept;
+    bool testLastUpdateAccess() noexcept;
+
+    bool diffTest() noexcept;
 };
 
 
