@@ -25,8 +25,8 @@ public:
     std::size_t getNoteId() const { return primaryKey; };
     std::size_t getUserId() const { return userID; };
     std::string getContent() const { return content; };
-    std::chrono::system_clock::time_point getDateAdded() const { return creationDate; };
-    std::chrono::system_clock::time_point getLastModified() const { return lastUpdate; };
+    std::chrono::system_clock::time_point getDateAdded() const { return creationDate.value(); };
+    std::chrono::system_clock::time_point getLastModified() const { return lastUpdate.value(); };
 
     void setNoteId(std::size_t noteId);
     void setUserId(std::size_t userId);
@@ -43,17 +43,17 @@ public:
  */
     bool isMissingUserID()  { return userID == 0; };;
     bool isMissingContent() { return (content.empty() || content.size() < 10); };
-    bool isMissingCreationDate() { return creationDate.time_since_epoch() != std::chrono::system_clock::duration::zero(); };
-    bool isMissingLastUpdate() { return lastUpdate.time_since_epoch() != std::chrono::system_clock::duration::zero(); };
+    bool isMissingCreationDate() { return !creationDate.has_value(); };
+    bool isMissingLastUpdate() { return !lastUpdate.has_value(); };
     void initRequiredFields() override;
 
     bool operator==(NoteModel& other)
     {
-        return diffUser(other);
+        return diffNote(other);
     };
     bool operator==(std::shared_ptr<NoteModel> other)
     {
-        return diffUser(*other);
+        return diffNote(*other);
     }
 
     friend std::ostream& operator<<(std::ostream& os, const NoteModel& note)
@@ -62,14 +62,14 @@ public:
         os << std::format(outFmtStr, "Note ID", note.primaryKey);
         os << std::format(outFmtStr, "User ID", note.userID);
         os << std::format(outFmtStr, "Content", note.content);
-        os << std::format(outFmtStr, "Created", note.creationDate);
-        os << std::format(outFmtStr, "Last Update", note.lastUpdate);
+        os << std::format(outFmtStr, "Created", note.creationDate.value());
+        os << std::format(outFmtStr, "Last Update", note.lastUpdate.value());
 
         return os;
     };
 
-private:
-    bool diffUser(NoteModel& other);
+protected:
+    bool diffNote(NoteModel& other);
     std::string formatInsertStatement() override;
     std::string formatUpdateStatement() override;
     std::string formatSelectStatement() override;
@@ -78,11 +78,11 @@ private:
     
     std::size_t userID;
     std::string content;
-    std::chrono::system_clock::time_point creationDate;
-    std::chrono::system_clock::time_point lastUpdate;
+    std::optional<std::chrono::system_clock::time_point> creationDate;
+    std::optional<std::chrono::system_clock::time_point> lastUpdate;
 
 
-private:
+protected:
 /*
  * The indexes below are based on the following select statement, maintain this order.
  * baseQuery could be SELECT * FROM UserProfile, but this way the order of the columns

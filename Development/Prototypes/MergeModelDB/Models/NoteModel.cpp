@@ -52,7 +52,7 @@ void NoteModel::setLastModified(std::chrono::system_clock::time_point lastModifi
     lastUpdate = lastModification;
 }
 
-bool NoteModel::diffUser(NoteModel &other)
+bool NoteModel::diffNote(NoteModel &other)
 {
     // Ignore user preferences
     return (primaryKey == other.primaryKey && userID == other.userID && content == other.content &&
@@ -73,8 +73,8 @@ std::string NoteModel::formatInsertStatement()
 
     std::string insertStatement = boost::mysql::format_sql(format_opts.value(),
         "INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES ({0}, {1}, {2}, {3})",
-        userID, stdChronoTimePointToBoostDateTime(creationDate),
-        content, stdChronoTimePointToBoostDateTime(lastUpdate));
+        userID, stdChronoTimePointToBoostDateTime(creationDate.value()),
+        content, stdChronoTimePointToBoostDateTime(lastUpdate.value()));
 
     return insertStatement;
 }
@@ -84,14 +84,14 @@ std::string NoteModel::formatUpdateStatement()
     initFormatOptions();
 
     std::string updateStatement = boost::mysql::format_sql(format_opts.value(),
-        "UPDATE UserProfile SET"
+        "UPDATE UserNotes SET"
             " UserNotes.UserID = {0},"
             " UserNotes.NotationDateTime = {1},"
             " UserNotes.Content = {2},"
             " UserNotes.LastUpdate = {3}" 
         " WHERE UserNotes.idUserNotes = {4}",
-            userID, stdChronoTimePointToBoostDateTime(creationDate),
-            content, stdChronoTimePointToBoostDateTime(lastUpdate));
+            userID, stdChronoTimePointToBoostDateTime(creationDate.value()),
+            content, stdChronoTimePointToBoostDateTime(lastUpdate.value()), primaryKey);
         
     return updateStatement;
 }
