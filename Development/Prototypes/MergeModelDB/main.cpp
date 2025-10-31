@@ -72,7 +72,6 @@ static bool runAllUnitTests()
     {
         allUnintTestsPassed = false;
     }
-    
 
     NoteSelfTest noteTest;
     if (!runUnitTest(&noteTest))
