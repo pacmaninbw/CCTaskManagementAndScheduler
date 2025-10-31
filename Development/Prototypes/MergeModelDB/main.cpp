@@ -26,80 +26,61 @@
  */
 ProgramOptions programOptions;
 
-static bool runUnitTests()
+template <class A>
+static bool runUnitTest(ModelSelfTest<A>* unitTest)
 {
-    UserSelfTest userTest;
-    
-    if (!userTest.runSelfTest())
+    if (!unitTest->runSelfTest())
     {
-        std::clog << std::format("*** {} FAILED Self Test ***\n", userTest.getModelName());
+        std::string failMessage = std::format("*** {} FAILED Self Test ***", unitTest->getModelName());
+        std::clog << failMessage << "\n";
         if (programOptions.quitFirstFail)
         {
-            return false;
+            std::runtime_error firstFail(failMessage);
+            throw firstFail;
         }
+        return false;
     }
     else
     {
         if (programOptions.verboseOutput)
         {
-            std::clog << std::format("{} PASSED Self Test\n", userTest.getModelName());
+            std::clog << std::format("{} PASSED Self Test\n", unitTest->getModelName());
         }
     }
 
-    TaskSelfTest taskTest;
-    
-    if (!taskTest.runSelfTest())
+    return true;
+}
+
+static bool runAllUnitTests()
+{
+    bool allUnintTestsPassed = true;
+
+    UserSelfTest userTest;
+    if (!runUnitTest(&userTest))
     {
-        std::clog << std::format("*** {} FAILED Self Test ***\n", taskTest.getModelName());
-        if (programOptions.quitFirstFail)
-        {
-            return false;
-        }
+        allUnintTestsPassed = false;
     }
-    else
+    
+    TaskSelfTest taskTest;
+    if (!runUnitTest(&taskTest))
     {
-        if (programOptions.verboseOutput)
-        {
-            std::clog << std::format("{} PASSED Self Test\n", taskTest.getModelName());
-        }
+        allUnintTestsPassed = false;
     }
 
     UserGoalSelfTest goalTest;
+    if (!runUnitTest(&goalTest))
+    {
+        allUnintTestsPassed = false;
+    }
     
-    if (!goalTest.runSelfTest())
-    {
-        std::clog << std::format("*** {} FAILED Self Test ***\n", goalTest.getModelName());
-        if (programOptions.quitFirstFail)
-        {
-            return false;
-        }
-    }
-    else
-    {
-        if (programOptions.verboseOutput)
-        {
-            std::clog << std::format("{} PASSED Self Test\n", goalTest.getModelName());
-        }
-    }
 
     NoteSelfTest noteTest;
+    if (!runUnitTest(&noteTest))
+    {
+        allUnintTestsPassed = false;
+    }
     
-    if (!noteTest.runSelfTest())
-    {
-        std::clog << std::format("*** {} FAILED Self Test ***\n", noteTest.getModelName());
-        if (programOptions.quitFirstFail)
-        {
-            return false;
-        }
-    }
-    else
-    {
-        if (programOptions.verboseOutput)
-        {
-            std::clog << std::format("{} PASSED Self Test\n", noteTest.getModelName());
-        }
-    }
-    return true;
+    return allUnintTestsPassed;
 }
 
 
@@ -111,7 +92,7 @@ int main(int argc, char* argv[])
 			programOptions = *progOptions;
             UtilityTimer stopWatch;
 
-            if (!runUnitTests())
+            if (!runAllUnitTests())
             {
                 if (programOptions.quitFirstFail)
                 {
