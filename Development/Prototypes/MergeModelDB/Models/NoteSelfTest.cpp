@@ -94,7 +94,7 @@ bool NoteSelfTest::testExceptionHandling() noexcept
     bool exceptionHandlingPassed = true;
     bool globalForceException = forceException;
     std::vector<ExceptionTestElement> exceptionTests;
-//    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionSelectByUserID, this), "selectByUserID"});
+    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionSelectByNoteID, this), "selectByUserID"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionInsert, this), "testExceptionInsert"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
@@ -143,6 +143,13 @@ bool NoteSelfTest::testExceptionRetrieve() noexcept
     setNoteId(1);
 
     return testExceptionAndSuccessNArgs("NoteModel::retrieve", std::bind(&NoteModel::retrieve, this));
+}
+
+bool NoteSelfTest::testExceptionSelectByNoteID() noexcept
+{
+    selfTestResetAllValues();
+
+    return testExceptionAndSuccessNArgs("NoteModel::selectByNoteID", std::bind(&NoteModel::selectByNoteID, this, std::placeholders::_1), 1);
 }
 
 bool NoteSelfTest::testNoteIdAccesss() noexcept
