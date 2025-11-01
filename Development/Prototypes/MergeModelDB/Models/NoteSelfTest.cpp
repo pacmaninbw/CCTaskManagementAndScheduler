@@ -49,6 +49,11 @@ bool NoteSelfTest::runSelfTest()
         std::clog << "Test of all insertion failures FAILED!\n";
     }
 
+    if (testCommonUpdateFailurePath() != TESTPASSED)
+    {
+        allSelfTestsPassed = false;
+    }
+
     inSelfTest = false;
     verboseOutput = false;
 
@@ -59,6 +64,7 @@ void NoteSelfTest::selfTestResetAllValues()
 {
     modified = false;
     primaryKey = 0;
+    userID = 0;
     content.clear();
     creationDate = {};
     lastUpdate = {};
@@ -152,6 +158,65 @@ bool NoteSelfTest::testExceptionSelectByNoteID() noexcept
     return testExceptionAndSuccessNArgs("NoteModel::selectByNoteID", std::bind(&NoteModel::selectByNoteID, this, std::placeholders::_1), 1);
 }
 
+ModelTestStatus NoteSelfTest::testAllInsertFailures()
+{
+    selfTestResetAllValues();
+
+    if (testCommonInsertFailurePath() != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();
+
+    std::vector<std::string> expectedErrors =
+    {
+        "User ID", "Content", "Date Created", "Last Update", " missing required values"
+    };
+
+    setNoteId(0);
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+    setUserId(27);
+
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+    setContent("Testing negative note insertion path");
+
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+    setDateAdded(timeStamp);
+
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+    setLastModified(timeStamp);
+
+    expectedErrors.clear();
+    errorMessages.clear();
+
+    std::clog << "NoteSelfTest::testAllInsertFailures() before successful insert *this = " << *this << "\n";
+
+    if (!insert())
+    {
+        std::clog << "In  NoteSelfTest::testAllInsertFailures() Expected successful insert failed\n" << errorMessages << "\n";
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
+}
+
 bool NoteSelfTest::testNoteIdAccesss() noexcept
 {
     return testAccessorFunctions<std::size_t>(27, &primaryKey, "Primary Key",
@@ -206,4 +271,3 @@ bool NoteSelfTest::diffTest() noexcept
 
     return *this == other;
 }
-

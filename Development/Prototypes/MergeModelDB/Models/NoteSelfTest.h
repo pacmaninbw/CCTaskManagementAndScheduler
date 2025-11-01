@@ -36,7 +36,7 @@ private:
     virtual bool testExceptionRetrieve() noexcept override;
     bool testExceptionSelectByNoteID() noexcept;
 
-//    virtual ModelTestStatus testAllInsertFailures() override;
+    virtual ModelTestStatus testAllInsertFailures() override;
 
     bool testNoteIdAccesss() noexcept;
     bool testUserIdAccesss() noexcept;
