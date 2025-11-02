@@ -21,22 +21,34 @@ class UserGoalSelfTest : public ModelSelfTest<UserGoalModel>
 public:
     UserGoalSelfTest();
     ~UserGoalSelfTest() = default;
-//    virtual bool runSelfTest() override;
-
+    virtual bool runSelfTest() override;
 
 private:
     
 // Unit test functions
-//    virtual void selfTestResetAllValues() override;
-//    virtual bool testAccessorFunctionsPassed() override;
+    virtual void selfTestResetAllValues() override;
+    virtual bool testAccessorFunctionsPassed() override;
+    bool testGoalIdAccesss() noexcept;
+    bool testUserIdAccesss() noexcept;
+    bool testDescriptionAccess() noexcept;
+    bool testCreationDateAccess() noexcept;
+    bool testParentIdAccess() noexcept;
+    bool testPriorityAccess() noexcept;
 
-//    virtual bool testExceptionHandling() noexcept override;
-//    virtual bool testExceptionInsert() noexcept override;
-//    virtual bool testExceptionUpdate() noexcept override;
-//    virtual bool testExceptionRetrieve() noexcept override;
+    virtual bool testExceptionHandling() noexcept override;
+    virtual bool testExceptionInsert() noexcept override;
+    virtual bool testExceptionUpdate() noexcept override;
+    virtual bool testExceptionRetrieve() noexcept override;
+    bool testExceptionSelectByGoalID() noexcept;
+    bool testExceptionSelectByUserIDAndDescription() noexcept;
+    bool testExceptionFormatSelectAllByUserId() noexcept;
+    bool testExceptionFormatSelectAllChildGoalsWithParentFromUser() noexcept;
+    bool testExceptionFormatSelectAllChildGoalsWithParent() noexcept;
+    bool testExceptionFormatSelectByExactDescription() noexcept;
+    bool testExceptionFormatSelectBySimilarDescription() noexcept;
 
-//    virtual ModelTestStatus testAllInsertFailures() override;
-
+    virtual ModelTestStatus testAllInsertFailures() override;
+    bool diffTest() noexcept;
 };
 
 #endif // USERGOALSELFTEST_H_
