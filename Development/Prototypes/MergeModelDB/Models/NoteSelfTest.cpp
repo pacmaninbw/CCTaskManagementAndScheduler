@@ -62,8 +62,7 @@ bool NoteSelfTest::runSelfTest()
 
 void NoteSelfTest::selfTestResetAllValues()
 {
-    modified = false;
-    primaryKey = 0;
+    ModelSelfTest::selfTestResetAllValues();
     userID = 0;
     content.clear();
     creationDate = {};

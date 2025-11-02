@@ -77,8 +77,8 @@ bool UserSelfTest::runSelfTest()
 
 void UserSelfTest::selfTestResetAllValues()
 {
-    modified = false;
-    primaryKey = 0;
+    ModelSelfTest::selfTestResetAllValues();
+
     lastName.clear();
     firstName.clear();
     middleInitial.clear();
@@ -87,8 +87,6 @@ void UserSelfTest::selfTestResetAllValues()
     password.clear();
     created.reset();
     lastLogin.reset();
-    errorMessages.clear();
-    format_opts.reset();
 }
 
 bool UserSelfTest::testAccessorFunctionsPassed()

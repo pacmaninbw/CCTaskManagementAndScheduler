@@ -71,9 +71,8 @@ bool TaskSelfTest::runSelfTest()
 
 void TaskSelfTest::selfTestResetAllValues()
 {
-    modified = false;
-    format_opts.reset();
-    primaryKey = 0;
+    ModelSelfTest::selfTestResetAllValues();
+
     creatorID = 0;
     assignToID = 0;
     description.clear();
@@ -93,7 +92,6 @@ void TaskSelfTest::selfTestResetAllValues()
     personal = false;
     dependencies.clear();
     lastUpdate.reset();
-
 }
 
 bool TaskSelfTest::testExceptionHandling() noexcept
