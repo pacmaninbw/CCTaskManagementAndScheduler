@@ -1,5 +1,4 @@
 // Project Header Files
-#include "UserGoalList.h"
 #include "UserGoalModel.h"
 
 // Standard C++ Header Files
@@ -123,7 +122,7 @@ std::string UserGoalModel::formatSelectAllByUserId(std::size_t userId)
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In TaskModel::formatSelectUnstartedDueForStartForAssignedUser({}) : {}", userId, e.what()));
+        appendErrorMessage(std::format("In UserGoalModel::formatSelectAllByUserId({}) : {}", userId, e.what()));
     }
 
     return std::string();
@@ -144,7 +143,7 @@ std::string UserGoalModel::formatSelectAllChildGoalsWithParentFromUser(std::size
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In TaskModel::formatSelectAllChildGoalsWithParentFromUser({}) : {}", userId, e.what()));
+        appendErrorMessage(std::format("In UserGoalModel::{}({}) : {}", __func__, userId, e.what()));
     }
 
     return std::string();
@@ -170,7 +169,7 @@ std::string UserGoalModel::formatSelectByExactDescription(std::string fullDescri
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In TaskModel::formatSelectByExactDescription({}) : {}", userId, e.what()));
+        appendErrorMessage(std::format("In UserGoalModel::{}({}) : {}", __func__, userId, e.what()));
     }
 
     return std::string();
@@ -191,7 +190,7 @@ std::string UserGoalModel::formatSelectBySimilarDescription(std::string partialD
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In TaskModel::formatSelectBySimilarDescription({}) : {}", userId, e.what()));
+        appendErrorMessage(std::format("In UserGoalModel::{}({}) : {}", __func__, userId, e.what()));
     }
 
     return std::string();

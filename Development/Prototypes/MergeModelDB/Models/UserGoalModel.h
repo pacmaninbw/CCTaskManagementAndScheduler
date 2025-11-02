@@ -72,13 +72,16 @@ public:
         os << std::format(outFmtStr, "Description", goal.description);
         os << std::format(outFmtStr, "Priority", goal.getPriority());
         os << std::format(outFmtStr, "Parent ID", goal.getParentId());
-        os << std::format(outFmtStr, "Creation Timestamp", goal.getCreationTimeStamp());
+        if (goal.creationDate.has_value())
+        {
+            os << std::format(outFmtStr, "Creation Timestamp", goal.creationDate.value());
+        }
         os << std::format(outFmtStr, "Last Update Timestamp", goal.getLastUpdateTimeStamp());
 
         return os;
     };
 
-private:
+protected:
     bool diffGoal(UserGoalModel& other);
     void processResultRow(boost::mysql::row_view rv) override;
     std::string formatInsertStatement() override;
