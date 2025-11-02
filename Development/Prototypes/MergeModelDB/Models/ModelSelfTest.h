@@ -107,9 +107,8 @@ protected:
     {
         ModelDBInterface::primaryKey = 0;
         ModelDBInterface::modified = false;
+        CoreDBInterface::format_opts.reset();   // Needs to be reset before any exception test.
         CoreDBInterface::errorMessages.clear();
-
-        std::clog << ModelDBInterface::modelName << "::selfTestResetAllValues() NOT IMPLEMENTED!\n";
     }
 
     virtual bool testAccessorFunctionsPassed()
