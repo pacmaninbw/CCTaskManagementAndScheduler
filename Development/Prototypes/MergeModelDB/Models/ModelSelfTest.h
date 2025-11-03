@@ -152,12 +152,14 @@ protected:
         {
             if (!hasErrorMessage())
             {
+                std::clog << ModelDBInterface::modelName << "::save Missing expected error messages\n";
                 testPassed = false;
             }
             else
             {
                 if (wrongErrorMessage("not modified, no changes to save") != TESTPASSED)
                 {
+                    std::clog << ModelDBInterface::modelName << "::save Wrong error message\n";
                     testPassed = false;
                 }
             }
