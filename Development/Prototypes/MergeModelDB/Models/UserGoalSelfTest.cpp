@@ -299,7 +299,45 @@ bool UserGoalSelfTest::testExceptionFormatSelectBySimilarDescription() noexcept
 
 ModelTestStatus UserGoalSelfTest::testAllInsertFailures()
 {
-    return TESTFAILED;
+    selfTestResetAllValues();
+
+    if (testCommonInsertFailurePath() != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    std::vector<std::string> expectedErrors =
+    {
+        "User ID", "Description", " missing required values"
+    };
+
+    setGoalId(0);
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+    setUserId(51);
+
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+    setDescription("Testing negative note insertion path");
+
+    expectedErrors.clear();
+    errorMessages.clear();
+
+    std::clog << "UserGoalSelfTest::testAllInsertFailures() before successful insert *this = " << *this << "\n";
+
+    if (!insert())
+    {
+        std::clog << "In  UserGoalSelfTest::testAllInsertFailures() Expected successful insert failed\n" << errorMessages << "\n";
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
 }
 
 bool UserGoalSelfTest::diffTest() noexcept
