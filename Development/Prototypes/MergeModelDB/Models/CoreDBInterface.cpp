@@ -69,8 +69,11 @@ boost::asio::awaitable<boost::mysql::results> CoreDBInterface::coRoutineExecuteS
 
     if (inSelfTest)
     {
+        if (verboseOutput)
+        {
+            std::clog << "In Self Test Query is: \n\t" << query << "\n";
+        }
         boost::mysql::results selectResult;
-        std::clog << "In Self Test Query is: \n\t" << query << "\n";
         co_return selectResult;
     }
 
