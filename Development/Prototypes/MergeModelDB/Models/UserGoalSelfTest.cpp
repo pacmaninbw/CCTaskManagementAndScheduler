@@ -7,13 +7,11 @@ UserGoalSelfTest::UserGoalSelfTest()
 bool UserGoalSelfTest::runSelfTest()
 {
     inSelfTest = true;
-    verboseOutput = true;
-
     bool allSelfTestsPassed = true;
 
     if (verboseOutput)
     {
-        std::clog << "Running UserGoalModel Self Test\n";
+        std::clog <<  std::format("Running {} Self Test\n", modelName);
     }
 
     if (!testExceptionHandling())
@@ -55,7 +53,8 @@ bool UserGoalSelfTest::runSelfTest()
     }
 
     inSelfTest = false;
-    verboseOutput = false;
+
+    std::clog <<  std::format("{} Self Test {}\n", modelName, allSelfTestsPassed? "PASSED" : "FAILED");
 
     return allSelfTestsPassed;
 }
@@ -329,7 +328,10 @@ ModelTestStatus UserGoalSelfTest::testAllInsertFailures()
     expectedErrors.clear();
     errorMessages.clear();
 
-    std::clog << "UserGoalSelfTest::testAllInsertFailures() before successful insert *this = " << *this << "\n";
+    if (verboseOutput)
+    {
+        std::clog << "UserGoalSelfTest::testAllInsertFailures() before successful insert *this = " << *this << "\n";
+    }
 
     if (!insert())
     {

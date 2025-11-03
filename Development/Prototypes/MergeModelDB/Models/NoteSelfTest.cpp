@@ -7,13 +7,11 @@ NoteSelfTest::NoteSelfTest()
 bool NoteSelfTest::runSelfTest()
 {
     inSelfTest = true;
-    verboseOutput = true;
-
     bool allSelfTestsPassed = true;
 
     if (verboseOutput)
     {
-        std::clog << "Running NoteModel Self Test\n";
+        std::clog <<  std::format("Running {} Self Test\n", modelName);
     }
 
     if (!testExceptionHandling())
@@ -55,7 +53,8 @@ bool NoteSelfTest::runSelfTest()
     }
 
     inSelfTest = false;
-    verboseOutput = false;
+
+    std::clog <<  std::format("{} Self Test {}\n", modelName, allSelfTestsPassed? "PASSED" : "FAILED");
 
     return allSelfTestsPassed;
 }
@@ -205,7 +204,10 @@ ModelTestStatus NoteSelfTest::testAllInsertFailures()
     expectedErrors.clear();
     errorMessages.clear();
 
-    std::clog << "NoteSelfTest::testAllInsertFailures() before successful insert *this = " << *this << "\n";
+    if (verboseOutput)
+    {
+        std::clog << "NoteSelfTest::testAllInsertFailures() before successful insert *this = " << *this << "\n";
+    }
 
     if (!insert())
     {

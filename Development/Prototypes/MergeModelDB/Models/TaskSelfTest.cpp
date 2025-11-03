@@ -22,13 +22,11 @@ TaskSelfTest::TaskSelfTest()
 bool TaskSelfTest::runSelfTest()
 {
     inSelfTest = true;
-    verboseOutput = true;
-
     bool allSelfTestsPassed = true;
 
     if (verboseOutput)
     {
-        std::clog << "Running TaskModel Self Test\n";
+        std::clog <<  std::format("Running {} Self Test\n", modelName);
     }
 
     if (!testExceptionHandling())
@@ -61,11 +59,13 @@ bool TaskSelfTest::runSelfTest()
     if (testAllInsertFailures() != TESTPASSED)
     {
         std::clog << "Test of all insertion failures FAILED!\n";
+        allSelfTestsPassed = false;
     }
 
     inSelfTest = false;
-    verboseOutput = false;
     
+    std::clog <<  std::format("{} Self Test {}\n", modelName, allSelfTestsPassed? "PASSED" : "FAILED");
+
     return allSelfTestsPassed;
 }
 
@@ -321,7 +321,10 @@ ModelTestStatus TaskSelfTest::testAllInsertFailures()
     expectedErrors.clear();
     errorMessages.clear();
 
-    std::clog << "TaskSelfTest::testAllInsertFailures() before successful insert *this = " << *this << "\n";
+    if (verboseOutput)
+    {
+        std::clog << "TaskSelfTest::testAllInsertFailures() before successful insert *this = " << *this << "\n";
+    }
 
     if (!insert())
     {
@@ -338,7 +341,8 @@ bool TaskSelfTest::testDiff()
 
     if (*this == other)
     {
-        std::clog << "TaskModel Equal test FAILED";
+        std::clog << "Empty TaskModel Equal test FAILED\n";
+        return false;
     }
 
     other.setTaskID(primaryKey);
@@ -352,8 +356,21 @@ bool TaskSelfTest::testDiff()
     other.setPriorityGroup(priorityGroup);
     other.setPriority(priority);
     other.setPersonal(personal);
+    other.setCreationDate(creationTimeStamp.value());
+    if (dependencies.size())
+    {
+        for (auto dependency: dependencies)
+        {
+            other.addDependency(dependency);
+        }
+    }
 
-    return *this == other;
+    if (*this != other)
+    {
+        std::clog << "TaskModel Equal test FAILED\n" << "this:\n" << *this << "\n other:\n" << other;
+        return false;
+    }
+    return true;
 }
 
 bool TaskSelfTest::testAccessorFunctionsPassed()
