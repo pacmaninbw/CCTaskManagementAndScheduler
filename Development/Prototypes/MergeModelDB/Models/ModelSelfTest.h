@@ -37,7 +37,11 @@ public:
     ModelSelfTest() : T() { }
 
     virtual ~ModelSelfTest() = default;
-    
+/*
+ * To maximize testy coverage of any particular model, override runSelfTest and
+ * provide any additional tests. This default version will provide roughly 80%
+ * test coverage. Improved logging will also be achieved by override.
+ */    
     virtual bool runSelfTest()
     {
         CoreDBInterface::inSelfTest = true;
@@ -87,6 +91,7 @@ public:
         if (testAllInsertFailures() != TESTPASSED)
         {
             std::clog << "Test of all insertion failures FAILED!\n";
+            allSelfTestsPassed = false;
         }
 
         if (!testTextFieldManipulation())
@@ -100,14 +105,19 @@ public:
         return allSelfTestsPassed;
     }
 
-
 protected:
-
+/*****
+ * ModelSelfTest::selfTestResetAllValues() should be called by any override.
+ * The override should provide resets for any of the model under tests attributes.
+ */
     virtual void selfTestResetAllValues()
     {
         ModelDBInterface::primaryKey = 0;
         ModelDBInterface::modified = false;
-        CoreDBInterface::format_opts.reset();   // Needs to be reset before any exception test.
+/*****
+ * format_opts needs to be reset before any exception test
+ */
+        CoreDBInterface::format_opts.reset();
         CoreDBInterface::errorMessages.clear();
     }
 
@@ -386,7 +396,7 @@ protected:
         setFunct(testValue);
         if (!ModelDBInterface::isModified())
         {
-            std::clog << "In self test for: " << ModelDBInterface::modelName << " set function for " << memberName << " FAILED to set modified\n";
+            std::clog << "In self test for: " << ModelDBInterface::modelName << " Set function for " << memberName << " FAILED to set modified\n";
             return false;
         }
 
@@ -539,6 +549,9 @@ protected:
         return true;
     }
 
+/*
+ * Format functions return strings rather than bool.
+ */
     template <typename F, typename... Ts>
     requires std::is_invocable_v<F, Ts...>
     bool testFormatExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
