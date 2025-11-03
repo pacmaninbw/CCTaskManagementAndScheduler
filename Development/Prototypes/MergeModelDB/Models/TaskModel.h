@@ -137,6 +137,7 @@ public:
         os << std::format(outFmtStr, "Actual Effort Hours", task.actualEffortToDate);
         os << std::format(outFmtStr, "Priority Group", task.priorityGroup);
         os << std::format(outFmtStr, "Priority", task.priority);
+        os << std::format(outFmtStr, "Dependency Count", task.dependencies.size());
 
         os << "Optional Fields\n";
         if (task.status.has_value())
