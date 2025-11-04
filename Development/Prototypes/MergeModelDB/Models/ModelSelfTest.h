@@ -611,8 +611,6 @@ protected:
 
 };
 
-//using AnySelfTest_shp = std::shared_ptr<<T>ModelSelfTest>;
-
 #endif // MODELDSELFTEST_H_
 
 
