@@ -48,12 +48,13 @@ bool TaskSelfTest::runSelfTest()
 
     if (!testDiff())
     {
+        std::clog << std::format("Comparing 2 {} FAILED!\n", modelName);
         allSelfTestsPassed = false;
     }
 
     if (verboseOutput)
     {
-        std::clog << "Test Ouput: " << *this << "\n";
+        std::clog << "Test Output: " << *this << "\n";
     }
 
     if (testAllInsertFailures() != TESTPASSED)
@@ -341,7 +342,6 @@ bool TaskSelfTest::testDiff()
 
     if (*this == other)
     {
-        std::clog << "Empty TaskModel Equal test FAILED\n";
         return false;
     }
 
@@ -357,6 +357,7 @@ bool TaskSelfTest::testDiff()
     other.setPriority(priority);
     other.setPersonal(personal);
     other.setCreationDate(creationTimeStamp.value());
+
     if (dependencies.size())
     {
         for (auto dependency: dependencies)
@@ -365,12 +366,7 @@ bool TaskSelfTest::testDiff()
         }
     }
 
-    if (*this != other)
-    {
-        std::clog << "TaskModel Equal test FAILED\n" << "this:\n" << *this << "\n other:\n" << other;
-        return false;
-    }
-    return true;
+    return *this == other;
 }
 
 bool TaskSelfTest::testAccessorFunctionsPassed()

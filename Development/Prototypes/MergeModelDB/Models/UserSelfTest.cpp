@@ -48,12 +48,13 @@ bool UserSelfTest::runSelfTest()
 
     if (!diffTest())
     {
+        std::clog << std::format("Equalify Operator test for {} FAILED!\n", modelName);
         allSelfTestsPassed = false;
     }
     
     if (verboseOutput)
     {
-        std::clog << "Test Ouput: " << *this << "\n";
+        std::clog << "Test Output: " << *this << "\n";
     }
 
     if (testAllInsertFailures() != TESTPASSED)
@@ -412,7 +413,6 @@ bool UserSelfTest::diffTest()
 
     if (*this == other)
     {
-        std::clog << "UserModel Diff FAILED!\n";
         return false;
     }
 
