@@ -97,11 +97,11 @@ protected:
     boost::mysql::constant_string_view baseQuery = 
         "SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes ";
 
-    const std::size_t NoteIdIdx = 0;
-    const std::size_t UserIdIdx = 1;
-    const std::size_t NotationDateTimeIdx = 2;
-    const std::size_t ContentIdx = 3;
-    const std::size_t LastUpdateIdx = 4;
+    static const std::size_t NoteIdIdx = 0;
+    static const std::size_t UserIdIdx = 1;
+    static const std::size_t NotationDateTimeIdx = 2;
+    static const std::size_t ContentIdx = 3;
+    static const std::size_t LastUpdateIdx = 4;
 };
 
 using NoteModel_shp = std::shared_ptr<NoteModel>;

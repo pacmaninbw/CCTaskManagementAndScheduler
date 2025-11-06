@@ -107,13 +107,13 @@ private:
     boost::mysql::constant_string_view baseQuery = 
         "SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals ";
 
-    const std::size_t GoalIdIdx = 0;
-    const std::size_t UserIdIdx = 1;
-    const std::size_t DescriptionIdx = 2;
-    const std::size_t CreationTSIdx = 3;
-    const std::size_t LastUpdateIdx = 4;
-    const std::size_t PriorityIdx = 5;
-    const std::size_t ParentGoalIDIdx = 6;
+    static const std::size_t GoalIdIdx = 0;
+    static const std::size_t UserIdIdx = 1;
+    static const std::size_t DescriptionIdx = 2;
+    static const std::size_t CreationTSIdx = 3;
+    static const std::size_t LastUpdateIdx = 4;
+    static const std::size_t PriorityIdx = 5;
+    static const std::size_t ParentGoalIDIdx = 6;
 
     boost::mysql::constant_string_view listQueryBase = "SELECT idUserGoals FROM UserGoals ";
 };

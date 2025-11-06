@@ -204,7 +204,7 @@ protected:
     unsigned int priorityGroup;
     unsigned int priority;
     bool personal;
-    const std::size_t MinimumDescriptionLength = 10;
+    static const std::size_t MinimumDescriptionLength = 10;
     std::vector<std::size_t> dependencies;
     std::optional<std::chrono::system_clock::time_point> lastUpdate;
 
@@ -217,27 +217,27 @@ protected:
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
             "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks ";
 
-    const std::size_t taskIdIdx = 0;
-    const std::size_t createdByIdx = 1;
-    const std::size_t assignedToIdx = 2;
-    const std::size_t descriptionIdx = 3;
-    const std::size_t parentTaskIdx = 4;
-    const std::size_t statusIdx = 5;
-    const std::size_t percentageCompleteIdx = 6;
-    const std::size_t createdOnIdx = 7;
-    const std::size_t requiredDeliveryIdx = 8;
-    const std::size_t scheduledStartIdx = 9;
-    const std::size_t actualStartIdx = 10;
-    const std::size_t estimatedCompletionIdx = 11;
-    const std::size_t completedIdx = 12;
-    const std::size_t estimatedEffortHoursIdx = 13;
-    const std::size_t actualEffortHoursIdx = 14;
-    const std::size_t schedulePriorityGroupIdx = 15;
-    const std::size_t priorityInGroupIdx = 16;
-    const std::size_t personalIdx = 17;
-    const std::size_t dependencyCountIdx = 18;
-    const std::size_t depenedenciesTextIdx = 19;
-    const std::size_t lastUpdate_Idx = 20;
+    static const std::size_t taskIdIdx = 0;
+    static const std::size_t createdByIdx = 1;
+    static const std::size_t assignedToIdx = 2;
+    static const std::size_t descriptionIdx = 3;
+    static const std::size_t parentTaskIdx = 4;
+    static const std::size_t statusIdx = 5;
+    static const std::size_t percentageCompleteIdx = 6;
+    static const std::size_t createdOnIdx = 7;
+    static const std::size_t requiredDeliveryIdx = 8;
+    static const std::size_t scheduledStartIdx = 9;
+    static const std::size_t actualStartIdx = 10;
+    static const std::size_t estimatedCompletionIdx = 11;
+    static const std::size_t completedIdx = 12;
+    static const std::size_t estimatedEffortHoursIdx = 13;
+    static const std::size_t actualEffortHoursIdx = 14;
+    static const std::size_t schedulePriorityGroupIdx = 15;
+    static const std::size_t priorityInGroupIdx = 16;
+    static const std::size_t personalIdx = 17;
+    static const std::size_t dependencyCountIdx = 18;
+    static const std::size_t depenedenciesTextIdx = 19;
+    static const std::size_t lastUpdate_Idx = 20;
 
     boost::mysql::constant_string_view listQueryBase = "SELECT TaskID FROM Tasks ";
 };

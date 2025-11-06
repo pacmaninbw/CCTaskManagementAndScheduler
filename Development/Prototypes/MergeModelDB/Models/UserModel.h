@@ -142,9 +142,9 @@ protected:
     std::optional<std::chrono::system_clock::time_point> created;
     std::optional<std::chrono::system_clock::time_point> lastLogin;
 
-    const std::size_t minNameLenght = 2;
-    const std::size_t minPasswordLenght = 8;
-    const std::size_t minEmailLength = 10;
+    static const std::size_t minNameLenght = 2;
+    static const std::size_t minPasswordLenght = 8;
+    static const std::size_t minEmailLength = 10;
 
 private:
 /*
@@ -156,23 +156,23 @@ private:
         "SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
             "HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile ";
 
-    const std::size_t UserIdIdx = 0;
-    const std::size_t LastNameIdx = 1;
-    const std::size_t FirstNameIdx = 2;
-    const std::size_t MiddleInitialIdx = 3;
-    const std::size_t EmailAddressIdx = 4;
-    const std::size_t LoginNameIdx = 5;
-    const std::size_t PasswordIdx = 6;
-    const std::size_t UserAddedIdx = 7;
-    const std::size_t LastLoginIdx = 8;
-    const std::size_t PreferencesIdx = 9;
+    static const std::size_t UserIdIdx = 0;
+    static const std::size_t LastNameIdx = 1;
+    static const std::size_t FirstNameIdx = 2;
+    static const std::size_t MiddleInitialIdx = 3;
+    static const std::size_t EmailAddressIdx = 4;
+    static const std::size_t LoginNameIdx = 5;
+    static const std::size_t PasswordIdx = 6;
+    static const std::size_t UserAddedIdx = 7;
+    static const std::size_t LastLoginIdx = 8;
+    static const std::size_t PreferencesIdx = 9;
 // Preference subfield indexes
-    const std::size_t PrefDayStartIdx = 0;
-    const std::size_t PrefDayEndIdx = 1;
-    const std::size_t PrefMajorPriorityIdx = 2;
-    const std::size_t PrefMinorPriorityIdx = 3;
-    const std::size_t PrefUsingLetterIdx = 4;
-    const std::size_t PrefUsingDotIdx = 5;
+    static const std::size_t PrefDayStartIdx = 0;
+    static const std::size_t PrefDayEndIdx = 1;
+    static const std::size_t PrefMajorPriorityIdx = 2;
+    static const std::size_t PrefMinorPriorityIdx = 3;
+    static const std::size_t PrefUsingLetterIdx = 4;
+    static const std::size_t PrefUsingDotIdx = 5;
 };
 
 using UserModel_shp = std::shared_ptr<UserModel>;
