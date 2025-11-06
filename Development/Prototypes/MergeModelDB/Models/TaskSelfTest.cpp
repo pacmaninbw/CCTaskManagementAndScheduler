@@ -340,31 +340,14 @@ bool TaskSelfTest::testDiff()
 {
     TaskModel other;
 
+    other.setTaskID(primaryKey);
+
     if (*this == other)
     {
         return false;
     }
 
-    other.setTaskID(primaryKey);
-    other.setDescription(description);
-    other.setCreatorID(creatorID);
-    other.setAssignToID(assignToID);
-    other.setPercentageComplete(percentageComplete);
-    other.setDueDate(dueDate.value());
-    other.setScheduledStart(scheduledStart.value());
-    other.setActualEffortToDate(actualEffortToDate);
-    other.setPriorityGroup(priorityGroup);
-    other.setPriority(priority);
-    other.setPersonal(personal);
-    other.setCreationDate(creationTimeStamp.value());
-
-    if (dependencies.size())
-    {
-        for (auto dependency: dependencies)
-        {
-            other.addDependency(dependency);
-        }
-    }
+    other = *this;
 
     return *this == other;
 }

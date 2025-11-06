@@ -411,17 +411,13 @@ bool UserSelfTest::diffTest()
 {
     UserModel other;
 
+    other.setUserID(primaryKey);
     if (*this == other)
     {
         return false;
     }
 
-    other.setUserID(primaryKey);
-    other.setLastName(lastName);
-    other.setFirstName(firstName);
-    other.setMiddleInitial(middleInitial);
-    other.setLoginName(loginName);
-    other.setPassword(password);
-
+    other = *this;
+    
     return *this == other;
 }

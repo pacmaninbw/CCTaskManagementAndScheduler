@@ -347,14 +347,13 @@ bool UserGoalSelfTest::diffTest() noexcept
 {
     UserGoalModel other;
 
+    other.setGoalId(primaryKey);
     if (*this == other)
     {
         return false;
     }
 
-    other.setGoalId(primaryKey);
-    other.setUserId(userID);
-    other.setDescription(description);
+    other = *this;
 
     return *this == other;
 }

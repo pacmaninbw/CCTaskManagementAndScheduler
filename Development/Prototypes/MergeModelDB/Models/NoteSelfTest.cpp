@@ -259,16 +259,13 @@ bool NoteSelfTest::diffTest() noexcept
 {
     NoteModel other;
 
+    other.setNoteId(primaryKey);
     if (*this == other)
     {
         return false;
     }
 
-    other.setNoteId(primaryKey);
-    other.setUserId(userID);
-    other.setContent(content);
-    other.setDateAdded(creationDate.value());
-    other.setLastModified(lastUpdate.value());
+    other = *this;
 
     return *this == other;
 }
