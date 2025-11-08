@@ -20,7 +20,6 @@ FileContentIndex
 PrivateData
 Oshit.txt
 launch.json
-*.sh
 
 # Old files that shouldn't be used
 ZOldNotUsed
