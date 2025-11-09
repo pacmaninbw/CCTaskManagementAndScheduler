@@ -4,6 +4,7 @@
 // Project Header Files
 #include "CommandLineParser.h"
 #include "ModelDBInterface.h"
+#include "TestStatus.h"
 
 // StandardS C++ Header Files
 #include <functional>
@@ -15,35 +16,31 @@
 class TestDBInterfaceCore
 {
 public:
-    enum class TestStatus {TestPassed, TestFailed};
     TestDBInterfaceCore(std::string_view modelName);
     virtual ~TestDBInterfaceCore() = default;
-    virtual TestDBInterfaceCore::TestStatus runAllTests();
-    virtual TestDBInterfaceCore::TestStatus runNegativePathTests();
-    virtual TestDBInterfaceCore::TestStatus runPositivePathTests();
+    virtual TestStatus runAllTests();
+    virtual TestStatus runNegativePathTests();
+    virtual TestStatus runPositivePathTests();
 
 protected:
-    TestDBInterfaceCore::TestStatus wrongErrorMessage(std::string expectedString, ModelDBInterface* modelUnderTest);
+    TestStatus wrongErrorMessage(std::string expectedString, ModelDBInterface* modelUnderTest);
     bool hasErrorMessage(ModelDBInterface* modelUnderTest);
-    TestDBInterfaceCore::TestStatus testInsertionFailureMessages(
+    TestStatus testInsertionFailureMessages(
         ModelDBInterface* modelUnderTest, std::vector<std::string> expectedErrors);
-    TestDBInterfaceCore::TestStatus testInsertionFailureMessages(
+    TestStatus testInsertionFailureMessages(
         std::shared_ptr<ModelDBInterface>modelUnderTest, std::vector<std::string> expectedErrors) {
             ModelDBInterface* ptr = modelUnderTest.get();
             return testInsertionFailureMessages(ptr, expectedErrors);
         };
-    void reportTestStatus(TestDBInterfaceCore::TestStatus status, std::string_view path);
-
-    const TestDBInterfaceCore::TestStatus TESTFAILED = TestDBInterfaceCore::TestStatus::TestFailed;
-    const TestDBInterfaceCore::TestStatus TESTPASSED = TestDBInterfaceCore::TestStatus::TestPassed;
+    void reportTestStatus(TestStatus status, std::string_view path);
 
     bool verboseOutput;
     bool forceErrors;
     bool forceExceptions;
     bool runSelfTest;
     std::string_view modelUnderTest;
-    std::vector<std::function<TestDBInterfaceCore::TestStatus(void)>> negativePathTestFuncsNoArgs;
-    std::vector<std::function<TestDBInterfaceCore::TestStatus(void)>> positiviePathTestFuncsNoArgs;
+    std::vector<std::function<TestStatus(void)>> negativePathTestFuncsNoArgs;
+    std::vector<std::function<TestStatus(void)>> positiviePathTestFuncsNoArgs;
 };
 
 #endif  // TESTDBINTERFACECORE_H_

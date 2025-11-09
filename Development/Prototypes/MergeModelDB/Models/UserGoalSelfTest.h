@@ -46,7 +46,7 @@ private:
     bool testExceptionFormatSelectByExactDescription() noexcept;
     bool testExceptionFormatSelectBySimilarDescription() noexcept;
 
-    virtual ModelTestStatus testAllInsertFailures() override;
+    virtual TestStatus testAllInsertFailures() override;
     bool diffTest() noexcept;
 };
 

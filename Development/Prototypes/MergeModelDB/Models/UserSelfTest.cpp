@@ -358,7 +358,7 @@ bool UserSelfTest::testExceptionRetrieve() noexcept
     return testExceptionAndSuccessNArgs("UserModel::retrieve", std::bind(&UserModel::retrieve, this));
 }
 
-ModelTestStatus UserSelfTest::testAllInsertFailures()
+TestStatus UserSelfTest::testAllInsertFailures()
 {
     selfTestResetAllValues();
 

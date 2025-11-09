@@ -308,7 +308,7 @@ bool UserGoalSelfTest::testExceptionFormatSelectBySimilarDescription() noexcept
         this, std::placeholders::_1, std::placeholders::_2), testDescription, testUserId);
 }
 
-ModelTestStatus UserGoalSelfTest::testAllInsertFailures()
+TestStatus UserGoalSelfTest::testAllInsertFailures()
 {
     selfTestResetAllValues();
 

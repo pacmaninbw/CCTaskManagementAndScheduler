@@ -38,7 +38,7 @@ private:
     virtual bool testExceptionInsert() noexcept override;
     virtual bool testExceptionUpdate() noexcept override;
     virtual bool testExceptionRetrieve() noexcept override;
-    virtual ModelTestStatus testAllInsertFailures() override;
+    virtual TestStatus testAllInsertFailures() override;
     bool testDiff();
 
     virtual bool testAccessorFunctionsPassed() override;

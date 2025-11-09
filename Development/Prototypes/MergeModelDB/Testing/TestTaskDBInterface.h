@@ -18,7 +18,7 @@ class TestTaskDBInterface : public TestDBInterfaceCore
 public:
     TestTaskDBInterface(std::string taskFileName);
     ~TestTaskDBInterface() = default;
-    virtual TestDBInterfaceCore::TestStatus runAllTests() override;
+    virtual TestStatus runAllTests() override;
 
 private:
     bool testGetTaskByDescription(TaskModel_shp task);
@@ -27,20 +27,20 @@ private:
     void commonTaskInit(TaskModel_shp newTask, CSVRow taskData);
     TaskModel_shp creatOddTask(CSVRow taskData);
     TaskModel_shp creatEvenTask(CSVRow taskData);
-    TestDBInterfaceCore::TestStatus testGetUnstartedTasks();
-    TestDBInterfaceCore::TestStatus testGetActiveTasks();
-    TestDBInterfaceCore::TestStatus testTaskUpdates();
+    TestStatus testGetUnstartedTasks();
+    TestStatus testGetActiveTasks();
+    TestStatus testTaskUpdates();
     bool testTaskUpdate(TaskModel_shp changedTask);
     bool testAddDepenedcies();
     bool testGetCompletedList();
     std::chrono::year_month_day stringToDate(std::string dateString);
-    TestDBInterfaceCore::TestStatus testnegativePathNotModified();
-    TestDBInterfaceCore::TestStatus testNegativePathAlreadyInDataBase();
-    TestDBInterfaceCore::TestStatus testMissingReuqiredField(TaskModel taskMissingFields);
-    TestDBInterfaceCore::TestStatus testNegativePathMissingRequiredFields();
-    TestDBInterfaceCore::TestStatus testTasksFromDataFile();
-    TestDBInterfaceCore::TestStatus testSharedPointerInteraction();
-    TestDBInterfaceCore::TestStatus insertShouldPass(TaskModel_shp newTask);
+    TestStatus testnegativePathNotModified();
+    TestStatus testNegativePathAlreadyInDataBase();
+    TestStatus testMissingReuqiredField(TaskModel taskMissingFields);
+    TestStatus testNegativePathMissingRequiredFields();
+    TestStatus testTasksFromDataFile();
+    TestStatus testSharedPointerInteraction();
+    TestStatus insertShouldPass(TaskModel_shp newTask);
 
     std::string dataFileName;
     std::vector<std::function<bool(TaskModel_shp)>> positiveTestFuncs;

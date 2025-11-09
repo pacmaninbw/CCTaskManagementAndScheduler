@@ -16,7 +16,7 @@ class TestUserDBInterface : public TestDBInterfaceCore
 public:
     TestUserDBInterface(std::string userFileName);
     ~TestUserDBInterface() = default;
-    virtual TestDBInterfaceCore::TestStatus runPositivePathTests() override;
+    virtual TestStatus runPositivePathTests() override;
 
 private:
     bool testGetUserByLoginName(UserModel_shp insertedUser);
@@ -26,8 +26,8 @@ private:
     bool testUpdateUserPassword(UserModel_shp insertedUser);
     bool loadTestUsersFromFile(UserListValues& userProfileTestData);
     bool testGetAllUsers(UserListValues userProfileTestData);
-    TestDBInterfaceCore::TestStatus testnegativePathNotModified();
-    TestDBInterfaceCore::TestStatus testNegativePathAlreadyInDataBase();
+    TestStatus testnegativePathNotModified();
+    TestStatus testNegativePathAlreadyInDataBase();
 
     std::string dataFileName;
     bool verboseOutput;

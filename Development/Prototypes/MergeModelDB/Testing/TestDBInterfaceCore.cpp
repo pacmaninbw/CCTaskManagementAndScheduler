@@ -20,12 +20,12 @@ TestDBInterfaceCore::TestDBInterfaceCore(std::string_view modelName)
 {
 }
 
-TestDBInterfaceCore::TestStatus TestDBInterfaceCore::runAllTests()
+TestStatus TestDBInterfaceCore::runAllTests()
 {
-    TestDBInterfaceCore::TestStatus positivePathPassed = runPositivePathTests();
-    TestDBInterfaceCore::TestStatus negativePathPassed = runNegativePathTests();
+    TestStatus positivePathPassed = runPositivePathTests();
+    TestStatus negativePathPassed = runNegativePathTests();
     
-    TestDBInterfaceCore::TestStatus allTestsStatus =
+    TestStatus allTestsStatus =
         (positivePathPassed == TESTPASSED && negativePathPassed == TESTPASSED) ? TESTPASSED : TESTFAILED;
 
     reportTestStatus(allTestsStatus, "");
@@ -33,13 +33,13 @@ TestDBInterfaceCore::TestStatus TestDBInterfaceCore::runAllTests()
     return allTestsStatus;
 }
 
-TestDBInterfaceCore::TestStatus TestDBInterfaceCore::runNegativePathTests()
+TestStatus TestDBInterfaceCore::runNegativePathTests()
 {
-    TestDBInterfaceCore::TestStatus allTestPassed = TESTPASSED;
+    TestStatus allTestPassed = TESTPASSED;
 
     for (auto test: negativePathTestFuncsNoArgs)
     {
-        TestDBInterfaceCore::TestStatus testResult = test();
+        TestStatus testResult = test();
         if (allTestPassed == TESTPASSED)
         {
             allTestPassed = testResult;
@@ -51,13 +51,13 @@ TestDBInterfaceCore::TestStatus TestDBInterfaceCore::runNegativePathTests()
     return allTestPassed;
 }
 
-TestDBInterfaceCore::TestStatus TestDBInterfaceCore::runPositivePathTests()
+TestStatus TestDBInterfaceCore::runPositivePathTests()
 {
-    TestDBInterfaceCore::TestStatus allTestPassed = TESTPASSED;
+    TestStatus allTestPassed = TESTPASSED;
 
     for (auto test: positiviePathTestFuncsNoArgs)
     {
-        TestDBInterfaceCore::TestStatus testResult = test();
+        TestStatus testResult = test();
         if (allTestPassed == TESTPASSED)
         {
             allTestPassed = testResult;
@@ -72,7 +72,7 @@ TestDBInterfaceCore::TestStatus TestDBInterfaceCore::runPositivePathTests()
 /*
  * Protected methods.
  */
-TestDBInterfaceCore::TestStatus TestDBInterfaceCore::wrongErrorMessage(std::string expectedString, ModelDBInterface* modelUnderTest)
+TestStatus TestDBInterfaceCore::wrongErrorMessage(std::string expectedString, ModelDBInterface* modelUnderTest)
 {
     std::string errorMessage = modelUnderTest->getAllErrorMessages();
     std::size_t found = errorMessage.find(expectedString);
@@ -105,7 +105,7 @@ bool TestDBInterfaceCore::hasErrorMessage(ModelDBInterface* modelUnderTest)
     return true;
 }
 
-TestDBInterfaceCore::TestStatus TestDBInterfaceCore::testInsertionFailureMessages(ModelDBInterface* modelUnderTest, std::vector<std::string> expectedErrors)
+TestStatus TestDBInterfaceCore::testInsertionFailureMessages(ModelDBInterface* modelUnderTest, std::vector<std::string> expectedErrors)
 {
     if (modelUnderTest->insert())
     {
@@ -129,7 +129,7 @@ TestDBInterfaceCore::TestStatus TestDBInterfaceCore::testInsertionFailureMessage
     return TESTPASSED;
 }
 
-void TestDBInterfaceCore::reportTestStatus(TestDBInterfaceCore::TestStatus status, std::string_view path)
+void TestDBInterfaceCore::reportTestStatus(TestStatus status, std::string_view path)
 {
     std::string_view statusStr = status == TESTPASSED? "PASSED" : "FAILED";
 

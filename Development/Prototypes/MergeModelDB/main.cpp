@@ -7,6 +7,7 @@
 #include "TestTaskDBInterface.h"
 #include "TestUserDBInterface.h"
 #include "TestGoalModel.h"
+#include "TestStatus.h"
 #include "UserGoalModel.h"
 #include "UserGoalSelfTest.h"
 #include "UserModel.h"
@@ -78,7 +79,7 @@ static bool runAllUnitTests()
     {
         allUnintTestsPassed = false;
     }
-    
+
     return allUnintTestsPassed;
 }
 
@@ -98,19 +99,19 @@ int main(int argc, char* argv[])
                     return EXIT_FAILURE;
                 }
             }
-#if 0
+#if 1
             TestUserDBInterface userTests(programOptions.userTestDataFile);
-            if (userTests.runAllTests() == TestDBInterfaceCore::TestStatus::TestPassed)
+            if (userTests.runAllTests() == TestStatus::TestPassed)
             {
                 TestTaskDBInterface tasktests(programOptions.taskTestDataFile);
-                if (tasktests.runAllTests() != TestDBInterfaceCore::TestStatus::TestPassed)
+                if (tasktests.runAllTests() != TestStatus::TestPassed)
                 {
                     return EXIT_FAILURE;
                 }
                 else
                 {
                     TestGoalModel goalTests;
-                    if (goalTests.runAllTests() != TestDBInterfaceCore::TestStatus::TestPassed)
+                    if (goalTests.runAllTests() != TestStatus::TestPassed)
                     {
                         return EXIT_FAILURE;
                     }

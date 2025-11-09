@@ -20,6 +20,7 @@ public:
     virtual ~CoreDBInterface() = default;
     std::string getAllErrorMessages() const noexcept { return errorMessages; };
     void setForceExceptions(bool forceIt) { forceException = forceIt; };
+    void setSelfTest(bool isSelfTest) { inSelfTest = isSelfTest; };
 
 protected:
     void initFormatOptions();

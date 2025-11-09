@@ -47,7 +47,7 @@ TestGoalModel::TestGoalModel()
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testNegativePathAlreadyInDataBase, this));
 }
 
-TestDBInterfaceCore::TestStatus TestGoalModel::testInsertAndGetParent(TestGoalInput testGoal)
+TestStatus TestGoalModel::testInsertAndGetParent(TestGoalInput testGoal)
 {
     UserModel_shp userOne = std::make_shared<UserModel>();
     userOne->selectByUserID(1);
@@ -78,13 +78,13 @@ TestDBInterfaceCore::TestStatus TestGoalModel::testInsertAndGetParent(TestGoalIn
     return TESTPASSED;
 }
 
-TestDBInterfaceCore::TestStatus TestGoalModel::testPositivePathGoalInsertions()
+TestStatus TestGoalModel::testPositivePathGoalInsertions()
 {
-    TestDBInterfaceCore::TestStatus testStatus = TESTPASSED;
+    TestStatus testStatus = TESTPASSED;
 
     for (auto testGoal: testInput)
     {
-        TestDBInterfaceCore::TestStatus currentResult = testInsertAndGetParent(testGoal);
+        TestStatus currentResult = testInsertAndGetParent(testGoal);
         if (testStatus == TESTPASSED)
         {
             testStatus = currentResult;
@@ -99,7 +99,7 @@ TestDBInterfaceCore::TestStatus TestGoalModel::testPositivePathGoalInsertions()
     return testStatus;
 }
 
-TestDBInterfaceCore::TestStatus TestGoalModel::testNegativePathAlreadyInDataBase()
+TestStatus TestGoalModel::testNegativePathAlreadyInDataBase()
 {
     UserGoalModel_shp goalAlreadyInDB = std::make_shared<UserGoalModel>();
     goalAlreadyInDB->setGoalId(1);
@@ -113,7 +113,7 @@ TestDBInterfaceCore::TestStatus TestGoalModel::testNegativePathAlreadyInDataBase
     return testInsertionFailureMessages(goalAlreadyInDB, expectedErrors);
 }
 
-TestDBInterfaceCore::TestStatus TestGoalModel::testnegativePathNotModified()
+TestStatus TestGoalModel::testnegativePathNotModified()
 {
     UserGoalModel_shp goalNotModified = std::make_shared<UserGoalModel>();
     goalNotModified->setGoalId(1);
@@ -129,9 +129,9 @@ TestDBInterfaceCore::TestStatus TestGoalModel::testnegativePathNotModified()
     return testInsertionFailureMessages(goalNotModified, expectedErrors);
 }
 
-TestDBInterfaceCore::TestStatus TestGoalModel::negativePathMissingRequiredFields()
+TestStatus TestGoalModel::negativePathMissingRequiredFields()
 {
-    TestDBInterfaceCore::TestStatus testStatus = TESTPASSED;
+    TestStatus testStatus = TESTPASSED;
 
     std::vector<std::string> expectedErrors =
     {
@@ -141,7 +141,7 @@ TestDBInterfaceCore::TestStatus TestGoalModel::negativePathMissingRequiredFields
     UserGoalModel testGoal;
     testGoal.setGoalId(0);  // prevent the not modified error.
 
-    std::vector<std::function<TestDBInterfaceCore::TestStatus(UserGoalModel&, std::vector<std::string>&)>> fieldTestUpdate =
+    std::vector<std::function<TestStatus(UserGoalModel&, std::vector<std::string>&)>> fieldTestUpdate =
     {
         {std::bind(&TestGoalModel::testMissingRequiredFieldsAddUserID, this, std::placeholders::_1, std::placeholders::_2)},
         {std::bind(&TestGoalModel::testMissingRequiredFieldsAddDescription, this, std::placeholders::_1, std::placeholders::_2)},
@@ -149,7 +149,7 @@ TestDBInterfaceCore::TestStatus TestGoalModel::negativePathMissingRequiredFields
 
     for (auto fieldTest: fieldTestUpdate)
     {
-        TestDBInterfaceCore::TestStatus thisTestStatus = fieldTest(testGoal, expectedErrors);
+        TestStatus thisTestStatus = fieldTest(testGoal, expectedErrors);
         if (testStatus == TESTPASSED)
         {
             testStatus = thisTestStatus;
@@ -171,10 +171,10 @@ TestDBInterfaceCore::TestStatus TestGoalModel::negativePathMissingRequiredFields
     return testStatus;
 }
 
-TestDBInterfaceCore::TestStatus TestGoalModel::testMissingRequiredFieldsAddUserID(
+TestStatus TestGoalModel::testMissingRequiredFieldsAddUserID(
     UserGoalModel &testGoal, std::vector<std::string>& expectedErrors)
 {
-    TestDBInterfaceCore::TestStatus testStatus =
+    TestStatus testStatus =
         testInsertionFailureMessages(&testGoal, expectedErrors);
 
     expectedErrors.erase(expectedErrors.begin());
@@ -183,10 +183,10 @@ TestDBInterfaceCore::TestStatus TestGoalModel::testMissingRequiredFieldsAddUserI
     return testStatus;
 }
 
-TestDBInterfaceCore::TestStatus TestGoalModel::testMissingRequiredFieldsAddDescription(
+TestStatus TestGoalModel::testMissingRequiredFieldsAddDescription(
     UserGoalModel &testGoal, std::vector<std::string>& expectedErrors)
 {
-    TestDBInterfaceCore::TestStatus testStatus =
+    TestStatus testStatus =
         testInsertionFailureMessages(&testGoal, expectedErrors);
 
     expectedErrors.erase(expectedErrors.begin());

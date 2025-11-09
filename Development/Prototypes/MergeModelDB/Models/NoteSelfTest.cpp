@@ -167,7 +167,7 @@ bool NoteSelfTest::testExceptionSelectByNoteID() noexcept
     return testExceptionAndSuccessNArgs("NoteModel::selectByNoteID", std::bind(&NoteModel::selectByNoteID, this, std::placeholders::_1), 1);
 }
 
-ModelTestStatus NoteSelfTest::testAllInsertFailures()
+TestStatus NoteSelfTest::testAllInsertFailures()
 {
     selfTestResetAllValues();
 

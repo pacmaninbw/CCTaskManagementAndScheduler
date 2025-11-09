@@ -32,7 +32,7 @@ TestTaskDBInterface::TestTaskDBInterface(std::string taskFileName)
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testSharedPointerInteraction, this));
 }
 
-TestDBInterfaceCore::TestStatus TestTaskDBInterface::runAllTests()
+TestStatus TestTaskDBInterface::runAllTests()
 {
     userOne = std::make_shared<UserModel>();
     userOne->setUserID(1);
@@ -43,10 +43,10 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::runAllTests()
         return TESTFAILED;
     }
 
-    TestDBInterfaceCore::TestStatus positivePathPassed = runPositivePathTests();
-    TestDBInterfaceCore::TestStatus negativePathPassed = runNegativePathTests();
+    TestStatus positivePathPassed = runPositivePathTests();
+    TestStatus negativePathPassed = runNegativePathTests();
 
-    TestDBInterfaceCore::TestStatus allTestsStatus =
+    TestStatus allTestsStatus =
         (positivePathPassed == TESTPASSED && negativePathPassed == TESTPASSED) ? TESTPASSED : TESTFAILED;
 
     reportTestStatus(allTestsStatus, "");
@@ -187,7 +187,7 @@ TaskModel_shp TestTaskDBInterface::creatEvenTask(CSVRow taskData)
     return newTask;
 }
 
-TestDBInterfaceCore::TestStatus TestTaskDBInterface::testGetUnstartedTasks()
+TestStatus TestTaskDBInterface::testGetUnstartedTasks()
 {
     TaskList taskDBInteface;
     TaskListValues notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(userOne->getUserID());
@@ -212,7 +212,7 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testGetUnstartedTasks()
     return TESTFAILED;
 }
 
-TestDBInterfaceCore::TestStatus TestTaskDBInterface::testGetActiveTasks()
+TestStatus TestTaskDBInterface::testGetActiveTasks()
 {
     TaskList taskDBInteface;
     TaskListValues activeTasks = taskDBInteface.getActiveTasksForAssignedUser(userOne->getUserID());
@@ -237,7 +237,7 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testGetActiveTasks()
     return TESTFAILED;
 }
 
-TestDBInterfaceCore::TestStatus TestTaskDBInterface::testTaskUpdates()
+TestStatus TestTaskDBInterface::testTaskUpdates()
 {
     TaskModel_shp firstTaskToChange = std::make_shared<TaskModel>();
     firstTaskToChange->selectByDescriptionAndAssignedUser("Archive BHHS74Reunion website to external SSD", userOne->getUserID());
@@ -418,7 +418,7 @@ std::chrono::year_month_day TestTaskDBInterface::stringToDate(std::string dateSt
     return dateValue;
 }
 
-TestDBInterfaceCore::TestStatus TestTaskDBInterface::testnegativePathNotModified()
+TestStatus TestTaskDBInterface::testnegativePathNotModified()
 {
     TaskModel_shp taskNotModified = std::make_shared<TaskModel>();
     taskNotModified->setTaskID(1);
@@ -434,7 +434,7 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testnegativePathNotModified
     return testInsertionFailureMessages(taskNotModified, expectedErrors);
 }
 
-TestDBInterfaceCore::TestStatus TestTaskDBInterface::testNegativePathAlreadyInDataBase()
+TestStatus TestTaskDBInterface::testNegativePathAlreadyInDataBase()
 {
     TaskModel_shp taskAlreadyInDB = std::make_shared<TaskModel>();
     taskAlreadyInDB->setTaskID(1);
@@ -448,13 +448,13 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testNegativePathAlreadyInDa
     return testInsertionFailureMessages(taskAlreadyInDB, expectedErrors);
 }
 
-TestDBInterfaceCore::TestStatus TestTaskDBInterface::testMissingReuqiredField(TaskModel taskMissingFields)
+TestStatus TestTaskDBInterface::testMissingReuqiredField(TaskModel taskMissingFields)
 {
     std::vector<std::string> expectedErrors = {"missing required values!"};
     return testInsertionFailureMessages(&taskMissingFields, expectedErrors);
 }
 
-TestDBInterfaceCore::TestStatus TestTaskDBInterface::testNegativePathMissingRequiredFields()
+TestStatus TestTaskDBInterface::testNegativePathMissingRequiredFields()
 {
     TaskModel newTask(userOne->getUserID());
     if (testMissingReuqiredField(newTask) != TESTPASSED)
@@ -492,9 +492,9 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testNegativePathMissingRequ
     return insertShouldPass(newTaskPtr);
 }
 
-TestDBInterfaceCore::TestStatus TestTaskDBInterface::testTasksFromDataFile()
+TestStatus TestTaskDBInterface::testTasksFromDataFile()
 {
-    TestDBInterfaceCore::TestStatus allTestsPassed = TESTPASSED;
+    TestStatus allTestsPassed = TESTPASSED;
     TaskListValues userTaskTestData = loadTasksFromDataFile();
 
     for (auto testTask: userTaskTestData)
@@ -516,7 +516,7 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testTasksFromDataFile()
     return allTestsPassed;
 }
 
-TestDBInterfaceCore::TestStatus TestTaskDBInterface::testSharedPointerInteraction()
+TestStatus TestTaskDBInterface::testSharedPointerInteraction()
 {
     TaskModel_shp newTask = std::make_shared<TaskModel>(userOne->getUserID());
 
@@ -554,7 +554,7 @@ TestDBInterfaceCore::TestStatus TestTaskDBInterface::testSharedPointerInteractio
     return insertShouldPass(newTask);
 }
 
-TestDBInterfaceCore::TestStatus TestTaskDBInterface::insertShouldPass(TaskModel_shp newTask)
+TestStatus TestTaskDBInterface::insertShouldPass(TaskModel_shp newTask)
 {
     if (newTask->insert())
     {

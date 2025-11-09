@@ -29,7 +29,7 @@ TestUserDBInterface::TestUserDBInterface(std::string userFileName)
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestUserDBInterface::testNegativePathAlreadyInDataBase, this));
 }
 
-TestDBInterfaceCore::TestStatus TestUserDBInterface::runPositivePathTests()
+TestStatus TestUserDBInterface::runPositivePathTests()
 {
     UserListValues userProfileTestData;
 
@@ -277,7 +277,7 @@ bool TestUserDBInterface::testGetAllUsers(UserListValues userProfileTestData)
     return testPassed;
 }
 
-TestDBInterfaceCore::TestStatus TestUserDBInterface::testnegativePathNotModified()
+TestStatus TestUserDBInterface::testnegativePathNotModified()
 {
     UserModel_shp userNotModified = std::make_shared<UserModel>();
     userNotModified->setUserID(1);
@@ -293,7 +293,7 @@ TestDBInterfaceCore::TestStatus TestUserDBInterface::testnegativePathNotModified
     return testInsertionFailureMessages(userNotModified, expectedErrors);
 }
 
-TestDBInterfaceCore::TestStatus TestUserDBInterface::testNegativePathAlreadyInDataBase()
+TestStatus TestUserDBInterface::testNegativePathAlreadyInDataBase()
 {
     UserModel_shp userAlreadyInDB = std::make_shared<UserModel>();
     userAlreadyInDB->setUserID(1);

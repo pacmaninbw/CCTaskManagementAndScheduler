@@ -3,6 +3,7 @@
 
 // Project Header Files
 #include "ModelDBInterface.h"
+#include "TestStatus.h"
 
 // External Libraries
 #include <boost/asio.hpp>
@@ -20,10 +21,6 @@
 #include <string_view>
 #include <type_traits>
 #include <vector>
-
-enum class ModelTestStatus {ModelTestPassed, ModelTestFailed};
-const ModelTestStatus TESTFAILED = ModelTestStatus::ModelTestFailed;
-const ModelTestStatus TESTPASSED = ModelTestStatus::ModelTestPassed;
 
 template<class T>
 concept IsDerivedFrom = std::is_base_of_v<ModelDBInterface, T>;
@@ -237,7 +234,7 @@ protected:
         return true;
     }
 
-    ModelTestStatus wrongErrorMessage(std::string expectedString)
+    TestStatus wrongErrorMessage(std::string expectedString)
     {
         std::size_t found = CoreDBInterface::errorMessages.find(expectedString);
         if (found == std::string::npos)
@@ -252,7 +249,7 @@ protected:
         return TESTPASSED;
     }
 
-    virtual ModelTestStatus testInsertionFailureMessages(std::vector<std::string> expectedErrors)
+    virtual TestStatus testInsertionFailureMessages(std::vector<std::string> expectedErrors)
     {
         if (ModelDBInterface::insert())
         {
@@ -276,7 +273,7 @@ protected:
             return TESTPASSED;
     }
 
-    virtual ModelTestStatus testUpdateFailureMessages(std::vector<std::string> expectedErrors)
+    virtual TestStatus testUpdateFailureMessages(std::vector<std::string> expectedErrors)
     {
         if (ModelDBInterface::update())
         {
@@ -300,7 +297,7 @@ protected:
         return TESTPASSED;
     }
 
-    virtual ModelTestStatus testAllInsertFailures()
+    virtual TestStatus testAllInsertFailures()
     {
         selfTestResetAllValues();
         std::clog << std::format("{}::testAllInsertFailures() NOT IMPLEMENTED! Test FAILED\n", ModelDBInterface::modelName);
@@ -340,7 +337,7 @@ protected:
         return exceptionHandlingPassed;
     }
 
-    ModelTestStatus testCommonInsertFailurePath()
+    TestStatus testCommonInsertFailurePath()
     {
         selfTestResetAllValues();
 
@@ -364,7 +361,7 @@ protected:
         return TESTPASSED;
     }
 
-    ModelTestStatus testCommonUpdateFailurePath()
+    TestStatus testCommonUpdateFailurePath()
     {
         selfTestResetAllValues();
 

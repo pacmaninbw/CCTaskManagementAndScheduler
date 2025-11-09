@@ -25,14 +25,14 @@ public:
     ~TestGoalModel() = default;
 
 private:
-    TestDBInterfaceCore::TestStatus testInsertAndGetParent(TestGoalInput testGoal);
-    TestDBInterfaceCore::TestStatus testPositivePathGoalInsertions();
-    TestDBInterfaceCore::TestStatus testNegativePathAlreadyInDataBase();
-    TestDBInterfaceCore::TestStatus testnegativePathNotModified();
-    TestDBInterfaceCore::TestStatus negativePathMissingRequiredFields();
-    TestDBInterfaceCore::TestStatus testMissingRequiredFieldsAddUserID(
+    TestStatus testInsertAndGetParent(TestGoalInput testGoal);
+    TestStatus testPositivePathGoalInsertions();
+    TestStatus testNegativePathAlreadyInDataBase();
+    TestStatus testnegativePathNotModified();
+    TestStatus negativePathMissingRequiredFields();
+    TestStatus testMissingRequiredFieldsAddUserID(
         UserGoalModel& testGoal, std::vector<std::string>& expectedErrors);
-    TestDBInterfaceCore::TestStatus testMissingRequiredFieldsAddDescription(
+    TestStatus testMissingRequiredFieldsAddDescription(
         UserGoalModel& testGoal, std::vector<std::string>& expectedErrors);
 
     bool verboseOutput;

@@ -254,7 +254,7 @@ bool TaskSelfTest::testExceptionRetrieve() noexcept
 }
 
 
-ModelTestStatus TaskSelfTest::testAllInsertFailures()
+TestStatus TaskSelfTest::testAllInsertFailures()
 {
     selfTestResetAllValues();
 
