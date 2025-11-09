@@ -75,19 +75,19 @@ public:
 
         if (!testAccessorFunctionsPassed())
         {
-            std::clog << ModelDBInterface::modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
+            std::cerr << ModelDBInterface::modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
             allSelfTestsPassed = false;
         }
 
         if (!testExceptionHandling())
         {
-            std::clog  << ModelDBInterface::modelName << "::runSelfTest: Exception handling FAILED!\n";
+            std::cerr  << ModelDBInterface::modelName << "::runSelfTest: Exception handling FAILED!\n";
             allSelfTestsPassed = false;
         }
         
         if (testAllInsertFailures() != TESTPASSED)
         {
-            std::clog << "Test of all insertion failures FAILED!\n";
+            std::cerr << "Test of all insertion failures FAILED!\n";
             allSelfTestsPassed = false;
         }
 
@@ -168,14 +168,14 @@ protected:
     virtual bool testExceptionInsert()
     {
         selfTestResetAllValues();
-        std::clog << std::format("{}::testExceptionInsert() NOT IMPLEMENTED! Test FAILED\n", ModelDBInterface::modelName);
+        std::cerr << std::format("{}::testExceptionInsert() NOT IMPLEMENTED! Test FAILED\n", ModelDBInterface::modelName);
         return false;
     }
     
     virtual bool testExceptionUpdate()
     {
         selfTestResetAllValues();
-        std::clog << std::format("{}::testExceptionUpdate() NOT IMPLEMENTED! Test FAILED\n", ModelDBInterface::modelName);
+        std::cerr << std::format("{}::testExceptionUpdate() NOT IMPLEMENTED! Test FAILED\n", ModelDBInterface::modelName);
         return false;
     }
     
@@ -205,7 +205,7 @@ protected:
         if (implodeOutput != expectedImplodeOutput)
         {
             textFieldManipulationPassed = false;
-            std::clog << std::format("Unit test of implodeTextField() FAILED!\nExpected Output = {}\nActual Output ={}\n",
+            std::cerr << std::format("Unit test of implodeTextField() FAILED!\nExpected Output = {}\nActual Output ={}\n",
                 expectedImplodeOutput, implodeOutput);
         }
 
@@ -215,7 +215,7 @@ protected:
             if (explodeOutput != testInputFields)
             {
                 textFieldManipulationPassed = false;
-                std::clog << "Unit test of explodeTextField() FAILED!\n";
+                std::cerr << "Unit test of explodeTextField() FAILED!\n";
             }
         }
 
@@ -227,7 +227,7 @@ protected:
         std::string testErrorMessage = CoreDBInterface::getAllErrorMessages();
         if (testErrorMessage.empty())
         {
-            std::clog << "No error message generated! TEST FAILED!\n";
+            std::cerr << "No error message generated! TEST FAILED!\n";
             return false;
         }
 
@@ -239,10 +239,10 @@ protected:
         std::size_t found = CoreDBInterface::errorMessages.find(expectedString);
         if (found == std::string::npos)
         {
-            std::clog << "Wrong message generated! TEST FAILED!\n";
-            std::clog << CoreDBInterface::errorMessages << "\n";
-            std::clog << "Missing expected: " << expectedString << "\n";
-            std::clog << "Error Messages:" << CoreDBInterface::errorMessages << "\n";
+            std::cerr << "Wrong message generated! TEST FAILED!\n";
+            std::cerr << CoreDBInterface::errorMessages << "\n";
+            std::cerr << "Missing expected: " << expectedString << "\n";
+            std::cerr << "Error Messages:" << CoreDBInterface::errorMessages << "\n";
             return TESTFAILED;
         }
 
@@ -253,7 +253,7 @@ protected:
     {
         if (ModelDBInterface::insert())
         {
-            std::clog << std::format("Inserted {} missing required fields!  TEST FAILED\n", ModelDBInterface::modelName);
+            std::cerr << std::format("Inserted {} missing required fields!  TEST FAILED\n", ModelDBInterface::modelName);
             return TESTFAILED;
         }
 
@@ -277,7 +277,7 @@ protected:
     {
         if (ModelDBInterface::update())
         {
-            std::clog << std::format("Update successful with expected errors!  TEST FAILED\n", ModelDBInterface::modelName);
+            std::cerr << std::format("Update successful with expected errors!  TEST FAILED\n", ModelDBInterface::modelName);
             return TESTFAILED;
         }
 
@@ -300,7 +300,7 @@ protected:
     virtual TestStatus testAllInsertFailures()
     {
         selfTestResetAllValues();
-        std::clog << std::format("{}::testAllInsertFailures() NOT IMPLEMENTED! Test FAILED\n", ModelDBInterface::modelName);
+        std::cerr << std::format("{}::testAllInsertFailures() NOT IMPLEMENTED! Test FAILED\n", ModelDBInterface::modelName);
         return TESTFAILED;
     }
 
@@ -320,7 +320,7 @@ protected:
             {
                 if (!exceptionTest.testExceptionFunction())
                 {
-                    std::clog << std::format("{}::{} returned true with exception: Exception Test Failed\n",
+                    std::cerr << std::format("{}::{} returned true with exception: Exception Test Failed\n",
                         ModelDBInterface::modelName, exceptionTest.functionUnderTest);
                     exceptionHandlingPassed = false;
                 }
@@ -329,8 +329,8 @@ protected:
 
         catch (std::exception &uncaughtException)
         {
-            std::clog << ModelDBInterface::modelName << "::testExceptionHandling():: Caught Unhandled Exception!! Test FAILED!\n";
-            std::clog << uncaughtException.what() << "\n";
+            std::cerr << ModelDBInterface::modelName << "::testExceptionHandling():: Caught Unhandled Exception!! Test FAILED!\n";
+            std::cerr << uncaughtException.what() << "\n";
             exceptionHandlingPassed = false;
         }
 
@@ -395,19 +395,19 @@ protected:
         setFunct(testValue);
         if (!ModelDBInterface::isModified())
         {
-            std::clog << "In self test for: " << ModelDBInterface::modelName << " Set function for " << memberName << " FAILED to set modified\n";
+            std::cerr << "In self test for: " << ModelDBInterface::modelName << " Set function for " << memberName << " FAILED to set modified\n";
             return false;
         }
 
         if (*member != testValue)
         {
-            std::clog  << "In self test for: " << ModelDBInterface::modelName << "Set function for " << memberName << " FAILED to set member value\n";
+            std::cerr  << "In self test for: " << ModelDBInterface::modelName << "Set function for " << memberName << " FAILED to set member value\n";
             return false;
         }
 
         if (getFunct() != testValue)
         {
-            std::clog  << "In self test for: " << ModelDBInterface::modelName << "Get function for " << memberName << " FAILED\n";
+            std::cerr  << "In self test for: " << ModelDBInterface::modelName << "Get function for " << memberName << " FAILED\n";
             return false;
         }
 
@@ -433,7 +433,7 @@ protected:
         setFunct(testValue.value());
         if (!ModelDBInterface::isModified())
         {
-            std::clog << "In self test for: " << ModelDBInterface::modelName << " set function for " << memberName << " FAILED to set modified\n";
+            std::cerr << "In self test for: " << ModelDBInterface::modelName << " set function for " << memberName << " FAILED to set modified\n";
             return false;
         }
 
@@ -441,11 +441,11 @@ protected:
         {
             if (!member->has_value())
             {
-                std::clog  << "In self test for: " << ModelDBInterface::modelName << "Set function for " << memberName << " FAILED to set member value\n";
+                std::cerr  << "In self test for: " << ModelDBInterface::modelName << "Set function for " << memberName << " FAILED to set member value\n";
             }
             if (member->value() != testValue.value())
             {
-                std::clog  << "In self test for: " << ModelDBInterface::modelName << " expected value: " << testValue.value()
+                std::cerr  << "In self test for: " << ModelDBInterface::modelName << " expected value: " << testValue.value()
                          << "actual value: " << member->value() << " FAILED to set member value\n";
             }
             return false;
@@ -454,7 +454,7 @@ protected:
         std::optional<U> returnValue = getFunct();
         if (returnValue != testValue)
         {
-            std::clog  << "In self test for: " << ModelDBInterface::modelName << "Get function for " << memberName << " FAILED\n";
+            std::cerr  << "In self test for: " << ModelDBInterface::modelName << "Get function for " << memberName << " FAILED\n";
             return false;
         }
 
@@ -482,19 +482,19 @@ protected:
         setFunct(testValue);
         if (!ModelDBInterface::isModified())
         {
-            std::clog << "In self test for: " << ModelDBInterface::modelName << " set function for " << memberName << " FAILED to set modified\n";
+            std::cerr << "In self test for: " << ModelDBInterface::modelName << " set function for " << memberName << " FAILED to set modified\n";
             return false;
         }
 
         if (!member->has_value() || member->value() != testValue)
         {
-            std::clog  << "In self test for: " << ModelDBInterface::modelName << "Set function for " << memberName << " FAILED to set member value\n";
+            std::cerr  << "In self test for: " << ModelDBInterface::modelName << "Set function for " << memberName << " FAILED to set member value\n";
             return false;
         }
 
         if (getFunct() != testValue)
         {
-            std::clog  << "In self test for: " << ModelDBInterface::modelName << "Get function for " << memberName << " FAILED\n";
+            std::cerr  << "In self test for: " << ModelDBInterface::modelName << "Get function for " << memberName << " FAILED\n";
             return false;
         }
 

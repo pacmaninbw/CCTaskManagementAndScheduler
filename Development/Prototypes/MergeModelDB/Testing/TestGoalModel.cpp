@@ -61,8 +61,8 @@ TestStatus TestGoalModel::testInsertAndGetParent(TestGoalInput testGoal)
         UserGoalModel parentGoal;
         if (!parentGoal.selectByUserIDAndDescription(userOne->getUserID(), testGoal.parentDescription))
         {
-            std::clog << "Failed to find Parent Goal! Test FAILED\n";
-            std::clog << parentGoal.getAllErrorMessages() << "\n";
+            std::cerr << "Failed to find Parent Goal! Test FAILED\n";
+            std::cerr << parentGoal.getAllErrorMessages() << "\n";
             return TESTFAILED;
         }
         newGoal.setParentID(parentGoal.getGoalId());
@@ -93,7 +93,7 @@ TestStatus TestGoalModel::testPositivePathGoalInsertions()
 
     if (testStatus == TESTFAILED)
     {
-        std::clog << "Some or all Goal Insertions FAILED\n";
+        std::cerr << "Some or all Goal Insertions FAILED\n";
     }
 
     return testStatus;

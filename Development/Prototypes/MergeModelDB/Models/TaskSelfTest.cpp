@@ -31,7 +31,7 @@ bool TaskSelfTest::runSelfTest()
 
     if (!testExceptionHandling())
     {
-        std::clog << "Exception handling FAILED!\n";
+        std::cerr << "Exception handling FAILED!\n";
         allSelfTestsPassed = false;
     }
     
@@ -42,13 +42,13 @@ bool TaskSelfTest::runSelfTest()
 
     if (!testAccessorFunctionsPassed())
     {
-        std::clog << "One or more get or set functions FAILED!\n";
+        std::cerr << "One or more get or set functions FAILED!\n";
         allSelfTestsPassed = false;
     }
 
     if (!testDiff())
     {
-        std::clog << std::format("Comparing 2 {} FAILED!\n", modelName);
+        std::cerr << std::format("Comparing 2 {} FAILED!\n", modelName);
         allSelfTestsPassed = false;
     }
 
@@ -59,7 +59,7 @@ bool TaskSelfTest::runSelfTest()
 
     if (testAllInsertFailures() != TESTPASSED)
     {
-        std::clog << "Test of all insertion failures FAILED!\n";
+        std::cerr << "Test of all insertion failures FAILED!\n";
         allSelfTestsPassed = false;
     }
 
@@ -201,7 +201,7 @@ bool TaskSelfTest::testExceptionInsert() noexcept
 
     if (!testFormatExceptionCatchSuccessNArgs("TaskModel::formatInsertStatement", std::bind(&TaskSelfTest::formatInsertStatement, this)))
     {
-        std::clog << "TaskSelfTest::formatInsertStatement() returned a string in Exception Test, FAILED\n";
+        std::cerr << "TaskSelfTest::formatInsertStatement() returned a string in Exception Test, FAILED\n";
         return false;
     }
 
@@ -231,7 +231,7 @@ bool TaskSelfTest::testExceptionUpdate() noexcept
     
     if (!testFormatExceptionCatchSuccessNArgs("TaskSelfTest::formatUpdateStatement", std::bind(&TaskSelfTest::formatUpdateStatement, this)))
     {
-        std::clog << "TaskSelfTest::formatInsertStatement() returned a string in Exception Test, FAILED\n";
+        std::cerr << "TaskSelfTest::formatInsertStatement() returned a string in Exception Test, FAILED\n";
         return false;
     }
 
@@ -246,7 +246,7 @@ bool TaskSelfTest::testExceptionRetrieve() noexcept
 
     if (!testFormatExceptionCatchSuccessNArgs("TaskSelfTest::formatSelectStatement", std::bind(&TaskSelfTest::formatSelectStatement, this)))
     {
-        std::clog << "TaskSelfTest::formatInsertStatement() returned a string in Exception Test, FAILED\n";
+        std::cerr << "TaskSelfTest::formatInsertStatement() returned a string in Exception Test, FAILED\n";
         return false;
     }
 
@@ -463,7 +463,7 @@ bool TaskSelfTest::testStatusVerifyValueAndGetStatus(TaskStatus testValue)
 {
     if (!isModified())
     {
-        std::clog << "In self test for: TaskSelfTest::status set function for status FAILED to set modified\n";
+        std::cerr << "In self test for: TaskSelfTest::status set function for status FAILED to set modified\n";
         return false;
     }
 
@@ -471,11 +471,11 @@ bool TaskSelfTest::testStatusVerifyValueAndGetStatus(TaskStatus testValue)
     {
         if (!status.has_value())
         {
-            std::clog  << "In self test for: TaskSelfTest::status Set function for status FAILED to set member value\n";
+            std::cerr  << "In self test for: TaskSelfTest::status Set function for status FAILED to set member value\n";
         }
         if (status.value() != testValue)
         {
-            std::clog  << "In self test for: TaskSelfTest::status expected value: " << static_cast<unsigned int>(testValue)
+            std::cerr  << "In self test for: TaskSelfTest::status expected value: " << static_cast<unsigned int>(testValue)
                         << "actual value: " << static_cast<unsigned int>(status.value()) << " FAILED to set member value\n";
         }
         return false;
@@ -484,13 +484,13 @@ bool TaskSelfTest::testStatusVerifyValueAndGetStatus(TaskStatus testValue)
     std::optional<TaskSelfTest::TaskStatus> returnValue = getStatus();
     if (!returnValue.has_value() || returnValue.value() != testValue)
     {
-        std::clog  << "In self test for: TaskSelfTest::status Get function for status FAILED\n";
+        std::cerr  << "In self test for: TaskSelfTest::status Get function for status FAILED\n";
         return false;
     }
 
     if (getStatusIntVal() != static_cast<unsigned int>(returnValue.value()))
     {
-        std::clog  << "In self test for: TaskModel::getStatusIntVal() FAILED\n";
+        std::cerr  << "In self test for: TaskModel::getStatusIntVal() FAILED\n";
         return false;
     }
 
@@ -536,7 +536,7 @@ bool TaskSelfTest::testParentTaskIDVerifyValueAndGetParentTaskID(std::size_t tes
 {
     if (!isModified())
     {
-        std::clog << "In self test for: TaskSelfTest::parentID set function for parentID FAILED to set modified\n";
+        std::cerr << "In self test for: TaskSelfTest::parentID set function for parentID FAILED to set modified\n";
         return false;
     }
 
@@ -544,11 +544,11 @@ bool TaskSelfTest::testParentTaskIDVerifyValueAndGetParentTaskID(std::size_t tes
     {
         if (!parentTaskID.has_value())
         {
-            std::clog  << "In self test for: TaskSelfTest::parentTaskID Set function for parentTaskID FAILED to set member value\n";
+            std::cerr  << "In self test for: TaskSelfTest::parentTaskID Set function for parentTaskID FAILED to set member value\n";
         }
         if (parentTaskID.value() != testValue)
         {
-            std::clog  << "In self test for: TaskSelfTest::parentTaskID expected value: " << testValue <<
+            std::cerr  << "In self test for: TaskSelfTest::parentTaskID expected value: " << testValue <<
                 "actual value: " << parentTaskID.value() << " FAILED to set member value\n";
         }
         return false;
@@ -557,7 +557,7 @@ bool TaskSelfTest::testParentTaskIDVerifyValueAndGetParentTaskID(std::size_t tes
     std::optional<std::size_t> returnValue = getParentTaskID();
     if (!returnValue.has_value() || returnValue.value() != testValue)
     {
-        std::clog  << "In self test for: TaskSelfTest::parentTaskID Get function for parentTaskID FAILED\n";
+        std::cerr  << "In self test for: TaskSelfTest::parentTaskID Get function for parentTaskID FAILED\n";
         return false;
     }
 
@@ -668,21 +668,21 @@ bool TaskSelfTest::testPriorityGroupCAccess()
     setPriorityGroupC(testValue);
     if (!isModified())
     {
-        std::clog << "In self test for: " << modelName << " set function for " << memberName << " FAILED to set modified\n";
+        std::cerr << "In self test for: " << modelName << " set function for " << memberName << " FAILED to set modified\n";
         return false;
     }
 
     if (priorityGroup != expectedInternalValue)
     {
-        std::clog  << "In self test for: " << modelName << "Set function for " << memberName << " FAILED to set member value\n";
-        std::clog << "\tExpected Value: " << expectedInternalValue << "Actual Value: " << priorityGroup << "\n";
+        std::cerr  << "In self test for: " << modelName << "Set function for " << memberName << " FAILED to set member value\n";
+        std::cerr << "\tExpected Value: " << expectedInternalValue << "Actual Value: " << priorityGroup << "\n";
         return false;
     }
 
     if (getPriorityGroup() != expectedInternalValue)
     {
-        std::clog  << "In self test for: " << modelName << " Get function for " << memberName << " FAILED\n";
-        std::clog << "\tExpected Value: " << expectedInternalValue << "Actual Value: " << getPriorityGroup() << "\n";
+        std::cerr  << "In self test for: " << modelName << " Get function for " << memberName << " FAILED\n";
+        std::cerr << "\tExpected Value: " << expectedInternalValue << "Actual Value: " << getPriorityGroup() << "\n";
         return false;
     }
 
@@ -731,20 +731,20 @@ bool TaskSelfTest::testDependenciesAccess()
         addDependency(dependency);
         if (!isModified())
         {
-            std::clog << "In self test for: " << modelName << "::addDependency()" << " FAILED to set modified\n";
+            std::cerr << "In self test for: " << modelName << "::addDependency()" << " FAILED to set modified\n";
             return false;
         }
     }
 
     if (dependencies != testDependencies)
     {
-        std::clog << "Self Test for " << modelName << "::addDependency()" << " FAILED to set values\n";
+        std::cerr << "Self Test for " << modelName << "::addDependency()" << " FAILED to set values\n";
         return false;
     }
 
     if (getDependencies() != testDependencies)
     {
-        std::clog << "Self Test for " << modelName << "::getDependencies()" << " FAILED to get values\n";
+        std::cerr << "Self Test for " << modelName << "::getDependencies()" << " FAILED to get values\n";
     }
 
     if (verboseOutput)
@@ -775,11 +775,11 @@ bool TaskSelfTest::testMarkComplete()
     {
         if (!status.has_value())
         {
-            std::clog  << "In self test for: TaskSelfTest::markComplete FAILED to set status member value\n";
+            std::cerr  << "In self test for: TaskSelfTest::markComplete FAILED to set status member value\n";
         }
         if (status.value() != TaskStatus::Complete)
         {
-            std::clog  << "In self test for: TaskSelfTest::markComplete expected value: " << static_cast<unsigned int>(TaskStatus::Complete)
+            std::cerr  << "In self test for: TaskSelfTest::markComplete expected value: " << static_cast<unsigned int>(TaskStatus::Complete)
                 << "actual value: " << static_cast<unsigned int>(status.value()) << " FAILED to set status member value\n";
         }
         return false;
@@ -787,7 +787,7 @@ bool TaskSelfTest::testMarkComplete()
 
     if (!completionDate.has_value())
     {
-        std::clog  << "In self test for: TaskSelfTest::markComplete FAILED to set completionDate member value\n";
+        std::cerr  << "In self test for: TaskSelfTest::markComplete FAILED to set completionDate member value\n";
         return false;
     }
 
@@ -809,20 +809,20 @@ bool TaskSelfTest::testAddEffort()
 
     if (!isModified())
     {
-        std::clog << "TaskSelfTest::addEffortHours() failed to set modified! test FAILED;\n";
+        std::cerr << "TaskSelfTest::addEffortHours() failed to set modified! test FAILED;\n";
         return false;
     }
 
     if (actualEffortToDate != expectedHours)
     {
-        std::clog << "TaskSelfTest::actualEffortToDate does not show additional hours! test FAILED;\n";
+        std::cerr << "TaskSelfTest::actualEffortToDate does not show additional hours! test FAILED;\n";
         return false;
 
     }
 
     if (getactualEffortToDate() != expectedHours)
     {
-        std::clog << "TaskModel::getactualEffortToDate() does not show additional hours! test FAILED;\n";
+        std::cerr << "TaskModel::getactualEffortToDate() does not show additional hours! test FAILED;\n";
         return false;
     }
 

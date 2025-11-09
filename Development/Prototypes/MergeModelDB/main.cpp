@@ -33,7 +33,7 @@ static bool runUnitTest(ModelSelfTest<A>* unitTest)
     if (!unitTest->runSelfTest())
     {
         std::string failMessage = std::format("*** {} FAILED Self Test ***", unitTest->getModelName());
-        std::clog << failMessage << "\n";
+        std::cerr << failMessage << "\n";
         if (programOptions.quitFirstFail)
         {
             std::runtime_error firstFail(failMessage);

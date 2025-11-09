@@ -88,14 +88,14 @@ bool TestUserDBInterface::testGetUserByLoginName(UserModel_shp insertedUser)
         }
         else
         {
-            std::clog << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
+            std::cerr << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
             *insertedUser << "\n" "Retreived User:\n" << *retrievedUser << "\n";
             return false;
         }
     }
     else
     {
-        std::clog << "testGetUserByLoginNamen(user->getLoginName()) FAILED!\n" <<
+        std::cerr << "testGetUserByLoginNamen(user->getLoginName()) FAILED!\n" <<
             retrievedUser->getAllErrorMessages() << "\n";
         return false;
     }
@@ -111,14 +111,14 @@ bool TestUserDBInterface::testGetUserByLoginAndPassword(UserModel_shp insertedUs
     {
         if (*retrievedUser != *insertedUser)
         {
-            std::clog << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
+            std::cerr << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
             *insertedUser << "\n" "Retreived User:\n" << *retrievedUser << "\n";
             return false;
         }
     }
     else
     {
-        std::clog << "testGetUserByLoginAndPassword(user->getLoginName()) FAILED!\n" <<
+        std::cerr << "testGetUserByLoginAndPassword(user->getLoginName()) FAILED!\n" <<
             retrievedUser->getAllErrorMessages() << "\n";
         return false;
     }
@@ -145,14 +145,14 @@ bool TestUserDBInterface::testGetUserByFullName(UserModel_shp insertedUser)
         }
         else
         {
-            std::clog << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
+            std::cerr << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
             *insertedUser << "\n" "Retreived User:\n" << *retrievedUser << "\n";
             return false;
         }
     }
     else
     {
-        std::clog << "retrievedUser->selectByFullName FAILED!\n" <<
+        std::cerr << "retrievedUser->selectByFullName FAILED!\n" <<
             retrievedUser->getAllErrorMessages() << "\n";
         return false;
     }
@@ -169,14 +169,14 @@ bool TestUserDBInterface::testGetUserByEmail(UserModel_shp insertedUser)
         }
         else
         {
-            std::clog << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
+            std::cerr << "Insertion user and retrieved User are not the same. Test FAILED!\nInserted User:\n" <<
             *insertedUser << "\n" "Retreived User:\n" << *retrievedUser << "\n";
             return false;
         }
     }
     else
     {
-        std::clog << "retrievedUser->selectByFullName FAILED!\n" <<
+        std::cerr << "retrievedUser->selectByFullName FAILED!\n" <<
             retrievedUser->getAllErrorMessages() << "\n";
         return false;
     }
@@ -192,7 +192,7 @@ bool TestUserDBInterface::testUpdateUserPassword(UserModel_shp insertedUser)
     insertedUser->setPassword(newPassword);
     if (!insertedUser->save())
     {
-        std::clog << "insertedUser->save()() FAILED" << insertedUser->getAllErrorMessages() << "\n";
+        std::cerr << "insertedUser->save()() FAILED" << insertedUser->getAllErrorMessages() << "\n";
         return false;
     }
 
@@ -201,7 +201,7 @@ bool TestUserDBInterface::testUpdateUserPassword(UserModel_shp insertedUser)
     newUserValues->retrieve();
     if (oldUserValues == *newUserValues)
     {
-        std::clog << std::format("Password update for user {} FAILED!\n", oldUserValues.getUserID());
+        std::cerr << std::format("Password update for user {} FAILED!\n", oldUserValues.getUserID());
         testPassed = false;
     }
 
@@ -252,7 +252,7 @@ bool TestUserDBInterface::testGetAllUsers(UserListValues userProfileTestData)
     }
     else
     {
-        std::clog << "Get All users FAILED! " << allUsers.size() << "\n";
+        std::cerr << "Get All users FAILED! " << allUsers.size() << "\n";
         if (userProfileTestData.size() != allUsers.size())
         {
             std::clog << std::format("Size differs: userProfileTestData.size({}) != llUsers.size({})",

@@ -78,9 +78,9 @@ TestStatus TestDBInterfaceCore::wrongErrorMessage(std::string expectedString, Mo
     std::size_t found = errorMessage.find(expectedString);
     if (found == std::string::npos)
     {
-        std::clog << "Wrong message generated! TEST FAILED!\n";
-        std::clog << errorMessage << "\n";
-        std::clog << "Missing expected: " << expectedString << "\n";
+        std::cerr << "Wrong message generated! TEST FAILED!\n";
+        std::cerr << errorMessage << "\n";
+        std::cerr << "Missing expected: " << expectedString << "\n";
         return TESTFAILED;
     }
 
@@ -93,7 +93,7 @@ bool TestDBInterfaceCore::hasErrorMessage(ModelDBInterface* modelUnderTest)
 
     if (errorMessage.empty())
     {
-        std::clog << "No error message generated! TEST FAILED!\n";
+        std::cerr << "No error message generated! TEST FAILED!\n";
         return false;
     }
 
@@ -109,7 +109,7 @@ TestStatus TestDBInterfaceCore::testInsertionFailureMessages(ModelDBInterface* m
 {
     if (modelUnderTest->insert())
     {
-        std::clog << std::format("Inserted {} missing required fields!  TEST FAILED\n", modelUnderTest->getModelName());
+        std::cerr << std::format("Inserted {} missing required fields!  TEST FAILED\n", modelUnderTest->getModelName());
         return TESTFAILED;
     }
 

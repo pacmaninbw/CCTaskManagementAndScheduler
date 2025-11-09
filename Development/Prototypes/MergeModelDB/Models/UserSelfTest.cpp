@@ -31,7 +31,7 @@ bool UserSelfTest::runSelfTest()
 
     if (!testExceptionHandling())
     {
-        std::clog << "Exception handling FAILED!\n";
+        std::cerr << "Exception handling FAILED!\n";
         allSelfTestsPassed = false;
     }
     
@@ -42,13 +42,13 @@ bool UserSelfTest::runSelfTest()
 
     if (!testAccessorFunctionsPassed())
     {
-        std::clog << "One or more get or set functions FAILED!\n";
+        std::cerr << "One or more get or set functions FAILED!\n";
         allSelfTestsPassed = false;
     }
 
     if (!diffTest())
     {
-        std::clog << std::format("Equalify Operator test for {} FAILED!\n", modelName);
+        std::cerr << std::format("Equalify Operator test for {} FAILED!\n", modelName);
         allSelfTestsPassed = false;
     }
     
@@ -60,7 +60,7 @@ bool UserSelfTest::runSelfTest()
     if (testAllInsertFailures() != TESTPASSED)
     {
         allSelfTestsPassed = false;
-        std::clog << "Test of all insertion failures FAILED!\n";
+        std::cerr << "Test of all insertion failures FAILED!\n";
     }
 
     if (!testTextFieldManipulation())

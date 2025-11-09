@@ -65,17 +65,17 @@ bool TestTaskDBInterface::testGetTaskByDescription(TaskModel_shp insertedTask)
         }
         else
         {
-            std::clog << "Inserted and retrieved Task are not the same! Test FAILED!\n";
+            std::cerr << "Inserted and retrieved Task are not the same! Test FAILED!\n";
             if (verboseOutput)
             {
-                std::clog << "Inserted Task:\n" << *insertedTask << "\n" "Retreived Task:\n" << *retrievedTask << "\n";
+                std::cerr << "Inserted Task:\n" << *insertedTask << "\n" "Retreived Task:\n" << *retrievedTask << "\n";
             }
             return false;
         }
     }
     else
     {
-        std::clog << "getTaskByDescription(task.getDescription())) FAILED!\n" 
+        std::cerr << "getTaskByDescription(task.getDescription())) FAILED!\n" 
             << retrievedTask->getAllErrorMessages() << "\n";
         return false;
     }
@@ -93,17 +93,17 @@ bool TestTaskDBInterface::testGetTaskByID(TaskModel_shp insertedTask)
         }
         else
         {
-            std::clog << "Inserted and retrieved Task are not the same! Test FAILED!\n";
+            std::cerr << "Inserted and retrieved Task are not the same! Test FAILED!\n";
             if (verboseOutput)
             {
-                std::clog << "Inserted Task:\n" << *insertedTask << "\n" "Retreived Task:\n" << *retrievedTask << "\n";
+                std::cerr << "Inserted Task:\n" << *insertedTask << "\n" "Retreived Task:\n" << *retrievedTask << "\n";
             }
             return false;
         }
     }
     else
     {
-        std::clog << "task.getTaskByTaskID()) FAILED!\n" 
+        std::cerr << "task.getTaskByTaskID()) FAILED!\n" 
             << retrievedTask->getAllErrorMessages() << "\n";
         return false;
     }
@@ -206,7 +206,7 @@ TestStatus TestTaskDBInterface::testGetUnstartedTasks()
         return TESTPASSED; 
     }
 
-    std::clog << std::format("taskDBInterface.getUnstartedDueForStartForAssignedUser({}) FAILED!\n", userOne->getUserID()) <<
+    std::cerr << std::format("taskDBInterface.getUnstartedDueForStartForAssignedUser({}) FAILED!\n", userOne->getUserID()) <<
         taskDBInteface.getAllErrorMessages() << "\n";
 
     return TESTFAILED;
@@ -231,7 +231,7 @@ TestStatus TestTaskDBInterface::testGetActiveTasks()
         return TESTPASSED; 
     }
 
-    std::clog << std::format("taskDBInterface.getActiveTasksForAssignedUser({}) FAILED!\n", userOne->getUserID()) <<
+    std::cerr << std::format("taskDBInterface.getActiveTasksForAssignedUser({}) FAILED!\n", userOne->getUserID()) <<
         taskDBInteface.getAllErrorMessages() << "\n";
 
     return TESTFAILED;
@@ -281,7 +281,7 @@ bool TestTaskDBInterface::testTaskUpdate(TaskModel_shp changedTask)
     shouldBeDifferent->retrieve();
     if (*original == *shouldBeDifferent)
     {
-        std::clog << std::format("Task update test FAILED for task: {}\n", taskID);
+        std::cerr << std::format("Task update test FAILED for task: {}\n", taskID);
         testPassed = false;
     }
 
@@ -308,7 +308,7 @@ bool TestTaskDBInterface::testAddDepenedcies()
     depenedentTask->addDependency(depenedsOn);
     if (!depenedentTask->update())
     {
-        std::clog << std::format("Update to add depenency to '{}' FAILED\n", taskDescriptions[0]);
+        std::cerr << std::format("Update to add depenency to '{}' FAILED\n", taskDescriptions[0]);
         return false;
     }
 
@@ -324,7 +324,7 @@ bool TestTaskDBInterface::testAddDepenedcies()
     }
     if (!mostDepenedentTask->update())
     {
-        std::clog << std::format("Update to add depenency to '{}' FAILED\n", mostDependentTaskDesc);
+        std::cerr << std::format("Update to add depenency to '{}' FAILED\n", mostDependentTaskDesc);
         return false;
     }
 
@@ -334,7 +334,7 @@ bool TestTaskDBInterface::testAddDepenedcies()
     std::vector<std::size_t> dbValue = testDepenedenciesInDB->getDependencies();
     if (comparison != dbValue)
     {
-        std::clog << "Retrival of task dependencies differ, Test FAILED\n";
+        std::cerr << "Retrival of task dependencies differ, Test FAILED\n";
         return false;
     }
 
@@ -376,7 +376,7 @@ bool TestTaskDBInterface::testGetCompletedList()
 
     if (completedTasks.size() != (tasksToMarkComplete.size() + 1))
     {
-        std::clog << std::format("Test FAILED: completedTasks.size() {} != expected value {}\n",
+        std::cerr << std::format("Test FAILED: completedTasks.size() {} != expected value {}\n",
             completedTasks.size(), tasksToMarkComplete.size() + 1);
         return false;
     }
