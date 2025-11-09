@@ -65,7 +65,14 @@ bool TaskSelfTest::runSelfTest()
 
     inSelfTest = false;
     
-    std::cout <<  std::format("{} Self Test {}\n", modelName, allSelfTestsPassed? "PASSED" : "FAILED");
+    if (allSelfTestsPassed)
+    {
+        std::cout <<  std::format("{} Self Test {}\n", modelName, "PASSED");
+    }
+    else
+    {
+        std::cerr <<  std::format("{} Self Test {}\n", modelName, "FAILED");
+    }
 
     return allSelfTestsPassed;
 }

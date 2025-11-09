@@ -43,7 +43,7 @@ bool NoteSelfTest::runSelfTest()
 
     if (!diffTest())
     {
-        std::cerr << std::format("Equalify Operator test for {} FAILED!\n", modelName);
+        std::cerr << std::format("Equality Operator test for {} FAILED!\n", modelName);
         allSelfTestsPassed = false;
     }
     
@@ -65,7 +65,14 @@ bool NoteSelfTest::runSelfTest()
 
     inSelfTest = false;
 
-    std::cout <<  std::format("{} Self Test {}\n", modelName, allSelfTestsPassed? "PASSED" : "FAILED");
+    if (allSelfTestsPassed)
+    {
+        std::cout <<  std::format("{} Self Test {}\n", modelName, "PASSED");
+    }
+    else
+    {
+        std::cerr <<  std::format("{} Self Test {}\n", modelName, "FAILED");
+    }
 
     return allSelfTestsPassed;
 }
