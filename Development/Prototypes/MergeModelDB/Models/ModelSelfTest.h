@@ -47,7 +47,7 @@ public:
 
         if (CoreDBInterface::verboseOutput)
         {
-            std::clog << "Running " << ModelDBInterface::modelName << " Self Test\n";
+            std::cout << "Running " << ModelDBInterface::modelName << " Self Test\n";
         }
 
         if (testCommonInsertFailurePath() != TESTPASSED)
@@ -56,7 +56,7 @@ public:
         }
         else
         {
-            std::clog << "Common Insertion Failure Test PASSED!\n";
+            std::cout << "Common Insertion Failure Test PASSED!\n";
         }
 
         if (testCommonUpdateFailurePath() != TESTPASSED)
@@ -65,7 +65,7 @@ public:
         }
         else
         {
-            std::clog << "Common Update Failure Test PASSED!\n";
+            std::cout << "Common Update Failure Test PASSED!\n";
         }
 
         if (!testSave())
@@ -121,14 +121,14 @@ protected:
     virtual bool testAccessorFunctionsPassed()
     {
         selfTestResetAllValues();
-        std::clog << ModelDBInterface::modelName << "::testAccessorFunctionsPassed() NOT IMPLEMENTED Forced FAIL!\n";
+        std::cout << ModelDBInterface::modelName << "::testAccessorFunctionsPassed() NOT IMPLEMENTED Forced FAIL!\n";
         return false;
     }
 
     virtual bool testExceptionHandling()
     {
         selfTestResetAllValues();
-        std::clog << ModelDBInterface::modelName << "::testExceptionHandling() NOT IMPLEMENTED Forced FAIL!\n";
+        std::cout << ModelDBInterface::modelName << "::testExceptionHandling() NOT IMPLEMENTED Forced FAIL!\n";
         return false;
     }
 
@@ -142,21 +142,21 @@ protected:
 
         if (ModelDBInterface::save())
         {
-            std::clog << ModelDBInterface::modelName << "::save worked without being modified\n";
+            std::cout << ModelDBInterface::modelName << "::save worked without being modified\n";
             testPassed = false;
         }
         else
         {
             if (!hasErrorMessage())
             {
-                std::clog << ModelDBInterface::modelName << "::save Missing expected error messages\n";
+                std::cout << ModelDBInterface::modelName << "::save Missing expected error messages\n";
                 testPassed = false;
             }
             else
             {
                 if (wrongErrorMessage("not modified, no changes to save") != TESTPASSED)
                 {
-                    std::clog << ModelDBInterface::modelName << "::save Wrong error message\n";
+                    std::cout << ModelDBInterface::modelName << "::save Wrong error message\n";
                     testPassed = false;
                 }
             }
@@ -387,7 +387,7 @@ protected:
     {
         if (CoreDBInterface::verboseOutput)
         {
-            std::clog << "Running self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << "\n";
+            std::cout << "Running self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << "\n";
         }
 
         ModelDBInterface::modified = false;
@@ -413,7 +413,7 @@ protected:
 
         if (CoreDBInterface::verboseOutput)
         {
-            std::clog << "Self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << " PASSED\n";
+            std::cout << "Self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << " PASSED\n";
         }
 
         return true;
@@ -425,7 +425,7 @@ protected:
     {
         if (CoreDBInterface::verboseOutput)
         {
-            std::clog << "Running self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << "\n";
+            std::cout << "Running self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << "\n";
         }
 
         ModelDBInterface::modified = false;
@@ -460,7 +460,7 @@ protected:
 
         if (CoreDBInterface::verboseOutput)
         {
-            std::clog << "Self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << " PASSED\n";
+            std::cout << "Self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << " PASSED\n";
         }
 
         return true;
@@ -474,7 +474,7 @@ protected:
     {
         if (CoreDBInterface::verboseOutput)
         {
-            std::clog << "Running self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << "\n";
+            std::cout << "Running self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << "\n";
         }
 
         ModelDBInterface::modified = false;
@@ -500,7 +500,7 @@ protected:
 
         if (CoreDBInterface::verboseOutput)
         {
-            std::clog << "Self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << " PASSED\n";
+            std::cout << "Self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << " PASSED\n";
         }
 
         return true;
@@ -524,7 +524,7 @@ protected:
             }
         }
 
-        std::clog << reportFailure << "\n";
+        std::cout << reportFailure << "\n";
 
         return false;
     }
@@ -592,7 +592,7 @@ protected:
         {
             if (CoreDBInterface::verboseOutput)
             {
-                std::clog << "Caught expected exception from " << funcName << "(): " << e.what() << "\n";
+                std::cout << "Caught expected exception from " << funcName << "(): " << e.what() << "\n";
             }
             CoreDBInterface::forceException = false; 
             formattedQuery = funcUnderTest(args...);

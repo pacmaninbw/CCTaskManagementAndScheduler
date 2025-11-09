@@ -99,7 +99,7 @@ bool TestDBInterfaceCore::hasErrorMessage(ModelDBInterface* modelUnderTest)
 
     if (verboseOutput)
     {
-        std::clog << "Expected error was; " << errorMessage << "\n";
+        std::cout << "Expected error was; " << errorMessage << "\n";
     }
 
     return true;
@@ -135,13 +135,13 @@ void TestDBInterfaceCore::reportTestStatus(TestStatus status, std::string_view p
 
     if (path.length() > 0)
     {
-        std::clog << std::format(
+        std::cout << std::format(
             "All {} path tests for database insertions and retrievals of {} {}!\n",
             path, modelUnderTest, statusStr);
     }
     else
     {
-        std::clog << std::format(
+        std::cout << std::format(
             "All tests for database insertions and retrievals of {} {}!\n",
             modelUnderTest, statusStr);
 

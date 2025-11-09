@@ -26,7 +26,7 @@ bool UserSelfTest::runSelfTest()
 
     if (verboseOutput)
     {
-        std::clog <<  std::format("Running {} Self Test\n", modelName);
+        std::cout <<  std::format("Running {} Self Test\n", modelName);
     }
 
     if (!testExceptionHandling())
@@ -54,7 +54,7 @@ bool UserSelfTest::runSelfTest()
     
     if (verboseOutput)
     {
-        std::clog << "Test Output: " << *this << "\n";
+        std::cout << "Test Output: " << *this << "\n";
     }
 
     if (testAllInsertFailures() != TESTPASSED)
@@ -70,7 +70,7 @@ bool UserSelfTest::runSelfTest()
 
     inSelfTest = false;
 
-    std::clog <<  std::format("{} Self Test {}\n", modelName, allSelfTestsPassed? "PASSED" : "FAILED");
+    std::cout <<  std::format("{} Self Test {}\n", modelName, allSelfTestsPassed? "PASSED" : "FAILED");
 
     return allSelfTestsPassed;
 }
@@ -395,12 +395,12 @@ TestStatus UserSelfTest::testAllInsertFailures()
 
     if (verboseOutput)
     {
-        std::clog << "UserSelfTest::testAllInsertFailures() before successful insert *this = " << *this << "\n";
+        std::cout << "UserSelfTest::testAllInsertFailures() before successful insert *this = " << *this << "\n";
     }
 
     if (!insert())
     {
-        std::clog << "In  UserSelfTest::testAllInsertFailures() Expected successful insert failed\n" << errorMessages << "\n";
+        std::cout << "In  UserSelfTest::testAllInsertFailures() Expected successful insert failed\n" << errorMessages << "\n";
         return TESTFAILED;
     }
 

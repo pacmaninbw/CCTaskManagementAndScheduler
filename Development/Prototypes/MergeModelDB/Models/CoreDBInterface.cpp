@@ -71,7 +71,7 @@ boost::asio::awaitable<boost::mysql::results> CoreDBInterface::coRoutineExecuteS
     {
         if (verboseOutput)
         {
-            std::clog << "In Self Test Query is: \n\t" << query << "\n";
+            std::cout << "In Self Test Query is: \n\t" << query << "\n";
         }
         boost::mysql::results selectResult;
         co_return selectResult;
@@ -85,7 +85,7 @@ boost::asio::awaitable<boost::mysql::results> CoreDBInterface::coRoutineExecuteS
 
     if (verboseOutput)
     {
-        std::clog << "Running: \n\t" << query << "\n";
+        std::cout << "Running: \n\t" << query << "\n";
     }
 
     co_await conn.async_execute(query, selectResult);

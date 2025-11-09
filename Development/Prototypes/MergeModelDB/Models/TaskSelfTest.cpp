@@ -26,7 +26,7 @@ bool TaskSelfTest::runSelfTest()
 
     if (verboseOutput)
     {
-        std::clog <<  std::format("Running {} Self Test\n", modelName);
+        std::cout <<  std::format("Running {} Self Test\n", modelName);
     }
 
     if (!testExceptionHandling())
@@ -54,7 +54,7 @@ bool TaskSelfTest::runSelfTest()
 
     if (verboseOutput)
     {
-        std::clog << "Test Output: " << *this << "\n";
+        std::cout << "Test Output: " << *this << "\n";
     }
 
     if (testAllInsertFailures() != TESTPASSED)
@@ -65,7 +65,7 @@ bool TaskSelfTest::runSelfTest()
 
     inSelfTest = false;
     
-    std::clog <<  std::format("{} Self Test {}\n", modelName, allSelfTestsPassed? "PASSED" : "FAILED");
+    std::cout <<  std::format("{} Self Test {}\n", modelName, allSelfTestsPassed? "PASSED" : "FAILED");
 
     return allSelfTestsPassed;
 }
@@ -324,12 +324,12 @@ TestStatus TaskSelfTest::testAllInsertFailures()
 
     if (verboseOutput)
     {
-        std::clog << "TaskSelfTest::testAllInsertFailures() before successful insert *this = " << *this << "\n";
+        std::cout << "TaskSelfTest::testAllInsertFailures() before successful insert *this = " << *this << "\n";
     }
 
     if (!insert())
     {
-        std::clog << "In  TaskSelfTest::testAllInsertFailures() Expected successful insert failed\n" << errorMessages << "\n";
+        std::cout << "In  TaskSelfTest::testAllInsertFailures() Expected successful insert failed\n" << errorMessages << "\n";
         return TESTFAILED;
     }
 
@@ -432,7 +432,7 @@ bool TaskSelfTest::testStatusAccess()
     TaskStatus testValue = TaskSelfTest::TaskStatus::On_Hold;
     if (verboseOutput)
     {
-        std::clog << "Running self test on set and get functions for TaskSelfTest::status\n";
+        std::cout << "Running self test on set and get functions for TaskSelfTest::status\n";
     }
 
     modified = false;
@@ -453,7 +453,7 @@ bool TaskSelfTest::testStatusAccess()
 
     if (verboseOutput)
     {
-        std::clog << "Self test on set and get functions for TaskSelfTest::status PASSED\n";
+        std::cout << "Self test on set and get functions for TaskSelfTest::status PASSED\n";
     }
 
     return testStatusAccessPassed;
@@ -504,7 +504,7 @@ bool TaskSelfTest::testParentTaskIDAccess()
     std::size_t testValue = 37;
     if (verboseOutput)
     {
-        std::clog << "Running self test on set and get functions for TaskSelfTest::parentTaskID\n";
+        std::cout << "Running self test on set and get functions for TaskSelfTest::parentTaskID\n";
     }
 
     modified = false;
@@ -526,7 +526,7 @@ bool TaskSelfTest::testParentTaskIDAccess()
 
     if (verboseOutput)
     {
-        std::clog << "Self test on set and get functions for TaskSelfTest::parentTaskID PASSED\n";
+        std::cout << "Self test on set and get functions for TaskSelfTest::parentTaskID PASSED\n";
     }
 
     return testParentTaskIDAccessPassed;
@@ -660,7 +660,7 @@ bool TaskSelfTest::testPriorityGroupCAccess()
 
     if (verboseOutput)
     {
-        std::clog << "Running self test on set and get functions for " << modelName << "::" << memberName << "\n";
+        std::cout << "Running self test on set and get functions for " << modelName << "::" << memberName << "\n";
     }
 
     modified = false;
@@ -688,7 +688,7 @@ bool TaskSelfTest::testPriorityGroupCAccess()
 
     if (verboseOutput)
     {
-        std::clog << "Self test on set and get functions for " << modelName << "::" << memberName << " PASSED\n";
+        std::cout << "Self test on set and get functions for " << modelName << "::" << memberName << " PASSED\n";
     }
 
     return true;
@@ -718,7 +718,7 @@ bool TaskSelfTest::testDependenciesAccess()
 
     if (verboseOutput)
     {
-        std::clog << "Running self test on add and get functions for " << modelName << "::dependencies\n";
+        std::cout << "Running self test on add and get functions for " << modelName << "::dependencies\n";
     }
 
     std::vector<std::size_t> testDependencies;
@@ -749,7 +749,7 @@ bool TaskSelfTest::testDependenciesAccess()
 
     if (verboseOutput)
     {
-        std::clog << "Self test on set and get functions for " << modelName << "::dependencoies PASSED\n";
+        std::cout << "Self test on set and get functions for " << modelName << "::dependencoies PASSED\n";
     }
 
     return true;
@@ -762,7 +762,7 @@ bool TaskSelfTest::testMarkComplete()
 {
     if (verboseOutput)
     {
-        std::clog << "Running self test for TaskSelfTest::markComplete\n";
+        std::cout << "Running self test for TaskSelfTest::markComplete\n";
     }
 
     modified = false;
@@ -793,7 +793,7 @@ bool TaskSelfTest::testMarkComplete()
 
     if (verboseOutput)
     {
-        std::clog << "Self test for TaskSelfTest::markComplete PASSED\n";
+        std::cout << "Self test for TaskSelfTest::markComplete PASSED\n";
     }
 
     return true;

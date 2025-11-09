@@ -56,11 +56,11 @@ TestStatus TestUserDBInterface::runPositivePathTests()
         }
         else
         {
-            std::clog << "Primary key for user: " << user->getLastName() << ", " << user->getFirstName() << " not set!\n";
-            std::clog << user->getAllErrorMessages() << "\n";
+            std::cout << "Primary key for user: " << user->getLastName() << ", " << user->getFirstName() << " not set!\n";
+            std::cout << user->getAllErrorMessages() << "\n";
             if (verboseOutput)
             {
-                std::clog << *user << "\n\n";
+                std::cout << *user << "\n\n";
             }
             allTestsPassed = false;
         }
@@ -126,7 +126,7 @@ bool TestUserDBInterface::testGetUserByLoginAndPassword(UserModel_shp insertedUs
 
     if (retrievedUser->selectByLoginAndPassword(testName, "NotThePassword"))
     {
-        std::clog << "retrievedUser->selectByLoginAndPassword(user->getLoginName()) Found user with fake password!\n";
+        std::cout << "retrievedUser->selectByLoginAndPassword(user->getLoginName()) Found user with fake password!\n";
         return false;
     }
 
@@ -214,7 +214,7 @@ bool TestUserDBInterface::loadTestUsersFromFile(UserListValues& userProfileTestD
 
     if (!userData.is_open())
     {
-        std::clog << "Can't open \"" << dataFileName << "\" for input!" << std::endl;
+        std::cout << "Can't open \"" << dataFileName << "\" for input!" << std::endl;
         return false;
     }
     
@@ -231,7 +231,7 @@ bool TestUserDBInterface::loadTestUsersFromFile(UserListValues& userProfileTestD
 
     if (userData.bad())
     {
-        std::clog << "Fatal error with file stream: \"" << dataFileName << "\"" << std::endl;
+        std::cout << "Fatal error with file stream: \"" << dataFileName << "\"" << std::endl;
         return false;
     }
 
@@ -255,7 +255,7 @@ bool TestUserDBInterface::testGetAllUsers(UserListValues userProfileTestData)
         std::cerr << "Get All users FAILED! " << allUsers.size() << "\n";
         if (userProfileTestData.size() != allUsers.size())
         {
-            std::clog << std::format("Size differs: userProfileTestData.size({}) != llUsers.size({})",
+            std::cout << std::format("Size differs: userProfileTestData.size({}) != llUsers.size({})",
                 userProfileTestData.size(), allUsers.size());
         }
         else
@@ -264,7 +264,7 @@ bool TestUserDBInterface::testGetAllUsers(UserListValues userProfileTestData)
             {
                 if (*userProfileTestData[userLisetIdx] != *allUsers[userLisetIdx])
                 {
-                    std::clog << std::format("Original Data [{}]", userLisetIdx) << "\n" <<
+                    std::cout << std::format("Original Data [{}]", userLisetIdx) << "\n" <<
                         *userProfileTestData[userLisetIdx] << std::format("Database Data [{}]", userLisetIdx) << 
                         "\n" << *allUsers[userLisetIdx] << "\n";
                 }
@@ -283,7 +283,7 @@ TestStatus TestUserDBInterface::testnegativePathNotModified()
     userNotModified->setUserID(1);
     if (!userNotModified->retrieve())
     {
-        std::clog << "User 1 not found in database!!\n" << userNotModified->getAllErrorMessages() << "\n";
+        std::cout << "User 1 not found in database!!\n" << userNotModified->getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 
@@ -299,7 +299,7 @@ TestStatus TestUserDBInterface::testNegativePathAlreadyInDataBase()
     userAlreadyInDB->setUserID(1);
     if (!userAlreadyInDB->retrieve())
     {
-        std::clog << "User 1 not found in database!!\n" << userAlreadyInDB->getAllErrorMessages() << "\n";
+        std::cout << "User 1 not found in database!!\n" << userAlreadyInDB->getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 

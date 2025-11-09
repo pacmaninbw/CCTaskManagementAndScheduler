@@ -70,8 +70,8 @@ TestStatus TestGoalModel::testInsertAndGetParent(TestGoalInput testGoal)
 
     if (!newGoal.insert())
     {
-        std::clog << "Insertion failed for Goal: " << newGoal << " :\n";
-        std::clog << newGoal.getAllErrorMessages() << "\n";
+        std::cout << "Insertion failed for Goal: " << newGoal << " :\n";
+        std::cout << newGoal.getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 
@@ -105,7 +105,7 @@ TestStatus TestGoalModel::testNegativePathAlreadyInDataBase()
     goalAlreadyInDB->setGoalId(1);
     if (!goalAlreadyInDB->retrieve())
     {
-        std::clog << "Goal 1 not found in database!!\n";
+        std::cout << "Goal 1 not found in database!!\n";
         return TESTFAILED;
     }
 
@@ -119,7 +119,7 @@ TestStatus TestGoalModel::testnegativePathNotModified()
     goalNotModified->setGoalId(1);
     if (!goalNotModified->retrieve())
     {
-        std::clog << "Goal 1 not found in database!!\n";
+        std::cout << "Goal 1 not found in database!!\n";
         return TESTFAILED;
     }
 
@@ -159,11 +159,11 @@ TestStatus TestGoalModel::negativePathMissingRequiredFields()
     testGoal.save();
     if (!testGoal.isInDataBase())
     {
-        std::clog << testGoal.getAllErrorMessages() << testGoal << "\n";
-        std::clog << "Primary key for user: " << testGoal.getGoalId() << " not set!\n";
+        std::cout << testGoal.getAllErrorMessages() << testGoal << "\n";
+        std::cout << "Primary key for user: " << testGoal.getGoalId() << " not set!\n";
         if (verboseOutput)
         {
-            std::clog << testGoal << "\n\n";
+            std::cout << testGoal << "\n\n";
         }
         testStatus = TESTFAILED;
     }

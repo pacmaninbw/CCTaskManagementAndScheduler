@@ -39,7 +39,7 @@ TestStatus TestTaskDBInterface::runAllTests()
     userOne->retrieve();
     if (!userOne->isInDataBase())
     {
-        std::clog << "Failed to retrieve userOne from DataBase!\n";
+        std::cout << "Failed to retrieve userOne from DataBase!\n";
         return TESTFAILED;
     }
 
@@ -195,12 +195,12 @@ TestStatus TestTaskDBInterface::testGetUnstartedTasks()
     {    
         if (verboseOutput)
         {
-            std::clog << std::format("Find unstarted tasks for user({}) PASSED!\n", userOne->getUserID());
-            std::clog << std::format("User {} has {} unstarted tasks\n",
+            std::cout << std::format("Find unstarted tasks for user({}) PASSED!\n", userOne->getUserID());
+            std::cout << std::format("User {} has {} unstarted tasks\n",
                 userOne->getUserID(), notStartedList.size());
             for (auto task: notStartedList)
             {
-                std::clog << *task << "\n";
+                std::cout << *task << "\n";
             }
         }
         return TESTPASSED; 
@@ -220,12 +220,12 @@ TestStatus TestTaskDBInterface::testGetActiveTasks()
     {    
         if (verboseOutput)
         {
-            std::clog << std::format("Find active tasks for user({}) PASSED!\n", userOne->getUserID());
-            std::clog << std::format("User {} has {} unstarted tasks\n",
+            std::cout << std::format("Find active tasks for user({}) PASSED!\n", userOne->getUserID());
+            std::cout << std::format("User {} has {} unstarted tasks\n",
                 userOne->getUserID(), activeTasks.size());
             for (auto task: activeTasks)
             {
-                std::clog << *task << "\n";
+                std::cout << *task << "\n";
             }
         }
         return TESTPASSED; 
@@ -271,7 +271,7 @@ bool TestTaskDBInterface::testTaskUpdate(TaskModel_shp changedTask)
 
     if (!changedTask->update())
     {
-        std::clog << std::format("taskDBInteface.update({}) failed execution!\n: {}\n",
+        std::cout << std::format("taskDBInteface.update({}) failed execution!\n: {}\n",
             taskID, changedTask->getAllErrorMessages());
         return false;
     }
@@ -353,7 +353,7 @@ bool TestTaskDBInterface::testGetCompletedList()
 
     if (!completedDate.ok())
     {
-        std::clog << "Parent Completion Date Not set\n" << *parentTask << "\n" << "completedDate " << completedDate << "\n";
+        std::cout << "Parent Completion Date Not set\n" << *parentTask << "\n" << "completedDate " << completedDate << "\n";
         return false;
     }
 
@@ -366,7 +366,7 @@ bool TestTaskDBInterface::testGetCompletedList()
         task->setStatus(newStatus);
         if (!task->update())
         {
-            std::clog << std::format("In testGetCompletedList Task Update Failed: \n{}\n", task->getAllErrorMessages());
+            std::cout << std::format("In testGetCompletedList Task Update Failed: \n{}\n", task->getAllErrorMessages());
             return false;
         }
     }
@@ -424,7 +424,7 @@ TestStatus TestTaskDBInterface::testnegativePathNotModified()
     taskNotModified->setTaskID(1);
     if (!taskNotModified->retrieve())
     {
-        std::clog << "Task 1 not found in database!!\n";
+        std::cout << "Task 1 not found in database!!\n";
         return TESTFAILED;
     }
 
@@ -440,7 +440,7 @@ TestStatus TestTaskDBInterface::testNegativePathAlreadyInDataBase()
     taskAlreadyInDB->setTaskID(1);
     if (!taskAlreadyInDB->retrieve())
     {
-        std::clog << "Task 1 not found in database!!\n";
+        std::cout << "Task 1 not found in database!!\n";
         return TESTFAILED;
     }
 
@@ -562,12 +562,12 @@ TestStatus TestTaskDBInterface::insertShouldPass(TaskModel_shp newTask)
     }
     else
     {
-        std::clog << newTask->getAllErrorMessages() << *newTask << "\n";
-        std::clog << "Primary key for task: " << newTask->getTaskID() << ", " << newTask->getDescription() <<
+        std::cout << newTask->getAllErrorMessages() << *newTask << "\n";
+        std::cout << "Primary key for task: " << newTask->getTaskID() << ", " << newTask->getDescription() <<
         " not set!\n";
         if (verboseOutput)
         {
-            std::clog << *newTask << "\n\n";
+            std::cout << *newTask << "\n\n";
         }
         return TESTFAILED;
     }

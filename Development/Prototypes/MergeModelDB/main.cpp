@@ -45,7 +45,7 @@ static bool runUnitTest(ModelSelfTest<A>* unitTest)
     {
         if (programOptions.verboseOutput)
         {
-            std::clog << std::format("{} PASSED Self Test\n", unitTest->getModelName());
+            std::cout << std::format("{} PASSED Self Test\n", unitTest->getModelName());
         }
     }
 
@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
             {
                 return EXIT_FAILURE;
             }
-            std::clog << "All tests Passed\n";
+            std::cout << "All tests Passed\n";
 			if (programOptions.enableExecutionTime)
 			{
                 stopWatch.stopTimerAndReport("Testing of Insertion and retrieval of users and tasks in MySQL database\n");
