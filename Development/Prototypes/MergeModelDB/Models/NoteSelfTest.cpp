@@ -109,22 +109,15 @@ bool NoteSelfTest::testAccessorFunctionsPassed()
     return allAccessorFunctionsPassed;
 }
 
-TestStatus NoteSelfTest::testExceptionHandling() noexcept
+std::vector<ExceptionTestElement> NoteSelfTest::initExceptionTests() noexcept
 {
-    selfTestResetAllValues();
-
-    bool globalForceException = forceException;
     std::vector<ExceptionTestElement> exceptionTests;
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionSelectByNoteID, this), "selectByUserID"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionInsert, this), "testExceptionInsert"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
 
-    TestStatus exceptionHandlingPassed = forceExceptionsLoop(exceptionTests);
-
-    forceException = globalForceException;
-
-    return exceptionHandlingPassed;
+    return exceptionTests;
 }
 
 bool NoteSelfTest::testExceptionInsert() noexcept
@@ -282,3 +275,4 @@ bool NoteSelfTest::diffTest() noexcept
 
     return *this == other;
 }
+

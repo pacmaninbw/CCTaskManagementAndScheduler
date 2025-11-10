@@ -46,7 +46,7 @@ private:
     bool testSeparateMajorAndMinorWithDotAccess() noexcept;
 
 
-    virtual TestStatus testExceptionHandling() noexcept override;
+    virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
     bool testExceptionSelectByLoginName() noexcept;
     bool testExceptionSelectByEmail() noexcept;
     bool testExceptionSelectByLoginAndPassword() noexcept;

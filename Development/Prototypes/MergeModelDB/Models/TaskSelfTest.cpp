@@ -102,12 +102,8 @@ void TaskSelfTest::selfTestResetAllValues()
     lastUpdate.reset();
 }
 
-TestStatus TaskSelfTest::testExceptionHandling() noexcept
+std::vector<ExceptionTestElement> TaskSelfTest::initExceptionTests() noexcept
 {
-    selfTestResetAllValues();
-
-    bool globalForceException = forceException;
-
     std::vector<ExceptionTestElement> exceptionTests;
     exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionSelectByTaskID, this), "selectByTaskID"});
     exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionSelectByDescriptionAndAssignedUser, this), "selectByDescriptionAndAssignedUser"});
@@ -123,11 +119,7 @@ TestStatus TaskSelfTest::testExceptionHandling() noexcept
     exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionFormatSelectTasksByAssignedIDandParentID, this),
         "formatSelectTasksByAssignedIDandParentID"});
 
-    TestStatus exceptionHandlingPassed = forceExceptionsLoop(exceptionTests);
-
-    forceException = globalForceException;
-
-    return exceptionHandlingPassed;
+    return exceptionTests;
 }
 
 bool TaskSelfTest::testExceptionSelectByTaskID()

@@ -250,11 +250,8 @@ bool UserSelfTest::testSeparateMajorAndMinorWithDotAccess() noexcept
         std::bind(&UserModel::isSeparatingPriorityWithDot, this));
 }
 
-TestStatus UserSelfTest::testExceptionHandling() noexcept
+std::vector<ExceptionTestElement> UserSelfTest::initExceptionTests() noexcept
 {
-    selfTestResetAllValues();
-
-    bool globalForceException = forceException;
     std::vector<ExceptionTestElement> exceptionTests;
     exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionSelectByUserID, this), "selectByUserID"});
     exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionSelectByFullName, this), "selectByFullName"});
@@ -266,11 +263,7 @@ TestStatus UserSelfTest::testExceptionHandling() noexcept
     exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
     exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
 
-    TestStatus exceptionHandlingPassed = forceExceptionsLoop(exceptionTests);
-
-    forceException = globalForceException;
-
-    return exceptionHandlingPassed;
+    return exceptionTests;
 }
 
 bool UserSelfTest::testExceptionSelectByLoginName() noexcept
@@ -424,3 +417,4 @@ bool UserSelfTest::diffTest()
     
     return *this == other;
 }
+

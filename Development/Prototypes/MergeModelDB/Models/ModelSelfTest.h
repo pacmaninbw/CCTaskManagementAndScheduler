@@ -22,6 +22,13 @@
 #include <type_traits>
 #include <vector>
 
+struct ExceptionTestElement
+{
+    std::function<bool(void)> testExceptionFunction;
+    std::string_view functionUnderTest;
+};
+
+
 template<class T>
 concept IsDerivedFrom = std::is_base_of_v<ModelDBInterface, T>;
 
@@ -123,13 +130,6 @@ protected:
         selfTestResetAllValues();
         std::cout << ModelDBInterface::modelName << "::testAccessorFunctionsPassed() NOT IMPLEMENTED Forced FAIL!\n";
         return false;
-    }
-
-    virtual TestStatus testExceptionHandling()
-    {
-        selfTestResetAllValues();
-        std::cout << ModelDBInterface::modelName << "::testExceptionHandling() NOT IMPLEMENTED Forced FAIL!\n";
-        return TESTFAILED;
     }
 
     virtual bool testSave()
@@ -304,11 +304,22 @@ protected:
         return TESTFAILED;
     }
 
-    struct ExceptionTestElement
+    virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept = 0;
+    virtual TestStatus testExceptionHandling() noexcept
     {
-        std::function<bool(void)> testExceptionFunction;
-        std::string_view functionUnderTest;
-    };
+        selfTestResetAllValues();
+
+        bool globalForceException = CoreDBInterface::forceException;
+
+        std::vector<ExceptionTestElement> exceptionTests = initExceptionTests();
+
+        TestStatus exceptionHandlingPassed = forceExceptionsLoop(exceptionTests);
+
+        CoreDBInterface::forceException = globalForceException;
+
+        return exceptionHandlingPassed;
+    }
+
 
     virtual TestStatus forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) noexcept
     {

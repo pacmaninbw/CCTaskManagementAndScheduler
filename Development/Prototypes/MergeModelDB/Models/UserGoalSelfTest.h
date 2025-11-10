@@ -34,7 +34,7 @@ private:
     bool testParentIdAccess() noexcept;
     bool testPriorityAccess() noexcept;
 
-    virtual TestStatus testExceptionHandling() noexcept override;
+    virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
     virtual bool testExceptionInsert() noexcept override;
     virtual bool testExceptionUpdate() noexcept override;
     virtual bool testExceptionRetrieve() noexcept override;

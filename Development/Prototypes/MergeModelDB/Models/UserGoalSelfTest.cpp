@@ -156,11 +156,9 @@ bool UserGoalSelfTest::testPriorityAccess() noexcept
         std::bind(&UserGoalModel::getPriority, this));
 }
 
-TestStatus UserGoalSelfTest::testExceptionHandling() noexcept
-{
-    selfTestResetAllValues();
 
-    bool globalForceException = forceException;
+std::vector<ExceptionTestElement> UserGoalSelfTest::initExceptionTests() noexcept
+{
     std::vector<ExceptionTestElement> exceptionTests;
     exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionSelectByGoalID, this), "selectByGoalID"});
     exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionSelectByUserIDAndDescription, this),
@@ -179,11 +177,7 @@ TestStatus UserGoalSelfTest::testExceptionHandling() noexcept
     exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
     exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
 
-    TestStatus exceptionHandlingPassed = forceExceptionsLoop(exceptionTests);
-
-    forceException = globalForceException;
-
-    return exceptionHandlingPassed;
+    return exceptionTests;
 }
 
 bool UserGoalSelfTest::testExceptionInsert() noexcept
