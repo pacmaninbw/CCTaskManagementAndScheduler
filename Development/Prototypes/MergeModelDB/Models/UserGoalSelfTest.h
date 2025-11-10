@@ -20,7 +20,7 @@ class UserGoalSelfTest : public ModelSelfTest<UserGoalModel>
 public:
     UserGoalSelfTest();
     ~UserGoalSelfTest() = default;
-    virtual bool runSelfTest() override;
+    virtual TestStatus runSelfTest() override;
 
 private:
     
@@ -34,7 +34,7 @@ private:
     bool testParentIdAccess() noexcept;
     bool testPriorityAccess() noexcept;
 
-    virtual bool testExceptionHandling() noexcept override;
+    virtual TestStatus testExceptionHandling() noexcept override;
     virtual bool testExceptionInsert() noexcept override;
     virtual bool testExceptionUpdate() noexcept override;
     virtual bool testExceptionRetrieve() noexcept override;

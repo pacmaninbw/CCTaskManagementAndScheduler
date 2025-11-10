@@ -19,7 +19,7 @@ TaskSelfTest::TaskSelfTest()
 {
 }
 
-bool TaskSelfTest::runSelfTest()
+TestStatus TaskSelfTest::runSelfTest()
 {
     inSelfTest = true;
     bool allSelfTestsPassed = true;
@@ -29,7 +29,7 @@ bool TaskSelfTest::runSelfTest()
         std::cout <<  std::format("Running {} Self Test\n", modelName);
     }
 
-    if (!testExceptionHandling())
+    if (testExceptionHandling() == TESTFAILED)
     {
         std::cerr << "Exception handling FAILED!\n";
         allSelfTestsPassed = false;
@@ -68,13 +68,13 @@ bool TaskSelfTest::runSelfTest()
     if (allSelfTestsPassed)
     {
         std::cout <<  std::format("{} Self Test {}\n", modelName, "PASSED");
+        return TESTPASSED;
     }
     else
     {
         std::cerr <<  std::format("{} Self Test {}\n", modelName, "FAILED");
+        return TESTFAILED;
     }
-
-    return allSelfTestsPassed;
 }
 
 void TaskSelfTest::selfTestResetAllValues()
@@ -102,11 +102,10 @@ void TaskSelfTest::selfTestResetAllValues()
     lastUpdate.reset();
 }
 
-bool TaskSelfTest::testExceptionHandling() noexcept
+TestStatus TaskSelfTest::testExceptionHandling() noexcept
 {
     selfTestResetAllValues();
 
-    bool exceptionHandlingPassed = true;
     bool globalForceException = forceException;
 
     std::vector<ExceptionTestElement> exceptionTests;
@@ -124,10 +123,7 @@ bool TaskSelfTest::testExceptionHandling() noexcept
     exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionFormatSelectTasksByAssignedIDandParentID, this),
         "formatSelectTasksByAssignedIDandParentID"});
 
-    if (!forceExceptionsLoop(exceptionTests))
-    {
-        exceptionHandlingPassed = false;
-    }
+    TestStatus exceptionHandlingPassed = forceExceptionsLoop(exceptionTests);
 
     forceException = globalForceException;
 

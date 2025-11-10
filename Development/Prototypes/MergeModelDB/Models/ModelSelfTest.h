@@ -39,7 +39,7 @@ public:
  * provide any additional tests. This default version will provide roughly 80%
  * test coverage. Improved logging will also be achieved by override.
  */    
-    virtual bool runSelfTest()
+    virtual TestStatus runSelfTest()
     {
         CoreDBInterface::inSelfTest = true;
         CoreDBInterface::verboseOutput = true;
@@ -79,7 +79,7 @@ public:
             allSelfTestsPassed = false;
         }
 
-        if (!testExceptionHandling())
+        if (testExceptionHandling()!= TESTPASSED)
         {
             std::cerr  << ModelDBInterface::modelName << "::runSelfTest: Exception handling FAILED!\n";
             allSelfTestsPassed = false;
@@ -99,7 +99,7 @@ public:
         CoreDBInterface::inSelfTest = false;
         CoreDBInterface::verboseOutput = false;
         
-        return allSelfTestsPassed;
+        return allSelfTestsPassed? TESTPASSED : TESTFAILED;
     }
 
 protected:
@@ -125,11 +125,11 @@ protected:
         return false;
     }
 
-    virtual bool testExceptionHandling()
+    virtual TestStatus testExceptionHandling()
     {
         selfTestResetAllValues();
         std::cout << ModelDBInterface::modelName << "::testExceptionHandling() NOT IMPLEMENTED Forced FAIL!\n";
-        return false;
+        return TESTFAILED;
     }
 
     virtual bool testSave()
@@ -310,9 +310,9 @@ protected:
         std::string_view functionUnderTest;
     };
 
-    virtual bool forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) noexcept
+    virtual TestStatus forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) noexcept
     {
-        bool exceptionHandlingPassed = true;
+        TestStatus testAllExceptionHandling = TESTPASSED;
         
         try
         {
@@ -322,7 +322,7 @@ protected:
                 {
                     std::cerr << std::format("{}::{} returned true with exception: Exception Test Failed\n",
                         ModelDBInterface::modelName, exceptionTest.functionUnderTest);
-                    exceptionHandlingPassed = false;
+                    testAllExceptionHandling = TESTFAILED;
                 }
             }
         }
@@ -331,10 +331,10 @@ protected:
         {
             std::cerr << ModelDBInterface::modelName << "::testExceptionHandling():: Caught Unhandled Exception!! Test FAILED!\n";
             std::cerr << uncaughtException.what() << "\n";
-            exceptionHandlingPassed = false;
+            testAllExceptionHandling = TESTFAILED;
         }
 
-        return exceptionHandlingPassed;
+        return testAllExceptionHandling;
     }
 
     TestStatus testCommonInsertFailurePath()

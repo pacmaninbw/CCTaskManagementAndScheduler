@@ -15,7 +15,7 @@ UserGoalSelfTest::UserGoalSelfTest()
 {
 }
 
-bool UserGoalSelfTest::runSelfTest()
+TestStatus UserGoalSelfTest::runSelfTest()
 {
     inSelfTest = true;
     bool allSelfTestsPassed = true;
@@ -25,7 +25,7 @@ bool UserGoalSelfTest::runSelfTest()
         std::cout <<  std::format("Running {} Self Test\n", modelName);
     }
 
-    if (!testExceptionHandling())
+    if (testExceptionHandling() == TESTFAILED)
     {
         std::cerr << "Exception handling FAILED!\n";
         allSelfTestsPassed = false;
@@ -69,13 +69,13 @@ bool UserGoalSelfTest::runSelfTest()
     if (allSelfTestsPassed)
     {
         std::cout <<  std::format("{} Self Test {}\n", modelName, "PASSED");
+        return TESTPASSED;
     }
     else
     {
         std::cerr <<  std::format("{} Self Test {}\n", modelName, "FAILED");
+        return TESTFAILED;
     }
-
-    return allSelfTestsPassed;
 }
 
 void UserGoalSelfTest::selfTestResetAllValues()
@@ -156,11 +156,10 @@ bool UserGoalSelfTest::testPriorityAccess() noexcept
         std::bind(&UserGoalModel::getPriority, this));
 }
 
-bool UserGoalSelfTest::testExceptionHandling() noexcept
+TestStatus UserGoalSelfTest::testExceptionHandling() noexcept
 {
     selfTestResetAllValues();
 
-    bool exceptionHandlingPassed = true;
     bool globalForceException = forceException;
     std::vector<ExceptionTestElement> exceptionTests;
     exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionSelectByGoalID, this), "selectByGoalID"});
@@ -180,10 +179,7 @@ bool UserGoalSelfTest::testExceptionHandling() noexcept
     exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
     exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
 
-    if (!forceExceptionsLoop(exceptionTests))
-    {
-        exceptionHandlingPassed = false;
-    }
+    TestStatus exceptionHandlingPassed = forceExceptionsLoop(exceptionTests);
 
     forceException = globalForceException;
 

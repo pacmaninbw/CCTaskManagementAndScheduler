@@ -20,8 +20,7 @@ class NoteSelfTest : public ModelSelfTest<NoteModel>
 public:
     NoteSelfTest();
     ~NoteSelfTest() = default;
-    virtual bool runSelfTest() override;
-
+    virtual TestStatus runSelfTest() override;
 
 private:
     
@@ -29,7 +28,7 @@ private:
     virtual void selfTestResetAllValues() override;
     virtual bool testAccessorFunctionsPassed() override;
 
-    virtual bool testExceptionHandling() noexcept override;
+    virtual TestStatus testExceptionHandling() noexcept override;
     virtual bool testExceptionInsert() noexcept override;
     virtual bool testExceptionUpdate() noexcept override;
     virtual bool testExceptionRetrieve() noexcept override;

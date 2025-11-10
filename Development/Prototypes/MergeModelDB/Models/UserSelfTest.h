@@ -21,7 +21,7 @@ class UserSelfTest : public ModelSelfTest<UserModel>
 public:
     UserSelfTest();
     ~UserSelfTest() = default;
-    virtual bool runSelfTest() override;
+    virtual TestStatus runSelfTest() override;
 
 
 private:
@@ -46,7 +46,7 @@ private:
     bool testSeparateMajorAndMinorWithDotAccess() noexcept;
 
 
-    virtual bool testExceptionHandling() noexcept override;
+    virtual TestStatus testExceptionHandling() noexcept override;
     bool testExceptionSelectByLoginName() noexcept;
     bool testExceptionSelectByEmail() noexcept;
     bool testExceptionSelectByLoginAndPassword() noexcept;

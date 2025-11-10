@@ -21,14 +21,14 @@ class TaskSelfTest : public ModelSelfTest<TaskModel>
 public:
     TaskSelfTest();
     virtual ~TaskSelfTest() = default;
-    virtual bool runSelfTest() override;
+    virtual TestStatus runSelfTest() override;
 
 private:
 /*
  * Unit Testing
  */
     virtual void selfTestResetAllValues() override;
-    virtual bool testExceptionHandling() noexcept override;
+    virtual TestStatus testExceptionHandling() noexcept override;
     bool testExceptionSelectByTaskID();
     bool testExceptionSelectByDescriptionAndAssignedUser();
     bool testExceptionFormatSelectActiveTasksForAssignedUser();

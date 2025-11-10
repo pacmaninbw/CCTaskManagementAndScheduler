@@ -28,9 +28,10 @@
 ProgramOptions programOptions;
 
 template <class A>
-static bool runUnitTest(ModelSelfTest<A>* unitTest)
+static TestStatus runUnitTest(ModelSelfTest<A>* unitTest)
 {
-    if (!unitTest->runSelfTest())
+    TestStatus thisTestStatus = unitTest->runSelfTest();
+    if (thisTestStatus != TESTPASSED)
     {
         std::string failMessage = std::format("*** {} FAILED Self Test ***", unitTest->getModelName());
         std::cerr << failMessage << "\n";
@@ -39,7 +40,6 @@ static bool runUnitTest(ModelSelfTest<A>* unitTest)
             std::runtime_error firstFail(failMessage);
             throw firstFail;
         }
-        return false;
     }
     else
     {
@@ -49,35 +49,35 @@ static bool runUnitTest(ModelSelfTest<A>* unitTest)
         }
     }
 
-    return true;
+    return thisTestStatus;
 }
 
-static bool runAllUnitTests()
+static TestStatus runAllUnitTests()
 {
-    bool allUnintTestsPassed = true;
+    TestStatus allUnintTestsPassed = TESTPASSED;
 
     UserSelfTest userTest;
-    if (!runUnitTest(&userTest))
+    if (runUnitTest(&userTest) == TESTFAILED)
     {
-        allUnintTestsPassed = false;
+        allUnintTestsPassed = TESTFAILED;
     }
     
     TaskSelfTest taskTest;
-    if (!runUnitTest(&taskTest))
+    if (runUnitTest(&taskTest) == TESTFAILED)
     {
-        allUnintTestsPassed = false;
+        allUnintTestsPassed = TESTFAILED;
     }
 
     UserGoalSelfTest goalTest;
-    if (!runUnitTest(&goalTest))
+    if (runUnitTest(&goalTest) == TESTFAILED)
     {
-        allUnintTestsPassed = false;
+        allUnintTestsPassed = TESTFAILED;
     }
 
     NoteSelfTest noteTest;
-    if (!runUnitTest(&noteTest))
+    if (runUnitTest(&noteTest) == TESTFAILED)
     {
-        allUnintTestsPassed = false;
+        allUnintTestsPassed = TESTFAILED;
     }
 
     return allUnintTestsPassed;
@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
 			programOptions = *progOptions;
             UtilityTimer stopWatch;
 
-            if (!runAllUnitTests())
+            if (runAllUnitTests() == TESTFAILED)
             {
                 if (programOptions.quitFirstFail)
                 {

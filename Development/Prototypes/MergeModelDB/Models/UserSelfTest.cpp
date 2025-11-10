@@ -19,7 +19,7 @@ UserSelfTest::UserSelfTest()
 {
 }
 
-bool UserSelfTest::runSelfTest()
+TestStatus UserSelfTest::runSelfTest()
 {
     inSelfTest = true;
     bool allSelfTestsPassed = true;
@@ -29,7 +29,7 @@ bool UserSelfTest::runSelfTest()
         std::cout <<  std::format("Running {} Self Test\n", modelName);
     }
 
-    if (!testExceptionHandling())
+    if (testExceptionHandling() == TESTFAILED)
     {
         std::cerr << "Exception handling FAILED!\n";
         allSelfTestsPassed = false;
@@ -73,13 +73,13 @@ bool UserSelfTest::runSelfTest()
     if (allSelfTestsPassed)
     {
         std::cout <<  std::format("{} Self Test {}\n", modelName, "PASSED");
+        return TESTPASSED;
     }
     else
     {
         std::cerr <<  std::format("{} Self Test {}\n", modelName, "FAILED");
+        return TESTFAILED;
     }
-
-    return allSelfTestsPassed;
 }
 
 void UserSelfTest::selfTestResetAllValues()
@@ -250,11 +250,10 @@ bool UserSelfTest::testSeparateMajorAndMinorWithDotAccess() noexcept
         std::bind(&UserModel::isSeparatingPriorityWithDot, this));
 }
 
-bool UserSelfTest::testExceptionHandling() noexcept
+TestStatus UserSelfTest::testExceptionHandling() noexcept
 {
     selfTestResetAllValues();
 
-    bool exceptionHandlingPassed = true;
     bool globalForceException = forceException;
     std::vector<ExceptionTestElement> exceptionTests;
     exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionSelectByUserID, this), "selectByUserID"});
@@ -267,10 +266,7 @@ bool UserSelfTest::testExceptionHandling() noexcept
     exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
     exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
 
-    if (!forceExceptionsLoop(exceptionTests))
-    {
-        exceptionHandlingPassed = false;
-    }
+    TestStatus exceptionHandlingPassed = forceExceptionsLoop(exceptionTests);
 
     forceException = globalForceException;
 

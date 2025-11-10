@@ -14,7 +14,7 @@ NoteSelfTest::NoteSelfTest()
 {
 }
 
-bool NoteSelfTest::runSelfTest()
+TestStatus NoteSelfTest::runSelfTest()
 {
     inSelfTest = true;
     bool allSelfTestsPassed = true;
@@ -24,7 +24,7 @@ bool NoteSelfTest::runSelfTest()
         std::cout <<  std::format("Running {} Self Test\n", modelName);
     }
 
-    if (!testExceptionHandling())
+    if (testExceptionHandling() == TESTFAILED)
     {
         std::cerr << "Exception handling FAILED!\n";
         allSelfTestsPassed = false;
@@ -68,13 +68,13 @@ bool NoteSelfTest::runSelfTest()
     if (allSelfTestsPassed)
     {
         std::cout <<  std::format("{} Self Test {}\n", modelName, "PASSED");
+        return TESTPASSED;
     }
     else
     {
         std::cerr <<  std::format("{} Self Test {}\n", modelName, "FAILED");
+        return TESTFAILED;
     }
-
-    return allSelfTestsPassed;
 }
 
 void NoteSelfTest::selfTestResetAllValues()
@@ -109,11 +109,10 @@ bool NoteSelfTest::testAccessorFunctionsPassed()
     return allAccessorFunctionsPassed;
 }
 
-bool NoteSelfTest::testExceptionHandling() noexcept
+TestStatus NoteSelfTest::testExceptionHandling() noexcept
 {
     selfTestResetAllValues();
 
-    bool exceptionHandlingPassed = true;
     bool globalForceException = forceException;
     std::vector<ExceptionTestElement> exceptionTests;
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionSelectByNoteID, this), "selectByUserID"});
@@ -121,10 +120,7 @@ bool NoteSelfTest::testExceptionHandling() noexcept
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
 
-    if (!forceExceptionsLoop(exceptionTests))
-    {
-        exceptionHandlingPassed = false;
-    }
+    TestStatus exceptionHandlingPassed = forceExceptionsLoop(exceptionTests);
 
     forceException = globalForceException;
 
