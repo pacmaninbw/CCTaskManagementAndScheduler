@@ -165,26 +165,9 @@ protected:
         return testPassed;
     }
 
-    virtual bool testExceptionInsert()
-    {
-        selfTestResetAllValues();
-        std::cerr << std::format("{}::testExceptionInsert() NOT IMPLEMENTED! Test FAILED\n", ModelDBInterface::modelName);
-        return false;
-    }
-    
-    virtual bool testExceptionUpdate()
-    {
-        selfTestResetAllValues();
-        std::cerr << std::format("{}::testExceptionUpdate() NOT IMPLEMENTED! Test FAILED\n", ModelDBInterface::modelName);
-        return false;
-    }
-    
-    virtual bool testExceptionRetrieve()
-    {
-        selfTestResetAllValues();
-        ModelDBInterface::primaryKey = 1;
-        return ModelDBInterface::retrieve() != true;
-    }
+    virtual bool testExceptionInsert() = 0;
+    virtual bool testExceptionUpdate() = 0;    
+    virtual bool testExceptionRetrieve() = 0;
     
     virtual bool testTextFieldManipulation()
     {
@@ -297,12 +280,7 @@ protected:
         return TESTPASSED;
     }
 
-    virtual TestStatus testAllInsertFailures()
-    {
-        selfTestResetAllValues();
-        std::cerr << std::format("{}::testAllInsertFailures() NOT IMPLEMENTED! Test FAILED\n", ModelDBInterface::modelName);
-        return TESTFAILED;
-    }
+    virtual TestStatus testAllInsertFailures() = 0;
 
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept = 0;
     virtual TestStatus testExceptionHandling() noexcept
