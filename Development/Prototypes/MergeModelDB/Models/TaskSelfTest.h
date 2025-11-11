@@ -21,7 +21,6 @@ class TaskSelfTest : public ModelSelfTest<TaskModel>
 public:
     TaskSelfTest();
     virtual ~TaskSelfTest() = default;
-    virtual TestStatus runSelfTest() override;
 
 private:
 /*
@@ -40,6 +39,7 @@ private:
     virtual bool testExceptionRetrieve() noexcept override;
     virtual TestStatus testAllInsertFailures() override;
     virtual TestStatus testEqualityOperator() noexcept override;
+    virtual void testOutput() noexcept override;
 
     virtual TestStatus testAttributeAccessFunctions() noexcept override;
     bool testTaskIdAccesss();

@@ -20,7 +20,6 @@ class UserGoalSelfTest : public ModelSelfTest<UserGoalModel>
 public:
     UserGoalSelfTest();
     ~UserGoalSelfTest() = default;
-    virtual TestStatus runSelfTest() override;
 
 private:
     
@@ -48,6 +47,7 @@ private:
 
     virtual TestStatus testAllInsertFailures() override;
     virtual TestStatus testEqualityOperator() noexcept override;
+    virtual void testOutput() noexcept override;
 };
 
 #endif // USERGOALSELFTEST_H_

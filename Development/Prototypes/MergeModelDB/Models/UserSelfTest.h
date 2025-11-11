@@ -21,7 +21,6 @@ class UserSelfTest : public ModelSelfTest<UserModel>
 public:
     UserSelfTest();
     ~UserSelfTest() = default;
-    virtual TestStatus runSelfTest() override;
 
 
 private:
@@ -58,7 +57,8 @@ private:
     virtual bool testExceptionRetrieve() noexcept override;
 
     virtual TestStatus testAllInsertFailures() override;
-    TestStatus testEqualityOperator() noexcept override;
+    virtual TestStatus testEqualityOperator() noexcept override;
+    virtual void testOutput() noexcept override;
 
 };
 

@@ -19,63 +19,6 @@ UserSelfTest::UserSelfTest()
 {
 }
 
-TestStatus UserSelfTest::runSelfTest()
-{
-    inSelfTest = true;
-    bool allSelfTestsPassed = true;
-
-    std::cout <<  std::format("\nRunning {} Self Test\n", modelName);
-
-    if (testExceptionHandling() == TESTFAILED)
-    {
-        std::cerr << "Exception handling FAILED!\n";
-        allSelfTestsPassed = false;
-    }
-    
-    if (!testSave())
-    {
-        allSelfTestsPassed = false;
-    }
-
-    if (testAttributeAccessFunctions() == TESTFAILED)
-    {
-        std::cerr << "One or more get or set functions FAILED!\n";
-        allSelfTestsPassed = false;
-    }
-
-    if (testEqualityOperator() == TESTFAILED)
-    {
-        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", modelName);
-        allSelfTestsPassed = false;
-    }
-    
-    std::cout << "Test Output: " << *this << "\n";
-
-    if (testAllInsertFailures() != TESTPASSED)
-    {
-        allSelfTestsPassed = false;
-        std::cerr << "Test of all insertion failures FAILED!\n";
-    }
-
-    if (!testTextFieldManipulation())
-    {
-        allSelfTestsPassed = false;
-    }
-
-    inSelfTest = false;
-
-    if (allSelfTestsPassed)
-    {
-        std::cout <<  std::format("{} Self Test {}\n", modelName, "PASSED");
-        return TESTPASSED;
-    }
-    else
-    {
-        std::cerr <<  std::format("{} Self Test {}\n", modelName, "FAILED");
-        return TESTFAILED;
-    }
-}
-
 void UserSelfTest::selfTestResetAllValues()
 {
     ModelSelfTest::selfTestResetAllValues();
@@ -412,3 +355,7 @@ TestStatus UserSelfTest::testEqualityOperator() noexcept
     return (*this == other)? TESTPASSED: TESTFAILED;
 }
 
+void UserSelfTest::testOutput() noexcept
+{
+    std::cout << "Test Output: " << *this << "\n";
+}
