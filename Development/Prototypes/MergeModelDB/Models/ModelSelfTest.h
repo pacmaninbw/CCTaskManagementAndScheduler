@@ -28,7 +28,6 @@ struct ExceptionTestElement
     std::string_view functionUnderTest;
 };
 
-
 template<class T>
 concept IsDerivedFrom = std::is_base_of_v<ModelDBInterface, T>;
 
@@ -36,6 +35,19 @@ template<class T>
 requires IsDerivedFrom<T>
 class ModelSelfTest : public T
 {
+protected:
+/*****
+ * These methods must be implemented.
+ * The tests they implement require the details of the particular model being tested.
+ */
+    virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept = 0;
+    virtual bool testExceptionInsert() = 0;     // Should be added too the vector returned by initExceptionTests()
+    virtual bool testExceptionUpdate() = 0;     // Should be added too the vector returned by initExceptionTests()
+    virtual bool testExceptionRetrieve() = 0;   // Should be added too the vector returned by initExceptionTests()
+    virtual TestStatus testAllInsertFailures() = 0;
+    virtual bool testAccessorFunctionsPassed() = 0;
+    virtual TestStatus testEqualityOperator() noexcept = 0;
+
 public:
 
     ModelSelfTest() : T() { }
@@ -109,7 +121,6 @@ public:
         return allSelfTestsPassed? TESTPASSED : TESTFAILED;
     }
 
-protected:
 /*****
  * ModelSelfTest::selfTestResetAllValues() should be called by any override.
  * The override should provide resets for any of the model under tests attributes.
@@ -123,13 +134,6 @@ protected:
  */
         CoreDBInterface::format_opts.reset();
         CoreDBInterface::errorMessages.clear();
-    }
-
-    virtual bool testAccessorFunctionsPassed()
-    {
-        selfTestResetAllValues();
-        std::cout << ModelDBInterface::modelName << "::testAccessorFunctionsPassed() NOT IMPLEMENTED Forced FAIL!\n";
-        return false;
     }
 
     virtual bool testSave()
@@ -165,10 +169,6 @@ protected:
         return testPassed;
     }
 
-    virtual bool testExceptionInsert() = 0;
-    virtual bool testExceptionUpdate() = 0;    
-    virtual bool testExceptionRetrieve() = 0;
-    
     virtual bool testTextFieldManipulation()
     {
         bool textFieldManipulationPassed = true;
@@ -280,11 +280,13 @@ protected:
         return TESTPASSED;
     }
 
-    virtual TestStatus testAllInsertFailures() = 0;
-
-    virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept = 0;
     virtual TestStatus testExceptionHandling() noexcept
     {
+        if (ModelDBInterface::verboseOutput)
+        {
+            std::cout << "\n\nRunning Exception Handling Test Cases\n";
+        }
+
         selfTestResetAllValues();
 
         bool globalForceException = CoreDBInterface::forceException;
@@ -295,9 +297,13 @@ protected:
 
         CoreDBInterface::forceException = globalForceException;
 
+        if (ModelDBInterface::verboseOutput)
+        {
+            std::cout << "\n\n";
+        }
+
         return exceptionHandlingPassed;
     }
-
 
     virtual TestStatus forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) noexcept
     {
@@ -369,7 +375,6 @@ protected:
 
         return TESTPASSED;
     }
-
     
     template <typename U>
     bool testAccessorFunctions(U testValue, U* member, std::string_view memberName, std::function<void(U)>setFunct, std::function<U(void)>getFunct) noexcept
@@ -593,7 +598,6 @@ protected:
 
         return true;
     }
-
 
 };
 
