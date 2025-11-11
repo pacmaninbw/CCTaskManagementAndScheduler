@@ -24,10 +24,7 @@ TestStatus TaskSelfTest::runSelfTest()
     inSelfTest = true;
     bool allSelfTestsPassed = true;
 
-    if (verboseOutput)
-    {
-        std::cout <<  std::format("\nRunning {} Self Test\n", modelName);
-    }
+    std::cout <<  std::format("\nRunning {} Self Test\n", modelName);
 
     if (testExceptionHandling() == TESTFAILED)
     {
@@ -52,10 +49,7 @@ TestStatus TaskSelfTest::runSelfTest()
         allSelfTestsPassed = false;
     }
 
-    if (verboseOutput)
-    {
-        std::cout << "Test Output: " << *this << "\n";
-    }
+    std::cout << "Test Output: " << *this << "\n";
 
     if (testAllInsertFailures() != TESTPASSED)
     {
@@ -319,7 +313,7 @@ TestStatus TaskSelfTest::testAllInsertFailures()
 
     if (verboseOutput)
     {
-        std::cout << "TaskSelfTest::testAllInsertFailures() before successful insert *this = " << *this << "\n";
+        std::cout << std::format("{}::{} before successful insert this = \n", modelName, __func__) << *this << "\n";
     }
 
     if (!insert())
@@ -425,10 +419,8 @@ bool TaskSelfTest::testStatusAccess()
 {
     bool testStatusAccessPassed = true;
     TaskStatus testValue = TaskSelfTest::TaskStatus::On_Hold;
-    if (verboseOutput)
-    {
-        std::cout << "Running self test on set and get functions for TaskSelfTest::status\n";
-    }
+
+    std::cout << "Running self test on set and get functions for TaskSelfTest::status\n";
 
     modified = false;
     setStatus(testValue);
@@ -446,10 +438,7 @@ bool TaskSelfTest::testStatusAccess()
         testStatusAccessPassed = false;
     }
 
-    if (verboseOutput)
-    {
-        std::cout << "Self test on set and get functions for TaskSelfTest::status PASSED\n";
-    }
+    std::cout << "Self test on set and get functions for TaskSelfTest::status PASSED\n";
 
     return testStatusAccessPassed;
 }
@@ -497,10 +486,8 @@ bool TaskSelfTest::testParentTaskIDAccess()
 {
     bool testParentTaskIDAccessPassed = true;
     std::size_t testValue = 37;
-    if (verboseOutput)
-    {
-        std::cout << "Running self test on set and get functions for TaskSelfTest::parentTaskID\n";
-    }
+
+    std::cout << "Running self test on set and get functions for TaskSelfTest::parentTaskID\n";
 
     modified = false;
     setParentTaskID(testValue);
@@ -519,9 +506,13 @@ bool TaskSelfTest::testParentTaskIDAccess()
         testParentTaskIDAccessPassed = false;
     }
 
-    if (verboseOutput)
+    if (testParentTaskIDAccessPassed)
     {
         std::cout << "Self test on set and get functions for TaskSelfTest::parentTaskID PASSED\n";
+    }
+    else
+    {
+        std::cout << "Self test on set and get functions for TaskSelfTest::parentTaskID FAILED\n";
     }
 
     return testParentTaskIDAccessPassed;
@@ -653,10 +644,7 @@ bool TaskSelfTest::testPriorityGroupCAccess()
     unsigned int expectedInternalValue = testValue - 'A' + 1;
     std::string_view memberName("Priority Group Character");
 
-    if (verboseOutput)
-    {
-        std::cout << "Running self test on set and get functions for " << modelName << "::" << memberName << "\n";
-    }
+    std::cout << "Running self test on set and get functions for " << modelName << "::" << memberName << "\n";
 
     modified = false;
 
@@ -681,10 +669,7 @@ bool TaskSelfTest::testPriorityGroupCAccess()
         return false;
     }
 
-    if (verboseOutput)
-    {
-        std::cout << "Self test on set and get functions for " << modelName << "::" << memberName << " PASSED\n";
-    }
+    std::cout << "Self test on set and get functions for " << modelName << "::" << memberName << " PASSED\n";
 
     return true;
 }
@@ -711,10 +696,7 @@ bool TaskSelfTest::testDependenciesAccess()
 {
     modified = false;
 
-    if (verboseOutput)
-    {
-        std::cout << "Running self test on add and get functions for " << modelName << "::dependencies\n";
-    }
+    std::cout << "Running self test on add and get functions for " << modelName << "::dependencies\n";
 
     std::vector<std::size_t> testDependencies;
     testDependencies.push_back(1);
@@ -740,12 +722,10 @@ bool TaskSelfTest::testDependenciesAccess()
     if (getDependencies() != testDependencies)
     {
         std::cerr << "Self Test for " << modelName << "::getDependencies()" << " FAILED to get values\n";
+        return false;
     }
 
-    if (verboseOutput)
-    {
-        std::cout << "Self test on set and get functions for " << modelName << "::dependencoies PASSED\n";
-    }
+    std::cout << "Self test on set and get functions for " << modelName << "::dependencoies PASSED\n";
 
     return true;
 }
@@ -755,10 +735,7 @@ bool TaskSelfTest::testDependenciesAccess()
  */
 bool TaskSelfTest::testMarkComplete()
 {
-    if (verboseOutput)
-    {
-        std::cout << "Running self test for TaskSelfTest::markComplete\n";
-    }
+    std::cout << "Running self test for TaskSelfTest::markComplete\n";
 
     modified = false;
     status.reset();
@@ -786,10 +763,7 @@ bool TaskSelfTest::testMarkComplete()
         return false;
     }
 
-    if (verboseOutput)
-    {
-        std::cout << "Self test for TaskSelfTest::markComplete PASSED\n";
-    }
+    std::cout << "Self test for TaskSelfTest::markComplete PASSED\n";
 
     return true;
 }

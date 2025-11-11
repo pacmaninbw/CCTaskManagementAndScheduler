@@ -64,10 +64,7 @@ public:
         CoreDBInterface::verboseOutput = true;
         bool allSelfTestsPassed = true;
 
-        if (CoreDBInterface::verboseOutput)
-        {
-            std::cout << "Running " << ModelDBInterface::modelName << " Self Test\n";
-        }
+        std::cout << "Running " << ModelDBInterface::modelName << " Self Test\n";
 
         if (testCommonInsertFailurePath() != TESTPASSED)
         {
@@ -282,10 +279,7 @@ public:
 
     virtual TestStatus testExceptionHandling() noexcept
     {
-        if (ModelDBInterface::verboseOutput)
-        {
-            std::cout << "\n\nRunning Exception Handling Test Cases\n";
-        }
+        std::cout << "\n\nRunning Exception Handling Test Cases\n";
 
         selfTestResetAllValues();
 
@@ -297,10 +291,7 @@ public:
 
         CoreDBInterface::forceException = globalForceException;
 
-        if (ModelDBInterface::verboseOutput)
-        {
-            std::cout << "\n\n";
-        }
+        std::cout << "\n\n";
 
         return exceptionHandlingPassed;
     }
@@ -379,10 +370,7 @@ public:
     template <typename U>
     bool testAccessorFunctions(U testValue, U* member, std::string_view memberName, std::function<void(U)>setFunct, std::function<U(void)>getFunct) noexcept
     {
-        if (CoreDBInterface::verboseOutput)
-        {
-            std::cout << "Running self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << "\n";
-        }
+        std::cout << "Running self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << "\n";
 
         ModelDBInterface::modified = false;
 
@@ -405,10 +393,7 @@ public:
             return false;
         }
 
-        if (CoreDBInterface::verboseOutput)
-        {
-            std::cout << "Self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << " PASSED\n";
-        }
+        std::cout << "Self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << " PASSED\n";
 
         return true;
     }
@@ -417,10 +402,7 @@ public:
     bool testOptionalAccessorFunctions(std::optional<U> testValue, std::optional<U>* member, std::string_view memberName,
         std::function<void(U)>setFunct, std::function<std::optional<U>(void)>getFunct) noexcept
     {
-        if (CoreDBInterface::verboseOutput)
-        {
-            std::cout << "Running self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << "\n";
-        }
+        std::cout << "Running self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << "\n";
 
         ModelDBInterface::modified = false;
 
@@ -452,10 +434,7 @@ public:
             return false;
         }
 
-        if (CoreDBInterface::verboseOutput)
-        {
-            std::cout << "Self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << " PASSED\n";
-        }
+        std::cout << "Self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << " PASSED\n";
 
         return true;
     }
@@ -466,10 +445,7 @@ public:
         std::function<void(std::chrono::system_clock::time_point)>setFunct,
         std::function<std::chrono::system_clock::time_point(void)>getFunct) noexcept
     {
-        if (CoreDBInterface::verboseOutput)
-        {
-            std::cout << "Running self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << "\n";
-        }
+        std::cout << "Running self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << "\n";
 
         ModelDBInterface::modified = false;
 
@@ -492,10 +468,7 @@ public:
             return false;
         }
 
-        if (CoreDBInterface::verboseOutput)
-        {
-            std::cout << "Self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << " PASSED\n";
-        }
+        std::cout << "Self test on set and get functions for " << ModelDBInterface::modelName << "::" << memberName << " PASSED\n";
 
         return true;
     }
@@ -504,18 +477,15 @@ public:
     {
         std::string reportFailure = std::format("In {}::{}: ", ModelDBInterface::modelName, testExceptionFuncName);
 
-        if (CoreDBInterface::verboseOutput)
+        if (expectSuccess)
         {
-            if (expectSuccess)
-            {
-                reportFailure.append(std::format("expected success returned {} \n", isBool? "false" : "empty string"));
-                reportFailure.append(CoreDBInterface::errorMessages);
-                reportFailure.append("\n");
-            }
-            else
-            {
-                reportFailure.append(std::format("expected failure returned {} ", isBool? "true" : "formatted string"));
-            }
+            reportFailure.append(std::format("expected success returned {} \n", isBool? "false" : "empty string"));
+            reportFailure.append(CoreDBInterface::errorMessages);
+            reportFailure.append("\n");
+        }
+        else
+        {
+            reportFailure.append(std::format("expected failure returned {} ", isBool? "true" : "formatted string"));
         }
 
         std::cout << reportFailure << "\n";
@@ -584,10 +554,7 @@ public:
         }
         catch(const std::exception& e)
         {
-            if (CoreDBInterface::verboseOutput)
-            {
-                std::cout << "Caught expected exception from " << funcName << "(): " << e.what() << "\n";
-            }
+            std::cout << "Caught expected exception from " << funcName << "(): " << e.what() << "\n";
             CoreDBInterface::forceException = false; 
             formattedQuery = funcUnderTest(args...);
             if (formattedQuery.empty())

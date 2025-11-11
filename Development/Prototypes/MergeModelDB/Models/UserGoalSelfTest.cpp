@@ -20,10 +20,7 @@ TestStatus UserGoalSelfTest::runSelfTest()
     inSelfTest = true;
     bool allSelfTestsPassed = true;
 
-    if (verboseOutput)
-    {
-        std::cout <<  std::format("\nRunning {} Self Test\n", modelName);
-    }
+    std::cout <<  std::format("\nRunning {} Self Test\n", modelName);
 
     if (testExceptionHandling() == TESTFAILED)
     {
@@ -48,10 +45,7 @@ TestStatus UserGoalSelfTest::runSelfTest()
         allSelfTestsPassed = false;
     }
     
-    if (verboseOutput)
-    {
-        std::cout << "Test Output: " << *this << "\n";
-    }
+    std::cout << "Test Output: " << *this << "\n";
 
     if (testAllInsertFailures() != TESTPASSED)
     {
@@ -339,7 +333,7 @@ TestStatus UserGoalSelfTest::testAllInsertFailures()
 
     if (verboseOutput)
     {
-        std::cout << "UserGoalSelfTest::testAllInsertFailures() before successful insert *this = " << *this << "\n";
+        std::cout << std::format("{}::{} before successful insert this = \n", modelName, __func__) << *this << "\n";
     }
 
     if (!insert())
