@@ -27,9 +27,28 @@
  */
 ProgramOptions programOptions;
 
+static constexpr std::size_t lineWidth = 80;
+
+static void printDashes()
+{
+    for (std::size_t i = 0; i <= lineWidth; ++i)
+    {
+        std::cout << '-';
+    }
+
+}
+static void separateTestCaseOutput()
+{
+    printDashes();
+    std::cout << "\n\n";
+    printDashes();
+}
+
 template <class A>
 static TestStatus runUnitTest(ModelSelfTest<A>* unitTest)
 {
+    separateTestCaseOutput();
+
     TestStatus thisTestStatus = unitTest->runSelfTest();
     if (thisTestStatus != TESTPASSED)
     {
@@ -100,9 +119,13 @@ int main(int argc, char* argv[])
                 }
             }
 #if 1
+            separateTestCaseOutput();
+
             TestUserDBInterface userTests(programOptions.userTestDataFile);
             if (userTests.runAllTests() == TestStatus::TestPassed)
             {
+                separateTestCaseOutput();
+    
                 TestTaskDBInterface tasktests(programOptions.taskTestDataFile);
                 if (tasktests.runAllTests() != TestStatus::TestPassed)
                 {
@@ -110,11 +133,13 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
+                    separateTestCaseOutput();
+
                     TestGoalModel goalTests;
-                    if (goalTests.runAllTests() != TestStatus::TestPassed)
-                    {
-                        return EXIT_FAILURE;
-                    }
+                        if (goalTests.runAllTests() != TestStatus::TestPassed)
+                        {
+                            return EXIT_FAILURE;
+                        }
                 }
             }
             else
