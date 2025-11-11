@@ -54,15 +54,9 @@ public:
     ModelSelfTest() : T() { }
 
     virtual ~ModelSelfTest() = default;
-/*
- * To maximize testy coverage of any particular model, override runSelfTest and
- * provide any additional tests. This default version will provide roughly 80%
- * test coverage. Improved logging will also be achieved by override.
- */    
     virtual TestStatus runSelfTest()
     {
         CoreDBInterface::inSelfTest = true;
-//        CoreDBInterface::verboseOutput = true;
         bool allSelfTestsPassed = true;
         std::string_view modelName(ModelDBInterface::modelName);
 
@@ -123,7 +117,6 @@ public:
         }
 
         CoreDBInterface::inSelfTest = false;
-//        CoreDBInterface::verboseOutput = false;
         
         if (allSelfTestsPassed)
         {
