@@ -26,7 +26,7 @@ TestStatus UserSelfTest::runSelfTest()
 
     if (verboseOutput)
     {
-        std::cout <<  std::format("Running {} Self Test\n", modelName);
+        std::cout <<  std::format("\nRunning {} Self Test\n", modelName);
     }
 
     if (testExceptionHandling() == TESTFAILED)
@@ -46,9 +46,9 @@ TestStatus UserSelfTest::runSelfTest()
         allSelfTestsPassed = false;
     }
 
-    if (!diffTest())
+    if (testEqualityOperator() == TESTFAILED)
     {
-        std::cerr << std::format("Equality Operator test for {} FAILED!\n", modelName);
+        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", modelName);
         allSelfTestsPassed = false;
     }
     
@@ -403,18 +403,18 @@ TestStatus UserSelfTest::testAllInsertFailures()
     return TESTPASSED;
 }
 
-bool UserSelfTest::diffTest()
+TestStatus UserSelfTest::testEqualityOperator() noexcept
 {
     UserModel other;
 
     other.setUserID(primaryKey);
     if (*this == other)
     {
-        return false;
+        return TESTFAILED;
     }
 
     other = *this;
     
-    return *this == other;
+    return (*this == other)? TESTPASSED: TESTFAILED;
 }
 

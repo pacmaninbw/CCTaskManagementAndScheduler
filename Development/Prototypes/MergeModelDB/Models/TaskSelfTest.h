@@ -39,7 +39,7 @@ private:
     virtual bool testExceptionUpdate() noexcept override;
     virtual bool testExceptionRetrieve() noexcept override;
     virtual TestStatus testAllInsertFailures() override;
-    bool testDiff();
+    virtual TestStatus testEqualityOperator() noexcept override;
 
     virtual bool testAccessorFunctionsPassed() override;
     bool testTaskIdAccesss();

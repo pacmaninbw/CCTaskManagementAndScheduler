@@ -42,7 +42,7 @@ private:
     bool testDateAddedAccess() noexcept;
     bool testLastUpdateAccess() noexcept;
 
-    bool diffTest() noexcept;
+    virtual TestStatus testEqualityOperator() noexcept override;
 };
 
 

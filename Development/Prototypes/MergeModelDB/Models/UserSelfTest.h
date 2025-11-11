@@ -58,7 +58,7 @@ private:
     virtual bool testExceptionRetrieve() noexcept override;
 
     virtual TestStatus testAllInsertFailures() override;
-    bool diffTest();
+    TestStatus testEqualityOperator() noexcept override;
 
 };
 

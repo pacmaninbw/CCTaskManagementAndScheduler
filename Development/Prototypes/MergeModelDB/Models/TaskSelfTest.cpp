@@ -26,7 +26,7 @@ TestStatus TaskSelfTest::runSelfTest()
 
     if (verboseOutput)
     {
-        std::cout <<  std::format("Running {} Self Test\n", modelName);
+        std::cout <<  std::format("\nRunning {} Self Test\n", modelName);
     }
 
     if (testExceptionHandling() == TESTFAILED)
@@ -46,9 +46,9 @@ TestStatus TaskSelfTest::runSelfTest()
         allSelfTestsPassed = false;
     }
 
-    if (!testDiff())
+    if (testEqualityOperator() == TESTFAILED)
     {
-        std::cerr << std::format("Comparing 2 {} FAILED!\n", modelName);
+        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", modelName);
         allSelfTestsPassed = false;
     }
 
@@ -331,7 +331,7 @@ TestStatus TaskSelfTest::testAllInsertFailures()
     return TESTPASSED;
 }
 
-bool TaskSelfTest::testDiff()
+TestStatus TaskSelfTest::testEqualityOperator() noexcept
 {
     TaskModel other;
 
@@ -339,12 +339,12 @@ bool TaskSelfTest::testDiff()
 
     if (*this == other)
     {
-        return false;
+        return TESTFAILED;
     }
 
     other = *this;
 
-    return *this == other;
+    return (*this == other)? TESTPASSED : TESTFAILED;
 }
 
 bool TaskSelfTest::testAccessorFunctionsPassed()

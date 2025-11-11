@@ -47,7 +47,7 @@ private:
     bool testExceptionFormatSelectBySimilarDescription() noexcept;
 
     virtual TestStatus testAllInsertFailures() override;
-    bool diffTest() noexcept;
+    virtual TestStatus testEqualityOperator() noexcept override;
 };
 
 #endif // USERGOALSELFTEST_H_
