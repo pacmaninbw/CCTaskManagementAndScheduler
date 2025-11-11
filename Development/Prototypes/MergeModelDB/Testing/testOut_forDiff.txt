@@ -44,9 +44,11 @@ Test Output: 	User ID: 31
 	Email: AnyEmail
 	Login Name: AnyLoginName
 	PassWord: AnyPassword
-	User Added: 2025-11-11 15:37:47.985917577
-	Last Login: 2025-11-11 15:37:47.985953859
+	User Added: 2025-11-11 21:59:30.636473699
+	Last Login: 2025-11-11 21:59:30.636480773
 
+Common Insertion Failure Test PASSED!
+Common Update Failure Test PASSED!
 User Self Test PASSED
 ---------------------------------------------------------------------------------
 
@@ -108,7 +110,7 @@ Test Output: TaskModel:
 	Assigned To ID: 2
 	Description: Test task description access
 	Percentage Complete: 86.5
-	Creation Date: 2025-11-11 15:37:48.011971816
+	Creation Date: 2025-11-11 21:59:30.644892554
 	Scheduled Start Date: 2025-11-04
 	Due Date: 2025-11-11
 	Estimated Effort Hours: 1024
@@ -123,6 +125,8 @@ Optional Fields
 	Estimated Completion Date: 2025-11-11
 	Completed Date: 2025-11-11
 
+Common Insertion Failure Test PASSED!
+Common Update Failure Test PASSED!
 Task Self Test PASSED
 ---------------------------------------------------------------------------------
 
@@ -150,9 +154,11 @@ Test Output: 	Goal ID: 57
 	Description: Test note content access
 	Priority: 1
 	Parent ID: 1
-	Creation Timestamp: 2025-11-11 15:37:48.040788342
+	Creation Timestamp: 2025-11-11 21:59:30.653536095
 	Last Update Timestamp: 1970-01-01 00:00:00.000000000
 
+Common Insertion Failure Test PASSED!
+Common Update Failure Test PASSED!
 UserGoalModel Self Test PASSED
 ---------------------------------------------------------------------------------
 
@@ -176,9 +182,11 @@ Self test on set and get functions for Note::Date Added PASSED
 Test Output: 	Note ID: 27
 	User ID: 31
 	Content: Test note content access
-	Created: 2025-11-11 15:37:48.052845935
-	Last Update: 2025-11-11 15:37:48.052857812
+	Created: 2025-11-11 21:59:30.657480857
+	Last Update: 2025-11-11 21:59:30.657484300
 
+Common Insertion Failure Test PASSED!
+Common Update Failure Test PASSED!
 Note Self Test PASSED
 ---------------------------------------------------------------------------------
 
