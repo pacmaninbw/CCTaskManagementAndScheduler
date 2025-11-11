@@ -34,6 +34,8 @@ TestTaskDBInterface::TestTaskDBInterface(std::string taskFileName)
 
 TestStatus TestTaskDBInterface::runAllTests()
 {
+    std::cout << std::format("\nRunning {} Integration Tests\n", modelUnderTest);
+
     userOne = std::make_shared<UserModel>();
     userOne->setUserID(1);
     userOne->retrieve();

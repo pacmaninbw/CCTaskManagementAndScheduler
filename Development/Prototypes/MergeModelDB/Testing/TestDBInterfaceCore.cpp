@@ -22,6 +22,8 @@ TestDBInterfaceCore::TestDBInterfaceCore(std::string_view modelName)
 
 TestStatus TestDBInterfaceCore::runAllTests()
 {
+    std::cout << std::format("\nRunning {} Integration Tests\n", modelUnderTest);
+    
     TestStatus positivePathPassed = runPositivePathTests();
     TestStatus negativePathPassed = runNegativePathTests();
     
