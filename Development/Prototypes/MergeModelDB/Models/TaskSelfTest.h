@@ -41,7 +41,7 @@ private:
     virtual TestStatus testAllInsertFailures() override;
     virtual TestStatus testEqualityOperator() noexcept override;
 
-    virtual bool testAccessorFunctionsPassed() override;
+    virtual TestStatus testAttributeAccessFunctions() noexcept override;
     bool testTaskIdAccesss();
     bool testCreatorIDAccess();
     bool testAssignToIDAccess();

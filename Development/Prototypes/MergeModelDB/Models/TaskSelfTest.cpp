@@ -37,7 +37,7 @@ TestStatus TaskSelfTest::runSelfTest()
         allSelfTestsPassed = false;
     }
 
-    if (!testAccessorFunctionsPassed())
+    if (testAttributeAccessFunctions() == TESTFAILED)
     {
         std::cerr << "One or more get or set functions FAILED!\n";
         allSelfTestsPassed = false;
@@ -341,7 +341,7 @@ TestStatus TaskSelfTest::testEqualityOperator() noexcept
     return (*this == other)? TESTPASSED : TESTFAILED;
 }
 
-bool TaskSelfTest::testAccessorFunctionsPassed()
+TestStatus TaskSelfTest::testAttributeAccessFunctions() noexcept
 {
     selfTestResetAllValues();
 
@@ -377,7 +377,7 @@ bool TaskSelfTest::testAccessorFunctionsPassed()
         }
     }
 
-    return allAccessorFunctionsPassed;
+    return allAccessorFunctionsPassed ? TESTPASSED : TESTFAILED;
 }
 
 bool TaskSelfTest::testTaskIdAccesss()

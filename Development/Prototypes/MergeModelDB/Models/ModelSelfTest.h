@@ -45,7 +45,7 @@ protected:
     virtual bool testExceptionUpdate() = 0;     // Should be added too the vector returned by initExceptionTests()
     virtual bool testExceptionRetrieve() = 0;   // Should be added too the vector returned by initExceptionTests()
     virtual TestStatus testAllInsertFailures() = 0;
-    virtual bool testAccessorFunctionsPassed() = 0;
+    virtual TestStatus testAttributeAccessFunctions() noexcept = 0;
     virtual TestStatus testEqualityOperator() noexcept = 0;
 
 public:
@@ -89,7 +89,7 @@ public:
             allSelfTestsPassed = false;
         }
 
-        if (!testAccessorFunctionsPassed())
+        if (testAttributeAccessFunctions() == TESTFAILED)
         {
             std::cerr << ModelDBInterface::modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
             allSelfTestsPassed = false;

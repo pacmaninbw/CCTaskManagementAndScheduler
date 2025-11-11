@@ -37,7 +37,7 @@ TestStatus UserSelfTest::runSelfTest()
         allSelfTestsPassed = false;
     }
 
-    if (!testAccessorFunctionsPassed())
+    if (testAttributeAccessFunctions() == TESTFAILED)
     {
         std::cerr << "One or more get or set functions FAILED!\n";
         allSelfTestsPassed = false;
@@ -90,7 +90,7 @@ void UserSelfTest::selfTestResetAllValues()
     lastLogin.reset();
 }
 
-bool UserSelfTest::testAccessorFunctionsPassed()
+TestStatus UserSelfTest::testAttributeAccessFunctions() noexcept
 {
     selfTestResetAllValues();
 
@@ -120,7 +120,7 @@ bool UserSelfTest::testAccessorFunctionsPassed()
         }
     }
 
-    return allAccessorFunctionsPassed;
+    return allAccessorFunctionsPassed ? TESTPASSED : TESTFAILED;
 }
 
 bool UserSelfTest::testUserIdAccesss() noexcept

@@ -33,7 +33,7 @@ TestStatus UserGoalSelfTest::runSelfTest()
         allSelfTestsPassed = false;
     }
 
-    if (!testAccessorFunctionsPassed())
+    if (testAttributeAccessFunctions() == TESTFAILED)
     {
         std::cerr << "One or more get or set functions FAILED!\n";
         allSelfTestsPassed = false;
@@ -84,7 +84,7 @@ void UserGoalSelfTest::selfTestResetAllValues()
     lastUpdate = {};
 }
 
-bool UserGoalSelfTest::testAccessorFunctionsPassed()
+TestStatus UserGoalSelfTest::testAttributeAccessFunctions() noexcept
 {
     selfTestResetAllValues();
 
@@ -105,7 +105,7 @@ bool UserGoalSelfTest::testAccessorFunctionsPassed()
         }
     }
 
-    return allAccessorFunctionsPassed;
+    return allAccessorFunctionsPassed ? TESTPASSED : TESTFAILED;
 }
 
 bool UserGoalSelfTest::testGoalIdAccesss() noexcept

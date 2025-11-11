@@ -28,7 +28,7 @@ private:
     
 // Unit test functions
     virtual void selfTestResetAllValues() override;
-    virtual bool testAccessorFunctionsPassed() override;
+    virtual TestStatus testAttributeAccessFunctions() noexcept override;
     bool testUserIdAccesss() noexcept;
     bool testLastNameAccess() noexcept;
     bool testFirstNameAccess() noexcept;

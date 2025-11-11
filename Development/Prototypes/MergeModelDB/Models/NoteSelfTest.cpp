@@ -32,7 +32,7 @@ TestStatus NoteSelfTest::runSelfTest()
         allSelfTestsPassed = false;
     }
 
-    if (!testAccessorFunctionsPassed())
+    if (testAttributeAccessFunctions() == TESTFAILED)
     {
         std::cerr << "One or more get or set functions FAILED!\n";
         allSelfTestsPassed = false;
@@ -80,7 +80,7 @@ void NoteSelfTest::selfTestResetAllValues()
     lastUpdate = {};
 }
 
-bool NoteSelfTest::testAccessorFunctionsPassed()
+TestStatus NoteSelfTest::testAttributeAccessFunctions() noexcept
 {
     selfTestResetAllValues();
 
@@ -100,7 +100,7 @@ bool NoteSelfTest::testAccessorFunctionsPassed()
         }
     }
 
-    return allAccessorFunctionsPassed;
+    return allAccessorFunctionsPassed? TESTPASSED : TESTFAILED;
 }
 
 std::vector<ExceptionTestElement> NoteSelfTest::initExceptionTests() noexcept
