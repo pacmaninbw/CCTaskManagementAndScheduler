@@ -27,28 +27,19 @@ void UserGoalSelfTest::selfTestResetAllValues()
     lastUpdate = {};
 }
 
-TestStatus UserGoalSelfTest::testAttributeAccessFunctions() noexcept
+std::vector<std::function<bool(void)>> UserGoalSelfTest::initAttributeAccessTests() noexcept
 {
     selfTestResetAllValues();
 
-    bool allAccessorFunctionsPassed = true;
-    std::vector<std::function<bool(void)>> accessTests;
-    accessTests.push_back({std::bind(&UserGoalSelfTest::testGoalIdAccesss, this)});
-    accessTests.push_back({std::bind(&UserGoalSelfTest::testUserIdAccesss, this)});
-    accessTests.push_back({std::bind(&UserGoalSelfTest::testDescriptionAccess, this)});
-    accessTests.push_back({std::bind(&UserGoalSelfTest::testCreationDateAccess, this)});
-    accessTests.push_back({std::bind(&UserGoalSelfTest::testParentIdAccess, this)});
-    accessTests.push_back({std::bind(&UserGoalSelfTest::testPriorityAccess, this)});
+    std::vector<std::function<bool(void)>> attributeAccessTests;
+    attributeAccessTests.push_back({std::bind(&UserGoalSelfTest::testGoalIdAccesss, this)});
+    attributeAccessTests.push_back({std::bind(&UserGoalSelfTest::testUserIdAccesss, this)});
+    attributeAccessTests.push_back({std::bind(&UserGoalSelfTest::testDescriptionAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserGoalSelfTest::testCreationDateAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserGoalSelfTest::testParentIdAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserGoalSelfTest::testPriorityAccess, this)});
 
-    for (auto accessTest: accessTests)
-    {
-        if (!accessTest())
-        {
-            allAccessorFunctionsPassed = false;
-        }
-    }
-
-    return allAccessorFunctionsPassed ? TESTPASSED : TESTFAILED;
+    return attributeAccessTests;
 }
 
 bool UserGoalSelfTest::testGoalIdAccesss() noexcept
@@ -307,3 +298,4 @@ void UserGoalSelfTest::testOutput() noexcept
 {
     std::cout << "Test Output: " << *this << "\n";
 }
+

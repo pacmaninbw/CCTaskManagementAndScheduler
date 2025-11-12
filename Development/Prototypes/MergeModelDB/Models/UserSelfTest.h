@@ -27,7 +27,7 @@ private:
     
 // Unit test functions
     virtual void selfTestResetAllValues() override;
-    virtual TestStatus testAttributeAccessFunctions() noexcept override;
+    virtual std::vector<std::function<bool(void)>> initAttributeAccessTests() noexcept override;
     bool testUserIdAccesss() noexcept;
     bool testLastNameAccess() noexcept;
     bool testFirstNameAccess() noexcept;

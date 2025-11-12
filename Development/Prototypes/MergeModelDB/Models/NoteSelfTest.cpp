@@ -23,27 +23,18 @@ void NoteSelfTest::selfTestResetAllValues()
     lastUpdate = {};
 }
 
-TestStatus NoteSelfTest::testAttributeAccessFunctions() noexcept
+std::vector<std::function<bool(void)>> NoteSelfTest::initAttributeAccessTests() noexcept
 {
     selfTestResetAllValues();
 
-    bool allAccessorFunctionsPassed = true;
-    std::vector<std::function<bool(void)>> accessTests;
-    accessTests.push_back({std::bind(&NoteSelfTest::testNoteIdAccesss, this)});
-    accessTests.push_back({std::bind(&NoteSelfTest::testUserIdAccesss, this)});
-    accessTests.push_back({std::bind(&NoteSelfTest::testContentAccess, this)});
-    accessTests.push_back({std::bind(&NoteSelfTest::testDateAddedAccess, this)});
-    accessTests.push_back({std::bind(&NoteSelfTest::testLastUpdateAccess, this)});
+    std::vector<std::function<bool(void)>> attributeAccessTests;
+    attributeAccessTests.push_back({std::bind(&NoteSelfTest::testNoteIdAccesss, this)});
+    attributeAccessTests.push_back({std::bind(&NoteSelfTest::testUserIdAccesss, this)});
+    attributeAccessTests.push_back({std::bind(&NoteSelfTest::testContentAccess, this)});
+    attributeAccessTests.push_back({std::bind(&NoteSelfTest::testDateAddedAccess, this)});
+    attributeAccessTests.push_back({std::bind(&NoteSelfTest::testLastUpdateAccess, this)});
 
-    for (auto accessTest: accessTests)
-    {
-        if (!accessTest())
-        {
-            allAccessorFunctionsPassed = false;
-        }
-    }
-
-    return allAccessorFunctionsPassed? TESTPASSED : TESTFAILED;
+    return attributeAccessTests;
 }
 
 std::vector<ExceptionTestElement> NoteSelfTest::initExceptionTests() noexcept
@@ -217,3 +208,4 @@ void NoteSelfTest::testOutput() noexcept
 {
     std::cout << "Test Output: " << *this << "\n";
 }
+

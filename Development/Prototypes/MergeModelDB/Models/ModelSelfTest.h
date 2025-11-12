@@ -39,13 +39,15 @@ protected:
 /*****
  * These methods must be implemented.
  * The tests they implement require the details of the particular model being tested.
+ * 
+ * Init functions should call the local version of selfTestResetAllValues().
  */
+    virtual std::vector<std::function<bool(void)>> initAttributeAccessTests() noexcept = 0;
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept = 0;
     virtual bool testExceptionInsert() = 0;     // Should be added too the vector returned by initExceptionTests()
     virtual bool testExceptionUpdate() = 0;     // Should be added too the vector returned by initExceptionTests()
     virtual bool testExceptionRetrieve() = 0;   // Should be added too the vector returned by initExceptionTests()
     virtual TestStatus testAllInsertFailures() = 0;
-    virtual TestStatus testAttributeAccessFunctions() noexcept = 0;
     virtual TestStatus testEqualityOperator() noexcept = 0;
     virtual void testOutput() noexcept = 0;
 
@@ -130,6 +132,7 @@ public:
         }
     }
 
+protected:
 /*****
  * ModelSelfTest::selfTestResetAllValues() should be called by any override.
  * The override should provide resets for any of the model under tests attributes.
@@ -380,6 +383,22 @@ public:
         return TESTPASSED;
     }
     
+    virtual TestStatus testAttributeAccessFunctions() noexcept
+    {
+        bool allAccessorFunctionsPassed = true;
+        std::vector<std::function<bool(void)>> accessTests = initAttributeAccessTests();
+
+        for (auto accessTest: accessTests)
+        {
+            if (!accessTest())
+            {
+                allAccessorFunctionsPassed = false;
+            }
+        }
+
+        return allAccessorFunctionsPassed ? TESTPASSED : TESTFAILED;
+    }
+
     template <typename U>
     bool testAccessorFunctions(U testValue, U* member, std::string_view memberName, std::function<void(U)>setFunct, std::function<U(void)>getFunct) noexcept
     {

@@ -33,37 +33,28 @@ void UserSelfTest::selfTestResetAllValues()
     lastLogin.reset();
 }
 
-TestStatus UserSelfTest::testAttributeAccessFunctions() noexcept
+std::vector<std::function<bool(void)>> UserSelfTest::initAttributeAccessTests() noexcept
 {
     selfTestResetAllValues();
+    std::vector<std::function<bool(void)>> attributeAccessTests;
 
-    bool allAccessorFunctionsPassed = true;
-    std::vector<std::function<bool(void)>> accessTests;
-    accessTests.push_back({std::bind(&UserSelfTest::testUserIdAccesss, this)});
-    accessTests.push_back({std::bind(&UserSelfTest::testLastNameAccess, this)});
-    accessTests.push_back({std::bind(&UserSelfTest::testFirstNameAccess, this)});
-    accessTests.push_back({std::bind(&UserSelfTest::testMiddleInitialAccess, this)});
-    accessTests.push_back({std::bind(&UserSelfTest::testEmailAccess, this)});
-    accessTests.push_back({std::bind(&UserSelfTest::testLoginNameAccess, this)});
-    accessTests.push_back({std::bind(&UserSelfTest::testPassWordAccess, this)});
-    accessTests.push_back({std::bind(&UserSelfTest::testCreatedDateAcfcess, this)});
-    accessTests.push_back({std::bind(&UserSelfTest::testLastLoginAccess, this)});
-    accessTests.push_back({std::bind(&UserSelfTest::testStartTimeAccess, this)});
-    accessTests.push_back({std::bind(&UserSelfTest::testEndTimeAccesss, this)});
-    accessTests.push_back({std::bind(&UserSelfTest::testIncludePriorityInScheduleAccess, this)});
-    accessTests.push_back({std::bind(&UserSelfTest::testIncludeMinorPriorityInScheduleAccess, this)});
-    accessTests.push_back({std::bind(&UserSelfTest::testUseLetterForMajorPriorityAccess, this)});
-    accessTests.push_back({std::bind(&UserSelfTest::testSeparateMajorAndMinorWithDotAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testUserIdAccesss, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testLastNameAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testFirstNameAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testMiddleInitialAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testEmailAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testLoginNameAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testPassWordAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testCreatedDateAcfcess, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testLastLoginAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testStartTimeAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testEndTimeAccesss, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testIncludePriorityInScheduleAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testIncludeMinorPriorityInScheduleAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testUseLetterForMajorPriorityAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testSeparateMajorAndMinorWithDotAccess, this)});
 
-    for (auto accessTest: accessTests)
-    {
-        if (!accessTest())
-        {
-            allAccessorFunctionsPassed = false;
-        }
-    }
-
-    return allAccessorFunctionsPassed ? TESTPASSED : TESTFAILED;
+    return attributeAccessTests;
 }
 
 bool UserSelfTest::testUserIdAccesss() noexcept
@@ -359,3 +350,4 @@ void UserSelfTest::testOutput() noexcept
 {
     std::cout << "Test Output: " << *this << "\n";
 }
+

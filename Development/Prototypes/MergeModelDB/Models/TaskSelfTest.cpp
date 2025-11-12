@@ -289,43 +289,34 @@ TestStatus TaskSelfTest::testEqualityOperator() noexcept
     return (*this == other)? TESTPASSED : TESTFAILED;
 }
 
-TestStatus TaskSelfTest::testAttributeAccessFunctions() noexcept
+std::vector<std::function<bool(void)>> TaskSelfTest::initAttributeAccessTests() noexcept
 {
     selfTestResetAllValues();
 
-     bool allAccessorFunctionsPassed = true;
-    std::vector<std::function<bool(void)>> accessTests; 
-    accessTests.push_back({std::bind(&TaskSelfTest::testTaskIdAccesss, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testCreatorIDAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testAssignToIDAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testDescriptionAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testStatusAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testParentTaskIDAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testPercentageCompleteAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testCreationDateAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testDueDateAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testScheduledStartAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testActualStartDateAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testEstimatedCompletionAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testCompletionDateAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testEstimatedEffortAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testActualEffortToDateAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testPriorityGroupAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testPriorityGroupCAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testPriorityAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testPersonalAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testDependenciesAccess, this)});
-    accessTests.push_back({std::bind(&TaskSelfTest::testMarkComplete, this)});
+    std::vector<std::function<bool(void)>> attributeAccessTests; 
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testTaskIdAccesss, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testCreatorIDAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testAssignToIDAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testDescriptionAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testStatusAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testParentTaskIDAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testPercentageCompleteAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testCreationDateAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testDueDateAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testScheduledStartAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testActualStartDateAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testEstimatedCompletionAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testCompletionDateAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testEstimatedEffortAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testActualEffortToDateAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testPriorityGroupAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testPriorityGroupCAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testPriorityAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testPersonalAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testDependenciesAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testMarkComplete, this)});
 
-    for (auto accessTest: accessTests)
-    {
-        if (!accessTest())
-        {
-            allAccessorFunctionsPassed = false;
-        }
-    }
-
-    return allAccessorFunctionsPassed ? TESTPASSED : TESTFAILED;
+    return attributeAccessTests;
 }
 
 bool TaskSelfTest::testTaskIdAccesss()
@@ -750,3 +741,4 @@ void TaskSelfTest::testOutput() noexcept
 {
     std::cout << "Test Output: " << *this << "\n";
 }
+
