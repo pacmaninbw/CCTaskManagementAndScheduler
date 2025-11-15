@@ -42,7 +42,7 @@ protected:
  * 
  * Init functions should call the local version of selfTestResetAllValues().
  */
-    virtual std::vector<std::function<bool(void)>> initAttributeAccessTests() noexcept = 0;
+    virtual std::vector<std::function<TestStatus(void)>> initAttributeAccessTests() noexcept = 0;
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept = 0;
     virtual bool testExceptionInsert() = 0;     // Should be added too the vector returned by initExceptionTests()
     virtual bool testExceptionUpdate() = 0;     // Should be added too the vector returned by initExceptionTests()
@@ -59,7 +59,7 @@ public:
     virtual TestStatus runSelfTest()
     {
         CoreDBInterface::inSelfTest = true;
-        bool allSelfTestsPassed = true;
+        TestStatus selfTestStatus = TESTPASSED;
         std::string_view modelName(ModelDBInterface::modelName);
 
         std::cout << "\nRunning " << modelName << " Self Test\n";
@@ -67,24 +67,24 @@ public:
         if (testExceptionHandling()!= TESTPASSED)
         {
             std::cerr  << modelName << "::runSelfTest: Exception handling FAILED!\n";
-            allSelfTestsPassed = false;
+            selfTestStatus = TESTFAILED;
         }
         
         if (testSave() == TESTFAILED)
         {
-            allSelfTestsPassed = false;
+            selfTestStatus = TESTFAILED;
         }
 
         if (testAttributeAccessFunctions() == TESTFAILED)
         {
             std::cerr << modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
-            allSelfTestsPassed = false;
+            selfTestStatus = TESTFAILED;
         }
 
         if (testEqualityOperator() == TESTFAILED)
         {
             std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", modelName);
-            allSelfTestsPassed = false;
+            selfTestStatus = TESTFAILED;
         }
 
         testOutput();
@@ -92,12 +92,12 @@ public:
         if (testAllInsertFailures() != TESTPASSED)
         {
             std::cerr << "Test of all insertion failures FAILED!\n";
-            allSelfTestsPassed = false;
+            selfTestStatus = TESTFAILED;
         }
 
         if (testCommonInsertFailurePath() != TESTPASSED)
         {
-            allSelfTestsPassed = false;
+            selfTestStatus = TESTFAILED;
         }
         else
         {
@@ -106,30 +106,30 @@ public:
 
         if (testCommonUpdateFailurePath() != TESTPASSED)
         {
-            allSelfTestsPassed = false;
+            selfTestStatus = TESTFAILED;
         }
         else
         {
             std::cout << "Common Update Failure Test PASSED!\n";
         }
 
-        if (!testTextFieldManipulation())
+        if (testTextFieldManipulation() == TESTFAILED)
         {
-            allSelfTestsPassed = false;
+            selfTestStatus = TESTFAILED;
         }
 
         CoreDBInterface::inSelfTest = false;
         
-        if (allSelfTestsPassed)
+        if (selfTestStatus == TESTPASSED)
         {
             std::cout <<  std::format("{} Self Test {}\n", modelName, "PASSED");
-            return TESTPASSED;
         }
         else
         {
             std::cerr <<  std::format("{} Self Test {}\n", modelName, "FAILED");
-            return TESTFAILED;
         }
+
+        return selfTestStatus;
     }
 
 protected:
@@ -152,7 +152,7 @@ protected:
     {
         selfTestResetAllValues();
 
-        bool testPassed = true;
+        TestStatus testStatus = TESTPASSED;
         ModelDBInterface::modified = false;
         ModelDBInterface::primaryKey = 0;
         std::string_view modelName(ModelDBInterface::modelName);
@@ -160,31 +160,31 @@ protected:
         if (ModelDBInterface::save())
         {
             std::cout << modelName << "::save worked without being modified\n";
-            testPassed = false;
+            testStatus = TESTFAILED;
         }
         else
         {
-            if (!hasErrorMessage())
+            if (hasErrorMessage() == TESTFAILED)
             {
                 std::cout << modelName << "::save Missing expected error messages\n";
-                testPassed = false;
+                testStatus = TESTFAILED;
             }
             else
             {
                 if (wrongErrorMessage("not modified, no changes to save") != TESTPASSED)
                 {
                     std::cout << modelName << "::save Wrong error message\n";
-                    testPassed = false;
+                    testStatus = TESTFAILED;
                 }
             }
         }
 
-        return testPassed ? TESTPASSED : TESTFAILED;
+        return testStatus;
     }
 
-    virtual bool testTextFieldManipulation()
+    virtual TestStatus testTextFieldManipulation()
     {
-        bool textFieldManipulationPassed = true;
+        TestStatus testStatus = TESTPASSED;
         int testFieldCount = 31;
         std::vector<std::string> testInputFields;
         std::string expectedImplodeOutput;
@@ -200,34 +200,34 @@ protected:
         std::string implodeOutput = ModelDBInterface::implodeTextField(testInputFields);
         if (implodeOutput != expectedImplodeOutput)
         {
-            textFieldManipulationPassed = false;
+            testStatus = TESTFAILED;
             std::cerr << std::format("Unit test of implodeTextField() FAILED!\nExpected Output = {}\nActual Output ={}\n",
                 expectedImplodeOutput, implodeOutput);
         }
 
-        if (textFieldManipulationPassed)
+        if (testStatus == TESTPASSED)
         {
             std::vector<std::string> explodeOutput = ModelDBInterface::explodeTextField(implodeOutput);
             if (explodeOutput != testInputFields)
             {
-                textFieldManipulationPassed = false;
+                testStatus = TESTFAILED;
                 std::cerr << "Unit test of explodeTextField() FAILED!\n";
             }
         }
 
-        return textFieldManipulationPassed;
+        return testStatus;
     }
 
-    bool hasErrorMessage()
+    TestStatus hasErrorMessage()
     {
         std::string testErrorMessage = CoreDBInterface::getAllErrorMessages();
         if (testErrorMessage.empty())
         {
             std::cerr << "No error message generated! TEST FAILED!\n";
-            return false;
+            return TESTFAILED;
         }
 
-        return true;
+        return TESTPASSED;
     }
 
     TestStatus wrongErrorMessage(std::string expectedString)
@@ -253,7 +253,7 @@ protected:
             return TESTFAILED;
         }
 
-        if (!hasErrorMessage())
+        if (hasErrorMessage() == TESTFAILED)
         {
             return TESTFAILED;
         }
@@ -277,7 +277,7 @@ protected:
             return TESTFAILED;
         }
 
-        if (!hasErrorMessage())
+        if (hasErrorMessage() == TESTFAILED)
         {
             return TESTFAILED;
         }
@@ -385,22 +385,22 @@ protected:
     
     virtual TestStatus testAttributeAccessFunctions() noexcept
     {
-        bool allAccessorFunctionsPassed = true;
-        std::vector<std::function<bool(void)>> accessTests = initAttributeAccessTests();
+        TestStatus testStatus = TESTPASSED;
+        std::vector<std::function<TestStatus(void)>> accessTests = initAttributeAccessTests();
 
         for (auto accessTest: accessTests)
         {
-            if (!accessTest())
+            if (accessTest() == TESTFAILED)
             {
-                allAccessorFunctionsPassed = false;
+                testStatus = TESTFAILED;
             }
         }
 
-        return allAccessorFunctionsPassed ? TESTPASSED : TESTFAILED;
+        return testStatus ;
     }
 
     template <typename U>
-    bool testAccessorFunctions(U testValue, U* member, std::string_view memberName, std::function<void(U)>setFunct, std::function<U(void)>getFunct) noexcept
+    TestStatus testAccessorFunctions(U testValue, U* member, std::string_view memberName, std::function<void(U)>setFunct, std::function<U(void)>getFunct) noexcept
     {
         std::string_view modelName(ModelDBInterface::modelName);
 
@@ -412,28 +412,28 @@ protected:
         if (!ModelDBInterface::isModified())
         {
             std::cerr << "In self test for: " << modelName << " Set function for " << memberName << " FAILED to set modified\n";
-            return false;
+            return TESTFAILED;
         }
 
         if (*member != testValue)
         {
             std::cerr  << "In self test for: " << modelName << "Set function for " << memberName << " FAILED to set member value\n";
-            return false;
+            return TESTFAILED;
         }
 
         if (getFunct() != testValue)
         {
             std::cerr  << "In self test for: " << modelName << "Get function for " << memberName << " FAILED\n";
-            return false;
+            return TESTFAILED;
         }
 
         std::cout << "Self test on set and get functions for " << modelName << "::" << memberName << " PASSED\n";
 
-        return true;
+        return TESTPASSED;
     }
 
     template <typename U>
-    bool testOptionalAccessorFunctions(std::optional<U> testValue, std::optional<U>* member, std::string_view memberName,
+    TestStatus testOptionalAccessorFunctions(std::optional<U> testValue, std::optional<U>* member, std::string_view memberName,
         std::function<void(U)>setFunct, std::function<std::optional<U>(void)>getFunct) noexcept
     {
         std::string_view modelName(ModelDBInterface::modelName);
@@ -446,7 +446,7 @@ protected:
         if (!ModelDBInterface::isModified())
         {
             std::cerr << "In self test for: " << modelName << " set function for " << memberName << " FAILED to set modified\n";
-            return false;
+            return TESTFAILED;
         }
 
         if (*member != testValue)
@@ -460,22 +460,22 @@ protected:
                 std::cerr  << "In self test for: " << modelName << " expected value: " << testValue.value()
                          << "actual value: " << member->value() << " FAILED to set member value\n";
             }
-            return false;
+            return TESTFAILED;
         }
 
         std::optional<U> returnValue = getFunct();
         if (returnValue != testValue)
         {
             std::cerr  << "In self test for: " << modelName << "Get function for " << memberName << " FAILED\n";
-            return false;
+            return TESTFAILED;
         }
 
         std::cout << "Self test on set and get functions for " << modelName << "::" << memberName << " PASSED\n";
 
-        return true;
+        return TESTPASSED;
     }
 
-    bool testTimeStampAccessorFunctions(std::chrono::system_clock::time_point testValue,
+    TestStatus testTimeStampAccessorFunctions(std::chrono::system_clock::time_point testValue,
         std::optional<std::chrono::system_clock::time_point>* member,
         std::string_view memberName,
         std::function<void(std::chrono::system_clock::time_point)>setFunct,
@@ -490,24 +490,24 @@ protected:
         if (!ModelDBInterface::isModified())
         {
             std::cerr << "In self test for: " << modelName << " set function for " << memberName << " FAILED to set modified\n";
-            return false;
+            return TESTFAILED;
         }
 
         if (!member->has_value() || member->value() != testValue)
         {
             std::cerr  << "In self test for: " << modelName << "Set function for " << memberName << " FAILED to set member value\n";
-            return false;
+            return TESTFAILED;
         }
 
         if (getFunct() != testValue)
         {
             std::cerr  << "In self test for: " << modelName << "Get function for " << memberName << " FAILED\n";
-            return false;
+            return TESTFAILED;
         }
 
         std::cout << "Self test on set and get functions for " << modelName << "::" << memberName << " PASSED\n";
 
-        return true;
+        return TESTPASSED;
     }
 
     bool testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName) noexcept

@@ -4,6 +4,7 @@
 // Project Header Files
 #include "commonUtilities.h"
 #include "ModelSelfTest.h"
+#include "TestStatus.h"
 #include "UserGoalModel.h"
 
 // Standard C++ Header Files
@@ -25,13 +26,13 @@ private:
     
 // Unit test functions
     virtual void selfTestResetAllValues() override;
-    virtual std::vector<std::function<bool(void)>> initAttributeAccessTests() noexcept override;
-    bool testGoalIdAccesss() noexcept;
-    bool testUserIdAccesss() noexcept;
-    bool testDescriptionAccess() noexcept;
-    bool testCreationDateAccess() noexcept;
-    bool testParentIdAccess() noexcept;
-    bool testPriorityAccess() noexcept;
+    virtual std::vector<std::function<TestStatus(void)>> initAttributeAccessTests() noexcept override;
+    TestStatus testGoalIdAccesss() noexcept;
+    TestStatus testUserIdAccesss() noexcept;
+    TestStatus testDescriptionAccess() noexcept;
+    TestStatus testCreationDateAccess() noexcept;
+    TestStatus testParentIdAccess() noexcept;
+    TestStatus testPriorityAccess() noexcept;
 
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
     virtual bool testExceptionInsert() noexcept override;

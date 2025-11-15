@@ -23,11 +23,11 @@ void NoteSelfTest::selfTestResetAllValues()
     lastUpdate = {};
 }
 
-std::vector<std::function<bool(void)>> NoteSelfTest::initAttributeAccessTests() noexcept
+std::vector<std::function<TestStatus(void)>> NoteSelfTest::initAttributeAccessTests() noexcept
 {
     selfTestResetAllValues();
 
-    std::vector<std::function<bool(void)>> attributeAccessTests;
+    std::vector<std::function<TestStatus(void)>> attributeAccessTests;
     attributeAccessTests.push_back({std::bind(&NoteSelfTest::testNoteIdAccesss, this)});
     attributeAccessTests.push_back({std::bind(&NoteSelfTest::testUserIdAccesss, this)});
     attributeAccessTests.push_back({std::bind(&NoteSelfTest::testContentAccess, this)});
@@ -153,35 +153,35 @@ TestStatus NoteSelfTest::testAllInsertFailures()
     return TESTPASSED;
 }
 
-bool NoteSelfTest::testNoteIdAccesss() noexcept
+TestStatus NoteSelfTest::testNoteIdAccesss() noexcept
 {
     return testAccessorFunctions<std::size_t>(27, &primaryKey, "Primary Key",
         std::bind(&NoteModel::setNoteId, this, std::placeholders::_1),
         std::bind(&NoteModel::getNoteId, this));
 }
 
-bool NoteSelfTest::testUserIdAccesss() noexcept
+TestStatus NoteSelfTest::testUserIdAccesss() noexcept
 {
     return testAccessorFunctions<std::size_t>(31, &userID, "User ID",
         std::bind(&NoteModel::setUserId, this, std::placeholders::_1),
         std::bind(&NoteModel::getUserId, this));
 }
 
-bool NoteSelfTest::testContentAccess() noexcept
+TestStatus NoteSelfTest::testContentAccess() noexcept
 {
     return testAccessorFunctions<std::string>("Test note content access", &content, "Content",
         std::bind(&NoteModel::setContent, this, std::placeholders::_1),
         std::bind(&NoteModel::getContent, this));
 }
 
-bool NoteSelfTest::testDateAddedAccess() noexcept
+TestStatus NoteSelfTest::testDateAddedAccess() noexcept
 {
     return testTimeStampAccessorFunctions(std::chrono::system_clock::now(), &creationDate, "Date Added",
         std::bind(&NoteModel::setDateAdded, this, std::placeholders::_1),
         std::bind(&NoteModel::getDateAdded, this));
 }
 
-bool NoteSelfTest::testLastUpdateAccess() noexcept
+TestStatus NoteSelfTest::testLastUpdateAccess() noexcept
 {
     std::chrono::system_clock::time_point testValue = std::chrono::system_clock::now();
     return testTimeStampAccessorFunctions(testValue, &lastUpdate, "Date Added",

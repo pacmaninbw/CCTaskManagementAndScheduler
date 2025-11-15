@@ -26,7 +26,7 @@ private:
 // Unit test functions
     virtual void selfTestResetAllValues() override;
 
-    virtual std::vector<std::function<bool(void)>> initAttributeAccessTests() noexcept override;
+    virtual std::vector<std::function<TestStatus(void)>> initAttributeAccessTests() noexcept override;
 
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
     virtual bool testExceptionInsert() noexcept override;
@@ -36,11 +36,11 @@ private:
 
     virtual TestStatus testAllInsertFailures() override;
 
-    bool testNoteIdAccesss() noexcept;
-    bool testUserIdAccesss() noexcept;
-    bool testContentAccess() noexcept;
-    bool testDateAddedAccess() noexcept;
-    bool testLastUpdateAccess() noexcept;
+    TestStatus testNoteIdAccesss() noexcept;
+    TestStatus testUserIdAccesss() noexcept;
+    TestStatus testContentAccess() noexcept;
+    TestStatus testDateAddedAccess() noexcept;
+    TestStatus testLastUpdateAccess() noexcept;
 
     virtual TestStatus testEqualityOperator() noexcept override;
     virtual void testOutput() noexcept override;

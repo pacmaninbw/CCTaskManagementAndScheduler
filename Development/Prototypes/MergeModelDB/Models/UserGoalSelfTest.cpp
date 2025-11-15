@@ -27,11 +27,11 @@ void UserGoalSelfTest::selfTestResetAllValues()
     lastUpdate = {};
 }
 
-std::vector<std::function<bool(void)>> UserGoalSelfTest::initAttributeAccessTests() noexcept
+std::vector<std::function<TestStatus(void)>> UserGoalSelfTest::initAttributeAccessTests() noexcept
 {
     selfTestResetAllValues();
 
-    std::vector<std::function<bool(void)>> attributeAccessTests;
+    std::vector<std::function<TestStatus(void)>> attributeAccessTests;
     attributeAccessTests.push_back({std::bind(&UserGoalSelfTest::testGoalIdAccesss, this)});
     attributeAccessTests.push_back({std::bind(&UserGoalSelfTest::testUserIdAccesss, this)});
     attributeAccessTests.push_back({std::bind(&UserGoalSelfTest::testDescriptionAccess, this)});
@@ -42,42 +42,42 @@ std::vector<std::function<bool(void)>> UserGoalSelfTest::initAttributeAccessTest
     return attributeAccessTests;
 }
 
-bool UserGoalSelfTest::testGoalIdAccesss() noexcept
+TestStatus UserGoalSelfTest::testGoalIdAccesss() noexcept
 {
     return testAccessorFunctions<std::size_t>(57, &primaryKey, "Primary Key",
         std::bind(&UserGoalModel::setGoalId, this, std::placeholders::_1),
         std::bind(&UserGoalModel::getGoalId, this));
 }
 
-bool UserGoalSelfTest::testUserIdAccesss() noexcept
+TestStatus UserGoalSelfTest::testUserIdAccesss() noexcept
 {
     return testAccessorFunctions<std::size_t>(23, &userID, "User ID",
         std::bind(&UserGoalModel::setUserId, this, std::placeholders::_1),
         std::bind(&UserGoalModel::getUserId, this));
 }
 
-bool UserGoalSelfTest::testDescriptionAccess() noexcept
+TestStatus UserGoalSelfTest::testDescriptionAccess() noexcept
 {
     return testAccessorFunctions<std::string>("Test note content access", &description, "Content",
         std::bind(&UserGoalModel::setDescription, this, std::placeholders::_1),
         std::bind(&UserGoalModel::getDescription, this));
 }
 
-bool UserGoalSelfTest::testCreationDateAccess() noexcept
+TestStatus UserGoalSelfTest::testCreationDateAccess() noexcept
 {
     return testTimeStampAccessorFunctions(std::chrono::system_clock::now(), &creationDate, "Date Added",
         std::bind(&UserGoalModel::setCreationTimeStamp, this, std::placeholders::_1),
         std::bind(&UserGoalModel::getCreationTimeStamp, this));
 }
 
-bool UserGoalSelfTest::testParentIdAccess() noexcept
+TestStatus UserGoalSelfTest::testParentIdAccess() noexcept
 {
     return testOptionalAccessorFunctions<std::size_t>(1, &parentID, "Parent ID",
         std::bind(&UserGoalModel::setParentID, this, std::placeholders::_1),
         std::bind(&UserGoalModel::getParentId, this));
 }
 
-bool UserGoalSelfTest::testPriorityAccess() noexcept
+TestStatus UserGoalSelfTest::testPriorityAccess() noexcept
 {
     return testOptionalAccessorFunctions<unsigned int>(1, &priority, "Priority",
         std::bind(&UserGoalModel::setPriority, this, std::placeholders::_1),

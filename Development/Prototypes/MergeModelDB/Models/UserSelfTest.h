@@ -27,22 +27,22 @@ private:
     
 // Unit test functions
     virtual void selfTestResetAllValues() override;
-    virtual std::vector<std::function<bool(void)>> initAttributeAccessTests() noexcept override;
-    bool testUserIdAccesss() noexcept;
-    bool testLastNameAccess() noexcept;
-    bool testFirstNameAccess() noexcept;
-    bool testMiddleInitialAccess() noexcept;
-    bool testLoginNameAccess() noexcept;
-    bool testPassWordAccess() noexcept;
-    bool testCreatedDateAcfcess() noexcept;
-    bool testLastLoginAccess() noexcept;
-    bool testEmailAccess() noexcept;
-    bool testStartTimeAccess() noexcept;
-    bool testEndTimeAccesss() noexcept;
-    bool testIncludePriorityInScheduleAccess() noexcept;
-    bool testIncludeMinorPriorityInScheduleAccess() noexcept;
-    bool testUseLetterForMajorPriorityAccess() noexcept;
-    bool testSeparateMajorAndMinorWithDotAccess() noexcept;
+    virtual std::vector<std::function<TestStatus(void)>> initAttributeAccessTests() noexcept override;
+    TestStatus testUserIdAccesss() noexcept;
+    TestStatus testLastNameAccess() noexcept;
+    TestStatus testFirstNameAccess() noexcept;
+    TestStatus testMiddleInitialAccess() noexcept;
+    TestStatus testLoginNameAccess() noexcept;
+    TestStatus testPassWordAccess() noexcept;
+    TestStatus testCreatedDateAcfcess() noexcept;
+    TestStatus testLastLoginAccess() noexcept;
+    TestStatus testEmailAccess() noexcept;
+    TestStatus testStartTimeAccess() noexcept;
+    TestStatus testEndTimeAccesss() noexcept;
+    TestStatus testIncludePriorityInScheduleAccess() noexcept;
+    TestStatus testIncludeMinorPriorityInScheduleAccess() noexcept;
+    TestStatus testUseLetterForMajorPriorityAccess() noexcept;
+    TestStatus testSeparateMajorAndMinorWithDotAccess() noexcept;
 
 
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
