@@ -35,16 +35,16 @@ private:
     TestStatus testPriorityAccess() noexcept;
 
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
-    virtual bool testExceptionInsert() noexcept override;
-    virtual bool testExceptionUpdate() noexcept override;
-    virtual bool testExceptionRetrieve() noexcept override;
-    bool testExceptionSelectByGoalID() noexcept;
-    bool testExceptionSelectByUserIDAndDescription() noexcept;
-    bool testExceptionFormatSelectAllByUserId() noexcept;
-    bool testExceptionFormatSelectAllChildGoalsWithParentFromUser() noexcept;
-    bool testExceptionFormatSelectAllChildGoalsWithParent() noexcept;
-    bool testExceptionFormatSelectByExactDescription() noexcept;
-    bool testExceptionFormatSelectBySimilarDescription() noexcept;
+    virtual TestStatus testExceptionInsert() noexcept override;
+    virtual TestStatus testExceptionUpdate() noexcept override;
+    virtual TestStatus testExceptionRetrieve() noexcept override;
+    TestStatus testExceptionSelectByGoalID() noexcept;
+    TestStatus testExceptionSelectByUserIDAndDescription() noexcept;
+    TestStatus testExceptionFormatSelectAllByUserId() noexcept;
+    TestStatus testExceptionFormatSelectAllChildGoalsWithParentFromUser() noexcept;
+    TestStatus testExceptionFormatSelectAllChildGoalsWithParent() noexcept;
+    TestStatus testExceptionFormatSelectByExactDescription() noexcept;
+    TestStatus testExceptionFormatSelectBySimilarDescription() noexcept;
 
     virtual TestStatus testAllInsertFailures() override;
     virtual TestStatus testEqualityOperator() noexcept override;

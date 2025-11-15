@@ -28,15 +28,15 @@ private:
  */
     virtual void selfTestResetAllValues() override;
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
-    bool testExceptionSelectByTaskID();
-    bool testExceptionSelectByDescriptionAndAssignedUser();
-    bool testExceptionFormatSelectActiveTasksForAssignedUser();
-    bool testExceptionFormatSelectUnstartedDueForStartForAssignedUser();
-    bool testExceptionFormatSelectTasksCompletedByAssignedAfterDate();
-    bool testExceptionFormatSelectTasksByAssignedIDandParentID();
-    virtual bool testExceptionInsert() noexcept override;
-    virtual bool testExceptionUpdate() noexcept override;
-    virtual bool testExceptionRetrieve() noexcept override;
+    TestStatus testExceptionSelectByTaskID();
+    TestStatus testExceptionSelectByDescriptionAndAssignedUser();
+    TestStatus testExceptionFormatSelectActiveTasksForAssignedUser();
+    TestStatus testExceptionFormatSelectUnstartedDueForStartForAssignedUser();
+    TestStatus testExceptionFormatSelectTasksCompletedByAssignedAfterDate();
+    TestStatus testExceptionFormatSelectTasksByAssignedIDandParentID();
+    virtual TestStatus testExceptionInsert() noexcept override;
+    virtual TestStatus testExceptionUpdate() noexcept override;
+    virtual TestStatus testExceptionRetrieve() noexcept override;
     virtual TestStatus testAllInsertFailures() override;
     virtual TestStatus testEqualityOperator() noexcept override;
     virtual void testOutput() noexcept override;

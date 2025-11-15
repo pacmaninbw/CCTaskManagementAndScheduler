@@ -24,7 +24,7 @@
 
 struct ExceptionTestElement
 {
-    std::function<bool(void)> testExceptionFunction;
+    std::function<TestStatus(void)> testExceptionFunction;
     std::string_view functionUnderTest;
 };
 
@@ -44,9 +44,9 @@ protected:
  */
     virtual std::vector<std::function<TestStatus(void)>> initAttributeAccessTests() noexcept = 0;
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept = 0;
-    virtual bool testExceptionInsert() = 0;     // Should be added too the vector returned by initExceptionTests()
-    virtual bool testExceptionUpdate() = 0;     // Should be added too the vector returned by initExceptionTests()
-    virtual bool testExceptionRetrieve() = 0;   // Should be added too the vector returned by initExceptionTests()
+    virtual TestStatus testExceptionInsert() = 0;     // Should be added too the vector returned by initExceptionTests()
+    virtual TestStatus testExceptionUpdate() = 0;     // Should be added too the vector returned by initExceptionTests()
+    virtual TestStatus testExceptionRetrieve() = 0;   // Should be added too the vector returned by initExceptionTests()
     virtual TestStatus testAllInsertFailures() = 0;
     virtual TestStatus testEqualityOperator() noexcept = 0;
     virtual void testOutput() noexcept = 0;
@@ -320,7 +320,7 @@ protected:
         {
             for (auto exceptionTest: exceptionTests)
             {
-                if (!exceptionTest.testExceptionFunction())
+                if (exceptionTest.testExceptionFunction() == TESTFAILED)
                 {
                     std::cerr << std::format("{}::{} returned true with exception: Exception Test Failed\n",
                         ModelDBInterface::modelName, exceptionTest.functionUnderTest);
@@ -510,7 +510,7 @@ protected:
         return TESTPASSED;
     }
 
-    bool testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName) noexcept
+    TestStatus testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName) noexcept
     {
         std::string reportFailure = std::format("In {}::{}: ", ModelDBInterface::modelName, testExceptionFuncName);
 
@@ -527,12 +527,12 @@ protected:
 
         std::cout << reportFailure << "\n";
 
-        return false;
+        return TESTFAILED;
     }
 
     template <typename F, typename... Ts>
     requires std::is_invocable_v<F, Ts...>
-    bool testExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
+    TestStatus testExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
     {
         CoreDBInterface::forceException = true;
         if (funcUnderTest(args...))
@@ -546,7 +546,7 @@ protected:
             return testExceptionReportFailure(true, true, funcName);
         }
 
-        return true;
+        return TESTPASSED;
     }
 
 /*
@@ -554,7 +554,7 @@ protected:
  */
     template <typename F, typename... Ts>
     requires std::is_invocable_v<F, Ts...>
-    bool testFormatExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
+    TestStatus testFormatExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
     {
         CoreDBInterface::forceException = true;
         std::string formattedQuery = funcUnderTest(args...);
@@ -571,7 +571,7 @@ protected:
             return testExceptionReportFailure(true, false, funcName);
         }
 
-        return true;
+        return TESTPASSED;
     }
 
 /*
@@ -579,7 +579,7 @@ protected:
  */
     template <typename F, typename... Ts>
     requires std::is_invocable_v<F, Ts...>
-    bool testFormatExceptionCatchSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
+    TestStatus testFormatExceptionCatchSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
     {
         std::string formattedQuery;
 
@@ -600,7 +600,7 @@ protected:
             }
         }        
 
-        return true;
+        return TESTPASSED;
     }
 
 };

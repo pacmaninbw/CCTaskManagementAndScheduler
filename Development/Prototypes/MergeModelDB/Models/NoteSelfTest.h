@@ -29,10 +29,10 @@ private:
     virtual std::vector<std::function<TestStatus(void)>> initAttributeAccessTests() noexcept override;
 
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
-    virtual bool testExceptionInsert() noexcept override;
-    virtual bool testExceptionUpdate() noexcept override;
-    virtual bool testExceptionRetrieve() noexcept override;
-    bool testExceptionSelectByNoteID() noexcept;
+    virtual TestStatus testExceptionInsert() noexcept override;
+    virtual TestStatus testExceptionUpdate() noexcept override;
+    virtual TestStatus testExceptionRetrieve() noexcept override;
+    TestStatus testExceptionSelectByNoteID() noexcept;
 
     virtual TestStatus testAllInsertFailures() override;
 

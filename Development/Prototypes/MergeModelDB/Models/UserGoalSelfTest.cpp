@@ -108,7 +108,7 @@ std::vector<ExceptionTestElement> UserGoalSelfTest::initExceptionTests() noexcep
     return exceptionTests;
 }
 
-bool UserGoalSelfTest::testExceptionInsert() noexcept
+TestStatus UserGoalSelfTest::testExceptionInsert() noexcept
 {
    selfTestResetAllValues();
 
@@ -120,7 +120,7 @@ bool UserGoalSelfTest::testExceptionInsert() noexcept
     return testExceptionAndSuccessNArgs("UserGoalModel::insert", std::bind(&UserGoalModel::insert, this));
 }
 
-bool UserGoalSelfTest::testExceptionUpdate() noexcept
+TestStatus UserGoalSelfTest::testExceptionUpdate() noexcept
 {
    selfTestResetAllValues();
 
@@ -133,7 +133,7 @@ bool UserGoalSelfTest::testExceptionUpdate() noexcept
     return testExceptionAndSuccessNArgs("UserGoalModel::update", std::bind(&UserGoalModel::update, this));
 }
 
-bool UserGoalSelfTest::testExceptionRetrieve() noexcept
+TestStatus UserGoalSelfTest::testExceptionRetrieve() noexcept
 {
     selfTestResetAllValues();
 
@@ -142,14 +142,14 @@ bool UserGoalSelfTest::testExceptionRetrieve() noexcept
     return testExceptionAndSuccessNArgs("UserGoalModel::retrieve", std::bind(&UserGoalModel::retrieve, this));
 }
 
-bool UserGoalSelfTest::testExceptionSelectByGoalID() noexcept
+TestStatus UserGoalSelfTest::testExceptionSelectByGoalID() noexcept
 {
     selfTestResetAllValues();
 
     return testExceptionAndSuccessNArgs("UserGoalModel::selectByGoalID", std::bind(&UserGoalModel::selectByGoalID, this, std::placeholders::_1), 1);
 }
 
-bool UserGoalSelfTest::testExceptionSelectByUserIDAndDescription() noexcept
+TestStatus UserGoalSelfTest::testExceptionSelectByUserIDAndDescription() noexcept
 {
     selfTestResetAllValues();
 
@@ -161,7 +161,7 @@ bool UserGoalSelfTest::testExceptionSelectByUserIDAndDescription() noexcept
         this, std::placeholders::_1, std::placeholders::_2), testUserId, testDescription);
 }
 
-bool UserGoalSelfTest::testExceptionFormatSelectAllByUserId() noexcept
+TestStatus UserGoalSelfTest::testExceptionFormatSelectAllByUserId() noexcept
 {
     selfTestResetAllValues();
 
@@ -169,7 +169,7 @@ bool UserGoalSelfTest::testExceptionFormatSelectAllByUserId() noexcept
         std::bind(&UserGoalModel::formatSelectAllByUserId, this, std::placeholders::_1), 1);
 }
 
-bool UserGoalSelfTest::testExceptionFormatSelectAllChildGoalsWithParentFromUser() noexcept
+TestStatus UserGoalSelfTest::testExceptionFormatSelectAllChildGoalsWithParentFromUser() noexcept
 {
     selfTestResetAllValues();
 
@@ -181,7 +181,7 @@ bool UserGoalSelfTest::testExceptionFormatSelectAllChildGoalsWithParentFromUser(
         this, std::placeholders::_1, std::placeholders::_2), testParentId, testUserId);
 }
 
-bool UserGoalSelfTest::testExceptionFormatSelectAllChildGoalsWithParent() noexcept
+TestStatus UserGoalSelfTest::testExceptionFormatSelectAllChildGoalsWithParent() noexcept
 {
     selfTestResetAllValues();
 
@@ -205,11 +205,11 @@ bool UserGoalSelfTest::testExceptionFormatSelectAllChildGoalsWithParent() noexce
         return testExceptionReportFailure(true, false, funcName);
     }
 
-    return true;
+    return TESTPASSED;
 
 }
 
-bool UserGoalSelfTest::testExceptionFormatSelectByExactDescription() noexcept
+TestStatus UserGoalSelfTest::testExceptionFormatSelectByExactDescription() noexcept
 {
     selfTestResetAllValues();
 
@@ -221,7 +221,7 @@ bool UserGoalSelfTest::testExceptionFormatSelectByExactDescription() noexcept
         this, std::placeholders::_1, std::placeholders::_2), testDescription, testUserId);
 }
 
-bool UserGoalSelfTest::testExceptionFormatSelectBySimilarDescription() noexcept
+TestStatus UserGoalSelfTest::testExceptionFormatSelectBySimilarDescription() noexcept
 {
     selfTestResetAllValues();
 

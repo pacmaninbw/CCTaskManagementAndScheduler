@@ -48,7 +48,7 @@ std::vector<ExceptionTestElement> NoteSelfTest::initExceptionTests() noexcept
     return exceptionTests;
 }
 
-bool NoteSelfTest::testExceptionInsert() noexcept
+TestStatus NoteSelfTest::testExceptionInsert() noexcept
 {
    selfTestResetAllValues();
 
@@ -61,7 +61,7 @@ bool NoteSelfTest::testExceptionInsert() noexcept
     return testExceptionAndSuccessNArgs("NoteModel::insert", std::bind(&NoteModel::insert, this));
 }
 
-bool NoteSelfTest::testExceptionUpdate() noexcept
+TestStatus NoteSelfTest::testExceptionUpdate() noexcept
 {
    selfTestResetAllValues();
 
@@ -75,7 +75,7 @@ bool NoteSelfTest::testExceptionUpdate() noexcept
     return testExceptionAndSuccessNArgs("NoteModel::update", std::bind(&NoteModel::update, this));
 }
 
-bool NoteSelfTest::testExceptionRetrieve() noexcept
+TestStatus NoteSelfTest::testExceptionRetrieve() noexcept
 {
     selfTestResetAllValues();
 
@@ -84,7 +84,7 @@ bool NoteSelfTest::testExceptionRetrieve() noexcept
     return testExceptionAndSuccessNArgs("NoteModel::retrieve", std::bind(&NoteModel::retrieve, this));
 }
 
-bool NoteSelfTest::testExceptionSelectByNoteID() noexcept
+TestStatus NoteSelfTest::testExceptionSelectByNoteID() noexcept
 {
     selfTestResetAllValues();
 

@@ -46,15 +46,15 @@ private:
 
 
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
-    bool testExceptionSelectByLoginName() noexcept;
-    bool testExceptionSelectByEmail() noexcept;
-    bool testExceptionSelectByLoginAndPassword() noexcept;
-    bool testExceptionSelectByFullName() noexcept;
-    bool testExceptionSelectByUserID() noexcept;
-    bool testExceptionFormatGetAllUsersQuery() noexcept;
-    virtual bool testExceptionInsert() noexcept override;
-    virtual bool testExceptionUpdate() noexcept override;
-    virtual bool testExceptionRetrieve() noexcept override;
+    TestStatus testExceptionSelectByLoginName() noexcept;
+    TestStatus testExceptionSelectByEmail() noexcept;
+    TestStatus testExceptionSelectByLoginAndPassword() noexcept;
+    TestStatus testExceptionSelectByFullName() noexcept;
+    TestStatus testExceptionSelectByUserID() noexcept;
+    TestStatus testExceptionFormatGetAllUsersQuery() noexcept;
+    virtual TestStatus testExceptionInsert() noexcept override;
+    virtual TestStatus testExceptionUpdate() noexcept override;
+    virtual TestStatus testExceptionRetrieve() noexcept override;
 
     virtual TestStatus testAllInsertFailures() override;
     virtual TestStatus testEqualityOperator() noexcept override;

@@ -64,14 +64,14 @@ std::vector<ExceptionTestElement> TaskSelfTest::initExceptionTests() noexcept
     return exceptionTests;
 }
 
-bool TaskSelfTest::testExceptionSelectByTaskID()
+TestStatus TaskSelfTest::testExceptionSelectByTaskID()
 {
     selfTestResetAllValues();
 
     return testExceptionAndSuccessNArgs("TaskSelfTest::selectByTaskID", std::bind(&TaskModel::selectByTaskID, this, std::placeholders::_1), 0);
 }
 
-bool TaskSelfTest::testExceptionSelectByDescriptionAndAssignedUser()
+TestStatus TaskSelfTest::testExceptionSelectByDescriptionAndAssignedUser()
 {
     selfTestResetAllValues();
     return testExceptionAndSuccessNArgs
@@ -80,21 +80,21 @@ bool TaskSelfTest::testExceptionSelectByDescriptionAndAssignedUser()
             "A task description", 1);
 }
 
-bool TaskSelfTest::testExceptionFormatSelectActiveTasksForAssignedUser()
+TestStatus TaskSelfTest::testExceptionFormatSelectActiveTasksForAssignedUser()
 {
     selfTestResetAllValues();
     return testFormatExceptionAndSuccessNArgs("TaskSelfTest::formatSelectActiveTasksForAssignedUser",
         std::bind(&TaskModel::formatSelectActiveTasksForAssignedUser, this, std::placeholders::_1), 1);
 }
 
-bool TaskSelfTest::testExceptionFormatSelectUnstartedDueForStartForAssignedUser()
+TestStatus TaskSelfTest::testExceptionFormatSelectUnstartedDueForStartForAssignedUser()
 {
     selfTestResetAllValues();
     return testFormatExceptionAndSuccessNArgs("TaskSelfTest::formatSelectUnstartedDueForStartForAssignedUser",
         std::bind(&TaskModel::formatSelectUnstartedDueForStartForAssignedUser, this, std::placeholders::_1), 1);
 }
 
-bool TaskSelfTest::testExceptionFormatSelectTasksCompletedByAssignedAfterDate()
+TestStatus TaskSelfTest::testExceptionFormatSelectTasksCompletedByAssignedAfterDate()
 {
     selfTestResetAllValues();
 
@@ -106,7 +106,7 @@ bool TaskSelfTest::testExceptionFormatSelectTasksCompletedByAssignedAfterDate()
         assignedUser, searchStartDate);
 }
  
-bool TaskSelfTest::testExceptionFormatSelectTasksByAssignedIDandParentID()
+TestStatus TaskSelfTest::testExceptionFormatSelectTasksByAssignedIDandParentID()
 {
     selfTestResetAllValues();
 
@@ -118,7 +118,7 @@ bool TaskSelfTest::testExceptionFormatSelectTasksByAssignedIDandParentID()
         assignedUser, parentid);
 }
 
-bool TaskSelfTest::testExceptionInsert() noexcept
+TestStatus TaskSelfTest::testExceptionInsert() noexcept
 {
     selfTestResetAllValues();
     forceException = true;
@@ -136,16 +136,17 @@ bool TaskSelfTest::testExceptionInsert() noexcept
     addDependency(5);
     addDependency(7);
 
-    if (!testFormatExceptionCatchSuccessNArgs("TaskModel::formatInsertStatement", std::bind(&TaskSelfTest::formatInsertStatement, this)))
+    if (testFormatExceptionCatchSuccessNArgs(
+        "TaskModel::formatInsertStatement", std::bind(&TaskSelfTest::formatInsertStatement, this)) == TESTFAILED)
     {
         std::cerr << "TaskSelfTest::formatInsertStatement() returned a string in Exception Test, FAILED\n";
-        return false;
+        return TESTFAILED;
     }
 
     return testExceptionAndSuccessNArgs("TaskModel::insert", std::bind(&TaskModel::insert, this));
 }
 
-bool TaskSelfTest::testExceptionUpdate() noexcept
+TestStatus TaskSelfTest::testExceptionUpdate() noexcept
 {
     selfTestResetAllValues();
 
@@ -166,25 +167,27 @@ bool TaskSelfTest::testExceptionUpdate() noexcept
     addDependency(4);
     addDependency(6);
     
-    if (!testFormatExceptionCatchSuccessNArgs("TaskSelfTest::formatUpdateStatement", std::bind(&TaskSelfTest::formatUpdateStatement, this)))
+    if (testFormatExceptionCatchSuccessNArgs(
+        "TaskSelfTest::formatUpdateStatement", std::bind(&TaskSelfTest::formatUpdateStatement, this)) == TESTFAILED)
     {
         std::cerr << "TaskSelfTest::formatInsertStatement() returned a string in Exception Test, FAILED\n";
-        return false;
+        return TESTFAILED;
     }
 
     return testExceptionAndSuccessNArgs("TaskSelfTest::update", std::bind(&TaskModel::update, this));
 }
 
-bool TaskSelfTest::testExceptionRetrieve() noexcept
+TestStatus TaskSelfTest::testExceptionRetrieve() noexcept
 {
     selfTestResetAllValues();
     
     setTaskID(37);
 
-    if (!testFormatExceptionCatchSuccessNArgs("TaskSelfTest::formatSelectStatement", std::bind(&TaskSelfTest::formatSelectStatement, this)))
+    if (testFormatExceptionCatchSuccessNArgs(
+        "TaskSelfTest::formatSelectStatement", std::bind(&TaskSelfTest::formatSelectStatement, this)) == TESTFAILED)
     {
         std::cerr << "TaskSelfTest::formatInsertStatement() returned a string in Exception Test, FAILED\n";
-        return false;
+        return TESTFAILED;
     }
 
     return testExceptionAndSuccessNArgs("TaskSelfTest::retrieve", std::bind(&TaskModel::retrieve, this));

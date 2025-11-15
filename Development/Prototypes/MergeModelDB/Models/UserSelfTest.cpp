@@ -194,13 +194,13 @@ std::vector<ExceptionTestElement> UserSelfTest::initExceptionTests() noexcept
     return exceptionTests;
 }
 
-bool UserSelfTest::testExceptionSelectByLoginName() noexcept
+TestStatus UserSelfTest::testExceptionSelectByLoginName() noexcept
 {
     selfTestResetAllValues();
 
     return testExceptionAndSuccessNArgs("UserSelfTest::selectByLoginName", std::bind(&UserModel::selectByLoginName, this, std::placeholders::_1), "testValue");
 }
-bool UserSelfTest::testExceptionSelectByEmail() noexcept
+TestStatus UserSelfTest::testExceptionSelectByEmail() noexcept
 {
     selfTestResetAllValues();
     std::string testEmail("testValue@testValue.com");
@@ -208,7 +208,7 @@ bool UserSelfTest::testExceptionSelectByEmail() noexcept
     return testExceptionAndSuccessNArgs("UserSelfTest::selectByEmail", std::bind(&UserModel::selectByEmail, this, std::placeholders::_1), testEmail);
 }
 
-bool UserSelfTest::testExceptionSelectByLoginAndPassword() noexcept
+TestStatus UserSelfTest::testExceptionSelectByLoginAndPassword() noexcept
 {
     selfTestResetAllValues();
 
@@ -217,7 +217,7 @@ bool UserSelfTest::testExceptionSelectByLoginAndPassword() noexcept
         "TestValue", "TestValue");
 }
 
-bool UserSelfTest::testExceptionSelectByFullName() noexcept
+TestStatus UserSelfTest::testExceptionSelectByFullName() noexcept
 {
     selfTestResetAllValues();
 
@@ -226,21 +226,21 @@ bool UserSelfTest::testExceptionSelectByFullName() noexcept
             "TestLastName", "TestFirstName", "MI");
 }
 
-bool UserSelfTest::testExceptionSelectByUserID() noexcept
+TestStatus UserSelfTest::testExceptionSelectByUserID() noexcept
 {
     selfTestResetAllValues();
 
     return testExceptionAndSuccessNArgs("UserModel::selectByUserID", std::bind(&UserModel::selectByUserID, this, std::placeholders::_1), 1);
 }
 
-bool UserSelfTest::testExceptionFormatGetAllUsersQuery() noexcept
+TestStatus UserSelfTest::testExceptionFormatGetAllUsersQuery() noexcept
 {
     selfTestResetAllValues();
     
     return testFormatExceptionAndSuccessNArgs("UserModel::formatGetAllUsersQuery", std::bind(&UserModel::formatGetAllUsersQuery, this));
 }
 
-bool UserSelfTest::testExceptionInsert() noexcept
+TestStatus UserSelfTest::testExceptionInsert() noexcept
 {
     selfTestResetAllValues();
 
@@ -256,7 +256,7 @@ bool UserSelfTest::testExceptionInsert() noexcept
     return testExceptionAndSuccessNArgs("UserModel::insert", std::bind(&UserModel::insert, this));
 }
 
-bool UserSelfTest::testExceptionUpdate() noexcept
+TestStatus UserSelfTest::testExceptionUpdate() noexcept
 {
     selfTestResetAllValues();
 
@@ -273,7 +273,7 @@ bool UserSelfTest::testExceptionUpdate() noexcept
     return testExceptionAndSuccessNArgs("UserModel::update", std::bind(&UserModel::update, this));
 }
 
-bool UserSelfTest::testExceptionRetrieve() noexcept
+TestStatus UserSelfTest::testExceptionRetrieve() noexcept
 {
     selfTestResetAllValues();
 
