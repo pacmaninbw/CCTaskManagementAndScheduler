@@ -7,13 +7,7 @@
 #include "TaskModel.h"
 
 // Standard C++ Header Files
-#include <chrono>
-#include <format>
-#include <functional>
-#include <iostream>
 #include <memory>
-#include <optional>
-#include <string>
 #include <vector>
 
 class TaskSelfTest : public ModelSelfTest<TaskModel>
@@ -21,6 +15,7 @@ class TaskSelfTest : public ModelSelfTest<TaskModel>
 public:
     TaskSelfTest();
     virtual ~TaskSelfTest() = default;
+    virtual TestStatus runSelfTest() noexcept override;
 
 private:
 /*

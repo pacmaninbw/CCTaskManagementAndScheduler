@@ -14,6 +14,82 @@ NoteSelfTest::NoteSelfTest()
 {
 }
 
+TestStatus NoteSelfTest::runSelfTest() noexcept
+{
+    CoreDBInterface::inSelfTest = true;
+    TestStatus selfTestStatus = TESTPASSED;
+    std::string_view modelName(ModelDBInterface::modelName);
+
+    std::cout << "\nRunning " << modelName << " Self Test\n";
+
+    if (ExceptionSelfTest::testExceptionHandling()!= TESTPASSED)
+    {
+        std::cerr  << modelName << "::runSelfTest: Exception handling FAILED!\n";
+        selfTestStatus = TESTFAILED;
+    }
+    
+    if (testSave() == TESTFAILED)
+    {
+        selfTestStatus = TESTFAILED;
+    }
+
+    if (AttributeSelfTest::testAttributeAccessFunctions() == TESTFAILED)
+    {
+        std::cerr << modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
+        selfTestStatus = TESTFAILED;
+    }
+
+    if (testEqualityOperator() == TESTFAILED)
+    {
+        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", modelName);
+        selfTestStatus = TESTFAILED;
+    }
+
+    testOutput();
+
+    if (testAllInsertFailures() != TESTPASSED)
+    {
+        std::cerr << "Test of all insertion failures FAILED!\n";
+        selfTestStatus = TESTFAILED;
+    }
+
+    if (testCommonInsertFailurePath() != TESTPASSED)
+    {
+        selfTestStatus = TESTFAILED;
+    }
+    else
+    {
+        std::cout << "Common Insertion Failure Test PASSED!\n";
+    }
+
+    if (testCommonUpdateFailurePath() != TESTPASSED)
+    {
+        selfTestStatus = TESTFAILED;
+    }
+    else
+    {
+        std::cout << "Common Update Failure Test PASSED!\n";
+    }
+
+    if (testTextFieldManipulation() == TESTFAILED)
+    {
+        selfTestStatus = TESTFAILED;
+    }
+
+    CoreDBInterface::inSelfTest = false;
+    
+    if (selfTestStatus == TESTPASSED)
+    {
+        std::cout <<  std::format("{} Self Test {}\n", modelName, "PASSED");
+    }
+    else
+    {
+        std::cerr <<  std::format("{} Self Test {}\n", modelName, "FAILED");
+    }
+
+    return selfTestStatus;
+}
+
 void NoteSelfTest::selfTestResetAllValues()
 {
     ModelSelfTest::selfTestResetAllValues();

@@ -7,13 +7,8 @@
 #include "UserModel.h"
 
 // Standard C++ Header Files
-#include <chrono>
-#include <format>
 #include <functional>
-#include <iostream>
 #include <memory>
-#include <optional>
-#include <string>
 #include <vector>
 
 class UserSelfTest : public ModelSelfTest<UserModel>
@@ -21,7 +16,7 @@ class UserSelfTest : public ModelSelfTest<UserModel>
 public:
     UserSelfTest();
     ~UserSelfTest() = default;
-
+    virtual TestStatus runSelfTest() noexcept override;
 
 private:
     

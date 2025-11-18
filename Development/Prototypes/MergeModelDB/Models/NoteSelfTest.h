@@ -3,7 +3,13 @@
 
 // Project Header Files
 #include "commonUtilities.h"
+#if 0
+#include "AttributeSelfTest.h"
+#include "ExceptionSelfTest.h"
+#include "FunctionalSelfTest.h"
+#else
 #include "ModelSelfTest.h"
+#endif
 #include "NoteModel.h"
 
 // Standard C++ Header Files
@@ -15,11 +21,12 @@
 #include <string>
 #include <vector>
 
-class NoteSelfTest : public ModelSelfTest<NoteModel>
+class NoteSelfTest : public ModelSelfTest<NoteModel> 
 {
 public:
     NoteSelfTest();
     ~NoteSelfTest() = default;
+    TestStatus runSelfTest() noexcept;
 
 private:
     

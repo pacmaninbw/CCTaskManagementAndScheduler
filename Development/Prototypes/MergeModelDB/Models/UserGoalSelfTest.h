@@ -8,12 +8,7 @@
 #include "UserGoalModel.h"
 
 // Standard C++ Header Files
-#include <chrono>
-#include <format>
 #include <functional>
-#include <iostream>
-#include <optional>
-#include <string>
 #include <vector>
 
 class UserGoalSelfTest : public ModelSelfTest<UserGoalModel>
@@ -21,6 +16,7 @@ class UserGoalSelfTest : public ModelSelfTest<UserGoalModel>
 public:
     UserGoalSelfTest();
     ~UserGoalSelfTest() = default;
+    virtual TestStatus runSelfTest() noexcept override;
 
 private:
     
