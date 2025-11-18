@@ -94,7 +94,7 @@ TestStatus UserSelfTest::runSelfTest() noexcept
     return selfTestStatus;
 }
 
-void UserSelfTest::selfTestResetAllValues()
+void UserSelfTest::selfTestResetAllValues() noexcept
 {
     ModelSelfTest::selfTestResetAllValues();
 

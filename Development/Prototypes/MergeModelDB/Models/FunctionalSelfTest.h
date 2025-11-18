@@ -22,13 +22,14 @@ template<class Model>
 requires std::is_base_of_v<ModelDBInterface, Model>
 class FunctionalSelfTest :  public virtual Model
 {
-public:
+protected:
 /*****
  * These methods must be implemented.
  * The tests they implement require the details of the particular model being tested.
  * 
  * Init functions should call the local version of selfTestResetAllValues().
  */
+    virtual void selfTestResetAllValues() noexcept = 0;
     virtual TestStatus testAllInsertFailures() = 0;
     virtual TestStatus testEqualityOperator() noexcept = 0;
     virtual void testOutput() noexcept = 0;
@@ -40,20 +41,6 @@ public:
     virtual ~FunctionalSelfTest() = default;
 
 protected:
-/*****
- * FunctionalSelfTest::selfTestResetAllValues() should be called by any override.
- * The override should provide resets for any of the model under tests attributes.
- */
-    virtual void selfTestResetAllValues()
-    {
-        ModelDBInterface::primaryKey = 0;
-        ModelDBInterface::modified = false;
-/*****
- * format_opts needs to be reset before any exception test
- */
-        CoreDBInterface::format_opts.reset();
-        CoreDBInterface::errorMessages.clear();
-    }
 
     virtual TestStatus testSave()
     {

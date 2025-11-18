@@ -21,7 +21,7 @@ private:
 /*
  * Unit Testing
  */
-    virtual void selfTestResetAllValues() override;
+    virtual void selfTestResetAllValues() noexcept override;
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
     TestStatus testExceptionSelectByTaskID();
     TestStatus testExceptionSelectByDescriptionAndAssignedUser();

@@ -35,7 +35,7 @@ protected:
  * ModelSelfTest::selfTestResetAllValues() should be called by any override.
  * The override should provide resets for any of the model under tests attributes.
  */
-    virtual void selfTestResetAllValues()
+    virtual void selfTestResetAllValues() noexcept
     {
         ModelDBInterface::primaryKey = 0;
         ModelDBInterface::modified = false;

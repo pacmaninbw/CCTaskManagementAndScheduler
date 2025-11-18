@@ -90,7 +90,7 @@ TestStatus UserGoalSelfTest::runSelfTest() noexcept
     return selfTestStatus;
 }
 
-void UserGoalSelfTest::selfTestResetAllValues()
+void UserGoalSelfTest::selfTestResetAllValues() noexcept
 {
     ModelSelfTest::selfTestResetAllValues();
 

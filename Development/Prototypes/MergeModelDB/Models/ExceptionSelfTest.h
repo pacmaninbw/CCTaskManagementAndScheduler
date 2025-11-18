@@ -36,7 +36,7 @@ protected:
  * 
  * Init functions should call the local version of selfTestResetAllValues().
  */
-    virtual void selfTestResetAllValues() = 0;
+    virtual void selfTestResetAllValues() noexcept = 0;
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept = 0;
     virtual TestStatus testExceptionInsert() = 0;     // Should be added too the vector returned by initExceptionTests()
     virtual TestStatus testExceptionUpdate() = 0;     // Should be added too the vector returned by initExceptionTests()

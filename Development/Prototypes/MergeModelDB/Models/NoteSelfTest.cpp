@@ -90,7 +90,7 @@ TestStatus NoteSelfTest::runSelfTest() noexcept
     return selfTestStatus;
 }
 
-void NoteSelfTest::selfTestResetAllValues()
+void NoteSelfTest::selfTestResetAllValues() noexcept
 {
     ModelSelfTest::selfTestResetAllValues();
     userID = 0;

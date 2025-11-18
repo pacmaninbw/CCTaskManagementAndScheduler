@@ -95,7 +95,7 @@ TestStatus TaskSelfTest::runSelfTest() noexcept
 }
 
 
-void TaskSelfTest::selfTestResetAllValues()
+void TaskSelfTest::selfTestResetAllValues() noexcept
 {
     ModelSelfTest::selfTestResetAllValues();
 
