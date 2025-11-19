@@ -12,12 +12,21 @@
 // Standard C++ Header Files
 #include <concepts>
 #include <iostream>
-//#include <ranges>
 #include <string>
 #include <string_view>
 #include <type_traits>
 #include <vector>
 
+/*
+ * The FunctionalSelfTest class provides unit testing for methods common to all 
+ * models that are not tested by either the attribute testing or the exception
+ * testing. Each model has an equality operator that needs to be tested. Each
+ * model has an output operator ("<<"). The ModelDBInterface provides methods
+ * such as insert(), update() and and retrieve() that are implemented within
+ * each model due to the different attributes and requirements of the model.
+ * 
+ * This class provides the unit tests for those methods.
+ */
 template<class Model>
 requires std::is_base_of_v<ModelDBInterface, Model>
 class FunctionalSelfTest :  public virtual Model
