@@ -27,6 +27,7 @@
  * 
  * This class provides the unit tests for those methods.
  */
+
 template<class Model>
 requires std::is_base_of_v<ModelDBInterface, Model>
 class FunctionalSelfTest :  public virtual Model
