@@ -56,6 +56,10 @@ public:
 
 protected:
 
+/*
+ * In some instances a text field is used to contain a list of values. This
+ * function provides the ability to test those text fields.
+ */
     virtual TestStatus testTextFieldManipulation()
     {
         TestStatus testStatus = TESTPASSED;
@@ -95,11 +99,11 @@ protected:
     virtual TestStatus testAttributeAccessFunctions() noexcept
     {
         TestStatus testStatus = TESTPASSED;
-        std::vector<AttributeTestFunction> accessTests = initAttributeAccessTests();
+        std::vector<AttributeTestFunction> attributeAccessTests = initAttributeAccessTests();
 
-        for (auto accessTest: accessTests)
+        for (auto attributeAccessTest: attributeAccessTests)
         {
-            if (accessTest() == TESTFAILED)
+            if (attributeAccessTest() == TESTFAILED)
             {
                 testStatus = TESTFAILED;
             }
@@ -108,8 +112,13 @@ protected:
         return testStatus ;
     }
 
+    /*
+     * Test the attribute access functions for a particular attribute. Used
+     * to test required attributes in a model.
+     */
     template <typename U>
-    TestStatus testAccessorFunctions(U testValue, U* member, std::string_view memberName, std::function<void(U)>setFunct, std::function<U(void)>getFunct) noexcept
+    TestStatus testAccessorFunctions(U testValue, U* member, std::string_view memberName,
+         std::function<void(U)>setFunct, std::function<U(void)>getFunct) noexcept
     {
         std::string_view modelName(ModelDBInterface::modelName);
 
@@ -141,6 +150,11 @@ protected:
         return TESTPASSED;
     }
 
+    /*
+     * Test the attribute access functions for a particular optional attribute. Due
+     * to the difference of how optional values are stored the method for required
+     * attributes can't be used here.
+     */
     template <typename U>
     TestStatus testOptionalAccessorFunctions(std::optional<U> testValue, std::optional<U>* member, std::string_view memberName,
         std::function<void(U)>setFunct, std::function<std::optional<U>(void)>getFunct) noexcept
@@ -184,6 +198,11 @@ protected:
         return TESTPASSED;
     }
 
+    /*
+     * TimeStamp attributes are required, but the only way to test if the have a
+     * value is to store it as an optional value. This method tests the access to
+     * TimeStamp attributes.
+     */
     TestStatus testTimeStampAccessorFunctions(std::chrono::system_clock::time_point testValue,
         std::optional<std::chrono::system_clock::time_point>* member,
         std::string_view memberName,
