@@ -19,6 +19,24 @@
 #include <type_traits>
 #include <vector>
 
+/*
+ * Each of the model classes will be used in application that provides a graphic
+ * user interface. The application needs to be robust and handle exceptions as
+ * they occur in a manor where the application will provide necessary information
+ * to the user if an error occurs. Error messages returned by the libraries in
+ * use may not be meaningful to a user. This class tests the functions in the
+ * model that may receive an exception from the underlying libraries.
+ * 
+ * Exceptions are forced at what be the library level to test the exception
+ * handling capability of the model.
+ * 
+ * An exception test should first test what the function will do if an exception
+ * is thrown and then test to see that the function properly works otherwise.
+ * 
+ * A list of exception tests needs tyo be provided by the class that is testing
+ * the model.
+ */
+
 struct ExceptionTestElement
 {
     std::function<TestStatus(void)> testExceptionFunction;
