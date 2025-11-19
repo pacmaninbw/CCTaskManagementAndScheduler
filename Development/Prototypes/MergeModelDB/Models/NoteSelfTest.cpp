@@ -99,11 +99,11 @@ void NoteSelfTest::selfTestResetAllValues() noexcept
     lastUpdate = {};
 }
 
-std::vector<std::function<TestStatus(void)>> NoteSelfTest::initAttributeAccessTests() noexcept
+std::vector<AttributeTestFunction> NoteSelfTest::initAttributeAccessTests() noexcept
 {
     selfTestResetAllValues();
 
-    std::vector<std::function<TestStatus(void)>> attributeAccessTests;
+    std::vector<AttributeTestFunction> attributeAccessTests;
     attributeAccessTests.push_back({std::bind(&NoteSelfTest::testNoteIdAccesss, this)});
     attributeAccessTests.push_back({std::bind(&NoteSelfTest::testUserIdAccesss, this)});
     attributeAccessTests.push_back({std::bind(&NoteSelfTest::testContentAccess, this)});

@@ -368,11 +368,11 @@ TestStatus TaskSelfTest::testEqualityOperator() noexcept
     return (*this == other)? TESTPASSED : TESTFAILED;
 }
 
-std::vector<std::function<TestStatus(void)>> TaskSelfTest::initAttributeAccessTests() noexcept
+std::vector<AttributeTestFunction> TaskSelfTest::initAttributeAccessTests() noexcept
 {
     selfTestResetAllValues();
 
-    std::vector<std::function<TestStatus(void)>> attributeAccessTests; 
+    std::vector<AttributeTestFunction> attributeAccessTests; 
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testTaskIdAccesss, this)});
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testCreatorIDAccess, this)});
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testAssignToIDAccess, this)});

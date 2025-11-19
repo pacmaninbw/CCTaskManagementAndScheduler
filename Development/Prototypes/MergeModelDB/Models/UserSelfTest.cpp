@@ -108,10 +108,10 @@ void UserSelfTest::selfTestResetAllValues() noexcept
     lastLogin.reset();
 }
 
-std::vector<std::function<TestStatus(void)>> UserSelfTest::initAttributeAccessTests() noexcept
+std::vector<AttributeTestFunction> UserSelfTest::initAttributeAccessTests() noexcept
 {
     selfTestResetAllValues();
-    std::vector<std::function<TestStatus(void)>> attributeAccessTests;
+    std::vector<AttributeTestFunction> attributeAccessTests;
 
     attributeAccessTests.push_back({std::bind(&UserSelfTest::testUserIdAccesss, this)});
     attributeAccessTests.push_back({std::bind(&UserSelfTest::testLastNameAccess, this)});

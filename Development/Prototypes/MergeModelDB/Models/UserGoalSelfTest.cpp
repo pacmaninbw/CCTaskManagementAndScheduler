@@ -102,11 +102,11 @@ void UserGoalSelfTest::selfTestResetAllValues() noexcept
     lastUpdate = {};
 }
 
-std::vector<std::function<TestStatus(void)>> UserGoalSelfTest::initAttributeAccessTests() noexcept
+std::vector<AttributeTestFunction> UserGoalSelfTest::initAttributeAccessTests() noexcept
 {
     selfTestResetAllValues();
 
-    std::vector<std::function<TestStatus(void)>> attributeAccessTests;
+    std::vector<AttributeTestFunction> attributeAccessTests;
     attributeAccessTests.push_back({std::bind(&UserGoalSelfTest::testGoalIdAccesss, this)});
     attributeAccessTests.push_back({std::bind(&UserGoalSelfTest::testUserIdAccesss, this)});
     attributeAccessTests.push_back({std::bind(&UserGoalSelfTest::testDescriptionAccess, this)});

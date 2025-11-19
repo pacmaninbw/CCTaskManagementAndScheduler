@@ -36,7 +36,7 @@ private:
     virtual TestStatus testEqualityOperator() noexcept override;
     virtual void testOutput() noexcept override;
 
-    virtual std::vector<std::function<TestStatus(void)>> initAttributeAccessTests() noexcept override;
+    virtual std::vector<AttributeTestFunction> initAttributeAccessTests() noexcept override;
     TestStatus testTaskIdAccesss();
     TestStatus testCreatorIDAccess();
     TestStatus testAssignToIDAccess();

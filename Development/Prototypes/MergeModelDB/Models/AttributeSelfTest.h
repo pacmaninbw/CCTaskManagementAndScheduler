@@ -21,6 +21,20 @@
 #include <type_traits>
 #include <vector>
 
+/*
+ * The AttributeSelfTest template class provides unit testing for the attributes
+ * of the model being tested. The tests include setting the attribute value
+ * through an attribute accessor function, getting the attrribute value with an
+ * accessor function, and testing if the model modified attribute or "dirty" is 
+ * set when the value is set.
+ * 
+ * This class is expected to be used by a class explicitly for testinmg a particular
+ * model. The class that tests a particular model will create a list of attribute
+ * tests that use the template test methods in this class. 
+ */
+
+ using AttributeTestFunction = std::function<TestStatus(void)>;
+
 template<class Model>
 requires std::is_base_of_v<ModelDBInterface, Model>
 class AttributeSelfTest : public virtual Model
@@ -32,7 +46,7 @@ protected:
  * 
  * Init functions should call the local version of selfTestResetAllValues().
  */
-    virtual std::vector<std::function<TestStatus(void)>> initAttributeAccessTests() noexcept = 0;
+    virtual std::vector<AttributeTestFunction> initAttributeAccessTests() noexcept = 0;
 
 public:
 
@@ -81,7 +95,7 @@ protected:
     virtual TestStatus testAttributeAccessFunctions() noexcept
     {
         TestStatus testStatus = TESTPASSED;
-        std::vector<std::function<TestStatus(void)>> accessTests = initAttributeAccessTests();
+        std::vector<AttributeTestFunction> accessTests = initAttributeAccessTests();
 
         for (auto accessTest: accessTests)
         {
