@@ -16,9 +16,17 @@
 #include <concepts>
 #include <type_traits>
 
+/*
+ * The ModelSelfTest provides a base class for unit testing all ModelDBInterface
+ * classes. It merges attribute tests, exception handling tests and functionality
+ * tests for a particular model into one class.
+ * 
+ * Each Model Self Test (Unit Test) provides the details to test that particular
+ * Model.
+ */
 template<class Model>
 requires std::is_base_of_v<ModelDBInterface, Model>
-class ModelSelfTest : public virtual ExceptionSelfTest<Model>,
+class ModelSelfTest :   public virtual ExceptionSelfTest<Model>,
                         public virtual AttributeSelfTest<Model>,
                         public virtual FunctionalSelfTest<Model>,
                         public virtual Model
@@ -45,8 +53,7 @@ protected:
         CoreDBInterface::format_opts.reset();
         CoreDBInterface::errorMessages.clear();
     }
-
-    
+ 
 };
 
 #endif // MODELDSELFTEST_H_
