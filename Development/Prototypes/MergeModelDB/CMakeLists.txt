@@ -30,6 +30,7 @@ add_executable(protoPersonalPlanner
     Testing/TestUserDBInterface.cpp
     Testing/TestTaskDBInterface.cpp
     Testing/TestGoalModel.cpp
+    Testing/TestNoteModel.cpp
 )
 
 target_include_directories(protoPersonalPlanner PRIVATE
