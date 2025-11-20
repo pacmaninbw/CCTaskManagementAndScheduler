@@ -7,6 +7,7 @@
 #include "TestTaskDBInterface.h"
 #include "TestUserDBInterface.h"
 #include "TestGoalModel.h"
+#include "TestNoteModel.h"
 #include "TestStatus.h"
 #include "UserGoalModel.h"
 #include "UserGoalSelfTest.h"
@@ -136,10 +137,18 @@ int main(int argc, char* argv[])
                     separateTestCaseOutput();
 
                     TestGoalModel goalTests;
-                        if (goalTests.runAllTests() != TestStatus::TestPassed)
-                        {
-                            return EXIT_FAILURE;
-                        }
+                    if (goalTests.runAllTests() != TestStatus::TestPassed)
+                    {
+                        return EXIT_FAILURE;
+                    }
+
+                    separateTestCaseOutput();
+
+                    TestNoteModel noteTests;
+                    if (noteTests.runAllTests() != TestStatus::TestPassed)
+                    {
+                        return EXIT_FAILURE;
+                    }
                 }
             }
             else
