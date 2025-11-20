@@ -102,7 +102,7 @@ std::string NoteModel::formatSelectStatement()
 
     boost::mysql::format_context fctx(format_opts.value());
     boost::mysql::format_sql_to(fctx, baseQuery);
-    boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", primaryKey);
+    boost::mysql::format_sql_to(fctx, " WHERE idUserNotes = {}", primaryKey);
 
     return std::move(fctx).get().value();
 }
