@@ -21,6 +21,7 @@
 #include <iostream>
 #include <memory>
 #include <stdexcept>
+#include <vector>
 
 /*
  * All of the DBInterface classes need access to the programOptions global variable for the
@@ -43,6 +44,7 @@ static void separateTestCaseOutput()
     printDashes();
     std::cout << "\n\n";
     printDashes();
+    std::cout << std::endl;     // Flush the output
 }
 
 template <class A>
@@ -103,6 +105,38 @@ static TestStatus runAllUnitTests()
     return allUnintTestsPassed;
 }
 
+static TestStatus runAllIntegrationTests()
+{
+    separateTestCaseOutput();
+    TestUserDBInterface userTests(programOptions.userTestDataFile);
+    if (userTests.runAllTests() == TESTFAILED)
+    {
+        return TESTFAILED;
+    }
+
+    separateTestCaseOutput();
+    TestTaskDBInterface tasktests(programOptions.taskTestDataFile);
+    if (tasktests.runAllTests() == TESTFAILED)
+    {
+        return TESTFAILED;
+    }
+
+    separateTestCaseOutput();
+    TestGoalModel goalTests;
+    if (goalTests.runAllTests() == TESTFAILED)
+    {
+        return TESTFAILED;
+    }
+
+    separateTestCaseOutput();
+    TestNoteModel noteTests;
+    if (noteTests.runAllTests() == TESTFAILED)
+    {
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
+}
 
 int main(int argc, char* argv[])
 {
@@ -120,41 +154,11 @@ int main(int argc, char* argv[])
                 }
             }
 #if 1
-            separateTestCaseOutput();
-
-            TestUserDBInterface userTests(programOptions.userTestDataFile);
-            if (userTests.runAllTests() == TestStatus::TestPassed)
-            {
-                separateTestCaseOutput();
-    
-                TestTaskDBInterface tasktests(programOptions.taskTestDataFile);
-                if (tasktests.runAllTests() != TestStatus::TestPassed)
-                {
-                    return EXIT_FAILURE;
-                }
-                else
-                {
-                    separateTestCaseOutput();
-
-                    TestGoalModel goalTests;
-                    if (goalTests.runAllTests() != TestStatus::TestPassed)
-                    {
-                        return EXIT_FAILURE;
-                    }
-
-                    separateTestCaseOutput();
-
-                    TestNoteModel noteTests;
-                    if (noteTests.runAllTests() != TestStatus::TestPassed)
-                    {
-                        return EXIT_FAILURE;
-                    }
-                }
-            }
-            else
+            if (runAllIntegrationTests() == TESTFAILED)
             {
                 return EXIT_FAILURE;
             }
+
             std::cout << "All tests Passed\n";
 			if (programOptions.enableExecutionTime)
 			{
