@@ -46,7 +46,7 @@ TestNoteModel::TestNoteModel()
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testNegativePathAlreadyInDataBase, this));
 }
 
-TestStatus TestNoteModel::testInsertAndGetParent(TestNoteInput testNote)
+TestStatus TestNoteModel::testInsertNote(TestNoteInput testNote)
 {
     UserModel_shp userOne = std::make_shared<UserModel>();
     userOne->selectByUserID(1);
@@ -71,7 +71,7 @@ TestStatus TestNoteModel::testPositivePathNoteInsertions()
 
     for (auto testNote: testInput)
     {
-        TestStatus currentResult = testInsertAndGetParent(testNote);
+        TestStatus currentResult = testInsertNote(testNote);
         if (testStatus == TESTPASSED)
         {
             testStatus = currentResult;
@@ -88,32 +88,32 @@ TestStatus TestNoteModel::testPositivePathNoteInsertions()
 
 TestStatus TestNoteModel::testNegativePathAlreadyInDataBase()
 {
-    NoteModel_shp goalAlreadyInDB = std::make_shared<NoteModel>();
-    goalAlreadyInDB->setNoteId(1);
-    if (!goalAlreadyInDB->retrieve())
+    NoteModel_shp noteAlreadyInDB = std::make_shared<NoteModel>();
+    noteAlreadyInDB->setNoteId(1);
+    if (!noteAlreadyInDB->retrieve())
     {
         std::cout << "Note 1 not found in database!!\n";
         return TESTFAILED;
     }
 
     std::vector<std::string> expectedErrors = {"already in Database"};
-    return testInsertionFailureMessages(goalAlreadyInDB, expectedErrors);
+    return testInsertionFailureMessages(noteAlreadyInDB, expectedErrors);
 }
 
 TestStatus TestNoteModel::testnegativePathNotModified()
 {
-    NoteModel_shp goalNotModified = std::make_shared<NoteModel>();
-    goalNotModified->setNoteId(1);
-    if (!goalNotModified->retrieve())
+    NoteModel_shp noteNotModified = std::make_shared<NoteModel>();
+    noteNotModified->setNoteId(1);
+    if (!noteNotModified->retrieve())
     {
         std::cout << "Note 1 not found in database!!\n";
         return TESTFAILED;
     }
 
-    goalNotModified->setNoteId(0); // Force it to check modified rather than Already in DB.
-    goalNotModified->clearModified();
+    noteNotModified->setNoteId(0); // Force it to check modified rather than Already in DB.
+    noteNotModified->clearModified();
     std::vector<std::string> expectedErrors = {"not modified!"};
-    return testInsertionFailureMessages(goalNotModified, expectedErrors);
+    return testInsertionFailureMessages(noteNotModified, expectedErrors);
 }
 
 TestStatus TestNoteModel::negativePathMissingRequiredFields()

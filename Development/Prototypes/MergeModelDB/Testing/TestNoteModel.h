@@ -22,7 +22,7 @@ public:
     ~TestNoteModel() = default;
 
 private:
-    TestStatus testInsertAndGetParent(TestNoteInput testNote);
+    TestStatus testInsertNote(TestNoteInput testNote);
     TestStatus testPositivePathNoteInsertions();
     TestStatus testNegativePathAlreadyInDataBase();
     TestStatus testnegativePathNotModified();
