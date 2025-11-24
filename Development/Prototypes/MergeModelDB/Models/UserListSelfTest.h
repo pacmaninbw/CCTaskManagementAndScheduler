@@ -28,7 +28,6 @@ public:
     virtual TestStatus runSelfTest() noexcept override;
 
 protected:
-    virtual void selfTestResetAllValues() noexcept override;
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
     TestStatus testExceptionsGetAllUsers() noexcept;
 };

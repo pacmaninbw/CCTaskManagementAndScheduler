@@ -31,20 +31,6 @@ TestStatus TaskListSelfTest::runSelfTest() noexcept
     return testListExceptionHandling();
 }
 
-void TaskListSelfTest::selfTestResetAllValues() noexcept
-{
-    inSelfTest = true;
-    format_opts.reset();
-    primaryKeyResults.clear();
-    returnType.clear();
-    errorMessages.clear();
-
-    queryGenerator.setSelfTest(true);
-    queryGenerator.clearModified();
-    queryGenerator.clearErrorMessages();
-    queryGenerator.testResetFormatOpts();
-}
-
 std::vector<ListExceptionTestElement> TaskListSelfTest::initListExceptionTests() noexcept
 {
     std::vector<ListExceptionTestElement> exceptionTests;
