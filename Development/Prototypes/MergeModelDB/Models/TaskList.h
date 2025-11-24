@@ -18,11 +18,11 @@ public:
     TaskList();
     virtual ~TaskList() = default;
 
-    TaskListValues getActiveTasksForAssignedUser(std::size_t assignedUserID);
-    TaskListValues getUnstartedDueForStartForAssignedUser(std::size_t assignedUserID);
+    TaskListValues getActiveTasksForAssignedUser(std::size_t assignedUserID) noexcept;
+    TaskListValues getUnstartedDueForStartForAssignedUser(std::size_t assignedUserID) noexcept;
     TaskListValues getTasksCompletedByAssignedAfterDate(std::size_t assignedUserID,
-        std::chrono::year_month_day& searchStartDate);
-    TaskListValues getTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID);
+        std::chrono::year_month_day searchStartDate) noexcept;
+    TaskListValues getTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID) noexcept;
 
 private:
     TaskListValues fillTaskList();

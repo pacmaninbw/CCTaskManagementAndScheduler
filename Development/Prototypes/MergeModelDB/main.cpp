@@ -4,6 +4,7 @@
 #include "NoteSelfTest.h"
 #include "TaskModel.h"
 #include "TaskSelfTest.h"
+#include "TaskListSelfTest.h"
 #include "TestTaskDBInterface.h"
 #include "TestUserDBInterface.h"
 #include "TestGoalModel.h"
@@ -11,6 +12,7 @@
 #include "TestStatus.h"
 #include "UserGoalModel.h"
 #include "UserGoalSelfTest.h"
+#include "UserListSelfTest.h"
 #include "UserModel.h"
 #include "UserSelfTest.h"
 #include "UtilityTimer.h"
@@ -105,6 +107,54 @@ static TestStatus runAllUnitTests()
     return allUnintTestsPassed;
 }
 
+template <class A>
+static TestStatus runListUnitTest(ListSelfTest<A>* unitTest)
+{
+    separateTestCaseOutput();
+
+    TestStatus thisTestStatus = unitTest->runSelfTest();
+    if (thisTestStatus != TESTPASSED)
+    {
+        std::string failMessage = std::format("*** {} FAILED Self Test ***", unitTest->getListTypeName());
+        std::cerr << failMessage << "\n";
+        if (programOptions.quitFirstFail)
+        {
+            std::runtime_error firstFail(failMessage);
+            throw firstFail;
+        }
+    }
+    else
+    {
+        if (programOptions.verboseOutput)
+        {
+            std::cout << std::format("{} PASSED Self Test\n", unitTest->getListTypeName());
+        }
+    }
+
+    return thisTestStatus;
+}
+
+static TestStatus runAllListUnitTests()
+{
+    TestStatus allUnintTestsPassed = TESTPASSED;
+    programOptions.verboseOutput = true;
+
+    UserListSelfTest userListTest;
+    if (runListUnitTest(&userListTest) == TESTFAILED)
+    {
+        allUnintTestsPassed = TESTFAILED;
+    }
+
+    TaskListSelfTest taskListTest;
+    if (runListUnitTest(&taskListTest) == TESTFAILED)
+    {
+        allUnintTestsPassed = TESTFAILED;
+    }
+
+    programOptions.verboseOutput = false;
+    return allUnintTestsPassed;
+}
+
 static TestStatus runAllIntegrationTests()
 {
     separateTestCaseOutput();
@@ -153,7 +203,15 @@ int main(int argc, char* argv[])
                     return EXIT_FAILURE;
                 }
             }
-#if 1
+
+            if (runAllListUnitTests() == TESTFAILED)
+            {
+                if (programOptions.quitFirstFail)
+                {
+                    return EXIT_FAILURE;
+                }
+            }
+
             if (runAllIntegrationTests() == TESTFAILED)
             {
                 return EXIT_FAILURE;
@@ -164,7 +222,6 @@ int main(int argc, char* argv[])
 			{
                 stopWatch.stopTimerAndReport("Testing of Insertion and retrieval of users and tasks in MySQL database\n");
 			}
-#endif
         }
         else
 		{

@@ -14,7 +14,7 @@ TaskList::TaskList()
 
 }
 
-TaskListValues TaskList::getActiveTasksForAssignedUser(std::size_t assignedUserID)
+TaskListValues TaskList::getActiveTasksForAssignedUser(std::size_t assignedUserID) noexcept
 {
     errorMessages.clear();
 /*
@@ -36,7 +36,7 @@ TaskListValues TaskList::getActiveTasksForAssignedUser(std::size_t assignedUserI
     return TaskListValues();
 }
 
-TaskListValues TaskList::getUnstartedDueForStartForAssignedUser(std::size_t assignedUserID)
+TaskListValues TaskList::getUnstartedDueForStartForAssignedUser(std::size_t assignedUserID) noexcept
 {
     errorMessages.clear();
     appendErrorMessage("In TaskList::getUnstartedDueForStartForAssignedUser : ");
@@ -56,7 +56,7 @@ TaskListValues TaskList::getUnstartedDueForStartForAssignedUser(std::size_t assi
 }
 
 TaskListValues TaskList::getTasksCompletedByAssignedAfterDate(std::size_t assignedUserID,
-    std::chrono::year_month_day& searchStartDate)
+    std::chrono::year_month_day searchStartDate) noexcept
 {
     errorMessages.clear();
     appendErrorMessage("In TaskList::getTasksCompletedByAssignedAfterDate : ");
@@ -76,7 +76,7 @@ TaskListValues TaskList::getTasksCompletedByAssignedAfterDate(std::size_t assign
     return TaskListValues();
 }
 
-TaskListValues TaskList::getTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID)
+TaskListValues TaskList::getTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID) noexcept
 {
     errorMessages.clear();
     appendErrorMessage("In TaskList::getTasksByAssignedIDandParentID : ");
@@ -118,6 +118,7 @@ TaskListValues TaskList::runQueryFillTaskList()
             queryGenerator.getAllErrorMessages()));
         return TaskListValues();
     }
+    
     if (runFirstQuery())
     {
         return fillTaskList();
