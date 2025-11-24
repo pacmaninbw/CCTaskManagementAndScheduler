@@ -68,6 +68,8 @@ public:
 
 protected:
 
+    std::string_view itemUnderTest;
+
     virtual TestStatus testExceptionHandling() noexcept
     {
         std::cout << "\n\nRunning Exception Handling Test Cases\n";
@@ -90,15 +92,17 @@ protected:
     virtual TestStatus forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) noexcept
     {
         TestStatus testAllExceptionHandling = TESTPASSED;
+        std::string_view failFunction;
         
         try
         {
             for (auto exceptionTest: exceptionTests)
             {
+                failFunction = exceptionTest.functionUnderTest;
                 if (exceptionTest.testExceptionFunction() == TESTFAILED)
                 {
                     std::cerr << std::format("{}::{} returned true with exception: Exception Test Failed\n",
-                        ModelDBInterface::modelName, exceptionTest.functionUnderTest);
+                        itemUnderTest, failFunction);
                     testAllExceptionHandling = TESTFAILED;
                 }
             }
@@ -106,8 +110,8 @@ protected:
 
         catch (std::exception &uncaughtException)
         {
-            std::cerr << ModelDBInterface::modelName << "::testExceptionHandling():: Caught Unhandled Exception!! Test FAILED!\n";
-            std::cerr << uncaughtException.what() << "\n";
+            std::cerr << std::format("{}::{}:: Caught Unhandled Exception!! Test FAILED!\n{}",
+                itemUnderTest, failFunction, uncaughtException.what());
             testAllExceptionHandling = TESTFAILED;
         }
 
