@@ -13,7 +13,7 @@ UserList::UserList()
 
 }
 
-UserListValues UserList::getAllUsers()
+UserListValues UserList::getAllUsers() noexcept
 {
     errorMessages.clear();
     
@@ -28,6 +28,7 @@ UserListValues UserList::getAllUsers()
                 queryGenerator.getAllErrorMessages()));
             return allUsers;
         }
+        
         if (runFirstQuery())
         {
             for (auto userID: primaryKeyResults)

@@ -16,7 +16,7 @@ class UserList : public ListDBInterface<UserModel>
 public:
     UserList();
     virtual ~UserList() = default;
-    UserListValues getAllUsers();
+    UserListValues getAllUsers() noexcept;
 
 private:
 
