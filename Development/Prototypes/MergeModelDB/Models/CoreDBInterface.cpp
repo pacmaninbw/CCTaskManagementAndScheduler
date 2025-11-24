@@ -26,6 +26,15 @@ CoreDBInterface::CoreDBInterface()
     dbConnectionParameters.database = programOptions.mySqlDBName;
 }
 
+void CoreDBInterface::debugShowVariables(std::string functionName) const noexcept
+{
+    std::cout << "In " << functionName << ":\n";
+    std::cout << "\tformat_opts: " << (format_opts.has_value()? "TRUE" : "FALSE") << "\n";
+    std::cout << "\tinSelfTest: " << (inSelfTest? "TRUE" : "FALSE") << "\n";
+    std::cout << "\tforceException: " << (forceException? "TRUE" : "FALSE") << "\n";
+    std::cout << std::endl;
+}
+
 void CoreDBInterface::initFormatOptions()
 {
     if (!format_opts.has_value())
@@ -71,7 +80,7 @@ boost::asio::awaitable<boost::mysql::results> CoreDBInterface::coRoutineExecuteS
     {
         if (verboseOutput)
         {
-            std::cout << "In Self Test Query is: \n\t" << query << "\n";
+            std::cout << "In Self Test Query is: \n\t" << query << std::endl;
         }
         boost::mysql::results selectResult;
         co_return selectResult;
@@ -85,7 +94,7 @@ boost::asio::awaitable<boost::mysql::results> CoreDBInterface::coRoutineExecuteS
 
     if (verboseOutput)
     {
-        std::cout << "Running: \n\t" << query << "\n";
+        std::cout << "Running: \n\t" << query << std::endl;
     }
 
     co_await conn.async_execute(query, selectResult);
@@ -135,3 +144,4 @@ boost::asio::awaitable<boost::mysql::format_options> CoreDBInterface::coRoutineG
 
     co_return options;
 }
+

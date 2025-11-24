@@ -19,8 +19,11 @@ public:
     CoreDBInterface();
     virtual ~CoreDBInterface() = default;
     std::string getAllErrorMessages() const noexcept { return errorMessages; };
+    void clearErrorMessages() { errorMessages.clear(); };   // Used in list self tests.
     void setForceExceptions(bool forceIt) { forceException = forceIt; };
     void setSelfTest(bool isSelfTest) { inSelfTest = isSelfTest; };
+    void testResetFormatOpts() { format_opts.reset(); };
+    void debugShowVariables(std::string functionName) const noexcept;
 
 protected:
     void initFormatOptions();
