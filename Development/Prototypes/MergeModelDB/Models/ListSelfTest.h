@@ -35,7 +35,7 @@ protected:
  * 
  * Init functions should call the local version of selfTestResetAllValues().
  */
-    virtual void selfTestResetAllValues() noexcept = 0;
+
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept = 0;
 
 public:
@@ -47,6 +47,20 @@ public:
 protected:
 
     std::string_view itemUnderTest;
+
+    virtual void selfTestResetAllValues() noexcept
+    {
+        CoreDBInterface::inSelfTest = true;
+        CoreDBInterface::format_opts.reset();
+        CoreDBInterface::errorMessages.clear();
+
+        ListClass::primaryKeyResults.clear();
+        ListClass::returnType.clear();
+        ListClass::queryGenerator.setSelfTest(true);
+        ListClass::queryGenerator.clearModified();
+        ListClass::queryGenerator.clearErrorMessages();
+        ListClass::queryGenerator.testResetFormatOpts();
+    }
 
     virtual TestStatus testListExceptionHandling() noexcept
     {
@@ -156,65 +170,6 @@ protected:
 
         return TESTPASSED;
     }
-
-/*
- * Format functions return strings rather than bool.
- */
-    template <typename F, typename... Ts>
-    requires std::is_invocable_v<F, Ts...>
-    TestStatus testFormatExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
-    {
-        CoreDBInterface::forceException = true;
-        ListClass::queryGenerator.setForceExceptions(true);
-        std::string formattedQuery = funcUnderTest(args...);
-        if (!formattedQuery.empty())
-        {
-            return testListExceptionReportFailure(false, false, funcName);
-        }
-
-        CoreDBInterface::forceException = false;
-        ListClass::queryGenerator.setForceExceptions(false);
-        formattedQuery.clear();
-        formattedQuery = funcUnderTest(args...);
-        if (formattedQuery.empty())
-        {
-            return testListExceptionReportFailure(true, false, funcName);
-        }
-
-        return TESTPASSED;
-    }
-
-/*
- * Used to test formatSQL functions that do not contain a try catch block.
- */
-    template <typename F, typename... Ts>
-    requires std::is_invocable_v<F, Ts...>
-    TestStatus testFormatExceptionCatchSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
-    {
-        std::string formattedQuery;
-
-        try
-        {
-            CoreDBInterface::forceException = true;
-            ListClass::queryGenerator.setForceExceptions(true);
-            formattedQuery = funcUnderTest(args...);
-            return testListExceptionReportFailure(false, false, funcName);    
-        }
-        catch(const std::exception& e)
-        {
-            std::cout << "Caught expected exception from " << funcName << "(): " << e.what() << "\n";
-            CoreDBInterface::forceException = false; 
-            ListClass::queryGenerator.setForceExceptions(false);
-            formattedQuery = funcUnderTest(args...);
-            if (formattedQuery.empty())
-            {
-                return testListExceptionReportFailure(true, false, funcName);
-            }
-        }        
-
-        return TESTPASSED;
-    }
-
 };
 
 #endif // LISTSELFTEST_H_
