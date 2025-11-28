@@ -6,8 +6,6 @@
 #include "UserGoalModel.h"
 
 // Standard C++ Header Files
-#include <chrono>
-#include <format>
 #include <iostream>
 
 using UserGoalListValues = std::vector<UserGoalModel_shp>;
@@ -18,13 +16,16 @@ public:
     UserGoalList();
     virtual ~UserGoalList() = default;
 
-    UserGoalListValues getAllGoalsForUser(std::size_t userID);
-    UserGoalListValues getAllChildrenFromParent(UserGoalModel& parentGoal);
+    UserGoalListValues getAllGoalsForUser(std::size_t userID) noexcept;
+    UserGoalListValues getAllChildrenFromParent(UserGoalModel parentGoal) noexcept;
 
 private:
     UserGoalListValues fillUserGoalList();
     UserGoalListValues runQueryFillUserGoalList();
 
+    virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
+    TestStatus testExceptionsGetAllGoalsForUser() noexcept;
+    TestStatus testExceptionsGetAllChildrenFromParent() noexcept;
 };
 
 #endif // USERGOALLIST_H_
