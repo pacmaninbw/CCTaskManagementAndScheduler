@@ -4,6 +4,7 @@
 // Project Header Files
 #include "CoreDBInterface.h"
 #include "ModelDBInterface.h"
+#include "TestStatus.h"
 
 // External Libraries
 #include <boost/asio.hpp>
@@ -18,6 +19,7 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <vector>
 
 /*
@@ -36,6 +38,12 @@
  * 
  * This design may be revisited if there is too much a performance degradation.
  */
+struct ListExceptionTestElement
+{
+    std::function<TestStatus(void)> testExceptionFunction;
+    const char* functionUnderTest;
+};
+
 template<typename ListType>
 requires std::is_base_of<ModelDBInterface, ListType>::value
 class ListDBInterface : public CoreDBInterface
@@ -44,13 +52,15 @@ public:
     ListDBInterface()
     : CoreDBInterface()
     {
-        std::string tempListType(queryGenerator.getModelName());
-        tempListType += "List";
+        queryGenerator = std::make_unique<ListType>();
+
+        std::string tempListType = queryGenerator->getModelName();
+        tempListType.append("List");
         listTypeName = tempListType;
     }
     virtual ~ListDBInterface() = default;
 
-    std::string_view getListTypeName() const noexcept { return listTypeName; };
+    std::string getListTypeName() const noexcept { return listTypeName; };
     
     bool runFirstQuery()
     {
@@ -68,9 +78,18 @@ public:
         catch(const std::exception& e)
         {
             appendErrorMessage(std::format("In {}List.runFirstQuery() : {}",
-                queryGenerator.getModelName(), e.what()));
+                listTypeName, e.what()));
             return false;
         }
+    };
+
+    virtual TestStatus runSelfTest() noexcept
+    {
+        selfTestResetAllValues();
+
+        std::cout << "\nRunning " << listTypeName << " Self Test\n";
+
+        return testListExceptionHandling();
     };
 
 protected:
@@ -89,7 +108,7 @@ protected:
 
         if (results.rows().empty())
         {
-            appendErrorMessage(std::format("No {}s found!", queryGenerator.getModelName()));
+            appendErrorMessage(std::format("No {}s found!", queryGenerator->getModelName()));
             return primaryKeyResults;
         }
 
@@ -101,8 +120,132 @@ protected:
         return primaryKeyResults;
     }
 
-    ListType queryGenerator;
-    std::string_view listTypeName;
+    virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept = 0;
+
+    virtual void selfTestResetAllValues() noexcept
+    {
+        inSelfTest = true;
+        format_opts.reset();
+        errorMessages.clear();
+
+        primaryKeyResults.clear();
+        returnType.clear();
+        queryGenerator->setSelfTest(true);
+        queryGenerator->clearModified();
+        queryGenerator->clearErrorMessages();
+        queryGenerator->testResetFormatOpts();
+    }
+
+    virtual TestStatus testListExceptionHandling() noexcept
+    {
+        std::cout << "\n\nRunning Exception Handling Test Cases " << listTypeName << "\n";
+
+        selfTestResetAllValues();
+
+        bool globalForceException = CoreDBInterface::forceException;
+
+        std::vector<ListExceptionTestElement> exceptionTests = initListExceptionTests();
+
+        TestStatus exceptionHandlingPassed = forceListExceptionsLoop(exceptionTests);
+
+        CoreDBInterface::forceException = globalForceException;
+
+        std::cout << "\n\n";
+
+        return exceptionHandlingPassed;
+    }
+
+    virtual TestStatus forceListExceptionsLoop(std::vector<ListExceptionTestElement> exceptionTests) noexcept
+    {
+        TestStatus testAllExceptionHandling = TESTPASSED;
+        const char* failFunction;
+        
+        try
+        {
+            for (auto exceptionTest: exceptionTests)
+            {
+                failFunction = exceptionTest.functionUnderTest;
+                if (exceptionTest.testExceptionFunction() == TESTFAILED)
+                {
+                    std::cerr << std::format("{}::{}: Exception Test FAILED\n",
+                        listTypeName, failFunction);
+                    testAllExceptionHandling = TESTFAILED;
+                }
+            }
+        }
+
+        catch (std::exception &uncaughtException)
+        {
+            std::cerr << std::format("{}::{}:: Caught Unhandled Exception!! Test FAILED!\n{}",
+                listTypeName, failFunction, uncaughtException.what());
+            testAllExceptionHandling = TESTFAILED;
+        }
+
+        return testAllExceptionHandling;
+    }
+
+    TestStatus testListExceptionReportFailure(bool expectSuccess, bool isBool, const char* testExceptionFuncName) noexcept
+    {
+        std::string reportFailure = std::format("In {}::{}: ", listTypeName, testExceptionFuncName);
+
+        if (expectSuccess)
+        {
+            reportFailure.append(std::format("expected success returned {} \n", isBool? "false" : "empty vector"));
+            reportFailure.append(CoreDBInterface::errorMessages);
+            reportFailure.append("\n");
+        }
+        else
+        {
+            reportFailure.append(std::format("expected failure returned {} ", isBool? "true" : "vector with values"));
+        }
+        reportFailure.append("\nException Test FAILED");
+
+        std::cerr << reportFailure << std::endl;
+
+        return TESTFAILED;
+    }
+
+    template <typename F, typename... Ts>
+    requires std::is_invocable_v<F, Ts...>
+    TestStatus testListExceptionAndSuccessNArgs(const char* funcName, F funcUnderTest, Ts... args) noexcept
+    {
+        std::cout << std::format("\nException Test for {}", funcName) << std::endl;
+        std::string debugName(funcName);
+
+        forceException = true;
+        queryGenerator->setForceExceptions(true);
+        if (!funcUnderTest(args...).empty())
+        {
+            return testListExceptionReportFailure(false, false, funcName);
+        }
+
+        selfTestResetAllValues();
+        queryGenerator->setForceExceptions(false);
+        if (!funcUnderTest(args...).empty())
+        {
+            return testListExceptionReportFailure(false, false, funcName);
+        }
+
+        selfTestResetAllValues();
+        forceException = false;
+        queryGenerator->setForceExceptions(true);
+        if (!funcUnderTest(args...).empty())
+        {
+            return testListExceptionReportFailure(false, false, funcName);
+        }
+
+        selfTestResetAllValues();
+        queryGenerator->setForceExceptions(false);
+        if (funcUnderTest(args...).empty())
+        {
+            return testListExceptionReportFailure(true, false, funcName);
+        }
+
+        return TESTPASSED;
+    }
+
+    std::unique_ptr<ListType> queryGenerator;
+    std::string listTypeName;
     std::string firstFormattedQuery;
     std::vector<std::size_t> primaryKeyResults;
     std::vector<std::shared_ptr<ListType>> returnType;
