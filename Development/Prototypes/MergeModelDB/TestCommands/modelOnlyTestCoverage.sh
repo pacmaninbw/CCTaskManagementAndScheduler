@@ -17,5 +17,5 @@ cp build/CMakeFiles/protoPersonalPlanner.dir/Models/*.gc* TestCoverage
 cp build/CMakeFiles/protoPersonalPlanner.dir/Testing/*.gc* TestCoverage
 lcov --directory . --capture --output-file TestCoverage/protoPersonalPlanner_Total.info >& lcovOut.txt
 lcov --remove TestCoverage/protoPersonalPlanner_Total.info '/usr/include/*' '*/boost/*' -o TestCoverage/protoPersonalPlanner_filtered.info
-lcov --remove TestCoverage/protoPersonalPlanner_filtered.info '*/Models/*SelfTest*' '*/Models/*List*'  -o TestCoverage/ModelOnly.info
+lcov --remove TestCoverage/protoPersonalPlanner_filtered.info '*/Models/*SelfTest*' -o TestCoverage/ModelOnly.info
 genhtml TestCoverage/ModelOnly.info --output-directory TestCoverage
