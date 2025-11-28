@@ -24,7 +24,7 @@ TaskListValues TaskList::getActiveTasksForAssignedUser(std::size_t assignedUserI
 
     try
     {
-        firstFormattedQuery = queryGenerator.formatSelectActiveTasksForAssignedUser(assignedUserID);
+        firstFormattedQuery = queryGenerator->formatSelectActiveTasksForAssignedUser(assignedUserID);
         return runQueryFillTaskList();
     }
 
@@ -43,7 +43,7 @@ TaskListValues TaskList::getUnstartedDueForStartForAssignedUser(std::size_t assi
 
     try
     {
-        firstFormattedQuery = queryGenerator.formatSelectUnstartedDueForStartForAssignedUser(assignedUserID);
+        firstFormattedQuery = queryGenerator->formatSelectUnstartedDueForStartForAssignedUser(assignedUserID);
         return runQueryFillTaskList();
     }
 
@@ -63,7 +63,7 @@ TaskListValues TaskList::getTasksCompletedByAssignedAfterDate(std::size_t assign
 
     try
     {
-        firstFormattedQuery = queryGenerator.formatSelectTasksCompletedByAssignedAfterDate(
+        firstFormattedQuery = queryGenerator->formatSelectTasksCompletedByAssignedAfterDate(
             assignedUserID, searchStartDate);
         return runQueryFillTaskList();
     }
@@ -83,7 +83,7 @@ TaskListValues TaskList::getTasksByAssignedIDandParentID(std::size_t assignedUse
 
     try
     {
-        firstFormattedQuery = queryGenerator.formatSelectTasksByAssignedIDandParentID(
+        firstFormattedQuery = queryGenerator->formatSelectTasksByAssignedIDandParentID(
             assignedUserID, parentID);
         return runQueryFillTaskList();
     }
@@ -115,7 +115,7 @@ TaskListValues TaskList::runQueryFillTaskList()
     if (firstFormattedQuery.empty())
     {
         appendErrorMessage(std::format("Formatting select multiple tasks query string failed {}",
-            queryGenerator.getAllErrorMessages()));
+            queryGenerator->getAllErrorMessages()));
         return TaskListValues();
     }
     
@@ -125,5 +125,61 @@ TaskListValues TaskList::runQueryFillTaskList()
     }
 
     return TaskListValues();
+}
+
+std::vector<ListExceptionTestElement> TaskList::initListExceptionTests() noexcept
+{
+    std::vector<ListExceptionTestElement> exceptionTests;
+    exceptionTests.push_back({std::bind(&TaskList::testExceptionGetActiveTasksForAssignedUser, this),
+        "getActiveTasksForAssignedUser"});
+    exceptionTests.push_back({std::bind(&TaskList::testExceptionGetUnstartedDueForStartForAssignedUser, this),
+        "getUnstartedDueForStartForAssignedUser"});
+    exceptionTests.push_back({std::bind(&TaskList::testExceptionGetTasksCompletedByAssignedAfterDate, this),
+        "getTasksCompletedByAssignedAfterDate"});
+    exceptionTests.push_back({std::bind(&TaskList::testExceptionGetTasksByAssignedIDandParentID, this),
+        "getTasksByAssignedIDandParentID"});
+
+    return exceptionTests;
+}
+
+TestStatus TaskList::testExceptionGetActiveTasksForAssignedUser() noexcept
+{
+    selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("TaskList::testExceptionGetActiveTasksForAssignedUser()",
+         std::bind(&TaskList::getActiveTasksForAssignedUser, this, std::placeholders::_1), 1);
+}
+
+TestStatus TaskList::testExceptionGetUnstartedDueForStartForAssignedUser() noexcept
+{
+   selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("TaskList::testExceptionGetUnstartedDueForStartForAssignedUser()",
+         std::bind(&TaskList::getUnstartedDueForStartForAssignedUser, this, std::placeholders::_1), 1);
+}
+
+TestStatus TaskList::testExceptionGetTasksCompletedByAssignedAfterDate() noexcept
+{
+    selfTestResetAllValues();
+
+    std::chrono::year_month_day searchStartDate = getTodaysDate();
+    std::size_t assignedUser = 1;
+
+    return testListExceptionAndSuccessNArgs("TaskList::testExceptionGetTasksCompletedByAssignedAfterDate()",
+         std::bind(&TaskList::getTasksCompletedByAssignedAfterDate, this, std::placeholders::_1, std::placeholders::_2),
+        assignedUser, searchStartDate);
+}
+
+TestStatus TaskList::testExceptionGetTasksByAssignedIDandParentID() noexcept
+{
+    selfTestResetAllValues();
+
+    std::size_t assignedUser = 1;
+    std::size_t parentid = 1;
+
+    return testListExceptionAndSuccessNArgs("TaskList::testExceptionGetUnstartedDueForStartForAssignedUser()",
+         std::bind(&TaskList::getTasksByAssignedIDandParentID, this, std::placeholders::_1, std::placeholders::_2),
+        assignedUser, parentid);
+
 }
 

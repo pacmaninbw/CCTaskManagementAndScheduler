@@ -7,8 +7,6 @@
 
 // Standard C++ Header Files
 #include <chrono>
-#include <format>
-#include <iostream>
 
 using TaskListValues = std::vector<TaskModel_shp>;
 
@@ -28,6 +26,11 @@ private:
     TaskListValues fillTaskList();
     TaskListValues runQueryFillTaskList();
 
+    virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
+    TestStatus testExceptionGetActiveTasksForAssignedUser() noexcept;
+    TestStatus testExceptionGetUnstartedDueForStartForAssignedUser() noexcept;
+    TestStatus testExceptionGetTasksCompletedByAssignedAfterDate() noexcept;
+    TestStatus testExceptionGetTasksByAssignedIDandParentID() noexcept;
 };
 
 #endif // TASKLIST_H_

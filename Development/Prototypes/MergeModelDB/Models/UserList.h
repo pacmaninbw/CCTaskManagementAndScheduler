@@ -19,7 +19,8 @@ public:
     UserListValues getAllUsers() noexcept;
 
 private:
-
+    virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
+    TestStatus testExceptionsGetAllUsers() noexcept;
 };
 
 #endif // USERLIST_H_

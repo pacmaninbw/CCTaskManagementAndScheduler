@@ -21,11 +21,11 @@ UserListValues UserList::getAllUsers() noexcept
 
     try
     {
-        firstFormattedQuery = queryGenerator.formatGetAllUsersQuery();
+        firstFormattedQuery = queryGenerator->formatGetAllUsersQuery();
         if (firstFormattedQuery.empty())
         {
             appendErrorMessage(std::format("Formatting getAllUser query string failed {}",
-                queryGenerator.getAllErrorMessages()));
+                queryGenerator->getAllErrorMessages()));
             return allUsers;
         }
         
@@ -47,3 +47,19 @@ UserListValues UserList::getAllUsers() noexcept
     
     return allUsers;
 }
+
+std::vector<ListExceptionTestElement> UserList::initListExceptionTests() noexcept 
+{
+    std::vector<ListExceptionTestElement> exceptionTests;
+    exceptionTests.push_back({std::bind(&UserList::testExceptionsGetAllUsers, this), "selectByUserID"});
+
+    return exceptionTests;
+}
+
+TestStatus UserList::testExceptionsGetAllUsers() noexcept
+{
+    selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("UserListSelfTest::testExceptionsGetAllUsers()", std::bind(&UserList::getAllUsers, this));
+}
+
