@@ -16,13 +16,12 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 #include <vector>
 
 class ModelDBInterface : public CoreDBInterface
 {
 public:
-    ModelDBInterface(std::string_view modelNameIn);
+    ModelDBInterface(std::string modelNameIn);
     virtual ~ModelDBInterface() = default;
     bool save() noexcept;
     bool insert() noexcept;
@@ -33,7 +32,7 @@ public:
     void clearModified() { modified = false; };
     bool hasRequiredValues();
     void reportMissingFields() noexcept;
-    std::string_view getModelName() const { return modelName; };
+    std::string getModelName() { return modelName; };
 
 protected:
 /*
@@ -73,7 +72,7 @@ protected:
 
 protected:
     std::size_t primaryKey;
-    std::string_view modelName;
+    std::string modelName;
     bool modified;
     char delimiter;
     struct RequireField

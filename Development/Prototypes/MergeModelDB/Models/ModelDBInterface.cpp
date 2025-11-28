@@ -17,7 +17,7 @@
 #include <utility>
 #include <vector>
 
-ModelDBInterface::ModelDBInterface(std::string_view modelNameIn)
+ModelDBInterface::ModelDBInterface(std::string modelNameIn)
 : CoreDBInterface()
 {
     primaryKey = 0;
