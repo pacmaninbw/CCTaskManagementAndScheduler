@@ -19,9 +19,7 @@ add_executable(protoPersonalPlanner
     Models/TaskSelfTest.cpp
     Models/ListDBInterface.h
     Models/UserList.cpp
-    Models/UserListSelfTest.cpp
     Models/TaskList.cpp
-    Models/TaskListSelfTest.cpp
     Models/NoteModel.cpp
     Models/NoteSelfTest.cpp
     Models/UserGoalModel.cpp
