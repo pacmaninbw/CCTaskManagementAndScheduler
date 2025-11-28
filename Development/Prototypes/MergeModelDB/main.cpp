@@ -4,7 +4,6 @@
 #include "NoteSelfTest.h"
 #include "TaskModel.h"
 #include "TaskSelfTest.h"
-#include "TaskListSelfTest.h"
 #include "TestTaskDBInterface.h"
 #include "TestUserDBInterface.h"
 #include "TestGoalModel.h"
@@ -12,9 +11,11 @@
 #include "TestStatus.h"
 #include "UserGoalModel.h"
 #include "UserGoalSelfTest.h"
-#include "UserListSelfTest.h"
 #include "UserModel.h"
 #include "UserSelfTest.h"
+#include "TaskList.h"
+#include "UserList.h"
+#include "UserGoalList.h"
 #include "UtilityTimer.h"
 
 // Standard C++ Header Files
@@ -108,7 +109,7 @@ static TestStatus runAllUnitTests()
 }
 
 template <class A>
-static TestStatus runListUnitTest(ListSelfTest<A>* unitTest)
+static TestStatus runListUnitTest(ListDBInterface<A>* unitTest)
 {
     separateTestCaseOutput();
 
@@ -137,21 +138,25 @@ static TestStatus runListUnitTest(ListSelfTest<A>* unitTest)
 static TestStatus runAllListUnitTests()
 {
     TestStatus allUnintTestsPassed = TESTPASSED;
-    programOptions.verboseOutput = true;
 
-    UserListSelfTest userListTest;
+    UserList userListTest;
     if (runListUnitTest(&userListTest) == TESTFAILED)
     {
         allUnintTestsPassed = TESTFAILED;
     }
 
-    TaskListSelfTest taskListTest;
+    TaskList taskListTest;
     if (runListUnitTest(&taskListTest) == TESTFAILED)
     {
         allUnintTestsPassed = TESTFAILED;
     }
 
-    programOptions.verboseOutput = false;
+    UserGoalList goalListTest;
+    if (runListUnitTest(&goalListTest) == TESTFAILED)
+    {
+        allUnintTestsPassed = TESTFAILED;
+    }
+    
     return allUnintTestsPassed;
 }
 
