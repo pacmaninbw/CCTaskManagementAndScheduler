@@ -27,6 +27,8 @@ public:
 private:
     TestStatus testInsertAndGetParent(TestGoalInput testGoal);
     TestStatus testPositivePathGoalInsertions();
+    TestStatus testPositivePathGetListofChildrenFromParent();
+    TestStatus testPositivePathGetAllGoalsForUser();
     TestStatus testNegativePathAlreadyInDataBase();
     TestStatus testnegativePathNotModified();
     TestStatus negativePathMissingRequiredFields();

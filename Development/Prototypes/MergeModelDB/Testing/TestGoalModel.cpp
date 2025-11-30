@@ -41,6 +41,8 @@ TestGoalModel::TestGoalModel()
     }
 
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testPositivePathGoalInsertions, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testPositivePathGetListofChildrenFromParent, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testPositivePathGetAllGoalsForUser, this));
 
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::negativePathMissingRequiredFields, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testnegativePathNotModified, this));
@@ -97,6 +99,65 @@ TestStatus TestGoalModel::testPositivePathGoalInsertions()
     }
 
     return testStatus;
+}
+
+TestStatus TestGoalModel::testPositivePathGetListofChildrenFromParent()
+{
+    UserGoalModel parentGoal;
+    if (!parentGoal.selectByUserIDAndDescription(1, "Get a Job in Software Engineering"))
+    {
+        std::cerr << "Failed to find Parent Goal! Test FAILED\n";
+        std::cerr << parentGoal.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    UserGoalList goalListTestInterface;
+    UserGoalListValues jobRelatedgoals = goalListTestInterface.getAllChildrenFromParent(parentGoal);
+
+    if (jobRelatedgoals.empty())
+    {
+        std::cerr << "test of goalListTestInterface.getAllChildrenFromParent() FAILED\n" <<
+            goalListTestInterface.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << parentGoal << "\n";
+        std::cout << std::format("Find all child goals for({}) PASSED!\n", parentGoal.getGoalId());
+        std::cout << std::format("Goal {} has {} child goals\n", parentGoal.getGoalId(), jobRelatedgoals.size());
+        for (auto goal: jobRelatedgoals)
+        {
+            std::cout << *goal << "\n";
+        }
+    }
+    
+    return TESTPASSED;
+}
+
+TestStatus TestGoalModel::testPositivePathGetAllGoalsForUser()
+{
+    UserGoalList goalListTestInterface;
+    UserGoalListValues allUserGoals = goalListTestInterface.getAllGoalsForUser(1);
+
+    if (allUserGoals.empty())
+    {
+        std::cerr << "test of goalListTestInterface.getAllGoalsForUser() FAILED\n" <<
+            goalListTestInterface.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("Find all goals for user ({}) PASSED!\n", 1);
+        std::cout << std::format("User {} has {} goals\n", 1, allUserGoals.size());
+        for (auto goal: allUserGoals)
+        {
+            std::cout << *goal << "\n";
+        }
+    }
+    
+    return TESTPASSED;
 }
 
 TestStatus TestGoalModel::testNegativePathAlreadyInDataBase()
