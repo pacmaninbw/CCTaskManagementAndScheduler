@@ -186,6 +186,15 @@ bool ModelDBInterface::processResult(boost::mysql::results& results)
     return true;
 }
 
+std::string ModelDBInterface::wrapSearchContentSQLPatternMatch(std::string searchString) noexcept
+{
+    std::string patternMatchString("%");
+    patternMatchString.append(searchString);
+    patternMatchString.append("%");
+
+    return patternMatchString;
+}
+
 std::vector<std::string> ModelDBInterface::explodeTextField(std::string const& textField) noexcept
 {
     std::vector<std::string> subFields;
@@ -257,6 +266,4 @@ std::optional<boost::mysql::datetime> ModelDBInterface::optionalDateTimeConversi
 
     return timeStamp;
 };
-
-
 

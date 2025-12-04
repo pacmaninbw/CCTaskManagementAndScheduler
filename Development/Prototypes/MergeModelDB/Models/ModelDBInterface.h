@@ -55,6 +55,11 @@ protected:
     virtual void processResultRow(boost::mysql::row_view rv) = 0;
 
 /*
+ * for MySQL pattern match of string
+ */
+    std::string wrapSearchContentSQLPatternMatch(std::string searchString) noexcept;
+
+/*
  * To process TEXT fields that contain model fields.
  */
     std::vector<std::string> explodeTextField(std::string const& textField) noexcept;

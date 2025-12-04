@@ -169,7 +169,8 @@ std::string NoteModel::formatSelectByUserIdAndSimilarContent(std::size_t userId,
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Content LIKE {}", userId, similarContent);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Content LIKE {}", userId,
+            wrapSearchContentSQLPatternMatch(similarContent));
 
         return std::move(fctx).get().value();
     }

@@ -183,7 +183,8 @@ std::string UserGoalModel::formatSelectBySimilarDescription(std::string partialD
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Description LIKE {}", userId, partialDescription);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Description LIKE {}", userId,
+            wrapSearchContentSQLPatternMatch(partialDescription));
 
         return std::move(fctx).get().value();
     }
