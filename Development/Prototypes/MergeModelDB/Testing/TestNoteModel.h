@@ -24,6 +24,10 @@ public:
 private:
     TestStatus testInsertNote(TestNoteInput testNote);
     TestStatus testPositivePathNoteInsertions();
+    TestStatus testPositivePathGetAllNotesForUser();
+    TestStatus testPositivePathGetNotesForUserWithSimilarContent();
+    TestStatus testPositivePathGetNotesForUserCreatedDateRange();
+    TestStatus testPositivePathGetNotesForUserEditedDateRange();
     TestStatus testNegativePathAlreadyInDataBase();
     TestStatus testnegativePathNotModified();
     TestStatus negativePathMissingRequiredFields();

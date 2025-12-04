@@ -1,6 +1,7 @@
 // Project Header Files
 #include "TestNoteModel.h"
 #include "TestDBInterfaceCore.h"
+#include "NoteList.h"
 #include "NoteModel.h"
 #include "UserModel.h"
 
@@ -40,6 +41,10 @@ TestNoteModel::TestNoteModel()
     }
 
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathNoteInsertions, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetAllNotesForUser, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetNotesForUserEditedDateRange, this));
 
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::negativePathMissingRequiredFields, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testnegativePathNotModified, this));
@@ -84,6 +89,113 @@ TestStatus TestNoteModel::testPositivePathNoteInsertions()
     }
 
     return testStatus;
+}
+
+TestStatus TestNoteModel::testPositivePathGetAllNotesForUser()
+{
+    NoteList NoteListTestInterface;
+    NoteListValues allUserNotes = NoteListTestInterface.getAllNotesForUser(1);
+
+    if (allUserNotes.empty())
+    {
+        std::cerr << "test of NoteListTestInterface.getAllNotesForUser() FAILED\n" <<
+            NoteListTestInterface.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("Find all notes for user ({}) PASSED!\n", 1);
+        std::cout << std::format("User {} has {} notes\n", 1, allUserNotes.size());
+        for (auto note: allUserNotes)
+        {
+            std::cout << *note << "\n";
+        }
+    }
+    
+    return TESTPASSED;
+}
+
+TestStatus TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent()
+{
+    std::string searchString("Maintain");
+    NoteList NoteListTestInterface;
+    NoteListValues allSimilarUserNotes = NoteListTestInterface.getNotesForUserSimlarToContent(1, searchString);
+
+    if (allSimilarUserNotes.empty())
+    {
+        std::cerr << "test of NoteListTestInterface.getNotesForUserSimlarToContent() FAILED\n" <<
+            NoteListTestInterface.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("Find all notes for user ({}) similar to {} PASSED!\n", 1, searchString);
+        std::cout << std::format("User {} has {} notes\n", 1, allSimilarUserNotes.size());
+        for (auto note: allSimilarUserNotes)
+        {
+            std::cout << *note << "\n";
+        }
+    }
+    
+    return TESTPASSED;
+}
+
+TestStatus TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange()
+{
+    std::chrono::year_month_day startDate = getTodaysDateMinus(OneWeek);
+    std::chrono::year_month_day endDate = getTodaysDatePlus(1);
+
+    NoteList NoteListTestInterface;
+    NoteListValues allNotesInRange = NoteListTestInterface.getAllNotesForUserCreatedInDatgeRange(1, startDate, endDate);
+
+    if (allNotesInRange.empty())
+    {
+        std::cerr << "test of NoteListTestInterface.getAllNotesForUserCreatedInDatgeRange() FAILED\n" <<
+            NoteListTestInterface.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("Find all notes for user ({}) created in date range PASSED!\n", 1);
+        std::cout << std::format("User {} has {} notes\n", 1, allNotesInRange.size());
+        for (auto note: allNotesInRange)
+        {
+            std::cout << *note << "\n";
+        }
+    }
+    
+    return TESTPASSED;
+}
+
+TestStatus TestNoteModel::testPositivePathGetNotesForUserEditedDateRange()
+{
+    std::chrono::year_month_day startDate = getTodaysDateMinus(OneWeek);
+    std::chrono::year_month_day endDate = getTodaysDatePlus(1);
+
+    NoteList NoteListTestInterface;
+    NoteListValues allNotesInRange = NoteListTestInterface.getAllNotesForUserEditedInDatgeRange(1, startDate, endDate);
+
+    if (allNotesInRange.empty())
+    {
+        std::cerr << "test of NoteListTestInterface.getAllNotesForUserEditedInDatgeRange() FAILED\n" <<
+            NoteListTestInterface.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("Find all notes for user ({}) edited in date range PASSED!\n", 1);
+        std::cout << std::format("User {} has {} notes\n", 1, allNotesInRange.size());
+        for (auto note: allNotesInRange)
+        {
+            std::cout << *note << "\n";
+        }
+    }
+    
+    return TESTPASSED;
 }
 
 TestStatus TestNoteModel::testNegativePathAlreadyInDataBase()

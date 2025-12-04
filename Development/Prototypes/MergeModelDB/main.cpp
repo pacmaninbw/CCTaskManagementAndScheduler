@@ -1,5 +1,6 @@
 // Project Header Files
 #include "CommandLineParser.h"
+#include "NoteList.h"
 #include "NoteModel.h"
 #include "NoteSelfTest.h"
 #include "TaskModel.h"
@@ -153,6 +154,12 @@ static TestStatus runAllListUnitTests()
 
     UserGoalList goalListTest;
     if (runListUnitTest(&goalListTest) == TESTFAILED)
+    {
+        allUnintTestsPassed = TESTFAILED;
+    }
+    
+    NoteList noteListTest;
+    if (runListUnitTest(&noteListTest) == TESTFAILED)
     {
         allUnintTestsPassed = TESTFAILED;
     }
