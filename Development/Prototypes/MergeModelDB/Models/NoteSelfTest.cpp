@@ -116,10 +116,14 @@ std::vector<AttributeTestFunction> NoteSelfTest::initAttributeAccessTests() noex
 std::vector<ExceptionTestElement> NoteSelfTest::initExceptionTests() noexcept
 {
     std::vector<ExceptionTestElement> exceptionTests;
-    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionSelectByNoteID, this), "selectByUserID"});
+    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionSelectByNoteID, this), "selectByNoteID"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionInsert, this), "testExceptionInsert"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
+    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionFormatSelectByUserId, this), "selectByUserId"});
+    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionFormatSelectByUserIdAndSimilarContent, this), "selectByUserIdAndSimilarContent"});
+    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionFormatSelectByUserIdAndCreationDateRange, this), "selectByUserIdAndCreationDateRange"});
+    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionFormatSelectByUserIdAndUpdateDateRange, this), "selectByUserIdAndUpdateDateRange"});
 
     return exceptionTests;
 }
@@ -165,6 +169,52 @@ TestStatus NoteSelfTest::testExceptionSelectByNoteID() noexcept
     selfTestResetAllValues();
 
     return testExceptionAndSuccessNArgs("NoteModel::selectByNoteID", std::bind(&NoteModel::selectByNoteID, this, std::placeholders::_1), 1);
+}
+
+TestStatus NoteSelfTest::testExceptionFormatSelectByUserId() noexcept
+{
+    selfTestResetAllValues();
+
+    return testFormatExceptionAndSuccessNArgs("NoteModel::formatSelectByUserId",
+        std::bind(&NoteModel::formatSelectByUserId, this, std::placeholders::_1), 1);
+}
+
+TestStatus NoteSelfTest::testExceptionFormatSelectByUserIdAndSimilarContent() noexcept
+{
+    selfTestResetAllValues();
+
+    std::size_t testUserId = 1;
+    std::string testContent("Test Content");
+
+    return testFormatExceptionAndSuccessNArgs("NoteModel::formatSelectByUserIdAndSimilarContent",
+        std::bind(&NoteModel::formatSelectByUserIdAndSimilarContent, this, std::placeholders::_1, std::placeholders::_2),
+        testUserId, testContent);
+}
+
+TestStatus NoteSelfTest::testExceptionFormatSelectByUserIdAndCreationDateRange() noexcept
+{
+    selfTestResetAllValues();
+
+    std::size_t testUserId = 1;
+    std::chrono::year_month_day startDate = getTodaysDateMinus(OneWeek);
+    std::chrono::year_month_day endDate = getTodaysDate();
+
+    return testFormatExceptionAndSuccessNArgs("NoteModel::formatSelectByUserIdAndCreationDateRange",
+        std::bind(&NoteModel::formatSelectByUserIdAndCreationDateRange, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
+        testUserId, startDate, endDate);
+}
+
+TestStatus NoteSelfTest::testExceptionFormatSelectByUserIdAndUpdateDateRange() noexcept
+{
+    selfTestResetAllValues();
+
+    std::size_t testUserId = 1;
+    std::chrono::year_month_day startDate = getTodaysDateMinus(OneWeek);
+    std::chrono::year_month_day endDate = getTodaysDate();
+
+    return testFormatExceptionAndSuccessNArgs("NoteModel::formatSelectByUserIdAndUpdateDateRange",
+        std::bind(&NoteModel::formatSelectByUserIdAndUpdateDateRange, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
+        testUserId, startDate, endDate);
 }
 
 TestStatus NoteSelfTest::testAllInsertFailures()

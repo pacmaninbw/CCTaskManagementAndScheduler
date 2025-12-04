@@ -40,6 +40,10 @@ private:
     virtual TestStatus testExceptionUpdate() noexcept override;
     virtual TestStatus testExceptionRetrieve() noexcept override;
     TestStatus testExceptionSelectByNoteID() noexcept;
+    TestStatus testExceptionFormatSelectByUserId() noexcept;
+    TestStatus testExceptionFormatSelectByUserIdAndSimilarContent() noexcept;
+    TestStatus testExceptionFormatSelectByUserIdAndCreationDateRange() noexcept;
+    TestStatus testExceptionFormatSelectByUserIdAndUpdateDateRange() noexcept;
 
     virtual TestStatus testAllInsertFailures() override;
 
