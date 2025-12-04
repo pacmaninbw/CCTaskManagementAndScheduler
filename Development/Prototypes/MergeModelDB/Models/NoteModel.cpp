@@ -135,7 +135,97 @@ bool NoteModel::selectByNoteID(std::size_t noteID)
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In NoteModel::selectByUserID : {}", e.what()));
+        appendErrorMessage(std::format("In NoteModel::selectByNoteID : {}", e.what()));
         return false;
     }
+}
+
+std::string NoteModel::formatSelectByUserId(std::size_t userId) noexcept
+{
+    errorMessages.clear();
+
+    try {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, listQueryBase);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In NoteModel::formatSelectByUserId({}) : {}", userId, e.what()));
+    }
+
+    return std::string();
+}
+
+std::string NoteModel::formatSelectByUserIdAndSimilarContent(std::size_t userId, std::string similarContent) noexcept
+{
+    errorMessages.clear();
+
+    try {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, listQueryBase);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Content LIKE {}", userId, similarContent);
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In NoteModel::formatSelectByUserId({}) : {}", userId, e.what()));
+    }
+
+    return std::string();
+}
+
+std::string NoteModel::formatSelectByUserIdAndCreationDateRange(
+    std::size_t userId, std::chrono::year_month_day startDay, std::chrono::year_month_day endDay) noexcept
+{
+    errorMessages.clear();
+
+    try {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, listQueryBase);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
+        boost::mysql::format_sql_to(fctx, " AND NotationDateTime >= {}", stdchronoDateToBoostMySQLDate(startDay));
+        boost::mysql::format_sql_to(fctx, " AND NotationDateTime <= {}", stdchronoDateToBoostMySQLDate(endDay));
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In NoteModel::formatSelectByUserId({}) : {}", userId, e.what()));
+    }
+
+    return std::string();
+}
+
+std::string NoteModel::formatSelectByUserIdAndUpdateDateRange(
+    std::size_t userId, std::chrono::year_month_day startDay, std::chrono::year_month_day endDay) noexcept
+{
+    errorMessages.clear();
+
+    try {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, listQueryBase);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
+        boost::mysql::format_sql_to(fctx, " AND LastUpdate >= {}", stdchronoDateToBoostMySQLDate(startDay));
+        boost::mysql::format_sql_to(fctx, " AND LastUpdate <= {}", stdchronoDateToBoostMySQLDate(endDay));
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In NoteModel::formatSelectByUserId({}) : {}", userId, e.what()));
+    }
+
+    return std::string();
 }

@@ -37,6 +37,13 @@ public:
  * Select with arguments
  */
     bool selectByNoteID(std::size_t noteID);
+    // Lists of notes
+    std::string formatSelectByUserId(std::size_t userId) noexcept;
+    std::string formatSelectByUserIdAndSimilarContent(std::size_t userId, std::string similarContent) noexcept;
+    std::string formatSelectByUserIdAndCreationDateRange(std::size_t userId, std::chrono::year_month_day startDay,
+        std::chrono::year_month_day endDay) noexcept;
+    std::string formatSelectByUserIdAndUpdateDateRange(std::size_t userId, std::chrono::year_month_day startDay,
+        std::chrono::year_month_day endDay) noexcept;
 
 /*
  * Required fields.
@@ -102,6 +109,8 @@ protected:
     static const std::size_t NotationDateTimeIdx = 2;
     static const std::size_t ContentIdx = 3;
     static const std::size_t LastUpdateIdx = 4;
+
+    boost::mysql::constant_string_view listQueryBase = "SELECT idUserNotes FROM UserNotes ";
 };
 
 using NoteModel_shp = std::shared_ptr<NoteModel>;
