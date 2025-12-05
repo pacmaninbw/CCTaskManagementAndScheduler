@@ -45,8 +45,8 @@ Test Output: 	User ID: 31
 	Email: AnyEmail
 	Login Name: AnyLoginName
 	PassWord: AnyPassword
-	User Added: 2025-11-28 14:04:04.214317359
-	Last Login: 2025-11-28 14:04:04.214332508
+	User Added: 2025-12-05 15:10:22.196771856
+	Last Login: 2025-12-05 15:10:22.196794472
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
@@ -112,9 +112,9 @@ Test Output: TaskModel:
 	Assigned To ID: 2
 	Description: Test task description access
 	Percentage Complete: 86.5
-	Creation Date: 2025-11-28 14:04:04.244086845
-	Scheduled Start Date: 2025-11-21
-	Due Date: 2025-11-28
+	Creation Date: 2025-12-05 15:10:22.215935085
+	Scheduled Start Date: 2025-11-28
+	Due Date: 2025-12-05
 	Estimated Effort Hours: 1024
 	Actual Effort Hours: 760
 	Priority Group: 2
@@ -123,9 +123,9 @@ Test Output: TaskModel:
 Optional Fields
 	Status: Completed
 	Parent ID: 42
-	Actual Start Date: 2025-11-26
-	Estimated Completion Date: 2025-11-28
-	Completed Date: 2025-11-28
+	Actual Start Date: 2025-12-03
+	Estimated Completion Date: 2025-12-05
+	Completed Date: 2025-12-05
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
@@ -158,7 +158,7 @@ Test Output: Model Name UserGoalModel
 	Description: Test note content access
 	Priority: 1
 	Parent ID: 1
-	Creation Timestamp: 2025-11-28 14:04:04.270143891
+	Creation Timestamp: 2025-12-05 15:10:22.234606511
 	Last Update Timestamp: 1970-01-01 00:00:00.000000000
 
 Common Insertion Failure Test PASSED!
@@ -187,8 +187,8 @@ Self test on set and get functions for Note::Date Added PASSED
 Test Output: 	Note ID: 27
 	User ID: 31
 	Content: Test note content access
-	Created: 2025-11-28 14:04:04.280703000
-	Last Update: 2025-11-28 14:04:04.280712652
+	Created: 2025-12-05 15:10:22.248399103
+	Last Update: 2025-12-05 15:10:22.248405733
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
@@ -235,6 +235,26 @@ Running Exception Handling Test Cases UserGoalModelList
 Exception Test for UserGoalList::testExceptionsGetAllGoalsForUser()
 
 Exception Test for UserGoalList::testExceptionsGetAllChildrenFromParent()
+
+Exception Test for UserGoalList::findGoalsByUserIdAndSimilarDescription()
+
+
+---------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------
+
+Running NoteList Self Test
+
+
+Running Exception Handling Test Cases NoteList
+
+Exception Test for NoteList::testExceptionsGetAllNotes()
+
+Exception Test for NoteList::testExceptionsGetNotesForUserLikeContent()
+
+Exception Test for NoteList::testExceptionsGetNotesForUserCreatedDateRange()
+
+Exception Test for NoteList::testExceptionsGetNotesForUserEditedDateRange()
 
 
 ---------------------------------------------------------------------------------

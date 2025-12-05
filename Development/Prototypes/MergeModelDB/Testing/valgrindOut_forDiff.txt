@@ -1,15 +1,32 @@
 Memcheck, a memory error detector
 Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
 Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
-Command: protoPersonalPlanner -u pacman -p M1nus+1r3th
+Command: protoPersonalPlanner -u -p --verbose
 
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
+
 Running User Self Test
 
 
 Running Exception Handling Test Cases
+In Self Test Query is: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+In Self Test Query is: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LastName = 'TestLastName' AND FirstName = 'TestFirstName' AND MiddleInitial = 'MI'
+In Self Test Query is: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LoginName = 'testValue'
+In Self Test Query is: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE EmailAddress = 'testValue@testValue.com'
+In Self Test Query is: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LoginName = 'TestValue' AND HashedPassWord = 'TestValue'
+In Self Test Query is: 
+	INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences) VALUES ('LastName', 'FirstName', 'M', 'FirstName.LastName@LastName.com', 'LastNameFirstNameM', 'LastNameFirstNameM', '2025-12-05 15:00:43.105947', '2025-12-05 15:00:43.105947', '8:30 AM;5:00 PM;1;1;1;0;')
+In Self Test Query is: 
+	UPDATE UserProfile SET UserProfile.LastName = 'LastName', UserProfile.FirstName = 'FirstName', UserProfile.MiddleInitial = 'M', UserProfile.EmailAddress = 'FirstName.LastName@LastName.com', UserProfile.LoginName = 'LastNameFirstNameM', UserProfile.HashedPassWord = 'LastNameFirstNameM', UserProfile.Preferences = '8:30 AM;5:00 PM;1;1;1;0;', UserProfile.LastLogin = '2025-12-05 15:00:43.340251' WHERE UserProfile.UserID = 1
+In Self Test Query is: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
 
 
 Running self test on set and get functions for User::Primary Key
@@ -49,20 +66,45 @@ Test Output: 	User ID: 31
 	Email: AnyEmail
 	Login Name: AnyLoginName
 	PassWord: AnyPassword
-	User Added: 2025-11-11 15:50:41.736703221
-	Last Login: 2025-11-11 15:50:41.772777868
+	User Added: 2025-12-05 15:00:43.606322282
+	Last Login: 2025-12-05 15:00:43.647228460
 
+User::testAllInsertFailures before successful insert this = 
+	User ID: 0
+	Last Name: teststringvalue
+	First Name: teststringvalue
+	Middle Initial: 
+	Email: teststringvalue
+	Login Name: teststringvalue
+	PassWord: teststringvalue
+
+In Self Test Query is: 
+	INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences) VALUES ('teststringvalue', 'teststringvalue', '', 'teststringvalue', 'teststringvalue', 'teststringvalue', '2025-12-05 15:00:44.130664', NULL, '4:30 AM;4:15 PM;1;1;1;1;')
+Common Insertion Failure Test PASSED!
+Common Update Failure Test PASSED!
 User Self Test PASSED
+User PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
+
 Running Task Self Test
 
 
 Running Exception Handling Test Cases
+In Self Test Query is: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 0
+In Self Test Query is: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'A task description' AND AsignedTo = 1
 Caught expected exception from TaskModel::formatInsertStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
+In Self Test Query is: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 2, 'Testing Exception handling', 1, 0, 0e+00, '2025-12-05 15:00:44.444312', '2025-12-07', '2025-12-05', NULL, NULL, NULL, 6, 0e+00, 65, 1, 0, 3, '3;5;7;', '2025-12-05 15:00:44.444973')
 Caught expected exception from TaskSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
+In Self Test Query is: 
+	UPDATE Tasks SET CreatedBy = 1, AsignedTo = 2, Description = 'Testing Exception handling', ParentTask = NULL, Status = 0, PercentageComplete = 0e+00, CreatedOn = '2025-12-05 15:00:44.664147', RequiredDelivery = '2025-12-07', ScheduledStart = '2025-12-05', ActualStart = NULL, EstimatedCompletion = NULL, Completed = NULL, EstimatedEffortHours = 6, ActualEffortHours = 0e+00, SchedulePriorityGroup = 65, PriorityInGroup = 1, Personal = 0, DependencyCount = 3,Dependencies = '2;4;6;' WHERE TaskID = 1 
 Caught expected exception from TaskSelfTest::formatSelectStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
+In Self Test Query is: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 37
 
 
 Running self test on set and get functions for Task::Primary Key
@@ -113,9 +155,9 @@ Test Output: TaskModel:
 	Assigned To ID: 2
 	Description: Test task description access
 	Percentage Complete: 86.5
-	Creation Date: 2025-11-11 15:50:43.204075754
-	Scheduled Start Date: 2025-11-04
-	Due Date: 2025-11-11
+	Creation Date: 2025-12-05 15:00:45.169412768
+	Scheduled Start Date: 2025-11-28
+	Due Date: 2025-12-05
 	Estimated Effort Hours: 1024
 	Actual Effort Hours: 760
 	Priority Group: 2
@@ -124,18 +166,51 @@ Test Output: TaskModel:
 Optional Fields
 	Status: Completed
 	Parent ID: 42
-	Actual Start Date: 2025-11-09
-	Estimated Completion Date: 2025-11-11
-	Completed Date: 2025-11-11
+	Actual Start Date: 2025-12-03
+	Estimated Completion Date: 2025-12-05
+	Completed Date: 2025-12-05
 
+Task::testAllInsertFailures before successful insert this = 
+TaskModel:
+	Task ID: 0
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Test missing required fields: Set Description
+	Percentage Complete: 0
+	Creation Date: 2025-12-05 15:00:45.628474719
+	Scheduled Start Date: 2025-11-28
+	Due Date: 2025-12-06
+	Estimated Effort Hours: 5
+	Actual Effort Hours: 0
+	Priority Group: 1
+	Priority: 0
+	Dependency Count: 0
+Optional Fields
+
+In Self Test Query is: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 1, 'Test missing required fields: Set Description', NULL, 0, 0e+00, '2025-12-05 15:00:45.644321', '2025-12-06', '2025-11-28', NULL, NULL, NULL, 5, 0e+00, 1, 0, 0, 0, NULL, '2025-12-05 15:00:45.644341')
+Common Insertion Failure Test PASSED!
+Common Update Failure Test PASSED!
 Task Self Test PASSED
+Task PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
+
 Running UserGoalModel Self Test
 
 
 Running Exception Handling Test Cases
+In Self Test Query is: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1
+In Self Test Query is: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 1 and Description = 'Test SelectByUserIDAndDescription Exception Handling'
+In Self Test Query is: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (27, 'Testing insertion exception', '2025-12-05 15:00:46.036768', '2025-12-05 15:00:46.084304', NULL, NULL)
+In Self Test Query is: 
+	UPDATE UserGoals SET UserGoals.UserID = 23, UserGoals.Description = 'Testing insertion exception', UserGoals.CreationTS = '2025-12-05 15:00:46.104902', UserGoals.LastUpdateTS = '2025-12-05 15:00:46.127287' UserGoals.Priority = NULL UserGoals.ParentGoal = NULL WHERE UserGoals.idUserGoals = 37
+In Self Test Query is: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1
 
 
 Running self test on set and get functions for UserGoalModel::Primary Key
@@ -150,22 +225,46 @@ Running self test on set and get functions for UserGoalModel::Parent ID
 Self test on set and get functions for UserGoalModel::Parent ID PASSED
 Running self test on set and get functions for UserGoalModel::Priority
 Self test on set and get functions for UserGoalModel::Priority PASSED
-Test Output: 	Goal ID: 57
+Test Output: Model Name UserGoalModel
+	Goal ID: 57
 	User ID: 23
 	Description: Test note content access
 	Priority: 1
 	Parent ID: 1
-	Creation Timestamp: 2025-11-11 15:50:44.227183836
+	Creation Timestamp: 2025-12-05 15:00:46.268525326
 	Last Update Timestamp: 1970-01-01 00:00:00.000000000
 
+UserGoalModel::testAllInsertFailures before successful insert this = 
+Model Name UserGoalModel
+	Goal ID: 0
+	User ID: 51
+	Description: Testing negative note insertion path
+	Priority: 0
+	Parent ID: 0
+	Last Update Timestamp: 1970-01-01 00:00:00.000000000
+
+In Self Test Query is: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (51, 'Testing negative note insertion path', '2025-12-05 15:00:46.435677', '2025-12-05 15:00:46.436123', NULL, NULL)
+Common Insertion Failure Test PASSED!
+Common Update Failure Test PASSED!
 UserGoalModel Self Test PASSED
+UserGoalModel PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
+
 Running Note Self Test
 
 
 Running Exception Handling Test Cases
+In Self Test Query is: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 1
+In Self Test Query is: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (27, '2025-12-05 15:00:46.559045', 'Testing insertion exception', '2025-12-05 15:00:46.559045')
+In Self Test Query is: 
+	UPDATE UserNotes SET UserNotes.UserID = 27, UserNotes.NotationDateTime = '2025-12-05 15:00:46.625756', UserNotes.Content = 'Testing insertion exception', UserNotes.LastUpdate = '2025-12-05 15:00:46.625756' WHERE UserNotes.idUserNotes = 1
+In Self Test Query is: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 1
 
 
 Running self test on set and get functions for Note::Primary Key
@@ -181,36 +280,1859 @@ Self test on set and get functions for Note::Date Added PASSED
 Test Output: 	Note ID: 27
 	User ID: 31
 	Content: Test note content access
-	Created: 2025-11-11 15:50:44.686385278
-	Last Update: 2025-11-11 15:50:44.706225583
+	Created: 2025-12-05 15:00:46.949931776
+	Last Update: 2025-12-05 15:00:46.971080630
 
+Note::testAllInsertFailures before successful insert this = 
+	Note ID: 0
+	User ID: 27
+	Content: Testing negative note insertion path
+	Created: 2025-12-05 15:00:47.013067048
+	Last Update: 2025-12-05 15:00:47.013067048
+
+In Self Test Query is: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (27, '2025-12-05 15:00:47.013067', 'Testing negative note insertion path', '2025-12-05 15:00:47.013067')
+Common Insertion Failure Test PASSED!
+Common Update Failure Test PASSED!
 Note Self Test PASSED
+Note PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
+
+Running UserList Self Test
+
+
+Running Exception Handling Test Cases UserList
+
+Exception Test for UserListSelfTest::testExceptionsGetAllUsers()
+In Self Test Query is: 
+	SELECT UserID FROM UserProfile 
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+
+
+UserList PASSED Self Test
+---------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------
+
+Running TaskList Self Test
+
+
+Running Exception Handling Test Cases TaskList
+
+Exception Test for TaskList::testExceptionGetActiveTasksForAssignedUser()
+In Self Test Query is: 
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND Completed IS NULL AND (Status IS NOT NULL AND Status <> '2025-12-12')
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 1
+
+Exception Test for TaskList::testExceptionGetUnstartedDueForStartForAssignedUser()
+In Self Test Query is: 
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND ScheduledStart < '2025-12-12' AND (Status IS NULL OR Status = 0)
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 1
+
+Exception Test for TaskList::testExceptionGetTasksCompletedByAssignedAfterDate()
+In Self Test Query is: 
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND Completed >= '2025-12-05'
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 1
+
+Exception Test for TaskList::testExceptionGetUnstartedDueForStartForAssignedUser()
+In Self Test Query is: 
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND ParentTask = 1
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 1
+
+
+TaskList PASSED Self Test
+---------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------
+
+Running UserGoalModelList Self Test
+
+
+Running Exception Handling Test Cases UserGoalModelList
+
+Exception Test for UserGoalList::testExceptionsGetAllGoalsForUser()
+In Self Test Query is: 
+	SELECT idUserGoals FROM UserGoals  WHERE UserID = 1 
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1
+
+Exception Test for UserGoalList::testExceptionsGetAllChildrenFromParent()
+In Self Test Query is: 
+	SELECT idUserGoals FROM UserGoals  WHERE UserID = 0 AND ParentGoal = 1
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1
+
+Exception Test for UserGoalList::findGoalsByUserIdAndSimilarDescription()
+In Self Test Query is: 
+	SELECT idUserGoals FROM UserGoals  WHERE UserID = 1 AND Description LIKE '%Maintain%'
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1
+
+
+UserGoalModelList PASSED Self Test
+---------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------
+
+Running NoteList Self Test
+
+
+Running Exception Handling Test Cases NoteList
+
+Exception Test for NoteList::testExceptionsGetAllNotes()
+In Self Test Query is: 
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 1
+
+Exception Test for NoteList::testExceptionsGetNotesForUserLikeContent()
+In Self Test Query is: 
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND Content LIKE '%Test Content%'
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 1
+
+Exception Test for NoteList::testExceptionsGetNotesForUserCreatedDateRange()
+In Self Test Query is: 
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND NotationDateTime >= '2025-11-28' AND NotationDateTime <= '2025-12-05'
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 1
+
+Exception Test for NoteList::testExceptionsGetNotesForUserEditedDateRange()
+In Self Test Query is: 
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND LastUpdate >= '2025-11-28' AND LastUpdate <= '2025-12-05'
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 1
+
+
+NoteList PASSED Self Test
+---------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------
+
 Running user Integration Tests
+Running: 
+	INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences) VALUES ('One', 'User', 'P', 'UserOne@gmail.com', 'OneUserP', 'OneUserP', '2025-12-05 15:00:49.202180', NULL, '8:30 AM;5:00 PM;1;1;1;0;')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LoginName = 'OneUserP'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LoginName = 'OneUserP' AND HashedPassWord = 'OneUserP'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LoginName = 'OneUserP' AND HashedPassWord = 'NotThePassword'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LastName = 'One' AND FirstName = 'User' AND MiddleInitial = 'P'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE EmailAddress = 'UserOne@gmail.com'
+Running: 
+	UPDATE UserProfile SET UserProfile.LastName = 'One', UserProfile.FirstName = 'User', UserProfile.MiddleInitial = 'P', UserProfile.EmailAddress = 'UserOne@gmail.com', UserProfile.LoginName = 'OneUserP', UserProfile.HashedPassWord = 'MyNew**&pAs5Word1', UserProfile.Preferences = '8:30 AM;5:00 PM;1;1;1;0;', UserProfile.LastLogin = NULL WHERE UserProfile.UserID = 1
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences) VALUES ('Doe', 'John', 'Q', 'johndoe@gmail.com', 'DoeJohnQ', 'DoeJohnQ', '2025-12-05 15:00:49.718939', NULL, '8:30 AM;5:00 PM;1;1;1;0;')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LoginName = 'DoeJohnQ'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LoginName = 'DoeJohnQ' AND HashedPassWord = 'DoeJohnQ'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LoginName = 'DoeJohnQ' AND HashedPassWord = 'NotThePassword'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LastName = 'Doe' AND FirstName = 'John' AND MiddleInitial = 'Q'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE EmailAddress = 'johndoe@gmail.com'
+Running: 
+	UPDATE UserProfile SET UserProfile.LastName = 'Doe', UserProfile.FirstName = 'John', UserProfile.MiddleInitial = 'Q', UserProfile.EmailAddress = 'johndoe@gmail.com', UserProfile.LoginName = 'DoeJohnQ', UserProfile.HashedPassWord = 'MyNew**&pAs5Word2', UserProfile.Preferences = '8:30 AM;5:00 PM;1;1;1;0;', UserProfile.LastLogin = NULL WHERE UserProfile.UserID = 2
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 2
+Running: 
+	INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences) VALUES ('Public', 'John', 'Q', 'anyone@gmail.com', 'PublicJohnQ', 'PublicJohnQ', '2025-12-05 15:00:50.013131', NULL, '8:30 AM;5:00 PM;1;1;1;0;')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LoginName = 'PublicJohnQ'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LoginName = 'PublicJohnQ' AND HashedPassWord = 'PublicJohnQ'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LoginName = 'PublicJohnQ' AND HashedPassWord = 'NotThePassword'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LastName = 'Public' AND FirstName = 'John' AND MiddleInitial = 'Q'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE EmailAddress = 'anyone@gmail.com'
+Running: 
+	UPDATE UserProfile SET UserProfile.LastName = 'Public', UserProfile.FirstName = 'John', UserProfile.MiddleInitial = 'Q', UserProfile.EmailAddress = 'anyone@gmail.com', UserProfile.LoginName = 'PublicJohnQ', UserProfile.HashedPassWord = 'MyNew**&pAs5Word3', UserProfile.Preferences = '8:30 AM;5:00 PM;1;1;1;0;', UserProfile.LastLogin = NULL WHERE UserProfile.UserID = 3
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 3
+Running: 
+	INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences) VALUES ('Doe', 'Jane', 'R', 'jdr@gmail.com', 'DoeJaneR', 'DoeJaneR', '2025-12-05 15:00:50.307376', NULL, '8:30 AM;5:00 PM;1;1;1;0;')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LoginName = 'DoeJaneR'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LoginName = 'DoeJaneR' AND HashedPassWord = 'DoeJaneR'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LoginName = 'DoeJaneR' AND HashedPassWord = 'NotThePassword'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LastName = 'Doe' AND FirstName = 'Jane' AND MiddleInitial = 'R'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE EmailAddress = 'jdr@gmail.com'
+Running: 
+	UPDATE UserProfile SET UserProfile.LastName = 'Doe', UserProfile.FirstName = 'Jane', UserProfile.MiddleInitial = 'R', UserProfile.EmailAddress = 'jdr@gmail.com', UserProfile.LoginName = 'DoeJaneR', UserProfile.HashedPassWord = 'MyNew**&pAs5Word4', UserProfile.Preferences = '8:30 AM;5:00 PM;1;1;1;0;', UserProfile.LastLogin = NULL WHERE UserProfile.UserID = 4
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 4
+Running: 
+	INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences) VALUES ('Case', 'Space', 'O', 'spacecase@gmail.com', 'CaseSpaceO', 'CaseSpaceO', '2025-12-05 15:00:50.602166', NULL, '8:30 AM;5:00 PM;1;1;1;0;')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LoginName = 'CaseSpaceO'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LoginName = 'CaseSpaceO' AND HashedPassWord = 'CaseSpaceO'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LoginName = 'CaseSpaceO' AND HashedPassWord = 'NotThePassword'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LastName = 'Case' AND FirstName = 'Space' AND MiddleInitial = 'O'
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE EmailAddress = 'spacecase@gmail.com'
+Running: 
+	UPDATE UserProfile SET UserProfile.LastName = 'Case', UserProfile.FirstName = 'Space', UserProfile.MiddleInitial = 'O', UserProfile.EmailAddress = 'spacecase@gmail.com', UserProfile.LoginName = 'CaseSpaceO', UserProfile.HashedPassWord = 'MyNew**&pAs5Word5', UserProfile.Preferences = '8:30 AM;5:00 PM;1;1;1;0;', UserProfile.LastLogin = NULL WHERE UserProfile.UserID = 5
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 5
+Running: 
+	SELECT UserID FROM UserProfile 
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 2
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 3
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 4
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 5
 All positive path tests for database insertions and retrievals of user PASSED!
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Expected error was; User not modified!
+
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Expected error was; User already in Database, use Update!
+
 All negative path tests for database insertions and retrievals of user PASSED!
 All tests for database insertions and retrievals of user PASSED!
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
+
 Running task Integration Tests
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 1, 'Archive BHHS74Reunion website to external SSD', 0, 3, 0e+00, '2025-12-05 15:00:51.701101', '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', NULL, 12, 1e+00, 65, 1, 0, 0, NULL, '2025-12-05 15:00:51.701115')
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 1
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Archive BHHS74Reunion website to external SSD' AND AsignedTo = 1
+Running: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 1, 'Develop Personal Planning Tool', 0, 3, 0e+00, '2025-12-05 15:00:51.918650', '2025-05-05', '2025-03-20', '2025-03-20', '2025-05-15', NULL, 300, 4e+01, 65, 2, 0, 0, NULL, '2025-12-05 15:00:51.918665')
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 2
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Develop Personal Planning Tool' AND AsignedTo = 1
+Running: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 1, 'Check with GoDaddy about providing service to archive website to external SSD', 1, 3, 0e+00, '2025-12-05 15:00:52.056688', '2025-04-15', '2025-12-05', NULL, '2025-12-05', NULL, 2, 1e+00, 65, 1, 0, 0, NULL, '2025-12-05 15:00:52.056701')
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 3
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Check with GoDaddy about providing service to archive website to external SSD' AND AsignedTo = 1
+Running: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 1, 'Install a WordPress Archive Plugin', 1, 0, 0e+00, '2025-12-05 15:00:52.190992', '2025-05-01', '2025-05-01', NULL, '2025-05-01', NULL, 1, 0e+00, 66, 2, 0, 0, NULL, '2025-12-05 15:00:52.191005')
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 4
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Install a WordPress Archive Plugin' AND AsignedTo = 1
+Running: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 1, 'Have GoDaddy install PHPMyAdmin', 1, 0, 0e+00, '2025-12-05 15:00:52.326330', '2025-05-02', '2025-05-02', NULL, '2025-05-03', NULL, 1, 0e+00, 66, 3, 0, 0, NULL, '2025-12-05 15:00:52.326343')
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 5
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Have GoDaddy install PHPMyAdmin' AND AsignedTo = 1
+Running: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 1, 'Run Archive Plugin', 1, 0, 0e+00, '2025-12-05 15:00:52.459059', '2025-05-03', '2025-05-03', NULL, '2025-05-03', NULL, 2, 0e+00, 66, 4, 0, 0, NULL, '2025-12-05 15:00:52.459072')
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 6
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Run Archive Plugin' AND AsignedTo = 1
+Running: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 1, 'Log into PHPMyAdmin and save Database to disk', 1, 0, 0e+00, '2025-12-05 15:00:52.591745', '2025-05-04', '2025-05-04', NULL, '2025-05-04', NULL, 1, 0e+00, 66, 5, 0, 0, NULL, '2025-12-05 15:00:52.591758')
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 7
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Log into PHPMyAdmin and save Database to disk' AND AsignedTo = 1
+Running: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 1, 'FTP all website files to computer', 1, 0, 0e+00, '2025-12-05 15:00:52.724874', '2025-05-05', '2025-05-05', NULL, '2025-05-05', NULL, 3, 0e+00, 66, 6, 0, 0, NULL, '2025-12-05 15:00:52.724887')
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 8
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'FTP all website files to computer' AND AsignedTo = 1
+Running: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 1, 'Store all website files on external SSD', 1, 0, 0e+00, '2025-12-05 15:00:52.857554', '2025-05-05', '2025-05-05', NULL, '2025-05-05', NULL, 2, 0e+00, 66, 7, 0, 0, NULL, '2025-12-05 15:00:52.857567')
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 9
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Store all website files on external SSD' AND AsignedTo = 1
+Running: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 1, 'Design Database for Personal Planner', 2, 3, 0e+00, '2025-12-05 15:00:52.991561', '2025-04-08', '2025-03-20', '2025-03-20', '2025-05-01', NULL, 24, 1.6e+01, 65, 0, 0, 0, NULL, '2025-12-05 15:00:52.991582')
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 10
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Design Database for Personal Planner' AND AsignedTo = 1
+Running: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 1, 'Design UML Diagram for Personal Planner', 2, 3, 0e+00, '2025-12-05 15:00:53.125827', '2025-04-12', '2025-04-08', '2025-04-08', '2025-04-15', NULL, 16, 5.25e+00, 65, 0, 0, 0, NULL, '2025-12-05 15:00:53.125840')
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 11
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Design UML Diagram for Personal Planner' AND AsignedTo = 1
+Running: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 1, 'Grocery Shopping', 0, 0, 0e+00, '2025-12-05 15:00:53.261269', '2025-04-12', '2025-04-11', NULL, '2025-12-05', NULL, 2, 2e+00, 67, 1, 0, 0, NULL, '2025-12-05 15:00:53.261283')
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 12
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Grocery Shopping' AND AsignedTo = 1
+Running: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 1, 'Daily 30 minute walk', 0, 0, 0e+00, '2025-12-05 15:00:53.394627', '2025-04-11', '2025-04-11', NULL, '2056-07-07', NULL, 1, 0e+00, 67, 2, 0, 0, NULL, '2025-12-05 15:00:53.394640')
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 13
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Daily 30 minute walk' AND AsignedTo = 1
+Running: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 1, 'Clean apartment', 0, 0, 0e+00, '2025-12-05 15:00:53.527377', '2025-04-12', '2025-04-12', NULL, '2025-12-05', NULL, 2, 0e+00, 67, 3, 0, 0, NULL, '2025-12-05 15:00:53.527391')
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 14
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Clean apartment' AND AsignedTo = 1
+Running: 
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND ScheduledStart < '2025-12-12' AND (Status IS NULL OR Status = 0)
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 4
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 5
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 6
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 7
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 8
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 9
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 12
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 13
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 14
+Find unstarted tasks for user(1) PASSED!
+User 1 has 9 unstarted tasks
+TaskModel:
+	Task ID: 4
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Install a WordPress Archive Plugin
+	Percentage Complete: 0
+	Creation Date: 2025-12-05 15:00:52.000000000
+	Scheduled Start Date: 2025-05-01
+	Due Date: 2025-05-01
+	Estimated Effort Hours: 1
+	Actual Effort Hours: 0
+	Priority Group: 66
+	Priority: 2
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 1
+	Estimated Completion Date: 2025-05-01
+
+TaskModel:
+	Task ID: 5
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Have GoDaddy install PHPMyAdmin
+	Percentage Complete: 0
+	Creation Date: 2025-12-05 15:00:52.000000000
+	Scheduled Start Date: 2025-05-02
+	Due Date: 2025-05-02
+	Estimated Effort Hours: 1
+	Actual Effort Hours: 0
+	Priority Group: 66
+	Priority: 3
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 1
+	Estimated Completion Date: 2025-05-03
+
+TaskModel:
+	Task ID: 6
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Run Archive Plugin
+	Percentage Complete: 0
+	Creation Date: 2025-12-05 15:00:52.000000000
+	Scheduled Start Date: 2025-05-03
+	Due Date: 2025-05-03
+	Estimated Effort Hours: 2
+	Actual Effort Hours: 0
+	Priority Group: 66
+	Priority: 4
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 1
+	Estimated Completion Date: 2025-05-03
+
+TaskModel:
+	Task ID: 7
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Log into PHPMyAdmin and save Database to disk
+	Percentage Complete: 0
+	Creation Date: 2025-12-05 15:00:52.000000000
+	Scheduled Start Date: 2025-05-04
+	Due Date: 2025-05-04
+	Estimated Effort Hours: 1
+	Actual Effort Hours: 0
+	Priority Group: 66
+	Priority: 5
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 1
+	Estimated Completion Date: 2025-05-04
+
+TaskModel:
+	Task ID: 8
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: FTP all website files to computer
+	Percentage Complete: 0
+	Creation Date: 2025-12-05 15:00:52.000000000
+	Scheduled Start Date: 2025-05-05
+	Due Date: 2025-05-05
+	Estimated Effort Hours: 3
+	Actual Effort Hours: 0
+	Priority Group: 66
+	Priority: 6
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 1
+	Estimated Completion Date: 2025-05-05
+
+TaskModel:
+	Task ID: 9
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Store all website files on external SSD
+	Percentage Complete: 0
+	Creation Date: 2025-12-05 15:00:52.000000000
+	Scheduled Start Date: 2025-05-05
+	Due Date: 2025-05-05
+	Estimated Effort Hours: 2
+	Actual Effort Hours: 0
+	Priority Group: 66
+	Priority: 7
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 1
+	Estimated Completion Date: 2025-05-05
+
+TaskModel:
+	Task ID: 12
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Grocery Shopping
+	Percentage Complete: 0
+	Creation Date: 2025-12-05 15:00:53.000000000
+	Scheduled Start Date: 2025-04-11
+	Due Date: 2025-04-12
+	Estimated Effort Hours: 2
+	Actual Effort Hours: 2
+	Priority Group: 67
+	Priority: 1
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 0
+	Estimated Completion Date: 2025-12-05
+
+TaskModel:
+	Task ID: 13
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Daily 30 minute walk
+	Percentage Complete: 0
+	Creation Date: 2025-12-05 15:00:53.000000000
+	Scheduled Start Date: 2025-04-11
+	Due Date: 2025-04-11
+	Estimated Effort Hours: 1
+	Actual Effort Hours: 0
+	Priority Group: 67
+	Priority: 2
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 0
+	Estimated Completion Date: 2056-07-07
+
+TaskModel:
+	Task ID: 14
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Clean apartment
+	Percentage Complete: 0
+	Creation Date: 2025-12-05 15:00:53.000000000
+	Scheduled Start Date: 2025-04-12
+	Due Date: 2025-04-12
+	Estimated Effort Hours: 2
+	Actual Effort Hours: 0
+	Priority Group: 67
+	Priority: 3
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 0
+	Estimated Completion Date: 2025-12-05
+
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Archive BHHS74Reunion website to external SSD' AND AsignedTo = 1
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 1
+Running: 
+	UPDATE Tasks SET CreatedBy = 1, AsignedTo = 1, Description = 'Archive BHHS74Reunion website to external SSD', ParentTask = 0, Status = 4, PercentageComplete = 0e+00, CreatedOn = '2025-12-05 15:00:51.000000', RequiredDelivery = '2025-05-05', ScheduledStart = '2025-04-08', ActualStart = '2025-04-08', EstimatedCompletion = '2025-05-05', Completed = '2025-12-05', EstimatedEffortHours = 12, ActualEffortHours = 6e+00, SchedulePriorityGroup = 65, PriorityInGroup = 1, Personal = 0, DependencyCount = 0,Dependencies = NULL WHERE TaskID = 1 
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 1
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Check with GoDaddy about providing service to archive website to external SSD' AND AsignedTo = 1
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Install a WordPress Archive Plugin' AND AsignedTo = 1
+Running: 
+	UPDATE Tasks SET CreatedBy = 1, AsignedTo = 1, Description = 'Install a WordPress Archive Plugin', ParentTask = 1, Status = 0, PercentageComplete = 0e+00, CreatedOn = '2025-12-05 15:00:52.000000', RequiredDelivery = '2025-05-01', ScheduledStart = '2025-05-01', ActualStart = NULL, EstimatedCompletion = '2025-05-01', Completed = NULL, EstimatedEffortHours = 1, ActualEffortHours = 0e+00, SchedulePriorityGroup = 66, PriorityInGroup = 2, Personal = 0, DependencyCount = 1,Dependencies = '3;' WHERE TaskID = 4 
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Log into PHPMyAdmin and save Database to disk' AND AsignedTo = 1
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Check with GoDaddy about providing service to archive website to external SSD' AND AsignedTo = 1
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Install a WordPress Archive Plugin' AND AsignedTo = 1
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Have GoDaddy install PHPMyAdmin' AND AsignedTo = 1
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Run Archive Plugin' AND AsignedTo = 1
+Running: 
+	UPDATE Tasks SET CreatedBy = 1, AsignedTo = 1, Description = 'Log into PHPMyAdmin and save Database to disk', ParentTask = 1, Status = 0, PercentageComplete = 0e+00, CreatedOn = '2025-12-05 15:00:52.000000', RequiredDelivery = '2025-05-04', ScheduledStart = '2025-05-04', ActualStart = NULL, EstimatedCompletion = '2025-05-04', Completed = NULL, EstimatedEffortHours = 1, ActualEffortHours = 0e+00, SchedulePriorityGroup = 66, PriorityInGroup = 5, Personal = 0, DependencyCount = 4,Dependencies = '3;4;5;6;' WHERE TaskID = 7 
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 7
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Archive BHHS74Reunion website to external SSD' AND AsignedTo = 1
+Running: 
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND ParentTask = 1
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 3
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 4
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 5
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 6
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 7
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 8
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 9
+Running: 
+	UPDATE Tasks SET CreatedBy = 1, AsignedTo = 1, Description = 'Check with GoDaddy about providing service to archive website to external SSD', ParentTask = 1, Status = 4, PercentageComplete = 0e+00, CreatedOn = '2025-12-05 15:00:52.000000', RequiredDelivery = '2025-04-15', ScheduledStart = '2025-12-05', ActualStart = NULL, EstimatedCompletion = '2025-12-05', Completed = '2025-12-05', EstimatedEffortHours = 2, ActualEffortHours = 1e+00, SchedulePriorityGroup = 65, PriorityInGroup = 1, Personal = 0, DependencyCount = 0,Dependencies = NULL WHERE TaskID = 3 
+Running: 
+	UPDATE Tasks SET CreatedBy = 1, AsignedTo = 1, Description = 'Install a WordPress Archive Plugin', ParentTask = 1, Status = 4, PercentageComplete = 0e+00, CreatedOn = '2025-12-05 15:00:52.000000', RequiredDelivery = '2025-05-01', ScheduledStart = '2025-05-01', ActualStart = NULL, EstimatedCompletion = '2025-05-01', Completed = '2025-12-05', EstimatedEffortHours = 1, ActualEffortHours = 0e+00, SchedulePriorityGroup = 66, PriorityInGroup = 2, Personal = 0, DependencyCount = 1,Dependencies = '3;' WHERE TaskID = 4 
+Running: 
+	UPDATE Tasks SET CreatedBy = 1, AsignedTo = 1, Description = 'Have GoDaddy install PHPMyAdmin', ParentTask = 1, Status = 4, PercentageComplete = 0e+00, CreatedOn = '2025-12-05 15:00:52.000000', RequiredDelivery = '2025-05-02', ScheduledStart = '2025-05-02', ActualStart = NULL, EstimatedCompletion = '2025-05-03', Completed = '2025-12-05', EstimatedEffortHours = 1, ActualEffortHours = 0e+00, SchedulePriorityGroup = 66, PriorityInGroup = 3, Personal = 0, DependencyCount = 0,Dependencies = NULL WHERE TaskID = 5 
+Running: 
+	UPDATE Tasks SET CreatedBy = 1, AsignedTo = 1, Description = 'Run Archive Plugin', ParentTask = 1, Status = 4, PercentageComplete = 0e+00, CreatedOn = '2025-12-05 15:00:52.000000', RequiredDelivery = '2025-05-03', ScheduledStart = '2025-05-03', ActualStart = NULL, EstimatedCompletion = '2025-05-03', Completed = '2025-12-05', EstimatedEffortHours = 2, ActualEffortHours = 0e+00, SchedulePriorityGroup = 66, PriorityInGroup = 4, Personal = 0, DependencyCount = 0,Dependencies = NULL WHERE TaskID = 6 
+Running: 
+	UPDATE Tasks SET CreatedBy = 1, AsignedTo = 1, Description = 'Log into PHPMyAdmin and save Database to disk', ParentTask = 1, Status = 4, PercentageComplete = 0e+00, CreatedOn = '2025-12-05 15:00:52.000000', RequiredDelivery = '2025-05-04', ScheduledStart = '2025-05-04', ActualStart = NULL, EstimatedCompletion = '2025-05-04', Completed = '2025-12-05', EstimatedEffortHours = 1, ActualEffortHours = 0e+00, SchedulePriorityGroup = 66, PriorityInGroup = 5, Personal = 0, DependencyCount = 4,Dependencies = '3;4;5;6;' WHERE TaskID = 7 
+Running: 
+	UPDATE Tasks SET CreatedBy = 1, AsignedTo = 1, Description = 'FTP all website files to computer', ParentTask = 1, Status = 4, PercentageComplete = 0e+00, CreatedOn = '2025-12-05 15:00:52.000000', RequiredDelivery = '2025-05-05', ScheduledStart = '2025-05-05', ActualStart = NULL, EstimatedCompletion = '2025-05-05', Completed = '2025-12-05', EstimatedEffortHours = 3, ActualEffortHours = 0e+00, SchedulePriorityGroup = 66, PriorityInGroup = 6, Personal = 0, DependencyCount = 0,Dependencies = NULL WHERE TaskID = 8 
+Running: 
+	UPDATE Tasks SET CreatedBy = 1, AsignedTo = 1, Description = 'Store all website files on external SSD', ParentTask = 1, Status = 4, PercentageComplete = 0e+00, CreatedOn = '2025-12-05 15:00:52.000000', RequiredDelivery = '2025-05-05', ScheduledStart = '2025-05-05', ActualStart = NULL, EstimatedCompletion = '2025-05-05', Completed = '2025-12-05', EstimatedEffortHours = 2, ActualEffortHours = 0e+00, SchedulePriorityGroup = 66, PriorityInGroup = 7, Personal = 0, DependencyCount = 0,Dependencies = NULL WHERE TaskID = 9 
+Running: 
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND Completed >= '2025-05-11'
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 1
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 3
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 4
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 5
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 6
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 7
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 8
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 9
+Running: 
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND Completed IS NULL AND (Status IS NOT NULL AND Status <> '2025-12-12')
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 2
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 10
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 11
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 12
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 13
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 14
+Find active tasks for user(1) PASSED!
+User 1 has 6 unstarted tasks
+TaskModel:
+	Task ID: 2
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Develop Personal Planning Tool
+	Percentage Complete: 0
+	Creation Date: 2025-12-05 15:00:51.000000000
+	Scheduled Start Date: 2025-03-20
+	Due Date: 2025-05-05
+	Estimated Effort Hours: 300
+	Actual Effort Hours: 40
+	Priority Group: 65
+	Priority: 2
+	Dependency Count: 0
+Optional Fields
+	Status: Work in Progress
+	Parent ID: 0
+	Actual Start Date: 2025-03-20
+	Estimated Completion Date: 2025-05-15
+
+TaskModel:
+	Task ID: 10
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Design Database for Personal Planner
+	Percentage Complete: 0
+	Creation Date: 2025-12-05 15:00:52.000000000
+	Scheduled Start Date: 2025-03-20
+	Due Date: 2025-04-08
+	Estimated Effort Hours: 24
+	Actual Effort Hours: 16
+	Priority Group: 65
+	Priority: 0
+	Dependency Count: 0
+Optional Fields
+	Status: Work in Progress
+	Parent ID: 2
+	Actual Start Date: 2025-03-20
+	Estimated Completion Date: 2025-05-01
+
+TaskModel:
+	Task ID: 11
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Design UML Diagram for Personal Planner
+	Percentage Complete: 0
+	Creation Date: 2025-12-05 15:00:53.000000000
+	Scheduled Start Date: 2025-04-08
+	Due Date: 2025-04-12
+	Estimated Effort Hours: 16
+	Actual Effort Hours: 5.25
+	Priority Group: 65
+	Priority: 0
+	Dependency Count: 0
+Optional Fields
+	Status: Work in Progress
+	Parent ID: 2
+	Actual Start Date: 2025-04-08
+	Estimated Completion Date: 2025-04-15
+
+TaskModel:
+	Task ID: 12
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Grocery Shopping
+	Percentage Complete: 0
+	Creation Date: 2025-12-05 15:00:53.000000000
+	Scheduled Start Date: 2025-04-11
+	Due Date: 2025-04-12
+	Estimated Effort Hours: 2
+	Actual Effort Hours: 2
+	Priority Group: 67
+	Priority: 1
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 0
+	Estimated Completion Date: 2025-12-05
+
+TaskModel:
+	Task ID: 13
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Daily 30 minute walk
+	Percentage Complete: 0
+	Creation Date: 2025-12-05 15:00:53.000000000
+	Scheduled Start Date: 2025-04-11
+	Due Date: 2025-04-11
+	Estimated Effort Hours: 1
+	Actual Effort Hours: 0
+	Priority Group: 67
+	Priority: 2
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 0
+	Estimated Completion Date: 2056-07-07
+
+TaskModel:
+	Task ID: 14
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Clean apartment
+	Percentage Complete: 0
+	Creation Date: 2025-12-05 15:00:53.000000000
+	Scheduled Start Date: 2025-04-12
+	Due Date: 2025-04-12
+	Estimated Effort Hours: 2
+	Actual Effort Hours: 0
+	Priority Group: 67
+	Priority: 3
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 0
+	Estimated Completion Date: 2025-12-05
+
 All positive path tests for database insertions and retrievals of task PASSED!
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 1
+Expected error was; Task already in Database, use Update!
+
+Running: 
+	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 1
+Expected error was; Task not modified!
+
+Expected error was; Task is missing required values!
+Missing Task required description!
+Missing Task required estimated effort in hours!
+Missing Task required priority!
+Missing Task required scheduled start date!
+Missing Task required due date (deadline)!
+
+Expected error was; Task is missing required values!
+Missing Task required estimated effort in hours!
+Missing Task required priority!
+Missing Task required scheduled start date!
+Missing Task required due date (deadline)!
+
+Expected error was; Task is missing required values!
+Missing Task required priority!
+Missing Task required scheduled start date!
+Missing Task required due date (deadline)!
+
+Expected error was; Task is missing required values!
+Missing Task required priority!
+Missing Task required due date (deadline)!
+
+Expected error was; Task is missing required values!
+Missing Task required priority!
+
+Running: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 1, 'Test missing required fields: Set Description', NULL, 0, 0e+00, '2025-12-05 15:00:56.482836', '2025-12-07', '2025-12-05', NULL, NULL, NULL, 3, 0e+00, 65, 1, 0, 0, NULL, '2025-12-05 15:00:56.482850')
+Expected error was; Task is missing required values!
+Missing Task required description!
+Missing Task required estimated effort in hours!
+Missing Task required priority!
+Missing Task required scheduled start date!
+Missing Task required due date (deadline)!
+
+Expected error was; Task is missing required values!
+Missing Task required estimated effort in hours!
+Missing Task required priority!
+Missing Task required scheduled start date!
+Missing Task required due date (deadline)!
+
+Expected error was; Task is missing required values!
+Missing Task required priority!
+Missing Task required scheduled start date!
+Missing Task required due date (deadline)!
+
+Expected error was; Task is missing required values!
+Missing Task required priority!
+Missing Task required due date (deadline)!
+
+Expected error was; Task is missing required values!
+Missing Task required priority!
+
+Running: 
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 1, 'Test shared pointer interaction in missing required fields', NULL, 0, 0e+00, '2025-12-05 15:00:56.557677', '2025-12-07', '2025-12-05', NULL, NULL, NULL, 3, 0e+00, 65, 1, 0, 0, NULL, '2025-12-05 15:00:56.557692')
 All negative path tests for database insertions and retrievals of task PASSED!
 All tests for database insertions and retrievals of task PASSED!
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
+
 Running Goal Integration Tests
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Get a Job in Software Engineering', '2025-12-05 15:00:56.724388', '2025-12-05 15:00:56.740904', 1, NULL)
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 1 and Description = 'Get a Job in Software Engineering'
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Maintain and improve my software engineering skills', '2025-12-05 15:00:56.808849', '2025-12-05 15:00:56.876084', 1, 1)
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 1 and Description = 'Get a Job in Software Engineering'
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Maintain and improve my C++ programming skills', '2025-12-05 15:00:56.940462', '2025-12-05 15:00:56.995652', 1, 1)
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 1 and Description = 'Get a Job in Software Engineering'
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Maintain and improve my  C programming skills', '2025-12-05 15:00:57.064042', '2025-12-05 15:00:57.119893', 2, 1)
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Maintain or archive the BHHS 74 Reunion website', '2025-12-05 15:00:57.183319', '2025-12-05 15:00:57.198729', 2, NULL)
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 1 and Description = 'Get a Job in Software Engineering'
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Maintain and improve my SQL skills', '2025-12-05 15:00:57.261609', '2025-12-05 15:00:57.316257', 3, 1)
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 1 and Description = 'Get a Job in Software Engineering'
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Learn QT graphic system', '2025-12-05 15:00:57.379667', '2025-12-05 15:00:57.434333', 4, 1)
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 1 and Description = 'Get a Job in Software Engineering'
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Improve my Linux Programming skills', '2025-12-05 15:00:57.497957', '2025-12-05 15:00:57.552874', 5, 1)
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 1 and Description = 'Get a Job in Software Engineering'
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Get an embedded programming certificate', '2025-12-05 15:00:57.616219', '2025-12-05 15:00:57.670851', 4, 1)
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 1 and Description = 'Get a Job in Software Engineering'
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Learn open source Linux Core Programming', '2025-12-05 15:00:57.734598', '2025-12-05 15:00:57.789138', 4, 1)
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Maintain my health', '2025-12-05 15:00:57.852366', '2025-12-05 15:00:57.867787', 2, NULL)
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 1 and Description = 'Maintain my health'
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Eat as healthy as possible', '2025-12-05 15:00:57.930299', '2025-12-05 15:00:57.984836', 3, 11)
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 1 and Description = 'Maintain my health'
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Walk 30 minutes a day', '2025-12-05 15:00:58.048273', '2025-12-05 15:00:58.103008', 4, 11)
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 1 and Description = 'Maintain my health'
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Track my vital signs', '2025-12-05 15:00:58.169518', '2025-12-05 15:00:58.231080', 3, 11)
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 1 and Description = 'Maintain my health'
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Get my weight down to 190 pounds', '2025-12-05 15:00:58.296904', '2025-12-05 15:00:58.352567', 4, 11)
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Be more organized', '2025-12-05 15:00:58.417030', '2025-12-05 15:00:58.432728', 1, NULL)
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Effectively moderate the code review site on stack exchange', '2025-12-05 15:00:58.497370', '2025-12-05 15:00:58.513317', 1, NULL)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 1 and Description = 'Get a Job in Software Engineering'
+Running: 
+	SELECT idUserGoals FROM UserGoals  WHERE UserID = 1 AND ParentGoal = 1
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 2
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 3
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 4
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 6
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 7
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 8
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 9
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 10
+Model Name UserGoalModel
+	Goal ID: 1
+	User ID: 1
+	Description: Get a Job in Software Engineering
+	Priority: 1
+	Parent ID: 0
+	Creation Timestamp: 2025-12-05 15:00:56.000000000
+	Last Update Timestamp: 2025-12-05 15:00:56.000000000
+
+Find all child goals for(1) PASSED!
+Goal 1 has 8 child goals
+Model Name UserGoalModel
+	Goal ID: 2
+	User ID: 1
+	Description: Maintain and improve my software engineering skills
+	Priority: 1
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:56.000000000
+	Last Update Timestamp: 2025-12-05 15:00:56.000000000
+
+Model Name UserGoalModel
+	Goal ID: 3
+	User ID: 1
+	Description: Maintain and improve my C++ programming skills
+	Priority: 1
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:56.000000000
+	Last Update Timestamp: 2025-12-05 15:00:56.000000000
+
+Model Name UserGoalModel
+	Goal ID: 4
+	User ID: 1
+	Description: Maintain and improve my  C programming skills
+	Priority: 2
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Model Name UserGoalModel
+	Goal ID: 6
+	User ID: 1
+	Description: Maintain and improve my SQL skills
+	Priority: 3
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Model Name UserGoalModel
+	Goal ID: 7
+	User ID: 1
+	Description: Learn QT graphic system
+	Priority: 4
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Model Name UserGoalModel
+	Goal ID: 8
+	User ID: 1
+	Description: Improve my Linux Programming skills
+	Priority: 5
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Model Name UserGoalModel
+	Goal ID: 9
+	User ID: 1
+	Description: Get an embedded programming certificate
+	Priority: 4
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Model Name UserGoalModel
+	Goal ID: 10
+	User ID: 1
+	Description: Learn open source Linux Core Programming
+	Priority: 4
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Running: 
+	SELECT idUserGoals FROM UserGoals  WHERE UserID = 1 
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 2
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 3
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 4
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 5
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 6
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 7
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 8
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 9
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 10
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 11
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 12
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 13
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 14
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 15
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 16
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 17
+Find all goals for user (1) PASSED!
+User 1 has 17 goals
+Model Name UserGoalModel
+	Goal ID: 1
+	User ID: 1
+	Description: Get a Job in Software Engineering
+	Priority: 1
+	Parent ID: 0
+	Creation Timestamp: 2025-12-05 15:00:56.000000000
+	Last Update Timestamp: 2025-12-05 15:00:56.000000000
+
+Model Name UserGoalModel
+	Goal ID: 2
+	User ID: 1
+	Description: Maintain and improve my software engineering skills
+	Priority: 1
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:56.000000000
+	Last Update Timestamp: 2025-12-05 15:00:56.000000000
+
+Model Name UserGoalModel
+	Goal ID: 3
+	User ID: 1
+	Description: Maintain and improve my C++ programming skills
+	Priority: 1
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:56.000000000
+	Last Update Timestamp: 2025-12-05 15:00:56.000000000
+
+Model Name UserGoalModel
+	Goal ID: 4
+	User ID: 1
+	Description: Maintain and improve my  C programming skills
+	Priority: 2
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Model Name UserGoalModel
+	Goal ID: 5
+	User ID: 1
+	Description: Maintain or archive the BHHS 74 Reunion website
+	Priority: 2
+	Parent ID: 0
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Model Name UserGoalModel
+	Goal ID: 6
+	User ID: 1
+	Description: Maintain and improve my SQL skills
+	Priority: 3
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Model Name UserGoalModel
+	Goal ID: 7
+	User ID: 1
+	Description: Learn QT graphic system
+	Priority: 4
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Model Name UserGoalModel
+	Goal ID: 8
+	User ID: 1
+	Description: Improve my Linux Programming skills
+	Priority: 5
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Model Name UserGoalModel
+	Goal ID: 9
+	User ID: 1
+	Description: Get an embedded programming certificate
+	Priority: 4
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Model Name UserGoalModel
+	Goal ID: 10
+	User ID: 1
+	Description: Learn open source Linux Core Programming
+	Priority: 4
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Model Name UserGoalModel
+	Goal ID: 11
+	User ID: 1
+	Description: Maintain my health
+	Priority: 2
+	Parent ID: 0
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Model Name UserGoalModel
+	Goal ID: 12
+	User ID: 1
+	Description: Eat as healthy as possible
+	Priority: 3
+	Parent ID: 11
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Model Name UserGoalModel
+	Goal ID: 13
+	User ID: 1
+	Description: Walk 30 minutes a day
+	Priority: 4
+	Parent ID: 11
+	Creation Timestamp: 2025-12-05 15:00:58.000000000
+	Last Update Timestamp: 2025-12-05 15:00:58.000000000
+
+Model Name UserGoalModel
+	Goal ID: 14
+	User ID: 1
+	Description: Track my vital signs
+	Priority: 3
+	Parent ID: 11
+	Creation Timestamp: 2025-12-05 15:00:58.000000000
+	Last Update Timestamp: 2025-12-05 15:00:58.000000000
+
+Model Name UserGoalModel
+	Goal ID: 15
+	User ID: 1
+	Description: Get my weight down to 190 pounds
+	Priority: 4
+	Parent ID: 11
+	Creation Timestamp: 2025-12-05 15:00:58.000000000
+	Last Update Timestamp: 2025-12-05 15:00:58.000000000
+
+Model Name UserGoalModel
+	Goal ID: 16
+	User ID: 1
+	Description: Be more organized
+	Priority: 1
+	Parent ID: 0
+	Creation Timestamp: 2025-12-05 15:00:58.000000000
+	Last Update Timestamp: 2025-12-05 15:00:58.000000000
+
+Model Name UserGoalModel
+	Goal ID: 17
+	User ID: 1
+	Description: Effectively moderate the code review site on stack exchange
+	Priority: 1
+	Parent ID: 0
+	Creation Timestamp: 2025-12-05 15:00:58.000000000
+	Last Update Timestamp: 2025-12-05 15:00:58.000000000
+
+Running: 
+	SELECT idUserGoals FROM UserGoals  WHERE UserID = 1 AND Description LIKE '%Maintain%'
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 2
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 3
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 4
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 5
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 6
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 11
+Find all goals for user (1) containing Maintain PASSED!
+User 1 has 6 goals
+Model Name UserGoalModel
+	Goal ID: 2
+	User ID: 1
+	Description: Maintain and improve my software engineering skills
+	Priority: 1
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:56.000000000
+	Last Update Timestamp: 2025-12-05 15:00:56.000000000
+
+Model Name UserGoalModel
+	Goal ID: 3
+	User ID: 1
+	Description: Maintain and improve my C++ programming skills
+	Priority: 1
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:56.000000000
+	Last Update Timestamp: 2025-12-05 15:00:56.000000000
+
+Model Name UserGoalModel
+	Goal ID: 4
+	User ID: 1
+	Description: Maintain and improve my  C programming skills
+	Priority: 2
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Model Name UserGoalModel
+	Goal ID: 5
+	User ID: 1
+	Description: Maintain or archive the BHHS 74 Reunion website
+	Priority: 2
+	Parent ID: 0
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Model Name UserGoalModel
+	Goal ID: 6
+	User ID: 1
+	Description: Maintain and improve my SQL skills
+	Priority: 3
+	Parent ID: 1
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
+Model Name UserGoalModel
+	Goal ID: 11
+	User ID: 1
+	Description: Maintain my health
+	Priority: 2
+	Parent ID: 0
+	Creation Timestamp: 2025-12-05 15:00:57.000000000
+	Last Update Timestamp: 2025-12-05 15:00:57.000000000
+
 All positive path tests for database insertions and retrievals of Goal PASSED!
+Expected error was; UserGoalModel is missing required values!
+Missing UserGoalModel required User ID!
+Missing UserGoalModel required Description!
+
+Expected error was; UserGoalModel is missing required values!
+Missing UserGoalModel required Description!
+Missing UserGoalModel required Description!
+
+Running: 
+	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (1, 'Test missing field Description', '2025-12-05 15:01:00.253923', '2025-12-05 15:01:00.253938', NULL, NULL)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1
+Expected error was; UserGoalModel not modified!
+
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1
+Expected error was; UserGoalModel already in Database, use Update!
+
 All negative path tests for database insertions and retrievals of Goal PASSED!
 All tests for database insertions and retrievals of Goal PASSED!
+---------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------
+
+Running Note Integration Tests
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:00.489123', 'Get a Job in Software Engineering', '2025-12-05 15:01:00.487263')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:00.571675', 'Maintain and improve my software engineering skills', '2025-12-05 15:01:00.571592')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:00.653165', 'Maintain and improve my C++ programming skills', '2025-12-05 15:01:00.653083')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:00.731545', 'Maintain and improve my  C programming skills', '2025-12-05 15:01:00.731462')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:00.809968', 'Maintain or archive the BHHS 74 Reunion website', '2025-12-05 15:01:00.809887')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:00.888352', 'Maintain and improve my SQL skills', '2025-12-05 15:01:00.888271')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:00.966943', 'Learn QT graphic system', '2025-12-05 15:01:00.966859')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:01.045609', 'Improve my Linux Programming skills', '2025-12-05 15:01:01.045514')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:01.123791', 'Get an embedded programming certificate', '2025-12-05 15:01:01.123709')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:01.202662', 'Learn open source Linux Core Programming', '2025-12-05 15:01:01.202569')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:01.281117', 'Maintain my health', '2025-12-05 15:01:01.281034')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:01.359570', 'Eat as healthy as possible', '2025-12-05 15:01:01.359487')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:01.438054', 'Walk 30 minutes a day', '2025-12-05 15:01:01.437971')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:01.516700', 'Track my vital signs', '2025-12-05 15:01:01.516617')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:01.594789', 'Get my weight down to 190 pounds', '2025-12-05 15:01:01.594707')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:01.673676', 'Be more organized', '2025-12-05 15:01:01.673593')
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE UserID = 1
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:01.751742', 'Effectively moderate the code review site on stack exchange', '2025-12-05 15:01:01.751660')
+Running: 
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 1
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 2
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 3
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 4
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 5
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 6
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 7
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 8
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 9
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 10
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 11
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 12
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 13
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 14
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 15
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 16
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 17
+Find all notes for user (1) PASSED!
+User 1 has 17 notes
+	Note ID: 1
+	User ID: 1
+	Content: Get a Job in Software Engineering
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 2
+	User ID: 1
+	Content: Maintain and improve my software engineering skills
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 3
+	User ID: 1
+	Content: Maintain and improve my C++ programming skills
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 4
+	User ID: 1
+	Content: Maintain and improve my  C programming skills
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 5
+	User ID: 1
+	Content: Maintain or archive the BHHS 74 Reunion website
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 6
+	User ID: 1
+	Content: Maintain and improve my SQL skills
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 7
+	User ID: 1
+	Content: Learn QT graphic system
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 8
+	User ID: 1
+	Content: Improve my Linux Programming skills
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 9
+	User ID: 1
+	Content: Get an embedded programming certificate
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 10
+	User ID: 1
+	Content: Learn open source Linux Core Programming
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 11
+	User ID: 1
+	Content: Maintain my health
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 12
+	User ID: 1
+	Content: Eat as healthy as possible
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 13
+	User ID: 1
+	Content: Walk 30 minutes a day
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 14
+	User ID: 1
+	Content: Track my vital signs
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 15
+	User ID: 1
+	Content: Get my weight down to 190 pounds
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 16
+	User ID: 1
+	Content: Be more organized
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 17
+	User ID: 1
+	Content: Effectively moderate the code review site on stack exchange
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+Running: 
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND Content LIKE '%Maintain%'
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 2
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 3
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 4
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 5
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 6
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 11
+Find all notes for user (1) similar to Maintain PASSED!
+User 1 has 6 notes
+	Note ID: 2
+	User ID: 1
+	Content: Maintain and improve my software engineering skills
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 3
+	User ID: 1
+	Content: Maintain and improve my C++ programming skills
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 4
+	User ID: 1
+	Content: Maintain and improve my  C programming skills
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 5
+	User ID: 1
+	Content: Maintain or archive the BHHS 74 Reunion website
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 6
+	User ID: 1
+	Content: Maintain and improve my SQL skills
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 11
+	User ID: 1
+	Content: Maintain my health
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+Running: 
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND NotationDateTime >= '2025-11-28' AND NotationDateTime <= '2025-12-06'
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 8
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 9
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 10
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 11
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 12
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 13
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 14
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 15
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 16
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 17
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 1
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 2
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 3
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 4
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 5
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 6
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 7
+Find all notes for user (1) created in date range PASSED!
+User 1 has 17 notes
+	Note ID: 8
+	User ID: 1
+	Content: Improve my Linux Programming skills
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 9
+	User ID: 1
+	Content: Get an embedded programming certificate
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 10
+	User ID: 1
+	Content: Learn open source Linux Core Programming
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 11
+	User ID: 1
+	Content: Maintain my health
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 12
+	User ID: 1
+	Content: Eat as healthy as possible
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 13
+	User ID: 1
+	Content: Walk 30 minutes a day
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 14
+	User ID: 1
+	Content: Track my vital signs
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 15
+	User ID: 1
+	Content: Get my weight down to 190 pounds
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 16
+	User ID: 1
+	Content: Be more organized
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 17
+	User ID: 1
+	Content: Effectively moderate the code review site on stack exchange
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 1
+	User ID: 1
+	Content: Get a Job in Software Engineering
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 2
+	User ID: 1
+	Content: Maintain and improve my software engineering skills
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 3
+	User ID: 1
+	Content: Maintain and improve my C++ programming skills
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 4
+	User ID: 1
+	Content: Maintain and improve my  C programming skills
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 5
+	User ID: 1
+	Content: Maintain or archive the BHHS 74 Reunion website
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 6
+	User ID: 1
+	Content: Maintain and improve my SQL skills
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 7
+	User ID: 1
+	Content: Learn QT graphic system
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+Running: 
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND LastUpdate >= '2025-11-28' AND LastUpdate <= '2025-12-06'
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 8
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 9
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 10
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 11
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 12
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 13
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 14
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 15
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 16
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 17
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 1
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 2
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 3
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 4
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 5
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 6
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 7
+Find all notes for user (1) edited in date range PASSED!
+User 1 has 17 notes
+	Note ID: 8
+	User ID: 1
+	Content: Improve my Linux Programming skills
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 9
+	User ID: 1
+	Content: Get an embedded programming certificate
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 10
+	User ID: 1
+	Content: Learn open source Linux Core Programming
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 11
+	User ID: 1
+	Content: Maintain my health
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 12
+	User ID: 1
+	Content: Eat as healthy as possible
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 13
+	User ID: 1
+	Content: Walk 30 minutes a day
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 14
+	User ID: 1
+	Content: Track my vital signs
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 15
+	User ID: 1
+	Content: Get my weight down to 190 pounds
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 16
+	User ID: 1
+	Content: Be more organized
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 17
+	User ID: 1
+	Content: Effectively moderate the code review site on stack exchange
+	Created: 2025-12-05 15:01:01.000000000
+	Last Update: 2025-12-05 15:01:01.000000000
+
+	Note ID: 1
+	User ID: 1
+	Content: Get a Job in Software Engineering
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 2
+	User ID: 1
+	Content: Maintain and improve my software engineering skills
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 3
+	User ID: 1
+	Content: Maintain and improve my C++ programming skills
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 4
+	User ID: 1
+	Content: Maintain and improve my  C programming skills
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 5
+	User ID: 1
+	Content: Maintain or archive the BHHS 74 Reunion website
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 6
+	User ID: 1
+	Content: Maintain and improve my SQL skills
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+	Note ID: 7
+	User ID: 1
+	Content: Learn QT graphic system
+	Created: 2025-12-05 15:01:00.000000000
+	Last Update: 2025-12-05 15:01:00.000000000
+
+All positive path tests for database insertions and retrievals of Note PASSED!
+Expected error was; Note is missing required values!
+Missing Note required User ID!
+Missing Note required Content!
+
+Expected error was; Note is missing required values!
+Missing Note required Content!
+Missing Note required Content!
+
+Running: 
+	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES (1, '2025-12-05 15:01:04.516903', 'Test missing field Content', '2025-12-05 15:01:04.516903')
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 1
+Expected error was; Note not modified!
+
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes  WHERE idUserNotes = 1
+Expected error was; Note already in Database, use Update!
+
+All negative path tests for database insertions and retrievals of Note PASSED!
+All tests for database insertions and retrievals of Note PASSED!
 All tests Passed
 
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
-  total heap usage: 48,941 allocs, 48,941 frees, 6,310,390 bytes allocated
+  total heap usage: 79,656 allocs, 79,656 frees, 10,455,868 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 
