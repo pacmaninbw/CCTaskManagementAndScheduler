@@ -1,14 +1,14 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 
-DROP DATABASE IF EXISTS `PlannerTaskScheduleDB`;
+DROP DATABASE IF EXISTS `testPTSDB`;
 
-CREATE DATABASE `PlannerTaskScheduleDB`;
+CREATE DATABASE `testPTSDB`;
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`OrganizationProfile`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`OrganizationProfile` (
+DROP TABLE IF EXISTS `testPTSDB`.`OrganizationProfile`;
+CREATE TABLE IF NOT EXISTS  `testPTSDB`.`OrganizationProfile` (
 	`OrganizationID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `Organization_Name` VARCHAR(256) NOT NULL,
     `EmailAddress` VARCHAR(256) NOT NULL,
@@ -28,8 +28,8 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`OrganizationProfile` (
 );
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserProfile`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserProfile` (
+DROP TABLE IF EXISTS `testPTSDB`.`UserProfile`;
+CREATE TABLE IF NOT EXISTS  `testPTSDB`.`UserProfile` (
     `UserID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `Organization_ID` INT UNSIGNED,
     `LastName` VARCHAR(45) NOT NULL,
@@ -57,8 +57,8 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserProfile` (
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserGoals`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserGoals` (
+DROP TABLE IF EXISTS `testPTSDB`.`UserGoals`;
+CREATE TABLE IF NOT EXISTS  `testPTSDB`.`UserGoals` (
     `idUserGoals` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserID` INT UNSIGNED NOT NULL,
     `Description` VARCHAR(1024) NOT NULL,
@@ -81,8 +81,8 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserGoals` (
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserNotes`;
-CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserNotes` (
+DROP TABLE IF EXISTS `testPTSDB`.`UserNotes`;
+CREATE TABLE IF NOT EXISTS `testPTSDB`.`UserNotes` (
     `idUserNotes` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserID` INT UNSIGNED NOT NULL,
     `NotationDateTime` DATETIME NOT NULL,
@@ -96,15 +96,15 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserNotes` (
     INDEX `fk_UserNotes_UserID_idx` (`UserID` ASC),
     CONSTRAINT `fk_UserNotes_UserID`
       FOREIGN KEY (`UserID`)
-      REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`UserID`)
+      REFERENCES `testPTSDB`.`UserProfile` (`UserID`)
       ON DELETE RESTRICT
       ON UPDATE RESTRICT
 );
     
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`Tasks`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Tasks` (
+DROP TABLE IF EXISTS `testPTSDB`.`Tasks`;
+CREATE TABLE IF NOT EXISTS  `testPTSDB`.`Tasks` (
     `TaskID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `CreatedBy` INT UNSIGNED NOT NULL,
     `AsignedTo` INT UNSIGNED NOT NULL,
@@ -146,8 +146,8 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Tasks` (
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `PlannerTaskScheduleDB`.`UserTaskGoals`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskGoals` (
+DROP TABLE IF EXISTS `testPTSDB`.`UserTaskGoals`;
+CREATE TABLE IF NOT EXISTS  `testPTSDB`.`UserTaskGoals` (
     `UserID` INT UNSIGNED NOT NULL,
     `TaskID`  INT UNSIGNED NOT NULL,
     `TaskGoalList` VARCHAR(45) NOT NULL,
@@ -171,8 +171,8 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskGoals` (
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`UserScheduleItemTypeEnum`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserScheduleItemTypeEnum` (
+DROP TABLE IF EXISTS  `testPTSDB`.`UserScheduleItemTypeEnum`;
+CREATE TABLE IF NOT EXISTS  `testPTSDB`.`UserScheduleItemTypeEnum` (
     `idUserScheduleItemTypeEnum` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserScheduleItemTypeEnumLabel` VARCHAR(45) NOT NULL,
     PRIMARY KEY (`idUserScheduleItemTypeEnum`),
@@ -180,7 +180,7 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserScheduleItemTypeEnum` (
     UNIQUE INDEX `UserScheduleItemTypeEnumLabel_UNIQUE` (`UserScheduleItemTypeEnumLabel` ASC)
 );
 
-INSERT INTO PlannerTaskScheduleDB.UserScheduleItemTypeEnum
+INSERT INTO testPTSDB.UserScheduleItemTypeEnum
     (UserScheduleItemTypeEnumLabel)
     VALUES
         ('Meeting'),
@@ -192,8 +192,8 @@ INSERT INTO PlannerTaskScheduleDB.UserScheduleItemTypeEnum
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`UserDaySchedule`;
-CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserDaySchedule` (
+DROP TABLE IF EXISTS  `testPTSDB`.`UserDaySchedule`;
+CREATE TABLE IF NOT EXISTS `testPTSDB`.`UserDaySchedule` (
     `idUserDaySchedule` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserID` INT UNSIGNED NOT NULL,
     `DateOfSchedule` DATE NOT NULL,
@@ -206,15 +206,15 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserDaySchedule` (
     INDEX `DateOfSchedule_idx` (`DateOfSchedule` DESC),
     CONSTRAINT `fk_UserDaySchedule_UserID`
       FOREIGN KEY (`UserID`)
-      REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`UserID`)
+      REFERENCES `testPTSDB`.`UserProfile` (`UserID`)
       ON DELETE RESTRICT
       ON UPDATE RESTRICT
 );
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`UserScheduleItem`;
-CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserScheduleItem` (
+DROP TABLE IF EXISTS  `testPTSDB`.`UserScheduleItem`;
+CREATE TABLE IF NOT EXISTS `testPTSDB`.`UserScheduleItem` (
     `idUserScheduleItem` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserID` INT UNSIGNED NOT NULL,
     `StartDateTime` DATETIME NOT NULL,
@@ -227,7 +227,7 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserScheduleItem` (
     INDEX `fk_UserScheduleItem_UserID_idx` (`UserID` ASC),
     CONSTRAINT `fk_UserScheduleItem_UserID`
       FOREIGN KEY (`UserID`)
-      REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`UserID`)
+      REFERENCES `testPTSDB`.`UserProfile` (`UserID`)
       ON DELETE RESTRICT
       ON UPDATE RESTRICT
 );
@@ -240,11 +240,11 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserScheduleItem` (
 -- function findUserScheduleItemTypeEnumLabelByValue
 -- -----------------------------------------------------
 
-USE `PlannerTaskScheduleDB`;
-DROP function IF EXISTS `PlannerTaskScheduleDB`.`findUserScheduleItemTypeEnumLabelByValue`;
+USE `testPTSDB`;
+DROP function IF EXISTS `testPTSDB`.`findUserScheduleItemTypeEnumLabelByValue`;
 
 DELIMITER $$
-USE `PlannerTaskScheduleDB`$$
+USE `testPTSDB`$$
 CREATE FUNCTION `findUserScheduleItemTypeEnumLabelByValue`(
     StatusKey INT
 ) RETURNS VARCHAR(20)
@@ -270,11 +270,11 @@ DELIMITER ;
 -- function findUserScheduleItemTypeEnumValueByLabel
 -- -----------------------------------------------------
 
-USE `PlannerTaskScheduleDB`;
-DROP function IF EXISTS `PlannerTaskScheduleDB`.`findUserScheduleItemTypeEnumValueByLabel`;
+USE `testPTSDB`;
+DROP function IF EXISTS `testPTSDB`.`findUserScheduleItemTypeEnumValueByLabel`;
 
 DELIMITER $$
-USE `PlannerTaskScheduleDB`$$
+USE `testPTSDB`$$
 CREATE FUNCTION `findUserScheduleItemTypeEnumValueByLabel`(
     TaskStatusEnumLable VARCHAR(20)
 ) RETURNS INT
@@ -301,11 +301,11 @@ DELIMITER ;
 -- function findUserIDKeyByLoginName
 -- -----------------------------------------------------
 
-USE `PlannerTaskScheduleDB`;
-DROP function IF EXISTS `PlannerTaskScheduleDB`.`findUserIDKeyByLoginName`;
+USE `testPTSDB`;
+DROP function IF EXISTS `testPTSDB`.`findUserIDKeyByLoginName`;
 
 DELIMITER $$
-USE `PlannerTaskScheduleDB`$$
+USE `testPTSDB`$$
 CREATE FUNCTION `findUserIDKeyByLoginName`(
     LoginName VARCHAR(45)
 ) RETURNS INT
@@ -331,11 +331,11 @@ DELIMITER ;
 -- function findUserIDKeyByFullName
 -- -----------------------------------------------------
 
-USE `PlannerTaskScheduleDB`;
-DROP function IF EXISTS `PlannerTaskScheduleDB`.`findUserIDKeyByFullName`;
+USE `testPTSDB`;
+DROP function IF EXISTS `testPTSDB`.`findUserIDKeyByFullName`;
 
 DELIMITER $$
-USE `PlannerTaskScheduleDB`$$
+USE `testPTSDB`$$
 CREATE FUNCTION `findUserIDKeyByFullName`(
     LastName VARCHAR(45),
     FirstName TINYTEXT,
@@ -365,11 +365,11 @@ DELIMITER ;
 -- function isValidUserLoginAndPassword
 -- -----------------------------------------------------
 
-USE `PlannerTaskScheduleDB`;
+USE `testPTSDB`;
 DROP function IF EXISTS `isValidUserLoginAndPassword`;
 
 DELIMITER $$
-USE `PlannerTaskScheduleDB`$$
+USE `testPTSDB`$$
 CREATE FUNCTION `isValidUserLoginAndPassword`
 (
     LoginName VARCHAR(45),
