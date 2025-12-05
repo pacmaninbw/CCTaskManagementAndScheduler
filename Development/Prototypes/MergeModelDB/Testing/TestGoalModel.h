@@ -29,6 +29,7 @@ private:
     TestStatus testPositivePathGoalInsertions();
     TestStatus testPositivePathGetListofChildrenFromParent();
     TestStatus testPositivePathGetAllGoalsForUser();
+    TestStatus testPositivePathFindGoalsWithSimilarDescription();
     TestStatus testNegativePathAlreadyInDataBase();
     TestStatus testnegativePathNotModified();
     TestStatus negativePathMissingRequiredFields();

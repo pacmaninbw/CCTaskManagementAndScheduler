@@ -56,6 +56,26 @@ UserGoalListValues UserGoalList::getAllChildrenFromParent(UserGoalModel parentGo
     return UserGoalListValues();
 }
 
+UserGoalListValues UserGoalList::findGoalsByUserIdAndSimilarDescription(std::size_t userID, std::string searchString) noexcept
+{
+    errorMessages.clear();
+
+    appendErrorMessage("In UserGoalList::findGoalsByUserIdAndSimilarDescription : ");
+
+    try
+    {
+        firstFormattedQuery = queryGenerator->formatSelectBySimilarDescription(searchString, userID);
+        return runQueryFillUserGoalList();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(e.what());
+    }
+    
+    return UserGoalListValues();
+}
+
 UserGoalListValues UserGoalList::fillUserGoalList()
 {
     UserGoalListValues UserGoalList;
@@ -91,13 +111,14 @@ std::vector<ListExceptionTestElement> UserGoalList::initListExceptionTests() noe
     std::vector<ListExceptionTestElement> exceptionTests;
     exceptionTests.push_back({std::bind(&UserGoalList::testExceptionsGetAllGoalsForUser, this), "getAllGoalsForUser"});
     exceptionTests.push_back({std::bind(&UserGoalList::testExceptionsGetAllChildrenFromParent, this), "selectAllChildGoalsWithParentFromUser"});
+    exceptionTests.push_back({std::bind(&UserGoalList::testExceptionsFindGoalsWithSimilarDescription, this), "findGoalsByUserIdAndSimilarDescription"});
 
     return exceptionTests;
 }
 
 TestStatus UserGoalList::testExceptionsGetAllGoalsForUser() noexcept
 {
-   selfTestResetAllValues();
+    selfTestResetAllValues();
 
     return testListExceptionAndSuccessNArgs("UserGoalList::testExceptionsGetAllGoalsForUser()",
          std::bind(&UserGoalList::getAllGoalsForUser, this, std::placeholders::_1), 1);
@@ -105,7 +126,7 @@ TestStatus UserGoalList::testExceptionsGetAllGoalsForUser() noexcept
 
 TestStatus UserGoalList::testExceptionsGetAllChildrenFromParent() noexcept
 {
-   selfTestResetAllValues();
+    selfTestResetAllValues();
 
     UserGoalModel parent;
     parent.setGoalId(1);
@@ -116,4 +137,13 @@ TestStatus UserGoalList::testExceptionsGetAllChildrenFromParent() noexcept
          std::bind(&UserGoalList::getAllChildrenFromParent, this, std::placeholders::_1), parent);
 }
 
+TestStatus UserGoalList::testExceptionsFindGoalsWithSimilarDescription() noexcept
+{
+    selfTestResetAllValues();
+    std::string searchString("Maintain");
+    std::size_t userId = 1;
 
+    return testListExceptionAndSuccessNArgs("UserGoalList::findGoalsByUserIdAndSimilarDescription()",
+         std::bind(&UserGoalList::findGoalsByUserIdAndSimilarDescription, this, std::placeholders::_1, std::placeholders::_2),
+         userId, searchString);
+}

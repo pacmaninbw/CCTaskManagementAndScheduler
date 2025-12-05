@@ -43,6 +43,7 @@ TestGoalModel::TestGoalModel()
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testPositivePathGoalInsertions, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testPositivePathGetListofChildrenFromParent, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testPositivePathGetAllGoalsForUser, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testPositivePathFindGoalsWithSimilarDescription, this));
 
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::negativePathMissingRequiredFields, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testnegativePathNotModified, this));
@@ -152,6 +153,33 @@ TestStatus TestGoalModel::testPositivePathGetAllGoalsForUser()
         std::cout << std::format("Find all goals for user ({}) PASSED!\n", 1);
         std::cout << std::format("User {} has {} goals\n", 1, allUserGoals.size());
         for (auto goal: allUserGoals)
+        {
+            std::cout << *goal << "\n";
+        }
+    }
+    
+    return TESTPASSED;
+}
+
+TestStatus TestGoalModel::testPositivePathFindGoalsWithSimilarDescription()
+{
+    UserGoalList goalListTestInterface;
+    std::string searchString("Maintain");
+    std::size_t userId = 1;
+
+    UserGoalListValues goalsWithSimilarDescription = goalListTestInterface.findGoalsByUserIdAndSimilarDescription(userId, searchString);
+    if (goalsWithSimilarDescription.empty())
+    {
+        std::cerr << "test of goalListTestInterface.findGoalsByUserIdAndSimilarDescription() FAILED\n" <<
+            goalListTestInterface.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("Find all goals for user ({}) containing {} PASSED!\n", userId, searchString);
+        std::cout << std::format("User {} has {} goals\n", 1, goalsWithSimilarDescription.size());
+        for (auto goal: goalsWithSimilarDescription)
         {
             std::cout << *goal << "\n";
         }

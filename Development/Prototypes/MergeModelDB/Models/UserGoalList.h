@@ -7,6 +7,7 @@
 
 // Standard C++ Header Files
 #include <iostream>
+#include <string>
 
 using UserGoalListValues = std::vector<UserGoalModel_shp>;
 
@@ -18,6 +19,7 @@ public:
 
     UserGoalListValues getAllGoalsForUser(std::size_t userID) noexcept;
     UserGoalListValues getAllChildrenFromParent(UserGoalModel parentGoal) noexcept;
+    UserGoalListValues findGoalsByUserIdAndSimilarDescription(std::size_t userID, std::string searchString) noexcept;
 
 private:
     UserGoalListValues fillUserGoalList();
@@ -26,6 +28,7 @@ private:
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
     TestStatus testExceptionsGetAllGoalsForUser() noexcept;
     TestStatus testExceptionsGetAllChildrenFromParent() noexcept;
+    TestStatus testExceptionsFindGoalsWithSimilarDescription() noexcept;
 };
 
 #endif // USERGOALLIST_H_
