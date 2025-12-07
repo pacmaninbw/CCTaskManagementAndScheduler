@@ -2,7 +2,9 @@
 #define COMMAND_LINE_PARSER_H_
 
 // Standard C++ Header Files
+#ifdef TESTCOMMANDLINEENABLED
 #include <expected>
+#endif // TESTCOMMANDLINEENABLED
 #include <string>
 
 struct ProgramOptions
@@ -23,6 +25,7 @@ struct ProgramOptions
     bool quitFirstFail = false;
 };
 
+#ifdef TESTCOMMANDLINEENABLED
 enum class CommandLineStatus
 {
     NoErrors,
@@ -31,6 +34,7 @@ enum class CommandLineStatus
 };
 
 auto parseCommandLine(int argc, char* argv[]) -> std::expected<ProgramOptions, CommandLineStatus>;
+#endif // TESTCOMMANDLINEENABLED
 
 extern ProgramOptions programOptions;
 

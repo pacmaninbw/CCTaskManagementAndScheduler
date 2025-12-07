@@ -34,6 +34,8 @@ add_executable(protoPersonalPlanner
     Testing/TestNoteModel.cpp
 )
 
+target_compile_definitions(protoPersonalPlanner PRIVATE TESTCOMMANDLINEENABLED=1)
+
 target_include_directories(protoPersonalPlanner PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common>
