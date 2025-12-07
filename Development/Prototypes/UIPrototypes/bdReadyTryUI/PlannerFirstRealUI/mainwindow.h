@@ -1,7 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+// Project Headers
+#include "CommandLineParser.h"
+
+// QT Headers
 #include <QMainWindow>
+
+// Standard C++ Header Files
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
