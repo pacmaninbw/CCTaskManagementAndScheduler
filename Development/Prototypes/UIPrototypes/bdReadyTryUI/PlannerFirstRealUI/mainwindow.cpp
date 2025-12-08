@@ -1,20 +1,100 @@
 // Project Headers
 #include "CommandLineParser.h"
 
+
 // QT Headers
 #include "mainwindow.h"
-#include "./ui_mainwindow.h"
 
 // Standard C++ Header Files
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
+    progNameStr = QString::fromStdString(programOptions.progName);
+
+    setUpMainWindowUI();
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+
 }
+
+void MainWindow::setUpMainWindowUI()
+{
+    dbConnectionsGB = creatSqlConnectionsGB();
+}
+
+QGroupBox* MainWindow::creatSqlConnectionsGB()
+{
+    QGroupBox* mysqlConnectionsGB = new QGroupBox("MySQL Database Connection Data", this);
+
+    dbConnectionsForm = createNamedQTWidget<QFormLayout>("dbConnectionsForm");
+    dbConnectionsForm->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
+
+    mySqlUser = createMySqlConnectLineEdit("mySqlUser");
+    mySqlUser->setText(QString::fromStdString(programOptions.mySqlUser));
+    dbConnectionsForm->addRow("MySQL User Name:", mySqlUser);
+
+    mySqlPassword = createMySqlConnectLineEdit("mySqlPassword");
+    mySqlPassword->setText(QString::fromStdString(programOptions.mySqlPassword));
+    dbConnectionsForm->addRow("MySQL User Password:", mySqlPassword);
+
+    mySqlUrl = createMySqlConnectLineEdit("mySqlUrl");
+    mySqlUrl->setText(QString::fromStdString(programOptions.mySqlUrl));
+    dbConnectionsForm->addRow("MySQL URL:", mySqlUrl);
+
+    mySqlPort = createMySqlConnectLineEdit("mySqlPort");
+    mySqlPort->setText(QString::number(programOptions.mySqlPort));
+    dbConnectionsForm->addRow("MySQL URL:", mySqlPort);
+
+    mySqlDBName = createMySqlConnectLineEdit("mySqlDBName");
+    mySqlDBName->setText(QString::fromStdString(programOptions.mySqlDBName));
+    dbConnectionsForm->addRow("MySQL URL:", mySqlDBName);
+
+    return mysqlConnectionsGB;
+}
+
+int MainWindow::getLabelWidth(QLabel *lab)
+{
+    QFont currentFont = lab->font();
+    QFontMetrics fm(currentFont);
+    return fm.horizontalAdvance(lab->text());
+}
+
+QLabel *MainWindow::createNamedLabel(const char *labText, const char *labName)
+{
+    QLabel* newLabel = createNameQTWidgetWithText<QLabel>(labText, labName, centralwidget);
+    newLabel->setStyleSheet(generateWidthAndHeightStyleString(getLabelWidth(newLabel), labelHeight));
+    newLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+    return newLabel;
+}
+
+QLineEdit* MainWindow::createMySqlConnectLineEdit(const char* fieldName)
+{
+    QLineEdit* mySqlLineEdit = createNamedQTWidget<QLineEdit>(fieldName, this);
+    mySqlLineEdit->setStyleSheet("width: 200px;");
+    mySqlLineEdit->setMaxLength(20);
+
+    return mySqlLineEdit;
+}
+
+QPushButton* MainWindow::CreateNamedButton(const char* buttonText, const char* buttonName)
+{
+    QPushButton* newButton = createNameQTWidgetWithText<QPushButton>(buttonText, buttonName, centralwidget);
+    newButton->setStyleSheet(generateWidthAndHeightStyleString(newButton->width(), buttonHeight));
+
+    return newButton;
+}
+
+QString MainWindow::generateWidthAndHeightStyleString(const int width, const int height)
+{
+    QString widthAndHeightStyleString("width: ");
+    widthAndHeightStyleString += QString::number(width) + "; height:";
+    widthAndHeightStyleString += QString::number(height) += ";";
+
+    return widthAndHeightStyleString;
+}
+
+
