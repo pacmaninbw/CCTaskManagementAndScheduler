@@ -47,6 +47,7 @@ set(PROJECT_MODEL_SOUCES
 )
 
 set(PROJECT_SOURCES
+	createNamedQTWidget.h
         main.cpp
         mainwindow.cpp
         mainwindow.h
