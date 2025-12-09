@@ -22,7 +22,19 @@ MainWindow::~MainWindow()
 
 void MainWindow::setUpMainWindowUI()
 {
+    centralwidget = new QWidget(this);
+    centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
+    mwLayout = new QVBoxLayout(centralwidget);
+
     dbConnectionsGB = creatSqlConnectionsGB();
+    mwLayout->addWidget(dbConnectionsGB, 0, Qt::AlignHCenter);
+
+    postDbConnectActions = creationPostDbConnectionsBox();
+    mwLayout->addWidget(postDbConnectActions, 0, Qt::AlignHCenter);
+
+    resize(mainWindowWidth, mainWindowHeight);
+
+    setCentralWidget(centralwidget);
 }
 
 QGroupBox* MainWindow::creatSqlConnectionsGB()
@@ -46,13 +58,35 @@ QGroupBox* MainWindow::creatSqlConnectionsGB()
 
     mySqlPort = createMySqlConnectLineEdit("mySqlPort");
     mySqlPort->setText(QString::number(programOptions.mySqlPort));
-    dbConnectionsForm->addRow("MySQL URL:", mySqlPort);
+    dbConnectionsForm->addRow("MySQL Port:", mySqlPort);
 
     mySqlDBName = createMySqlConnectLineEdit("mySqlDBName");
     mySqlDBName->setText(QString::fromStdString(programOptions.mySqlDBName));
-    dbConnectionsForm->addRow("MySQL URL:", mySqlDBName);
+    dbConnectionsForm->addRow("MySQL Database Name:", mySqlDBName);
+
+    saveDbConnectionData = CreateNamedButton("Save", "saveDbConnectionData");
+    dbConnectionsForm->addRow(saveDbConnectionData);
+
+    mysqlConnectionsGB->setLayout(dbConnectionsForm);
 
     return mysqlConnectionsGB;
+}
+
+QGroupBox* MainWindow::creationPostDbConnectionsBox()
+{
+    QGroupBox* actionButtons = new QGroupBox("Actions After DB Connection", this);
+
+    actionButtonLayout = createNamedQTWidget<QHBoxLayout>("actionButtonLayout");
+
+    actionAddUser = CreateNamedButton("Add New User", "actionAddUser");
+    actionButtonLayout->addWidget(actionAddUser);
+
+    actionLoginAsUser = CreateNamedButton("Login as User", "actionLoginAsUser");
+    actionButtonLayout->addWidget(actionLoginAsUser);
+
+    actionButtons->setLayout(actionButtonLayout);
+
+    return actionButtons;
 }
 
 int MainWindow::getLabelWidth(QLabel *lab)

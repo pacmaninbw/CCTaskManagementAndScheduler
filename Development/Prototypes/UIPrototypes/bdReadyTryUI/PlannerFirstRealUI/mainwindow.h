@@ -1,3 +1,6 @@
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
 // Project Headers
 #include "createNamedQTWidget.h"
 
@@ -20,10 +23,6 @@
 
 // Standard C++ Header Files
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
-
-#include <QMainWindow>
 
 class MainWindow : public QMainWindow
 {
@@ -69,9 +68,11 @@ private:
     QLineEdit* mySqlUrl;
     QLineEdit* mySqlPort;
     QLineEdit* mySqlDBName;
+    QPushButton* saveDbConnectionData;
 
     QGroupBox* postDbConnectActions;
-    QPushButton* addUser;
-    QPushButton* loginAsUser;
+    QHBoxLayout* actionButtonLayout;
+    QPushButton* actionAddUser;
+    QPushButton* actionLoginAsUser;
 };
 #endif // MAINWINDOW_H
