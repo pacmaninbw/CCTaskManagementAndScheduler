@@ -431,6 +431,8 @@ std::string TaskModel::formatUpdateStatement()
 
     initFormatOptions();
 
+    lastUpdate = std::chrono::system_clock::now();
+
     return boost::mysql::format_sql(format_opts.value(),
         "UPDATE Tasks SET"
             " CreatedBy = {0},"
@@ -451,8 +453,9 @@ std::string TaskModel::formatUpdateStatement()
             " PriorityInGroup = {15},"
             " Personal = {16},"
             " DependencyCount = {17},"
-            "Dependencies = {18}"
-        " WHERE TaskID = {19} ",
+            " Dependencies = {18},"
+            " LastUpdateTS = {19}"
+        " WHERE TaskID = {20} ",
             creatorID,
             assignToID,
             description,
@@ -472,8 +475,10 @@ std::string TaskModel::formatUpdateStatement()
             personal,
             dependencyCount,
             depenenciesText,
+            optionalDateTimeConversion(lastUpdate),
         primaryKey
-    );}
+    );
+}
 
 std::string TaskModel::formatSelectStatement()
 {
