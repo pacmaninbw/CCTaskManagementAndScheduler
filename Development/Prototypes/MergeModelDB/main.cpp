@@ -3,6 +3,8 @@
 #include "NoteList.h"
 #include "NoteModel.h"
 #include "NoteSelfTest.h"
+#include "ScheduleItemModel.h"
+#include "ScheduleItemSelfTest.h"
 #include "TaskModel.h"
 #include "TaskSelfTest.h"
 #include "TestTaskDBInterface.h"
@@ -102,6 +104,12 @@ static TestStatus runAllUnitTests()
 
     NoteSelfTest noteTest;
     if (runUnitTest(&noteTest) == TESTFAILED)
+    {
+        allUnintTestsPassed = TESTFAILED;
+    }
+
+    ScheduleItemSelfTest scheduleItemTest;
+    if (runUnitTest(&scheduleItemTest) == TESTFAILED)
     {
         allUnintTestsPassed = TESTFAILED;
     }

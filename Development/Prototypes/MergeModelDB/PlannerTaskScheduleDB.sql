@@ -221,9 +221,15 @@ CREATE TABLE IF NOT EXISTS `testPTSDB`.`UserScheduleItem` (
     `EndDateTime` DATETIME NOT NULL,
     `ItemType` TINYINT NOT NULL,
     `Title` VARCHAR(128) NOT NULL,
-    `Location` VARCHAR(45) DEFAULT NULL,
+    `Location` VARCHAR(128) DEFAULT NULL,
+    `CreatedTS` DATETIME NOT NULL,
+    `LastUpdateTS` DATETIME NOT NULL,
     PRIMARY KEY (`idUserScheduleItem`, `UserID`),
     UNIQUE INDEX `idUserScheduleItem_UNIQUE` (`idUserScheduleItem` ASC),
+    INDEX `ScheduleItem_Title_idx` (`Title` ASC),
+    INDEX `ScheduleItem_StartDateTime_idx` (`StartDateTime` DESC),
+    INDEX `ScheduleItem_CreatedTS_idx` (`CreatedTS` DESC),
+    INDEX `ScheduleItem_LastUpdateTS_idx` (`LastUpdateTS` DESC),
     INDEX `fk_UserScheduleItem_UserID_idx` (`UserID` ASC),
     CONSTRAINT `fk_UserScheduleItem_UserID`
       FOREIGN KEY (`UserID`)

@@ -23,6 +23,8 @@ add_executable(protoPersonalPlanner
     Models/NoteModel.cpp
     Models/NoteSelfTest.cpp
     Models/NoteList.cpp
+    Models/ScheduleItemModel.cpp
+    Models/ScheduleItemSelfTest.cpp
     Models/UserGoalModel.cpp
     Models/UserGoalSelfTest.cpp
     Models/UserGoalList.cpp
