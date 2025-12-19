@@ -17,21 +17,17 @@ public:
     ~ScheduleItemSelfTest() = default;
     virtual TestStatus runSelfTest() noexcept override;
 
-private:
+protected:
 /*
  * Unit Testing
  */
     virtual void selfTestResetAllValues() noexcept override;
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
-    TestStatus testExceptionSelectByTaskID();
-    TestStatus testExceptionSelectByDescriptionAndAssignedUser();
-    TestStatus testExceptionFormatSelectActiveTasksForAssignedUser();
-    TestStatus testExceptionFormatSelectUnstartedDueForStartForAssignedUser();
-    TestStatus testExceptionFormatSelectTasksCompletedByAssignedAfterDate();
-    TestStatus testExceptionFormatSelectTasksByAssignedIDandParentID();
     virtual TestStatus testExceptionInsert() noexcept override;
     virtual TestStatus testExceptionUpdate() noexcept override;
     virtual TestStatus testExceptionRetrieve() noexcept override;
+    TestStatus testExceptionFormatSelectScheduleItemsByDateAndUser() noexcept;
+    TestStatus testExceptionFormatSelectSiByContentDateRangeUser() noexcept;
     virtual TestStatus testAllInsertFailures() override;
     virtual TestStatus testEqualityOperator() noexcept override;
     virtual void testOutput() noexcept override;

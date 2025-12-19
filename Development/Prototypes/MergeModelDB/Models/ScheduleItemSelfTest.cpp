@@ -113,29 +113,160 @@ void ScheduleItemSelfTest::selfTestResetAllValues() noexcept
 std::vector<ExceptionTestElement> ScheduleItemSelfTest::initExceptionTests() noexcept
 {
     std::vector<ExceptionTestElement> exceptionTests;
-//    exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionSelectByTaskID, this), "selectByTaskID"});
+    exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionFormatSelectScheduleItemsByDateAndUser, this),
+        "Select by Datee and User"});
+    exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionFormatSelectSiByContentDateRangeUser, this),
+        "Select by Content, Date Range and User"});
+    exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionInsert, this), "testExceeptionInsert"});
+    exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
+    exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
 
     return exceptionTests;
 }
 
 TestStatus ScheduleItemSelfTest::testExceptionInsert() noexcept
 {
-    return TestStatus();
+    selfTestResetAllValues();
+    forceException = true;
+
+    setUserID(1);
+    setTitle("Testing Exception handling for Schedule Item Insert");
+    setType(ScheduleItemModel::ScheduleItemType::Personal_Other);
+    setStartDateAndTime(std::chrono::system_clock::now());
+    setEndDateAndTime(std::chrono::system_clock::now());
+
+    if (testFormatExceptionCatchSuccessNArgs(
+        "ScheduleItemSelfTest::formatInsertStatement", std::bind(&ScheduleItemSelfTest::formatInsertStatement, this)) == TESTFAILED)
+    {
+        std::cerr << "ScheduleItemSelfTest::formatInsertStatement() returned a string in Exception Test, FAILED\n";
+        return TESTFAILED;
+    }
+
+    return testExceptionAndSuccessNArgs("ScheduleItemModel::insert", std::bind(&ScheduleItemModel::insert, this));
 }
 
 TestStatus ScheduleItemSelfTest::testExceptionUpdate() noexcept
 {
-    return TestStatus();
+    selfTestResetAllValues();
+
+    setScheduleItemID(57);
+    setUserID(1);
+    setTitle("Testing Exception handling for Schedule Item Update");
+    setType(ScheduleItemModel::ScheduleItemType::Personal_Other);
+    setStartDateAndTime(std::chrono::system_clock::now());
+    setEndDateAndTime(std::chrono::system_clock::now());
+
+    if (testFormatExceptionCatchSuccessNArgs(
+        "ScheduleItemSelfTest::formatUpdateStatement", std::bind(&ScheduleItemSelfTest::formatUpdateStatement, this)) == TESTFAILED)
+    {
+        std::cerr << "ScheduleItemSelfTest::formatUpdateStatement() returned a string in Exception Test, FAILED\n";
+        return TESTFAILED;
+    }
+
+    return testExceptionAndSuccessNArgs("ScheduleItemModel::update", std::bind(&ScheduleItemModel::update, this));
 }
 
 TestStatus ScheduleItemSelfTest::testExceptionRetrieve() noexcept
 {
-    return TestStatus();
+    selfTestResetAllValues();
+
+    setScheduleItemID(57);
+    setUserID(1);
+
+    if (testFormatExceptionCatchSuccessNArgs(
+        "ScheduleItemSelfTest::formatSelectStatement", std::bind(&ScheduleItemSelfTest::formatSelectStatement, this)) == TESTFAILED)
+    {
+        std::cerr << "ScheduleItemSelfTest::formatSelectStatement() returned a string in Exception Test, FAILED\n";
+        return TESTFAILED;
+    }
+
+    return testExceptionAndSuccessNArgs("ScheduleItemModel::retrieve", std::bind(&ScheduleItemModel::retrieve, this));
+}
+
+TestStatus ScheduleItemSelfTest::testExceptionFormatSelectScheduleItemsByDateAndUser() noexcept
+{
+    selfTestResetAllValues();
+
+    std::chrono::year_month_day testDate(getTodaysDate());
+
+    return testFormatExceptionAndSuccessNArgs("ScheduleItemSelfTest::testExceptionFormatSelectScheduleItemsByDateAndUser",
+        std::bind(&ScheduleItemModel::formatSelectScheduleItemsByDateAndUser, this, std::placeholders::_1, std::placeholders::_2), testDate, 1);
+}
+
+TestStatus ScheduleItemSelfTest::testExceptionFormatSelectSiByContentDateRangeUser() noexcept
+{
+    selfTestResetAllValues();
+
+    std::chrono::year_month_day startSearch(getTodaysDateMinus(1));
+    std::chrono::year_month_day endSearch(getTodaysDatePlus(1));
+    std::string testTitle("This is only a test");
+    std::size_t testUser = 1;
+
+    return testFormatExceptionAndSuccessNArgs("ScheduleItemSelfTest::testExceptionFormatSelectSiByContentDateRangeUser",
+        std::bind(&ScheduleItemModel::formatSelectSiByContentDateRangeUser, this,
+        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
+        testTitle, startSearch, endSearch, testUser);
 }
 
 TestStatus ScheduleItemSelfTest::testAllInsertFailures()
 {
-    return TestStatus();
+    selfTestResetAllValues();
+
+    if (testCommonInsertFailurePath() != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    std::vector<std::string> expectedErrors =
+    {
+        "User ID", "Title", "Start Time", "End Time", " missing required values"
+    };
+
+    setScheduleItemID(0);
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+
+    setUserID(1);
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+
+    setTitle("Test missing required fields: Set title");
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+
+    setStartDateAndTime(std::chrono::system_clock::now());
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+
+    setEndDateAndTime(std::chrono::system_clock::now());
+
+    expectedErrors.clear();
+    errorMessages.clear();
+
+    if (verboseOutput)
+    {
+        std::cout << std::format("{}::{} before successful insert this = \n", modelName, __func__) << *this << "\n";
+    }
+
+    if (!insert())
+    {
+        std::cout << "In ScheduleItemSelfTest::testAllInsertFailuresExpected successful insert failed\n" << errorMessages << "\n";
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
 }
 
 TestStatus ScheduleItemSelfTest::testEqualityOperator() noexcept
@@ -217,6 +348,7 @@ TestStatus ScheduleItemSelfTest::testScheduleItemTypeAccess() noexcept
 {
     ScheduleItemModel::ScheduleItemType testValue = ScheduleItemModel::ScheduleItemType::Phone_Call;
     setType(testValue);
+    std::cerr << std::format("{}::{}: NOT Implemented\n", modelName, __func__);
 
     return TESTFAILED;
 }
@@ -259,6 +391,7 @@ TestStatus ScheduleItemSelfTest::testLastUpDateTimeStampAccess() noexcept
 
 TestStatus ScheduleItemSelfTest::testPersonalAccess() noexcept
 {
+    std::cerr << std::format("{}::{}: NOT Implemented\n", modelName, __func__);
     return TESTFAILED;
 }
 
@@ -266,7 +399,7 @@ TestStatus ScheduleItemSelfTest::testLocationAccess() noexcept
 {
     std::string testValue("Home Office");
 
-    return testOptionalAccessorFunctions<std::string>(testValue, &location, "Due Date",
+    return testOptionalAccessorFunctions<std::string>(testValue, &location, "Location",
         std::bind(&ScheduleItemSelfTest::setLocation, this, std::placeholders::_1),
         std::bind(&ScheduleItemSelfTest::getLocation, this));
 }
