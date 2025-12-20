@@ -1,6 +1,5 @@
 // Project Header Files
 #include "commonUtilities.h"
-#include "GenericDictionary.h"
 #include "ScheduleItemModel.h"
 
 // Standard C++ Header Files
@@ -15,37 +14,12 @@
 #include <utility>
 #include <vector>
 
-static const ScheduleItemModel::ScheduleItemType UnknowScheduleItem = static_cast<ScheduleItemModel::ScheduleItemType>(-1);
-
-static std::vector<GenericDictionary<ScheduleItemModel::ScheduleItemType, std::string>::DictType> schedlueTypeConversionsDefs = {
-    {ScheduleItemModel::ScheduleItemType::Meeting, "Meeting"},
-    {ScheduleItemModel::ScheduleItemType::Phone_Call, "Phone Call"},
-    {ScheduleItemModel::ScheduleItemType::Task_Execution, "Task Execution"},
-    {ScheduleItemModel::ScheduleItemType::Personal_Appointment, "Personal Appointment"},
-    {ScheduleItemModel::ScheduleItemType::Personal_Other, "Personal Other"}
-};
-
-static GenericDictionary<ScheduleItemModel::ScheduleItemType, std::string> scheduleItemTypeConversionTable(schedlueTypeConversionsDefs);
-
 ScheduleItemModel::ScheduleItemModel()
 : ModelDBInterface("ScheduleItem")
 {
     userID = 0;
     title = "";
     personal = false;
-}
-
-ScheduleItemModel::ScheduleItemModel(std::size_t userID)
-: ScheduleItemModel()
-{
-    setUserID(userID);
-}
-
-std::string ScheduleItemModel::getTypeStringVal() const
-{
-    ScheduleItemModel::ScheduleItemType status = getType();
-    auto itemTypeName = scheduleItemTypeConversionTable.lookupName(status);
-    return itemTypeName.has_value()? *itemTypeName : "Unknown Schedule Item Type Value";
 }
 
 void ScheduleItemModel::setUserID(std::size_t userId)
@@ -58,14 +32,6 @@ void ScheduleItemModel::setTitle(std::string titleIn)
 {
     modified = true;
     title = titleIn;
-}
-
-void ScheduleItemModel::setType(ScheduleItemModel::ScheduleItemType sItemType)
-{
-    modified = true;
-    scheduleItemType = sItemType;
-    personal = (sItemType == ScheduleItemModel::ScheduleItemType::Personal_Appointment ||
-        sItemType == ScheduleItemModel::ScheduleItemType::Personal_Other) ? true : false;
 }
 
 void ScheduleItemModel::setStartDateAndTime(std::chrono::system_clock::time_point startTimeTS)
@@ -108,18 +74,6 @@ void ScheduleItemModel::setScheduleItemID(std::size_t newID)
 {
     modified = true;
     primaryKey = newID;
-}
-
-std::string ScheduleItemModel::scheduleItemTypeString(ScheduleItemModel::ScheduleItemType inVal) const
-{
-    auto scheduleItemName = scheduleItemTypeConversionTable.lookupName(inVal);
-    return scheduleItemName.has_value()? *scheduleItemName : "Unknown ScheduleItemType Name";
-}
-
-ScheduleItemModel::ScheduleItemType ScheduleItemModel::stringToType(std::string sItemTypeName) const
-{
-    auto scheduleItem = scheduleItemTypeConversionTable.lookupID(sItemTypeName);
-    return scheduleItem.has_value()? *scheduleItem : UnknowScheduleItem;
 }
 
 std::string ScheduleItemModel::formatSelectScheduleItemsByDateAndUser(std::chrono::year_month_day scheduleDate, std::size_t userId) noexcept
@@ -210,13 +164,13 @@ std::string ScheduleItemModel::formatInsertStatement()
     initFormatOptions();
 
     return boost::mysql::format_sql(format_opts.value(),
-        "INSERT INTO ScheduleItems (UserID, StartDateTime, EndDateTime, ItemType, Title, Location, CreatedTS, LastUpdateTS) "
+        "INSERT INTO ScheduleItems (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS) "
             " VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})",
             userID,
             optionalDateTimeConversion(startTime.value()),
             optionalDateTimeConversion(endTime.value()),
-            static_cast<unsigned int>(scheduleItemType),
             title,
+            static_cast<unsigned int>(personal?1:0),
             location,
             optionalDateTimeConversion(creationTimeStamp),
             optionalDateTimeConversion(lastUpdate)
@@ -233,15 +187,15 @@ std::string ScheduleItemModel::formatUpdateStatement()
         "UPDATE ScheduleItems SET"
             " StartDateTime = {0},"
             " EndDateTime = {1},"
-            " ItemType = {2},"
-            " Title = {3},"
+            " Title = {2},"
+            " Personal = {3}"
             " Location = {4},"
             " LastUpdateTS = {5}"
         " WHERE idUserScheduleItem = {6} AND UserID = {7} ",
             optionalDateTimeConversion(startTime),
             optionalDateTimeConversion(endTime),
-            static_cast<unsigned int>(scheduleItemType),
             title,
+            static_cast<unsigned int>(personal?1:0),
             location,
             optionalDateTimeConversion(lastUpdate),
         primaryKey, userID
@@ -274,7 +228,7 @@ void ScheduleItemModel::processResultRow(boost::mysql::row_view rv)
     userID = rv.at(userIdIdx).as_uint64();
     startTime = boostMysqlDateTimeToChronoTimePoint(rv.at(startTimeIdx).as_datetime());
     endTime = boostMysqlDateTimeToChronoTimePoint(rv.at(endTimeIdx).as_datetime());
-    scheduleItemType = static_cast<ScheduleItemModel::ScheduleItemType>(rv.at(itemTypeIdx).as_uint64());
+    personal = static_cast<bool>(rv.at(personalIdx).as_uint64());
     title = rv.at(titleIdx).as_string();
     if (!rv.at(locationIdx).is_null())
     {
@@ -282,8 +236,5 @@ void ScheduleItemModel::processResultRow(boost::mysql::row_view rv)
     }
     creationTimeStamp = boostMysqlDateTimeToChronoTimePoint(rv.at(createdOnIdx).as_datetime());
     lastUpdate = boostMysqlDateTimeToChronoTimePoint(rv.at(lastUpdate_Idx).as_datetime());
-
-    personal = (scheduleItemType == ScheduleItemModel::ScheduleItemType::Personal_Appointment ||
-        scheduleItemType == ScheduleItemModel::ScheduleItemType::Personal_Other) ? true : false;
 }
 

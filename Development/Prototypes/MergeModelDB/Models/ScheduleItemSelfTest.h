@@ -36,7 +36,6 @@ protected:
     TestStatus testScheduleItemIDAccess() noexcept;
     TestStatus testUserIDAccess() noexcept;
     TestStatus testTitleAccess() noexcept;
-    TestStatus testScheduleItemTypeAccess() noexcept;
     TestStatus testStartTimeAccess() noexcept;
     TestStatus testEndTimeAccess() noexcept;
     TestStatus testCreationTimeStampAccess() noexcept;

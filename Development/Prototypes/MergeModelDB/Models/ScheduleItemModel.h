@@ -18,21 +18,12 @@
 class ScheduleItemModel : public ModelDBInterface
 {
 public:
-    enum class ScheduleItemType
-    {
-        Meeting, Phone_Call, Task_Execution, Personal_Appointment, Personal_Other
-    };
-
     ScheduleItemModel();
-    ScheduleItemModel(std::size_t userID);
     virtual ~ScheduleItemModel() = default;
 
     std::size_t getScheduleItemID() const { return primaryKey; };
     std::size_t getUserID() const { return userID; };
     std::string getTitle() const { return title; };
-    ScheduleItemModel::ScheduleItemType getType() const { return scheduleItemType; };
-    unsigned int getTypeIntVal() const { return static_cast<unsigned int>(getType()); };
-    std::string getTypeStringVal() const;
     std::chrono::system_clock::time_point getCreationDate() const { return creationTimeStamp.value(); };
     std::chrono::system_clock::time_point getLastUpdate() const { return lastUpdate.value(); };
     std::chrono::system_clock::time_point getStartTime() const { return startTime.value(); };
@@ -41,8 +32,6 @@ public:
     bool isPersonal() const { return personal; };
     void setUserID(std::size_t userId);
     void setTitle(std::string titleIn);
-    void setType(ScheduleItemModel::ScheduleItemType sItemType);
-    void setType(std::string statusStr) { setType(stringToType(statusStr)); };
     void setStartDateAndTime(std::chrono::system_clock::time_point startTimeTS);
     void setEndDateAndTime(std::chrono::system_clock::time_point endTimeTS);
     void setCreationDate(std::chrono::system_clock::time_point creationDateTS);
@@ -50,8 +39,6 @@ public:
     void setPersonal(bool personalIn);
     void setLocation(std::string locationStr);
     void setScheduleItemID(std::size_t newID);
-    std::string scheduleItemTypeString(ScheduleItemModel::ScheduleItemType inVal) const;
-    ScheduleItemModel::ScheduleItemType stringToType(std::string sItemTypeName) const;
 /*
  * Select with arguments
  */
@@ -86,7 +73,6 @@ public:
         os << "ScheduleItemModel:\n";
         os << std::format(outFmtStr, "ScheduleItem ID", scheduleItem.primaryKey);
         os << std::format(outFmtStr, "User ID", scheduleItem.userID);
-        os << std::format(outFmtStr, "Type", scheduleItem.getTypeStringVal());
         os << std::format(outFmtStr, "Title", scheduleItem.title);
         os << std::format(outFmtStr, "Creation Date", scheduleItem.creationTimeStamp.value_or(std::chrono::system_clock::now()));
         os << std::format(outFmtStr, "Start Date and Time", scheduleItem.startTime.value_or(std::chrono::system_clock::now()));
@@ -108,7 +94,6 @@ protected:
 /*
  * Implementation
  */
-    ScheduleItemType itemTypeFromInt(unsigned int itemTypeI) const { return static_cast<ScheduleItemModel::ScheduleItemType>(itemTypeI); };
     bool diffScheduleItem(ScheduleItemModel& other);
     virtual std::string formatInsertStatement() override;
     virtual std::string formatUpdateStatement() override;
@@ -121,7 +106,6 @@ protected:
   */
     std::size_t userID;
     std::string title;
-    ScheduleItemType scheduleItemType;
 /*
  * startTime and endTime are not optional in the database, We are using
  * std::optional for those 2 fields to remove errors in valgrind and possible
@@ -141,14 +125,14 @@ protected:
  * returned are known.
  */
     boost::mysql::constant_string_view baseQuery = "SELECT idUserScheduleItem, UserID, StartDateTime,"
-        " EndDateTime, ItemType, Title, Location, CreatedTS, LastUpdateTS FROM ScheduleItems ";
+        " EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS FROM ScheduleItems ";
 
     static const std::size_t scheduleItemIdIdx = 0;
     static const std::size_t userIdIdx = 1;
     static const std::size_t startTimeIdx = 2;
     static const std::size_t endTimeIdx = 3;
-    static const std::size_t itemTypeIdx = 4;
-    static const std::size_t titleIdx = 5;
+    static const std::size_t titleIdx = 4;
+    static const std::size_t personalIdx = 5;
     static const std::size_t locationIdx = 6;
     static const std::size_t createdOnIdx = 7;
     static const std::size_t lastUpdate_Idx = 8;

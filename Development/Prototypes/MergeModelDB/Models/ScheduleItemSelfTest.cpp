@@ -101,7 +101,6 @@ void ScheduleItemSelfTest::selfTestResetAllValues() noexcept
 
     userID = 0;
     title.clear();
-    scheduleItemType = static_cast<ScheduleItemModel::ScheduleItemType>(0);
     startTime.reset();
     endTime.reset();
     personal = false;
@@ -131,7 +130,6 @@ TestStatus ScheduleItemSelfTest::testExceptionInsert() noexcept
 
     setUserID(1);
     setTitle("Testing Exception handling for Schedule Item Insert");
-    setType(ScheduleItemModel::ScheduleItemType::Personal_Other);
     setStartDateAndTime(std::chrono::system_clock::now());
     setEndDateAndTime(std::chrono::system_clock::now());
 
@@ -152,7 +150,6 @@ TestStatus ScheduleItemSelfTest::testExceptionUpdate() noexcept
     setScheduleItemID(57);
     setUserID(1);
     setTitle("Testing Exception handling for Schedule Item Update");
-    setType(ScheduleItemModel::ScheduleItemType::Personal_Other);
     setStartDateAndTime(std::chrono::system_clock::now());
     setEndDateAndTime(std::chrono::system_clock::now());
 
@@ -306,7 +303,6 @@ std::vector<AttributeTestFunction> ScheduleItemSelfTest::initAttributeAccessTest
     attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testScheduleItemIDAccess, this)});
     attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testUserIDAccess, this)});
     attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testTitleAccess, this)});
-    attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testScheduleItemTypeAccess, this)});
     attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testStartTimeAccess, this)});
     attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testEndTimeAccess, this)});
     attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testCreationTimeStampAccess, this)});
@@ -342,15 +338,6 @@ TestStatus ScheduleItemSelfTest::testTitleAccess() noexcept
     return testAccessorFunctions<std::string>(testValue, &title, "Title",
         std::bind(&ScheduleItemModel::setTitle, this, std::placeholders::_1),
         std::bind(&ScheduleItemModel::getTitle, this));
-}
-
-TestStatus ScheduleItemSelfTest::testScheduleItemTypeAccess() noexcept
-{
-    ScheduleItemModel::ScheduleItemType testValue = ScheduleItemModel::ScheduleItemType::Phone_Call;
-    setType(testValue);
-    std::cerr << std::format("{}::{}: NOT Implemented\n", modelName, __func__);
-
-    return TESTFAILED;
 }
 
 TestStatus ScheduleItemSelfTest::testStartTimeAccess() noexcept
@@ -391,8 +378,11 @@ TestStatus ScheduleItemSelfTest::testLastUpDateTimeStampAccess() noexcept
 
 TestStatus ScheduleItemSelfTest::testPersonalAccess() noexcept
 {
-    std::cerr << std::format("{}::{}: NOT Implemented\n", modelName, __func__);
-    return TESTFAILED;
+    bool testValue = true;
+
+    return testAccessorFunctions<bool>(testValue, &personal, "Personal",
+        std::bind(&ScheduleItemModel::setPersonal, this, std::placeholders::_1),
+        std::bind(&ScheduleItemModel::isPersonal, this));
 }
 
 TestStatus ScheduleItemSelfTest::testLocationAccess() noexcept
