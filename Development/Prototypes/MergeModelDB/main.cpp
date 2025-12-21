@@ -5,6 +5,7 @@
 #include "NoteSelfTest.h"
 #include "ScheduleItemModel.h"
 #include "ScheduleItemSelfTest.h"
+#include "ScheduleItemList.h"
 #include "TaskModel.h"
 #include "TaskSelfTest.h"
 #include "TestTaskDBInterface.h"
@@ -171,6 +172,13 @@ static TestStatus runAllListUnitTests()
     {
         allUnintTestsPassed = TESTFAILED;
     }
+
+    ScheduleItemList scheduleItemList(1);
+    if (runListUnitTest(&scheduleItemList) == TESTFAILED)
+    {
+        allUnintTestsPassed = TESTFAILED;
+    }
+
     
     return allUnintTestsPassed;
 }
