@@ -121,7 +121,7 @@ std::string ScheduleItemModel::formatSelectSiByContentDateRangeUser(
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
-        boost::mysql::format_sql_to(fctx, " AND Title LIKE {}", content);
+        boost::mysql::format_sql_to(fctx, " AND Title LIKE {}", wrapSearchContentSQLPatternMatch(content));
         boost::mysql::format_sql_to(fctx, " AND StartDateTime >= {}", stdchronoDateToBoostMySQLDate(searchStart));
         boost::mysql::format_sql_to(fctx, " AND StartDateTime <= {}", stdchronoDateToBoostMySQLDate(searchEnd));
 
@@ -164,7 +164,7 @@ std::string ScheduleItemModel::formatInsertStatement()
     initFormatOptions();
 
     return boost::mysql::format_sql(format_opts.value(),
-        "INSERT INTO ScheduleItems (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS) "
+        "INSERT INTO UserScheduleItem (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS) "
             " VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})",
             userID,
             optionalDateTimeConversion(startTime.value()),
@@ -184,7 +184,7 @@ std::string ScheduleItemModel::formatUpdateStatement()
     lastUpdate = std::chrono::system_clock::now();
 
     return boost::mysql::format_sql(format_opts.value(),
-        "UPDATE ScheduleItems SET"
+        "UPDATE UserScheduleItem SET"
             " StartDateTime = {0},"
             " EndDateTime = {1},"
             " Title = {2},"
@@ -228,7 +228,6 @@ void ScheduleItemModel::processResultRow(boost::mysql::row_view rv)
     userID = rv.at(userIdIdx).as_uint64();
     startTime = boostMysqlDateTimeToChronoTimePoint(rv.at(startTimeIdx).as_datetime());
     endTime = boostMysqlDateTimeToChronoTimePoint(rv.at(endTimeIdx).as_datetime());
-    personal = static_cast<bool>(rv.at(personalIdx).as_uint64());
     title = rv.at(titleIdx).as_string();
     if (!rv.at(locationIdx).is_null())
     {
@@ -236,5 +235,6 @@ void ScheduleItemModel::processResultRow(boost::mysql::row_view rv)
     }
     creationTimeStamp = boostMysqlDateTimeToChronoTimePoint(rv.at(createdOnIdx).as_datetime());
     lastUpdate = boostMysqlDateTimeToChronoTimePoint(rv.at(lastUpdate_Idx).as_datetime());
+    personal = rv.at(personalIdx).as_int64();
 }
 

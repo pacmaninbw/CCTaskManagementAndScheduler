@@ -121,11 +121,11 @@ protected:
 
 /*
  * The indexes below are based on the following select statement, maintain this order
- * baseQuery could be SELECT * FROM ScheduleItems, but this way the order of the columns
+ * baseQuery could be SELECT * FROM UserScheduleItem, but this way the order of the columns
  * returned are known.
  */
     boost::mysql::constant_string_view baseQuery = "SELECT idUserScheduleItem, UserID, StartDateTime,"
-        " EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS FROM ScheduleItems ";
+        " EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS FROM UserScheduleItem ";
 
     static const std::size_t scheduleItemIdIdx = 0;
     static const std::size_t userIdIdx = 1;
@@ -137,7 +137,7 @@ protected:
     static const std::size_t createdOnIdx = 7;
     static const std::size_t lastUpdate_Idx = 8;
 
-    boost::mysql::constant_string_view listQueryBase = "SELECT idUserScheduleItem FROM ScheduleItems ";
+    boost::mysql::constant_string_view listQueryBase = "SELECT idUserScheduleItem FROM UserScheduleItem ";
 };
 
 using ScheduleItemModel_shp = std::shared_ptr<ScheduleItemModel>;
