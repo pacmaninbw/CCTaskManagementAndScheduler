@@ -171,59 +171,23 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserTaskGoals` (
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`UserScheduleItemTypeEnum`;
-CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`UserScheduleItemTypeEnum` (
-    `idUserScheduleItemTypeEnum` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `UserScheduleItemTypeEnumLabel` VARCHAR(45) NOT NULL,
-    PRIMARY KEY (`idUserScheduleItemTypeEnum`),
-    UNIQUE INDEX `idUserScheduleItemTypeEnum_UNIQUE` (`idUserScheduleItemTypeEnum` ASC),
-    UNIQUE INDEX `UserScheduleItemTypeEnumLabel_UNIQUE` (`UserScheduleItemTypeEnumLabel` ASC)
-);
-
-INSERT INTO PlannerTaskScheduleDB.UserScheduleItemTypeEnum
-    (UserScheduleItemTypeEnumLabel)
-    VALUES
-        ('Meeting'),
-        ('Phone Call'),
-        ('Task Execution'),
-        ('Personal Appointment'),
-        ('Personal Other');
-
-
--- --------------------------------------------------------
-
-DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`UserDaySchedule`;
-CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserDaySchedule` (
-    `idUserDaySchedule` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `UserID` INT UNSIGNED NOT NULL,
-    `DateOfSchedule` DATE NOT NULL,
-    `StartOfDay` TIME NOT NULL,
-    `EndOfDay` TIME NOT NULL,
-    `DailyGoals` VARCHAR(45) NULL,
-    PRIMARY KEY (`idUserDaySchedule`, `UserID`),
-    UNIQUE INDEX `idUserDaySchedule_UNIQUE` (`idUserDaySchedule` ASC),
-    INDEX `fk_UserDaySchedule_UserID_idx` (`UserID` ASC),
-    INDEX `DateOfSchedule_idx` (`DateOfSchedule` DESC),
-    CONSTRAINT `fk_UserDaySchedule_UserID`
-      FOREIGN KEY (`UserID`)
-      REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`UserID`)
-      ON DELETE RESTRICT
-      ON UPDATE RESTRICT
-);
-
--- --------------------------------------------------------
-
 DROP TABLE IF EXISTS  `PlannerTaskScheduleDB`.`UserScheduleItem`;
 CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserScheduleItem` (
     `idUserScheduleItem` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `UserID` INT UNSIGNED NOT NULL,
     `StartDateTime` DATETIME NOT NULL,
     `EndDateTime` DATETIME NOT NULL,
-    `ItemType` TINYINT NOT NULL,
     `Title` VARCHAR(128) NOT NULL,
-    `Location` VARCHAR(45) DEFAULT NULL,
+    `Personal` TINYINT NOT NULL,
+    `Location` VARCHAR(128) DEFAULT NULL,
+    `CreatedTS` DATETIME NOT NULL,
+    `LastUpdateTS` DATETIME NOT NULL,
     PRIMARY KEY (`idUserScheduleItem`, `UserID`),
     UNIQUE INDEX `idUserScheduleItem_UNIQUE` (`idUserScheduleItem` ASC),
+    INDEX `ScheduleItem_Title_idx` (`Title` ASC),
+    INDEX `ScheduleItem_StartDateTime_idx` (`StartDateTime` DESC),
+    INDEX `ScheduleItem_CreatedTS_idx` (`CreatedTS` DESC),
+    INDEX `ScheduleItem_LastUpdateTS_idx` (`LastUpdateTS` DESC),
     INDEX `fk_UserScheduleItem_UserID_idx` (`UserID` ASC),
     CONSTRAINT `fk_UserScheduleItem_UserID`
       FOREIGN KEY (`UserID`)
@@ -235,67 +199,6 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserScheduleItem` (
 -- -----------------------------------------------------
 -- Stored Functions
 -- -----------------------------------------------------
-
--- -----------------------------------------------------
--- function findUserScheduleItemTypeEnumLabelByValue
--- -----------------------------------------------------
-
-USE `PlannerTaskScheduleDB`;
-DROP function IF EXISTS `PlannerTaskScheduleDB`.`findUserScheduleItemTypeEnumLabelByValue`;
-
-DELIMITER $$
-USE `PlannerTaskScheduleDB`$$
-CREATE FUNCTION `findUserScheduleItemTypeEnumLabelByValue`(
-    StatusKey INT
-) RETURNS VARCHAR(20)
-DETERMINISTIC
-BEGIN
-    
-    SET @UserScheduleItemTypeEnumLabel = ``;
-    
-    SELECT UserScheduleItemTypeEnum.TaskStatusEnumLable INTO @UserScheduleItemTypeEnumLabel
-        FROM UserScheduleItemTypeEnum
-        WHERE UserScheduleItemTypeEnum.idUserScheduleItemTypeEnum = TaskStatusEnumLable;
-    IF @TasUserScheduleItemTypeEnumLabelkStatusKey IS NULL THEN
-        SET @UserScheduleItemTypeEnumLabel = 'Not Started';
-    END IF;
-
-    RETURN @UserScheduleItemTypeEnumLabel;
-    
-END$$
-
-DELIMITER ;
-
--- -----------------------------------------------------
--- function findUserScheduleItemTypeEnumValueByLabel
--- -----------------------------------------------------
-
-USE `PlannerTaskScheduleDB`;
-DROP function IF EXISTS `PlannerTaskScheduleDB`.`findUserScheduleItemTypeEnumValueByLabel`;
-
-DELIMITER $$
-USE `PlannerTaskScheduleDB`$$
-CREATE FUNCTION `findUserScheduleItemTypeEnumValueByLabel`(
-    TaskStatusEnumLable VARCHAR(20)
-) RETURNS INT
-DETERMINISTIC
-BEGIN
-    
-    SET @UserScheduleItemTypeEnumKey = 0;
-    
-    SELECT UserScheduleItemTypeEnum.idUserScheduleItemTypeEnum INTO @UserScheduleItemTypeEnumKey
-        FROM UserScheduleItemTypeEnum
-        WHERE UserScheduleItemTypeEnum.TaskStatusEnumLable = TaskStatusEnumLable;
-    IF @UserScheduleItemTypeEnumKey IS NULL THEN
-        SET @UserScheduleItemTypeEnumKey = 0;
-    END IF;
-
-    RETURN @UserScheduleItemTypeEnumKey;
-    
-END$$
-
-DELIMITER ;
-
 
 -- -----------------------------------------------------
 -- function findUserIDKeyByLoginName
