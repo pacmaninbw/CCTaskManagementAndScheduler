@@ -12,6 +12,7 @@
 #include "TestUserDBInterface.h"
 #include "TestGoalModel.h"
 #include "TestNoteModel.h"
+#include "TestScheduleItemModel.h"
 #include "TestStatus.h"
 #include "UserGoalModel.h"
 #include "UserGoalSelfTest.h"
@@ -209,6 +210,13 @@ static TestStatus runAllIntegrationTests()
     separateTestCaseOutput();
     TestNoteModel noteTests;
     if (noteTests.runAllTests() == TESTFAILED)
+    {
+        return TESTFAILED;
+    }
+
+    separateTestCaseOutput();
+    TestScheduleItemModel scheduleItemTests;
+    if (scheduleItemTests.runAllTests() == TESTFAILED)
     {
         return TESTFAILED;
     }

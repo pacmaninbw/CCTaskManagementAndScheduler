@@ -35,6 +35,7 @@ add_executable(protoPersonalPlanner
     Testing/TestTaskDBInterface.cpp
     Testing/TestGoalModel.cpp
     Testing/TestNoteModel.cpp
+    Testing/TestScheduleItemModel.cpp
 )
 
 target_compile_definitions(protoPersonalPlanner PRIVATE TESTCOMMANDLINEENABLED=1)
