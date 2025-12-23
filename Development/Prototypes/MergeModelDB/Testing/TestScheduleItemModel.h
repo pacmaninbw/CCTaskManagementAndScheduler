@@ -28,7 +28,7 @@ public:
 private:
     TestStatus testInsertScheduleItem(TestScheduleItemInput testScheduleItem);
     TestStatus testPositivePathScheduleItemInsertions();
-    TestStatus testPositivePathGetScheduleItemsForUserWithSimilarContentDateRange();
+    TestStatus testPositivePathGetScheduleItemsForUserWithSimilarTitleDateRange();
     TestStatus testPositivePathGetScheduleItemsForUserByDate();
     TestStatus testNegativePathAlreadyInDataBase();
     TestStatus testnegativePathNotModified();

@@ -32,7 +32,7 @@ TestScheduleItemModel::TestScheduleItemModel()
     }
 
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathScheduleItemInsertions, this));
-    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSimilarContentDateRange, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSimilarTitleDateRange, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate, this));
 
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::negativePathMissingRequiredFields, this));
@@ -83,7 +83,7 @@ TestStatus TestScheduleItemModel::testPositivePathScheduleItemInsertions()
     return testStatus;
 }
 
-TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSimilarContentDateRange()
+TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSimilarTitleDateRange()
 {
     UserModel_shp userOne = std::make_shared<UserModel>();
     userOne->selectByUserID(1);
@@ -104,8 +104,8 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSim
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all schedule itemss for user ({}) similar to {} PASSED!\n", 1, searchString);
-        std::cout << std::format("User {} has {} schedule itemss\n", 1, allSimilarUserScheduleItems.size());
+        std::cout << std::format("Find all schedule items for user ({}) similar to {} PASSED!\n", 1, searchString);
+        std::cout << std::format("User {} has {} schedule items\n", 1, allSimilarUserScheduleItems.size());
         for (auto scheduleitems: allSimilarUserScheduleItems)
         {
             std::cout << *scheduleitems << "\n";
@@ -134,8 +134,8 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate(
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all schedule itemss for user ({}) edited in date range PASSED!\n", 1);
-        std::cout << std::format("User {} has {} schedule itemss\n", 1, allScheduleItemsInRange.size());
+        std::cout << std::format("Find all schedule items for user ({}) edited in date range PASSED!\n", 1);
+        std::cout << std::format("User {} has {} schedule items\n", 1, allScheduleItemsInRange.size());
         for (auto scheduleitem: allScheduleItemsInRange)
         {
             std::cout << *scheduleitem << "\n";
