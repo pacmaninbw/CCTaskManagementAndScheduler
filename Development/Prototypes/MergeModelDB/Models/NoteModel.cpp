@@ -71,6 +71,16 @@ std::string NoteModel::formatInsertStatement()
 {
     initFormatOptions();
 
+    if (!creationDate.has_value())
+    {
+        creationDate = std::chrono::system_clock::now();
+    }
+
+    if (!lastUpdate.has_value())
+    {
+        lastUpdate = creationDate;
+    }
+
     std::string insertStatement = boost::mysql::format_sql(format_opts.value(),
         "INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES ({0}, {1}, {2}, {3})",
         userID, stdChronoTimePointToBoostDateTime(creationDate.value()),
