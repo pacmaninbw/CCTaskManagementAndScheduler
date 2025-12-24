@@ -4,7 +4,7 @@
 // Project Header Files
 #include "CommandLineParser.h"
 #include "ModelDBInterface.h"
-#include "TestStatus.h"
+#include "commonTestValues.h"
 
 // StandardS C++ Header Files
 #include <functional>

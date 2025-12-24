@@ -1,5 +1,6 @@
 // Project Header Files
 #include "commonUtilities.h"
+#include "commonTestValues.h"
 #include "CSVReader.h"
 #include "TaskModel.h"
 #include "TestDBInterfaceCore.h"
@@ -154,6 +155,7 @@ void TestTaskDBInterface::commonTaskInit(TaskModel_shp newTask, CSVRow taskData)
     newTask->setPriorityGroup(taskData[CSV_MajorPriorityColIdx][0]);
     newTask->setPriority(std::stoi(taskData[CSV_MinorPriorityColIdx]));
     newTask->setPercentageComplete(0.0);
+    newTask->setCreationDate(commonTestTimeStampValue);
 
     // Optional fields
     if (!taskData[CSV_ParentTaskColIdx].empty())

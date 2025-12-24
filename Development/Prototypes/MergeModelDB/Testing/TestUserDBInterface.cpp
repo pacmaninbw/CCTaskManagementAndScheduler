@@ -1,5 +1,6 @@
 // Project Header Files
 #include "CommandLineParser.h"
+#include "commonTestValues.h"
 #include "commonUtilities.h"
 #include "CSVReader.h"
 #include "TestUserDBInterface.h"
@@ -226,6 +227,7 @@ bool TestUserDBInterface::loadTestUsersFromFile(UserListValues& userProfileTestD
         userIn->setMiddleInitial(row[2]);
         userIn->setEmail(row[3]);
         userIn->autoGenerateLoginAndPassword();
+        userIn->setCreationDate(commonTestTimeStampValue);
         userProfileTestData.push_back(userIn);
     }
 
