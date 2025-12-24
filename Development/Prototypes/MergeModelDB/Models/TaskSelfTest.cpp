@@ -174,7 +174,7 @@ TestStatus TaskSelfTest::testExceptionFormatSelectTasksCompletedByAssignedAfterD
 {
     selfTestResetAllValues();
 
-    std::chrono::year_month_day searchStartDate = getTodaysDate();
+    std::chrono::year_month_day searchStartDate = commonTestDateRangeStartValue;
     std::size_t assignedUser = 1;
 
     return testFormatExceptionAndSuccessNArgs("TaskSelfTest::formatSelectTasksCompletedByAssignedAfterDate",
@@ -203,14 +203,15 @@ TestStatus TaskSelfTest::testExceptionInsert() noexcept
     setAssignToID(2);
     setDescription("Testing Exception handling");
     setEstimatedEffort(6);
-    setScheduledStart(getTodaysDate());
-    setDueDate(getTodaysDatePlus(2));
+    setScheduledStart(commonTestDateValue);
+    setDueDate(commonTestDateRangeEndValue);
     setPriorityGroup('A');
     setPriority(1);
     setParentTaskID(1);
     addDependency(3);
     addDependency(5);
     addDependency(7);
+    setCreationDate(commonTestTimeStampValue);
 
     if (testFormatExceptionCatchSuccessNArgs(
         "TaskModel::formatInsertStatement", std::bind(&TaskSelfTest::formatInsertStatement, this)) == TESTFAILED)
@@ -227,21 +228,22 @@ TestStatus TaskSelfTest::testExceptionUpdate() noexcept
     selfTestResetAllValues();
 
     forceException = true;
-    std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point timeStamp = commonTestTimeStampValue;
 
     setTaskID(1);
     setDescription("Testing Exception handling");
     setCreatorID(1);
     setAssignToID(2);
     setEstimatedEffort(6);
-    setScheduledStart(getTodaysDate());
-    setDueDate(getTodaysDatePlus(2));
+    setScheduledStart(commonTestDateValue);
+    setDueDate(commonTestDateRangeEndValue);
     setPriorityGroup('A');
     setPriority(1);
     setCreationDate(timeStamp);
     addDependency(2);
     addDependency(4);
     addDependency(6);
+    setCreationDate(commonTestTimeStampValue);
     
     if (testFormatExceptionCatchSuccessNArgs(
         "TaskSelfTest::formatUpdateStatement", std::bind(&TaskSelfTest::formatUpdateStatement, this)) == TESTFAILED)
@@ -326,18 +328,20 @@ TestStatus TaskSelfTest::testAllInsertFailures()
         return TESTFAILED;
     }
     expectedErrors.erase(expectedErrors.begin());
-    setScheduledStart(getTodaysDateMinus(OneWeek));
+    setScheduledStart(commonTestDateRangeStartValue);
 
     if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
     {
         return TESTFAILED;
     }
     expectedErrors.erase(expectedErrors.begin());
-    setDueDate(getTodaysDatePlus(1));
+    setDueDate(commonTestDateRangeEndValue);
 
     expectedErrors.clear();
     errorMessages.clear();
 
+    setCreationDate(commonTestTimeStampValue);
+    
     if (verboseOutput)
     {
         std::cout << std::format("{}::{} before successful insert this = \n", modelName, __func__) << *this << "\n";
@@ -579,7 +583,7 @@ TestStatus TaskSelfTest::testPercentageCompleteAccess()
 
 TestStatus TaskSelfTest::testCreationDateAccess()
 {
-    std::chrono::system_clock::time_point testValue = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
     return testTimeStampAccessorFunctions(testValue, &creationTimeStamp, "Creation TimeStamp",
         std::bind(&TaskModel::setCreationDate, this, std::placeholders::_1),
         std::bind(&TaskModel::getCreationDate, this));
@@ -587,7 +591,7 @@ TestStatus TaskSelfTest::testCreationDateAccess()
 
 TestStatus TaskSelfTest::testDueDateAccess()
 {
-    std::chrono::year_month_day testValue = getTodaysDate();
+    std::chrono::year_month_day testValue = commonTestDateValue;
     return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &dueDate, "Due Date",
         std::bind(&TaskModel::setDueDate, this, std::placeholders::_1),
         std::bind(&TaskModel::getDueDate, this));
@@ -595,7 +599,7 @@ TestStatus TaskSelfTest::testDueDateAccess()
 
 TestStatus TaskSelfTest::testScheduledStartAccess()
 {
-    std::chrono::year_month_day testValue = getTodaysDateMinus(OneWeek);
+    std::chrono::year_month_day testValue = commonTestDateRangeStartValue;
     return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &scheduledStart, "Scheduled Start Date",
         std::bind(&TaskModel::setScheduledStart, this, std::placeholders::_1),
         std::bind(&TaskModel::getScheduledStart, this));
@@ -603,7 +607,7 @@ TestStatus TaskSelfTest::testScheduledStartAccess()
 
 TestStatus TaskSelfTest::testActualStartDateAccess()
 {
-    std::chrono::year_month_day testValue = getTodaysDateMinus(2);
+    std::chrono::year_month_day testValue = commonTestDateValue;
     return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &actualStartDate, "Actual Start Date",
         std::bind(&TaskModel::setactualStartDate, this, std::placeholders::_1),
         std::bind(&TaskModel::getactualStartDate, this));
@@ -620,7 +624,7 @@ TestStatus TaskSelfTest::testEstimatedEffortAccess()
 
 TestStatus TaskSelfTest::testCompletionDateAccess()
 {
-    std::chrono::year_month_day testValue = getTodaysDate();
+    std::chrono::year_month_day testValue = commonTestDateValue;
     return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &completionDate, "Completion Date",
         std::bind(&TaskModel::setCompletionDate, this, std::placeholders::_1),
         std::bind(&TaskModel::getCompletionDate, this));
@@ -628,7 +632,7 @@ TestStatus TaskSelfTest::testCompletionDateAccess()
 
 TestStatus TaskSelfTest::testEstimatedCompletionAccess()
 {
-    std::chrono::year_month_day testValue = getTodaysDate();
+    std::chrono::year_month_day testValue = commonTestDateValue;
     return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &estimatedCompletion, "Completion Date",
         std::bind(&TaskModel::setEstimatedCompletion, this, std::placeholders::_1),
         std::bind(&TaskModel::getEstimatedCompletion, this));

@@ -130,8 +130,9 @@ TestStatus ScheduleItemSelfTest::testExceptionInsert() noexcept
 
     setUserID(1);
     setTitle("Testing Exception handling for Schedule Item Insert");
-    setStartDateAndTime(std::chrono::system_clock::now());
-    setEndDateAndTime(std::chrono::system_clock::now());
+    setStartDateAndTime(commonTestTimeStampValue);
+    setEndDateAndTime(commonTestTimeStampValue);
+    setCreationDate(commonTestTimeStampValue);
 
     if (testFormatExceptionCatchSuccessNArgs(
         "ScheduleItemSelfTest::formatInsertStatement", std::bind(&ScheduleItemSelfTest::formatInsertStatement, this)) == TESTFAILED)
@@ -150,8 +151,10 @@ TestStatus ScheduleItemSelfTest::testExceptionUpdate() noexcept
     setScheduleItemID(57);
     setUserID(1);
     setTitle("Testing Exception handling for Schedule Item Update");
-    setStartDateAndTime(std::chrono::system_clock::now());
-    setEndDateAndTime(std::chrono::system_clock::now());
+    setStartDateAndTime(commonTestTimeStampValue);
+    setEndDateAndTime(commonTestTimeStampValue);
+    setCreationDate(commonTestTimeStampValue);
+    setLastUpdate(commonTestTimeStampValue);
 
     if (testFormatExceptionCatchSuccessNArgs(
         "ScheduleItemSelfTest::formatUpdateStatement", std::bind(&ScheduleItemSelfTest::formatUpdateStatement, this)) == TESTFAILED)
@@ -184,7 +187,7 @@ TestStatus ScheduleItemSelfTest::testExceptionFormatSelectScheduleItemsByDateAnd
 {
     selfTestResetAllValues();
 
-    std::chrono::year_month_day testDate(getTodaysDate());
+    std::chrono::year_month_day testDate(commonTestDateValue);
 
     return testFormatExceptionAndSuccessNArgs("ScheduleItemSelfTest::testExceptionFormatSelectScheduleItemsByDateAndUser",
         std::bind(&ScheduleItemModel::formatSelectScheduleItemsByDateAndUser, this, std::placeholders::_1, std::placeholders::_2), testDate, 1);
@@ -194,8 +197,8 @@ TestStatus ScheduleItemSelfTest::testExceptionFormatSelectSiByContentDateRangeUs
 {
     selfTestResetAllValues();
 
-    std::chrono::year_month_day startSearch(getTodaysDateMinus(1));
-    std::chrono::year_month_day endSearch(getTodaysDatePlus(1));
+    std::chrono::year_month_day startSearch(commonTestDateRangeStartValue);
+    std::chrono::year_month_day endSearch(commonTestDateRangeEndValue);
     std::string testTitle("This is only a test");
     std::size_t testUser = 1;
 
@@ -240,14 +243,14 @@ TestStatus ScheduleItemSelfTest::testAllInsertFailures()
     }
     expectedErrors.erase(expectedErrors.begin());
 
-    setStartDateAndTime(std::chrono::system_clock::now());
+    setStartDateAndTime(commonTestTimeStampValue);
     if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
     {
         return TESTFAILED;
     }
     expectedErrors.erase(expectedErrors.begin());
 
-    setEndDateAndTime(std::chrono::system_clock::now());
+    setEndDateAndTime(commonTestTimeStampValue);
 
     expectedErrors.clear();
     errorMessages.clear();
@@ -342,7 +345,7 @@ TestStatus ScheduleItemSelfTest::testTitleAccess() noexcept
 
 TestStatus ScheduleItemSelfTest::testStartTimeAccess() noexcept
 {
-    std::chrono::system_clock::time_point testValue = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
 
     return testTimeStampAccessorFunctions(testValue, &startTime, "Schedule Item Start Time",
         std::bind(&ScheduleItemSelfTest::setStartDateAndTime, this, std::placeholders::_1),
@@ -351,7 +354,7 @@ TestStatus ScheduleItemSelfTest::testStartTimeAccess() noexcept
 
 TestStatus ScheduleItemSelfTest::testEndTimeAccess() noexcept
 {
-    std::chrono::system_clock::time_point testValue = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
 
     return testTimeStampAccessorFunctions(testValue, &endTime, "Schedule Item End Time",
         std::bind(&ScheduleItemSelfTest::setEndDateAndTime, this, std::placeholders::_1),
@@ -360,7 +363,7 @@ TestStatus ScheduleItemSelfTest::testEndTimeAccess() noexcept
 
 TestStatus ScheduleItemSelfTest::testCreationTimeStampAccess() noexcept
 {
-    std::chrono::system_clock::time_point testValue = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
 
     return testTimeStampAccessorFunctions(testValue, &creationTimeStamp, "Schedule Item Creation Timestamp",
         std::bind(&ScheduleItemSelfTest::setCreationDate, this, std::placeholders::_1),
@@ -369,7 +372,7 @@ TestStatus ScheduleItemSelfTest::testCreationTimeStampAccess() noexcept
 
 TestStatus ScheduleItemSelfTest::testLastUpDateTimeStampAccess() noexcept
 {
-    std::chrono::system_clock::time_point testValue = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
 
     return testTimeStampAccessorFunctions(testValue, &lastUpdate, "Schedule Item Last Update Timestamp",
         std::bind(&ScheduleItemSelfTest::setLastUpdate, this, std::placeholders::_1),

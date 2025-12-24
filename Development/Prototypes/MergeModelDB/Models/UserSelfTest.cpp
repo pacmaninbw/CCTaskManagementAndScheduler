@@ -183,7 +183,7 @@ TestStatus UserSelfTest::testPassWordAccess() noexcept
 
 TestStatus UserSelfTest::testCreatedDateAcfcess() noexcept
 {
-    std::chrono::system_clock::time_point testValue = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
     return testTimeStampAccessorFunctions(testValue, &created, "Creation TimeStamp",
         std::bind(&UserModel::setCreationDate, this, std::placeholders::_1),
         std::bind(&UserModel::getCreationDate, this));
@@ -191,7 +191,7 @@ TestStatus UserSelfTest::testCreatedDateAcfcess() noexcept
 
 TestStatus UserSelfTest::testLastLoginAccess() noexcept
 {
-    std::optional<std::chrono::system_clock::time_point> testValue = std::chrono::system_clock::now();
+    std::optional<std::chrono::system_clock::time_point> testValue = commonTestTimeStampValue;
     return testOptionalAccessorFunctions<std::chrono::system_clock::time_point>(testValue, &lastLogin, "Last Login TimeStamp",
         std::bind(&UserModel::setLastLogin, this, std::placeholders::_1),
         std::bind(&UserModel::getLastLogin, this));
@@ -319,7 +319,7 @@ TestStatus UserSelfTest::testExceptionInsert() noexcept
 {
     selfTestResetAllValues();
 
-    std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point timeStamp = commonTestTimeStampValue;
     setLastName("LastName");
     setFirstName("FirstName");
     setMiddleInitial("M");
@@ -335,7 +335,7 @@ TestStatus UserSelfTest::testExceptionUpdate() noexcept
 {
     selfTestResetAllValues();
 
-    std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point timeStamp = commonTestTimeStampValue;
     setUserID(1);
     setLastName("LastName");
     setFirstName("FirstName");
@@ -397,6 +397,7 @@ TestStatus UserSelfTest::testAllInsertFailures()
         std::cout << std::format("{}::{} before successful insert this = \n", modelName, __func__) << *this << "\n";
     }
 
+    setCreationDate(commonTestTimeStampValue);
     if (!insert())
     {
         std::cout << "In  UserSelfTest::testAllInsertFailures() Expected successful insert failed\n" << errorMessages << "\n";

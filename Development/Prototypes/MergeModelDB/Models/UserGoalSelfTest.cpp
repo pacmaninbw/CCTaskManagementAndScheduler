@@ -140,7 +140,7 @@ TestStatus UserGoalSelfTest::testDescriptionAccess() noexcept
 
 TestStatus UserGoalSelfTest::testCreationDateAccess() noexcept
 {
-    return testTimeStampAccessorFunctions(std::chrono::system_clock::now(), &creationDate, "Date Added",
+    return testTimeStampAccessorFunctions(commonTestTimeStampValue, &creationDate, "Date Added",
         std::bind(&UserGoalModel::setCreationTimeStamp, this, std::placeholders::_1),
         std::bind(&UserGoalModel::getCreationTimeStamp, this));
 }
@@ -187,7 +187,7 @@ TestStatus UserGoalSelfTest::testExceptionInsert() noexcept
 {
    selfTestResetAllValues();
 
-    std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point timeStamp = commonTestTimeStampValue;
     setDescription("Testing insertion exception");
     setUserId(27);
     setCreationTimeStamp(timeStamp);
@@ -199,7 +199,7 @@ TestStatus UserGoalSelfTest::testExceptionUpdate() noexcept
 {
    selfTestResetAllValues();
 
-    std::chrono::system_clock::time_point timeStamp = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point timeStamp = commonTestTimeStampValue;
     setGoalId(37);
     setDescription("Testing insertion exception");
     setUserId(23);
@@ -339,6 +339,8 @@ TestStatus UserGoalSelfTest::testAllInsertFailures()
 
     expectedErrors.clear();
     errorMessages.clear();
+
+    setCreationTimeStamp(commonTestTimeStampValue);
 
     if (verboseOutput)
     {
