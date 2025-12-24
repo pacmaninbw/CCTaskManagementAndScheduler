@@ -192,6 +192,12 @@ std::string UserModel::formatInsertStatement()
     {
         created = std::chrono::system_clock::now();
     }
+
+    if (!lastLogin.has_value())
+    {
+        lastLogin = created;
+    }
+
     std::string insertStatement = boost::mysql::format_sql(format_opts.value(),
         "INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
         "HashedPassWord, UserAdded, LastLogin, Preferences) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8})",

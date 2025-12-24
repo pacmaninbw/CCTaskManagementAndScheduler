@@ -212,7 +212,7 @@ std::string UserGoalModel::formatInsertStatement()
         creationDate = std::chrono::system_clock::now();
     }
 
-    lastUpdate = std::chrono::system_clock::now();
+    lastUpdate = creationDate.value();
 
     std::string insertStatement = boost::mysql::format_sql(format_opts.value(),
         "INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, "
