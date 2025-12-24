@@ -6,7 +6,7 @@
 #include "ExceptionSelfTest.h"
 #include "FunctionalSelfTest.h"
 #include "ModelDBInterface.h"
-#include "TestStatus.h"
+#include "commonTestValues.h"
 
 // External Libraries
 #include <boost/asio.hpp>
