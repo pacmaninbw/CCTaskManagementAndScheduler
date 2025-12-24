@@ -386,7 +386,11 @@ std::string TaskModel::formatInsertStatement()
     if (isMissingCreationDate())
     {
         creationTimeStamp = std::chrono::system_clock::now();
-        lastUpdate = std::chrono::system_clock::now();
+    }
+
+    if (!lastUpdate.has_value())
+    {
+        lastUpdate = creationTimeStamp;
     }
 
     initFormatOptions();
