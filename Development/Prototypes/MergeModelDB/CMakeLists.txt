@@ -10,6 +10,7 @@ find_package(Boost 1.87.0 REQUIRED COMPONENTS system charconv program_options)
 
 add_executable(protoPersonalPlanner
     common/commonUtilities.cpp
+    common/commonTestValues.cpp
     CommandLineParser.cpp
     Models/CoreDBInterface.cpp
     Models/ModelDBInterface.cpp

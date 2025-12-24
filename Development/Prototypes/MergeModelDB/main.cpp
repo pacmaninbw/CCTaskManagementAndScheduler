@@ -1,5 +1,6 @@
 // Project Header Files
 #include "CommandLineParser.h"
+#include "commonTestValues.h"
 #include "NoteList.h"
 #include "NoteModel.h"
 #include "NoteSelfTest.h"
@@ -231,6 +232,8 @@ int main(int argc, char* argv[])
 		{
 			programOptions = *progOptions;
             UtilityTimer stopWatch;
+
+            initCommonTestValues("2024-05-14 08:31:53");
 
             if (runAllUnitTests() == TESTFAILED)
             {
