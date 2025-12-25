@@ -45,6 +45,7 @@ public:
     std::optional<std::size_t> rawParentTaskID() const { return parentTaskID; };
     double getPercentageComplete() const { return percentageComplete; };
     std::chrono::system_clock::time_point getCreationDate() const { return creationTimeStamp.value(); };
+    std::chrono::system_clock::time_point getLastUpdate() const { return lastUpdate.value(); };
     std::chrono::year_month_day getDueDate() const { return dueDate.value(); };
     std::chrono::year_month_day getScheduledStart() const { return scheduledStart.value(); };
     std::chrono::year_month_day getactualStartDate() const;
@@ -79,6 +80,7 @@ public:
     void setPriorityGroupC(const char priorityGroup);
     void setPriority(unsigned int priority);
     void setPersonal(bool personalIn);
+    void setLastUpdate(std::chrono::system_clock::time_point lastUpdateTS);
     void addDependency(std::size_t taskId);
     void addDependency(TaskModel& dependency) { addDependency(dependency.getTaskID()); };
     void addDependency(std::shared_ptr<TaskModel> dependency) { addDependency(dependency->getTaskID()); };

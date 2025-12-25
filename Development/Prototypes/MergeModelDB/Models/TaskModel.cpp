@@ -199,6 +199,12 @@ void TaskModel::addDependency(std::size_t taskId)
     dependencies.push_back(taskId);
 }
 
+void TaskModel::setLastUpdate(std::chrono::system_clock::time_point lastUpdateTS)
+{
+    modified = true;
+    lastUpdate = lastUpdateTS;
+}
+
 void TaskModel::setTaskID(std::size_t newID)
 {
     modified = true;
@@ -262,7 +268,7 @@ std::string TaskModel::formatSelectActiveTasksForAssignedUser(std::size_t assign
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND Completed IS NULL AND (Status IS NOT NULL AND Status <> {})",
-            assignedUserID, stdchronoDateToBoostMySQLDate(getTodaysDatePlus(OneWeek)), notStarted);
+            assignedUserID, notStarted);
 
         return std::move(fctx).get().value();
     }
@@ -593,5 +599,4 @@ void TaskModel::processResultRow(boost::mysql::row_view rv)
         addDependencies(dependenciesText);
     }
 }
-
 

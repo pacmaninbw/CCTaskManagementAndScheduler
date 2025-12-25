@@ -244,6 +244,7 @@ TestStatus TaskSelfTest::testExceptionUpdate() noexcept
     addDependency(4);
     addDependency(6);
     setCreationDate(commonTestTimeStampValue);
+    setLastUpdate(commonTestTimeStampValue);
     
     if (testFormatExceptionCatchSuccessNArgs(
         "TaskSelfTest::formatUpdateStatement", std::bind(&TaskSelfTest::formatUpdateStatement, this)) == TESTFAILED)
@@ -385,6 +386,7 @@ std::vector<AttributeTestFunction> TaskSelfTest::initAttributeAccessTests() noex
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testParentTaskIDAccess, this)});
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testPercentageCompleteAccess, this)});
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testCreationDateAccess, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testLastUpdateAccess, this)});
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testDueDateAccess, this)});
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testScheduledStartAccess, this)});
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testActualStartDateAccess, this)});
@@ -587,6 +589,15 @@ TestStatus TaskSelfTest::testCreationDateAccess()
     return testTimeStampAccessorFunctions(testValue, &creationTimeStamp, "Creation TimeStamp",
         std::bind(&TaskModel::setCreationDate, this, std::placeholders::_1),
         std::bind(&TaskModel::getCreationDate, this));
+}
+
+
+TestStatus TaskSelfTest::testLastUpdateAccess()
+{
+    std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
+    return testTimeStampAccessorFunctions(testValue, &lastUpdate, "Last Update TimeStamp",
+        std::bind(&TaskModel::setLastUpdate, this, std::placeholders::_1),
+        std::bind(&TaskModel::getLastUpdate, this));
 }
 
 TestStatus TaskSelfTest::testDueDateAccess()

@@ -47,6 +47,7 @@ private:
     TestStatus testParentTaskIDVerifyValueAndGetParentTaskID(std::size_t testValue);
     TestStatus testPercentageCompleteAccess();
     TestStatus testCreationDateAccess();
+    TestStatus testLastUpdateAccess();
     TestStatus testDueDateAccess();
     TestStatus testScheduledStartAccess();
     TestStatus testActualStartDateAccess();
