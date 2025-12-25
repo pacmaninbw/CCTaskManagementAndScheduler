@@ -478,13 +478,13 @@ TestStatus TestTaskDBInterface::testNegativePathMissingRequiredFields()
         return TESTFAILED;
     }
 
-    newTask.setScheduledStart(getTodaysDate());
+    newTask.setScheduledStart(commonTestDateValue);
     if (testMissingReuqiredField(newTask) != TESTPASSED)
     {
         return TESTFAILED;
     }
 
-    newTask.setDueDate(getTodaysDatePlus(2));
+    newTask.setDueDate(commonTestDateRangeEndValue);
     if (testMissingReuqiredField(newTask) != TESTPASSED)
     {
         return TESTFAILED;
@@ -541,13 +541,13 @@ TestStatus TestTaskDBInterface::testSharedPointerInteraction()
         return TESTFAILED;
     }
 
-    newTask->setScheduledStart(getTodaysDate());
+    newTask->setScheduledStart(commonTestDateValue);
     if (testMissingReuqiredField(*newTask) != TESTPASSED)
     {
         return TESTFAILED;
     }
 
-    newTask->setDueDate(getTodaysDatePlus(2));
+    newTask->setDueDate(commonTestDateRangeEndValue);
     if (testMissingReuqiredField(*newTask) != TESTPASSED)
     {
         return TESTFAILED;

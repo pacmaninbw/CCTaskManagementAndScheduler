@@ -58,7 +58,7 @@ TestStatus TestGoalModel::testInsertAndGetParent(TestGoalInput testGoal)
     newGoal.setUserId(userOne->getUserID());
     newGoal.setDescription(testGoal.description);
     newGoal.setPriority(testGoal.priority);
-    newGoal.setCreationTimeStamp(std::chrono::system_clock::now());
+    newGoal.setCreationTimeStamp(commonTestTimeStampValue);
     if (!testGoal.parentDescription.empty())
     {
         UserGoalModel parentGoal;
