@@ -163,8 +163,8 @@ TestStatus NoteList::testExceptionsGetNotesForUserCreatedDateRange() noexcept
     selfTestResetAllValues();
 
     std::size_t testUserId = 1;
-    std::chrono::year_month_day startDate = getTodaysDateMinus(OneWeek);
-    std::chrono::year_month_day endDate = getTodaysDate();
+    std::chrono::year_month_day startDate = commonTestDateRangeStartValue;
+    std::chrono::year_month_day endDate = commonTestDateValue;
 
     return testListExceptionAndSuccessNArgs("NoteList::testExceptionsGetNotesForUserCreatedDateRange()",
         std::bind(&NoteList::getAllNotesForUserCreatedInDatgeRange, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), 
@@ -176,8 +176,8 @@ TestStatus NoteList::testExceptionsGetNotesForUserEditedDateRange() noexcept
     selfTestResetAllValues();
 
     std::size_t testUserId = 1;
-    std::chrono::year_month_day startDate = getTodaysDateMinus(OneWeek);
-    std::chrono::year_month_day endDate = getTodaysDate();
+    std::chrono::year_month_day startDate = commonTestDateRangeStartValue;
+    std::chrono::year_month_day endDate = commonTestDateValue;
 
     return testListExceptionAndSuccessNArgs("NoteList::testExceptionsGetNotesForUserEditedDateRange()",
         std::bind(&NoteList::getAllNotesForUserEditedInDatgeRange, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), 

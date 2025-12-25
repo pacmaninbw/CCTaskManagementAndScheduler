@@ -162,7 +162,7 @@ TestStatus TaskList::testExceptionGetTasksCompletedByAssignedAfterDate() noexcep
 {
     selfTestResetAllValues();
 
-    std::chrono::year_month_day searchStartDate = getTodaysDate();
+    std::chrono::year_month_day searchStartDate = commonTestDateValue;
     std::size_t assignedUser = 1;
 
     return testListExceptionAndSuccessNArgs("TaskList::testExceptionGetTasksCompletedByAssignedAfterDate()",
