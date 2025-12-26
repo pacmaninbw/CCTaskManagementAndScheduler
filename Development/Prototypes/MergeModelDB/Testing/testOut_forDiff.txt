@@ -45,8 +45,8 @@ Test Output: 	User ID: 31
 	Email: AnyEmail
 	Login Name: AnyLoginName
 	PassWord: AnyPassword
-	User Added: 2025-12-05 15:10:22.196771856
-	Last Login: 2025-12-05 15:10:22.196794472
+	User Added: 2024-05-14 08:31:53.000000000
+	Last Login: 2024-05-14 08:31:53.000000000
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
@@ -80,6 +80,8 @@ Running self test on set and get functions for Task::Percentage Complete
 Self test on set and get functions for Task::Percentage Complete PASSED
 Running self test on set and get functions for Task::Creation TimeStamp
 Self test on set and get functions for Task::Creation TimeStamp PASSED
+Running self test on set and get functions for Task::Last Update TimeStamp
+Self test on set and get functions for Task::Last Update TimeStamp PASSED
 Running self test on set and get functions for Task::Due Date
 Self test on set and get functions for Task::Due Date PASSED
 Running self test on set and get functions for Task::Scheduled Start Date
@@ -112,9 +114,9 @@ Test Output: TaskModel:
 	Assigned To ID: 2
 	Description: Test task description access
 	Percentage Complete: 86.5
-	Creation Date: 2025-12-05 15:10:22.215935085
-	Scheduled Start Date: 2025-11-28
-	Due Date: 2025-12-05
+	Creation Date: 2024-05-14 08:31:53.000000000
+	Scheduled Start Date: 2024-05-07
+	Due Date: 2024-05-14
 	Estimated Effort Hours: 1024
 	Actual Effort Hours: 760
 	Priority Group: 2
@@ -123,9 +125,9 @@ Test Output: TaskModel:
 Optional Fields
 	Status: Completed
 	Parent ID: 42
-	Actual Start Date: 2025-12-03
-	Estimated Completion Date: 2025-12-05
-	Completed Date: 2025-12-05
+	Actual Start Date: 2024-05-14
+	Estimated Completion Date: 2024-05-14
+	Completed Date: 2025-12-26
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
@@ -158,7 +160,7 @@ Test Output: Model Name UserGoalModel
 	Description: Test note content access
 	Priority: 1
 	Parent ID: 1
-	Creation Timestamp: 2025-12-05 15:10:22.234606511
+	Creation Timestamp: 2024-05-14 08:31:53.000000000
 	Last Update Timestamp: 1970-01-01 00:00:00.000000000
 
 Common Insertion Failure Test PASSED!
@@ -187,12 +189,58 @@ Self test on set and get functions for Note::Date Added PASSED
 Test Output: 	Note ID: 27
 	User ID: 31
 	Content: Test note content access
-	Created: 2025-12-05 15:10:22.248399103
-	Last Update: 2025-12-05 15:10:22.248405733
+	Created: 2024-05-14 08:31:53.000000000
+	Last Update: 2024-05-14 08:31:53.000000000
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
 Note Self Test PASSED
+---------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------
+
+Running ScheduleItem Self Test
+
+
+Running Exception Handling Test Cases
+Caught expected exception from ScheduleItemSelfTest::formatInsertStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
+Caught expected exception from ScheduleItemSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
+Caught expected exception from ScheduleItemSelfTest::formatSelectStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
+
+
+Running self test on set and get functions for ScheduleItem::Primary Key
+Self test on set and get functions for ScheduleItem::Primary Key PASSED
+Running self test on set and get functions for ScheduleItem::User ID
+Self test on set and get functions for ScheduleItem::User ID PASSED
+Running self test on set and get functions for ScheduleItem::Title
+Self test on set and get functions for ScheduleItem::Title PASSED
+Running self test on set and get functions for ScheduleItem::Schedule Item Start Time
+Self test on set and get functions for ScheduleItem::Schedule Item Start Time PASSED
+Running self test on set and get functions for ScheduleItem::Schedule Item End Time
+Self test on set and get functions for ScheduleItem::Schedule Item End Time PASSED
+Running self test on set and get functions for ScheduleItem::Schedule Item Creation Timestamp
+Self test on set and get functions for ScheduleItem::Schedule Item Creation Timestamp PASSED
+Running self test on set and get functions for ScheduleItem::Schedule Item Last Update Timestamp
+Self test on set and get functions for ScheduleItem::Schedule Item Last Update Timestamp PASSED
+Running self test on set and get functions for ScheduleItem::Location
+Self test on set and get functions for ScheduleItem::Location PASSED
+Running self test on set and get functions for ScheduleItem::Personal
+Self test on set and get functions for ScheduleItem::Personal PASSED
+Test Output: ScheduleItemModel:
+	ScheduleItem ID: 57
+	User ID: 1
+	Title: Testing schedule item Title string access
+	Creation Date: 2024-05-14 08:31:53.000000000
+	Start Date and Time: 2024-05-14 08:31:53.000000000
+	End Date and Time: 2024-05-14 08:31:53.000000000
+	Personal: TRUE
+	location: Home Office
+Optional Fields
+	Last Update: 2024-05-14 08:31:53.000000000
+
+Common Insertion Failure Test PASSED!
+Common Update Failure Test PASSED!
+ScheduleItem Self Test PASSED
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
@@ -261,6 +309,20 @@ Exception Test for NoteList::testExceptionsGetNotesForUserEditedDateRange()
 
 ---------------------------------------------------------------------------------
 
+Running ScheduleItemList Self Test
+
+
+Running Exception Handling Test Cases ScheduleItemList
+
+Exception Test for ScheduleItemList::testExceptionGgetUserDaySchedule()
+
+Exception Test for ScheduleItemList::testExceptionFindUserScheduleItemsByContentAndDateRange()
+
+
+---------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------
+
 Running user Integration Tests
 All positive path tests for database insertions and retrievals of user PASSED!
 All negative path tests for database insertions and retrievals of user PASSED!
@@ -289,4 +351,12 @@ Running Note Integration Tests
 All positive path tests for database insertions and retrievals of Note PASSED!
 All negative path tests for database insertions and retrievals of Note PASSED!
 All tests for database insertions and retrievals of Note PASSED!
+---------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------
+
+Running ScheduleItem Integration Tests
+All positive path tests for database insertions and retrievals of ScheduleItem PASSED!
+All negative path tests for database insertions and retrievals of ScheduleItem PASSED!
+All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
