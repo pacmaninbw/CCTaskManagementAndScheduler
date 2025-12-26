@@ -1,6 +1,6 @@
 A,1,Archive BHHS74Reunion website to external SSD,2025-05-05,12,1.0,0,Work in Progress,2025-04-08,2025-04-08,2025-04-01,2025-06-30,2025-05-05,
 A,2,Develop Personal Planning Tool,2025-05-05,300,40.0,0,Work in Progress,2025-03-20,2025-03-20,2025-04-01,2025-04-30,2025-05-15,
-A,1,Check with GoDaddy about providing service to archive website to external SSD,2025-04-15,2,1.0,1,Work in Progress, ,,,,,
+A,1,Check with GoDaddy about providing service to archive website to external SSD,2025-04-15,2,1.0,1,Work in Progress,2025-04-15,2025-04-15,2025-04-15,2025-04-15,2025-04-15,
 B,2,Install a WordPress Archive Plugin,2025-05-01,1,0.0,1,Not Started,2025-05-01,,2025-04-10,2025-06-30,2025-05-01,
 B,3,Have GoDaddy install PHPMyAdmin,2025-05-02,1,0.0,1,Not Started,2025-05-02,,2025-04-10,2025-06-30,2025-05-03,
 B,4,Run Archive Plugin,2025-05-03,2,0.0,1,Not Started,2025-05-03,,2025-04-10,2025-06-30,2025-05-03,
