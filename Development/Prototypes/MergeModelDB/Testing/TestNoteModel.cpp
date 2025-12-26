@@ -58,7 +58,8 @@ TestStatus TestNoteModel::testInsertNote(TestNoteInput testNote)
     NoteModel newNote;
     newNote.setUserId(userOne->getUserID());
     newNote.setContent(testNote.content);
-    newNote.setDateAdded(std::chrono::system_clock::now());
+    newNote.setDateAdded(commonTestTimeStampValue);
+    newNote.setLastModified(commonTestTimeStampValue);
 
     if (!newNote.insert())
     {
@@ -145,7 +146,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent()
 TestStatus TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange()
 {
     std::chrono::year_month_day startDate = commonTestDateRangeStartValue;
-    std::chrono::year_month_day endDate = commonTestDateValue;
+    std::chrono::year_month_day endDate = commonTestDateRangeEndValue;
 
     NoteList NoteListTestInterface;
     NoteListValues allNotesInRange = NoteListTestInterface.getAllNotesForUserCreatedInDatgeRange(1, startDate, endDate);
@@ -172,8 +173,10 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange()
 
 TestStatus TestNoteModel::testPositivePathGetNotesForUserEditedDateRange()
 {
+//    std::chrono::year_month_day startDate = getTodaysDateMinus(OneWeek);
+//    std::chrono::year_month_day endDate = getTodaysDatePlus(OneWeek);
     std::chrono::year_month_day startDate = commonTestDateRangeStartValue;
-    std::chrono::year_month_day endDate = commonTestDateValue;
+    std::chrono::year_month_day endDate = commonTestDateRangeEndValue;
 
     NoteList NoteListTestInterface;
     NoteListValues allNotesInRange = NoteListTestInterface.getAllNotesForUserEditedInDatgeRange(1, startDate, endDate);
@@ -255,6 +258,8 @@ TestStatus TestNoteModel::negativePathMissingRequiredFields()
         }
     }
 
+    testNote.setDateAdded(commonTestTimeStampValue);
+    testNote.setLastModified(commonTestTimeStampValue);
     testNote.save();
     if (!testNote.isInDataBase())
     {

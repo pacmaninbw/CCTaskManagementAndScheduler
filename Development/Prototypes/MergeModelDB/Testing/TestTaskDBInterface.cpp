@@ -492,6 +492,7 @@ TestStatus TestTaskDBInterface::testNegativePathMissingRequiredFields()
 
     newTask.setPriorityGroup('A');
     newTask.setPriority(1);
+    newTask.setCreationDate(commonTestTimeStampValue);
     TaskModel_shp newTaskPtr = std::make_shared<TaskModel>(newTask);
     return insertShouldPass(newTaskPtr);
 }
@@ -555,6 +556,7 @@ TestStatus TestTaskDBInterface::testSharedPointerInteraction()
 
     newTask->setPriorityGroup('A');
     newTask->setPriority(1);
+    newTask->setCreationDate(commonTestTimeStampValue);
     return insertShouldPass(newTask);
 }
 

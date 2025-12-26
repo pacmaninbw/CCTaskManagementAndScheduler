@@ -245,6 +245,7 @@ TestStatus TestGoalModel::negativePathMissingRequiredFields()
         }
     }
 
+    testGoal.setCreationTimeStamp(commonTestTimeStampValue);
     testGoal.save();
     if (!testGoal.isInDataBase())
     {

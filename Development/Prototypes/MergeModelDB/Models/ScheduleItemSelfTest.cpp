@@ -255,6 +255,8 @@ TestStatus ScheduleItemSelfTest::testAllInsertFailures()
     expectedErrors.clear();
     errorMessages.clear();
 
+    setCreationDate(commonTestTimeStampValue);
+
     if (verboseOutput)
     {
         std::cout << std::format("{}::{} before successful insert this = \n", modelName, __func__) << *this << "\n";
