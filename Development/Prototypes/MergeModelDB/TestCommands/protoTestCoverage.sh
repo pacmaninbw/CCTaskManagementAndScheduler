@@ -9,7 +9,7 @@ mkdir -p TestCoverage
 mysql -u $sqluser -p$sqlpassword < PlannerTaskScheduleDB.sql
 build/protoPersonalPlanner -u "$sqluser" -p "$sqlpassword" > Testing/testOut.txt
 echo "Diff"
-diff Testing/testOut.txt Testing/testOut_forDiff.txt
+diff -w Testing/testOut.txt Testing/testOut_forDiff.txt
 cp build/protoPersonalPlanner TestCoverage
 cp build/CMakeFiles/protoPersonalPlanner.dir/*.gc* TestCoverage
 cp build/CMakeFiles/protoPersonalPlanner.dir/common/*.gc* TestCoverage

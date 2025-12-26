@@ -10,6 +10,6 @@ protoPersonalPlanner -u $sqluser -p $sqlpassword >& Testing/testOut.txt
 mysql -u $sqluser -p$sqlpassword < PlannerTaskScheduleDB.sql
 valgrind --track-origins=yes protoPersonalPlanner -u $sqluser -p $sqlpassword  2>&1 | sed 's/^==[0-9]*== //' > Testing/valgrindOut.txt
 echo "Diff"
-diff Testing/testOut.txt Testing/testOut_forDiff.txt
+diff -w Testing/testOut.txt Testing/testOut_forDiff.txt
 echo "valgrind Diff"
 diff Testing/valgrindOut.txt Testing/valgrindOut_forDiff.txt
