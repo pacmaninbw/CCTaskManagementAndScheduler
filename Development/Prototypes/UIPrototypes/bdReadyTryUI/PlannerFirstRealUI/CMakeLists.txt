@@ -22,6 +22,7 @@ set(PROJECT_MODEL_SOUCES
     CommandLineParser.h
     common/commonUtilities.h
     common/commonUtilities.cpp
+    common/commonTestValues.cpp
     common/GenericDictionary.h
     Models/CoreDBInterface.h
     Models/CoreDBInterface.cpp
@@ -59,6 +60,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(PlannerFirstRealUI
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        EditUserProfileDialog.h EditUserProfileDialog.cpp EditUserProfileDialog.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET PlannerFirstRealUI APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
