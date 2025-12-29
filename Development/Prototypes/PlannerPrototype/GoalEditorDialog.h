@@ -16,6 +16,12 @@ public:
     explicit GoalEditorDialog(QWidget *parent = nullptr);
     ~GoalEditorDialog();
 
+public slots:
+
+signals:
+
+private slots:
+
 private:
 
 };

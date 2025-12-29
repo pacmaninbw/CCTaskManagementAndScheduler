@@ -16,6 +16,12 @@ public:
     explicit UserEditorDialog(QWidget *parent = nullptr);
     ~UserEditorDialog();
 
+public slots:
+
+signals:
+
+private slots:
+
 private:
 
 };

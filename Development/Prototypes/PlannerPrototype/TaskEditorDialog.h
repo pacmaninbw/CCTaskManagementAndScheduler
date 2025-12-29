@@ -16,6 +16,12 @@ public:
     explicit TaskEditorDialog(QWidget *parent = nullptr);
     ~TaskEditorDialog();
 
+public slots:
+
+signals:
+
+private slots:
+
 private:
 
 };

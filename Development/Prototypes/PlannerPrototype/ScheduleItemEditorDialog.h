@@ -17,6 +17,12 @@ public:
     explicit ScheduleItemEditorDialog(QWidget *parent = nullptr);
     ~ScheduleItemEditorDialog();
 
+public slots:
+
+signals:
+
+private slots:
+
 private:
 
 };

@@ -16,6 +16,12 @@ public:
     explicit DataBaseConnectionDialog(QWidget *parent = nullptr);
     ~DataBaseConnectionDialog();
 
+public slots:
+
+signals:
+
+private slots:
+
 private:
 
 };

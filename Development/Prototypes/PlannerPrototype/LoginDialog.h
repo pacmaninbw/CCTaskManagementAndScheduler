@@ -17,6 +17,12 @@ public:
     explicit LoginDialog(QWidget *parent = nullptr);
     ~LoginDialog();
 
+public slots:
+
+signals:
+
+private slots:
+
 private:
 
 };

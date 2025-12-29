@@ -16,6 +16,12 @@ public:
     explicit NoteEditorDialog(QWidget *parent = nullptr);
     ~NoteEditorDialog();
 
+public slots:
+
+signals:
+
+private slots:
+
 private:
 
 };
