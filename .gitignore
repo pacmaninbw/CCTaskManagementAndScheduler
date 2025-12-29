@@ -29,6 +29,8 @@ ZOldNotUsed
 
 # Generated Code
 performanceTest.h
+UIFilesForCopy
+*.ui
 
 # Prerequisites
 *.d
