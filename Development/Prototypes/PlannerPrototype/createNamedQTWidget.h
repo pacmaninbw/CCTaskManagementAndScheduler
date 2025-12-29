@@ -1,15 +1,9 @@
 #ifndef CREATENAMEDQTWIDGET_H_
 #define CREATENAMEDQTWIDGET_H_
 
-/*
- * Providing object names makes using QMetaObject::connectSlotsByName() easier.
- * Properly named slots can be easily connected to their signals.
- */
+#include <QWidget>
+#include <QLineEdit>
 
-class QWidget;
-/*
- * General Widget types.
- */
 template <typename WidgetType>
 WidgetType *createNamedQTWidget(const char* objectName, QWidget* parent=nullptr)
 {
@@ -31,6 +25,8 @@ WidgetType *createNameQTWidgetWithText(const char* textContent, const char* obje
     return objectPointer;
 
 }
+
+extern QLineEdit* createNamedLineEditWithWidthAndLength(const char* lineEditName, QWidget* parent=nullptr, std::size_t width=200, std::size_t charCount=20);
 
 #endif // CREATENAMEDQTWIDGET_H_
 
