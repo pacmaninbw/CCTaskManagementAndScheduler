@@ -61,6 +61,12 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         EditUserProfileDialog.h EditUserProfileDialog.cpp EditUserProfileDialog.ui
+        GoalEditViewDialog.h GoalEditViewDialog.cpp GoalEditViewDialog.ui
+        ScheduleItemEditViewDialog.h ScheduleItemEditViewDialog.cpp ScheduleItemEditViewDialog.ui
+        UserLoginDialog.h UserLoginDialog.cpp UserLoginDialog.ui
+        TaskEditViewDialog.h TaskEditViewDialog.cpp TaskEditViewDialog.ui
+        NoteEditViewDialog.h NoteEditViewDialog.cpp NoteEditViewDialog.ui
+        UserDashboard.h UserDashboard.cpp UserDashboard.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET PlannerFirstRealUI APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
