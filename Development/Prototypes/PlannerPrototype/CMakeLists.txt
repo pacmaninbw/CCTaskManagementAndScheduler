@@ -20,6 +20,8 @@ find_package(Boost 1.87.0 REQUIRED COMPONENTS system charconv program_options)
 
 set(PROJECT_MODEL_SOUCES
     CommandLineParser.h
+    createNamedQTWidget.h
+    createNamedQTWidget.cpp
     common/commonUtilities.h
     common/commonUtilities.cpp
     common/commonTestValues.cpp
