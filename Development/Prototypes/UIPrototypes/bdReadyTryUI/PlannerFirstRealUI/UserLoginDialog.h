@@ -1,11 +1,23 @@
 #ifndef USERLOGINDIALOG_H
 #define USERLOGINDIALOG_H
 
-#include <QDialog>
+// Project Headers
+#include "createNamedQTWidget.h"
 
-namespace Ui {
-class UserLoginDialog;
-}
+// QT Headers
+#include <QVariant>
+#include <QDialog>
+#include <QAbstractButton>
+#include <QApplication>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QLineEdit>
+#include <QVBoxLayout>
+
+// Standard C++ Headers
 
 class UserLoginDialog : public QDialog
 {
@@ -15,8 +27,19 @@ public:
     explicit UserLoginDialog(QWidget *parent = nullptr);
     ~UserLoginDialog();
 
+public slots:
+
+signals:
+
+private slots:
+
 private:
-    Ui::UserLoginDialog *ui;
+    QDialogButtonBox* editUserButtonBox;
+    QGroupBox* userLoginGB;
+    QFormLayout* userLoginFormLayout;
+    QLineEdit* userLoginUserNameLE;
+    QLineEdit* userLoginPasswordLE;
+
 };
 
 #endif // USERLOGINDIALOG_H
