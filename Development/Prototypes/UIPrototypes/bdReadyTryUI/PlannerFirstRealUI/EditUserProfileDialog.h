@@ -38,7 +38,8 @@ private:
     QGroupBox* setUpUserProfileGB();
     QGroupBox* setUpLoginDataGB();
     QDialogButtonBox* setUpEditUserButtonBox();
-    QFormLayout* createNamedFormLayoutWithPolicy(const char* formName);    
+    QFormLayout* createNamedFormLayoutWithPolicy(const char* formName);
+    QLineEdit* createNamedLineEditWithWidthAndLength(const char* lineEditName, std::size_t width=200, std::size_t charCount=20);
 
 // Model related variables
     std::size_t userID;

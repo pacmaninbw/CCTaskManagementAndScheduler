@@ -6,6 +6,7 @@
 
 // QT Headers
 #include <QVariant>
+#include <QAction>
 #include <QApplication>
 #include <QFormLayout>
 #include <QGroupBox>
@@ -37,6 +38,7 @@ public slots:
 signals:
 
 private slots:
+    void handle_actionAddUser_Clicked();
 
 private:
     void setUpMainWindowUI();

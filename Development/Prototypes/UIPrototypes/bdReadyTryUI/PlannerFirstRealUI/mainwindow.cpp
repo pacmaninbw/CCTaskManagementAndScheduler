@@ -3,9 +3,11 @@
 
 
 // QT Headers
+#include "EditUserProfileDialog.h"
 #include "mainwindow.h"
 
 // Standard C++ Header Files
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -13,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent)
     progNameStr = QString::fromStdString(programOptions.progName);
 
     setUpMainWindowUI();
+
+//    QMetaObject::connectSlotsByName(this);
 }
 
 MainWindow::~MainWindow()
@@ -35,6 +39,7 @@ void MainWindow::setUpMainWindowUI()
     resize(mainWindowWidth, mainWindowHeight);
 
     setCentralWidget(centralwidget);
+    setWindowTitle(progNameStr);
 }
 
 QGroupBox* MainWindow::creatSqlConnectionsGB()
@@ -80,6 +85,8 @@ QGroupBox* MainWindow::creationPostDbConnectionsBox()
 
     actionAddUser = CreateNamedButton("Add New User", "actionAddUser");
     actionButtonLayout->addWidget(actionAddUser);
+    connect(actionAddUser, &QPushButton::clicked, this, &MainWindow::handle_actionAddUser_Clicked);
+
 
     actionLoginAsUser = CreateNamedButton("Login as User", "actionLoginAsUser");
     actionButtonLayout->addWidget(actionLoginAsUser);
@@ -87,6 +94,13 @@ QGroupBox* MainWindow::creationPostDbConnectionsBox()
     actionButtons->setLayout(actionButtonLayout);
 
     return actionButtons;
+}
+
+void MainWindow::handle_actionAddUser_Clicked()
+{
+    EditUserProfileDialog editUser(this);
+
+    editUser.exec();
 }
 
 int MainWindow::getLabelWidth(QLabel *lab)
