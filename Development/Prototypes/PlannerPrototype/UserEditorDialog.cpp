@@ -35,7 +35,7 @@ UserEditorDialog::~UserEditorDialog()
 }
 void UserEditorDialog::setUpUserEditorialogUi()
 {
-    editUserLayout = createNamedQTWidget<QVBoxLayout>("editUserLayout");
+    editUserLayout = createNamedQTWidget<QVBoxLayout>("editUserLayout", this);
     editUserLayout->addWidget(setUpUserProfileGB(), 0, Qt::AlignHCenter);
     editUserLayout->addWidget(setUpLoginDataGB(), 0, Qt::AlignHCenter);
 
@@ -56,7 +56,7 @@ QGroupBox* UserEditorDialog::setUpUserProfileGB()
 {
     userProfileGB = new QGroupBox("User Profile:");
 
-    userProfileForm = createNamedFormLayoutWithPolicy("userProfileForm");
+    userProfileForm = createNamedFormLayoutWithPolicy("userProfileForm", this);
 
     firstNameLE = createNamedLineEditWithWidthAndLength("firstNameLE", this);
     userProfileForm->addRow("FirstName:", firstNameLE);
@@ -79,7 +79,7 @@ QGroupBox* UserEditorDialog::setUpLoginDataGB()
 {
     loginDataGB = new QGroupBox("User Login:");
 
-    loginDataForm = createNamedFormLayoutWithPolicy("loginDataForm");
+    loginDataForm = createNamedFormLayoutWithPolicy("loginDataForm", this);
 
     userNameLE = createNamedLineEditWithWidthAndLength("userNameLE", this);
     loginDataForm->addRow("User Name:", userNameLE);
@@ -104,12 +104,5 @@ QDialogButtonBox *UserEditorDialog::setUpEditUserButtonBox()
     return buttonBox;
 }
 
-QFormLayout *UserEditorDialog::createNamedFormLayoutWithPolicy(const char *formName)
-{
-    QFormLayout* newFormLayout = createNamedQTWidget<QFormLayout>(formName);
-    newFormLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
-
-    return newFormLayout;
-}
 
 

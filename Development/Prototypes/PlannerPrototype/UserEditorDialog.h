@@ -36,7 +36,6 @@ private:
     QGroupBox* setUpUserProfileGB();
     QGroupBox* setUpLoginDataGB();
     QDialogButtonBox* setUpEditUserButtonBox();
-    QFormLayout* createNamedFormLayoutWithPolicy(const char* formName);
 
 // Model related variables
     std::size_t userID;
