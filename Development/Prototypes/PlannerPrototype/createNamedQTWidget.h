@@ -2,6 +2,7 @@
 #define CREATENAMEDQTWIDGET_H_
 
 #include <QWidget>
+#include <QFormLayout>
 #include <QLineEdit>
 
 template <typename WidgetType>
@@ -27,6 +28,8 @@ WidgetType *createNameQTWidgetWithText(const char* textContent, const char* obje
 }
 
 extern QLineEdit* createNamedLineEditWithWidthAndLength(const char* lineEditName, QWidget* parent=nullptr, std::size_t width=200, std::size_t charCount=20);
+
+extern QFormLayout* createNamedFormLayoutWithPolicy(const char* formName, QWidget* parent=nullptr, QFormLayout::FieldGrowthPolicy policy=QFormLayout::ExpandingFieldsGrow);
 
 #endif // CREATENAMEDQTWIDGET_H_
 

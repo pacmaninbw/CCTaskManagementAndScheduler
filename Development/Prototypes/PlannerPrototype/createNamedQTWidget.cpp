@@ -10,3 +10,12 @@ QLineEdit* createNamedLineEditWithWidthAndLength(const char* lineEditName, QWidg
     return newLineEdit;
 
 }
+
+QFormLayout* createNamedFormLayoutWithPolicy(const char* formName, QWidget* parent, QFormLayout::FieldGrowthPolicy policy)
+{
+    QFormLayout* newFormLayout = createNamedQTWidget<QFormLayout>(formName, parent);
+    newFormLayout->setFieldGrowthPolicy(policy);
+
+    return newFormLayout;
+
+}
