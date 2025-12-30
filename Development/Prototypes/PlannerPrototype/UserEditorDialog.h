@@ -4,7 +4,16 @@
 // Project Header Files
 
 // QT Header Files
+#include <QVariant>
+#include <QAbstractButton>
+#include <QApplication>
 #include <QDialog>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QLineEdit>
+#include <QVBoxLayout>
 
 // Standard C++ Header Files
 
@@ -23,7 +32,30 @@ signals:
 private slots:
 
 private:
+    void setUpUserEditorialogUi();
+    QGroupBox* setUpUserProfileGB();
+    QGroupBox* setUpLoginDataGB();
+    QDialogButtonBox* setUpEditUserButtonBox();
+    QFormLayout* createNamedFormLayoutWithPolicy(const char* formName);
 
+// Model related variables
+    std::size_t userID;
+
+// QT Widgets
+    QDialogButtonBox* editUserButtonBox;
+    QVBoxLayout* editUserLayout;
+    QGroupBox* userProfileGB;
+    QFormLayout* userProfileForm;
+    QLineEdit* firstNameLE;
+    QLineEdit* lastNameLE;
+    QLineEdit* middleNameLE;
+    QLineEdit* emailLE;
+    QGroupBox* loginDataGB;
+    QFormLayout* loginDataForm;
+    QLineEdit* userNameLE;
+    QLineEdit* passwordLE;
+
+    const int groupBoxSpacing = 60;
 };
 
 #endif // USEREDITORDIALOG_H
