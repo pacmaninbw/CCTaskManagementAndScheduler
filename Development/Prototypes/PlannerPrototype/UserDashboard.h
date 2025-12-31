@@ -13,17 +13,11 @@
 #include <QLineEdit>
 #include <QMainWindow>
 #include <QMenu>
-#include <QMenuBar>
-#include <QStatusBar>
+#include <QVBoxLayout>
 #include <QWidget>
 
 // Standard C++ Header Files
-
-QT_BEGIN_NAMESPACE
-namespace Ui {
-class UserDashboard;
-}
-QT_END_NAMESPACE
+#include <string>
 
 class UserDashboard : public QMainWindow
 {
@@ -43,6 +37,7 @@ private slots:
     void handleAddUserAction();
     void handleEditUserAction();
     void handleAddNoteAction();
+    void handleUserLoginAction();
     void handleEditNoteAction();
     void handleAddGoalAction();
     void handleEditGoalAction();
@@ -51,9 +46,19 @@ private slots:
 
 private:
     void setUpUserDashboardUi();
-    QMenuBar* buildDashboardMenuBar();
-    void connectMenuActions();
-    QGroupBox* fillUserIdBox();
+    void setUpDashboardMenuBar();
+    void setUpTaskMenu();
+    void setUpUserMenu();
+    void setUpNoteMenu();
+    void setUpGoalMenu();
+    void setUpScheduleItemMenu();
+    QGroupBox* setUpUserIdBox();
+    QHBoxLayout* setUpPerDayLayout();
+    QGroupBox* setUpPerDayTaskGB();
+    QGroupBox* setUpPerDayScheduleGB();
+    QGroupBox* setUpPerDayNotesGB();
+    void fakeFillGroupBoxLayout(std::string fieldPartialName, QVBoxLayout* layoutToFill);
+    void fillUserIdBoxData();
     QGroupBox* updateTaskList();
     QGroupBox* updateSchedule();
     QGroupBox* listNotes();
@@ -62,28 +67,43 @@ private:
     std::size_t userID;
 
     QMenu* udTaskMenu;
+    QMenu* udUserMenu;
+    QMenu* udNoteMenu;
+    QMenu* udGoalMenu;
+    QMenu* udScheduleItemMenu;
     QAction* udActionAddTask;
     QAction* udActionEditTask;
-    QAction* udActionAddSchedule_Item;
-    QAction* udActionEditSchedule_Item;
+    QAction* udActionAddScheduleItem;
+    QAction* udActionEditScheduleItem;
     QAction* udActionAddNote;
     QAction* udActionEditNote;
     QAction* udActionAddUserProfile;
     QAction* udActionEditUserProfile;
-    QAction* actionAdd_Goal;
+    QAction* udActionUserLogin;
+    QAction* udActionUserLogout;
+    QAction* udActionAddGoal;
+    QAction* udActionEditGoal;
     QWidget* centralwidget;
+    QGroupBox* udTaskListGB;
     QGroupBox* udScheduleGB;
     QGroupBox* udNotesGB;
     QGroupBox* userDashBoardIDGB;
-    QLineEdit* udUserFirstNameDispaly;
+    QLineEdit* udUserFirstNameDisplay;
     QLineEdit* udUserMiddleInitialDisplay;
     QLineEdit* udUserLastNameDisplay;
     QLineEdit* udUserNameDisplay;
     QDateEdit* udDateSelectorDE;
-    QGroupBox* udTaskListGB;
-    QMenuBar* udMenubar;
-    QMenu* menuUser_Dashboard;
-    QStatusBar *statusbar;
+
+/*
+ * Size and positioning constants.
+ */
+    const int dashboardWidth = 1000;
+    const int dashboardHeight = 720;
+    const int maxOjectWidth = static_cast<int>(dashboardWidth * 0.8);
+    const int perDayGroupBoxWidth = 300;
+    const int perDayGroupBoxHeight = 400;
+    const int perDayLineEditWidth = 280;
+
 };
 #endif // USERDASHBOARD_H
 

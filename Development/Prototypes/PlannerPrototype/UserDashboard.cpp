@@ -2,6 +2,7 @@
 #include "CommandLineParser.h"
 #include "createNamedQTWidget.h"
 #include "GoalEditorDialog.h"
+#include "LoginDialog.h"
 #include "NoteEditorDialog.h"
 #include "ScheduleItemEditorDialog.h"
 #include "TaskEditorDialog.h"
@@ -9,11 +10,15 @@
 #include "UserEditorDialog.h"
 
 // QT Header Files
-
+#include <QFormLayout>
+#include <QHBoxLayout>
+#include <QMenuBar>
+#include <QVBoxLayout>
+#include <QString>
 
 // Standard C++ Header Files
-
-#include "UserDashboard.h"
+#include <format>
+#include <string>
 
 UserDashboard::UserDashboard(QWidget *parent)
     : QMainWindow(parent),
@@ -31,11 +36,225 @@ UserDashboard::~UserDashboard()
 
 void UserDashboard::setUpUserDashboardUi()
 {
+    setUpDashboardMenuBar();
+
     centralwidget = new QWidget(this);
     centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
+
+    resize(dashboardWidth, dashboardHeight);
+
+    QVBoxLayout* dashboardLayout = new QVBoxLayout(centralwidget);
+    dashboardLayout->setObjectName("dashboardLayout");
+
+    dashboardLayout->addWidget(setUpUserIdBox(), 0, Qt::AlignHCenter);
+
+    QFormLayout* dashboardDateForm = createNamedFormLayoutWithPolicy("dashboardDateForm");
+
+    udDateSelectorDE = new QDateEdit(QDate::currentDate(), this);
+
+    dashboardDateForm->addRow("Date:", udDateSelectorDE);
+
+    dashboardDateForm->setFormAlignment(Qt::AlignHCenter);
+
+    dashboardLayout->addLayout(dashboardDateForm);
+
+    dashboardLayout->addLayout(setUpPerDayLayout());
+
     setCentralWidget(centralwidget);
 
     setWindowTitle(progNameStr);
+}
+
+void UserDashboard::setUpDashboardMenuBar()
+{
+    setUpTaskMenu();
+    setUpUserMenu();
+    setUpNoteMenu();
+    setUpGoalMenu();
+    setUpScheduleItemMenu();
+}
+
+void UserDashboard::setUpTaskMenu()
+{
+    udActionAddTask = new QAction("Add Task", this);
+    udActionAddTask->setStatusTip(tr("Create a new Task"));
+    connect(udActionAddTask, &QAction::triggered, this, &UserDashboard::handleAddTaskAction);
+
+    udActionEditTask = new QAction("Edit Task", this);
+    udActionEditTask->setStatusTip(tr("Edit a Task"));
+    connect(udActionEditTask, &QAction::triggered, this, &UserDashboard::handleEditTaskAction);
+
+    udTaskMenu = menuBar()->addMenu("&Task");
+    udTaskMenu->addAction(udActionAddTask);
+    udTaskMenu->addAction(udActionEditTask);
+    udTaskMenu->addSeparator();
+}
+
+void UserDashboard::setUpUserMenu()
+{
+    udActionUserLogin = new QAction("Login", this);
+    udActionUserLogin->setStatusTip(tr("Login as a user"));
+    connect(udActionUserLogin, &QAction::triggered, this, &UserDashboard::handleUserLoginAction);
+
+    udActionAddUserProfile = new QAction("Add User", this);
+    udActionAddUserProfile->setStatusTip(tr("Create a new User"));
+    connect(udActionAddUserProfile, &QAction::triggered, this, &UserDashboard::handleAddUserAction);
+
+    udActionEditUserProfile = new QAction("Edit User", this);
+    udActionEditUserProfile->setStatusTip(tr("Edit your profile"));
+    connect(udActionEditUserProfile, &QAction::triggered, this, &UserDashboard::handleEditUserAction);
+
+    udActionUserLogout = new QAction("Logout", this);
+    udActionUserLogout->setStatusTip(tr("Exit the planner app"));
+    connect(udActionUserLogout, &QAction::triggered, this, &QApplication::quit);
+
+    udUserMenu = menuBar()->addMenu("&User");
+    udUserMenu->addAction(udActionUserLogin);
+    udUserMenu->addAction(udActionAddUserProfile);
+    udUserMenu->addAction(udActionEditUserProfile);
+    udUserMenu->addAction(udActionUserLogout);
+    udUserMenu->addSeparator();
+}
+
+void UserDashboard::setUpNoteMenu()
+{
+    udActionAddNote = new QAction("Add Note", this);
+    udActionAddNote->setStatusTip(tr("Create a new Note"));
+    connect(udActionAddNote, &QAction::triggered, this, &UserDashboard::handleAddNoteAction);
+
+    udActionEditNote = new QAction("Edit Note", this);
+    udActionEditNote->setStatusTip(tr("Edit a Note"));
+    connect(udActionEditNote, &QAction::triggered, this, &UserDashboard::handleEditNoteAction);
+
+    udNoteMenu = menuBar()->addMenu("&Note");
+    udNoteMenu->addAction(udActionAddNote);
+    udNoteMenu->addAction(udActionEditNote);
+    udNoteMenu->addSeparator();
+}
+
+void UserDashboard::setUpGoalMenu()
+{
+    udActionAddGoal = new QAction("Add Goal", this);
+    udActionAddGoal->setStatusTip(tr("Create a new Goal"));
+    connect(udActionAddGoal, &QAction::triggered, this, &UserDashboard::handleAddGoalAction);
+
+    udActionEditGoal = new QAction("Edit Goal", this);
+    udActionEditGoal->setStatusTip(tr("Edit a Goal"));
+    connect(udActionEditGoal, &QAction::triggered, this, &UserDashboard::handleEditGoalAction);
+
+    udGoalMenu = menuBar()->addMenu("&Goal");
+    udGoalMenu->addAction(udActionAddGoal);
+    udGoalMenu->addAction(udActionEditGoal);
+    udGoalMenu->addSeparator();
+}
+
+void UserDashboard::setUpScheduleItemMenu()
+{
+    udActionAddScheduleItem = new QAction("Add to Schedule", this);
+    udActionAddScheduleItem->setStatusTip(tr("Add an item to your schedule"));
+    connect(udActionAddScheduleItem, &QAction::triggered, this, &UserDashboard::handleAddScheduleItemAction);
+
+    udActionEditTask = new QAction("Edit Schedule", this);
+    udActionEditTask->setStatusTip(tr("Edit a scheduled event"));
+    connect(udActionEditTask, &QAction::triggered, this, &UserDashboard::handleEditScheduleItemAction);
+
+    udScheduleItemMenu = menuBar()->addMenu("&Scheduling");
+    udScheduleItemMenu->addAction(udActionAddScheduleItem);
+    udScheduleItemMenu->addAction(udActionEditTask);
+    udScheduleItemMenu->addSeparator();
+}
+
+QGroupBox *UserDashboard::setUpUserIdBox()
+{
+    userDashBoardIDGB = new QGroupBox("User ID:", centralwidget);
+    QHBoxLayout* uiBoxLaytout = new QHBoxLayout;
+    uiBoxLaytout->setObjectName("uiBoxLaytout");
+
+    udUserFirstNameDisplay = createNamedLineEditWithWidthAndLength("udUserFirstNameDisplay", this);
+    uiBoxLaytout->addWidget(udUserFirstNameDisplay);
+
+    udUserMiddleInitialDisplay = createNamedLineEditWithWidthAndLength("udUserMiddleInitialDisplay", this);
+    uiBoxLaytout->addWidget(udUserMiddleInitialDisplay);
+
+    udUserLastNameDisplay = createNamedLineEditWithWidthAndLength("udUserLastNameDisplay", this);
+    uiBoxLaytout->addWidget(udUserLastNameDisplay);
+
+    udUserNameDisplay = createNamedLineEditWithWidthAndLength("udUserNameDisplay", this);
+    uiBoxLaytout->addWidget(udUserNameDisplay);
+
+    userDashBoardIDGB->setLayout(uiBoxLaytout);
+    userDashBoardIDGB->setGeometry(QRect(10, 10, maxOjectWidth, 90));
+    userDashBoardIDGB->setAlignment(Qt::AlignCenter);
+
+    return userDashBoardIDGB;
+}
+
+QHBoxLayout *UserDashboard::setUpPerDayLayout()
+{
+    QHBoxLayout* perDayLayout = new QHBoxLayout;
+    perDayLayout->setObjectName("perDayLayout");
+
+    perDayLayout->addWidget(setUpPerDayTaskGB());
+
+    perDayLayout->addWidget(setUpPerDayScheduleGB());
+
+    perDayLayout->addWidget(setUpPerDayNotesGB());
+
+    return perDayLayout;
+}
+
+QGroupBox *UserDashboard::setUpPerDayTaskGB()
+{
+    udTaskListGB = new QGroupBox("Tasks:");
+    QVBoxLayout* taskLisGBLayout = new QVBoxLayout;
+
+    fakeFillGroupBoxLayout("Task", taskLisGBLayout);
+
+    udTaskListGB->setLayout(taskLisGBLayout);
+
+    udTaskListGB->setAlignment(Qt::AlignCenter);
+
+    return udTaskListGB;
+}
+
+QGroupBox *UserDashboard::setUpPerDayScheduleGB()
+{
+    udScheduleGB = new QGroupBox("Schedule:");
+    QVBoxLayout* scheduleGBLayout = new QVBoxLayout;
+
+    fakeFillGroupBoxLayout("ScheduleItem", scheduleGBLayout);
+
+    udScheduleGB->setLayout(scheduleGBLayout);
+
+    udScheduleGB->setAlignment(Qt::AlignCenter);
+
+    return udScheduleGB;
+}
+
+QGroupBox *UserDashboard::setUpPerDayNotesGB()
+{
+    udNotesGB = new QGroupBox("Notes:");
+    QVBoxLayout* notesGBLayOut = new QVBoxLayout;
+
+    fakeFillGroupBoxLayout("Note", notesGBLayOut);
+
+    udNotesGB->setLayout(notesGBLayOut);
+
+    udNotesGB->setAlignment(Qt::AlignCenter);
+
+    return udNotesGB;
+}
+
+void UserDashboard::fakeFillGroupBoxLayout(std::string fieldPartialName, QVBoxLayout *layoutToFill)
+{
+    for (int i = 0; i < 15; ++i)
+    {
+        std::string listElementObjectName(std::format("tempLineEdit{}{}", fieldPartialName, i));
+        QLineEdit* tempElement = createNamedLineEditWithWidthAndLength(listElementObjectName.c_str(), this, perDayLineEditWidth);
+        QString qstr = QString::fromStdString(fieldPartialName);
+        tempElement->setText(qstr);
+        layoutToFill->addWidget(tempElement);
+    }
 }
 
 void UserDashboard::handleAddTaskAction()
@@ -71,6 +290,13 @@ void UserDashboard::handleAddNoteAction()
     NoteEditorDialog addNoteDialog(this);
 
     addNoteDialog.exec();
+}
+
+void UserDashboard::handleUserLoginAction()
+{
+    LoginDialog userLogin(this);
+
+    userLogin.exec();
 }
 
 void UserDashboard::handleEditNoteAction()
