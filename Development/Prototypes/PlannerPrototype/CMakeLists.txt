@@ -61,7 +61,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         ${PROJECT_MODEL_SOUCES}
-        UserEditordialog.ui
         DataBaseConnectionDialog.h DataBaseConnectionDialog.cpp DataBaseConnectionDialog.ui
         TaskEditorDialog.h TaskEditorDialog.cpp TaskEditorDialog.ui
         UserEditorDialog.h UserEditorDialog.cpp UserEditorDialog.ui
