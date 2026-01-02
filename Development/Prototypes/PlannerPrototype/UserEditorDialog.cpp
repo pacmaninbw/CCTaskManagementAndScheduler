@@ -56,7 +56,7 @@ QGroupBox* UserEditorDialog::setUpUserProfileGB()
 {
     userProfileGB = new QGroupBox("User Profile:");
 
-    userProfileForm = createNamedFormLayoutWithPolicy("userProfileForm", this);
+    userProfileForm = createNamedFormLayoutWithPolicy("userProfileForm", userProfileGB);
 
     firstNameLE = createNamedLineEditWithWidthAndLength("firstNameLE", this);
     userProfileForm->addRow("FirstName:", firstNameLE);
@@ -79,7 +79,7 @@ QGroupBox* UserEditorDialog::setUpLoginDataGB()
 {
     loginDataGB = new QGroupBox("User Login:");
 
-    loginDataForm = createNamedFormLayoutWithPolicy("loginDataForm", this);
+    loginDataForm = createNamedFormLayoutWithPolicy("loginDataForm", loginDataGB);
 
     userNameLE = createNamedLineEditWithWidthAndLength("userNameLE", this);
     loginDataForm->addRow("User Name:", userNameLE);
@@ -100,6 +100,9 @@ QDialogButtonBox *UserEditorDialog::setUpEditUserButtonBox()
     buttonBox->setGeometry(QRect(0, 500, 341, 32));
     buttonBox->setOrientation(Qt::Horizontal);
     buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
+
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
     return buttonBox;
 }
