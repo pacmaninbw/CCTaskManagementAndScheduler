@@ -19,3 +19,22 @@ QFormLayout* createNamedFormLayoutWithPolicy(const char* formName, QWidget* pare
     return newFormLayout;
 
 }
+
+QDateEdit *createNamedDateEditWithCalendarPopUpCurrentDate(const char *formName, QWidget *parent)
+{
+    const int TwoWeeks = 14;
+    const int OneYear = 365;
+
+    QDateEdit* newDateEdit = new QDateEdit(QDate::currentDate(), parent);
+    newDateEdit->setObjectName(formName);
+
+    newDateEdit->setCalendarPopup(true);
+
+    newDateEdit->setDisplayFormat("MM/dd/yyyy");
+    
+    newDateEdit->setMinimumDate(QDate::currentDate().addDays(-TwoWeeks));
+    
+    newDateEdit->setMaximumDate(QDate::currentDate().addDays(OneYear));
+
+    return newDateEdit;
+}
