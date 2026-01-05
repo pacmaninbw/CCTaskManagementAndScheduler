@@ -259,14 +259,16 @@ void UserDashboard::fakeFillGroupBoxLayout(std::string fieldPartialName, QVBoxLa
 
 void UserDashboard::handleAddTaskAction()
 {
-    TaskEditorDialog addTaskDialog(this);
+    TaskEditorDialog addTaskDialog(this, userID);
 
     addTaskDialog.exec();
 }
 
 void UserDashboard::handleEditTaskAction()
 {
-    TaskEditorDialog editTaskDialog(this);
+    std::size_t taskID = 1;
+
+    TaskEditorDialog editTaskDialog(this, userID, taskID);
 
     editTaskDialog.exec();
 }
@@ -280,14 +282,14 @@ void UserDashboard::handleAddUserAction()
 
 void UserDashboard::handleEditUserAction()
 {
-    UserEditorDialog editUserDialog(this);
+    UserEditorDialog editUserDialog(this, userID);
 
     editUserDialog.exec();
 }
 
 void UserDashboard::handleAddNoteAction()
 {
-    NoteEditorDialog addNoteDialog(this);
+    NoteEditorDialog addNoteDialog(this, userID);
 
     addNoteDialog.exec();
 }
@@ -301,35 +303,40 @@ void UserDashboard::handleUserLoginAction()
 
 void UserDashboard::handleEditNoteAction()
 {
-    NoteEditorDialog editNoteDialog(this);
+    std::size_t noteID = 1;
+
+    NoteEditorDialog editNoteDialog(this, userID, noteID);
 
     editNoteDialog.exec();
 }
 
 void UserDashboard::handleAddGoalAction()
 {
-    GoalEditorDialog addGoalDialog(this);
+    GoalEditorDialog addGoalDialog(this, userID);
 
     addGoalDialog.exec();
 }
 
 void UserDashboard::handleEditGoalAction()
 {
-    GoalEditorDialog editGoalDialog(this);
+    std::size_t goalID = 1;
+
+    GoalEditorDialog editGoalDialog(this, userID, goalID);
 
     editGoalDialog.exec();
 }
 
 void UserDashboard::handleAddScheduleItemAction()
 {
-    ScheduleItemEditorDialog addScheduleItemDialog(this);
+    ScheduleItemEditorDialog addScheduleItemDialog(this, userID);
 
     addScheduleItemDialog.exec();
 }
 
 void UserDashboard::handleEditScheduleItemAction()
 {
-    ScheduleItemEditorDialog editScheduleItemDialog(this);
+    std::size_t scheduleItemID = 1;
+    ScheduleItemEditorDialog editScheduleItemDialog(this, userID, scheduleItemID;
 
     editScheduleItemDialog.exec();
 }
