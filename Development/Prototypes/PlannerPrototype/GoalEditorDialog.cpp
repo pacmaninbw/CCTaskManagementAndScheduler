@@ -19,8 +19,9 @@
 // Standard C++ Header Files
 
 
-GoalEditorDialog::GoalEditorDialog(QWidget *parent, std::size_t goalId)
+GoalEditorDialog::GoalEditorDialog(QWidget *parent, std::size_t userId, std::size_t goalId)
     : QDialog(parent),
+    userID{userId},
     goalID{goalId}
 {
     setUpGoalEditorDialogUI();

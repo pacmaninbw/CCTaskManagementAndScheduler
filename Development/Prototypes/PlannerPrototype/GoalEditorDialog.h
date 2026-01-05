@@ -22,7 +22,7 @@ class GoalEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit GoalEditorDialog(QWidget* parent = nullptr, std::size_t goalId=0);
+    explicit GoalEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, std::size_t goalId=0);
     ~GoalEditorDialog();
 
 public slots:
@@ -37,6 +37,7 @@ private:
     QTextEdit* setUpGoalDescriptionTextEdit();
     QDialogButtonBox* setUpGoalEditorDialogButtonBox();
 
+    std::size_t userID;
     std::size_t goalID;
     QDialogButtonBox* buttonBox;
     QGroupBox* editGoalGB;
