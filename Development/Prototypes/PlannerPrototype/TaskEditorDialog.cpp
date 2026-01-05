@@ -99,34 +99,47 @@ void TaskEditorDialog::on_editTaskChangeAssignedUserPB_Clicked()
 
 void TaskEditorDialog::setUpTaskEditorUI()
 {
-
     editTaskMainLayout = new QVBoxLayout(this);
     editTaskMainLayout->setObjectName("editTaskMainLayout");
 
-    editTaskMainLayout->addWidget(setUpTaskCreatorGroupBox(), 0, Qt::AlignHCenter);
+    QHBoxLayout* userSectionLayout = new QHBoxLayout;
+    userSectionLayout->setObjectName("userSectionLayout");
 
-    editTaskMainLayout->addWidget(setUpTaskAssigneeGroupBox(), 0, Qt::AlignHCenter);
+    userSectionLayout->addWidget(setUpTaskCreatorGroupBox(), 0, Qt::AlignLeft);
+
+    userSectionLayout->addWidget(setUpTaskAssigneeGroupBox(), 0, Qt::AlignRight);
 
     editTaskMainLayout->addWidget(setUpTaskDescriptionAndStatusGroupBox(), 0, Qt::AlignHCenter);
 
-    editTaskMainLayout->addWidget(setUpParentTaskGroupBox(), 0, Qt::AlignHCenter);
+    editTaskMainLayout->addLayout(userSectionLayout);
 
-    editTaskMainLayout->addWidget(setUpTaskDatesGroupBox(), 0, Qt::AlignHCenter);
+    QHBoxLayout* DateAndRelatedTasksSection = new QHBoxLayout;
+    DateAndRelatedTasksSection->setObjectName("DateAndRelatedTasksSection");
 
-    editTaskMainLayout->addWidget(setUpTaskEfforGroupBox(), 0, Qt::AlignHCenter);
+    DateAndRelatedTasksSection->addWidget(setUpTaskDatesGroupBox(), 0, Qt::AlignLeft);
 
-    editTaskMainLayout->addWidget(setUpTaskPriorityGroupBox(), 0, Qt::AlignHCenter);
+    DateAndRelatedTasksSection->addWidget(setUpRelatedTasksGroupBox(), 0, Qt::AlignRight);
 
-    editTaskAddDependenciesPB = createNameQTWidgetWithText<QPushButton>("Add Dependencies", "editTaskAddDependenciesPB", this);
+    editTaskMainLayout->addLayout(DateAndRelatedTasksSection);
 
-    editTaskPersonalCB = createNameQTWidgetWithText<QCheckBox>("Personal", "editTaskPersonalCB", this);
-    editTaskMainLayout->addWidget(editTaskPersonalCB, 0, Qt::AlignHCenter);
+    QHBoxLayout* efforAndPrioritySectionLayout = new QHBoxLayout;
+    efforAndPrioritySectionLayout->setObjectName("efforAndPrioritySectionLayout");
 
-    editTaskMainLayout->addWidget(editTaskAddDependenciesPB, 0, Qt::AlignHCenter);
+    efforAndPrioritySectionLayout->addWidget(setUpTaskEfforGroupBox(), 0, Qt::AlignLeft);
+
+    efforAndPrioritySectionLayout->addWidget(setUpTaskPriorityGroupBox(), 0, Qt::AlignRight);
+
+    editTaskMainLayout->addLayout(efforAndPrioritySectionLayout);
+
     editTaskMainLayout->addWidget(setUpEditTaskButtonBox(), 0, Qt::AlignHCenter);
+
+    editTaskMainLayout->setContentsMargins(20, 20, 20, 20);
+    editTaskMainLayout->setSpacing(15);
 
     setLayout(editTaskMainLayout);
 
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    
     adjustSize();
 
     QString titleStr = taskID? "Edit Task Dialog" : "Add Task Dialog";
@@ -182,9 +195,9 @@ QGroupBox *TaskEditorDialog::setUpTaskAssigneeGroupBox()
     return editTaskAssignedToGB;
 }
 
-QGroupBox *TaskEditorDialog::setUpParentTaskGroupBox()
+QGroupBox *TaskEditorDialog::setUpRelatedTasksGroupBox()
 {
-    editTaskParentTaskGB = new QGroupBox("Parent Task:", this);
+    editTaskParentTaskGB = new QGroupBox("Related Tasks:", this);
     editTaskParentTaskGB->setObjectName("editTaskParentTaskGB");
     editTaskParentTaskGB->setAlignment(Qt::AlignHCenter);
 
@@ -199,6 +212,14 @@ QGroupBox *TaskEditorDialog::setUpParentTaskGroupBox()
 
     connect(editTaskSelectParentPB, &QPushButton::clicked, this,
             &TaskEditorDialog::on_editTaskSelectParentPB_Clicked);
+
+    editTaskAddDependenciesPB = createNameQTWidgetWithText<QPushButton>(
+        "Add Dependencies", "editTaskAddDependenciesPB", this);
+    editTaskParentForm->addWidget(editTaskAddDependenciesPB);
+
+    connect(editTaskAddDependenciesPB, &QPushButton::clicked, this,
+            &TaskEditorDialog::on_editTaskAddDependenciesPB_Clicked);
+
 
     editTaskParentTaskGB->setLayout(editTaskParentForm);
 
@@ -227,7 +248,11 @@ QGroupBox *TaskEditorDialog::setUpTaskDescriptionAndStatusGroupBox()
     editTaskStatusSelectorCB->addItem("Complete", 4);
     editTaskDescriptionAndStatusForm->addRow("Current Status:", editTaskStatusSelectorCB);
 
+    editTaskPersonalCB = createNameQTWidgetWithText<QCheckBox>("Personal", "editTaskPersonalCB", this);
+    editTaskDescriptionAndStatusForm->addWidget(editTaskPersonalCB);
+
     editTaskDescriptionAndStatusGB->setLayout(editTaskDescriptionAndStatusForm);
+
 
     return editTaskDescriptionAndStatusGB;
 }

@@ -43,7 +43,7 @@ private:
     void setUpTaskEditorUI();
     QGroupBox* setUpTaskCreatorGroupBox();
     QGroupBox* setUpTaskAssigneeGroupBox();
-    QGroupBox* setUpParentTaskGroupBox();
+    QGroupBox* setUpRelatedTasksGroupBox();
     QGroupBox* setUpTaskDescriptionAndStatusGroupBox();
     QGroupBox* setUpTaskDatesGroupBox();
     QGroupBox* setUpTaskEfforGroupBox();
@@ -88,10 +88,8 @@ private:
     QCheckBox* editTaskPersonalCB;
     QPushButton* editTaskAddDependenciesPB;
 
-    const int editTaskDialogWidth = 752;
-    const int editTaskDialogHeight = 665;
-    const int taskDescriptionTEWidth = 600;
-    const int taskDescriptionTEHeight = 80;
+    const int taskDescriptionTEWidth = 700;
+    const int taskDescriptionTEHeight = 60;
 };
 
 #endif // TASKEDITORDIALOG_H
