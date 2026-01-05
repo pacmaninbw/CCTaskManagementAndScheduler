@@ -22,7 +22,7 @@ class UserEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit UserEditorDialog(QWidget *parent = nullptr);
+    explicit UserEditorDialog(QWidget *parent = nullptr, std::size_t userId=0);
     ~UserEditorDialog();
 
 public slots:

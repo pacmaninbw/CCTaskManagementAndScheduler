@@ -22,9 +22,9 @@
 
 // Standard C++ Header Files
 
-UserEditorDialog::UserEditorDialog(QWidget *parent)
+UserEditorDialog::UserEditorDialog(QWidget *parent, std::size_t userId)
     : QDialog(parent),
-    userID{0}
+    userID{userId}
 {
     setUpUserEditorialogUi();
 }
@@ -33,6 +33,7 @@ UserEditorDialog::~UserEditorDialog()
 {
 
 }
+
 void UserEditorDialog::setUpUserEditorialogUi()
 {
     editUserLayout = createNamedQTWidget<QVBoxLayout>("editUserLayout", this);
