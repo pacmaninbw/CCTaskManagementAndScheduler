@@ -11,6 +11,7 @@
 #include <QDialogButtonBox>
 #include <QGroupBox>
 #include <QTextEdit>
+#include <QVBoxLayout>
 
 // Standard C++ Header Files
 
@@ -36,7 +37,12 @@ private:
     std::size_t noteID;
     QDialogButtonBox* buttonBox;
     QGroupBox* editNoteEnterContentGB;
+    QVBoxLayout* editNoteLayOut;
     QTextEdit* editNoteContentTE;
+
+    const int minNoteContentWidth = 60;
+    const int maxNoteContentWidth = 90;
+    const int noteLineCount = 5;
 };
 
 #endif // NOTEEDITORDIALOG_H

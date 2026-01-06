@@ -1,7 +1,9 @@
 // Project Header Files
+#include "commonQTWidgetsForApp.h"
 #include "NoteEditorDialog.h"
 
 // QT Header Files
+#include <QFormLayout>
 
 // Standard C++ Header Files
 
@@ -21,21 +23,27 @@ NoteEditorDialog::~NoteEditorDialog()
 
 void NoteEditorDialog::setUpNoteEditorUI()
 {
-    resize(691, 267);
+
+    editNoteLayOut = new QVBoxLayout(this);
+    editNoteLayOut->setObjectName("editNoteLayOut");
+
+    editNoteContentTE = cqtfa_flixbleTextEditEbasedOnCharCount("editNoteContentTE", nullptr, 60, 90, 4);
+
+    QFormLayout* noteForm = cqtfa_FormLayoutWithPolicy("NoteForm", nullptr);
+
+    noteForm->addRow("Content:", editNoteContentTE);
+
+    editNoteLayOut->addLayout(noteForm);
+
+    editNoteLayOut->addWidget(setUpEditNoteButtonBox(), 0, Qt::AlignHCenter);
+
+    setLayout(editNoteLayOut);
 
     QString titleString = noteID? "Edit Note" : "Add Note";
 
-    editNoteEnterContentGB = new QGroupBox(titleString + " Content", this);
-    editNoteEnterContentGB->setObjectName("editNoteEnterContentGB");
-    editNoteEnterContentGB->setGeometry(QRect(30, 30, 600, 160));
-
-    editNoteContentTE = new QTextEdit(editNoteEnterContentGB);
-    editNoteContentTE->setObjectName("editNoteContentTE");
-    editNoteContentTE->setGeometry(QRect(10, 30, 581, 121));
-
-    setUpEditNoteButtonBox();
-
     setWindowTitle(titleString + " Dialog");
+
+    adjustSize();
 }
 
 QDialogButtonBox* NoteEditorDialog::setUpEditNoteButtonBox()
@@ -43,7 +51,7 @@ QDialogButtonBox* NoteEditorDialog::setUpEditNoteButtonBox()
     QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
 
     buttonBox->setObjectName(QString::fromUtf8("editNoteButtonBox"));
-    buttonBox->setGeometry(QRect(30, 220, 341, 32));
+    buttonBox->setGeometry(QRect(30, 30, 341, 32));
     buttonBox->setOrientation(Qt::Horizontal);
     buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
 
