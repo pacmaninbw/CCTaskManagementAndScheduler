@@ -99,6 +99,7 @@ private:
  */
     const int dashboardWidth = 1000;
     const int dashboardHeight = 720;
+    const int userNameWidth = 40;
     const int maxOjectWidth = static_cast<int>(dashboardWidth * 0.8);
     const int perDayGroupBoxWidth = 300;
     const int perDayGroupBoxHeight = 400;

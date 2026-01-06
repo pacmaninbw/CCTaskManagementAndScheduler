@@ -170,16 +170,16 @@ QGroupBox *UserDashboard::setUpUserIdBox()
     QHBoxLayout* uiBoxLaytout = new QHBoxLayout;
     uiBoxLaytout->setObjectName("uiBoxLaytout");
 
-    udUserFirstNameDisplay = cqtfa_LineEditWithWidthAndLength("udUserFirstNameDisplay", this);
+    udUserFirstNameDisplay = cqtfa_LineEditFixedWidthByCharCount("udUserFirstNameDisplay", userDashBoardIDGB, userNameWidth);
     uiBoxLaytout->addWidget(udUserFirstNameDisplay);
 
-    udUserMiddleInitialDisplay = cqtfa_LineEditWithWidthAndLength("udUserMiddleInitialDisplay", this);
+    udUserMiddleInitialDisplay = cqtfa_LineEditFixedWidthByCharCount("udUserMiddleInitialDisplay", userDashBoardIDGB, userNameWidth / 4);
     uiBoxLaytout->addWidget(udUserMiddleInitialDisplay);
 
-    udUserLastNameDisplay = cqtfa_LineEditWithWidthAndLength("udUserLastNameDisplay", this);
+    udUserLastNameDisplay = cqtfa_LineEditFixedWidthByCharCount("udUserLastNameDisplay", userDashBoardIDGB, userNameWidth);
     uiBoxLaytout->addWidget(udUserLastNameDisplay);
 
-    udUserNameDisplay = cqtfa_LineEditWithWidthAndLength("udUserNameDisplay", this);
+    udUserNameDisplay = cqtfa_LineEditFixedWidthByCharCount("udUserNameDisplay", userDashBoardIDGB, userNameWidth);
     uiBoxLaytout->addWidget(udUserNameDisplay);
 
     userDashBoardIDGB->setLayout(uiBoxLaytout);
