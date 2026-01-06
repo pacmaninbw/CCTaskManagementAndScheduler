@@ -71,3 +71,25 @@ QTextEdit *cqtfa_flexibleWidthTextEdit(const char *objName, QWidget *parent, int
 
     return newTextEdit;
 }
+
+QTextEdit *cqtfa_flixbleTextEditEbasedOnCharCount(const char *objName, QWidget *parent, int minCharCount, int maxCharCount, int rowCount)
+{
+    QTextEdit* newTextEdit = new QTextEdit(parent);
+    QFontMetrics qfm(newTextEdit->font());
+
+    newTextEdit->setObjectName(objName);
+
+    newTextEdit->setObjectName(objName);
+
+    newTextEdit->setMinimumHeight(qfm.height() * rowCount);
+
+    newTextEdit->setMaximumHeight(qfm.height() * (rowCount + 2));
+
+    newTextEdit->setMinimumWidth(qfm.horizontalAdvance(QString(minCharCount, 'x')));
+
+    newTextEdit->setMaximumWidth(qfm.horizontalAdvance(QString(maxCharCount, 'x')));
+
+    newTextEdit->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+
+    return newTextEdit;
+}

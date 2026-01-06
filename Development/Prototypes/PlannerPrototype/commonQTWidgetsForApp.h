@@ -43,6 +43,9 @@ WidgetType *cqtfa_QTWidgetWithText(const char* textContent, const char* objectNa
 
 extern QLineEdit* cqtfa_LineEditWithWidthAndLength(const char* lineEditName, QWidget* parent, std::size_t width=200, std::size_t charCount=20);
 
+/*
+ * Provides a fixed width QLineEdit based on the maximum number of characters expected.
+ */
 extern QLineEdit* cqtfa_LineEditFixedWidthByCharCount(const char* objName, QWidget* parent, int charcount);
 
 extern QFormLayout* cqtfa_FormLayoutWithPolicy(const char* formName, QWidget* parent,
@@ -52,6 +55,7 @@ extern QDateEdit* cqtfa_DateEditWithCalendarPopUpCurrentDate(const char* formNam
 
 extern QTextEdit* cqtfa_flexibleWidthTextEdit(const char* objName, QWidget* parent, int boxWidthMin, int boxWidthMax, int rowCount);
 
+extern QTextEdit* cqtfa_flixbleTextEditEbasedOnCharCount(const char* objName, QWidget* parent, int minCharCount, int maxCharCount, int rowCount);
 
 #endif // COMMONQTWIDGETSFORAPP_H_
 
