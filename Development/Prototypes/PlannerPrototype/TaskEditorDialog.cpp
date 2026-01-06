@@ -1,5 +1,5 @@
 // Project Header Files
-#include "createNamedQTWidget.h"
+#include "commonQTWidgetsForApp.h"
 #include "TaskEditorDialog.h"
 
 // QT Header Files
@@ -152,14 +152,14 @@ QGroupBox *TaskEditorDialog::setUpTaskCreatorGroupBox()
     editTaskCreatorGB->setObjectName("editTaskCreatorGB");
     editTaskCreatorGB->setAlignment(Qt::AlignHCenter);
 
-    editTaskCreatorForm = createNamedFormLayoutWithPolicy("editTaskCreatorForm", editTaskCreatorGB);
+    editTaskCreatorForm = cqtfa_FormLayoutWithPolicy("editTaskCreatorForm", editTaskCreatorGB);
 
     editTaskCreatorFirstNameDisplay =
-        createNamedLineEditWithWidthAndLength("editTaskCreatorFirstNameDisplay", editTaskCreatorGB);
+        cqtfa_LineEditWithWidthAndLength("editTaskCreatorFirstNameDisplay", editTaskCreatorGB);
     editTaskCreatorForm->addRow("First Name:", editTaskCreatorFirstNameDisplay);
 
     editTaskCreatorLastNameDisplay =
-        createNamedLineEditWithWidthAndLength("editTaskCreatorLastNameDisplay", editTaskCreatorGB);
+        cqtfa_LineEditWithWidthAndLength("editTaskCreatorLastNameDisplay", editTaskCreatorGB);
     editTaskCreatorForm->addRow("Last Name:", editTaskCreatorLastNameDisplay);
 
     editTaskCreatorGB->setLayout(editTaskCreatorForm);
@@ -173,17 +173,17 @@ QGroupBox *TaskEditorDialog::setUpTaskAssigneeGroupBox()
     editTaskAssignedToGB->setObjectName("editTaskAssignedToGB");
     editTaskAssignedToGB->setAlignment(Qt::AlignHCenter);
 
-    editTaskAssigneeForm = createNamedFormLayoutWithPolicy("editTaskAssigneeForm", editTaskAssignedToGB);
+    editTaskAssigneeForm = cqtfa_FormLayoutWithPolicy("editTaskAssigneeForm", editTaskAssignedToGB);
 
-    editTaskAssignedToFirstNameDisplay = createNamedLineEditWithWidthAndLength(
+    editTaskAssignedToFirstNameDisplay = cqtfa_LineEditWithWidthAndLength(
         "editTaskAssignedToFirstNameDisplay", editTaskAssignedToGB);
     editTaskAssigneeForm->addRow("First Name:", editTaskAssignedToFirstNameDisplay);
 
-    editTaskAssignedToLastName = createNamedLineEditWithWidthAndLength(
+    editTaskAssignedToLastName = cqtfa_LineEditWithWidthAndLength(
         "editTaskAssignedToLastName", editTaskAssignedToGB);
     editTaskAssigneeForm->addRow("Last Name:", editTaskAssignedToLastName);
 
-    editTaskChangeAssignedUserPB = createNameQTWidgetWithText<QPushButton>(
+    editTaskChangeAssignedUserPB = cqtfa_QTWidgetWithText<QPushButton>(
         "Change Assigned User", "editTaskChangeAssignedUserPB", editTaskAssignedToGB);
     editTaskAssigneeForm->addWidget(editTaskChangeAssignedUserPB);
 
@@ -201,19 +201,19 @@ QGroupBox *TaskEditorDialog::setUpRelatedTasksGroupBox()
     editTaskParentTaskGB->setObjectName("editTaskParentTaskGB");
     editTaskParentTaskGB->setAlignment(Qt::AlignHCenter);
 
-    editTaskParentForm = createNamedFormLayoutWithPolicy("editTaskParentForm", editTaskParentTaskGB);
+    editTaskParentForm = cqtfa_FormLayoutWithPolicy("editTaskParentForm", editTaskParentTaskGB);
 
-    editTaskParentTaskDescriptionDisplay = createNamedLineEditWithWidthAndLength("", editTaskParentTaskGB);
+    editTaskParentTaskDescriptionDisplay = cqtfa_LineEditWithWidthAndLength("", editTaskParentTaskGB);
     editTaskParentForm->addRow("", editTaskParentTaskDescriptionDisplay);
 
-    editTaskSelectParentPB = createNameQTWidgetWithText<QPushButton>("Select Parent Task",
+    editTaskSelectParentPB = cqtfa_QTWidgetWithText<QPushButton>("Select Parent Task",
         "editTaskSelectParentPB" , editTaskParentTaskGB);
     editTaskParentForm->addWidget(editTaskSelectParentPB);
 
     connect(editTaskSelectParentPB, &QPushButton::clicked, this,
             &TaskEditorDialog::on_editTaskSelectParentPB_Clicked);
 
-    editTaskAddDependenciesPB = createNameQTWidgetWithText<QPushButton>(
+    editTaskAddDependenciesPB = cqtfa_QTWidgetWithText<QPushButton>(
         "Add Dependencies", "editTaskAddDependenciesPB", this);
     editTaskParentForm->addWidget(editTaskAddDependenciesPB);
 
@@ -232,10 +232,10 @@ QGroupBox *TaskEditorDialog::setUpTaskDescriptionAndStatusGroupBox()
     editTaskDescriptionAndStatusGB->setObjectName("editTaskDescriptionAndStatusGB");
     editTaskDescriptionAndStatusGB->setAlignment(Qt::AlignHCenter);
 
-    editTaskDescriptionAndStatusForm = createNamedFormLayoutWithPolicy(
+    editTaskDescriptionAndStatusForm = cqtfa_FormLayoutWithPolicy(
         "editTaskDescriptionAndStatusForm", editTaskDescriptionAndStatusGB);
 
-    editTaskDescriptionTE = createNamedQTWidget<QTextEdit>("editTaskDescriptionTE", editTaskDescriptionAndStatusGB);
+    editTaskDescriptionTE = cqtfa_QTWidget<QTextEdit>("editTaskDescriptionTE", editTaskDescriptionAndStatusGB);
     editTaskDescriptionTE->resize(taskDescriptionTEWidth, taskDescriptionTEHeight);
     editTaskDescriptionAndStatusForm->addRow("Task Description:", editTaskDescriptionTE);
 
@@ -248,7 +248,7 @@ QGroupBox *TaskEditorDialog::setUpTaskDescriptionAndStatusGroupBox()
     editTaskStatusSelectorCB->addItem("Complete", 4);
     editTaskDescriptionAndStatusForm->addRow("Current Status:", editTaskStatusSelectorCB);
 
-    editTaskPersonalCB = createNameQTWidgetWithText<QCheckBox>("Personal", "editTaskPersonalCB", this);
+    editTaskPersonalCB = cqtfa_QTWidgetWithText<QCheckBox>("Personal", "editTaskPersonalCB", this);
     editTaskDescriptionAndStatusForm->addWidget(editTaskPersonalCB);
 
     editTaskDescriptionAndStatusGB->setLayout(editTaskDescriptionAndStatusForm);
@@ -263,17 +263,17 @@ QGroupBox *TaskEditorDialog::setUpTaskDatesGroupBox()
     editTaskDatesGB->setObjectName("editTaskDatesGB");
     editTaskDatesGB->setAlignment(Qt::AlignHCenter);
 
-    editTaskDatesForm = createNamedFormLayoutWithPolicy("editTaskDatesForm", editTaskDatesGB);
+    editTaskDatesForm = cqtfa_FormLayoutWithPolicy("editTaskDatesForm", editTaskDatesGB);
 
-    editTaskDueDateSelectorDE = createNamedDateEditWithCalendarPopUpCurrentDate(
+    editTaskDueDateSelectorDE = cqtfa_DateEditWithCalendarPopUpCurrentDate(
         "editTaskDueDateSelectorDE", editTaskDatesGB);
     editTaskDatesForm->addRow("Due Date:", editTaskDueDateSelectorDE);
 
-    editTaskScheduledStartDE = createNamedDateEditWithCalendarPopUpCurrentDate(
+    editTaskScheduledStartDE = cqtfa_DateEditWithCalendarPopUpCurrentDate(
         "editTaskScheduledStartDE", editTaskDatesGB);
     editTaskDatesForm->addRow("Scheduled Start:", editTaskScheduledStartDE);
 
-    editTaskExpectedCompletionDE  = createNamedDateEditWithCalendarPopUpCurrentDate(
+    editTaskExpectedCompletionDE  = cqtfa_DateEditWithCalendarPopUpCurrentDate(
         "editTaskExpectedCompletionDE", editTaskDatesGB);
     editTaskDatesForm->addRow("Estimated Completion:", editTaskExpectedCompletionDE);
 
@@ -288,13 +288,13 @@ QGroupBox *TaskEditorDialog::setUpTaskEfforGroupBox()
     editTaskEffortGB->setObjectName("editTaskEffortGB");
     editTaskEffortGB->setAlignment(Qt::AlignHCenter);
 
-    editTaskEffortForm = createNamedFormLayoutWithPolicy("editTaskEffortForm", editTaskEffortGB);
+    editTaskEffortForm = cqtfa_FormLayoutWithPolicy("editTaskEffortForm", editTaskEffortGB);
 
-    editTaskEstimatedEffortLE = createNamedLineEditWithWidthAndLength(
+    editTaskEstimatedEffortLE = cqtfa_LineEditWithWidthAndLength(
         "editTaskEstimatedEffortLE", editTaskEffortGB, 113, 5);
     editTaskEffortForm->addRow("Estimated:", editTaskEstimatedEffortLE);
 
-    editTaskActualEffortLE = createNamedLineEditWithWidthAndLength(
+    editTaskActualEffortLE = cqtfa_LineEditWithWidthAndLength(
         "editTaskActualEffortLE", editTaskEffortGB, 113, 5);
     editTaskEffortForm->addRow("Actual:", editTaskActualEffortLE);
 
@@ -309,14 +309,14 @@ QGroupBox *TaskEditorDialog::setUpTaskPriorityGroupBox()
     editTaskPrioritiesGB->setObjectName("editTaskPrioritiesGB");
     editTaskPrioritiesGB->setAlignment(Qt::AlignHCenter);
 
-    editTaskPrioritiesForm = createNamedFormLayoutWithPolicy("editTaskPrioritiesForm",
+    editTaskPrioritiesForm = cqtfa_FormLayoutWithPolicy("editTaskPrioritiesForm",
         editTaskPrioritiesGB);
 
-    editTaskPriorityGroupLE = createNamedLineEditWithWidthAndLength(
+    editTaskPriorityGroupLE = cqtfa_LineEditWithWidthAndLength(
         "editTaskPriorityGroupLE", editTaskPrioritiesGB, 113, 5);
     editTaskPrioritiesForm->addRow("Priority Group:", editTaskPriorityGroupLE);
 
-    editTaskPriorityLE = createNamedLineEditWithWidthAndLength(
+    editTaskPriorityLE = cqtfa_LineEditWithWidthAndLength(
         "editTaskPriorityLE", editTaskPrioritiesGB, 113, 5);
     editTaskPrioritiesForm->addRow("Priority:", editTaskPriorityLE);
 

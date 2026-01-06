@@ -1,5 +1,5 @@
 // Project Header Files
-#include "createNamedQTWidget.h"
+#include "commonQTWidgetsForApp.h"
 #include "ScheduleItemEditorDialog.h"
 
 // QT Header Files
@@ -48,11 +48,11 @@ QGroupBox *ScheduleItemEditorDialog::setUpScheduleTimeControls()
     sied_scheduleTimeControls->setObjectName("sied_scheduleTimeControls");
     sied_scheduleTimeControls->setAlignment(Qt::AlignHCenter);
 
-    seid_groupBoxLayout = createNamedFormLayoutWithPolicy("seid_groupBoxLayout", sied_scheduleTimeControls);
+    seid_groupBoxLayout = cqtfa_FormLayoutWithPolicy("seid_groupBoxLayout", sied_scheduleTimeControls);
 
     if (scheduleItemID < 1)
     {
-        seid_AddItemDate = createNamedDateEditWithCalendarPopUpCurrentDate(
+        seid_AddItemDate = cqtfa_DateEditWithCalendarPopUpCurrentDate(
             "seid_AddItemDate", sied_scheduleTimeControls);
     
         seid_groupBoxLayout->addRow("Date:", seid_AddItemDate);
@@ -67,15 +67,15 @@ QGroupBox *ScheduleItemEditorDialog::setUpScheduleTimeControls()
     sied_scheduleItemEndTimeDTEdit = createAndInitDateTimeEdit("sied_scheduleEndTimeDTEdit");
     seid_groupBoxLayout->addRow("End:", sied_scheduleItemEndTimeDTEdit);
 
-    sied_scheduleItemTitleTE = createAndInitTextEdit("sied_scheduleItemTitleTE",
-        sied_TextEditMinWidth, sied_TextEditMaxWidth, 2);
+    sied_scheduleItemTitleTE = cqtfa_flexibleWidthTextEdit("sied_scheduleItemTitleTE",
+        sied_scheduleTimeControls, sied_TextEditMinWidth, sied_TextEditMaxWidth, 2);
     seid_groupBoxLayout->addRow("What:", sied_scheduleItemTitleTE);
 
-    sied_locationTE = createAndInitTextEdit("sied_locationTE", sied_TextEditMinWidth,
-        sied_TextEditMaxWidth, 3);
+    sied_locationTE = cqtfa_flexibleWidthTextEdit("sied_locationTE", sied_scheduleTimeControls,
+        sied_TextEditMinWidth, sied_TextEditMaxWidth, 3);
     seid_groupBoxLayout->addRow("Where:", sied_locationTE);
 
-    sied_scheduleItemIsPersonalCB = createNameQTWidgetWithText<QCheckBox>("Personal",
+    sied_scheduleItemIsPersonalCB = cqtfa_QTWidgetWithText<QCheckBox>("Personal",
         "sied_scheduleItemIsPersonalCB", sied_scheduleTimeControls);
     seid_groupBoxLayout->addRow(sied_scheduleItemIsPersonalCB);
 
@@ -116,27 +116,7 @@ QDateTimeEdit* ScheduleItemEditorDialog::createAndInitDateTimeEdit(const char *o
 
     newDateTimeElement->setCalendarPopup(true);
 
-
     return newDateTimeElement;
-}
-
-QTextEdit* ScheduleItemEditorDialog::createAndInitTextEdit(const char *objName, int boxWidthMin, int boxWidthMax, int rowCount)
-{
-    QTextEdit* newTextEdit = new QTextEdit(sied_scheduleTimeControls);
-
-    newTextEdit->setObjectName(objName);
-
-    newTextEdit->setMinimumHeight(newTextEdit->fontMetrics().height() * rowCount);
-
-    newTextEdit->setMaximumHeight(newTextEdit->fontMetrics().height() * (rowCount + 2));
-
-    newTextEdit->setMinimumWidth(boxWidthMin);
-
-    newTextEdit->setMaximumWidth(boxWidthMax);
-
-    newTextEdit->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
-
-    return newTextEdit;
 }
 
 void ScheduleItemEditorDialog::handleAddItemDate_DateChanged()

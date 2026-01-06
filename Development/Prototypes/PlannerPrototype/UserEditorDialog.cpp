@@ -1,5 +1,5 @@
 // Project Header Files
-#include "createNamedQTWidget.h"
+#include "commonQTWidgetsForApp.h"
 #include "UserEditorDialog.h"
 
 // QT Header Files
@@ -36,7 +36,7 @@ UserEditorDialog::~UserEditorDialog()
 
 void UserEditorDialog::setUpUserEditorialogUi()
 {
-    editUserLayout = createNamedQTWidget<QVBoxLayout>("editUserLayout", this);
+    editUserLayout = cqtfa_QTWidget<QVBoxLayout>("editUserLayout", this);
     editUserLayout->addWidget(setUpUserProfileGB(), 0, Qt::AlignHCenter);
     editUserLayout->addWidget(setUpLoginDataGB(), 0, Qt::AlignHCenter);
 
@@ -57,18 +57,18 @@ QGroupBox* UserEditorDialog::setUpUserProfileGB()
 {
     userProfileGB = new QGroupBox("User Profile:");
 
-    userProfileForm = createNamedFormLayoutWithPolicy("userProfileForm", userProfileGB);
+    userProfileForm = cqtfa_FormLayoutWithPolicy("userProfileForm", userProfileGB);
 
-    firstNameLE = createNamedLineEditWithWidthAndLength("firstNameLE", this);
+    firstNameLE = cqtfa_LineEditWithWidthAndLength("firstNameLE", this);
     userProfileForm->addRow("FirstName:", firstNameLE);
 
-    lastNameLE = createNamedLineEditWithWidthAndLength("lastNameLE", this);
+    lastNameLE = cqtfa_LineEditWithWidthAndLength("lastNameLE", this);
     userProfileForm->addRow("Last Name:", lastNameLE);
 
-    middleNameLE = createNamedLineEditWithWidthAndLength("middleNameLE", this);
+    middleNameLE = cqtfa_LineEditWithWidthAndLength("middleNameLE", this);
     userProfileForm->addRow("Middle Initial:", middleNameLE);
 
-    emailLE = createNamedLineEditWithWidthAndLength("emailLE", this);
+    emailLE = cqtfa_LineEditWithWidthAndLength("emailLE", this);
     userProfileForm->addRow("eMail Address:", emailLE);
 
     userProfileGB->setLayout(userProfileForm);
@@ -80,12 +80,12 @@ QGroupBox* UserEditorDialog::setUpLoginDataGB()
 {
     loginDataGB = new QGroupBox("User Login:");
 
-    loginDataForm = createNamedFormLayoutWithPolicy("loginDataForm", loginDataGB);
+    loginDataForm = cqtfa_FormLayoutWithPolicy("loginDataForm", loginDataGB);
 
-    userNameLE = createNamedLineEditWithWidthAndLength("userNameLE", this);
+    userNameLE = cqtfa_LineEditWithWidthAndLength("userNameLE", this);
     loginDataForm->addRow("User Name:", userNameLE);
 
-    passwordLE = createNamedLineEditWithWidthAndLength("passwordLE", this);
+    passwordLE = cqtfa_LineEditWithWidthAndLength("passwordLE", this);
     loginDataForm->addRow("Password:", passwordLE);
     
     loginDataGB->setLayout(loginDataForm);

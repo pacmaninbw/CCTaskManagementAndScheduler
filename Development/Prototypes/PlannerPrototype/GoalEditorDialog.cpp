@@ -1,5 +1,5 @@
 // Project Header Files
-#include "createNamedQTWidget.h"
+#include "commonQTWidgetsForApp.h"
 #include "GoalEditorDialog.h"
 
 // QT Header Files
@@ -57,15 +57,15 @@ void GoalEditorDialog::setUpGoalEditorDialogUI()
 
 QFormLayout *GoalEditorDialog::setUpGoalEditorDialogGroupBoxContents()
 {
-    QFormLayout* goalEditorDialogFormLayout = createNamedFormLayoutWithPolicy(
+    QFormLayout* goalEditorDialogFormLayout = cqtfa_FormLayoutWithPolicy(
         "goalEditorDialogFormLayout", editGoalGB);
 
     goalEditorDialogFormLayout->addRow("Goal Description:", setUpGoalDescriptionTextEdit());
 
     goalEditorDialogFormLayout->addRow("Priority:",
-        createNamedLineEditWithWidthAndLength("editGoalPriorityLE", this, 113, 5));
+        cqtfa_LineEditWithWidthAndLength("editGoalPriorityLE", this, 113, 5));
 
-    editGoalSelectParentGoalPB = createNameQTWidgetWithText<QPushButton>(
+    editGoalSelectParentGoalPB = cqtfa_QTWidgetWithText<QPushButton>(
         "editGoalSelectParentGoalPB", "Select Parent Goal", this);
     editGoalSelectParentGoalPB->setGeometry(QRect(30, 270, 200, 26));
 

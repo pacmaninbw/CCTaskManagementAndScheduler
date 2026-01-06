@@ -1,5 +1,5 @@
 // Project Header Files
-#include "createNamedQTWidget.h"
+#include "commonQTWidgetsForApp.h"
 #include "LoginDialog.h"
 
 // QT Header Files
@@ -26,13 +26,13 @@ void LoginDialog::setUpLoginDialogUI()
     userLoginGB = new QGroupBox("Login As User", this);
     userLoginGB->setObjectName("userLoginGB");
 
-    QFormLayout* userLoginFormLayout = createNamedFormLayoutWithPolicy("userLogingFormLayout", userLoginGB);
+    QFormLayout* userLoginFormLayout = cqtfa_FormLayoutWithPolicy("userLogingFormLayout", userLoginGB);
 
-    userLoginFormLayout->addRow("User Name:", createNamedLineEditWithWidthAndLength("userLoginUserNameLE"));
+    userLoginFormLayout->addRow("User Name:", cqtfa_LineEditWithWidthAndLength("userLoginUserNameLE", userLoginGB));
 
-    userLoginFormLayout->addRow("Password:", createNamedLineEditWithWidthAndLength("userLoginPasswordLE"));
+    userLoginFormLayout->addRow("Password:", cqtfa_LineEditWithWidthAndLength("userLoginPasswordLE", userLoginGB));
 
-    actionLoginAsUserPB = createNameQTWidgetWithText<QPushButton>("Login As User", "actionLoginAsUserPB", userLoginGB);
+    actionLoginAsUserPB = cqtfa_QTWidgetWithText<QPushButton>("Login As User", "actionLoginAsUserPB", userLoginGB);
     connect(actionLoginAsUserPB, &QPushButton::clicked, this, &LoginDialog::onactionLoginAsUserPBClicked);
     userLoginFormLayout->addWidget(actionLoginAsUserPB);
 

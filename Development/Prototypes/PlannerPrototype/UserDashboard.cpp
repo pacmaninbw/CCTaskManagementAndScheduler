@@ -1,6 +1,6 @@
 // Project Header Files
 #include "CommandLineParser.h"
-#include "createNamedQTWidget.h"
+#include "commonQTWidgetsForApp.h"  // cqtfa_ functions
 #include "GoalEditorDialog.h"
 #include "LoginDialog.h"
 #include "NoteEditorDialog.h"
@@ -48,9 +48,9 @@ void UserDashboard::setUpUserDashboardUi()
 
     dashboardLayout->addWidget(setUpUserIdBox(), 0, Qt::AlignHCenter);
 
-    QFormLayout* dashboardDateForm = createNamedFormLayoutWithPolicy("dashboardDateForm");
+    QFormLayout* dashboardDateForm = cqtfa_FormLayoutWithPolicy("dashboardDateForm", nullptr);
 
-    udDateSelectorDE = new QDateEdit(QDate::currentDate(), this);
+    udDateSelectorDE = cqtfa_DateEditWithCalendarPopUpCurrentDate("udDateSelectorDE", this);
 
     dashboardDateForm->addRow("Date:", udDateSelectorDE);
 
@@ -170,16 +170,16 @@ QGroupBox *UserDashboard::setUpUserIdBox()
     QHBoxLayout* uiBoxLaytout = new QHBoxLayout;
     uiBoxLaytout->setObjectName("uiBoxLaytout");
 
-    udUserFirstNameDisplay = createNamedLineEditWithWidthAndLength("udUserFirstNameDisplay", this);
+    udUserFirstNameDisplay = cqtfa_LineEditWithWidthAndLength("udUserFirstNameDisplay", this);
     uiBoxLaytout->addWidget(udUserFirstNameDisplay);
 
-    udUserMiddleInitialDisplay = createNamedLineEditWithWidthAndLength("udUserMiddleInitialDisplay", this);
+    udUserMiddleInitialDisplay = cqtfa_LineEditWithWidthAndLength("udUserMiddleInitialDisplay", this);
     uiBoxLaytout->addWidget(udUserMiddleInitialDisplay);
 
-    udUserLastNameDisplay = createNamedLineEditWithWidthAndLength("udUserLastNameDisplay", this);
+    udUserLastNameDisplay = cqtfa_LineEditWithWidthAndLength("udUserLastNameDisplay", this);
     uiBoxLaytout->addWidget(udUserLastNameDisplay);
 
-    udUserNameDisplay = createNamedLineEditWithWidthAndLength("udUserNameDisplay", this);
+    udUserNameDisplay = cqtfa_LineEditWithWidthAndLength("udUserNameDisplay", this);
     uiBoxLaytout->addWidget(udUserNameDisplay);
 
     userDashBoardIDGB->setLayout(uiBoxLaytout);
@@ -250,7 +250,7 @@ void UserDashboard::fakeFillGroupBoxLayout(std::string fieldPartialName, QVBoxLa
     for (int i = 0; i < 15; ++i)
     {
         std::string listElementObjectName(std::format("tempLineEdit{}{}", fieldPartialName, i));
-        QLineEdit* tempElement = createNamedLineEditWithWidthAndLength(listElementObjectName.c_str(), this, perDayLineEditWidth);
+        QLineEdit* tempElement = cqtfa_LineEditWithWidthAndLength(listElementObjectName.c_str(), this, perDayLineEditWidth);
         QString qstr = QString::fromStdString(fieldPartialName);
         tempElement->setText(qstr);
         layoutToFill->addWidget(tempElement);
@@ -336,7 +336,7 @@ void UserDashboard::handleAddScheduleItemAction()
 void UserDashboard::handleEditScheduleItemAction()
 {
     std::size_t scheduleItemID = 1;
-    ScheduleItemEditorDialog editScheduleItemDialog(this, userID, scheduleItemID;
+    ScheduleItemEditorDialog editScheduleItemDialog(this, userID, scheduleItemID);
 
     editScheduleItemDialog.exec();
 }

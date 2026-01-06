@@ -39,7 +39,6 @@ private:
     QGroupBox* setUpScheduleTimeControls();
     QDialogButtonBox* setUpScheduleItemButtonBox();
     QDateTimeEdit* createAndInitDateTimeEdit(const char* objName);
-    QTextEdit* createAndInitTextEdit(const char* objName, int boxWidthMin, int boxWidthMax, int rowCount);
     void handleAddItemDate_DateChanged();
 
     std::size_t userID;
