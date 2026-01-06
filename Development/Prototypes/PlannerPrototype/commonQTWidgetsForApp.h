@@ -43,6 +43,8 @@ WidgetType *cqtfa_QTWidgetWithText(const char* textContent, const char* objectNa
 
 extern QLineEdit* cqtfa_LineEditWithWidthAndLength(const char* lineEditName, QWidget* parent, std::size_t width=200, std::size_t charCount=20);
 
+extern QLineEdit* cqtfa_LineEditFixedWidthByCharCount(const char* objName, QWidget* parent, int charcount);
+
 extern QFormLayout* cqtfa_FormLayoutWithPolicy(const char* formName, QWidget* parent,
     QFormLayout::FieldGrowthPolicy policy=QFormLayout::ExpandingFieldsGrow);
 

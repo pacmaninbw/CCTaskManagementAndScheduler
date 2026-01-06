@@ -10,6 +10,22 @@ QLineEdit* cqtfa_LineEditWithWidthAndLength(const char* lineEditName, QWidget *p
     return newLineEdit;
 }
 
+QLineEdit *cqtfa_LineEditFixedWidthByCharCount(const char *objName, QWidget *parent, int charCount)
+{
+    QLineEdit* newLineEdit = cqtfa_QTWidget<QLineEdit>(objName, parent);
+
+    QFontMetrics fm(newLineEdit->font());
+    // Using horizontalAdvance for accurate width calculation
+    int desiredWidth = fm.horizontalAdvance(QString(charCount, 'x'));
+
+    // Set fixed width and size policy
+    newLineEdit->setFixedWidth(desiredWidth);
+    newLineEdit->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    newLineEdit->setMaxLength(charCount);
+
+    return newLineEdit;
+}
+
 QFormLayout* cqtfa_FormLayoutWithPolicy(const char* formName, QWidget* parent, QFormLayout::FieldGrowthPolicy policy)
 {
     QFormLayout* newFormLayout = cqtfa_QTWidget<QFormLayout>(formName, parent);
