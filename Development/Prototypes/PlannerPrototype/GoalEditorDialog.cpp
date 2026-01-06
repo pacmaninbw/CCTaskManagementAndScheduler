@@ -50,6 +50,8 @@ void GoalEditorDialog::setUpGoalEditorDialogUI()
 
     setLayout(goalEditorDialogLayout);
 
+    adjustSize();
+
     groupBoxTitle += " Dialog";
 
     setWindowTitle(groupBoxTitle);
@@ -60,27 +62,19 @@ QFormLayout *GoalEditorDialog::setUpGoalEditorDialogGroupBoxContents()
     QFormLayout* goalEditorDialogFormLayout = cqtfa_FormLayoutWithPolicy(
         "goalEditorDialogFormLayout", editGoalGB);
 
-    goalEditorDialogFormLayout->addRow("Goal Description:", setUpGoalDescriptionTextEdit());
+    editGoalDescriptionTE = cqtfa_flixbleTextEditEbasedOnCharCount("", editGoalGB, 40, 80, 3);
+    goalEditorDialogFormLayout->addRow("Goal Description:", editGoalDescriptionTE);
 
-    goalEditorDialogFormLayout->addRow("Priority:",
-        cqtfa_LineEditWithWidthAndLength("editGoalPriorityLE", this, 113, 5));
+    editGoalPriorityLE = cqtfa_LineEditFixedWidthByCharCount("editGoalPriorityLE", editGoalGB, 5);
+    goalEditorDialogFormLayout->addRow("Priority:", editGoalPriorityLE);
 
     editGoalSelectParentGoalPB = cqtfa_QTWidgetWithText<QPushButton>(
-        "editGoalSelectParentGoalPB", "Select Parent Goal", this);
+        "Select Parent Goal", "editGoalSelectParentGoalPB", editGoalGB);
     editGoalSelectParentGoalPB->setGeometry(QRect(30, 270, 200, 26));
 
     goalEditorDialogFormLayout->addWidget(editGoalSelectParentGoalPB);
 
     return goalEditorDialogFormLayout;
-}
-
-QTextEdit *GoalEditorDialog::setUpGoalDescriptionTextEdit()
-{
-    editGoalDescriptionTE = new QTextEdit(editGoalGB);
-    editGoalDescriptionTE->setObjectName("editGoalDescriptionTE");
-    editGoalDescriptionTE->setGeometry(QRect(30, 55, 550, 150));
-
-    return editGoalDescriptionTE;
 }
 
 QDialogButtonBox *GoalEditorDialog::setUpGoalEditorDialogButtonBox()

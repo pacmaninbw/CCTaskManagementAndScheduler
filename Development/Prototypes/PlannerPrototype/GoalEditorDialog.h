@@ -34,7 +34,6 @@ private slots:
 private:
     void setUpGoalEditorDialogUI();
     QFormLayout* setUpGoalEditorDialogGroupBoxContents();
-    QTextEdit* setUpGoalDescriptionTextEdit();
     QDialogButtonBox* setUpGoalEditorDialogButtonBox();
 
     std::size_t userID;
