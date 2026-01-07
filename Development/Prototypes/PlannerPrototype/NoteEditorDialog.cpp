@@ -23,11 +23,11 @@ NoteEditorDialog::~NoteEditorDialog()
 
 void NoteEditorDialog::setUpNoteEditorUI()
 {
-
     editNoteLayOut = new QVBoxLayout(this);
     editNoteLayOut->setObjectName("editNoteLayOut");
 
-    editNoteContentTE = cqtfa_flixbleTextEditEbasedOnCharCount("editNoteContentTE", nullptr, 60, 90, 4);
+    editNoteContentTE = cqtfa_flixbleTextEditEbasedOnCharCount("editNoteContentTE",
+        nullptr, minNoteContentWidth, maxNoteContentWidth, noteLineCount);
 
     QFormLayout* noteForm = cqtfa_FormLayoutWithPolicy("NoteForm", nullptr);
 
