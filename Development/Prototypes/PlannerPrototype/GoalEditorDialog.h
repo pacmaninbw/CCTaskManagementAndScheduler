@@ -35,6 +35,7 @@ private:
     void setUpGoalEditorDialogUI();
     QFormLayout* setUpGoalEditorDialogGroupBoxContents();
     QDialogButtonBox* setUpGoalEditorDialogButtonBox();
+    void limitDialogRowth();
 
     std::size_t userID;
     std::size_t goalID;
@@ -43,9 +44,16 @@ private:
     QTextEdit* editGoalDescriptionTE;
     QLineEdit* editGoalPriorityLE;
     QPushButton* editGoalSelectParentGoalPB;
+    int maxGroupBoxHeight;
+    int maxButtonBoxHeight;
 
-    const int goalEditorDialogWidth = 691;
-    const int goalEditorDialogHeight = 400;
+
+    const int goalDescriptionMinCharWidth = 40;
+    const int goalDescriptionMaxCharWidth = 80;
+    const int goalDescriptionLineCount = 3;
+    const int goalPriorityMaxChar = 5;
+    const int marginAndSpacing = 30;
+//    const int goalDialogMaxWidth = goalDescriptionMaxCharWidth + marginAndSpacing;
 };
 
 #endif // GOALEDITORDIALOG_H
