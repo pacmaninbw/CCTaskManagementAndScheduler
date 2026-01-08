@@ -13,11 +13,11 @@
  * Named QT Objects may provide an easier mechanism for connecting events with actions.
  */
 
-#include <QWidget>
 #include <QDateEdit>
 #include <QFormLayout>
 #include <QLineEdit>
 #include <QTextEdit>
+#include <QWidget>
 
 template <typename WidgetType>
 WidgetType* cqtfa_QTWidget(const char* objectName, QWidget* parent)
@@ -38,7 +38,6 @@ WidgetType *cqtfa_QTWidgetWithText(const char* textContent, const char* objectNa
     objectPointer->setObjectName(objectName);
 
     return objectPointer;
-
 }
 
 extern QLineEdit* cqtfa_LineEditWithWidthAndLength(const char* lineEditName, QWidget* parent, std::size_t width=200, std::size_t charCount=20);
@@ -56,6 +55,10 @@ extern QDateEdit* cqtfa_DateEditWithCalendarPopUpCurrentDate(const char* formNam
 extern QTextEdit* cqtfa_flexibleWidthTextEdit(const char* objName, QWidget* parent, int boxWidthMin, int boxWidthMax, int rowCount);
 
 extern QTextEdit* cqtfa_flixbleTextEditEbasedOnCharCount(const char* objName, QWidget* parent, int minCharCount, int maxCharCount, int rowCount);
+
+extern int cqtfa_getFormLayoutMaxWidth(QFormLayout* formToSize);
+
+extern int cqtfa_calculateFormLayoutMaxHeight(QFormLayout* formToSize);
 
 #endif // COMMONQTWIDGETSFORAPP_H_
 
