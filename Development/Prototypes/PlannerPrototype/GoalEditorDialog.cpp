@@ -17,6 +17,7 @@
 
 
 // Standard C++ Header Files
+//#include <iostream>
 
 
 GoalEditorDialog::GoalEditorDialog(QWidget *parent, std::size_t userId, std::size_t goalId)
@@ -61,8 +62,7 @@ void GoalEditorDialog::setUpGoalEditorDialogUI()
 
 QFormLayout *GoalEditorDialog::setUpGoalEditorDialogGroupBoxContents()
 {
-    QFormLayout* goalEditorDialogFormLayout = cqtfa_FormLayoutWithPolicy(
-        "goalEditorDialogFormLayout", editGoalGB);
+    goalEditorDialogFormLayout = cqtfa_FormLayoutWithPolicy("goalEditorDialogFormLayout", editGoalGB);
 
     editGoalDescriptionTE = cqtfa_flixbleTextEditEbasedOnCharCount("editGoalDescriptionTE", editGoalGB,
         goalDescriptionMinCharWidth, goalDescriptionMaxCharWidth, goalDescriptionLineCount);
@@ -76,9 +76,7 @@ QFormLayout *GoalEditorDialog::setUpGoalEditorDialogGroupBoxContents()
         "Select Parent Goal", "editGoalSelectParentGoalPB", editGoalGB);
     goalEditorDialogFormLayout->addWidget(editGoalSelectParentGoalPB);
 
-    maxGroupBoxHeight = 80 + editGoalDescriptionTE->height();
-    maxGroupBoxHeight += editGoalPriorityLE->height();
-    maxGroupBoxHeight += editGoalSelectParentGoalPB->height();
+    maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(goalEditorDialogFormLayout);
 
     return goalEditorDialogFormLayout;
 }
@@ -104,11 +102,8 @@ void GoalEditorDialog::limitDialogRowth()
 
     buttonBox->setMaximumHeight(maxButtonBoxHeight);
 
-    int maxDialogWidth = editGoalDescriptionTE->maximumSize().width() + marginAndSpacing;
-    int maxDialogHeight = maxGroupBoxHeight;
-    maxDialogHeight += maxButtonBoxHeight;
-    maxDialogHeight += marginAndSpacing;
+    int maxDialogWidth = cqtfa_getFormLayoutMaxWidth(goalEditorDialogFormLayout) + marginAndSpacing;
 
     setMaximumWidth(maxDialogWidth);
-    setMaximumHeight(maxDialogHeight);
+    setMaximumHeight(maxGroupBoxHeight + maxButtonBoxHeight + marginAndSpacing);
 }

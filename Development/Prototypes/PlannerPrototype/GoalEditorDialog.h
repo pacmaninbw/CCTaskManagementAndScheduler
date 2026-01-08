@@ -41,12 +41,12 @@ private:
     std::size_t goalID;
     QDialogButtonBox* buttonBox;
     QGroupBox* editGoalGB;
+    QFormLayout* goalEditorDialogFormLayout;
     QTextEdit* editGoalDescriptionTE;
     QLineEdit* editGoalPriorityLE;
     QPushButton* editGoalSelectParentGoalPB;
     int maxGroupBoxHeight;
     int maxButtonBoxHeight;
-
 
     const int goalDescriptionMinCharWidth = 40;
     const int goalDescriptionMaxCharWidth = 80;
