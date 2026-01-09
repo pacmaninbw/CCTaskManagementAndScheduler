@@ -64,7 +64,7 @@ QFormLayout *GoalEditorDialog::setUpGoalEditorDialogGroupBoxContents()
 {
     goalEditorDialogFormLayout = cqtfa_FormLayoutWithPolicy("goalEditorDialogFormLayout", editGoalGB);
 
-    editGoalDescriptionTE = cqtfa_flixbleTextEditEbasedOnCharCount("editGoalDescriptionTE", editGoalGB,
+    editGoalDescriptionTE = cqtfa_flexibleTextEditEbasedOnCharCount("editGoalDescriptionTE", editGoalGB,
         goalDescriptionMinCharWidth, goalDescriptionMaxCharWidth, goalDescriptionLineCount);
     goalEditorDialogFormLayout->addRow("Goal Description:", editGoalDescriptionTE);
 
