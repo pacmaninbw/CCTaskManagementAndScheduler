@@ -9,6 +9,7 @@
 #include <QApplication>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QFormLayout>
 #include <QGroupBox>
 #include <QTextEdit>
 #include <QVBoxLayout>
@@ -31,18 +32,24 @@ private slots:
 
 private:
     void setUpNoteEditorUI();
+    QFormLayout* setUpNoteEditorGBForm();
     QDialogButtonBox* setUpEditNoteButtonBox();
+    void limitDialogRowth();
 
     std::size_t userID;
     std::size_t noteID;
     QDialogButtonBox* buttonBox;
     QGroupBox* editNoteEnterContentGB;
+    QFormLayout* noteForm;
     QVBoxLayout* editNoteLayOut;
     QTextEdit* editNoteContentTE;
+    int maxGroupBoxHeight;
+    int maxButtonBoxHeight;
 
     const int minNoteContentWidth = 60;
     const int maxNoteContentWidth = 90;
     const int noteLineCount = 5;
+    const int marginAndSpacing = 30;
 };
 
 #endif // NOTEEDITORDIALOG_H
