@@ -54,7 +54,7 @@ extern QDateEdit* cqtfa_DateEditWithCalendarPopUpCurrentDate(const char* formNam
 
 extern QTextEdit* cqtfa_flexibleWidthTextEdit(const char* objName, QWidget* parent, int boxWidthMin, int boxWidthMax, int rowCount);
 
-extern QTextEdit* cqtfa_flixbleTextEditEbasedOnCharCount(const char* objName, QWidget* parent, int minCharCount, int maxCharCount, int rowCount);
+extern QTextEdit* cqtfa_flexibleTextEditEbasedOnCharCount(const char* objName, QWidget* parent, int minCharCount, int maxCharCount, int rowCount);
 
 extern int cqtfa_getFormLayoutMaxWidth(QFormLayout* formToSize);
 

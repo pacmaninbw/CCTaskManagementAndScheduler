@@ -89,7 +89,7 @@ QTextEdit *cqtfa_flexibleWidthTextEdit(const char *objName, QWidget *parent, int
     return newTextEdit;
 }
 
-QTextEdit *cqtfa_flixbleTextEditEbasedOnCharCount(const char *objName, QWidget *parent, int minCharCount, int maxCharCount, int rowCount)
+QTextEdit *cqtfa_flexibleTextEditEbasedOnCharCount(const char *objName, QWidget *parent, int minCharCount, int maxCharCount, int rowCount)
 {
     QTextEdit* newTextEdit = new QTextEdit(parent);
     QFontMetrics qfm(newTextEdit->font());
@@ -121,17 +121,16 @@ static int getRowMaximumWidth(QFormLayout* layout, int row)
 
     if (labelItem) {
         maxLabelWidth = labelItem->maximumSize().width();
+        if (maxLabelWidth >= maxWidthUndefined) { 
+            maxLabelWidth = labelItem->sizeHint().width();
+        }
     }
 
     if (fieldItem) {
         maxFieldWidth = fieldItem->maximumSize().width();
-    }
-
-    if (maxLabelWidth >= maxWidthUndefined) { 
-        maxLabelWidth = labelItem->sizeHint().width();
-    }
-    if (maxFieldWidth >= maxWidthUndefined) {
-        maxFieldWidth = fieldItem->sizeHint().width();
+        if (maxFieldWidth >= maxWidthUndefined) {
+            maxFieldWidth = fieldItem->sizeHint().width();
+        }
     }
 
     int horizontalSpacing = layout->horizontalSpacing();
