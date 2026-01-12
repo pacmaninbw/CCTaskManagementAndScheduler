@@ -1,6 +1,7 @@
 // Project Header Files
 #include "CommandLineParser.h"
 #include "commonQTWidgetsForApp.h"  // cqtfa_ functions
+#include "DataBaseConnectionDialog.h"
 #include "GoalEditorDialog.h"
 #include "LoginDialog.h"
 #include "NoteEditorDialog.h"
@@ -72,6 +73,7 @@ void UserDashboard::setUpDashboardMenuBar()
     setUpNoteMenu();
     setUpGoalMenu();
     setUpScheduleItemMenu();
+    setUpDbConnectionMenu();
 }
 
 void UserDashboard::setUpTaskMenu()
@@ -162,6 +164,18 @@ void UserDashboard::setUpScheduleItemMenu()
     udScheduleItemMenu->addAction(udActionAddScheduleItem);
     udScheduleItemMenu->addAction(udActionEditTask);
     udScheduleItemMenu->addSeparator();
+}
+
+void UserDashboard::setUpDbConnectionMenu()
+{
+    udActionConnectDB = new QAction("Connect Database", this);
+    udActionConnectDB->setStatusTip("Add Database User and Password");
+    connect(udActionConnectDB, &QAction::triggered, this, &UserDashboard::handleDatabaseConnectionAction);
+
+    udDBConnectionMenu = menuBar()->addMenu("&DB Connection");
+    udDBConnectionMenu->addAction(udActionConnectDB);
+    udDBConnectionMenu->addSeparator();
+
 }
 
 QGroupBox *UserDashboard::setUpUserIdBox()
@@ -339,4 +353,11 @@ void UserDashboard::handleEditScheduleItemAction()
     ScheduleItemEditorDialog editScheduleItemDialog(this, userID, scheduleItemID);
 
     editScheduleItemDialog.exec();
+}
+
+void UserDashboard::handleDatabaseConnectionAction()
+{
+    DataBaseConnectionDialog dbConnectionDialog(this);
+
+    dbConnectionDialog.exec();
 }

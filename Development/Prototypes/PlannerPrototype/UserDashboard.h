@@ -43,6 +43,7 @@ private slots:
     void handleEditGoalAction();
     void handleAddScheduleItemAction();
     void handleEditScheduleItemAction();
+    void handleDatabaseConnectionAction();
 
 private:
     void setUpUserDashboardUi();
@@ -52,6 +53,7 @@ private:
     void setUpNoteMenu();
     void setUpGoalMenu();
     void setUpScheduleItemMenu();
+    void setUpDbConnectionMenu();
     QGroupBox* setUpUserIdBox();
     QHBoxLayout* setUpPerDayLayout();
     QGroupBox* setUpPerDayTaskGB();
@@ -71,6 +73,7 @@ private:
     QMenu* udNoteMenu;
     QMenu* udGoalMenu;
     QMenu* udScheduleItemMenu;
+    QMenu* udDBConnectionMenu;
     QAction* udActionAddTask;
     QAction* udActionEditTask;
     QAction* udActionAddScheduleItem;
@@ -83,6 +86,7 @@ private:
     QAction* udActionUserLogout;
     QAction* udActionAddGoal;
     QAction* udActionEditGoal;
+    QAction* udActionConnectDB;
     QWidget* centralwidget;
     QGroupBox* udTaskListGB;
     QGroupBox* udScheduleGB;
