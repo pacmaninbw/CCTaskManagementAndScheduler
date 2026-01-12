@@ -47,6 +47,8 @@ set(PROJECT_MODEL_SOUCES
     Models/UserGoalModel.cpp
     Models/UserGoalList.h
     Models/UserGoalList.cpp
+    TestDBConnection.h
+    TestDBConnection.cpp
 )
 
 set(PROJECT_SOURCES
