@@ -14,6 +14,7 @@
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QGroupBox>
+#include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTextEdit>
@@ -41,11 +42,14 @@ private slots:
 
 private:
     void setUpTaskEditorUI();
+    QHBoxLayout* setUpUserSection();
     QGroupBox* setUpTaskCreatorGroupBox();
     QGroupBox* setUpTaskAssigneeGroupBox();
+    QHBoxLayout* setUpDateAndRelatedTasksSection();
     QGroupBox* setUpRelatedTasksGroupBox();
     QGroupBox* setUpTaskDescriptionAndStatusGroupBox();
     QGroupBox* setUpTaskDatesGroupBox();
+    QHBoxLayout* setUpEfforAndPrioritySectionLayout();
     QGroupBox* setUpTaskEfforGroupBox();
     QGroupBox* setUpTaskPriorityGroupBox();
     QDialogButtonBox* setUpEditTaskButtonBox();
@@ -87,6 +91,9 @@ private:
     QLineEdit* editTaskPriorityLE;
     QCheckBox* editTaskPersonalCB;
     QPushButton* editTaskAddDependenciesPB;
+    QHBoxLayout* userSectionLayout;
+    QHBoxLayout* DateAndRelatedTasksSection;
+    QHBoxLayout* efforAndPrioritySectionLayout;
 
     const int taskDescriptionTEWidth = 700;
     const int taskDescriptionTEHeight = 60;

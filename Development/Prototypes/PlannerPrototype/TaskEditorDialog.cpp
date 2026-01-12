@@ -102,34 +102,13 @@ void TaskEditorDialog::setUpTaskEditorUI()
     editTaskMainLayout = new QVBoxLayout(this);
     editTaskMainLayout->setObjectName("editTaskMainLayout");
 
-    QHBoxLayout* userSectionLayout = new QHBoxLayout;
-    userSectionLayout->setObjectName("userSectionLayout");
+    editTaskMainLayout->addWidget(setUpTaskDescriptionAndStatusGroupBox());
 
-    userSectionLayout->addWidget(setUpTaskCreatorGroupBox(), 0, Qt::AlignLeft);
+    editTaskMainLayout->addLayout(setUpUserSection());
 
-    userSectionLayout->addWidget(setUpTaskAssigneeGroupBox(), 0, Qt::AlignRight);
+    editTaskMainLayout->addLayout(setUpDateAndRelatedTasksSection());
 
-    editTaskMainLayout->addWidget(setUpTaskDescriptionAndStatusGroupBox(), 0, Qt::AlignHCenter);
-
-    editTaskMainLayout->addLayout(userSectionLayout);
-
-    QHBoxLayout* DateAndRelatedTasksSection = new QHBoxLayout;
-    DateAndRelatedTasksSection->setObjectName("DateAndRelatedTasksSection");
-
-    DateAndRelatedTasksSection->addWidget(setUpTaskDatesGroupBox(), 0, Qt::AlignLeft);
-
-    DateAndRelatedTasksSection->addWidget(setUpRelatedTasksGroupBox(), 0, Qt::AlignRight);
-
-    editTaskMainLayout->addLayout(DateAndRelatedTasksSection);
-
-    QHBoxLayout* efforAndPrioritySectionLayout = new QHBoxLayout;
-    efforAndPrioritySectionLayout->setObjectName("efforAndPrioritySectionLayout");
-
-    efforAndPrioritySectionLayout->addWidget(setUpTaskEfforGroupBox(), 0, Qt::AlignLeft);
-
-    efforAndPrioritySectionLayout->addWidget(setUpTaskPriorityGroupBox(), 0, Qt::AlignRight);
-
-    editTaskMainLayout->addLayout(efforAndPrioritySectionLayout);
+    editTaskMainLayout->addLayout(setUpEfforAndPrioritySectionLayout());
 
     editTaskMainLayout->addWidget(setUpEditTaskButtonBox(), 0, Qt::AlignHCenter);
 
@@ -138,12 +117,24 @@ void TaskEditorDialog::setUpTaskEditorUI()
 
     setLayout(editTaskMainLayout);
 
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     
     adjustSize();
 
     QString titleStr = taskID? "Edit Task Dialog" : "Add Task Dialog";
     setWindowTitle(titleStr);
+}
+
+QHBoxLayout* TaskEditorDialog::setUpUserSection()
+{
+    userSectionLayout = new QHBoxLayout;
+    userSectionLayout->setObjectName("userSectionLayout");
+
+    userSectionLayout->addWidget(setUpTaskCreatorGroupBox(), 0, Qt::AlignLeft);
+
+    userSectionLayout->addWidget(setUpTaskAssigneeGroupBox(), 0, Qt::AlignRight);
+
+    return userSectionLayout;
 }
 
 QGroupBox *TaskEditorDialog::setUpTaskCreatorGroupBox()
@@ -193,6 +184,18 @@ QGroupBox *TaskEditorDialog::setUpTaskAssigneeGroupBox()
     editTaskAssignedToGB->setLayout(editTaskAssigneeForm);
 
     return editTaskAssignedToGB;
+}
+
+QHBoxLayout* TaskEditorDialog::setUpDateAndRelatedTasksSection()
+{
+    DateAndRelatedTasksSection = new QHBoxLayout;
+    DateAndRelatedTasksSection->setObjectName("DateAndRelatedTasksSection");
+
+    DateAndRelatedTasksSection->addWidget(setUpTaskDatesGroupBox(), 0, Qt::AlignLeft);
+
+    DateAndRelatedTasksSection->addWidget(setUpRelatedTasksGroupBox(), 0, Qt::AlignRight);
+
+    return DateAndRelatedTasksSection;
 }
 
 QGroupBox *TaskEditorDialog::setUpRelatedTasksGroupBox()
@@ -280,6 +283,18 @@ QGroupBox *TaskEditorDialog::setUpTaskDatesGroupBox()
     editTaskDatesGB->setLayout(editTaskDatesForm);
 
     return editTaskDatesGB;
+}
+
+QHBoxLayout* TaskEditorDialog::setUpEfforAndPrioritySectionLayout()
+{
+    efforAndPrioritySectionLayout = new QHBoxLayout;
+    efforAndPrioritySectionLayout->setObjectName("efforAndPrioritySectionLayout");
+
+    efforAndPrioritySectionLayout->addWidget(setUpTaskEfforGroupBox(), 0, Qt::AlignLeft);
+
+    efforAndPrioritySectionLayout->addWidget(setUpTaskPriorityGroupBox(), 0, Qt::AlignRight);
+
+    return efforAndPrioritySectionLayout;
 }
 
 QGroupBox *TaskEditorDialog::setUpTaskEfforGroupBox()
