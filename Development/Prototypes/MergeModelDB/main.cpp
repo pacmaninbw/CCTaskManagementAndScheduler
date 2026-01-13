@@ -9,6 +9,7 @@
 #include "ScheduleItemList.h"
 #include "TaskModel.h"
 #include "TaskSelfTest.h"
+#include "TestDBConnection.h"
 #include "TestTaskDBInterface.h"
 #include "TestUserDBInterface.h"
 #include "TestGoalModel.h"
@@ -234,6 +235,12 @@ int main(int argc, char* argv[])
             UtilityTimer stopWatch;
 
             initCommonTestValues("2024-05-14 08:31:53");
+
+            TestDBConnection dbConnectionTest;
+            if (dbConnectionTest.runTestConnect() == TESTFAILED)
+            {
+                return EXIT_FAILURE;
+            }
 
             if (runAllUnitTests() == TESTFAILED)
             {

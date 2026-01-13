@@ -31,6 +31,7 @@ add_executable(protoPersonalPlanner
     Models/UserGoalSelfTest.cpp
     Models/UserGoalList.cpp
     main.cpp
+    TestDBConnection.cpp
     Testing/TestDBInterfaceCore.cpp
     Testing/TestUserDBInterface.cpp
     Testing/TestTaskDBInterface.cpp
