@@ -3,7 +3,7 @@
 
 // Project Header Files
 #include "CommandLineParser.h"
-#include "commonTestValues.h"
+//#include "commonTestValues.h"
 
 // External Libraries
 #include <boost/asio.hpp>
@@ -24,7 +24,8 @@ public:
     TestDBConnection();
     ~TestDBConnection() = default;
     void debugShowVariables(std::string functionName) const noexcept;
-    TestStatus runTestConnect();
+    bool runTestConnect();
+    std::string getErrorMessages() { return errorMessages; };
     
 private:
     void initConnectionData(ProgramOptions &po);
@@ -38,7 +39,6 @@ private:
     bool forceException;
     bool inSelfTest;
     std::optional<boost::mysql::format_options> format_opts;
-
 };
 
 #endif

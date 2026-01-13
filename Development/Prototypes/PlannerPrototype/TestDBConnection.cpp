@@ -33,7 +33,7 @@ void TestDBConnection::debugShowVariables(std::string functionName) const noexce
     std::cerr << std::endl;
 }
 
-TestStatus TestDBConnection::runTestConnect()
+bool TestDBConnection::runTestConnect()
 {
     try
     {
@@ -43,21 +43,25 @@ TestStatus TestDBConnection::runTestConnect()
 
         if (!format_opts.has_value())
         {
-            std::cerr << std::format("Failed to get format options from {} : TEST FAILED", programOptions.mySqlDBName) << std::endl;
-            return TESTFAILED;
+            std::string eMsg(std::format("Failed to connect to database {}", programOptions.mySqlDBName));
+            errorMessages.append(eMsg);
+            std::cerr << eMsg << std::endl;
+            return false;
         }
         else
         {
             std::cerr << std::format("Connected to {}", programOptions.mySqlDBName) << std::endl;
         }
 
-        return TESTPASSED;
+        return true;
     }
+
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
-        debugShowVariables("");
-        return TESTFAILED;
+        std::string eMsg(std::format("Failed to connect to database {}: ", programOptions.mySqlDBName));
+        eMsg.append(e.what());
+        errorMessages.append(eMsg);
+        return false;
     }    
 }
 

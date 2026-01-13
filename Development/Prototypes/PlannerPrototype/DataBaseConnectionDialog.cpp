@@ -122,8 +122,10 @@ bool DataBaseConnectionDialog::testConnection()
 {
     TestDBConnection dbConnectionTest;
 
-    if (dbConnectionTest.runTestConnect() == TESTFAILED)
+    if (!dbConnectionTest.runTestConnect())
     {
+        QString errorMessages = QString::fromStdString(dbConnectionTest.getErrorMessages());
+        QMessageBox::critical(nullptr, "Critical Error", errorMessages, QMessageBox::Ok);
         return false;
     }
 
@@ -175,6 +177,10 @@ void DataBaseConnectionDialog::on_dbConnectionsButtonBox_accepted()
         if (testConnection())
         {
             QDialog::accept();
+        }
+        else
+        {
+
         }
     }
     return;
