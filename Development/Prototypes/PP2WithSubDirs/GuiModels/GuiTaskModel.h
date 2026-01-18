@@ -22,7 +22,7 @@ class GuiTaskModel : public QObject
 public:
     enum class GUITaskStatus
     {
-        Not_Started, On_Hold, Waiting_for_Dependency, Work_in_Progress, Complete
+        Not_Started, On_Hold, Waiting_for_Dependency, Work_in_Progress, Complete, UNKNOWN
     };
     Q_ENUM(GUITaskStatus)
 
@@ -65,9 +65,6 @@ public:
     void setEstimatedEffort(QString v);
     void setActualEffortToDate(QString v);
     void setPersonal(bool v);
-    void setPercentageComplete(QString v);
-    void setCreationTimeStamp(QString v);
-    void setLastUpdateTimeStamp(QString v);
 
 signals:
     void dbTaskIdChanged();
