@@ -63,13 +63,16 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         ${PROJECT_MODEL_SOUCES}
-        DataBaseConnectionDialog.h DataBaseConnectionDialog.cpp DataBaseConnectionDialog.ui
-        TaskEditorDialog.h TaskEditorDialog.cpp TaskEditorDialog.ui
-        UserEditorDialog.h UserEditorDialog.cpp UserEditorDialog.ui
-        GoalEditorDialog.h GoalEditorDialog.cpp GoalEditorDialog.ui
-        NoteEditorDialog.h NoteEditorDialog.cpp NoteEditorDialog.ui
-        ScheduleItemEditorDialog.h ScheduleItemEditorDialog.cpp ScheduleItemEditorDialog.ui
-        LoginDialog.h LoginDialog.cpp LoginDialog.ui
+        Dialogs/DataBaseConnectionDialog.h Dialogs/DataBaseConnectionDialog.cpp Dialogs/DataBaseConnectionDialog.ui
+        Dialogs/TaskEditorDialog.h Dialogs/TaskEditorDialog.cpp Dialogs/TaskEditorDialog.ui
+        Dialogs/UserEditorDialog.h Dialogs/UserEditorDialog.cpp Dialogs/UserEditorDialog.ui
+        Dialogs/GoalEditorDialog.h Dialogs/GoalEditorDialog.cpp Dialogs/GoalEditorDialog.ui
+        Dialogs/NoteEditorDialog.h Dialogs/NoteEditorDialog.cpp Dialogs/NoteEditorDialog.ui
+        Dialogs/ScheduleItemEditorDialog.h Dialogs/ScheduleItemEditorDialog.cpp SDialogs/cheduleItemEditorDialog.ui
+        Dialogs/LoginDialog.h Dialogs/LoginDialog.cpp Dialogs/LoginDialog.ui
+        GuiModels/GuiUserModel.h GuiModels/GuiUserModel.cpp
+        GuiModels/GuiTaskModel.h GuiModels/GuiTaskModel.cpp
+        GuiModels/GuiTaskTableShortView.h GuiModels/GuiTaskTableShortView.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET PlannerPrototype APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -93,6 +96,8 @@ target_include_directories(PlannerPrototype PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Models>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/GuiModels>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Dialogs>
 )
 
 target_compile_options(PlannerPrototype PRIVATE -Wall -Wextra -pedantic -Werror)
