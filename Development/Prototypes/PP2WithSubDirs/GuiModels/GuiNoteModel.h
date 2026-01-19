@@ -29,7 +29,6 @@ private:
     QString m_CreationDateTS;
     QString m_LastUpdateTS;
     std::shared_ptr<NoteModel> m_DBNoteDataptr;
-
 };
 
 #endif // GUINOTEMODEL_H

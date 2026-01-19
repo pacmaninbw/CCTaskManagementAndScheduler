@@ -3,6 +3,7 @@
 
 // QT Header Files
 #include "GuiNoteModel.h"
+#include "stdChronoToQTConversions.h"
 
 GuiNoteModel::GuiNoteModel(QObject *parent)
     : QObject{parent},
@@ -16,6 +17,13 @@ GuiNoteModel::GuiNoteModel(std::shared_ptr<NoteModel> dbNoteDataptr, QObject *pa
     m_DBNoteDataptr = dbNoteDataptr;
     m_UserId = dbNoteDataptr->getUserId();
     m_Content = QString::fromStdString(dbNoteDataptr->getContent());
+
+    QDateTime tempqdt = chronoTimePointToQDateTime(dbNoteDataptr->getDateAdded());
+    m_CreationDateTS = tempqdt.toString(Qt::ISODate);
+
+    tempqdt = chronoTimePointToQDateTime(dbNoteDataptr->getLastModified());
+    m_LastUpdateTS = tempqdt.toString(Qt::ISODate);
+
 }
 
 void GuiNoteModel::setContent(QString newContent)
