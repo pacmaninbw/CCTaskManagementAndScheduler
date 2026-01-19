@@ -2,26 +2,39 @@
 #define GUIUSERMODEL_H_
 
 // Project Header Files
+class UserModel;
 
 // QT Header Files
 #include <QObject>
 #include <QString>
 
 // Standard C++ Header Files
-#include <chrono>
+#include <memory>
 
 class GuiUserModel : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString loginName MEMBER m_LoginName NOTIFY loginNameChanged)
-    Q_PROPERTY(QString password MEMBER m_Password NOTIFY passwordChanged)
-    Q_PROPERTY(QString email MEMBER m_Email NOTIFY emailChanged)
-    Q_PROPERTY(QString lastName MEMBER m_LastName NOTIFY lastNameChanged)
-    Q_PROPERTY(QString firstName MEMBER m_FirstName NOTIFY firstNameChanged)
-    Q_PROPERTY(QString middleInitial MEMBER m_MiddleInitial NOTIFY middleInitialChanged)
 
 public:
     explicit GuiUserModel(QObject *parent = nullptr);
+    explicit GuiUserModel(std::shared_ptr<UserModel> dbUserDataPtr, QObject *parent = nullptr);
+
+    QString getLoginName() const { return m_LoginName; };
+    QString getPassword()  const { return m_Password; };
+    QString getEmail() const { return m_Email; };
+    QString getLastName() const { return m_LastName; };
+    QString getFirstName() const { return m_FirstName; };
+    QString getMiddleInitial() const { return m_MiddleInitial; };
+    QString getCreated() const { return m_CreatedTS; };
+    QString getLastLogin() const { return m_LastLoginTS; };
+    std::size_t getDbUserId() const { return m_dbUserId; };
+
+    void setLoginName(QString val);
+    void setPassword(QString val);
+    void setEmail(QString val);
+    void setLastName(QString val);
+    void setFirstName(QString val);
+    void setMiddleInitial(QString val);
 
 signals:
     void loginNameChanged();
@@ -30,9 +43,6 @@ signals:
     void lastNameChanged();
     void firstNameChanged();
     void middleInitialChanged();
-    void dbUserIdChanged();
-    void creationTimeStampChanged();
-    void lastLoginTimeStampChanged();
 
 private:
     QString m_LoginName;
@@ -41,9 +51,10 @@ private:
     QString m_LastName;
     QString m_FirstName;
     QString m_MiddleInitial;
-    std::chrono::system_clock::time_point m_created;
-    std::chrono::system_clock::time_point m_lastLogin;
+    QString m_CreatedTS;
+    QString m_LastLoginTS;
     std::size_t m_dbUserId;
+    std::shared_ptr<UserModel> m_DbUserDataPtr;
 };
 
 #endif // GUIUSERMODEL_H_
