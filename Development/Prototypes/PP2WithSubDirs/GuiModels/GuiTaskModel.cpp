@@ -4,9 +4,11 @@
 
 // QT Header File
 #include "GuiTaskModel.h"
+#include "stdChronoToQTConversions.h"
 
 // Standard C++ Header Files
 #include <memory>
+#include <string>
 
 GuiTaskModel::GuiTaskModel(QObject *parent)
     : QObject{parent},
@@ -26,6 +28,7 @@ GuiTaskModel::GuiTaskModel(std::shared_ptr<TaskModel> dbTaskDataPtr, QObject* pa
     m_CreatorUserId = dbTaskDataPtr->getCreatorID();
     m_AssigneeUserId = dbTaskDataPtr->getAssignToID();
     m_Description = QString::fromStdString(dbTaskDataPtr->getDescription());
+    m_status = convertFromTaskModel(static_cast<std::size_t>(dbTaskDataPtr->getStatus()));
     m_DueDate = QDate(dbTaskDataPtr->getDueDate());
     m_ScheduledStart = QDate(dbTaskDataPtr->getScheduledStart());
 
@@ -43,6 +46,20 @@ GuiTaskModel::GuiTaskModel(std::shared_ptr<TaskModel> dbTaskDataPtr, QObject* pa
     {
         m_CompletionDate = QDate(dbTaskDataPtr->getCompletionDate());
     }
+
+    m_EstimatedEffort = QString::fromStdString(std::to_string(dbTaskDataPtr->getEstimatedEffort()));
+
+    m_ActualEffortToDate = QString::fromStdString(std::to_string(dbTaskDataPtr->getactualEffortToDate()));
+
+    m_PriorityGroup = QString::fromStdString(std::to_string(dbTaskDataPtr->getPriorityGroup()));
+
+    m_Priority = QString::fromStdString(std::to_string(dbTaskDataPtr->getPriority()));
+
+    QDateTime tempqdt = chronoTimePointToQDateTime(dbTaskDataPtr->getCreationDate());
+    m_CreationTimeStamp = tempqdt.toString(Qt::ISODate);
+
+    tempqdt = chronoTimePointToQDateTime(dbTaskDataPtr->getLastUpdate());
+    m_LastUpdateTimeStamp = tempqdt.toString(Qt::ISODate);
 }
 
 void GuiTaskModel::setDbTaskId(std::size_t v)
