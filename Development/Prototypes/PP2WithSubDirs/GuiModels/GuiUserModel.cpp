@@ -1,6 +1,11 @@
+// Project Header Files
 #include <UserModel.h>
 
+// QT Header Files
 #include "GuiUserModel.h"
+#include "stdChronoToQTConversions.h"
+
+// Standard C++ Header Files
 
 GuiUserModel::GuiUserModel(QObject *parent)
     : QObject{parent},
@@ -12,6 +17,21 @@ GuiUserModel::GuiUserModel(std::shared_ptr<UserModel> dbUserDataPtr, QObject *pa
 {
     m_DbUserDataPtr = dbUserDataPtr;
     m_dbUserId = dbUserDataPtr->getUserID();
+    m_LoginName = QString::fromStdString(dbUserDataPtr->getLoginName());
+    m_Password = QString::fromStdString(dbUserDataPtr->getPassword());
+    m_Email = QString::fromStdString(dbUserDataPtr->getEmail());
+    m_LastName = QString::fromStdString(dbUserDataPtr->getLastName());
+    m_FirstName = QString::fromStdString(dbUserDataPtr->getFirstName());
+    m_MiddleInitial = QString::fromStdString(dbUserDataPtr->getMiddleInitial());
+
+    QDateTime tempqdt = chronoTimePointToQDateTime(dbUserDataPtr->getCreationDate());
+    m_CreatedTS = tempqdt.toString(Qt::ISODate);
+
+    if (dbUserDataPtr->getLastLogin().has_value())
+    {
+        tempqdt = chronoTimePointToQDateTime(dbUserDataPtr->getLastLogin().value());
+        m_LastLoginTS = tempqdt.toString(Qt::ISODate);
+    }
 }
 
 void GuiUserModel::setLoginName(QString val)
