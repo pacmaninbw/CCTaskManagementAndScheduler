@@ -80,6 +80,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Dialogs/UserEditorDialog.cpp Dialogs/UserEditorDialog.h Dialogs/UserEditorDialog.ui
         Dialogs/NoteEditorDialog.cpp Dialogs/NoteEditorDialog.h Dialogs/NoteEditorDialog.ui
         Dialogs/LoginDialog.h Dialogs/LoginDialog.cpp Dialogs/LoginDialog.ui
+        GuiModels/GuiGoalModel.h GuiModels/GuiGoalModel.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET PP2WithSubDirs APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
