@@ -13,7 +13,11 @@
 
 
 GuiGoalModel::GuiGoalModel(QObject *parent)
-    : QObject{parent}
+    : QObject{parent},
+    m_GoalId{0},
+    m_UserId{0},
+    m_ParentId{0},
+    m_DBGoalDataptr{nullptr}
 {}
 
 GuiGoalModel::GuiGoalModel(std::shared_ptr<UserGoalModel> dbGoalDataptr, QObject *parent)
@@ -24,7 +28,6 @@ GuiGoalModel::GuiGoalModel(std::shared_ptr<UserGoalModel> dbGoalDataptr, QObject
     m_Description = QString::fromStdString(dbGoalDataptr->getDescription());
     m_Priority = QString::fromStdString(std::to_string(dbGoalDataptr->getPriority()));
     m_ParentId = dbGoalDataptr->getParentId();
-
 
     QDateTime tempqdt = chronoTimePointToQDateTime(dbGoalDataptr->getCreationTimeStamp());
     m_CreationTS = tempqdt.toString(Qt::ISODate);
