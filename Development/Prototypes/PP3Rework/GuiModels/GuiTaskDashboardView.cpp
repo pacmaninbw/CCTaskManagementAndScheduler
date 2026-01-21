@@ -1,10 +1,10 @@
-#include "GuiTaskTableShortView.h"
+#include "GuiTaskDashboardView.h"
 
-GuiTaskTableShortView::GuiTaskTableShortView(QObject *parent)
+GuiTaskDashboardView::GuiTaskDashboardView(QObject *parent)
     : QAbstractTableModel(parent)
 {}
 
-QVariant GuiTaskTableShortView::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant GuiTaskDashboardView::headerData(int section, Qt::Orientation orientation, int role) const
 {
     // FIXME: Implement me!
     if (orientation != Qt::Horizontal || role != Qt::DisplayRole) return {};
@@ -16,7 +16,7 @@ QVariant GuiTaskTableShortView::headerData(int section, Qt::Orientation orientat
     }
 }
 
-bool GuiTaskTableShortView::setHeaderData(
+bool GuiTaskDashboardView::setHeaderData(
         int section, Qt::Orientation orientation, const QVariant &value, int role)
 {
     if (value != headerData(section, orientation, role)) {
@@ -27,7 +27,7 @@ bool GuiTaskTableShortView::setHeaderData(
     return false;
 }
 
-int GuiTaskTableShortView::rowCount(const QModelIndex &parent) const
+int GuiTaskDashboardView::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
         return 0;
@@ -35,7 +35,7 @@ int GuiTaskTableShortView::rowCount(const QModelIndex &parent) const
     return m_data.count();
 }
 
-int GuiTaskTableShortView::columnCount(const QModelIndex &parent) const
+int GuiTaskDashboardView::columnCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
         return 0;
@@ -44,7 +44,7 @@ int GuiTaskTableShortView::columnCount(const QModelIndex &parent) const
     return 3;
 }
 
-QVariant GuiTaskTableShortView::data(const QModelIndex &index, int role) const
+QVariant GuiTaskDashboardView::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
         return QVariant();
@@ -60,7 +60,7 @@ QVariant GuiTaskTableShortView::data(const QModelIndex &index, int role) const
     }
 }
 
-bool GuiTaskTableShortView::setData(const QModelIndex &index, const QVariant &value, int role)
+bool GuiTaskDashboardView::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (data(index, role) != value) {
         // FIXME: Implement me!
@@ -70,7 +70,7 @@ bool GuiTaskTableShortView::setData(const QModelIndex &index, const QVariant &va
     return false;
 }
 
-Qt::ItemFlags GuiTaskTableShortView::flags(const QModelIndex &index) const
+Qt::ItemFlags GuiTaskDashboardView::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
         return Qt::NoItemFlags;
@@ -78,7 +78,7 @@ Qt::ItemFlags GuiTaskTableShortView::flags(const QModelIndex &index) const
     return QAbstractItemModel::flags(index) | Qt::ItemIsEditable; // FIXME: Implement me!
 }
 
-bool GuiTaskTableShortView::insertRows(int row, int count, const QModelIndex &parent)
+bool GuiTaskDashboardView::insertRows(int row, int count, const QModelIndex &parent)
 {
     beginInsertRows(parent, row, row + count - 1);
     // FIXME: Implement me!
@@ -86,7 +86,7 @@ bool GuiTaskTableShortView::insertRows(int row, int count, const QModelIndex &pa
     return true;
 }
 
-bool GuiTaskTableShortView::insertColumns(int column, int count, const QModelIndex &parent)
+bool GuiTaskDashboardView::insertColumns(int column, int count, const QModelIndex &parent)
 {
     beginInsertColumns(parent, column, column + count - 1);
     // FIXME: Implement me!
@@ -94,7 +94,7 @@ bool GuiTaskTableShortView::insertColumns(int column, int count, const QModelInd
     return true;
 }
 
-bool GuiTaskTableShortView::removeRows(int row, int count, const QModelIndex &parent)
+bool GuiTaskDashboardView::removeRows(int row, int count, const QModelIndex &parent)
 {
     beginRemoveRows(parent, row, row + count - 1);
     // FIXME: Implement me!
@@ -102,7 +102,7 @@ bool GuiTaskTableShortView::removeRows(int row, int count, const QModelIndex &pa
     return true;
 }
 
-bool GuiTaskTableShortView::removeColumns(int column, int count, const QModelIndex &parent)
+bool GuiTaskDashboardView::removeColumns(int column, int count, const QModelIndex &parent)
 {
     beginRemoveColumns(parent, column, column + count - 1);
     // FIXME: Implement me!

@@ -58,8 +58,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         GuiModels/GuiScheduleItemModel.h
         GuiModels/GuiTaskModel.cpp
         GuiModels/GuiTaskModel.h
-        GuiModels/GuiTaskTableShortView.cpp
-        GuiModels/GuiTaskTableShortView.h
+        GuiModels/GuiTaskDashboardView.cpp
+        GuiModels/GuiTaskDashboardView.h
         GuiModels/GuiUserModel.cpp
         GuiModels/GuiUserModel.h
         GuiModels/stdChronoToQTConversions.cpp
