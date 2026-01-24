@@ -4,9 +4,11 @@
 // Project Header Files
 
 // QT Header Files
+#include "GuiUserModel.h"
 #include <QVariant>
 #include <QAbstractButton>
 #include <QApplication>
+#include <QCheckBox>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QFormLayout>
@@ -22,23 +24,29 @@ class UserEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit UserEditorDialog(QWidget *parent = nullptr, std::size_t userId=0);
+    explicit UserEditorDialog(QWidget *parent = nullptr, GuiUserModel* userData=nullptr);
     ~UserEditorDialog();
 
 public slots:
+    void accept() override;
 
 signals:
 
 private slots:
 
 private:
-    void setUpUserEditorialogUi();
+    void setUpUserEditorDialogUi();
     QGroupBox* setUpUserProfileGB();
     QGroupBox* setUpLoginDataGB();
     QDialogButtonBox* setUpEditUserButtonBox();
+    void initAllFieldsFromData();
+    bool addUser();
+    bool upDateUser();
+    void transferAllFieldsToData();
 
 // Model related variables
-    std::size_t userID;
+    std::size_t m_userID;
+    GuiUserModel* m_UserData;
 
 // QT Widgets
     QDialogButtonBox* editUserButtonBox;
@@ -53,8 +61,11 @@ private:
     QFormLayout* loginDataForm;
     QLineEdit* userNameLE;
     QLineEdit* passwordLE;
+    QCheckBox* autoGenerateLoginAndPassword;
 
     const int groupBoxSpacing = 60;
+    const int emailWidth = 300;
+    const int emailCharCount = 50;
 };
 
 #endif // USEREDITORDIALOG_H

@@ -14,19 +14,27 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QVBoxLayout>
-
-// Standard C++ Headers
-
 
 
 // Standard C++ Header Files
 
-UserEditorDialog::UserEditorDialog(QWidget *parent, std::size_t userId)
+UserEditorDialog::UserEditorDialog(QWidget *parent, GuiUserModel* userData)
     : QDialog(parent),
-    userID{userId}
+    m_userID{0},
+    m_UserData{nullptr}
 {
-    setUpUserEditorialogUi();
+    m_UserData = (userData != nullptr)? userData : new GuiUserModel;
+
+    m_userID = m_UserData->getDbUserId();
+
+    setUpUserEditorDialogUi();
+
+    if (userData != nullptr)
+    {
+        initAllFieldsFromData();
+    }
 }
 
 UserEditorDialog::~UserEditorDialog()
@@ -34,7 +42,23 @@ UserEditorDialog::~UserEditorDialog()
 
 }
 
-void UserEditorDialog::setUpUserEditorialogUi()
+void UserEditorDialog::accept()
+{
+    bool updateSuccessful = (m_userID > 0)? upDateUser() : addUser();
+    
+    if (updateSuccessful)
+    {
+        QDialog::accept();
+    }
+    else
+    {
+        QString errorReport = "User edit failed.\n";
+        errorReport += m_UserData->getErrorMessages();
+        QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
+    }
+}
+
+void UserEditorDialog::setUpUserEditorDialogUi()
 {
     editUserLayout = cqtfa_QTWidget<QVBoxLayout>("editUserLayout", this);
     editUserLayout->addWidget(setUpUserProfileGB(), 0, Qt::AlignHCenter);
@@ -47,10 +71,9 @@ void UserEditorDialog::setUpUserEditorialogUi()
 
     setLayout(editUserLayout);
 
-    QString dialogTitle = (userID == 0)? "Add User" : "Edit User Profile";
+    QString dialogTitle = (m_userID == 0)? "Add User" : "Edit User Profile";
 
     setWindowTitle(dialogTitle);
-
 }
 
 QGroupBox* UserEditorDialog::setUpUserProfileGB()
@@ -68,7 +91,7 @@ QGroupBox* UserEditorDialog::setUpUserProfileGB()
     middleNameLE = cqtfa_LineEditWithWidthAndLength("middleNameLE", this);
     userProfileForm->addRow("Middle Initial:", middleNameLE);
 
-    emailLE = cqtfa_LineEditWithWidthAndLength("emailLE", this);
+    emailLE = cqtfa_LineEditWithWidthAndLength("emailLE", this, emailWidth, emailCharCount);
     userProfileForm->addRow("eMail Address:", emailLE);
 
     userProfileGB->setLayout(userProfileForm);
@@ -87,6 +110,17 @@ QGroupBox* UserEditorDialog::setUpLoginDataGB()
 
     passwordLE = cqtfa_LineEditWithWidthAndLength("passwordLE", this);
     loginDataForm->addRow("Password:", passwordLE);
+
+    if (m_userID == 0)
+    {
+        autoGenerateLoginAndPassword = cqtfa_QTWidgetWithText<QCheckBox>(
+            "Auto Generate Login and Password", "autoGenerateLoginAndPassword", this);
+        loginDataForm->addRow(autoGenerateLoginAndPassword);
+    }
+    else
+    {
+        autoGenerateLoginAndPassword = nullptr;
+    }
     
     loginDataGB->setLayout(loginDataForm);
 
@@ -108,5 +142,38 @@ QDialogButtonBox *UserEditorDialog::setUpEditUserButtonBox()
     return buttonBox;
 }
 
+void UserEditorDialog::initAllFieldsFromData()
+{
+    firstNameLE->setText(m_UserData->getFirstName());
+    lastNameLE->setText(m_UserData->getLastName());
+    middleNameLE->setText(m_UserData->getMiddleInitial());
+    emailLE->setText(m_UserData->getEmail());
+    userNameLE->setText(m_UserData->getLoginName());
+    passwordLE->setText(m_UserData->getPassword());
+}
 
+bool UserEditorDialog::addUser()
+{
+    transferAllFieldsToData();
+    return m_UserData->attemptAddUser();
+}
 
+bool UserEditorDialog::upDateUser()
+{
+    transferAllFieldsToData();
+    return m_UserData->attemptUpdateUser();
+}
+
+void UserEditorDialog::transferAllFieldsToData()
+{
+    m_UserData->setFirstName(firstNameLE->text());
+    m_UserData->setLastName(lastNameLE->text());
+    m_UserData->setMiddleInitial(middleNameLE->text());
+    m_UserData->setEmail(emailLE->text());
+    m_UserData->setLoginName(userNameLE->text());
+    m_UserData->setPassword(passwordLE->text());
+    if (autoGenerateLoginAndPassword != nullptr)
+    {
+        m_UserData->setAutoGenerateLoginData(autoGenerateLoginAndPassword->isChecked());
+    }
+}
