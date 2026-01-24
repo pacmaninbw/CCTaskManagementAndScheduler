@@ -4,6 +4,7 @@
 // Project Header Files
 
 // QT Header Files
+#include "GuiUserModel.h"
 #include <QVariant>
 #include <QApplication>
 #include <QDialog>
@@ -21,6 +22,7 @@ class LoginDialog : public QDialog
 public:
     explicit LoginDialog(QWidget* parent = nullptr);
     ~LoginDialog();
+    GuiUserModel* GetUserData() { return m_UserDataPtr; };
 
 public slots:
 
@@ -31,6 +33,8 @@ private slots:
 
 private:
     void setUpLoginDialogUI();
+
+    GuiUserModel* m_UserDataPtr;
 
     QGroupBox* userLoginGB;
     QLineEdit* userLoginUserNameLE;
