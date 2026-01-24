@@ -4,6 +4,7 @@
 // Project Header Files
 
 // QT Header Files
+#include "GuiUserModel.h"
 #include <QVariant>
 #include <QAction>
 #include <QApplication>
@@ -54,6 +55,7 @@ private:
     void setUpGoalMenu();
     void setUpScheduleItemMenu();
     void setUpDbConnectionMenu();
+    void updateDashboardDisplayData();
     QGroupBox* setUpUserIdBox();
     QHBoxLayout* setUpPerDayLayout();
     QGroupBox* setUpPerDayTaskGB();
@@ -65,8 +67,9 @@ private:
     QGroupBox* updateSchedule();
     QGroupBox* listNotes();
 
-    QString progNameStr;
-    std::size_t userID;
+    QString m_ProgNameStr;
+    std::size_t m_UserID;
+    GuiUserModel* m_UserDataPtr;
 
     QMenu* udTaskMenu;
     QMenu* udUserMenu;

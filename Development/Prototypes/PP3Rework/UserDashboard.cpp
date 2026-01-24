@@ -23,9 +23,10 @@
 
 UserDashboard::UserDashboard(QWidget *parent)
     : QMainWindow(parent),
-    userID{0}
+    m_UserID{0},
+    m_UserDataPtr{nullptr}
 {
-    progNameStr = QString::fromStdString(programOptions.progName);
+    m_ProgNameStr = QString::fromStdString(programOptions.progName);
 
     setUpUserDashboardUi();
 }
@@ -63,7 +64,7 @@ void UserDashboard::setUpUserDashboardUi()
 
     setCentralWidget(centralwidget);
 
-    setWindowTitle(progNameStr);
+    setWindowTitle(m_ProgNameStr);
 }
 
 void UserDashboard::setUpDashboardMenuBar()
@@ -175,7 +176,15 @@ void UserDashboard::setUpDbConnectionMenu()
     udDBConnectionMenu = menuBar()->addMenu("&DB Connection");
     udDBConnectionMenu->addAction(udActionConnectDB);
     udDBConnectionMenu->addSeparator();
+}
 
+void UserDashboard::updateDashboardDisplayData()
+{
+    m_UserID = m_UserDataPtr->getDbUserId();
+    udUserFirstNameDisplay->setText(m_UserDataPtr->getFirstName());
+    udUserMiddleInitialDisplay->setText(m_UserDataPtr->getMiddleInitial());
+    udUserLastNameDisplay->setText(m_UserDataPtr->getLastName());
+    udUserNameDisplay->setText(m_UserDataPtr->getLoginName());
 }
 
 QGroupBox *UserDashboard::setUpUserIdBox()
@@ -273,7 +282,7 @@ void UserDashboard::fakeFillGroupBoxLayout(std::string fieldPartialName, QVBoxLa
 
 void UserDashboard::handleAddTaskAction()
 {
-    TaskEditorDialog addTaskDialog(this, userID);
+    TaskEditorDialog addTaskDialog(this, m_UserID);
 
     addTaskDialog.exec();
 }
@@ -282,7 +291,7 @@ void UserDashboard::handleEditTaskAction()
 {
     std::size_t taskID = 1;
 
-    TaskEditorDialog editTaskDialog(this, userID, taskID);
+    TaskEditorDialog editTaskDialog(this, m_UserID, taskID);
 
     editTaskDialog.exec();
 }
@@ -296,14 +305,14 @@ void UserDashboard::handleAddUserAction()
 
 void UserDashboard::handleEditUserAction()
 {
-    UserEditorDialog editUserDialog(this, userID);
+    UserEditorDialog editUserDialog(this, m_UserDataPtr);
 
     editUserDialog.exec();
 }
 
 void UserDashboard::handleAddNoteAction()
 {
-    NoteEditorDialog addNoteDialog(this, userID);
+    NoteEditorDialog addNoteDialog(this, m_UserID);
 
     addNoteDialog.exec();
 }
@@ -313,20 +322,23 @@ void UserDashboard::handleUserLoginAction()
     LoginDialog userLogin(this);
 
     userLogin.exec();
+
+    m_UserDataPtr = userLogin.GetUserData();
+    updateDashboardDisplayData();
 }
 
 void UserDashboard::handleEditNoteAction()
 {
     std::size_t noteID = 1;
 
-    NoteEditorDialog editNoteDialog(this, userID, noteID);
+    NoteEditorDialog editNoteDialog(this, m_UserID, noteID);
 
     editNoteDialog.exec();
 }
 
 void UserDashboard::handleAddGoalAction()
 {
-    GoalEditorDialog addGoalDialog(this, userID);
+    GoalEditorDialog addGoalDialog(this, m_UserID);
 
     addGoalDialog.exec();
 }
@@ -335,14 +347,14 @@ void UserDashboard::handleEditGoalAction()
 {
     std::size_t goalID = 1;
 
-    GoalEditorDialog editGoalDialog(this, userID, goalID);
+    GoalEditorDialog editGoalDialog(this, m_UserID, goalID);
 
     editGoalDialog.exec();
 }
 
 void UserDashboard::handleAddScheduleItemAction()
 {
-    ScheduleItemEditorDialog addScheduleItemDialog(this, userID);
+    ScheduleItemEditorDialog addScheduleItemDialog(this, m_UserID);
 
     addScheduleItemDialog.exec();
 }
@@ -350,7 +362,7 @@ void UserDashboard::handleAddScheduleItemAction()
 void UserDashboard::handleEditScheduleItemAction()
 {
     std::size_t scheduleItemID = 1;
-    ScheduleItemEditorDialog editScheduleItemDialog(this, userID, scheduleItemID);
+    ScheduleItemEditorDialog editScheduleItemDialog(this, m_UserID, scheduleItemID);
 
     editScheduleItemDialog.exec();
 }
