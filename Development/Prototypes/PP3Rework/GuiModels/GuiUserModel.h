@@ -28,6 +28,9 @@ public:
     QString getCreated() const { return m_CreatedTS; };
     QString getLastLogin() const { return m_LastLoginTS; };
     std::size_t getDbUserId() const { return m_dbUserId; };
+    QString getErrorMessages() const { return m_DbErrorMessages; };
+    bool getAutoGenerateLoginData() const { return m_AutoGenerateLoginAndPassword; };
+    bool isValid();
 
     void setLoginName(QString val);
     void setPassword(QString val);
@@ -35,6 +38,12 @@ public:
     void setLastName(QString val);
     void setFirstName(QString val);
     void setMiddleInitial(QString val);
+    void setAutoGenerateLoginData(bool val);
+    void setUserDataPtr(std::shared_ptr<UserModel> dbUserDataPtr);
+    bool attemptLogin();
+    bool attemptLogin(QString loginName, QString password);
+    bool attemptAddUser();
+    bool attemptUpdateUser();
 
 signals:
     void loginNameChanged();
@@ -43,8 +52,10 @@ signals:
     void lastNameChanged();
     void firstNameChanged();
     void middleInitialChanged();
+    void autoGenerateLoginDataChanged();
 
 private:
+    bool addLoginData(std::shared_ptr<UserModel> newUser);
     QString m_LoginName;
     QString m_Password;
     QString m_Email;
@@ -55,6 +66,8 @@ private:
     QString m_LastLoginTS;
     std::size_t m_dbUserId;
     std::shared_ptr<UserModel> m_DbUserDataPtr;
+    QString m_DbErrorMessages;
+    bool m_AutoGenerateLoginAndPassword;
 };
 
 #endif // GUIUSERMODEL_H_
