@@ -308,6 +308,7 @@ void UserDashboard::handleEditUserAction()
     UserEditorDialog editUserDialog(this, m_UserDataPtr);
 
     editUserDialog.exec();
+    updateDashboardDisplayData();
 }
 
 void UserDashboard::handleAddNoteAction()

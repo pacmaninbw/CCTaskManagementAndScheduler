@@ -12,7 +12,8 @@ GuiUserModel::GuiUserModel(QObject *parent)
     : QObject{parent},
     m_dbUserId{0},
     m_DbUserDataPtr{nullptr},
-    m_AutoGenerateLoginAndPassword{false}
+    m_AutoGenerateLoginAndPassword{false},
+    m_FieldsChangedValue{false}
 {}
 
 GuiUserModel::GuiUserModel(std::shared_ptr<UserModel> dbUserDataPtr, QObject *parent)
@@ -31,6 +32,7 @@ void GuiUserModel::setLoginName(QString val)
     if (m_LoginName != val)
     {
         m_LoginName = val;
+        m_FieldsChangedValue = true;
         emit loginNameChanged();
     }
 }
@@ -40,6 +42,7 @@ void GuiUserModel::setPassword(QString val)
     if (m_Password != val)
     {
         m_Password = val;
+        m_FieldsChangedValue = true;
         emit passwordChanged();
     }
 }
@@ -49,6 +52,7 @@ void GuiUserModel::setEmail(QString val)
     if (m_Email != val)
     {
         m_Email = val;
+        m_FieldsChangedValue = true;
         emit emailChanged();
     }
 }
@@ -58,6 +62,7 @@ void GuiUserModel::setLastName(QString val)
     if (m_LastName != val)
     {
         m_LastName = val;
+        m_FieldsChangedValue = true;
         emit lastNameChanged();
     }
 }
@@ -67,6 +72,7 @@ void GuiUserModel::setFirstName(QString val)
         if (m_FirstName != val)
     {
         m_FirstName = val;
+        m_FieldsChangedValue = true;
         emit firstNameChanged();
     }
 }
@@ -76,6 +82,7 @@ void GuiUserModel::setMiddleInitial(QString val)
     if (m_MiddleInitial != val)
     {
         m_MiddleInitial = val;
+        m_FieldsChangedValue = true;
         emit middleInitialChanged();
     }
 }
@@ -187,7 +194,19 @@ bool GuiUserModel::attemptAddUser()
 
 bool GuiUserModel::attemptUpdateUser()
 {
-    return false;
+    if (!m_FieldsChangedValue)
+    {
+        return true;
+    }
+
+    m_DbUserDataPtr->setFirstName(m_FirstName.toStdString());
+    m_DbUserDataPtr->setMiddleInitial(m_MiddleInitial.toStdString());
+    m_DbUserDataPtr->setLastName(m_LastName.toStdString());
+    m_DbUserDataPtr->setEmail(m_Email.toStdString());
+    m_DbUserDataPtr->setLoginName(m_LoginName.toStdString());
+    m_DbUserDataPtr->setPassword(m_Password.toStdString());
+
+    return m_DbUserDataPtr->update();
 }
 
 bool GuiUserModel::addLoginData(std::shared_ptr<UserModel> newUser)

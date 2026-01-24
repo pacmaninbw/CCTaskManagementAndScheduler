@@ -68,6 +68,7 @@ private:
     std::shared_ptr<UserModel> m_DbUserDataPtr;
     QString m_DbErrorMessages;
     bool m_AutoGenerateLoginAndPassword;
+    bool m_FieldsChangedValue;
 };
 
 #endif // GUIUSERMODEL_H_
