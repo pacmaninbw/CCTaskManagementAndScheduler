@@ -30,3 +30,13 @@ std::chrono::system_clock::time_point qDateTimeToChrono(const QDateTime& qtDateT
 
     return timePoint;
 }
+
+std::chrono::year_month_day qDateToChrono(const QDate &qdate)
+{
+        // Requires C++20
+    std::chrono::sys_days sysDays = qdate.toStdSysDays();
+
+    // std::chrono::year_month_day can be constructed from std::chrono::sys_days
+    std::chrono::year_month_day ymd{sysDays};
+    return ymd;
+}
