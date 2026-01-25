@@ -65,6 +65,11 @@ public:
     void setEstimatedEffort(QString v);
     void setActualEffortToDate(QString v);
     void setPersonal(bool v);
+    bool addTaskToDatabase();
+    bool updateTaskInDatabase();
+    bool isValid();
+    QString getErrorMessages() const { return m_DbErrorMessages; };
+
 
 signals:
     void dbTaskIdChanged();
@@ -91,6 +96,10 @@ signals:
 private:
     GUITaskStatus convertFromTaskModel(std::size_t taskModelStatus);
     std::size_t TaskModelStatusFromGuiTaskStatus(GUITaskStatus taskStatus);
+    void transferFieldsToDbModel();
+    void transferDbModelDataToFields();
+    void transferPriorityFieldDataToDBModel();
+    void transferOptionalFieldsToDBModel();
     std::size_t m_DbTaskId;
     std::size_t m_CreatorUserId;
     std::size_t m_AssigneeUserId;
@@ -112,6 +121,8 @@ private:
     QString m_LastUpdateTimeStamp;
     QList<std::size_t> m_Depenedencies;
     std::shared_ptr<TaskModel> m_DbTaskDataPtr;
+    bool m_FieldsChangedValue;
+    QString m_DbErrorMessages;
 };
 
 #endif // GUITASKMODEL_H_
