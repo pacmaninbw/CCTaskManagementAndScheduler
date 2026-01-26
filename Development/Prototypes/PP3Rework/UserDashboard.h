@@ -57,6 +57,8 @@ private:
     void setUpScheduleItemMenu();
     void setUpDbConnectionMenu();
     void updateDashboardDisplayData();
+    bool dbIsConnectedUserIsLoggedIn();
+    bool dbIsConnected();
     QGroupBox* setUpUserIdBox();
     QHBoxLayout* setUpPerDayLayout();
     QGroupBox* setUpPerDayTaskGB();
