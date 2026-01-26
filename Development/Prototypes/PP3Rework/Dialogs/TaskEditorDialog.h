@@ -2,6 +2,8 @@
 #define TASKEDITORDIALOG_H
 
 // Project Header Files
+#include "GuiTaskModel.h"
+#include "GuiUserModel.h"
 
 // QT Header Files
 #include <QVariant>
@@ -27,10 +29,11 @@ class TaskEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit TaskEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, std::size_t taskId=0);
+    explicit TaskEditorDialog(QWidget* parent = nullptr, GuiUserModel* creator=nullptr, GuiTaskModel* taskToEdit=nullptr);
     ~TaskEditorDialog();
 
 public slots:
+    void accept() override;
 
 signals:
 
@@ -53,9 +56,16 @@ private:
     QGroupBox* setUpTaskEfforGroupBox();
     QGroupBox* setUpTaskPriorityGroupBox();
     QDialogButtonBox* setUpEditTaskButtonBox();
+    bool addTask();
+    bool updateTask();
+    void transferAllFieldsToData();
+    void initEditFields(GuiTaskModel* taskToEdit);
+    QDate initValidDateField(QDate fieldData);
 
-    std::size_t userID;
-    std::size_t taskID;
+    GuiUserModel* m_Creator;
+    GuiTaskModel* m_TaskData;
+    GuiUserModel* m_Assignee;
+    GuiTaskModel* m_ParentTaskData;
 
     QVBoxLayout* editTaskMainLayout;
     QDialogButtonBox* editTaskbuttonBox;

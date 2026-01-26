@@ -20,17 +20,36 @@
 
 // Standard C++ Header Files
 
-TaskEditorDialog::TaskEditorDialog(QWidget *parent, std::size_t userId, std::size_t taskId)
+TaskEditorDialog::TaskEditorDialog(QWidget *parent, GuiUserModel* creator, GuiTaskModel* taskToEdit)
     : QDialog(parent),
-    userID{userId},
-    taskID{taskId}
+    m_Creator{creator},
+    m_TaskData{taskToEdit},
+    m_ParentTaskData{nullptr}
 {
     setUpTaskEditorUI();
+
+    initEditFields(taskToEdit);
 }
 
 TaskEditorDialog::~TaskEditorDialog()
 {
 
+}
+
+void TaskEditorDialog::accept()
+{
+    bool updateSuccessful = (m_TaskData->getDbTaskId() > 0)? updateTask() : addTask();
+
+    if (updateSuccessful)
+    {
+        QDialog::accept();
+    }
+    else
+    {
+        QString errorReport = "User edit failed.\n";
+        errorReport += m_TaskData->getErrorMessages();
+        QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
+    }
 }
 
 void TaskEditorDialog::on_editTaskPersonalCB_stateChanged()
@@ -121,7 +140,7 @@ void TaskEditorDialog::setUpTaskEditorUI()
     
     adjustSize();
 
-    QString titleStr = taskID? "Edit Task Dialog" : "Add Task Dialog";
+    QString titleStr = (m_TaskData && m_TaskData->getDbTaskId() > 0)? "Edit Task Dialog" : "Add Task Dialog";
     setWindowTitle(titleStr);
 }
 
@@ -351,6 +370,77 @@ QDialogButtonBox *TaskEditorDialog::setUpEditTaskButtonBox()
     connect(editTaskbuttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(editTaskbuttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
-
     return editTaskbuttonBox;
+}
+
+bool TaskEditorDialog::addTask()
+{
+    transferAllFieldsToData();
+    return m_TaskData->addTaskToDatabase();
+}
+
+bool TaskEditorDialog::updateTask()
+{
+    transferAllFieldsToData();
+    return m_TaskData->updateTaskInDatabase();
+}
+
+void TaskEditorDialog::transferAllFieldsToData()
+{
+    m_TaskData->setCreatorUserId(m_Creator->getDbUserId());
+    m_TaskData->setAssigneeUserId(m_Assignee->getDbUserId());
+    m_TaskData->setDescription(editTaskDescriptionTE->toPlainText());
+    m_TaskData->setDueDate(editTaskDueDateSelectorDE->date());
+    m_TaskData->setScheduledStart(editTaskScheduledStartDE->date());
+    m_TaskData->setEstimatedCompletion(editTaskExpectedCompletionDE->date());
+    m_TaskData->setEstimatedEffort(editTaskEstimatedEffortLE->text());
+    m_TaskData->setActualEffortToDate(editTaskActualEffortLE->text());
+    m_TaskData->setPriorityGroup(editTaskPriorityGroupLE->text());
+    m_TaskData->setPriority(editTaskPriorityLE->text());
+    m_TaskData->setPersonal(editTaskPersonalCB->isChecked());
+    m_TaskData->setStatus(static_cast<GuiTaskModel::GUITaskStatus>(editTaskStatusSelectorCB->currentIndex()));
+
+    if (m_ParentTaskData)
+    {
+        m_TaskData->setParentTaskId(m_ParentTaskData->getDbTaskId());
+    }
+/*
+ *     QDate m_ActualStartDate;
+ *     QDate m_CompletionDate;
+ *     QList<std::size_t> m_Depenedencies;
+ */
+}
+
+void TaskEditorDialog::initEditFields(GuiTaskModel *taskToEdit)
+{
+    if (!taskToEdit)
+    {
+        editTaskCreatorFirstNameDisplay->setText(m_Creator->getFirstName());
+        editTaskCreatorLastNameDisplay->setText(m_Creator->getLastName());
+        editTaskAssignedToFirstNameDisplay->setText(m_Creator->getFirstName());
+        editTaskAssignedToLastName->setText(m_Creator->getLastName());
+
+        m_Assignee = m_Creator;
+
+        m_TaskData = new GuiTaskModel();
+
+        return;
+    }
+
+    editTaskDescriptionTE->setText(taskToEdit->getDescription());
+
+    editTaskDueDateSelectorDE->setDate(initValidDateField(taskToEdit->getDueDate()));
+    editTaskScheduledStartDE->setDate(initValidDateField(taskToEdit->getScheduledStart()));
+    editTaskExpectedCompletionDE->setDate(initValidDateField(taskToEdit->getEstimatedCompletion()));
+}
+
+QDate TaskEditorDialog::initValidDateField(QDate fieldData)
+{
+    QDate tempDate(fieldData);
+    if (!tempDate.isValid())
+    {
+        tempDate = QDate::currentDate();
+    }
+
+    return tempDate;
 }
