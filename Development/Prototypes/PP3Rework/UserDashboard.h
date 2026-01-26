@@ -5,6 +5,7 @@
 
 // QT Header Files
 #include "GuiUserModel.h"
+#include "GuiTaskModel.h"
 #include <QVariant>
 #include <QAction>
 #include <QApplication>
@@ -70,6 +71,7 @@ private:
     QString m_ProgNameStr;
     std::size_t m_UserID;
     GuiUserModel* m_UserDataPtr;
+    GuiTaskModel* m_TaskToEdit;
 
     QMenu* udTaskMenu;
     QMenu* udUserMenu;

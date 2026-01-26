@@ -24,7 +24,8 @@
 UserDashboard::UserDashboard(QWidget *parent)
     : QMainWindow(parent),
     m_UserID{0},
-    m_UserDataPtr{nullptr}
+    m_UserDataPtr{nullptr},
+    m_TaskToEdit{nullptr}
 {
     m_ProgNameStr = QString::fromStdString(programOptions.progName);
 
@@ -282,16 +283,14 @@ void UserDashboard::fakeFillGroupBoxLayout(std::string fieldPartialName, QVBoxLa
 
 void UserDashboard::handleAddTaskAction()
 {
-    TaskEditorDialog addTaskDialog(this, m_UserID);
+    TaskEditorDialog addTaskDialog(this, m_UserDataPtr);
 
     addTaskDialog.exec();
 }
 
 void UserDashboard::handleEditTaskAction()
 {
-    std::size_t taskID = 1;
-
-    TaskEditorDialog editTaskDialog(this, m_UserID, taskID);
+    TaskEditorDialog editTaskDialog(this, m_UserDataPtr, m_TaskToEdit);
 
     editTaskDialog.exec();
 }
