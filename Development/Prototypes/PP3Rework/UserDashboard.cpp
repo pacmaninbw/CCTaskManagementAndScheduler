@@ -23,7 +23,6 @@
 
 UserDashboard::UserDashboard(QWidget *parent)
     : QMainWindow(parent),
-    m_UserID{0},
     m_UserDataPtr{nullptr},
     m_TaskToEdit{nullptr}
 {
@@ -181,14 +180,13 @@ void UserDashboard::setUpDbConnectionMenu()
 
 void UserDashboard::updateDashboardDisplayData()
 {
-    m_UserID = m_UserDataPtr->getDbUserId();
     udUserFirstNameDisplay->setText(m_UserDataPtr->getFirstName());
     udUserMiddleInitialDisplay->setText(m_UserDataPtr->getMiddleInitial());
     udUserLastNameDisplay->setText(m_UserDataPtr->getLastName());
     udUserNameDisplay->setText(m_UserDataPtr->getLoginName());
 }
 
-bool UserDashboard::dbIsConnectedUserIsLoggedIn()
+bool UserDashboard::userIsLoggedIn()
 {
     if (!dbIsConnected())
     {
@@ -309,7 +307,7 @@ void UserDashboard::fakeFillGroupBoxLayout(std::string fieldPartialName, QVBoxLa
 
 void UserDashboard::handleAddTaskAction()
 {
-    if (!dbIsConnectedUserIsLoggedIn())
+    if (!userIsLoggedIn())
     {
         return;
     }
@@ -321,7 +319,7 @@ void UserDashboard::handleAddTaskAction()
 
 void UserDashboard::handleEditTaskAction()
 {
-    if (!dbIsConnectedUserIsLoggedIn())
+    if (!userIsLoggedIn())
     {
         return;
     }
@@ -333,7 +331,7 @@ void UserDashboard::handleEditTaskAction()
 
 void UserDashboard::handleAddUserAction()
 {
-    if (!dbIsConnectedUserIsLoggedIn())
+    if (!userIsLoggedIn())
     {
         return;
     }
@@ -345,7 +343,7 @@ void UserDashboard::handleAddUserAction()
 
 void UserDashboard::handleEditUserAction()
 {
-    if (!dbIsConnectedUserIsLoggedIn())
+    if (!userIsLoggedIn())
     {
         return;
     }
@@ -358,12 +356,12 @@ void UserDashboard::handleEditUserAction()
 
 void UserDashboard::handleAddNoteAction()
 {
-    if (!dbIsConnectedUserIsLoggedIn())
+    if (!userIsLoggedIn())
     {
         return;
     }
 
-    NoteEditorDialog addNoteDialog(this, m_UserID);
+    NoteEditorDialog addNoteDialog(this, m_UserDataPtr->getDbUserId());
 
     addNoteDialog.exec();
 }
@@ -385,65 +383,65 @@ void UserDashboard::handleUserLoginAction()
 
 void UserDashboard::handleEditNoteAction()
 {
-    if (!dbIsConnectedUserIsLoggedIn())
+    if (!userIsLoggedIn())
     {
         return;
     }
 
     std::size_t noteID = 1;
 
-    NoteEditorDialog editNoteDialog(this, m_UserID, noteID);
+    NoteEditorDialog editNoteDialog(this,  m_UserDataPtr->getDbUserId(), noteID);
 
     editNoteDialog.exec();
 }
 
 void UserDashboard::handleAddGoalAction()
 {
-    if (!dbIsConnectedUserIsLoggedIn())
+    if (!userIsLoggedIn())
     {
         return;
     }
 
-    GoalEditorDialog addGoalDialog(this, m_UserID);
+    GoalEditorDialog addGoalDialog(this,  m_UserDataPtr->getDbUserId());
 
     addGoalDialog.exec();
 }
 
 void UserDashboard::handleEditGoalAction()
 {
-    if (!dbIsConnectedUserIsLoggedIn())
+    if (!userIsLoggedIn())
     {
         return;
     }
 
     std::size_t goalID = 1;
 
-    GoalEditorDialog editGoalDialog(this, m_UserID, goalID);
+    GoalEditorDialog editGoalDialog(this,  m_UserDataPtr->getDbUserId(), goalID);
 
     editGoalDialog.exec();
 }
 
 void UserDashboard::handleAddScheduleItemAction()
 {
-    if (!dbIsConnectedUserIsLoggedIn())
+    if (!userIsLoggedIn())
     {
         return;
     }
 
-    ScheduleItemEditorDialog addScheduleItemDialog(this, m_UserID);
+    ScheduleItemEditorDialog addScheduleItemDialog(this,  m_UserDataPtr->getDbUserId());
 
     addScheduleItemDialog.exec();
 }
 
 void UserDashboard::handleEditScheduleItemAction()
 {
-    if (!dbIsConnectedUserIsLoggedIn())
+    if (!userIsLoggedIn())
     {
         return;
     }
 
     std::size_t scheduleItemID = 1;
-    ScheduleItemEditorDialog editScheduleItemDialog(this, m_UserID, scheduleItemID);
+    ScheduleItemEditorDialog editScheduleItemDialog(this,  m_UserDataPtr->getDbUserId(), scheduleItemID);
 
     editScheduleItemDialog.exec();
 }
