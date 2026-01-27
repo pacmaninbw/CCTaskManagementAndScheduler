@@ -414,9 +414,7 @@ void UserDashboard::handleEditGoalAction()
         return;
     }
 
-    std::size_t goalID = 1;
-
-    GoalEditorDialog editGoalDialog(this,  m_UserDataPtr->getDbUserId(), goalID);
+    GoalEditorDialog editGoalDialog(this,  m_UserDataPtr->getDbUserId(), m_GoalToEdit);
 
     editGoalDialog.exec();
 }

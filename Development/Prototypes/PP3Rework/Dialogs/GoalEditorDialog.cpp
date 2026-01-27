@@ -20,10 +20,10 @@
 //#include <iostream>
 
 
-GoalEditorDialog::GoalEditorDialog(QWidget *parent, std::size_t userId, std::size_t goalId)
+GoalEditorDialog::GoalEditorDialog(QWidget *parent, std::size_t userId, GuiGoalModel* goalDataToEdit)
     : QDialog(parent),
-    userID{userId},
-    goalID{goalId},
+    m_UserID{userId},
+    m_GoalData{goalDataToEdit},
     maxGroupBoxHeight{0},
     maxButtonBoxHeight{0}
 {
@@ -40,7 +40,7 @@ void GoalEditorDialog::setUpGoalEditorDialogUI()
     QVBoxLayout* goalEditorDialogLayout = new QVBoxLayout(this);
     goalEditorDialogLayout->setObjectName("goalEditorDialogLayout");
 
-    QString groupBoxTitle = goalID? "Edit Goal" : "Add Goal";
+    QString groupBoxTitle = m_GoalData? "Edit Goal" : "Add Goal";
 
     editGoalGB = new QGroupBox(groupBoxTitle, this);
     editGoalGB->setLayout(setUpGoalEditorDialogGroupBoxContents());

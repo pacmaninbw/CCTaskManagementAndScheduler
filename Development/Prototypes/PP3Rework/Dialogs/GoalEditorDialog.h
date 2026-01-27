@@ -2,6 +2,7 @@
 #define GOALEDITORDIALOG_H
 
 // Project Header Files
+#include "GuiGoalModel.h"
 
 // QT Header Files
 #include <QVariant>
@@ -22,7 +23,7 @@ class GoalEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit GoalEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, std::size_t goalId=0);
+    explicit GoalEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, GuiGoalModel* goalToEdit=nullptr);
     ~GoalEditorDialog();
 
 public slots:
@@ -37,8 +38,8 @@ private:
     QDialogButtonBox* setUpGoalEditorDialogButtonBox();
     void limitDialogRowth();
 
-    std::size_t userID;
-    std::size_t goalID;
+    std::size_t m_UserID;
+    GuiGoalModel* m_GoalData;
     QDialogButtonBox* buttonBox;
     QGroupBox* editGoalGB;
     QFormLayout* goalEditorDialogFormLayout;
