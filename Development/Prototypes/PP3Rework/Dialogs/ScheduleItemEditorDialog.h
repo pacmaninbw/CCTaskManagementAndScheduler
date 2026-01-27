@@ -2,6 +2,7 @@
 #define SCHEDULEITEMEDITORDIALOG_H
 
 // Project Header Files
+#include "GuiScheduleItemModel.h"
 
 // QT Header Files
 #include <QVariant>
@@ -25,7 +26,7 @@ class ScheduleItemEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ScheduleItemEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, std::size_t siId=0);
+    explicit ScheduleItemEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, GuiScheduleItemModel* scheduleItemToEdit=nullptr);
     ~ScheduleItemEditorDialog();
 
 public slots:
@@ -41,8 +42,8 @@ private:
     QDateTimeEdit* createAndInitDateTimeEdit(const char* objName);
     void handleAddItemDate_DateChanged();
 
-    std::size_t userID;
-    std::size_t scheduleItemID;
+    std::size_t m_UserID;
+    GuiScheduleItemModel* m_ScheduleItemData;
 
     QVBoxLayout* seid_scheduleItemEditorDialogLayout;
     QDialogButtonBox* sied_buttonBox;

@@ -6,10 +6,10 @@
 
 // Standard C++ Header Files
 
-ScheduleItemEditorDialog::ScheduleItemEditorDialog(QWidget* parent, std::size_t userId, std::size_t siId)
+ScheduleItemEditorDialog::ScheduleItemEditorDialog(QWidget* parent, std::size_t userId, GuiScheduleItemModel* scheduleItemToEdit)
     : QDialog(parent),
-    userID{userId},
-    scheduleItemID{siId},
+    m_UserID{userId},
+    m_ScheduleItemData{scheduleItemToEdit},
     seid_AddItemDate{nullptr}
 {
     setUpScheduleItemEditorDialogUI();
@@ -37,7 +37,7 @@ void ScheduleItemEditorDialog::setUpScheduleItemEditorDialogUI()
     
     adjustSize();
 
-    QString titleStr = scheduleItemID? "Edit" : "Add";
+    QString titleStr = m_ScheduleItemData? "Edit" : "Add";
     titleStr += " Schedule Dialog";
     setWindowTitle(titleStr);
 }
@@ -50,7 +50,7 @@ QGroupBox *ScheduleItemEditorDialog::setUpScheduleTimeControls()
 
     seid_groupBoxLayout = cqtfa_FormLayoutWithPolicy("seid_groupBoxLayout", sied_scheduleTimeControls);
 
-    if (scheduleItemID < 1)
+    if (!m_ScheduleItemData || m_ScheduleItemData->getScheduleItemId() < 1)
     {
         seid_AddItemDate = cqtfa_DateEditWithCalendarPopUpCurrentDate(
             "seid_AddItemDate", sied_scheduleTimeControls);
