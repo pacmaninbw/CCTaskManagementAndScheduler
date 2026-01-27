@@ -2,6 +2,7 @@
 #define NOTEEDITORDIALOG_H
 
 // Project Header Files
+#include "GuiNoteModel.h"
 
 // QT Header Files
 #include <QVariant>
@@ -21,10 +22,11 @@ class NoteEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit NoteEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, std::size_t noteId=0);
+    explicit NoteEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, GuiNoteModel* noteToEdit=nullptr);
     ~NoteEditorDialog();
 
 public slots:
+    void accept() override;
 
 signals:
 
@@ -36,8 +38,8 @@ private:
     QDialogButtonBox* setUpEditNoteButtonBox();
     void limitDialogRowth();
 
-    std::size_t userID;
-    std::size_t noteID;
+    std::size_t m_userID;
+    GuiNoteModel* m_NoteData;
     QDialogButtonBox* buttonBox;
     QGroupBox* editNoteEnterContentGB;
     QFormLayout* noteForm;

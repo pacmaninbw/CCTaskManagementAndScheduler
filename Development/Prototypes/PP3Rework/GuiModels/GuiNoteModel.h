@@ -19,9 +19,14 @@ public:
     explicit GuiNoteModel(std::shared_ptr<NoteModel> dbNoteDataptr,QObject *parent = nullptr);
     QString getContent() const { return m_Content; };
     void setContent(QString newContent);
+    void setUserId(std::size_t userId);
+    bool addNote();
+    bool updateNote();
+    QString getErrorMessages() const { return m_DbErrorMessages; };
 
 signals:
     void contentChanged();
+    void userIdChanged();
 
 private:
     std::size_t m_UserId;
@@ -29,6 +34,8 @@ private:
     QString m_CreationDateTS;
     QString m_LastUpdateTS;
     std::shared_ptr<NoteModel> m_DBNoteDataptr;
+    bool m_FieldsChangedValue;
+    QString m_DbErrorMessages;
 };
 
 #endif // GUINOTEMODEL_H

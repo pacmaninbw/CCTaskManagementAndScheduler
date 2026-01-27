@@ -4,8 +4,11 @@
 // Project Header Files
 
 // QT Header Files
-#include "GuiUserModel.h"
+#include "GuiGoalModel.h"
+#include "GuiNoteModel.h"
+#include "GuiScheduleItemModel.h"
 #include "GuiTaskModel.h"
+#include "GuiUserModel.h"
 #include <QVariant>
 #include <QAction>
 #include <QApplication>
@@ -73,6 +76,9 @@ private:
     QString m_ProgNameStr;
     GuiUserModel* m_UserDataPtr;
     GuiTaskModel* m_TaskToEdit;
+    GuiNoteModel* m_NoteToEdit;
+    GuiGoalModel* m_GoalToEdit;
+    GuiScheduleItemModel* m_ScheduleItemToEdit;
 
     QMenu* udTaskMenu;
     QMenu* udUserMenu;

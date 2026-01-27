@@ -188,6 +188,10 @@ bool GuiUserModel::attemptAddUser()
             m_LastLoginTS = tempqdt.toString(Qt::ISODate);
         }
     }
+    else
+    {
+        m_DbErrorMessages = QString::fromStdString(newUser->getAllErrorMessages());
+    }
 
     return userAdded;
 }
@@ -206,7 +210,12 @@ bool GuiUserModel::attemptUpdateUser()
     m_DbUserDataPtr->setLoginName(m_LoginName.toStdString());
     m_DbUserDataPtr->setPassword(m_Password.toStdString());
 
-    return m_DbUserDataPtr->update();
+    if (!m_DbUserDataPtr->update())
+    {
+        m_DbErrorMessages = QString::fromStdString(m_DbUserDataPtr->getAllErrorMessages());
+        return false;
+    }
+    return true;
 }
 
 bool GuiUserModel::addLoginData(std::shared_ptr<UserModel> newUser)

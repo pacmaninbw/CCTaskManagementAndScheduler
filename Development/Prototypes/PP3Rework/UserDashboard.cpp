@@ -24,7 +24,9 @@
 UserDashboard::UserDashboard(QWidget *parent)
     : QMainWindow(parent),
     m_UserDataPtr{nullptr},
-    m_TaskToEdit{nullptr}
+    m_TaskToEdit{nullptr},
+    m_NoteToEdit{nullptr},
+    m_ScheduleItemToEdit{nullptr}
 {
     m_ProgNameStr = QString::fromStdString(programOptions.progName);
 
@@ -388,9 +390,7 @@ void UserDashboard::handleEditNoteAction()
         return;
     }
 
-    std::size_t noteID = 1;
-
-    NoteEditorDialog editNoteDialog(this,  m_UserDataPtr->getDbUserId(), noteID);
+    NoteEditorDialog editNoteDialog(this,  m_UserDataPtr->getDbUserId(), m_NoteToEdit);
 
     editNoteDialog.exec();
 }
@@ -440,8 +440,7 @@ void UserDashboard::handleEditScheduleItemAction()
         return;
     }
 
-    std::size_t scheduleItemID = 1;
-    ScheduleItemEditorDialog editScheduleItemDialog(this,  m_UserDataPtr->getDbUserId(), scheduleItemID);
+    ScheduleItemEditorDialog editScheduleItemDialog(this,  m_UserDataPtr->getDbUserId(), m_ScheduleItemToEdit);
 
     editScheduleItemDialog.exec();
 }

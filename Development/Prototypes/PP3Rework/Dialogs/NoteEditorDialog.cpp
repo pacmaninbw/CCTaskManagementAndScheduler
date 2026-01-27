@@ -4,15 +4,15 @@
 
 // QT Header Files
 #include <QFormLayout>
+#include <QMessageBox>
 
 // Standard C++ Header Files
 
 #include "NoteEditorDialog.h"
 
-NoteEditorDialog::NoteEditorDialog(QWidget *parent, std::size_t userId, std::size_t noteId)
-    : QDialog(parent),
-    userID{userId},
-    noteID{noteId}
+NoteEditorDialog::NoteEditorDialog(QWidget *parent, std::size_t userId, GuiNoteModel* noteToEdit)    : QDialog(parent),
+    m_userID{userId},
+    m_NoteData{noteToEdit}
 {
     setUpNoteEditorUI();
 }
@@ -21,9 +21,38 @@ NoteEditorDialog::~NoteEditorDialog()
 {
 }
 
+void NoteEditorDialog::accept()
+{
+    bool updateSuccessful = true;
+    if (!m_NoteData)
+    {
+        m_NoteData = new GuiNoteModel;
+        m_NoteData->setUserId(m_userID);
+        m_NoteData->setContent(editNoteContentTE->toPlainText());
+        updateSuccessful = m_NoteData->addNote();
+    }
+    else
+    {
+        m_NoteData->setContent(editNoteContentTE->toPlainText());
+        updateSuccessful = m_NoteData->updateNote();
+    }
+
+    if (updateSuccessful)
+    {
+        QDialog::accept();
+    }
+    else
+    {
+        QString errorReport = "User edit failed.\n";
+        errorReport += m_NoteData->getErrorMessages();
+        QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
+    }
+
+}
+
 void NoteEditorDialog::setUpNoteEditorUI()
 {
-    QString titleString = noteID? "Edit Note" : "Add Note";
+    QString titleString = m_NoteData? "Edit Note" : "Add Note";
 
     editNoteLayOut = new QVBoxLayout(this);
     editNoteLayOut->setObjectName("editNoteLayOut");
