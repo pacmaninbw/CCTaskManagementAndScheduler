@@ -1,5 +1,5 @@
-#ifndef GUITASKDASHBOARDVIEW_H
-#define GUITASKDASHBOARDVIEW_H
+#ifndef GUIDASHBOARDTASKTABLE_H
+#define GUIDASHBOARDTASKTABLE_H
 
 // Project Header Files
 
@@ -13,14 +13,14 @@
 // Standard C++ Header Files
 
 
-class GuiTaskDashboardView : public QAbstractTableModel
+class GuiDashboardTaskTable : public QAbstractTableModel
 {
     Q_OBJECT
 
     QList<GuiTaskModel> m_data;
 
 public:
-    explicit GuiTaskDashboardView(QObject *parent = nullptr);
+    explicit GuiDashboardTaskTable(QObject *parent = nullptr);
 
     // Header:
     QVariant headerData(int section,
@@ -54,4 +54,4 @@ public:
 private:
 };
 
-#endif // GUITASKDASHBOARDVIEW_H
+#endif // GUIDASHBOARDTASKTABLE_H

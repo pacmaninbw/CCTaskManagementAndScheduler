@@ -1,10 +1,10 @@
-#include "GuiTaskDashboardView.h"
+#include "GuiDashboardTaskTable.h"
 
-GuiTaskDashboardView::GuiTaskDashboardView(QObject *parent)
+GuiDashboardTaskTable::GuiDashboardTaskTable(QObject *parent)
     : QAbstractTableModel(parent)
 {}
 
-QVariant GuiTaskDashboardView::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant GuiDashboardTaskTable::headerData(int section, Qt::Orientation orientation, int role) const
 {
     // FIXME: Implement me!
     if (orientation != Qt::Horizontal || role != Qt::DisplayRole) return {};
@@ -16,7 +16,7 @@ QVariant GuiTaskDashboardView::headerData(int section, Qt::Orientation orientati
     }
 }
 
-bool GuiTaskDashboardView::setHeaderData(
+bool GuiDashboardTaskTable::setHeaderData(
         int section, Qt::Orientation orientation, const QVariant &value, int role)
 {
     if (value != headerData(section, orientation, role)) {
@@ -27,7 +27,7 @@ bool GuiTaskDashboardView::setHeaderData(
     return false;
 }
 
-int GuiTaskDashboardView::rowCount(const QModelIndex &parent) const
+int GuiDashboardTaskTable::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
         return 0;
@@ -35,7 +35,7 @@ int GuiTaskDashboardView::rowCount(const QModelIndex &parent) const
     return m_data.count();
 }
 
-int GuiTaskDashboardView::columnCount(const QModelIndex &parent) const
+int GuiDashboardTaskTable::columnCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
         return 0;
@@ -44,7 +44,7 @@ int GuiTaskDashboardView::columnCount(const QModelIndex &parent) const
     return 3;
 }
 
-QVariant GuiTaskDashboardView::data(const QModelIndex &index, int role) const
+QVariant GuiDashboardTaskTable::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
         return QVariant();
@@ -60,7 +60,7 @@ QVariant GuiTaskDashboardView::data(const QModelIndex &index, int role) const
     }
 }
 
-bool GuiTaskDashboardView::setData(const QModelIndex &index, const QVariant &value, int role)
+bool GuiDashboardTaskTable::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (data(index, role) != value) {
         // FIXME: Implement me!
@@ -70,7 +70,7 @@ bool GuiTaskDashboardView::setData(const QModelIndex &index, const QVariant &val
     return false;
 }
 
-Qt::ItemFlags GuiTaskDashboardView::flags(const QModelIndex &index) const
+Qt::ItemFlags GuiDashboardTaskTable::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
         return Qt::NoItemFlags;
@@ -78,7 +78,7 @@ Qt::ItemFlags GuiTaskDashboardView::flags(const QModelIndex &index) const
     return QAbstractItemModel::flags(index) | Qt::ItemIsEditable; // FIXME: Implement me!
 }
 
-bool GuiTaskDashboardView::insertRows(int row, int count, const QModelIndex &parent)
+bool GuiDashboardTaskTable::insertRows(int row, int count, const QModelIndex &parent)
 {
     beginInsertRows(parent, row, row + count - 1);
     // FIXME: Implement me!
@@ -86,7 +86,7 @@ bool GuiTaskDashboardView::insertRows(int row, int count, const QModelIndex &par
     return true;
 }
 
-bool GuiTaskDashboardView::insertColumns(int column, int count, const QModelIndex &parent)
+bool GuiDashboardTaskTable::insertColumns(int column, int count, const QModelIndex &parent)
 {
     beginInsertColumns(parent, column, column + count - 1);
     // FIXME: Implement me!
@@ -94,7 +94,7 @@ bool GuiTaskDashboardView::insertColumns(int column, int count, const QModelInde
     return true;
 }
 
-bool GuiTaskDashboardView::removeRows(int row, int count, const QModelIndex &parent)
+bool GuiDashboardTaskTable::removeRows(int row, int count, const QModelIndex &parent)
 {
     beginRemoveRows(parent, row, row + count - 1);
     // FIXME: Implement me!
@@ -102,7 +102,7 @@ bool GuiTaskDashboardView::removeRows(int row, int count, const QModelIndex &par
     return true;
 }
 
-bool GuiTaskDashboardView::removeColumns(int column, int count, const QModelIndex &parent)
+bool GuiDashboardTaskTable::removeColumns(int column, int count, const QModelIndex &parent)
 {
     beginRemoveColumns(parent, column, column + count - 1);
     // FIXME: Implement me!
