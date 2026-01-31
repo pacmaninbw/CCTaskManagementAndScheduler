@@ -1,8 +1,63 @@
+// Project Header Files
+#include "TaskList.h"
 #include "GuiDashboardTaskTable.h"
+#include "GuiTaskModel.h"
+#include "GuiUserModel.h"
+
+// QT Header Files
+#include <QAbstractTableModel>
+#include <QList>
+#include <QObject>
+#include <QString>
+
+// Standard C++ Header Files
+#include <ranges>
+
 
 GuiDashboardTaskTable::GuiDashboardTaskTable(QObject *parent)
     : QAbstractTableModel(parent)
 {}
+
+GuiDashboardTaskTable::GuiDashboardTaskTable(GuiUserModel *userDataPtr, QObject *parent)
+    : QAbstractTableModel(parent)
+{
+    m_UserDataPtr = userDataPtr;
+}
+
+void GuiDashboardTaskTable::setUserRefillTable(GuiUserModel *userDataPtr)
+{
+    m_UserDataPtr = userDataPtr;
+    fillTable();
+}
+
+void GuiDashboardTaskTable::fillTable()
+{
+    if (!m_UserDataPtr || m_UserDataPtr->getDbUserId() == 0)
+    {
+        makeFakeQList();
+        return;
+    }
+
+    TaskList currentUserTaskList;
+    TaskListValues userTasks = currentUserTaskList.getUnstartedDueForStartForAssignedUser(m_UserDataPtr->getDbUserId());
+
+    if (userTasks.empty())
+    {
+        makeFakeQList();
+        return;
+    }
+
+    if (!m_data.empty())
+    {
+        qDeleteAll(m_data.begin(), m_data.end());
+        m_data.clear();
+    }
+    for (const auto& dbTaskPtr: userTasks)
+    {
+        GuiTaskModel* modelData = new GuiTaskModel(dbTaskPtr, this);
+        m_data.append(modelData);
+    }
+}
 
 QVariant GuiDashboardTaskTable::headerData(int section, Qt::Orientation orientation, int role) const
 {
@@ -30,7 +85,9 @@ bool GuiDashboardTaskTable::setHeaderData(
 int GuiDashboardTaskTable::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
+    {
         return 0;
+    }
 
     return m_data.count();
 }
@@ -38,24 +95,27 @@ int GuiDashboardTaskTable::rowCount(const QModelIndex &parent) const
 int GuiDashboardTaskTable::columnCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
+    {
         return 0;
+    }
 
-    // FIXME: Implement me!
     return 3;
 }
 
 QVariant GuiDashboardTaskTable::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
+    {
         return QVariant();
+    }
 
 
     if (role != Qt::DisplayRole && role != Qt::EditRole) return {};
-    const auto &task = m_data[index.row()];
+    const GuiTaskModel* task = m_data[index.row()];
     switch (index.column()) {
-        case 0: return task.getPriorityGroup();
-        case 1: return task.getPriority();
-        case 2: return task.getDescription();
+        case 0: return task->getPriorityGroup();
+        case 1: return task->getPriority();
+        case 2: return task->getDescription();
         default: return {};
     }
 }
@@ -108,4 +168,24 @@ bool GuiDashboardTaskTable::removeColumns(int column, int count, const QModelInd
     // FIXME: Implement me!
     endRemoveColumns();
     return true;
+}
+
+void GuiDashboardTaskTable::makeFakeQList()
+{
+    if (!m_data.isEmpty())
+    {
+        return;
+    }
+    for (std::size_t priorityGroup: std::views::iota(0, 3))
+    {
+        QString priorityGroupString = "A";
+        for (std::size_t priority : std::views::iota(1, 6))
+        {
+            GuiTaskModel* taskData = new GuiTaskModel(this->parent());
+            taskData->setPriorityGroup(priorityGroupString);
+            taskData->setPriority(QString::number(priority));
+            taskData->setDescription(priorityGroup == 0 && priority == 1 ? "Login to app" : "");
+            m_data.append(taskData);
+        }
+    }
 }

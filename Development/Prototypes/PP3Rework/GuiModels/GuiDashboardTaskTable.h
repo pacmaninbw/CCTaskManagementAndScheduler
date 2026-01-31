@@ -1,10 +1,12 @@
 #ifndef GUIDASHBOARDTASKTABLE_H
 #define GUIDASHBOARDTASKTABLE_H
 
+class GuiTaskModel;
+class GuiUserModel;
+
 // Project Header Files
 
 // QT Header Files
-#include "GuiTaskModel.h"
 #include <QAbstractTableModel>
 #include <QList>
 #include <QObject>
@@ -17,10 +19,13 @@ class GuiDashboardTaskTable : public QAbstractTableModel
 {
     Q_OBJECT
 
-    QList<GuiTaskModel> m_data;
 
 public:
+
     explicit GuiDashboardTaskTable(QObject *parent = nullptr);
+    explicit GuiDashboardTaskTable(GuiUserModel *userDataPtr, QObject* parent=nullptr);
+    void setUserRefillTable(GuiUserModel *userDataPtr);
+    void fillTable();
 
     // Header:
     QVariant headerData(int section,
@@ -52,6 +57,9 @@ public:
     bool removeColumns(int column, int count, const QModelIndex &parent = QModelIndex()) override;
 
 private:
+    void makeFakeQList();
+    GuiUserModel *m_UserDataPtr;
+    QList<GuiTaskModel*> m_data;
 };
 
 #endif // GUIDASHBOARDTASKTABLE_H
