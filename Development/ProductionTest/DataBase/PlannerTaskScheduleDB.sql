@@ -132,6 +132,11 @@ CREATE TABLE IF NOT EXISTS  `PlannerTaskScheduleDB`.`Tasks` (
     INDEX `fk_Tasks_AsignedTo_idx` (`AsignedTo` ASC),
     INDEX `Task_Description_idx` (`Description` ASC),
     INDEX `Task_LastUpdateTS_idx` (`LastUpdateTS` DESC),
+    INDEX `Task_SchedulePriorityGroup_idx` (`SchedulePriorityGroup` ASC),
+    INDEX `Task_PriorityInGroup_idx` (`PriorityInGroup` ASC),
+    INDEX `Task_Status_idx` (`Status` ASC),
+    INDEX `Task_RequiredDelivery_idx` (`RequiredDelivery` ASC),
+    INDEX `Task_ScheduledStart_idx` (`ScheduledStart` ASC),
     CONSTRAINT `fk_Tasks_CreatedBy`
         FOREIGN KEY (`CreatedBy`)
         REFERENCES `UserProfile` (`UserID`)
