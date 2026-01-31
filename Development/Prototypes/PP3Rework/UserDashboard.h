@@ -1,14 +1,16 @@
 #ifndef USERDASHBOARD_H
 #define USERDASHBOARD_H
 
+class GuiUserModel;
+class GuiTaskModel;
+class GuiNoteModel;
+class GuiGoalModel;
+class GuiScheduleItemModel;
+class GuiDashboardTaskTable;
+
 // Project Header Files
 
 // QT Header Files
-#include "GuiGoalModel.h"
-#include "GuiNoteModel.h"
-#include "GuiScheduleItemModel.h"
-#include "GuiTaskModel.h"
-#include "GuiUserModel.h"
 #include <QVariant>
 #include <QAction>
 #include <QApplication>
@@ -18,6 +20,7 @@
 #include <QLineEdit>
 #include <QMainWindow>
 #include <QMenu>
+#include <QTableView>
 #include <QVBoxLayout>
 #include <QWidget>
 
@@ -69,7 +72,7 @@ private:
     QGroupBox* setUpPerDayNotesGB();
     void fakeFillGroupBoxLayout(std::string fieldPartialName, QVBoxLayout* layoutToFill);
     void fillUserIdBoxData();
-    QGroupBox* updateTaskList();
+    QTableView* updateTaskList();
     QGroupBox* updateSchedule();
     QGroupBox* listNotes();
 
@@ -79,6 +82,7 @@ private:
     GuiNoteModel* m_NoteToEdit;
     GuiGoalModel* m_GoalToEdit;
     GuiScheduleItemModel* m_ScheduleItemToEdit;
+    GuiDashboardTaskTable* m_TaskTable;
 
     QMenu* udTaskMenu;
     QMenu* udUserMenu;
@@ -109,6 +113,7 @@ private:
     QLineEdit* udUserLastNameDisplay;
     QLineEdit* udUserNameDisplay;
     QDateEdit* udDateSelectorDE;
+    QTableView* udTaskTableView;
 
 /*
  * Size and positioning constants.

@@ -1,8 +1,10 @@
-// Project Header Files
+// Project Header
+#include "TaskList.h"
 #include "CommandLineParser.h"
 #include "commonQTWidgetsForApp.h"  // cqtfa_ functions
 #include "DataBaseConnectionDialog.h"
 #include "GoalEditorDialog.h"
+#include "GuiDashboardTaskTable.h"
 #include "LoginDialog.h"
 #include "NoteEditorDialog.h"
 #include "ScheduleItemEditorDialog.h"
@@ -13,6 +15,7 @@
 // QT Header Files
 #include <QFormLayout>
 #include <QHBoxLayout>
+#include <QHeaderView>
 #include <QMenuBar>
 #include <QVBoxLayout>
 #include <QString>
@@ -26,7 +29,9 @@ UserDashboard::UserDashboard(QWidget *parent)
     m_UserDataPtr{nullptr},
     m_TaskToEdit{nullptr},
     m_NoteToEdit{nullptr},
-    m_ScheduleItemToEdit{nullptr}
+    m_ScheduleItemToEdit{nullptr},
+    m_TaskTable{nullptr},
+    udTaskTableView{nullptr}
 {
     m_ProgNameStr = QString::fromStdString(programOptions.progName);
 
@@ -182,10 +187,8 @@ void UserDashboard::setUpDbConnectionMenu()
 
 void UserDashboard::updateDashboardDisplayData()
 {
-    udUserFirstNameDisplay->setText(m_UserDataPtr->getFirstName());
-    udUserMiddleInitialDisplay->setText(m_UserDataPtr->getMiddleInitial());
-    udUserLastNameDisplay->setText(m_UserDataPtr->getLastName());
-    udUserNameDisplay->setText(m_UserDataPtr->getLoginName());
+    fillUserIdBoxData();
+    updateTaskList();
 }
 
 bool UserDashboard::userIsLoggedIn()
@@ -258,7 +261,7 @@ QGroupBox *UserDashboard::setUpPerDayTaskGB()
     udTaskListGB = new QGroupBox("Tasks:");
     QVBoxLayout* taskLisGBLayout = new QVBoxLayout;
 
-    fakeFillGroupBoxLayout("Task", taskLisGBLayout);
+    taskLisGBLayout->addWidget(updateTaskList());
 
     udTaskListGB->setLayout(taskLisGBLayout);
 
@@ -305,6 +308,41 @@ void UserDashboard::fakeFillGroupBoxLayout(std::string fieldPartialName, QVBoxLa
         tempElement->setText(qstr);
         layoutToFill->addWidget(tempElement);
     }
+}
+
+void UserDashboard::fillUserIdBoxData()
+{
+    udUserFirstNameDisplay->setText(m_UserDataPtr->getFirstName());
+    udUserMiddleInitialDisplay->setText(m_UserDataPtr->getMiddleInitial());
+    udUserLastNameDisplay->setText(m_UserDataPtr->getLastName());
+    udUserNameDisplay->setText(m_UserDataPtr->getLoginName());
+}
+
+QTableView *UserDashboard::updateTaskList()
+{
+    if (!udTaskTableView)
+    {
+        udTaskTableView = cqtfa_QTWidget<QTableView>("udTaskTableView", this);
+    }
+
+    if (!m_TaskTable)
+    {
+        m_TaskTable =  (!m_UserDataPtr)? new GuiDashboardTaskTable(this) :
+                new GuiDashboardTaskTable(m_UserDataPtr, this);
+        m_TaskTable->setObjectName("m_TaskTable");
+        m_TaskTable->fillTable();
+    }
+    else
+    {
+        m_TaskTable->setUserRefillTable(m_UserDataPtr);
+    }
+
+    udTaskTableView->setModel(m_TaskTable);
+    udTaskTableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    udTaskTableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    udTaskTableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+
+    return udTaskTableView;
 }
 
 void UserDashboard::handleAddTaskAction()
