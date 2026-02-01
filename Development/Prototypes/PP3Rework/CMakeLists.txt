@@ -65,10 +65,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         GuiModels/stdChronoToQTConversions.cpp
         GuiModels/stdChronoToQTConversions.h
         ../MergeModelDB/CommandLineParser.h
-        commonQTWidgetsForApp.cpp
-        commonQTWidgetsForApp.h
-        TestDBConnection.cpp
-        TestDBConnection.h
+        AppWidgets/commonQTWidgetsForApp.cpp
+        AppWidgets/commonQTWidgetsForApp.h
+        BusinessLogic/TestDBConnection.cpp
+        BusinessLogic/TestDBConnection.h
         ../MergeModelDB/Models/CoreDBInterface.cpp
         ../MergeModelDB/Models/CoreDBInterface.h
         ../MergeModelDB/Models/ListDBInterface.h
@@ -121,6 +121,8 @@ target_include_directories(PP3Rework PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/DBModels>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/GuiModels>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Dialogs>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/AppWidgets>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/BusinessLogic>
 )
 target_compile_options(PP3Rework PRIVATE -Wall -Wextra -pedantic -Werror)
 
