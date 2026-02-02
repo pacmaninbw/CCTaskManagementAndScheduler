@@ -29,6 +29,7 @@ public:
     QString getLocation() const { return m_Location; };
     QString getCreationTS() const { return m_CreationTimeStamp; };
     QString getLastUpdateTS() const { return m_LastUpdateTimreStamp; };
+    void debugShow();
 
     void setUserID(std::size_t inValue);
     void setTitle(QString inValue);

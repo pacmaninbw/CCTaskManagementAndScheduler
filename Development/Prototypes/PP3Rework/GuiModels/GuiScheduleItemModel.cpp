@@ -6,6 +6,7 @@
 #include "stdChronoToQTConversions.h"
 
 // Standard C++ Header Files
+#include <iostream>
 
 GuiScheduleItemModel::GuiScheduleItemModel(QObject *parent)
     : QObject{parent},
@@ -29,6 +30,18 @@ GuiScheduleItemModel::GuiScheduleItemModel(std::shared_ptr<ScheduleItemModel> db
 
     tempqdt = chronoTimePointToQDateTime(dbScheduleItemDataPtr->getLastUpdate());
     m_LastUpdateTimreStamp = tempqdt.toString(Qt::ISODate);
+}
+
+void GuiScheduleItemModel::debugShow()
+{
+    std::cerr << "GuiScheduleItemModel:" << std::endl;
+    std::cerr << "Start Time raw: " << m_StartTime.toString(Qt::TextDate).toStdString() << std::endl;
+    std::cerr << "Start Time only: " << m_StartTime.toString("h:m").toStdString() << std::endl;
+    std::cerr << "End Time raw: " << m_EndTime.toString(Qt::TextDate).toStdString() << std::endl;
+    std::cerr << "End Time only: " << m_EndTime.toString("h:m").toStdString() << std::endl;
+    std::cerr << "Title: " << m_Title.toStdString() << std::endl;
+    std::cerr << "Personal: " << (m_Personal? "True" : "False") << std::endl;
+    std::cerr << "Location: " << m_Location.toStdString() << std::endl;
 }
 
 void GuiScheduleItemModel::setUserID(std::size_t inValue)
