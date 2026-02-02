@@ -8,6 +8,7 @@
 #include "LoginDialog.h"
 #include "NoteEditorDialog.h"
 #include "ScheduleItemEditorDialog.h"
+#include "ScheduleTablerViewer.h"
 #include "TaskEditorDialog.h"
 #include "UserDashboard.h"
 #include "UserEditorDialog.h"
@@ -31,7 +32,8 @@ UserDashboard::UserDashboard(QWidget *parent)
     m_NoteToEdit{nullptr},
     m_ScheduleItemToEdit{nullptr},
     m_TaskTable{nullptr},
-    udTaskTableView{nullptr}
+    udTaskTableView{nullptr},
+    udScheduleTableView{nullptr}
 {
     m_ProgNameStr = QString::fromStdString(programOptions.progName);
 
@@ -275,7 +277,12 @@ QGroupBox *UserDashboard::setUpPerDayScheduleGB()
     udScheduleGB = new QGroupBox("Schedule:");
     QVBoxLayout* scheduleGBLayout = new QVBoxLayout;
 
-    fakeFillGroupBoxLayout("ScheduleItem", scheduleGBLayout);
+    if (!udScheduleTableView)
+    {
+        udScheduleTableView = new ScheduleTablerViewer(this);
+        udScheduleTableView->setObjectName("udScheduleTableView");
+    }
+    scheduleGBLayout->addWidget(udScheduleTableView);
 
     udScheduleGB->setLayout(scheduleGBLayout);
 

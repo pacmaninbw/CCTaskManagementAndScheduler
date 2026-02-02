@@ -114,6 +114,7 @@ private:
     QLineEdit* udUserNameDisplay;
     QDateEdit* udDateSelectorDE;
     QTableView* udTaskTableView;
+    QTableView* udScheduleTableView;
 
 /*
  * Size and positioning constants.
