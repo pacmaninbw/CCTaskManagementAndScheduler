@@ -64,11 +64,17 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         GuiModels/GuiUserModel.h
         GuiModels/stdChronoToQTConversions.cpp
         GuiModels/stdChronoToQTConversions.h
-        ../MergeModelDB/CommandLineParser.h
+        GuiModels/GuiDashboardScheduleTable.h
+        GuiModels/GuiDashboardScheduleTable.cpp
         AppWidgets/commonQTWidgetsForApp.cpp
         AppWidgets/commonQTWidgetsForApp.h
+        AppWidgets/ScheduleTablerViewer.h
+        AppWidgets/ScheduleTablerViewer.cpp
+        AppWidgets/DashboardTaskViewer.h
+        AppWidgets/DashboardTaskViewer.cpp
         BusinessLogic/TestDBConnection.cpp
         BusinessLogic/TestDBConnection.h
+        ../MergeModelDB/CommandLineParser.h
         ../MergeModelDB/Models/CoreDBInterface.cpp
         ../MergeModelDB/Models/CoreDBInterface.h
         ../MergeModelDB/Models/ListDBInterface.h
@@ -96,8 +102,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ../MergeModelDB/Models/UserModel.h
         ../MergeModelDB/common/commonTestValues.cpp
         ../MergeModelDB/common/commonUtilities.cpp
-        AppWidgets/ScheduleTablerViewer.h AppWidgets/ScheduleTablerViewer.cpp
-        GuiModels/GuiDashboardScheduleTable.h GuiModels/GuiDashboardScheduleTable.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET PP3Rework APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
