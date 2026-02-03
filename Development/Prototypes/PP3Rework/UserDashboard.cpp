@@ -1,7 +1,7 @@
 // Project Header
-#include "TaskList.h"
 #include "CommandLineParser.h"
 #include "commonQTWidgetsForApp.h"  // cqtfa_ functions
+#include "DashboardTaskViewer.h"
 #include "DataBaseConnectionDialog.h"
 #include "GoalEditorDialog.h"
 #include "GuiDashboardTaskTable.h"
@@ -31,7 +31,6 @@ UserDashboard::UserDashboard(QWidget *parent)
     m_TaskToEdit{nullptr},
     m_NoteToEdit{nullptr},
     m_ScheduleItemToEdit{nullptr},
-    m_TaskTable{nullptr},
     udTaskTableView{nullptr},
     udScheduleTableView{nullptr}
 {
@@ -329,9 +328,15 @@ QTableView *UserDashboard::updateTaskList()
 {
     if (!udTaskTableView)
     {
-        udTaskTableView = cqtfa_QTWidget<QTableView>("udTaskTableView", this);
+        udTaskTableView = new DashboardTaskViewer(this);
+        udTaskTableView->setObjectName("udTaskTableView");
+    }
+    else
+    {
+        udTaskTableView->update();
     }
 
+#if 0
     if (!m_TaskTable)
     {
         m_TaskTable =  (!m_UserDataPtr)? new GuiDashboardTaskTable(this) :
@@ -348,6 +353,7 @@ QTableView *UserDashboard::updateTaskList()
     udTaskTableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     udTaskTableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     udTaskTableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+#endif
 
     return udTaskTableView;
 }
@@ -425,6 +431,14 @@ void UserDashboard::handleUserLoginAction()
     userLogin.exec();
 
     m_UserDataPtr = userLogin.GetUserData();
+    if (udTaskTableView)
+    {
+        udTaskTableView->setUserId(m_UserDataPtr);
+    }
+    if (udScheduleTableView)
+    {
+        udScheduleTableView->setUserId(m_UserDataPtr);
+    }
     updateDashboardDisplayData();
 }
 

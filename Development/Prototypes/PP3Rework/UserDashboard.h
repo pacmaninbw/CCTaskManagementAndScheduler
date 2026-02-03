@@ -6,7 +6,8 @@ class GuiTaskModel;
 class GuiNoteModel;
 class GuiGoalModel;
 class GuiScheduleItemModel;
-class GuiDashboardTaskTable;
+class DashboardTaskViewer;
+class ScheduleTablerViewer;
 
 // Project Header Files
 
@@ -82,7 +83,6 @@ private:
     GuiNoteModel* m_NoteToEdit;
     GuiGoalModel* m_GoalToEdit;
     GuiScheduleItemModel* m_ScheduleItemToEdit;
-    GuiDashboardTaskTable* m_TaskTable;
 
     QMenu* udTaskMenu;
     QMenu* udUserMenu;
@@ -113,8 +113,8 @@ private:
     QLineEdit* udUserLastNameDisplay;
     QLineEdit* udUserNameDisplay;
     QDateEdit* udDateSelectorDE;
-    QTableView* udTaskTableView;
-    QTableView* udScheduleTableView;
+    DashboardTaskViewer* udTaskTableView;
+    ScheduleTablerViewer* udScheduleTableView;
 
 /*
  * Size and positioning constants.
