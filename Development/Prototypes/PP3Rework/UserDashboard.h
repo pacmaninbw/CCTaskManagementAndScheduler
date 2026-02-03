@@ -15,6 +15,7 @@ class ScheduleTablerViewer;
 #include <QVariant>
 #include <QAction>
 #include <QApplication>
+#include <QDate>
 #include <QDateEdit>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -53,6 +54,7 @@ private slots:
     void handleAddScheduleItemAction();
     void handleEditScheduleItemAction();
     void handleDatabaseConnectionAction();
+    void handleDateChanged(const QDate &newDate);
 
 private:
     void setUpUserDashboardUi();
@@ -83,6 +85,7 @@ private:
     GuiNoteModel* m_NoteToEdit;
     GuiGoalModel* m_GoalToEdit;
     GuiScheduleItemModel* m_ScheduleItemToEdit;
+    QDate m_DashboardDate;
 
     QMenu* udTaskMenu;
     QMenu* udUserMenu;

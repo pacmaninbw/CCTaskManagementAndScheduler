@@ -31,6 +31,7 @@ UserDashboard::UserDashboard(QWidget *parent)
     m_TaskToEdit{nullptr},
     m_NoteToEdit{nullptr},
     m_ScheduleItemToEdit{nullptr},
+    m_DashboardDate{QDate::currentDate()},
     udTaskTableView{nullptr},
     udScheduleTableView{nullptr}
 {
@@ -61,6 +62,8 @@ void UserDashboard::setUpUserDashboardUi()
     QFormLayout* dashboardDateForm = cqtfa_FormLayoutWithPolicy("dashboardDateForm", nullptr);
 
     udDateSelectorDE = cqtfa_DateEditWithCalendarPopUpCurrentDate("udDateSelectorDE", this);
+    
+    connect(udDateSelectorDE, &QDateEdit::dateChanged, this, &UserDashboard::handleDateChanged);
 
     dashboardDateForm->addRow("Date:", udDateSelectorDE);
 
@@ -507,4 +510,17 @@ void UserDashboard::handleDatabaseConnectionAction()
     DataBaseConnectionDialog dbConnectionDialog(this);
 
     dbConnectionDialog.exec();
+}
+
+void UserDashboard::handleDateChanged(const QDate &newDate)
+{
+    m_DashboardDate = newDate;
+    if (udTaskTableView)
+    {
+        udTaskTableView->setDate(newDate);
+    }
+    if (udScheduleTableView)
+    {
+        udScheduleTableView->setDate(newDate);
+    }
 }
