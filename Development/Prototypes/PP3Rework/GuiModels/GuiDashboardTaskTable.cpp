@@ -15,13 +15,14 @@
 
 
 GuiDashboardTaskTable::GuiDashboardTaskTable(QObject *parent)
-    : QAbstractTableModel(parent)
+    : QAbstractTableModel(parent),
+    m_UserDataPtr{nullptr}
 {}
 
 GuiDashboardTaskTable::GuiDashboardTaskTable(GuiUserModel *userDataPtr, QObject *parent)
-    : QAbstractTableModel(parent)
+    : QAbstractTableModel(parent),
+    m_UserDataPtr{userDataPtr}
 {
-    m_UserDataPtr = userDataPtr;
 }
 
 void GuiDashboardTaskTable::setUserRefillTable(GuiUserModel *userDataPtr)
