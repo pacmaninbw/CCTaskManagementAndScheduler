@@ -30,17 +30,23 @@ public:
     ~ScheduleItemEditorDialog();
 
 public slots:
+    void accept() override;
 
 signals:
 
 private slots:
+    void handleAddItemDate_DateChanged();
 
 private:
     void setUpScheduleItemEditorDialogUI();
     QGroupBox* setUpScheduleTimeControls();
     QDialogButtonBox* setUpScheduleItemButtonBox();
     QDateTimeEdit* createAndInitDateTimeEdit(const char* objName);
-    void handleAddItemDate_DateChanged();
+    bool addToDatabase();
+    bool udpateDatabase();
+    void transferFieldsToDataModel();
+    void initEditFields();
+    QDateTime initValidDateTime(QDateTime fieldData);
 
     std::size_t m_UserID;
     GuiScheduleItemModel* m_ScheduleItemData;

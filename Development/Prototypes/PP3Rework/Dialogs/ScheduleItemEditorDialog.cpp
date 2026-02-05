@@ -3,6 +3,7 @@
 #include "ScheduleItemEditorDialog.h"
 
 // QT Header Files
+#include <QMessageBox>
 
 // Standard C++ Header Files
 
@@ -13,10 +14,30 @@ ScheduleItemEditorDialog::ScheduleItemEditorDialog(QWidget* parent, std::size_t 
     seid_AddItemDate{nullptr}
 {
     setUpScheduleItemEditorDialogUI();
+
+    initEditFields();
 }
 
 ScheduleItemEditorDialog::~ScheduleItemEditorDialog()
 {
+}
+
+void ScheduleItemEditorDialog::accept()
+{
+    bool updateSuccessful = (m_ScheduleItemData->getScheduleItemId() > 0)
+            ? udpateDatabase()
+            : addToDatabase();
+
+    if (updateSuccessful)
+    {
+        QDialog::accept();
+    }
+    else
+    {
+        QString errorReport = "User edit failed.\n";
+        errorReport += m_ScheduleItemData->getErrorMessages();
+        QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
+    }
 }
 
 void ScheduleItemEditorDialog::setUpScheduleItemEditorDialogUI()
@@ -131,4 +152,54 @@ void ScheduleItemEditorDialog::handleAddItemDate_DateChanged()
 
     sied_scheduleItemStartTimeDTEdit->setMaximumDate(newDate.addYears(1));
     sied_scheduleItemEndTimeDTEdit->setMaximumDate(sied_scheduleItemStartTimeDTEdit->maximumDate());
+}
+
+bool ScheduleItemEditorDialog::addToDatabase()
+{
+    transferFieldsToDataModel();
+    return m_ScheduleItemData->addToDatabase();
+}
+
+bool ScheduleItemEditorDialog::udpateDatabase()
+{
+    transferFieldsToDataModel();
+    return m_ScheduleItemData->updateInDatabase();
+}
+
+void ScheduleItemEditorDialog::transferFieldsToDataModel()
+{
+    m_ScheduleItemData->setTitle(sied_scheduleItemTitleTE->toPlainText());
+    m_ScheduleItemData->setStartTime(sied_scheduleItemStartTimeDTEdit->dateTime());
+    m_ScheduleItemData->setEndTime(sied_scheduleItemEndTimeDTEdit->dateTime());
+    m_ScheduleItemData->setLocation(sied_locationTE->toPlainText());
+    m_ScheduleItemData->setPersonal(sied_scheduleItemIsPersonalCB->isChecked());
+}
+    
+void ScheduleItemEditorDialog::initEditFields()
+{
+    if (!m_ScheduleItemData)
+    {
+        m_ScheduleItemData = new GuiScheduleItemModel(m_UserID, parent());
+        return;
+    }
+
+    QDateTime startTime = initValidDateTime(m_ScheduleItemData->getStartTime());
+    seid_AddItemDate->setDate(startTime.date());
+
+    sied_scheduleItemStartTimeDTEdit->setDateTime(startTime);
+    sied_scheduleItemEndTimeDTEdit->setDateTime(initValidDateTime(m_ScheduleItemData->getEndTime()));
+    sied_scheduleItemTitleTE->setText(m_ScheduleItemData->getTitle());
+    sied_locationTE->setText(m_ScheduleItemData->getLocation());
+    sied_scheduleItemIsPersonalCB->setChecked(m_ScheduleItemData->getPersonal());
+}
+
+QDateTime ScheduleItemEditorDialog::initValidDateTime(QDateTime fieldData)
+{
+    QDateTime tempDate(fieldData);
+    if (!tempDate.isValid())
+    {
+        tempDate = QDateTime::currentDateTime();
+    }
+
+    return tempDate;
 }

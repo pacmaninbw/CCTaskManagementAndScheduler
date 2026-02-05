@@ -112,7 +112,8 @@ void GuiDashboardScheduleTable::makeBlankSchedule()
     {
         QTime scheduleTime(dayStart + hourInDay, 0, 0);
         QDateTime scheduleDateTime(m_DateOfSchedule, scheduleTime);
-        GuiScheduleItemModel* hourData = new GuiScheduleItemModel(this->parent());
+        std::size_t userId = (m_UserDataPtr)? m_UserDataPtr->getDbUserId() : 0;
+        GuiScheduleItemModel* hourData = new GuiScheduleItemModel(userId, this->parent());
         hourData->setStartTime(scheduleDateTime);
         hourData->setTitle(" ");
         m_data.append(hourData);

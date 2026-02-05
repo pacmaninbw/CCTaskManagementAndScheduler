@@ -2,6 +2,7 @@
 #define GUISCHEDULEITEMMODEL_H
 
 class ScheduleItemModel;
+
 // Project Header Files
 
 // QT Headeer Files
@@ -17,7 +18,7 @@ class GuiScheduleItemModel : public QObject
     Q_OBJECT
 
 public:
-    explicit GuiScheduleItemModel(QObject *parent = nullptr);
+    explicit GuiScheduleItemModel(std::size_t userID, QObject *parent = nullptr);
     explicit GuiScheduleItemModel(std::shared_ptr<ScheduleItemModel> dbScheduleItemDataPtr, QObject *parent = nullptr);
 
     std::size_t getUserID() const { return m_UserID; };
@@ -38,6 +39,10 @@ public:
     void setPersonal(bool inValue);
     void setLocation(QString inValue);
 
+    bool addToDatabase();
+    bool updateInDatabase();
+    QString getErrorMessages() const { return m_DbErrorMessages; };
+
 signals:
     void userIdChanged();
     void titleChanged();
@@ -47,6 +52,9 @@ signals:
     void locationChanged();
 
 private:
+    void transferFieldsToDbModel();
+    void transferDbModelDataToFields();
+    void transferOptionalFieldsToDBModel();
     std::size_t m_UserID;
     std::size_t m_DbScheduleItemId;
     QString m_Title;
@@ -57,6 +65,7 @@ private:
     QString m_CreationTimeStamp;
     QString m_LastUpdateTimreStamp;
     std::shared_ptr<ScheduleItemModel> m_DbScheduleItemDataPtr;
+    QString m_DbErrorMessages;
 };
 
 #endif // GUISCHEDULEITEMMODEL_H
