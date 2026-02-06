@@ -42,6 +42,11 @@ void GuiScheduleItemModel::debugShow()
     std::cerr << "Title: " << m_Title.toStdString() << std::endl;
     std::cerr << "Personal: " << (m_Personal? "True" : "False") << std::endl;
     std::cerr << "Location: " << m_Location.toStdString() << std::endl;
+
+    if (m_DbScheduleItemDataPtr)
+    {
+        std::cerr << "Schedule to store in Database:\n" << *m_DbScheduleItemDataPtr << std::endl;
+    }
 }
 
 void GuiScheduleItemModel::setUserID(std::size_t inValue)
