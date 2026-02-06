@@ -29,7 +29,7 @@ std::chrono::system_clock::time_point qDateTimeToChrono(const QDateTime& qtDateT
     // Create the std::chrono::system_clock::time_point
     std::chrono::system_clock::time_point timePoint = std::chrono::system_clock::from_time_t(0) + durationSinceEpoch;
 
-\    return timePoint;
+    return timePoint;
 }
 
 std::chrono::year_month_day qDateToChrono(const QDate &qdate)
