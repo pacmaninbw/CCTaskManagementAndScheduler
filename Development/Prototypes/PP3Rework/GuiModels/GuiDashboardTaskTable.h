@@ -19,23 +19,19 @@ class GuiDashboardTaskTable : public QAbstractTableModel
 {
     Q_OBJECT
 
-
 public:
 
     explicit GuiDashboardTaskTable(QObject *parent = nullptr);
     explicit GuiDashboardTaskTable(GuiUserModel *userDataPtr, QObject* parent=nullptr);
     void setUserRefillTable(GuiUserModel *userDataPtr);
     void fillTable();
+    void append(GuiTaskModel* taskData);
+    void clearData();
 
     // Header:
-    QVariant headerData(int section,
-                        Qt::Orientation orientation,
-                        int role = Qt::DisplayRole) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-    bool setHeaderData(int section,
-                       Qt::Orientation orientation,
-                       const QVariant &value,
-                       int role = Qt::EditRole) override;
+    bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole) override;
 
     // Basic functionality:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -50,11 +46,9 @@ public:
 
     // Add data:
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
-    bool insertColumns(int column, int count, const QModelIndex &parent = QModelIndex()) override;
 
     // Remove data:
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
-    bool removeColumns(int column, int count, const QModelIndex &parent = QModelIndex()) override;
 
 private:
     void makeFakeQList();

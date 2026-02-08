@@ -60,6 +60,26 @@ void GuiDashboardTaskTable::fillTable()
     }
 }
 
+void GuiDashboardTaskTable::append(GuiTaskModel* taskData)
+{
+    beginInsertRows(QModelIndex(), m_data.count(), m_data.count());
+
+    m_data.append(taskData);
+    
+    endInsertRows();
+
+}
+
+void GuiDashboardTaskTable::clearData()
+{
+    beginResetModel();
+
+    qDeleteAll(m_data.begin(), m_data.end());
+    m_data.clear();
+
+    endResetModel();
+}
+
 QVariant GuiDashboardTaskTable::headerData(int section, Qt::Orientation orientation, int role) const
 {
     // FIXME: Implement me!
@@ -139,35 +159,36 @@ Qt::ItemFlags GuiDashboardTaskTable::flags(const QModelIndex &index) const
     return QAbstractItemModel::flags(index) | Qt::ItemIsEditable; // FIXME: Implement me!
 }
 
-bool GuiDashboardTaskTable::insertRows(int row, int count, const QModelIndex &parent)
+bool GuiDashboardTaskTable::insertRows(int position, int count, const QModelIndex &parent)
 {
-    beginInsertRows(parent, row, row + count - 1);
-    // FIXME: Implement me!
+    Q_UNUSED(parent);
+    beginInsertRows(QModelIndex(), position, position + count - 1);
+
+    for (int row = 0; row < count; ++row)
+    {
+        m_data.insert(position, nullptr);
+    }
+
     endInsertRows();
+
     return true;
 }
 
-bool GuiDashboardTaskTable::insertColumns(int column, int count, const QModelIndex &parent)
-{
-    beginInsertColumns(parent, column, column + count - 1);
-    // FIXME: Implement me!
-    endInsertColumns();
-    return true;
-}
 
-bool GuiDashboardTaskTable::removeRows(int row, int count, const QModelIndex &parent)
+bool GuiDashboardTaskTable::removeRows(int position, int count, const QModelIndex &parent)
 {
-    beginRemoveRows(parent, row, row + count - 1);
-    // FIXME: Implement me!
+    Q_UNUSED(parent);
+    beginRemoveRows(QModelIndex(), position, position + count - 1);
+
+    for (int row = 0; row < count; ++row)
+    {
+        GuiTaskModel* data = m_data.at(position);
+        delete data;
+        m_data.removeAt(position);
+    }
+
     endRemoveRows();
-    return true;
-}
 
-bool GuiDashboardTaskTable::removeColumns(int column, int count, const QModelIndex &parent)
-{
-    beginRemoveColumns(parent, column, column + count - 1);
-    // FIXME: Implement me!
-    endRemoveColumns();
     return true;
 }
 
@@ -186,7 +207,7 @@ void GuiDashboardTaskTable::makeFakeQList()
             taskData->setPriorityGroup(priorityGroupString);
             taskData->setPriority(QString::number(priority));
             taskData->setDescription(priorityGroup == 0 && priority == 1 ? "Login to app" : "");
-            m_data.append(taskData);
+            append(taskData);
         }
     }
 }
