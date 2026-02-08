@@ -75,8 +75,8 @@ private:
     QGroupBox* setUpPerDayNotesGB();
     void fakeFillGroupBoxLayout(std::string fieldPartialName, QVBoxLayout* layoutToFill);
     void fillUserIdBoxData();
-    QTableView* updateTaskList();
-    QGroupBox* updateSchedule();
+    DashboardTaskViewer* updateTaskList();
+    ScheduleTablerViewer* updateSchedule();
     QGroupBox* listNotes();
 
     QString m_ProgNameStr;

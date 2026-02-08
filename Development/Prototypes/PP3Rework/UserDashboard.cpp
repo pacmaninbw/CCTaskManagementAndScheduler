@@ -193,6 +193,7 @@ void UserDashboard::updateDashboardDisplayData()
 {
     fillUserIdBoxData();
     updateTaskList();
+    updateSchedule();
 }
 
 bool UserDashboard::userIsLoggedIn()
@@ -327,7 +328,7 @@ void UserDashboard::fillUserIdBoxData()
     udUserNameDisplay->setText(m_UserDataPtr->getLoginName());
 }
 
-QTableView *UserDashboard::updateTaskList()
+DashboardTaskViewer* UserDashboard::updateTaskList()
 {
     if (!udTaskTableView)
     {
@@ -339,26 +340,21 @@ QTableView *UserDashboard::updateTaskList()
         udTaskTableView->update();
     }
 
-#if 0
-    if (!m_TaskTable)
-    {
-        m_TaskTable =  (!m_UserDataPtr)? new GuiDashboardTaskTable(this) :
-                new GuiDashboardTaskTable(m_UserDataPtr, this);
-        m_TaskTable->setObjectName("m_TaskTable");
-        m_TaskTable->fillTable();
-    }
-    else
-    {
-        m_TaskTable->setUserRefillTable(m_UserDataPtr);
-    }
-
-    udTaskTableView->setModel(m_TaskTable);
-    udTaskTableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
-    udTaskTableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
-    udTaskTableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
-#endif
-
     return udTaskTableView;
+}
+
+ScheduleTablerViewer* UserDashboard::updateSchedule()
+{
+    if (!udScheduleTableView)
+    {
+        udScheduleTableView = new ScheduleTablerViewer(this);
+        udScheduleTableView->setObjectName("udScheduleTableView");
+    }
+
+    udScheduleTableView->setUserIdAndDate(m_UserDataPtr, m_DashboardDate);
+    udScheduleTableView->updateSchedule();
+
+    return udScheduleTableView;
 }
 
 void UserDashboard::handleAddTaskAction()
@@ -523,4 +519,5 @@ void UserDashboard::handleDateChanged(const QDate &newDate)
     {
         udScheduleTableView->setDate(newDate);
     }
+    updateDashboardDisplayData();
 }
