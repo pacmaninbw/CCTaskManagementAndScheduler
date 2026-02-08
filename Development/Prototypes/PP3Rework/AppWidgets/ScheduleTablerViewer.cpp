@@ -10,6 +10,7 @@
 #include <QTableView>
 
 // Standard C++ Header Files
+#include <iostream>
 
 ScheduleTablerViewer::ScheduleTablerViewer(QWidget *parent)
     : QTableView{parent},
@@ -48,6 +49,23 @@ void ScheduleTablerViewer::setUserIdAndDate(GuiUserModel *userDataPtr, QDate sch
     if (m_ScheduleTable)
     {
         m_ScheduleTable->setUser(userDataPtr);
-        m_ScheduleTable->setUser(userDataPtr);
+        m_ScheduleTable->setDate(scheduleToShow);
     }
+}
+
+void ScheduleTablerViewer::updateSchedule()
+{
+    std::cerr << "Before Update row count: " << m_ScheduleTable->rowCount() << std::endl;
+    if (!m_ScheduleTable)
+    {
+        m_ScheduleTable = new GuiDashboardScheduleTable(parent());
+        m_ScheduleTable->setObjectName("m_ScheduleTable");
+    }
+
+    m_ScheduleTable->setUserAndDateRefillSchedule(m_DBUserId, m_DateOfSchedule);
+    std::cerr << "After Update row count: " << m_ScheduleTable->rowCount() << std::endl;
+
+    setModel(m_ScheduleTable);
+    horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
 }
