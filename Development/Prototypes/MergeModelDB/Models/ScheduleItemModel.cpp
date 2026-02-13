@@ -81,10 +81,6 @@ std::string ScheduleItemModel::formatSelectScheduleItemsByDateAndUser(std::chron
     errorMessages.clear();
 
     std::chrono::sys_days searchAdjustor(scheduleDate);
-    searchAdjustor -= std::chrono::days{1};
-    std::chrono::year_month_day startSearch(searchAdjustor);
-
-    searchAdjustor = scheduleDate;
     searchAdjustor += std::chrono::days{1};
     std::chrono::year_month_day endSearch(searchAdjustor);
 
@@ -93,8 +89,9 @@ std::string ScheduleItemModel::formatSelectScheduleItemsByDateAndUser(std::chron
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
-        boost::mysql::format_sql_to(fctx, " AND StartDateTime >= {}", stdchronoDateToBoostMySQLDate(startSearch));
+        boost::mysql::format_sql_to(fctx, " AND StartDateTime >= {}", stdchronoDateToBoostMySQLDate(scheduleDate));
         boost::mysql::format_sql_to(fctx, " AND StartDateTime <= {}", stdchronoDateToBoostMySQLDate(endSearch));
+        boost::mysql::format_sql_to(fctx, " ORDER BY StartDateTime ASC");
 
         return std::move(fctx).get().value();
     }
