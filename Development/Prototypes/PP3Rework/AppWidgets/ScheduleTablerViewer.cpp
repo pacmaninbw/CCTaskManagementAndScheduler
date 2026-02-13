@@ -6,11 +6,10 @@
 // QT Header Files
 #include <QDate>
 #include <QHeaderView>
-#include <QWidget>
 #include <QTableView>
+#include <QWidget>
 
 // Standard C++ Header Files
-#include <iostream>
 
 ScheduleTablerViewer::ScheduleTablerViewer(QWidget *parent)
     : QTableView{parent},
@@ -19,6 +18,7 @@ ScheduleTablerViewer::ScheduleTablerViewer(QWidget *parent)
 {
     m_ScheduleTable = new GuiDashboardScheduleTable(parent);
     m_ScheduleTable->setObjectName("m_ScheduleTable");
+
     setModel(m_ScheduleTable);
     horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
@@ -55,7 +55,6 @@ void ScheduleTablerViewer::setUserIdAndDate(GuiUserModel *userDataPtr, QDate sch
 
 void ScheduleTablerViewer::updateSchedule()
 {
-    std::cerr << "Before Update row count: " << m_ScheduleTable->rowCount() << std::endl;
     if (!m_ScheduleTable)
     {
         m_ScheduleTable = new GuiDashboardScheduleTable(parent());
@@ -63,7 +62,6 @@ void ScheduleTablerViewer::updateSchedule()
     }
 
     m_ScheduleTable->setUserAndDateRefillSchedule(m_DBUserId, m_DateOfSchedule);
-    std::cerr << "After Update row count: " << m_ScheduleTable->rowCount() << std::endl;
 
     setModel(m_ScheduleTable);
     horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
