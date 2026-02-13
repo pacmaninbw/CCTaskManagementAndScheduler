@@ -15,6 +15,10 @@ class ScheduleItemModel;
 #include <QObject>
 #include <QString>
 
+// Standard C++ Header Files
+#include <chrono>
+#include <vector>
+
 class GuiDashboardScheduleTable : public QAbstractTableModel
 {
     Q_OBJECT
@@ -51,12 +55,17 @@ public:
 
 private:
     void fillSchedule();
-    void makeBlankSchedule();
-    void addScheduledItems();
+    std::chrono::system_clock::time_point getLocalMidnight(std::chrono::year_month_day scheduleDate);
+    void setUserDay(std::chrono::year_month_day scheduleDate);
+    bool hasNoTimeConflicts(std::chrono::system_clock::time_point proposedStartTime);
+    void addBlankHoursForDisplay();
     GuiUserModel *m_UserDataPtr;
     QList<GuiScheduleItemModel*> m_data;
     QDate m_DateOfSchedule;
-
+    std::chrono::system_clock::time_point m_UserStartDay;
+    std::chrono::system_clock::time_point m_UserEndDay;
+    std::chrono::year_month_day m_ChronDateOfSchedule;
+    std::vector<std::shared_ptr<ScheduleItemModel>> m_ScheduledItems;
 };
 
 #endif // GUIDASHBOARDSCHEDULETABLE_H

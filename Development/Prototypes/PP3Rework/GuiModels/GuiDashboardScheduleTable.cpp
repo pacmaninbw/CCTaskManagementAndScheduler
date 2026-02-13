@@ -12,11 +12,12 @@
 #include <QObject>
 #include <QString>
 #include <QTime>
+#include <QTimeZone>
 #include "stdChronoToQTConversions.h"
 
 // Standard C++ Header Files
+#include <algorithm>
 #include <chrono>
-#include <ranges>
 
 
 GuiDashboardScheduleTable::GuiDashboardScheduleTable(QObject *parent)
@@ -24,7 +25,8 @@ GuiDashboardScheduleTable::GuiDashboardScheduleTable(QObject *parent)
     m_UserDataPtr{nullptr},
     m_DateOfSchedule{QDate::currentDate()}
 {
-    makeBlankSchedule();
+    m_ChronDateOfSchedule = qDateToChrono(m_DateOfSchedule);
+    fillSchedule();
 }
 
 GuiDashboardScheduleTable::GuiDashboardScheduleTable(GuiUserModel *userData, QDate dateOfSchedule, QObject *parent)
@@ -32,6 +34,7 @@ GuiDashboardScheduleTable::GuiDashboardScheduleTable(GuiUserModel *userData, QDa
     m_UserDataPtr{userData},
     m_DateOfSchedule{dateOfSchedule}
 {
+    m_ChronDateOfSchedule = qDateToChrono(dateOfSchedule);
 }
 
 void GuiDashboardScheduleTable::setUser(GuiUserModel *userData)
@@ -48,6 +51,8 @@ void GuiDashboardScheduleTable::setUserAndDateRefillSchedule(GuiUserModel *userD
 {
     m_UserDataPtr = userData;
     m_DateOfSchedule = dateOfSchedule;
+    m_ChronDateOfSchedule = qDateToChrono(dateOfSchedule);
+
     fillSchedule();
 }
 
@@ -62,6 +67,8 @@ void GuiDashboardScheduleTable::append(GuiScheduleItemModel *scheduledItem)
 
 void GuiDashboardScheduleTable::clearData()
 {
+    m_ScheduledItems.clear();
+
     beginResetModel();
 
     qDeleteAll(m_data.begin(), m_data.end());
@@ -72,7 +79,6 @@ void GuiDashboardScheduleTable::clearData()
 
 QVariant GuiDashboardScheduleTable::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    // FIXME: Implement me!
     if (orientation != Qt::Horizontal || role != Qt::DisplayRole) return {};
     switch (section) {
         case 0: return "Start Time";
@@ -108,11 +114,10 @@ QVariant GuiDashboardScheduleTable::data(const QModelIndex &index, int role) con
         return QVariant();
     }
 
-
     if (role != Qt::DisplayRole && role != Qt::EditRole) return {};
     const GuiScheduleItemModel* todoItem = m_data[index.row()];
     switch (index.column()) {
-        case 0: return todoItem->getStartTime().time().toString("h:mm ap");
+        case 0: return todoItem->getStartTime().toLocalTime().time().toString("h:mm ap");
         case 1: return todoItem->getTitle();
         default: return {};
     }
@@ -125,13 +130,16 @@ bool GuiDashboardScheduleTable::setData(const QModelIndex &index, const QVariant
         emit dataChanged(index, index, {role});
         return true;
     }
+
     return false;
 }
 
 Qt::ItemFlags GuiDashboardScheduleTable::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
+    {
         return Qt::NoItemFlags;
+    }
 
     return QAbstractItemModel::flags(index) | Qt::ItemIsEditable; // FIXME: Implement me!
 }
@@ -170,55 +178,83 @@ bool GuiDashboardScheduleTable::removeRows(int position, int count, const QModel
 
 void GuiDashboardScheduleTable::fillSchedule()
 {
-    if (!m_data.empty())
-    {
-        clearData();
-    }
-
-    makeBlankSchedule();
-    
-    if (m_UserDataPtr)
-    {
-        addScheduledItems();
-    }
-}
-
-void GuiDashboardScheduleTable::makeBlankSchedule()
-{
-    int dayStart = 8;
-
-    for (std::size_t hourInDay: std::views::iota(0, 12))
-    {
-        QTime scheduleTime(dayStart + hourInDay, 0, 0);
-        QDateTime scheduleDateTime(m_DateOfSchedule, scheduleTime);
-        std::size_t userId = (m_UserDataPtr)? m_UserDataPtr->getDbUserId() : 0;
-        GuiScheduleItemModel* hourData = new GuiScheduleItemModel(userId, this->parent());
-        hourData->setStartTime(scheduleDateTime);
-        hourData->setEndTime(scheduleDateTime.addSecs(3599));
-        hourData->setTitle(" ");
-        append(hourData);
-    }
-}
-
-void GuiDashboardScheduleTable::addScheduledItems()
-{
-    if (!m_UserDataPtr)
-    {
-        return;
-    }
-    ScheduleItemList dbScheduleList(m_UserDataPtr->getDbUserId());
-
+    clearData();
     std::chrono::year_month_day dateOfSchedule(qDateToChrono(m_DateOfSchedule));
 
-    ScheduleItemListValues scheduledItems = dbScheduleList.getUserDaySchedule(dateOfSchedule);
-    if (scheduledItems.size())
+    if (m_UserDataPtr)
     {
-        for (const auto &scheduledItem: scheduledItems)
+        ScheduleItemList dbScheduleList(m_UserDataPtr->getDbUserId());
+        m_ScheduledItems = dbScheduleList.getUserDaySchedule(dateOfSchedule);
+    }
+
+    setUserDay(dateOfSchedule);
+
+    addBlankHoursForDisplay();
+
+    std::sort(m_ScheduledItems.begin(), m_ScheduledItems.end(),
+        [](ScheduleItemModel_shp left, ScheduleItemModel_shp right)
+        { return left->getStartTime() < right->getStartTime();}
+    );
+
+    for (const auto &scheduledItem: m_ScheduledItems)
+    {
+        GuiScheduleItemModel* newEntry = new GuiScheduleItemModel(scheduledItem, this->parent());
+        append(newEntry);
+    }
+}
+
+std::chrono::system_clock::time_point GuiDashboardScheduleTable::getLocalMidnight(std::chrono::year_month_day scheduleDate)
+{
+    const std::chrono::time_zone* localTimeZone = std::chrono::current_zone();
+    const std::chrono::local_days local_midnight{scheduleDate};
+    const std::chrono::zoned_time zt_midnight = localTimeZone->to_sys(local_midnight);
+    return zt_midnight.get_sys_time();
+}
+
+void GuiDashboardScheduleTable::setUserDay(std::chrono::year_month_day scheduleDate)
+{
+    std::chrono::hours hour(1);
+    m_UserStartDay = getLocalMidnight(scheduleDate);
+    // TODO get the users preferred start time and use that in the following calculation
+    m_UserStartDay += 8 * hour;
+    // TODO get the users preferred end time and use that in the following calculation
+    m_UserEndDay = m_UserStartDay + 12 * hour;
+}
+
+bool GuiDashboardScheduleTable::hasNoTimeConflicts(std::chrono::system_clock::time_point proposedHour)
+{
+    for (auto &scheduledItem: m_ScheduledItems)
+    {
+        if (proposedHour >= scheduledItem->getStartTime() && proposedHour <= scheduledItem->getEndTime())
         {
-            GuiScheduleItemModel* newEntry = new GuiScheduleItemModel(scheduledItem, this->parent());
-            append(newEntry);
+            return false;
         }
     }
 
-    return;
+    return true;
+}
+
+void GuiDashboardScheduleTable::addBlankHoursForDisplay()
+{
+    const int secondsInHour = 3600;
+    const std::chrono::seconds endOfHour(secondsInHour - 1);
+    const std::chrono::hours oneHour{1};
+        
+    std::chrono::system_clock::time_point proposedStartTime = std::chrono::floor<std::chrono::hours>(m_UserStartDay);
+    std::chrono::system_clock::time_point endDay = std::chrono::ceil<std::chrono::hours>(m_UserEndDay);
+    while (proposedStartTime < endDay)
+    {
+        if (hasNoTimeConflicts(proposedStartTime))
+        {
+            ScheduleItemModel_shp blankHour = std::make_shared<ScheduleItemModel>();
+            blankHour->setStartDateAndTime(proposedStartTime);
+            blankHour->setEndDateAndTime(proposedStartTime + endOfHour);
+            blankHour->setTitle(" ");
+            blankHour->setCreationDate(std::chrono::system_clock::now());
+            blankHour->setLastUpdate(std::chrono::system_clock::now());
+            m_ScheduledItems.push_back(blankHour);
+        }
+        proposedStartTime += oneHour;
+    }
+
 }
