@@ -28,6 +28,7 @@ private:
     TaskModel_shp creatOddTask(CSVRow taskData);
     TaskModel_shp creatEvenTask(CSVRow taskData);
     TestStatus testGetUnstartedTasks();
+    TestStatus testGetDefaultDashboardTaskList();
     TestStatus testGetActiveTasks();
     TestStatus testTaskUpdates();
     bool testTaskUpdate(TaskModel_shp changedTask);

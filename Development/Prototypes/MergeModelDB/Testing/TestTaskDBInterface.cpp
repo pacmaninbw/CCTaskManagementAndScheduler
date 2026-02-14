@@ -24,6 +24,7 @@ TestTaskDBInterface::TestTaskDBInterface(std::string taskFileName)
 
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testTasksFromDataFile, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetUnstartedTasks, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetDefaultDashboardTaskList, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testTaskUpdates, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetActiveTasks, this));
 
@@ -215,6 +216,32 @@ TestStatus TestTaskDBInterface::testGetUnstartedTasks()
 
     return TESTFAILED;
 }
+
+TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskList()
+{
+    TaskList taskDBInteface;
+    TaskListValues notStartedList = taskDBInteface.getDefaultDashboardTaskList(userOne->getUserID(), commonTestDateValue);
+    if (!notStartedList.empty())
+    {    
+        if (verboseOutput)
+        {
+            std::cout << std::format("Find default task list for user({}) PASSED!\n", userOne->getUserID());
+            std::cout << std::format("User {} dashboard has {} tasks\n",
+                userOne->getUserID(), notStartedList.size());
+            for (auto task: notStartedList)
+            {
+                std::cout << *task << "\n";
+            }
+        }
+        return TESTPASSED; 
+    }
+
+    std::cerr << std::format("taskDBInterface.getDefaultDashboardTaskList({}) FAILED!\n", userOne->getUserID()) <<
+        taskDBInteface.getAllErrorMessages() << "\n";
+
+    return TESTFAILED;
+}
+
 
 TestStatus TestTaskDBInterface::testGetActiveTasks()
 {
