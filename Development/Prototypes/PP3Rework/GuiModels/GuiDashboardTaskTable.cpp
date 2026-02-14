@@ -11,6 +11,7 @@
 #include <QString>
 
 // Standard C++ Header Files
+#include <chrono>
 #include <ranges>
 
 
@@ -39,8 +40,9 @@ void GuiDashboardTaskTable::fillTable()
         return;
     }
 
+    std::chrono::year_month_day searchDate = getTodaysDatePlus(TwoWeeks);
     TaskList currentUserTaskList;
-    TaskListValues userTasks = currentUserTaskList.getUnstartedDueForStartForAssignedUser(m_UserDataPtr->getDbUserId());
+    TaskListValues userTasks = currentUserTaskList.getDefaultDashboardTaskList(m_UserDataPtr->getDbUserId(), searchDate);
 
     if (userTasks.empty())
     {

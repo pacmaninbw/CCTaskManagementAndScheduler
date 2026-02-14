@@ -98,6 +98,8 @@ public:
     std::string formatSelectTasksCompletedByAssignedAfterDate(std::size_t assignedUserID,
         std::chrono::year_month_day searchStartDate) noexcept;
     std::string formatSelectTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID) noexcept;
+    std::string formatDefaultTaskTableSelect(std::size_t assignedUserID,
+        std::chrono::year_month_day searchStartDate) noexcept;
 
 /*
  * Required fields.

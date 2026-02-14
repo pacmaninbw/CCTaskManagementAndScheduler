@@ -348,6 +348,29 @@ std::string TaskModel::formatSelectTasksByAssignedIDandParentID(std::size_t assi
     return std::string();
 }
 
+std::string TaskModel::formatDefaultTaskTableSelect(std::size_t assignedUserID, std::chrono::year_month_day searchStartDate) noexcept
+{
+    errorMessages.clear();
+
+    try {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, listQueryBase);
+        boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND RequiredDelivery < {} AND Completed IS NULL",
+            assignedUserID, stdchronoDateToBoostMySQLDate(searchStartDate));
+        boost::mysql::format_sql_to(fctx, " ORDER BY SchedulePriorityGroup ASC, PriorityInGroup ASC");
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In TaskModel::formatSelectTasksByAssignedIDandParentID({}) : {}", assignedUserID, e.what()));
+    }
+
+    return std::string();
+}
+
 std::string TaskModel::taskStatusString(TaskModel::TaskStatus inVal) const
 {
     auto statusName = taskStatusConversionTable.lookupName(inVal);

@@ -21,6 +21,8 @@ public:
     TaskListValues getTasksCompletedByAssignedAfterDate(std::size_t assignedUserID,
         std::chrono::year_month_day searchStartDate) noexcept;
     TaskListValues getTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID) noexcept;
+    TaskListValues getDefaultDashboardTaskList(std::size_t assignedUserID,
+        std::chrono::year_month_day searchStartDate) noexcept;
 
 private:
     TaskListValues fillTaskList();
@@ -31,6 +33,7 @@ private:
     TestStatus testExceptionGetUnstartedDueForStartForAssignedUser() noexcept;
     TestStatus testExceptionGetTasksCompletedByAssignedAfterDate() noexcept;
     TestStatus testExceptionGetTasksByAssignedIDandParentID() noexcept;
+    TestStatus testExceptionGetDefaultDashboardTaskList() noexcept;
 };
 
 #endif // TASKLIST_H_

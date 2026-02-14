@@ -499,6 +499,7 @@ void UserDashboard::handleEditScheduleItemAction()
     ScheduleItemEditorDialog editScheduleItemDialog(this,  m_UserDataPtr->getDbUserId(), m_ScheduleItemToEdit);
 
     editScheduleItemDialog.exec();
+    updateSchedule();
 }
 
 void UserDashboard::handleDatabaseConnectionAction()

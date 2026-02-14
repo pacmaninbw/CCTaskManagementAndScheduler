@@ -96,6 +96,25 @@ TaskListValues TaskList::getTasksByAssignedIDandParentID(std::size_t assignedUse
     return TaskListValues();
 }
 
+TaskListValues TaskList::getDefaultDashboardTaskList(std::size_t assignedUserID, std::chrono::year_month_day searchStartDate) noexcept
+{
+    errorMessages.clear();
+    appendErrorMessage("In TaskList::getDefaultDashboardTaskList : ");
+
+    try
+    {
+        firstFormattedQuery = queryGenerator->formatDefaultTaskTableSelect(assignedUserID, searchStartDate);
+        return runQueryFillTaskList();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(e.what());
+    }
+    
+    return TaskListValues();
+}
+
 TaskListValues TaskList::fillTaskList()
 {
     TaskListValues taskList;
@@ -138,6 +157,8 @@ std::vector<ListExceptionTestElement> TaskList::initListExceptionTests() noexcep
         "getTasksCompletedByAssignedAfterDate"});
     exceptionTests.push_back({std::bind(&TaskList::testExceptionGetTasksByAssignedIDandParentID, this),
         "getTasksByAssignedIDandParentID"});
+    exceptionTests.push_back({std::bind(&TaskList::testExceptionGetDefaultDashboardTaskList, this),
+        "getDefaultDashboardTaskList"});
 
     return exceptionTests;
 }
@@ -183,3 +204,14 @@ TestStatus TaskList::testExceptionGetTasksByAssignedIDandParentID() noexcept
 
 }
 
+TestStatus TaskList::testExceptionGetDefaultDashboardTaskList() noexcept
+{
+    selfTestResetAllValues();
+
+    std::chrono::year_month_day searchStartDate = commonTestDateValue;
+    std::size_t assignedUser = 1;
+
+    return testListExceptionAndSuccessNArgs("TaskList::testExceptionGetTasksCompletedByAssignedAfterDate()",
+         std::bind(&TaskList::getDefaultDashboardTaskList, this, std::placeholders::_1, std::placeholders::_2),
+        assignedUser, searchStartDate);
+}
