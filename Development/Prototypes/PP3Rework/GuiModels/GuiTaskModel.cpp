@@ -30,6 +30,17 @@ GuiTaskModel::GuiTaskModel(std::shared_ptr<TaskModel> dbTaskDataPtr, QObject* pa
     transferDbModelDataToFields();
 }
 
+GuiTaskModel::GuiTaskModel(std::size_t dbTaskId, QObject *parent)
+    : GuiTaskModel(parent)
+{
+    TaskModel_shp newTaskModel = std::make_shared<TaskModel>();
+    newTaskModel->setTaskID(dbTaskId);
+    newTaskModel->retrieve();
+
+    m_DbTaskDataPtr = newTaskModel;
+    transferDbModelDataToFields();
+}
+
 void GuiTaskModel::setDbTaskId(std::size_t v)
 {
     if (m_DbTaskId != v)

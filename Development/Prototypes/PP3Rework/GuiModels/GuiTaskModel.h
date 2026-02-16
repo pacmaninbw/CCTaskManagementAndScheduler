@@ -28,6 +28,7 @@ public:
 
     explicit GuiTaskModel(QObject *parent = nullptr);
     explicit GuiTaskModel(std::shared_ptr<TaskModel> dbTaskDataPtr, QObject* parent = nullptr);
+    explicit GuiTaskModel(std::size_t dbTaskId, QObject* parent = nullptr);
 
     std::size_t getDbTaskId() const { return m_DbTaskId; };
     std::size_t getCreatorUserId() const { return m_CreatorUserId;};
