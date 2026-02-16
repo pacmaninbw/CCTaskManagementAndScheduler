@@ -1,5 +1,6 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
+#include "GuiUserModel.h"
 #include "TaskEditorDialog.h"
 
 // QT Header Files
@@ -20,20 +21,33 @@
 
 // Standard C++ Header Files
 
-TaskEditorDialog::TaskEditorDialog(QWidget *parent, GuiUserModel* creator, GuiTaskModel* taskToEdit)
+TaskEditorDialog::TaskEditorDialog(QWidget *parent, GuiUserModel* creator)
     : QDialog(parent),
     m_Creator{creator},
-    m_TaskData{taskToEdit},
+    m_TaskData{nullptr},
     m_ParentTaskData{nullptr}
 {
     setUpTaskEditorUI();
 
-    initEditFields(taskToEdit);
+    initEditFields();
 }
 
 TaskEditorDialog::~TaskEditorDialog()
 {
 
+}
+
+void TaskEditorDialog::setTaskDataAndInitDisplayFields(GuiTaskModel *taskToEdit)
+{
+    if (!taskToEdit)
+    {
+        return;
+    }
+
+    m_TaskData = taskToEdit;
+
+    initDisplayFields();
+    initEditFieldsFromTaskData();
 }
 
 void TaskEditorDialog::accept()
@@ -411,27 +425,18 @@ void TaskEditorDialog::transferAllFieldsToData()
  */
 }
 
-void TaskEditorDialog::initEditFields(GuiTaskModel *taskToEdit)
+void TaskEditorDialog::initEditFields()
 {
-    if (!taskToEdit)
-    {
-        editTaskCreatorFirstNameDisplay->setText(m_Creator->getFirstName());
-        editTaskCreatorLastNameDisplay->setText(m_Creator->getLastName());
-        editTaskAssignedToFirstNameDisplay->setText(m_Creator->getFirstName());
-        editTaskAssignedToLastName->setText(m_Creator->getLastName());
+    editTaskCreatorFirstNameDisplay->setText(m_Creator->getFirstName());
+    editTaskCreatorLastNameDisplay->setText(m_Creator->getLastName());
+    editTaskAssignedToFirstNameDisplay->setText(m_Creator->getFirstName());
+    editTaskAssignedToLastName->setText(m_Creator->getLastName());
 
-        m_Assignee = m_Creator;
+    m_Assignee = m_Creator;
 
-        m_TaskData = new GuiTaskModel();
+    m_TaskData = new GuiTaskModel();
 
-        return;
-    }
-
-    editTaskDescriptionTE->setText(taskToEdit->getDescription());
-
-    editTaskDueDateSelectorDE->setDate(initValidDateField(taskToEdit->getDueDate()));
-    editTaskScheduledStartDE->setDate(initValidDateField(taskToEdit->getScheduledStart()));
-    editTaskExpectedCompletionDE->setDate(initValidDateField(taskToEdit->getEstimatedCompletion()));
+    return;
 }
 
 QDate TaskEditorDialog::initValidDateField(QDate fieldData)
@@ -443,4 +448,57 @@ QDate TaskEditorDialog::initValidDateField(QDate fieldData)
     }
 
     return tempDate;
+}
+
+GuiUserModel *TaskEditorDialog::getUserDataFromTaskData(std::size_t dbUserId)
+{
+    return new GuiUserModel(dbUserId);
+}
+
+void TaskEditorDialog::initDisplayFields()
+{
+    if (!m_TaskData)
+    {
+        return;
+    }
+
+    m_Creator = getUserDataFromTaskData(m_TaskData->getCreatorUserId());
+    initUserNameFields(editTaskCreatorFirstNameDisplay, editTaskCreatorLastNameDisplay, m_Creator);
+
+    m_Assignee = getUserDataFromTaskData(m_TaskData->getAssigneeUserId());
+    initUserNameFields(editTaskAssignedToFirstNameDisplay, editTaskAssignedToLastName, m_Assignee);
+
+    std::size_t dbParentTaskId = m_TaskData->getParentTaskId();
+    if (dbParentTaskId)
+    {
+        m_ParentTaskData = new GuiTaskModel(dbParentTaskId);
+    }
+}
+
+void TaskEditorDialog::initEditFieldsFromTaskData()
+{
+    if (!m_TaskData)
+    {
+        return;
+    }
+
+    editTaskDescriptionTE->setText(m_TaskData->getDescription());
+
+    editTaskDueDateSelectorDE->setDate(initValidDateField(m_TaskData->getDueDate()));
+    editTaskScheduledStartDE->setDate(initValidDateField(m_TaskData->getScheduledStart()));
+    editTaskExpectedCompletionDE->setDate(initValidDateField(m_TaskData->getEstimatedCompletion()));
+
+    editTaskEstimatedEffortLE->setText(m_TaskData->getEstimatedEffort());
+    editTaskActualEffortLE->setText(m_TaskData->getActualEffortToDate());
+
+    editTaskPriorityGroupLE->setText(m_TaskData->getPriorityGroup());
+    editTaskPriorityLE->setText(m_TaskData->getPriority());
+
+    editTaskPersonalCB->setChecked(m_TaskData->getPersonal());
+}
+
+void TaskEditorDialog::initUserNameFields(QLineEdit *firstNameEditor, QLineEdit *lastNameEditor, GuiUserModel *user)
+{
+    firstNameEditor->setText(user->getFirstName());
+    lastNameEditor->setText(user->getLastName());
 }

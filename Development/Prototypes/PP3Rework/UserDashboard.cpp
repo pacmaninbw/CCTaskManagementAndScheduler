@@ -18,11 +18,13 @@
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QMenuBar>
+#include <QMessageBox>
 #include <QVBoxLayout>
 #include <QString>
 
 // Standard C++ Header Files
 #include <format>
+#include <iostream>
 #include <string>
 
 UserDashboard::UserDashboard(QWidget *parent)
@@ -334,6 +336,8 @@ DashboardTaskViewer* UserDashboard::updateTaskList()
     {
         udTaskTableView = new DashboardTaskViewer(this);
         udTaskTableView->setObjectName("udTaskTableView");
+        connect(udTaskTableView, &QTableView::clicked, this, &UserDashboard::handleTaskTableClicked);
+        connect(udTaskTableView, &QTableView::doubleClicked, this, &UserDashboard::handleTaskTableClicked);
     }
     else
     {
@@ -376,7 +380,33 @@ void UserDashboard::handleEditTaskAction()
         return;
     }
 
-    TaskEditorDialog editTaskDialog(this, m_UserDataPtr, m_TaskToEdit);
+    TaskEditorDialog editTaskDialog(this, m_UserDataPtr);
+    editTaskDialog.setTaskDataAndInitDisplayFields(m_TaskToEdit);
+
+    editTaskDialog.exec();
+}
+
+void UserDashboard::handleTaskTableClicked(const QModelIndex &index)
+{
+    std::cerr << "Entered handleTaskTableClicked" << std::endl;
+    if (!userIsLoggedIn())
+    {
+        // There is no valid data to edit.
+        QMessageBox::critical(nullptr, "Critical Error", "Please log into the app before attempting edits", QMessageBox::Ok);
+        return;
+    }
+
+    if (!index.isValid())
+    {
+        std::cerr << "Index invalid" << std::endl;
+        return;
+    }
+
+    std::cerr << "Row " << index.row() << " Column " << index.column() << std::endl;
+    m_TaskToEdit = static_cast<GuiTaskModel*>(index.internalPointer());
+
+    TaskEditorDialog editTaskDialog(this, m_UserDataPtr);
+    editTaskDialog.setTaskDataAndInitDisplayFields(m_TaskToEdit);
 
     editTaskDialog.exec();
 }

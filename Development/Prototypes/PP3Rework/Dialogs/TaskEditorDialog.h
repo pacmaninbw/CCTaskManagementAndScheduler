@@ -29,8 +29,9 @@ class TaskEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit TaskEditorDialog(QWidget* parent = nullptr, GuiUserModel* creator=nullptr, GuiTaskModel* taskToEdit=nullptr);
+    explicit TaskEditorDialog(QWidget* parent = nullptr, GuiUserModel* creator = nullptr);
     ~TaskEditorDialog();
+    void setTaskDataAndInitDisplayFields(GuiTaskModel* taskToEdit);
 
 public slots:
     void accept() override;
@@ -59,8 +60,12 @@ private:
     bool addTask();
     bool updateTask();
     void transferAllFieldsToData();
-    void initEditFields(GuiTaskModel* taskToEdit);
+    void initEditFields();
     QDate initValidDateField(QDate fieldData);
+    GuiUserModel* getUserDataFromTaskData(std::size_t dbUserId);
+    void initDisplayFields();
+    void initEditFieldsFromTaskData();
+    void initUserNameFields(QLineEdit* firstNameEditor, QLineEdit* lastNameEditor, GuiUserModel* user);
 
     GuiUserModel* m_Creator;
     GuiTaskModel* m_TaskData;

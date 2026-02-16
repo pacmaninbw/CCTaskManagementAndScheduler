@@ -44,6 +44,7 @@ signals:
 private slots:
     void handleAddTaskAction();
     void handleEditTaskAction();
+    void handleTaskTableClicked(const QModelIndex &index);
     void handleAddUserAction();
     void handleEditUserAction();
     void handleAddNoteAction();
