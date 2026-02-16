@@ -1,7 +1,6 @@
 #ifndef DASHBOARDTASKVIEWER_H
 #define DASHBOARDTASKVIEWER_H
 
-
 class GuiUserModel;
 class GuiDashboardTaskTable;
 

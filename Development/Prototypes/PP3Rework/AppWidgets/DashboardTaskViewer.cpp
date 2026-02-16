@@ -71,3 +71,4 @@ void DashboardTaskViewer::update()
     horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
 }
+
