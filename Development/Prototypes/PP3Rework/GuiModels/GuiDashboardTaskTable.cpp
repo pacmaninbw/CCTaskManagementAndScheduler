@@ -194,6 +194,22 @@ bool GuiDashboardTaskTable::removeRows(int position, int count, const QModelInde
     return true;
 }
 
+QModelIndex GuiDashboardTaskTable::index(int row, int column, const QModelIndex &parent) const
+{
+    if (!hasIndex(row, column, parent))
+    {
+        return QModelIndex();
+    }
+
+    GuiTaskModel* taskModelItem = m_data.at(row);
+    if (taskModelItem)
+    {
+        return createIndex(row, column, taskModelItem);
+    }
+
+    return QModelIndex();
+}
+
 void GuiDashboardTaskTable::makeFakeQList()
 {
     if (!m_data.isEmpty())
