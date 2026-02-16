@@ -22,6 +22,15 @@ GuiUserModel::GuiUserModel(std::shared_ptr<UserModel> dbUserDataPtr, QObject *pa
     setUserDataPtr(dbUserDataPtr);
 }
 
+GuiUserModel::GuiUserModel(std::size_t dbUserId, QObject *parent)
+    : GuiUserModel{parent}
+{
+    std::shared_ptr<UserModel> newUserModel = std::make_shared<UserModel>();
+    newUserModel->setUserID(dbUserId);
+    newUserModel->retrieve();
+    setUserDataPtr(newUserModel);
+}
+
 bool GuiUserModel::isValid()
 {
     return false;

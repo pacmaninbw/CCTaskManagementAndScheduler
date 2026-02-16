@@ -18,6 +18,7 @@ class GuiUserModel : public QObject
 public:
     explicit GuiUserModel(QObject *parent = nullptr);
     explicit GuiUserModel(std::shared_ptr<UserModel> dbUserDataPtr, QObject *parent = nullptr);
+    explicit GuiUserModel(std::size_t dbUserId, QObject *parent = nullptr);
 
     QString getLoginName() const { return m_LoginName; };
     QString getPassword()  const { return m_Password; };
