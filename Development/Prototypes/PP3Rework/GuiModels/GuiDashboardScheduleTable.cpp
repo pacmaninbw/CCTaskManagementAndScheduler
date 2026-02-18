@@ -176,6 +176,22 @@ bool GuiDashboardScheduleTable::removeRows(int position, int count, const QModel
     return true;
 }
 
+QModelIndex GuiDashboardScheduleTable::index(int row, int column, const QModelIndex &parent) const
+{
+    if (!hasIndex(row, column, parent))
+    {
+        return QModelIndex();
+    }
+
+    GuiScheduleItemModel* scheduleItem = m_data.at(row);
+    if (scheduleItem)
+    {
+        return createIndex(row, column, scheduleItem);
+    }
+
+    return QModelIndex();
+}
+
 void GuiDashboardScheduleTable::fillSchedule()
 {
     clearData();
