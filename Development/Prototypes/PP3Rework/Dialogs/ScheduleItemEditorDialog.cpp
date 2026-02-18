@@ -6,6 +6,7 @@
 #include <QMessageBox>
 
 // Standard C++ Header Files
+#include <iostream>
 
 ScheduleItemEditorDialog::ScheduleItemEditorDialog(QWidget* parent, std::size_t userId, GuiScheduleItemModel* scheduleItemToEdit)
     : QDialog(parent),
@@ -15,6 +16,11 @@ ScheduleItemEditorDialog::ScheduleItemEditorDialog(QWidget* parent, std::size_t 
 {
     setUpScheduleItemEditorDialogUI();
 
+    std::cerr << "In editor Constructor \n";
+    if (scheduleItemToEdit)
+    {
+        scheduleItemToEdit->debugShow();
+    }
     initEditFields();
 }
 
@@ -183,8 +189,13 @@ void ScheduleItemEditorDialog::initEditFields()
         return;
     }
 
+    m_ScheduleItemData->debugShow();
+
     QDateTime startTime = initValidDateTime(m_ScheduleItemData->getStartTime());
-    seid_AddItemDate->setDate(startTime.date());
+    if (seid_AddItemDate)
+    {
+        seid_AddItemDate->setDate(startTime.date());
+    }
 
     sied_scheduleItemStartTimeDTEdit->setDateTime(startTime);
     sied_scheduleItemEndTimeDTEdit->setDateTime(initValidDateTime(m_ScheduleItemData->getEndTime()));
@@ -200,6 +211,6 @@ QDateTime ScheduleItemEditorDialog::initValidDateTime(QDateTime fieldData)
     {
         tempDate = QDateTime::currentDateTime();
     }
-
+    
     return tempDate;
 }
