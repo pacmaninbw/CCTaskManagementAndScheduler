@@ -54,6 +54,7 @@ private slots:
     void handleEditGoalAction();
     void handleAddScheduleItemAction();
     void handleEditScheduleItemAction();
+    void handleScheduleClicked(const QModelIndex &index);
     void handleDatabaseConnectionAction();
     void handleDateChanged(const QDate &newDate);
 

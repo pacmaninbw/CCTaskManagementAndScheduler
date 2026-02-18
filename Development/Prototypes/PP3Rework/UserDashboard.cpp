@@ -282,12 +282,7 @@ QGroupBox *UserDashboard::setUpPerDayScheduleGB()
     udScheduleGB = new QGroupBox("Schedule:");
     QVBoxLayout* scheduleGBLayout = new QVBoxLayout;
 
-    if (!udScheduleTableView)
-    {
-        udScheduleTableView = new ScheduleTablerViewer(this);
-        udScheduleTableView->setObjectName("udScheduleTableView");
-    }
-    scheduleGBLayout->addWidget(udScheduleTableView);
+    scheduleGBLayout->addWidget(updateSchedule());
 
     udScheduleGB->setLayout(scheduleGBLayout);
 
@@ -353,6 +348,8 @@ ScheduleTablerViewer* UserDashboard::updateSchedule()
     {
         udScheduleTableView = new ScheduleTablerViewer(this);
         udScheduleTableView->setObjectName("udScheduleTableView");
+        connect(udScheduleTableView, &QTableView::clicked, this, &UserDashboard::handleScheduleClicked);
+        connect(udScheduleTableView, &QTableView::doubleClicked, this, &UserDashboard::handleScheduleClicked);
     }
 
     udScheduleTableView->setUserIdAndDate(m_UserDataPtr, m_DashboardDate);
@@ -388,21 +385,16 @@ void UserDashboard::handleEditTaskAction()
 
 void UserDashboard::handleTaskTableClicked(const QModelIndex &index)
 {
-    std::cerr << "Entered handleTaskTableClicked" << std::endl;
     if (!userIsLoggedIn())
     {
-        // There is no valid data to edit.
-        QMessageBox::critical(nullptr, "Critical Error", "Please log into the app before attempting edits", QMessageBox::Ok);
         return;
     }
 
     if (!index.isValid())
     {
-        std::cerr << "Index invalid" << std::endl;
         return;
     }
 
-    std::cerr << "Row " << index.row() << " Column " << index.column() << std::endl;
     m_TaskToEdit = static_cast<GuiTaskModel*>(index.internalPointer());
 
     TaskEditorDialog editTaskDialog(this, m_UserDataPtr);
@@ -532,6 +524,25 @@ void UserDashboard::handleEditScheduleItemAction()
     updateSchedule();
 }
 
+void UserDashboard::handleScheduleClicked(const QModelIndex &index)
+{
+    if (!userIsLoggedIn())
+    {
+        return;
+    }
+
+    if (!index.isValid())
+    {
+        return;
+    }
+
+    m_ScheduleItemToEdit = static_cast<GuiScheduleItemModel*>(index.internalPointer());
+
+    ScheduleItemEditorDialog editScheduleItemDialog(this,  m_UserDataPtr->getDbUserId(), m_ScheduleItemToEdit);
+
+    editScheduleItemDialog.exec();
+}
+
 void UserDashboard::handleDatabaseConnectionAction()
 {
     DataBaseConnectionDialog dbConnectionDialog(this);
@@ -542,13 +553,16 @@ void UserDashboard::handleDatabaseConnectionAction()
 void UserDashboard::handleDateChanged(const QDate &newDate)
 {
     m_DashboardDate = newDate;
+
     if (udTaskTableView)
     {
         udTaskTableView->setDate(newDate);
     }
+
     if (udScheduleTableView)
     {
         udScheduleTableView->setDate(newDate);
     }
+
     updateDashboardDisplayData();
 }
