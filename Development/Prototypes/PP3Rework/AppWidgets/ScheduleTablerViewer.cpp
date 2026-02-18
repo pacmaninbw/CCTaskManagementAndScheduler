@@ -14,6 +14,7 @@
 ScheduleTablerViewer::ScheduleTablerViewer(QWidget *parent)
     : QTableView{parent},
     m_DBUserId{nullptr},
+    m_DateOfSchedule{QDate::currentDate()},
     m_ScheduleTable{nullptr}
 {
     m_ScheduleTable = new GuiDashboardScheduleTable(parent);
