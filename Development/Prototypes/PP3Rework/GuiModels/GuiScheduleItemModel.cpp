@@ -19,17 +19,8 @@ GuiScheduleItemModel::GuiScheduleItemModel(std::shared_ptr<ScheduleItemModel> db
     : GuiScheduleItemModel(dbScheduleItemDataPtr->getUserID(), parent)
 {
     m_DbScheduleItemDataPtr = dbScheduleItemDataPtr;
-    m_DbScheduleItemId = dbScheduleItemDataPtr->getScheduleItemID();
-//    m_UserID = dbScheduleItemDataPtr->getUserID();
-    m_Title = QString::fromStdString(dbScheduleItemDataPtr->getTitle());
-    m_StartTime = chronoTimePointToQDateTime(dbScheduleItemDataPtr->getStartTime());
-    m_EndTime = chronoTimePointToQDateTime(dbScheduleItemDataPtr->getEndTime());
 
-    QDateTime tempqdt = chronoTimePointToQDateTime(dbScheduleItemDataPtr->getCreationDate());
-    m_CreationTimeStamp = tempqdt.toString(Qt::ISODate);
-
-    tempqdt = chronoTimePointToQDateTime(dbScheduleItemDataPtr->getLastUpdate());
-    m_LastUpdateTimreStamp = tempqdt.toString(Qt::ISODate);
+    transferDbModelDataToFields();
 }
 
 void GuiScheduleItemModel::debugShow()
