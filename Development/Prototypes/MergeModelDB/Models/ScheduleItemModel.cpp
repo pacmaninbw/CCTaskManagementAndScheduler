@@ -188,7 +188,7 @@ std::string ScheduleItemModel::formatUpdateStatement()
             " StartDateTime = {0},"
             " EndDateTime = {1},"
             " Title = {2},"
-            " Personal = {3}"
+            " Personal = {3},"
             " Location = {4},"
             " LastUpdateTS = {5}"
         " WHERE idUserScheduleItem = {6} AND UserID = {7} ",
