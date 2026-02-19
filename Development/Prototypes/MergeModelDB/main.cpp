@@ -189,41 +189,68 @@ static TestStatus runAllListUnitTests()
 static TestStatus runAllIntegrationTests()
 {
     separateTestCaseOutput();
+    TestStatus allInitgrationTests = TESTPASSED;
+
     TestUserDBInterface userTests(programOptions.userTestDataFile);
     if (userTests.runAllTests() == TESTFAILED)
     {
-        return TESTFAILED;
+        allInitgrationTests = TESTFAILED;
+
+        if (programOptions.quitFirstFail)
+        {
+            return TESTFAILED;
+        }
     }
 
     separateTestCaseOutput();
     TestTaskDBInterface tasktests(programOptions.taskTestDataFile);
     if (tasktests.runAllTests() == TESTFAILED)
     {
-        return TESTFAILED;
+        allInitgrationTests = TESTFAILED;
+
+        if (programOptions.quitFirstFail)
+        {
+            return TESTFAILED;
+        }
     }
 
     separateTestCaseOutput();
     TestGoalModel goalTests;
     if (goalTests.runAllTests() == TESTFAILED)
     {
-        return TESTFAILED;
+        allInitgrationTests = TESTFAILED;
+
+        if (programOptions.quitFirstFail)
+        {
+            return TESTFAILED;
+        }
     }
 
     separateTestCaseOutput();
     TestNoteModel noteTests;
     if (noteTests.runAllTests() == TESTFAILED)
     {
-        return TESTFAILED;
+        allInitgrationTests = TESTFAILED;
+
+        if (programOptions.quitFirstFail)
+        {
+            return TESTFAILED;
+        }
     }
 
     separateTestCaseOutput();
     TestScheduleItemModel scheduleItemTests;
     if (scheduleItemTests.runAllTests() == TESTFAILED)
     {
-        return TESTFAILED;
+        allInitgrationTests = TESTFAILED;
+
+        if (programOptions.quitFirstFail)
+        {
+            return TESTFAILED;
+        }
     }
 
-    return TESTPASSED;
+    return allInitgrationTests;
 }
 
 int main(int argc, char* argv[])
