@@ -30,6 +30,7 @@ private:
     TestStatus testPositivePathScheduleItemInsertions();
     TestStatus testPositivePathGetScheduleItemsForUserWithSimilarTitleDateRange();
     TestStatus testPositivePathGetScheduleItemsForUserByDate();
+    TestStatus testPositivePathUpdateScheduleItem();
     TestStatus testNegativePathAlreadyInDataBase();
     TestStatus testnegativePathNotModified();
     TestStatus negativePathMissingRequiredFields();

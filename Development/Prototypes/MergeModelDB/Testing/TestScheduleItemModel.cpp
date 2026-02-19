@@ -34,6 +34,7 @@ TestScheduleItemModel::TestScheduleItemModel()
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathScheduleItemInsertions, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSimilarTitleDateRange, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathUpdateScheduleItem, this));
 
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::negativePathMissingRequiredFields, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testnegativePathNotModified, this));
@@ -84,6 +85,34 @@ TestStatus TestScheduleItemModel::testPositivePathScheduleItemInsertions()
 
     return testStatus;
 }
+
+TestStatus TestScheduleItemModel::testPositivePathUpdateScheduleItem()
+{
+    TestStatus testStatus = TESTPASSED;
+
+    ScheduleItemModel_shp scheduleitemToUpdate = std::make_shared<ScheduleItemModel>();
+    scheduleitemToUpdate->setScheduleItemID(1);
+    scheduleitemToUpdate->setUserID(1);
+    if (!scheduleitemToUpdate->retrieve())
+    {
+        std::cout << "ScheduleItem 1 not found in database!!\n";
+        return TESTFAILED;
+    }
+
+    scheduleitemToUpdate->setTitle("Dr. David Aftergood");
+    scheduleitemToUpdate->setLocation("99. N. La Cienega");
+    scheduleitemToUpdate->setPersonal(false);
+
+    if (!scheduleitemToUpdate->update())
+    {
+        std::cout << "Update failed for ScheduleItem: " << *scheduleitemToUpdate << " :\n";
+        std::cout << scheduleitemToUpdate->getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    return testStatus;
+}
+
 
 TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSimilarTitleDateRange()
 {
@@ -266,3 +295,4 @@ TestStatus TestScheduleItemModel::testMissingRequiredFieldsAddEndTime(ScheduleIt
 
     return testStatus;
 }
+
