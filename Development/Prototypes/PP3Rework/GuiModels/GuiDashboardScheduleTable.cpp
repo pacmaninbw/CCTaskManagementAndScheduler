@@ -215,6 +215,10 @@ void GuiDashboardScheduleTable::fillSchedule()
     for (const auto &scheduledItem: m_ScheduledItems)
     {
         GuiScheduleItemModel* newEntry = new GuiScheduleItemModel(scheduledItem, this->parent());
+        if (m_UserDataPtr)
+        {
+            newEntry->setUserID(m_UserDataPtr->getDbUserId());
+        }
         append(newEntry);
     }
 }
