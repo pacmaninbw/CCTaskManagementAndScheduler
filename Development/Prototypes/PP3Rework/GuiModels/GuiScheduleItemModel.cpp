@@ -119,6 +119,15 @@ bool GuiScheduleItemModel::updateInDatabase()
 {
     m_DbErrorMessages = "";
 
+    transferFieldsToDbModel();
+
+    if (m_DbScheduleItemDataPtr->update())
+    {
+        return true;
+    }
+
+    m_DbErrorMessages = QString::fromStdString(m_DbScheduleItemDataPtr->getAllErrorMessages());
+
     return false;
 }
 
@@ -140,6 +149,7 @@ void GuiScheduleItemModel::transferFieldsToDbModel()
 
 void GuiScheduleItemModel::transferDbModelDataToFields()
 {
+    m_DbScheduleItemId = m_DbScheduleItemDataPtr->getScheduleItemID();
     m_Title = QString::fromStdString(m_DbScheduleItemDataPtr->getTitle());
     m_StartTime = chronoTimePointToQDateTime(m_DbScheduleItemDataPtr->getStartTime());
     m_EndTime = chronoTimePointToQDateTime(m_DbScheduleItemDataPtr->getEndTime());
