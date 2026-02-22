@@ -39,10 +39,11 @@ public slots:
 signals:
 
 private slots:
-    void on_editTaskPersonalCB_stateChanged();
+    void on_editTaskPersonalCB_stateChanged(int newState);
     void on_editTaskSelectParentPB_Clicked();
     void on_editTaskAddDependenciesPB_Clicked();
     void on_editTaskChangeAssignedUserPB_Clicked();
+    void on_editTaskStatusSelectorCBChanged(int index);
 
 private:
     void setUpTaskEditorUI();
@@ -66,6 +67,7 @@ private:
     void initDisplayFields();
     void initEditFieldsFromTaskData();
     void initUserNameFields(QLineEdit* firstNameEditor, QLineEdit* lastNameEditor, GuiUserModel* user);
+    void connectEditFieldsToActions();
 
     GuiUserModel* m_Creator;
     GuiTaskModel* m_TaskData;
