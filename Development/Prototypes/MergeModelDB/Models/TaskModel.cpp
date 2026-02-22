@@ -107,6 +107,19 @@ void TaskModel::setStatus(TaskModel::TaskStatus inStatus)
 {
     modified = true;
     status = inStatus;
+
+    if (status == TaskModel::TaskStatus::Work_in_Progress)
+    {
+        if (!actualStartDate.has_value())
+        {
+            setactualStartDate(getTodaysDate());
+        }
+    }
+
+    if (status == TaskModel::TaskStatus::Complete)
+    {
+        setCompletionDate(getTodaysDate());
+    }
 }
 
 void TaskModel::setParentTaskID(std::size_t inParentTaskID)
