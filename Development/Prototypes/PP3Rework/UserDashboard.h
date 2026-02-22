@@ -67,7 +67,6 @@ private:
     void setUpGoalMenu();
     void setUpScheduleItemMenu();
     void setUpDbConnectionMenu();
-    void updateDashboardDisplayData();
     bool userIsLoggedIn();
     bool dbIsConnected();
     QGroupBox* setUpUserIdBox();

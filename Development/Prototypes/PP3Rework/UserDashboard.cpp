@@ -191,13 +191,6 @@ void UserDashboard::setUpDbConnectionMenu()
     udDBConnectionMenu->addSeparator();
 }
 
-void UserDashboard::updateDashboardDisplayData()
-{
-    fillUserIdBoxData();
-    updateTaskList();
-    updateSchedule();
-}
-
 bool UserDashboard::userIsLoggedIn()
 {
     if (!dbIsConnected())
@@ -368,6 +361,8 @@ void UserDashboard::handleAddTaskAction()
     TaskEditorDialog addTaskDialog(this, m_UserDataPtr);
 
     addTaskDialog.exec();
+
+    updateTaskList();
 }
 
 void UserDashboard::handleEditTaskAction()
@@ -381,6 +376,8 @@ void UserDashboard::handleEditTaskAction()
     editTaskDialog.setTaskDataAndInitDisplayFields(m_TaskToEdit);
 
     editTaskDialog.exec();
+
+    updateTaskList();
 }
 
 void UserDashboard::handleTaskTableClicked(const QModelIndex &index)
@@ -401,6 +398,8 @@ void UserDashboard::handleTaskTableClicked(const QModelIndex &index)
     editTaskDialog.setTaskDataAndInitDisplayFields(m_TaskToEdit);
 
     editTaskDialog.exec();
+
+    updateTaskList();
 }
 
 void UserDashboard::handleAddUserAction()
@@ -425,7 +424,9 @@ void UserDashboard::handleEditUserAction()
     UserEditorDialog editUserDialog(this, m_UserDataPtr);
 
     editUserDialog.exec();
-    updateDashboardDisplayData();
+    fillUserIdBoxData();
+    updateTaskList();
+    updateSchedule();
 }
 
 void UserDashboard::handleAddNoteAction()
@@ -452,15 +453,20 @@ void UserDashboard::handleUserLoginAction()
     userLogin.exec();
 
     m_UserDataPtr = userLogin.GetUserData();
+
+    fillUserIdBoxData();
+
     if (udTaskTableView)
     {
         udTaskTableView->setUserId(m_UserDataPtr);
+        updateTaskList();
     }
+
     if (udScheduleTableView)
     {
         udScheduleTableView->setUserId(m_UserDataPtr);
+        updateSchedule();
     }
-    updateDashboardDisplayData();
 }
 
 void UserDashboard::handleEditNoteAction()
@@ -509,6 +515,8 @@ void UserDashboard::handleAddScheduleItemAction()
     ScheduleItemEditorDialog addScheduleItemDialog(this,  m_UserDataPtr->getDbUserId());
 
     addScheduleItemDialog.exec();
+    
+    updateSchedule();
 }
 
 void UserDashboard::handleEditScheduleItemAction()
@@ -521,6 +529,7 @@ void UserDashboard::handleEditScheduleItemAction()
     ScheduleItemEditorDialog editScheduleItemDialog(this,  m_UserDataPtr->getDbUserId(), m_ScheduleItemToEdit);
 
     editScheduleItemDialog.exec();
+
     updateSchedule();
 }
 
@@ -541,6 +550,8 @@ void UserDashboard::handleScheduleClicked(const QModelIndex &index)
     ScheduleItemEditorDialog editScheduleItemDialog(this,  m_UserDataPtr->getDbUserId(), m_ScheduleItemToEdit);
 
     editScheduleItemDialog.exec();
+    
+    updateSchedule();
 }
 
 void UserDashboard::handleDatabaseConnectionAction()
@@ -557,12 +568,15 @@ void UserDashboard::handleDateChanged(const QDate &newDate)
     if (udTaskTableView)
     {
         udTaskTableView->setDate(newDate);
+        updateTaskList();
     }
 
     if (udScheduleTableView)
     {
         udScheduleTableView->setDate(newDate);
+        updateSchedule();
     }
 
-    updateDashboardDisplayData();
+    fillUserIdBoxData();
 }
+
