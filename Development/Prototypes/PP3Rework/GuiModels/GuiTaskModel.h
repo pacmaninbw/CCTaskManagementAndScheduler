@@ -70,6 +70,7 @@ public:
     bool updateTaskInDatabase();
     bool isValid();
     QString getErrorMessages() const { return m_DbErrorMessages; };
+    void debugShow();
 
 
 signals:

@@ -7,6 +7,7 @@
 #include "stdChronoToQTConversions.h"
 
 // Standard C++ Header Files
+#include <iostream>
 #include <memory>
 #include <string>
 
@@ -224,7 +225,35 @@ bool GuiTaskModel::updateTaskInDatabase()
 {
     m_DbErrorMessages = "";
 
+    if (!m_DbTaskDataPtr)
+    {
+        m_DbErrorMessages = "No original database data!";
+        return false;
+    }
+
+    transferFieldsToDbModel();
+
+    if (m_DbTaskDataPtr->update())
+    {
+        return true;
+    }
+
+    m_DbErrorMessages = QString::fromStdString(m_DbTaskDataPtr->getAllErrorMessages());
+
     return false;
+}
+
+void GuiTaskModel::debugShow()
+{
+    std::cerr << "Task Database ID: " << m_DbTaskId << std::endl;
+    std::cerr << "Creator ID: " << m_CreatorUserId << std::endl;
+    std::cerr << "Assigned User ID: " << m_AssigneeUserId << std::endl;
+    std::cerr << "Description: " << m_Description.toStdString() << std::endl;
+    std::cerr << "Status: " << static_cast<int>(m_status) << std::endl;
+    std::cerr << "Parent Task ID: " << m_ParentTaskId << std::endl;
+    std::cerr << "Personal: " << (m_Personal? "TRUE" : "FALSE" ) << std::endl;
+
+    std::cerr << "Database Task: \n" << *m_DbTaskDataPtr << std::endl;
 }
 
 GuiTaskModel::GUITaskStatus GuiTaskModel::convertFromTaskModel(std::size_t taskModelStatus)
@@ -271,9 +300,11 @@ void GuiTaskModel::transferFieldsToDbModel()
     m_DbTaskDataPtr->setCreatorID(m_CreatorUserId);
     m_DbTaskDataPtr->setAssignToID(m_AssigneeUserId);
     m_DbTaskDataPtr->setDescription(m_Description.toStdString());
-    m_status = convertFromTaskModel(static_cast<std::size_t>(m_DbTaskDataPtr->getStatus()));
+    m_DbTaskDataPtr->setStatus(static_cast<TaskModel::TaskStatus>(
+        TaskModelStatusFromGuiTaskStatus(m_status)));
     m_DbTaskDataPtr->setDueDate(qDateToChrono(m_DueDate));
     m_DbTaskDataPtr->setScheduledStart(qDateToChrono(m_ScheduledStart));
+    m_DbTaskDataPtr->setPersonal(m_Personal);
 
     transferOptionalFieldsToDBModel();
 
@@ -296,6 +327,7 @@ void GuiTaskModel::transferFieldsToDbModel()
 
 void GuiTaskModel::transferDbModelDataToFields()
 {
+    m_DbTaskId = m_DbTaskDataPtr->getTaskID();
     m_CreatorUserId = m_DbTaskDataPtr->getCreatorID();
     m_AssigneeUserId = m_DbTaskDataPtr->getAssignToID();
     m_Description = QString::fromStdString(m_DbTaskDataPtr->getDescription());
