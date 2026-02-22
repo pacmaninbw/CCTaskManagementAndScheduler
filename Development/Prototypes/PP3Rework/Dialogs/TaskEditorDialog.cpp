@@ -60,26 +60,45 @@ void TaskEditorDialog::accept()
     }
     else
     {
-        QString errorReport = "User edit failed.\n";
+        QString errorReport = "Task edit failed.\n";
         errorReport += m_TaskData->getErrorMessages();
         QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
     }
 }
 
-void TaskEditorDialog::on_editTaskPersonalCB_stateChanged()
+void TaskEditorDialog::on_editTaskPersonalCB_stateChanged(int newState)
 {
-    QMessageBox msgBox(this);
-    msgBox.setWindowTitle("Personal Checkbox");
-    msgBox.setText("on_editTaskPersonalCB_stateChanged NOT IMPLEMENTED");
-    msgBox.setStandardButtons(QMessageBox::Ok); 
-    msgBox.setDefaultButton(QMessageBox::Ok);
-    
-    int ret = msgBox.exec();
+    bool isChecked = false;
+    switch (newState)
+    {
+        default:
+            {
+                QMessageBox msgBox(this);
+                msgBox.setWindowTitle("Personal Checkbox");
+                QString myMessage("Invalid state entered ");
+                myMessage += QString::number(newState);
+                msgBox.setText(myMessage);
+                msgBox.setStandardButtons(QMessageBox::Ok); 
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                
+                int ret = msgBox.exec();
 
-    if (ret == QMessageBox::Ok) {
-        // Code to execute when the OK button is clicked
-        qDebug("OK was clicked");
+                if (ret == QMessageBox::Ok) {
+                    // Code to execute when the OK button is clicked
+                    qDebug("OK was clicked");
+                }
+            }
+            return;
+
+        case Qt::Checked:
+            isChecked = true;
+            break;
+
+        case Qt::Unchecked:
+            isChecked = false;
+            break;    
     }
+    m_TaskData->setPersonal(isChecked);
 }
 
 void TaskEditorDialog::on_editTaskSelectParentPB_Clicked()
@@ -128,6 +147,12 @@ void TaskEditorDialog::on_editTaskChangeAssignedUserPB_Clicked()
         // Code to execute when the OK button is clicked
         qDebug("OK was clicked");
     }
+}
+
+void TaskEditorDialog::on_editTaskStatusSelectorCBChanged(int index)
+{
+    GuiTaskModel::GUITaskStatus taskStatus = static_cast<GuiTaskModel::GUITaskStatus>(index);
+    m_TaskData->setStatus(taskStatus);
 }
 
 void TaskEditorDialog::setUpTaskEditorUI()
@@ -211,8 +236,6 @@ QGroupBox *TaskEditorDialog::setUpTaskAssigneeGroupBox()
         "Change Assigned User", "editTaskChangeAssignedUserPB", editTaskAssignedToGB);
     editTaskAssigneeForm->addWidget(editTaskChangeAssignedUserPB);
 
-    connect(editTaskChangeAssignedUserPB, &QPushButton::clicked, this,
-            &TaskEditorDialog::on_editTaskChangeAssignedUserPB_Clicked);
 
     editTaskAssignedToGB->setLayout(editTaskAssigneeForm);
 
@@ -246,15 +269,9 @@ QGroupBox *TaskEditorDialog::setUpRelatedTasksGroupBox()
         "editTaskSelectParentPB" , editTaskParentTaskGB);
     editTaskParentForm->addWidget(editTaskSelectParentPB);
 
-    connect(editTaskSelectParentPB, &QPushButton::clicked, this,
-            &TaskEditorDialog::on_editTaskSelectParentPB_Clicked);
-
     editTaskAddDependenciesPB = cqtfa_QTWidgetWithText<QPushButton>(
         "Add Dependencies", "editTaskAddDependenciesPB", this);
     editTaskParentForm->addWidget(editTaskAddDependenciesPB);
-
-    connect(editTaskAddDependenciesPB, &QPushButton::clicked, this,
-            &TaskEditorDialog::on_editTaskAddDependenciesPB_Clicked);
 
 
     editTaskParentTaskGB->setLayout(editTaskParentForm);
@@ -288,7 +305,6 @@ QGroupBox *TaskEditorDialog::setUpTaskDescriptionAndStatusGroupBox()
     editTaskDescriptionAndStatusForm->addWidget(editTaskPersonalCB);
 
     editTaskDescriptionAndStatusGB->setLayout(editTaskDescriptionAndStatusForm);
-
 
     return editTaskDescriptionAndStatusGB;
 }
@@ -381,9 +397,6 @@ QDialogButtonBox *TaskEditorDialog::setUpEditTaskButtonBox()
     editTaskbuttonBox->setOrientation(Qt::Horizontal);
     editTaskbuttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
 
-    connect(editTaskbuttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
-    connect(editTaskbuttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
-
     return editTaskbuttonBox;
 }
 
@@ -396,6 +409,7 @@ bool TaskEditorDialog::addTask()
 bool TaskEditorDialog::updateTask()
 {
     transferAllFieldsToData();
+//    m_TaskData->debugShow();
     return m_TaskData->updateTaskInDatabase();
 }
 
@@ -412,7 +426,6 @@ void TaskEditorDialog::transferAllFieldsToData()
     m_TaskData->setPriorityGroup(editTaskPriorityGroupLE->text());
     m_TaskData->setPriority(editTaskPriorityLE->text());
     m_TaskData->setPersonal(editTaskPersonalCB->isChecked());
-    m_TaskData->setStatus(static_cast<GuiTaskModel::GUITaskStatus>(editTaskStatusSelectorCB->currentIndex()));
 
     if (m_ParentTaskData)
     {
@@ -435,6 +448,10 @@ void TaskEditorDialog::initEditFields()
     m_Assignee = m_Creator;
 
     m_TaskData = new GuiTaskModel();
+
+    // To prevent any loops caused by updating display fields the connections
+    // are implemented after the fields are initialized.
+    connectEditFieldsToActions();
 
     return;
 }
@@ -495,10 +512,37 @@ void TaskEditorDialog::initEditFieldsFromTaskData()
     editTaskPriorityLE->setText(m_TaskData->getPriority());
 
     editTaskPersonalCB->setChecked(m_TaskData->getPersonal());
+    editTaskStatusSelectorCB->setCurrentIndex(static_cast<int>(m_TaskData->getStatus()));
+
+    // To prevent any loops caused by updating display fields the connections
+    // are implemented after the fields are initialized.
+    connectEditFieldsToActions();
 }
 
 void TaskEditorDialog::initUserNameFields(QLineEdit *firstNameEditor, QLineEdit *lastNameEditor, GuiUserModel *user)
 {
     firstNameEditor->setText(user->getFirstName());
     lastNameEditor->setText(user->getLastName());
+}
+
+void TaskEditorDialog::connectEditFieldsToActions()
+{
+    connect(editTaskChangeAssignedUserPB, &QPushButton::clicked, this,
+            &TaskEditorDialog::on_editTaskChangeAssignedUserPB_Clicked, Qt::UniqueConnection);
+
+    connect(editTaskSelectParentPB, &QPushButton::clicked, this,
+            &TaskEditorDialog::on_editTaskSelectParentPB_Clicked, Qt::UniqueConnection);
+
+    connect(editTaskAddDependenciesPB, &QPushButton::clicked, this,
+            &TaskEditorDialog::on_editTaskAddDependenciesPB_Clicked, Qt::UniqueConnection);
+
+    connect(editTaskStatusSelectorCB, &QComboBox::currentIndexChanged, this,
+            &TaskEditorDialog::on_editTaskStatusSelectorCBChanged, Qt::UniqueConnection);
+
+    connect(editTaskPersonalCB, &QCheckBox::stateChanged, this,
+            &TaskEditorDialog::on_editTaskPersonalCB_stateChanged, Qt::UniqueConnection);
+
+    connect(editTaskbuttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept, Qt::UniqueConnection);
+
+    connect(editTaskbuttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject, Qt::UniqueConnection);
 }
