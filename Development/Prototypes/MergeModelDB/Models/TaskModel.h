@@ -133,6 +133,7 @@ public:
         os << std::format(outFmtStr, "Creator ID", task.creatorID);
         os << std::format(outFmtStr, "Assigned To ID", task.assignToID);
         os << std::format(outFmtStr, "Description", task.description);
+        os << std::format(outFmtStr, "Status", task.getStatusIntVal());
         os << std::format(outFmtStr, "Percentage Complete", task.percentageComplete);
         os << std::format(outFmtStr, "Creation Date", task.creationTimeStamp.value_or(std::chrono::system_clock::now()));
         os << std::format(outFmtStr, "Scheduled Start Date", task.scheduledStart.value_or(getTodaysDate()));
