@@ -1,6 +1,7 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
 #include "GuiUserModel.h"
+#include "SelectTaskParentDialog.h"
 #include "TaskEditorDialog.h"
 
 // QT Header Files
@@ -103,17 +104,11 @@ void TaskEditorDialog::on_editTaskPersonalCB_stateChanged(int newState)
 
 void TaskEditorDialog::on_editTaskSelectParentPB_Clicked()
 {
-    QMessageBox msgBox(this);
-    msgBox.setWindowTitle("Select Parent Task Button");
-    msgBox.setText("on_editTaskSelectParentPB_Clicked NOT IMPLEMENTED");
-    msgBox.setStandardButtons(QMessageBox::Ok); 
-    msgBox.setDefaultButton(QMessageBox::Ok);
-    
-    int ret = msgBox.exec();
+    SelectTaskParentDialog selectParentTask(this);
 
-    if (ret == QMessageBox::Ok) {
-        // Code to execute when the OK button is clicked
-        qDebug("OK was clicked");
+    if (selectParentTask.exec() == QDialog::Accepted)
+    {
+        m_ParentTaskData->setParent(selectParentTask.getParentTaskID());
     }
 }
 
