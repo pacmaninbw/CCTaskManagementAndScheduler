@@ -42,6 +42,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Dialogs/LoginDialog.h
         Dialogs/NoteEditorDialog.h
         Dialogs/ScheduleItemEditorDialog.h
+        Dialogs/SelectTaskParentDialog.h
+        Dialogs/SelectTaskParentDialog.cpp
         Dialogs/TaskEditorDialog.h
         Dialogs/UserEditorDialog.h
         Dialogs/GoalEditorDialog.cpp
