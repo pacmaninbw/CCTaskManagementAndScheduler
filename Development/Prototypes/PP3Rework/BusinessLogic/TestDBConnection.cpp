@@ -48,10 +48,6 @@ bool TestDBConnection::runTestConnect()
             std::cerr << eMsg << std::endl;
             return false;
         }
-        else
-        {
-            std::cerr << std::format("Connected to {}", programOptions.mySqlDBName) << std::endl;
-        }
 
         return true;
     }
