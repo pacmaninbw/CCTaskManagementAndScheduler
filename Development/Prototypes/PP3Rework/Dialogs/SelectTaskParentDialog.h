@@ -7,12 +7,15 @@
 // QT Header Files
 #include <QVariant>
 #include <QAbstractButton>
+#include <QAbstractTableModel>
 #include <QApplication>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QFormLayout>
 #include <QGroupBox>
 #include <QHeaderView>
 #include <QTableView>
+#include <QVBoxLayout>
 
 // Standard C++ Header Files
 
@@ -22,14 +25,22 @@ class SelectTaskParentDialog : public QDialog
 
 public:
     explicit SelectTaskParentDialog(QWidget *parent = nullptr);
+    explicit SelectTaskParentDialog(GuiTaskModel* orphanTask, QWidget* parent = nullptr);
     ~SelectTaskParentDialog();
     GuiTaskModel* getParentTaskID() { return parentTaskDBID; };
 
 private:
     void setupDialogUI();
-    QDialogButtonBox *buttonBox;
-    QGroupBox *selectParentgroupBox;
-    QTableView *selectParentTableView;
+    QGroupBox* setUpGroupBox();
+    QDialogButtonBox* setUpDialogButtons();
+    QTableView* setUpParentTaskView();
+    QAbstractTableModel* setUpParentTaskTable();
+    QVBoxLayout* selectTaskParentDialogLayout;
+    QDialogButtonBox* buttonBox;
+    QGroupBox* selectParentgroupBox;
+    QFormLayout* selectParentGroupBoxLayout;
+    QTableView* selectParentTableView;
+    GuiTaskModel* childTaskData;
     GuiTaskModel* parentTaskDBID;
 
     const int defaultDialogWidth = 700;
