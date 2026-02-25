@@ -108,7 +108,7 @@ void TaskEditorDialog::on_editTaskSelectParentPB_Clicked()
 
     if (selectParentTask.exec() == QDialog::Accepted)
     {
-        m_ParentTaskData->setParent(selectParentTask.getParentTaskID());
+        m_ParentTaskData = selectParentTask.getParentTaskID();
     }
 }
 
