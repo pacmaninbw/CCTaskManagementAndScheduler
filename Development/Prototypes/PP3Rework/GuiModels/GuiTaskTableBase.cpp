@@ -7,6 +7,7 @@
 // QT Header Files
 #include <QAbstractTableModel>
 #include <QList>
+#include <QMetaEnum>
 #include <QObject>
 #include <QString>
 
@@ -95,6 +96,7 @@ QVariant GuiTaskTableBase::headerData(int section, Qt::Orientation orientation, 
         case 3: return "Description";
         case 4: return "Creator ID";
         case 5: return "Assigned ID";
+        case 6: return "Status";
         default: return {};
     }
 }
@@ -161,13 +163,14 @@ QVariant GuiTaskTableBase::data(const QModelIndex &index, int role) const
     if (role != Qt::DisplayRole && role != Qt::EditRole) return {};
     const GuiTaskModel* task = m_data[index.row()];
     switch (index.column()) {
-    case 0: return task->getPriorityGroup();
-    case 1: return task->getPriorityGroup();
-    case 2: return task->getPriority();
-    case 3: return task->getDescription();
-    case 4: return QString::number(task->getCreatorUserId());
-    case 5: return QString::number(task->getAssigneeUserId());
-    default: return {};
+        case 0: return task->getPriorityGroup();
+        case 1: return task->getPriorityGroup();
+        case 2: return task->getPriority();
+        case 3: return task->getDescription();
+        case 4: return QString::number(task->getCreatorUserId());
+        case 5: return QString::number(task->getAssigneeUserId());
+        case 6: return QString::number(static_cast<int>(task->getStatus()));
+        default: return {};
     }
 }
 
@@ -272,3 +275,4 @@ void GuiTaskTableBase::makeFakeQList()
         }
     }
 }
+

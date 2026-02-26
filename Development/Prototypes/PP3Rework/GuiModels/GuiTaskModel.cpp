@@ -5,6 +5,7 @@
 // QT Header File
 #include "GuiTaskModel.h"
 #include "stdChronoToQTConversions.h"
+#include <QMetaEnum>
 
 // Standard C++ Header Files
 #include <iostream>
@@ -40,6 +41,15 @@ GuiTaskModel::GuiTaskModel(std::size_t dbTaskId, QObject *parent)
 
     m_DbTaskDataPtr = newTaskModel;
     transferDbModelDataToFields();
+}
+
+QString GuiTaskModel::statusStringFromEnum()
+{
+    QMetaEnum metaEnum = QMetaEnum::fromType<GuiTaskModel::GUITaskStatus>();
+
+    const char* key = metaEnum.valueToKey(static_cast<int>(m_status));
+
+    return QString::fromUtf8(key);
 }
 
 void GuiTaskModel::setDbTaskId(std::size_t v)

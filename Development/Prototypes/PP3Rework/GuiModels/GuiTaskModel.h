@@ -49,6 +49,7 @@ public:
     QString getPercentageComplete() const { return  m_PercentageComplete; };
     QString getCreationTimeStamp() const { return  m_CreationTimeStamp; };
     QString getLastUpdateTimeStamp() const { return  m_LastUpdateTimeStamp; };
+    QString statusStringFromEnum();
 
     void setDbTaskId(std::size_t v);
     void setCreatorUserId(std::size_t v);
