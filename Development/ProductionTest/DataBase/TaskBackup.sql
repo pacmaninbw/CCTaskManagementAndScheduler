@@ -1,56 +1,177 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1deb3
--- https://www.phpmyadmin.net/
---
--- Host: localhost:3306
--- Generation Time: Jan 31, 2026 at 03:02 PM
--- Server version: 10.11.14-MariaDB-0ubuntu0.24.04.1
--- PHP Version: 8.3.6
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
 --
 -- Database: `PlannerTaskScheduleDB`
 --
-CREATE DATABASE IF NOT EXISTS `PlannerTaskScheduleDB` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `PlannerTaskScheduleDB`;
-
-INSERT INTO `UserProfile` (`UserID`, `Organization_ID`, `LastName`, `FirstName`, `MiddleInitial`, `EmailAddress`, `LoginName`, `HashedPassWord`, `Preferences`, `UserAdded`, `LastLogin`) VALUES
-(1, NULL, 'Chernick', 'Paul', 'A', 'paul.chernick@chernicksw.com', 'pacmaninbw', 'M1nus+1r3th', '8:30 AM;5:00 PM;1;1;1;0;', '2026-01-23 15:14:39', '2026-01-31 14:25:21');
-
---
--- Dumping data for table `Tasks`
---
-
-INSERT INTO `Tasks` (`TaskID`, `CreatedBy`, `AsignedTo`, `Description`, `ParentTask`, `Status`, `PercentageComplete`, `CreatedOn`, `RequiredDelivery`, `ScheduledStart`, `ActualStart`, `EstimatedCompletion`, `Completed`, `EstimatedEffortHours`, `ActualEffortHours`, `SchedulePriorityGroup`, `PriorityInGroup`, `Personal`, `DependencyCount`, `Dependencies`, `LastUpdateTS`) VALUES
-(1, 1, 1, 'Create a personal planner program that allows task mangement using QT and C++.', NULL, 0, 0, '2026-01-26 14:49:02', '2026-01-26', '2026-01-26', NULL, '2026-04-30', NULL, 1000, 500, 1, 1, 0, 0, NULL, '2026-01-26 14:49:02'),
-(2, 1, 1, 'Add creation of notes in Database.', NULL, 0, 0, '2026-01-26 15:18:38', '2026-01-27', '2026-01-26', NULL, '2026-01-27', NULL, 4, 0, 1, 2, 0, 0, NULL, '2026-01-26 15:18:38'),
-(3, 1, 1, 'Add editing of note to update database.', NULL, 0, 0, '2026-01-26 15:19:47', '2026-01-27', '2026-01-26', NULL, '2026-01-27', NULL, 4, 0, 1, 3, 0, 0, NULL, '2026-01-26 15:19:47'),
-(4, 1, 1, 'Get toenails trimmed', NULL, 0, 0, '2026-01-26 15:21:21', '2026-01-28', '2026-01-28', NULL, '2026-01-28', NULL, 1, 0, 3, 1, 0, 0, NULL, '2026-01-26 15:21:21'),
-(5, 1, 1, 'Connect goal creation and editing to database.', NULL, 0, 0, '2026-01-26 15:23:03', '2026-01-29', '2026-01-28', NULL, '2026-01-29', NULL, 4, 0, 1, 4, 0, 0, NULL, '2026-01-26 15:23:03'),
-(6, 1, 1, 'Implement task editing.', NULL, 0, 0, '2026-01-26 15:24:39', '2026-01-30', '2026-01-29', NULL, '2026-01-30', NULL, 8, 0, 1, 5, 0, 0, NULL, '2026-01-26 15:24:39');
-
---
--- Dumping data for table `UserNotes`
---
-
-INSERT INTO `UserNotes` (`idUserNotes`, `UserID`, `NotationDateTime`, `Content`, `LastUpdate`) VALUES
-(1, 1, '2026-01-27 15:38:10', 'Testing adding a new note!', '2026-01-27 15:38:10');
 
 --
 -- Dumping data for table `UserProfile`
 --
 
-COMMIT;
+INSERT INTO `PlannerTaskScheduleDB`.`UserProfile` (`Organization_ID`, `LastName`, `FirstName`, `MiddleInitial`, `EmailAddress`, `LoginName`, `HashedPassWord`, `Preferences`, `UserAdded`, `LastLogin`) VALUES
+(NULL, 'Chernick', 'Paul', 'A', 'paul.chernick@chernicksw.com', 'pacmaninbw', 'M1nus+1r3th', '8:30 AM;5:00 PM;1;1;1;0;', '2026-01-23 15:14:39', '2026-03-01 14:30:09');
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+--
+-- Dumping data for table `Tasks`
+--
+
+INSERT INTO `PlannerTaskScheduleDB`.`Tasks` ( `CreatedBy`, `AsignedTo`, `Description`, `ParentTask`, `Status`, `PercentageComplete`, `CreatedOn`, `RequiredDelivery`, `ScheduledStart`, `ActualStart`, `EstimatedCompletion`, `Completed`, `EstimatedEffortHours`, `ActualEffortHours`, `SchedulePriorityGroup`, `PriorityInGroup`, `Personal`, `DependencyCount`, `Dependencies`, `LastUpdateTS`) VALUES
+(1, 1, 'Create a personal planner program that allows task mangement using QT and C++.', NULL, 3, 0, '2026-01-26 14:49:02', '2026-02-14', '2026-02-14', '2026-02-23', '2026-04-30', NULL, 1000, 500, 1, 2, 0, 0, NULL, '2026-02-28 16:33:53'),
+(1, 1, 'Add creation of notes in Database.', NULL, 0, 0, '2026-01-26 15:18:38', '2026-02-14', '2026-02-14', NULL, '2026-02-14', NULL, 8, 0, 1, 8, 0, 0, NULL, '2026-02-28 12:58:16'),
+(1, 1, 'Add editing of note to update database.', NULL, 0, 0, '2026-01-26 15:19:47', '2026-02-14', '2026-02-14', NULL, '2026-02-14', NULL, 4, 0, 1, 6, 0, 0, NULL, '2026-02-28 12:58:38'),
+(1, 1, 'Get toenails trimmed', NULL, 4, 0, '2026-01-26 15:21:21', '2026-02-07', '2026-02-07', NULL, '2026-02-07', '2026-02-21', 1, 0, 3, 1, 0, 0, NULL, '2026-02-21 22:14:07'),
+(1, 1, 'Connect goal creation and editing to database.', NULL, 0, 0, '2026-01-26 15:23:03', '2026-02-14', '2026-02-14', NULL, '2026-02-14', NULL, 4, 0, 1, 7, 0, 0, NULL, '2026-02-28 12:58:24'),
+(1, 1, 'Implement task editing.', NULL, 4, 0, '2026-01-26 15:24:39', '2026-02-07', '2026-02-07', NULL, '2026-02-07', '2026-02-21', 8, 0, 1, 5, 0, 0, NULL, '2026-02-21 22:13:39'),
+(1, 1, 'Redisplay schedule after adding or editing a schedule item.', NULL, 4, 0, '2026-02-13 15:07:13', '2026-02-16', '2026-02-14', '2026-02-22', '2026-02-22', '2026-02-22', 4, 6, 1, 4, 0, 0, NULL, '2026-02-22 16:14:56'),
+(1, 1, 'Redisplay tasks after adding or editing a task.', NULL, 4, 0, '2026-02-13 15:08:37', '2026-02-17', '2026-02-16', NULL, '2026-02-17', '2026-02-22', 4, 0, 1, 3, 0, 0, NULL, '2026-02-22 16:14:27'),
+(1, 1, 'Sort tasks by group priority and priority.', NULL, 4, 0, '2026-02-13 15:11:09', '2026-02-15', '2026-02-13', '2026-02-21', '2026-02-16', '2026-02-21', 6, 4, 1, 3, 0, 0, NULL, '2026-02-21 22:12:22'),
+(1, 1, 'Implement editing of existing tasks', NULL, 3, 0, '2026-02-13 15:12:44', '2026-02-22', '2026-02-17', '2026-02-21', '2026-02-22', NULL, 8, 6, 1, 5, 0, 0, NULL, '2026-02-28 12:58:47'),
+(1, 1, 'Implement editing of schedule.', NULL, 4, 0, '2026-02-13 15:13:49', '2026-02-19', '2026-02-18', NULL, '2026-02-19', '2026-02-21', 8, 0, 1, 5, 0, 0, NULL, '2026-02-21 22:24:39'),
+(1, 1, 'Finish the ability to edit tasks. Implement select parent task, add dependencies, display of dependencies.', NULL, 0, 0, '2026-02-22 16:13:38', '2026-02-24', '2026-02-22', NULL, '2026-02-24', NULL, 16, 14, 1, 3, 0, 0, NULL, '2026-03-01 14:31:51'),
+(1, 1, 'Figure out how to use signals and slots to implement table view updates.', NULL, 0, 0, '2026-02-22 16:18:48', '2026-02-25', '2026-02-24', NULL, '2026-02-25', NULL, 4, 1, 2, 3, 0, 0, NULL, '2026-02-23 14:47:41'),
+(1, 1, 'Clear selections after table edits.', NULL, 0, 0, '2026-02-22 16:21:28', '2026-02-23', '2026-02-23', NULL, '2026-02-23', NULL, 4, 0, 2, 2, 0, 0, NULL, '2026-02-22 16:21:28'),
+(1, 1, 'Create Task View Table for select parent task', NULL, 0, 0, '2026-02-23 14:46:41', '2026-02-24', '2026-02-23', NULL, '2026-02-25', NULL, 8, 0, 2, 1, 0, 0, NULL, '2026-02-23 14:47:23'),
+(1, 1, 'Create Requirement system to augment the planning system', NULL, 0, 0, '2026-02-23 14:50:03', '2026-05-31', '2026-04-30', NULL, '2026-05-31', NULL, 300, 0, 3, 1, 0, 0, NULL, '2026-02-23 14:50:03'),
+(1, 1, 'Implement user preferences in planner', NULL, 0, 0, '2026-02-23 14:52:01', '2026-03-04', '2026-03-01', NULL, '2026-03-04', NULL, 24, 0, 3, 2, 0, 0, NULL, '2026-02-23 14:52:01'),
+(1, 1, 'Find a Silver Sneakers program   ', NULL, 0, 0, '2026-02-25 12:47:09', '2026-03-01', '2026-02-26', NULL, '2026-03-01', NULL, 4, 0, 2, 5, 0, 0, NULL, '2026-02-27 13:26:02'),
+(1, 1, 'Add alternate methods of connecting to the database and logging in. Use environment variable and or command line flags.', NULL, 0, 0, '2026-02-27 13:25:42', '2026-02-27', '2026-02-27', NULL, '2026-02-27', NULL, 16, 0, 2, 4, 0, 0, NULL, '2026-02-27 13:25:42'),
+(1, 1, 'Add the ability to repeat schedule items on a daily basis.', NULL, 0, 0, '2026-02-27 13:29:45', '2026-02-27', '2026-02-27', NULL, '2026-02-27', NULL, 16, 0, 2, 6, 0, 0, NULL, '2026-02-27 13:29:45'),
+(1, 1, 'Add the ability to find an old schedule item and add it again to a new schedule', NULL, 0, 0, '2026-02-27 13:32:10', '2026-02-27', '2026-02-27', NULL, '2026-02-27', NULL, 16, 0, 3, 3, 0, 0, NULL, '2026-02-27 13:32:10'),
+(1, 1, 'Add the ability to reuse locations in the schedule.', NULL, 0, 0, '2026-02-27 13:33:22', '2026-02-27', '2026-02-27', NULL, '2026-02-27', NULL, 24, 0, 3, 4, 0, 0, NULL, '2026-02-27 13:33:22'),
+(1, 1, 'Freeze Chicken fillets', NULL, 0, 0, '2026-02-27 23:25:15', '2026-03-05', '2026-02-27', NULL, '2026-02-27', NULL, 1, 0, 1, 1, 0, 0, NULL, '2026-02-27 23:25:15'),
+(1, 1, 'Fix bug in scheduler where late appointments appear in the next day schedule.', NULL, 0, 0, '2026-02-28 12:55:47', '2026-02-28', '2026-02-28', NULL, '2026-02-28', NULL, 8, 0, 1, 4, 0, 0, NULL, '2026-02-28 16:19:59'),
+(1, 1, 'Debug parent task id not being set in the database when the parent has been selected', NULL, 3, 0, '2026-03-01 14:31:51', '2026-03-01', '2026-03-01', '2026-03-01', '2026-03-01', NULL, 2, 1, 1, 2, 0, 0, NULL, '2026-03-01 14:31:51');
+
+--
+-- Dumping data for table `UserScheduleItem`
+--
+
+INSERT INTO `PlannerTaskScheduleDB`.`UserScheduleItem` (`UserID`, `StartDateTime`, `EndDateTime`, `Title`, `Personal`, `Location`, `CreatedTS`, `LastUpdateTS`) VALUES
+(1, '2026-02-05 15:29:05', '2026-02-05 15:29:05', 'CDC Chinese New Year luncheon', 1, 'China Buffet', '2026-02-05 15:29:05', '2026-02-05 15:29:05'),
+(1, '2026-02-05 15:31:02', '2026-02-05 15:31:02', 'Dr. Lakdawala', 1, '8641 Wilshire Blvd', '2026-02-05 15:31:02', '2026-02-05 15:31:02'),
+(1, '2026-02-05 15:32:35', '2026-02-05 15:32:35', 'Dr. Aftergood', 1, '99 N. La Cienaga', '2026-02-05 15:32:35', '2026-02-05 15:32:35'),
+(1, '2026-02-05 15:33:42', '2026-02-05 15:33:42', 'Review current status of Code Review', 0, 'Starbucks', '2026-02-05 15:33:42', '2026-02-05 15:33:42'),
+(1, '2026-02-07 12:30:00', '2026-02-07 12:30:00', 'Review Code Review Status', 0, 'Starbucks', '2026-02-07 13:35:40', '2026-02-07 13:35:40'),
+(1, '2026-02-07 13:00:00', '2026-02-07 14:30:00', 'Debug schedule viewer', 0, 'Starbuck', '2026-02-07 13:36:51', '2026-02-07 13:36:51'),
+(1, '2026-02-09 13:00:00', '2026-02-09 13:30:00', 'Code Review Moderator Overwatch', 0, 'Starbucks', '2026-02-09 14:58:02', '2026-02-09 14:58:02'),
+(1, '2026-02-09 13:30:00', '2026-02-09 16:30:00', 'Finish implementing planner day schedule', 0, 'Starbucks', '2026-02-09 14:59:41', '2026-02-09 14:59:41'),
+(1, '2026-02-09 18:00:00', '2026-02-09 18:30:00', 'Eat Breakfast', 1, 'Home', '2026-02-09 15:50:19', '2026-02-09 15:50:19'),
+(1, '2026-02-10 12:30:00', '2026-02-10 13:00:00', 'Code Review Moderator Oversite', 0, 'Starbucks', '2026-02-10 02:43:03', '2026-02-10 02:43:03'),
+(1, '2026-02-10 13:00:00', '2026-02-10 13:15:00', 'Check email and LinkedIn', 1, 'Starbucks', '2026-02-10 02:44:14', '2026-02-10 02:44:14'),
+(1, '2026-02-10 13:30:00', '2026-02-10 16:30:00', 'Implement sorting of scheduled item', 0, NULL, '2026-02-10 02:45:34', '2026-02-10 02:45:34'),
+(1, '2026-02-11 12:30:00', '2026-02-11 13:00:00', 'Code Review Moderator Oversite', 0, 'Starbucks', '2026-02-10 02:46:58', '2026-02-10 02:46:58'),
+(1, '2026-02-11 15:00:00', '2026-02-11 16:00:00', 'Shave and shower', 1, 'Home', '2026-02-10 02:48:18', '2026-02-10 02:48:18'),
+(1, '2026-02-11 18:00:00', '2026-02-11 19:00:00', 'Dr. Lakdawala', 1, '8641 WilShire Blvd.', '2026-02-10 02:49:57', '2026-02-10 02:49:57'),
+(1, '2026-02-10 17:15:00', '2026-02-10 17:45:00', 'Shower and shave', 1, 'Home', '2026-02-10 14:41:00', '2026-02-10 14:41:00'),
+(1, '2026-02-10 18:00:00', '2026-02-10 18:30:00', 'Eat breakfast', 1, 'Home', '2026-02-10 14:41:58', '2026-02-10 14:41:58'),
+(1, '2026-02-12 12:15:00', '2026-02-12 12:30:00', 'Starbuck Coffee', 0, NULL, '2026-02-12 19:47:14', '2026-02-12 19:47:14'),
+(1, '2026-02-12 12:30:00', '2026-02-12 13:00:00', 'Code Review Moderator Oversight', 0, NULL, '2026-02-12 19:48:06', '2026-02-12 19:48:06'),
+(1, '2026-02-12 13:00:00', '2026-02-12 16:30:00', 'Recode schedule generation', 0, 'Starbucks', '2026-02-12 19:49:17', '2026-02-12 19:49:17'),
+(1, '2026-02-12 18:00:00', '2026-02-12 19:00:00', 'Breakfast and Science Fiction', 0, 'Home', '2026-02-12 19:50:43', '2026-02-12 19:50:43'),
+(1, '2026-02-12 20:15:00', '2026-02-12 10:00:00', 'Debug scheduling issues', 0, 'home', '2026-02-12 19:51:34', '2026-02-12 19:51:34'),
+(1, '2026-02-13 19:30:00', '2026-02-13 21:30:00', 'CDC Chinese New Year Lunch', 1, 'China Buffet', '2026-02-13 14:29:34', '2026-02-13 14:29:34'),
+(1, '2026-02-13 12:15:00', '2026-02-13 12:30:00', 'Check Vitals ', 1, 'Home', '2026-02-13 14:30:47', '2026-02-13 14:30:47'),
+(1, '2026-02-13 12:45:00', '2026-02-13 13:15:00', 'Code Review Moderator Oversight', 0, 'Starbucks', '2026-02-13 14:32:23', '2026-02-13 14:32:23'),
+(1, '2026-02-13 13:30:00', '2026-02-13 15:00:00', 'Implement get local midnight', 0, 'Starbucks', '2026-02-13 14:33:44', '2026-02-13 14:33:44'),
+(1, '2026-02-13 16:30:00', '2026-02-13 17:30:00', 'Breakfast and Science Fiction', 1, 'Home', '2026-02-13 14:35:03', '2026-02-13 14:35:03'),
+(1, '2026-02-13 18:00:00', '2026-02-13 19:00:00', 'Shave and shower, clean cloths', 1, 'Home', '2026-02-13 14:36:02', '2026-02-13 14:36:02'),
+(1, '2026-02-14 12:30:00', '2026-02-14 13:00:00', 'Code Review Moderator Oversight', 0, 'Starbucks', '2026-02-14 14:19:38', '2026-02-14 14:19:38'),
+(1, '2026-02-14 13:00:00', '2026-02-14 15:00:00', 'Implement sort tasks by group priority and priority', 0, 'Starbucks', '2026-02-14 14:21:07', '2026-02-14 14:21:07'),
+(1, '2026-02-14 17:00:00', '2026-02-14 18:00:00', 'Breakfast and Science Fiction', 0, 'Home', '2026-02-14 14:22:58', '2026-02-14 14:22:58'),
+(1, '2026-02-16 13:30:00', '2026-02-16 14:00:00', 'Code Review Moderator Oversight', 0, 'Starbucks', '2026-02-17 01:24:44', '2026-02-17 01:24:44'),
+(1, '2026-02-16 14:00:00', '2026-02-16 17:30:00', 'Implement task editing.', 0, 'Starbucks', '2026-02-17 01:25:56', '2026-02-17 01:25:56'),
+(1, '2026-02-16 17:30:00', '2026-02-16 18:00:00', 'Get bananas and blueberrys', 1, 'Ralph\'s Markey', '2026-02-17 01:26:52', '2026-02-17 01:26:52'),
+(1, '2026-02-16 18:15:00', '2026-02-16 19:30:00', 'Breakfast and Science Fiction', 1, 'Home', '2026-02-17 01:27:48', '2026-02-17 01:27:48'),
+(1, '2026-02-17 11:45:00', '2026-02-17 12:00:00', 'Check vital signs', 1, 'Home', '2026-02-17 01:40:13', '2026-02-17 01:40:13'),
+(1, '2026-02-17 12:15:00', '2026-02-17 12:45:00', 'Code Review Moderator Oversight', 0, 'Starbuck', '2026-02-17 01:41:30', '2026-02-17 01:41:30'),
+(1, '2026-02-17 13:00:00', '2026-02-17 16:30:00', 'Debug schedule item editing', 0, 'Starbucks', '2026-02-17 01:42:49', '2026-02-17 01:42:49'),
+(1, '2026-02-18 12:15:00', '2026-02-18 12:30:00', 'Take vital signs record on iPhone.', 0, 'Home.', '2026-02-18 13:57:01', '2026-02-18 13:57:01'),
+(1, '2026-02-18 12:30:00', '2026-02-18 12:45:00', 'Coffee at Starbucks!!!', 0, 'Starbucks', '2026-02-18 13:58:20', '2026-02-18 13:58:20'),
+(1, '2026-02-18 12:45:00', '2026-02-18 13:15:00', 'Code Review moderator oversight', 0, 'Starbucks', '2026-02-18 13:59:30', '2026-02-18 13:59:30'),
+(1, '2026-02-18 13:15:00', '2026-02-18 16:30:00', 'Debug schedule item editor segV.', 0, 'Starbucks', '2026-02-18 14:00:44', '2026-02-18 14:00:44'),
+(1, '2026-02-18 13:15:00', '2026-02-18 16:30:00', 'Debug schedule item editor segV.', 0, 'Starbucks', '2026-02-18 16:59:26', '2026-02-18 16:59:26'),
+(1, '2026-02-18 12:45:00', '2026-02-18 13:15:00', 'Code Review moderator oversight', 0, 'Starbucks', '2026-02-18 16:59:30', '2026-02-18 16:59:30'),
+(1, '2026-02-18 12:30:00', '2026-02-18 12:45:00', 'Coffee at Starbucks!!!', 1, 'Starbucks', '2026-02-18 16:59:39', '2026-02-18 16:59:39'),
+(1, '2026-02-18 12:15:00', '2026-02-18 12:30:00', 'Take vital signs record on iPhone.', 1, 'Home.', '2026-02-18 16:59:56', '2026-02-18 16:59:56'),
+(1, '2026-02-18 18:00:00', '2026-02-18 19:00:00', 'Breakfast and Neal Asher', 1, NULL, '2026-02-19 01:44:17', '2026-02-19 01:44:17'),
+(1, '2026-02-19 12:15:00', '2026-02-19 12:30:00', 'Check vital signs, including temperature	', 1, 'Home', '2026-02-19 15:55:36', '2026-02-19 15:55:36'),
+(1, '2026-02-19 12:30:00', '2026-02-19 12:45:00', 'Get coffee at starbucks, chat with people', 0, 'Starbucks', '2026-02-19 15:56:36', '2026-02-19 16:03:05'),
+(1, '2026-02-19 12:45:00', '2026-02-19 13:15:00', 'Code Review Moderator Oversight', 0, 'Starbucks', '2026-02-19 15:57:47', '2026-02-19 15:57:47'),
+(1, '2026-02-19 13:15:00', '2026-02-19 16:00:00', 'Add schedule item update integration test. Debug schedule item update', 0, 'Starbucks', '2026-02-19 15:59:19', '2026-02-19 16:05:15'),
+(1, '2026-02-19 19:00:00', '2026-02-19 20:00:00', 'Dr. David Aftergood, checkup', 1, '99. N. La Cienega', '2026-02-19 16:00:22', '2026-02-19 16:00:22'),
+(1, '2026-02-19 20:00:00', '2026-02-19 21:30:00', 'Bruch at Canters Deli', 1, 'Canters Deli', '2026-02-19 16:01:24', '2026-02-19 16:01:24'),
+(1, '2026-02-19 17:00:00', '2026-02-19 17:59:59', ' Shave and shower, prepare for doctor appointment.', 1, 'Home', '2026-02-19 16:27:12', '2026-02-19 16:27:12'),
+(1, '2026-02-20 12:00:00', '2026-02-20 12:15:00', 'Take vital signs, record on iPhone and spreadsheet. ', 1, 'Home', '2026-02-20 02:00:14', '2026-02-20 02:07:13'),
+(1, '2026-02-20 12:30:00', '2026-02-20 12:45:00', 'Coffee Starbucks, talk to people ', 1, 'Starbucks', '2026-02-20 02:01:41', '2026-02-20 02:01:41'),
+(1, '2026-02-20 12:45:00', '2026-02-20 13:15:00', 'Code Review Moderator Oversite ', 0, 'Starbucks', '2026-02-20 02:02:57', '2026-02-20 02:02:57'),
+(1, '2026-02-20 13:15:00', '2026-02-20 16:30:00', 'Get all fields working on Task editing. Especially completing tasks and changing status ', 0, 'Starbucks', '2026-02-20 02:06:01', '2026-02-20 02:06:01'),
+(1, '2026-02-20 17:00:00', '2026-02-20 18:30:00', ' Breakfast and Science Fiction', 1, 'Home', '2026-02-20 02:06:27', '2026-02-20 02:09:58'),
+(1, '2026-02-20 21:30:00', '2026-02-20 21:59:59', 'Lunch and science fiction ', 1, 'home', '2026-02-20 02:08:47', '2026-02-20 02:08:47'),
+(1, '2026-02-20 19:00:00', '2026-02-20 19:59:59', ' Pay VISA credit card and health insurance', 1, 'home', '2026-02-20 02:09:32', '2026-02-20 02:09:32'),
+(1, '2026-02-21 12:30:00', '2026-02-21 12:45:00', 'Check vital signs, record on iPhone and spreadsheet. ', 1, 'Home', '2026-02-21 14:19:48', '2026-02-21 14:19:48'),
+(1, '2026-02-21 12:45:00', '2026-02-21 13:00:00', 'Get coffee at Starbucks, say hello to people', 1, 'Starbuckss', '2026-02-21 14:21:57', '2026-02-21 14:21:57'),
+(1, '2026-02-21 13:00:00', '2026-02-21 13:30:00', 'Code Review Moderator Oversight', 0, 'Starbucks', '2026-02-21 14:23:09', '2026-02-21 14:23:09'),
+(1, '2026-02-21 13:30:00', '2026-02-21 16:30:00', 'Implement full task editing.', 0, 'Starbucks', '2026-02-21 14:24:27', '2026-02-21 14:24:27'),
+(1, '2026-02-21 17:00:00', '2026-02-21 17:59:59', ' Breakfast and Science Fiction', 1, 'Home', '2026-02-21 14:25:15', '2026-02-21 14:25:15'),
+(1, '2026-02-21 21:00:00', '2026-02-21 21:59:59', ' Implement task editing', 0, 'Home', '2026-02-21 21:54:33', '2026-02-21 21:54:33'),
+(1, '2026-02-22 12:30:00', '2026-02-22 12:45:00', 'Check vital signs, record data on iPhone and in spreadsheet', 1, 'Home', '2026-02-22 16:01:18', '2026-02-22 16:03:11'),
+(1, '2026-02-22 13:00:00', '2026-02-22 13:15:00', 'Get coffee at Starbucks, say hello to everyone.', 1, 'Starbucks', '2026-02-22 16:03:05', '2026-02-22 16:03:05'),
+(1, '2026-02-22 13:30:00', '2026-02-22 14:00:00', 'Code Review Moderator Oversight', 0, 'Starbucks', '2026-02-22 16:04:34', '2026-02-22 16:04:34'),
+(1, '2026-02-22 14:00:00', '2026-02-22 16:30:00', 'Get redisplay of tasks and schedule after adding or editing working.', 0, 'Starbucks', '2026-02-22 16:08:34', '2026-02-22 16:08:34'),
+(1, '2026-02-22 17:00:00', '2026-02-22 17:30:00', 'Buy blue berries at Ralph\'s', 1, 'Ralph\'s market', '2026-02-22 16:09:53', '2026-02-22 16:30:58'),
+(1, '2026-02-22 18:00:00', '2026-02-22 19:30:00', 'Breakfast and Science Fiction ', 1, 'Home', '2026-02-22 16:10:35', '2026-02-22 16:19:40'),
+(1, '2026-02-23 12:00:00', '2026-02-23 12:14:59', 'Check vital signs, record on iPhone and in spreadsheet.', 1, 'Home', '2026-02-22 16:23:39', '2026-02-22 16:25:54'),
+(1, '2026-02-23 12:15:00', '2026-02-23 12:29:59', 'Get coffee at Starbucks, say hello to everyone.', 1, 'Starbucks', '2026-02-22 16:25:48', '2026-02-22 16:25:48'),
+(1, '2026-02-23 12:30:00', '2026-02-23 13:00:00', 'Code Review Moderator Oversight', 0, 'Starbucks', '2026-02-22 16:28:07', '2026-02-22 16:28:07'),
+(1, '2026-02-23 13:00:00', '2026-02-23 16:45:00', 'Personal Planner software development ', 0, 'Starbucks', '2026-02-22 16:29:40', '2026-02-22 16:29:40'),
+(1, '2026-02-23 18:00:00', '2026-02-23 19:30:00', ' Breakfast and Science Fiction', 1, 'Home', '2026-02-22 16:30:27', '2026-02-23 14:41:18'),
+(1, '2026-02-24 12:00:00', '2026-02-24 12:15:00', 'Check vital signs, record results on iPhone and in spreadsheet.', 1, 'Home', '2026-02-23 14:30:35', '2026-02-23 14:30:35'),
+(1, '2026-02-24 12:15:00', '2026-02-24 12:30:00', 'Coffee at Starbcucks, say hello to people. ', 1, 'Starbucks', '2026-02-23 14:32:08', '2026-02-23 14:32:08'),
+(1, '2026-02-24 12:30:00', '2026-02-24 13:00:00', 'Code Review Moderator Oversight ', 0, 'Starbucks', '2026-02-23 14:34:16', '2026-02-23 14:34:16'),
+(1, '2026-02-24 13:00:00', '2026-02-24 15:29:59', 'Personal Planner Software Development ', 0, 'Starbucks', '2026-02-23 14:35:27', '2026-02-23 14:35:27'),
+(1, '2026-02-24 15:30:00', '2026-02-24 17:15:00', 'Breakfast, shave, shower, prepare for appointment with Dr. Wachtel ', 1, 'Home', '2026-02-23 14:37:09', '2026-02-23 14:37:09'),
+(1, '2026-02-24 18:45:00', '2026-02-24 19:15:00', 'Sleep medicine Dr Appointment, Dr. Wachtel ', 1, '8635 W. Third Street.', '2026-02-23 14:38:47', '2026-02-23 14:38:47'),
+(1, '2026-02-23 16:30:00', '2026-02-23 17:59:59', 'Take care to American Tire, get tires checked', 1, 'American Tire\n22910 Hawthorne Blvd.', '2026-02-23 14:43:45', '2026-02-23 14:44:03'),
+(1, '2026-02-23 20:00:00', '2026-02-23 20:59:59', ' Prepare chicken for freezer', 1, 'Home', '2026-02-23 14:44:45', '2026-02-23 14:44:45'),
+(1, '2026-02-25 11:45:00', '2026-02-25 12:00:00', 'Check Vital signs, record data on iPhone and in spreadsheet', 1, 'Home', '2026-02-25 12:31:43', '2026-02-25 12:31:43'),
+(1, '2026-02-25 12:00:00', '2026-02-25 12:15:00', 'Coffee at Starbucks, say hello to people', 1, 'Starbucks', '2026-02-25 12:33:20', '2026-02-25 12:33:20'),
+(1, '2026-02-25 12:15:00', '2026-02-25 12:29:59', 'Plan day using PP3Rework', 1, 'Starbucks', '2026-02-25 12:34:44', '2026-02-25 12:34:44'),
+(1, '2026-02-25 12:30:00', '2026-02-25 12:59:59', 'Code Review Moderator Oversight ', 0, 'Starbucks', '2026-02-25 12:37:02', '2026-02-25 12:37:02'),
+(1, '2026-02-25 13:00:00', '2026-02-25 16:59:59', ' Implement the select parent task dialog', 0, 'Starbucks', '2026-02-25 12:38:12', '2026-02-25 12:38:12'),
+(1, '2026-02-25 17:00:00', '2026-02-25 18:29:59', ' Breakfast and Science Fiction', 1, 'Home', '2026-02-25 12:39:17', '2026-02-25 12:39:17'),
+(1, '2026-02-25 19:00:00', '2026-02-25 19:59:59', 'Food shopping, get 1 week of groceries', 1, 'Redondo Beach Ralph\'s Market', '2026-02-25 12:41:23', '2026-02-25 12:41:23'),
+(1, '2026-02-25 22:00:00', '2026-02-25 22:59:59', ' Lunch Science Fiction', 1, 'Home', '2026-02-25 12:42:01', '2026-02-25 12:42:01'),
+(1, '2026-02-26 12:15:00', '2026-02-26 12:29:59', ' Check vital signs, record on iPhone and in spreadsheet', 1, 'Home', '2026-02-26 13:17:03', '2026-02-26 13:17:03'),
+(1, '2026-02-26 12:30:00', '2026-02-26 12:44:59', ' Get coffee at Starbuck, say hello to everyone', 1, 'Starbucks', '2026-02-26 13:18:18', '2026-02-26 13:18:18'),
+(1, '2026-02-26 12:45:00', '2026-02-26 13:14:59', 'Code Review moderator oversight. ', 0, 'Starbucks', '2026-02-26 13:19:27', '2026-02-26 13:19:27'),
+(1, '2026-02-26 13:15:00', '2026-02-26 13:29:59', 'Plan day using prototype personal planner ', 1, 'Starbucks', '2026-02-26 13:21:04', '2026-02-26 13:21:04'),
+(1, '2026-02-26 13:30:00', '2026-02-26 16:29:59', 'Implement generic task table as a base class for multiple views of task tables. ', 0, 'Starbucks', '2026-02-26 13:24:06', '2026-02-26 13:24:06'),
+(1, '2026-02-26 17:00:00', '2026-02-26 17:59:59', ' Grocery shopping at Redondo Beach Ralph\'s Market', 1, 'Redondo Beach Ralph\'s Market', '2026-02-26 13:26:11', '2026-02-26 13:26:11'),
+(1, '2026-02-26 18:00:00', '2026-02-26 18:59:59', ' Breakfast and Science Fiction', 1, 'Home', '2026-02-26 13:26:57', '2026-02-26 13:26:57'),
+(1, '2026-02-26 22:00:00', '2026-02-26 22:59:59', ' Lunch and Science Fiction', 1, 'Home', '2026-02-26 13:27:52', '2026-02-26 13:27:52'),
+(1, '2026-02-26 23:00:00', '2026-02-26 23:59:59', ' Food preparation', 1, 'Home', '2026-02-26 13:28:29', '2026-02-26 13:28:29'),
+(1, '2026-02-27 12:15:00', '2026-02-27 12:29:59', 'Check vital sign, record on iPhone and in spreadsheet', 1, 'Home', '2026-02-27 12:50:36', '2026-02-27 12:50:36'),
+(1, '2026-02-27 12:30:00', '2026-02-27 12:44:59', 'Coffee at Starbucks, say hello to everyone ', 1, 'Starbuck', '2026-02-27 12:51:29', '2026-02-27 12:51:29'),
+(1, '2026-02-27 12:45:00', '2026-02-27 12:59:59', 'Plan day using personal planner/organizer ', 1, 'Starbucks', '2026-02-27 12:53:06', '2026-02-27 12:53:06'),
+(1, '2026-02-27 13:00:00', '2026-02-27 13:29:59', 'Code Review Moderator Oversight ', 0, 'Starbucks', '2026-02-27 12:54:18', '2026-02-27 12:54:18'),
+(1, '2026-02-27 13:30:00', '2026-02-27 16:59:59', ' Finish implementing the Select Parent Task dialog', 0, 'Starbucks', '2026-02-27 12:56:03', '2026-02-27 12:56:03'),
+(1, '2026-02-27 17:00:00', '2026-02-27 17:59:59', ' Breakfast and Science Fiction', 1, 'Home', '2026-02-27 12:56:31', '2026-02-27 12:56:31'),
+(1, '2026-02-27 18:00:00', '2026-02-27 18:59:59', ' Call Bill McCandless', 1, 'Home', '2026-02-27 12:57:06', '2026-02-27 12:57:06'),
+(1, '2026-02-27 19:00:00', '2026-02-27 20:29:59', 'Food preparation, cut chicken into 1/3 pound fillets. Chop vegetables ', 1, 'Home', '2026-02-27 12:59:01', '2026-02-27 12:59:01'),
+(1, '2026-02-27 22:00:00', '2026-02-27 22:59:59', ' Lunch and science fiction', 1, 'Home', '2026-02-27 12:59:44', '2026-02-27 12:59:44'),
+(1, '2026-02-28 12:00:00', '2026-02-28 12:14:29', 'Check vital sign, record on iPhone and in spreadsheet', 1, 'Home', '2026-02-27 23:18:10', '2026-02-27 23:18:10'),
+(1, '2026-02-28 12:15:00', '2026-02-28 12:29:59', 'Coffee at Starbucks, say hello to everyone ', 1, 'Starbucks', '2026-02-27 23:19:05', '2026-02-27 23:19:05'),
+(1, '2026-02-28 12:30:00', '2026-02-28 12:44:59', 'Plan day using personal planner/organizer ', 1, 'Starbucks', '2026-02-27 23:20:02', '2026-02-27 23:20:02'),
+(1, '2026-02-28 13:00:00', '2026-02-28 13:29:59', 'Code Review Moderator Oversight ', 0, 'Starbucks', '2026-02-27 23:21:14', '2026-02-27 23:21:14'),
+(1, '2026-02-28 13:30:00', '2026-02-28 16:29:59', 'Find where something is being freed twice during select parent.', 0, 'Starbucks', '2026-02-27 23:22:40', '2026-02-27 23:22:40'),
+(1, '2026-02-28 17:00:00', '2026-02-28 17:59:59', ' Breakfast and science fiction', 1, 'Home', '2026-02-27 23:23:13', '2026-02-27 23:23:13'),
+(1, '2026-03-05 18:00:00', '2026-03-05 18:59:59', ' Freeze Chicken Fillets', 1, 'Home', '2026-02-27 23:25:53', '2026-02-27 23:25:53'),
+(1, '2026-03-04 22:00:00', '2026-03-04 22:59:59', ' Freeze Chicken Fillets', 1, 'Home', '2026-02-27 23:26:21', '2026-02-27 23:26:21'),
+(1, '2026-02-28 21:00:00', '2026-02-28 21:59:59', ' Lunch and Science Fiction', 1, 'Home', '2026-02-28 12:52:03', '2026-02-28 12:52:03'),
+(1, '2026-03-01 12:00:00', '2026-03-01 12:15:00', 'Check Vital Signs log data on iPhone and in spreadsheet ', 1, 'Home', '2026-03-01 12:42:53', '2026-03-01 12:42:53'),
+(1, '2026-03-01 11:45:00', '2026-03-01 11:59:59', 'Prepare some chicken breasts for cooking.', 1, 'Home', '2026-03-01 12:43:54', '2026-03-01 12:43:54'),
+(1, '2026-03-01 12:30:00', '2026-03-01 12:44:59', ' Coffee at Starbucks, say hello to everyone', 1, 'Starbucks', '2026-03-01 12:45:34', '2026-03-01 12:45:34'),
+(1, '2026-03-01 12:45:00', '2026-03-01 12:59:59', 'Plan day using electronic personal planner ', 1, 'Starbucks', '2026-03-01 12:46:39', '2026-03-01 12:46:39'),
+(1, '2026-03-01 13:00:00', '2026-03-01 13:29:59', 'Code Review Moderator Oversight ', 0, 'Starbuck', '2026-03-01 12:48:39', '2026-03-01 12:48:39'),
+(1, '2026-03-01 13:30:00', '2026-03-01 16:59:59', 'Fix bugs in planner: 1) Save the parent task id to the child task. 2) copy constructor for TaskModel is really needed?', 0, 'Starbucks', '2026-03-01 12:51:20', '2026-03-01 12:51:20'),
+(1, '2026-03-01 17:00:00', '2026-03-01 17:59:59', ' Breakfast and science fiction.', 1, 'Home', '2026-03-01 12:52:35', '2026-03-01 12:52:35');
+
