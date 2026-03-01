@@ -43,6 +43,14 @@ GuiTaskModel::GuiTaskModel(std::size_t dbTaskId, QObject *parent)
     transferDbModelDataToFields();
 }
 
+GuiTaskModel::GuiTaskModel(GuiTaskModel *original)
+    : GuiTaskModel()
+{
+    m_DbTaskDataPtr = original->m_DbTaskDataPtr;
+    transferDbModelDataToFields();
+    m_FieldsChangedValue = original->m_FieldsChangedValue;
+}
+
 QString GuiTaskModel::statusStringFromEnum()
 {
     QMetaEnum metaEnum = QMetaEnum::fromType<GuiTaskModel::GUITaskStatus>();
@@ -253,6 +261,13 @@ bool GuiTaskModel::updateTaskInDatabase()
     return false;
 }
 
+void GuiTaskModel::addChildTask(std::shared_ptr<GuiTaskModel>child)
+{
+    std::size_t childId = child->getDbTaskId();
+    m_DbTaskDataPtr->addDependency(childId);
+    m_FieldsChangedValue = true;
+}
+
 void GuiTaskModel::debugShow()
 {
     std::cerr << "Task Database ID: " << m_DbTaskId << std::endl;
@@ -402,6 +417,11 @@ void GuiTaskModel::transferPriorityFieldDataToDBModel()
 
 void GuiTaskModel::transferOptionalFieldsToDBModel()
 {
+    if (m_ParentTaskId != m_DbTaskDataPtr->getParentTaskID())
+    {
+        m_DbTaskDataPtr->setParentTaskID(m_ParentTaskId);
+    }
+
     if (m_ActualStartDate.isValid())
     {
         m_DbTaskDataPtr->setactualStartDate(qDateToChrono(m_ActualStartDate));

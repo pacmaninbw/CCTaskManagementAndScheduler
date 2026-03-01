@@ -29,6 +29,7 @@ public:
     explicit GuiTaskModel(QObject *parent = nullptr);
     explicit GuiTaskModel(std::shared_ptr<TaskModel> dbTaskDataPtr, QObject* parent = nullptr);
     explicit GuiTaskModel(std::size_t dbTaskId, QObject* parent = nullptr);
+    explicit GuiTaskModel(GuiTaskModel* original);
 
     std::size_t getDbTaskId() const { return m_DbTaskId; };
     std::size_t getCreatorUserId() const { return m_CreatorUserId;};
@@ -50,6 +51,7 @@ public:
     QString getCreationTimeStamp() const { return  m_CreationTimeStamp; };
     QString getLastUpdateTimeStamp() const { return  m_LastUpdateTimeStamp; };
     QString statusStringFromEnum();
+    bool isModified() const { return m_FieldsChangedValue; };
 
     void setDbTaskId(std::size_t v);
     void setCreatorUserId(std::size_t v);
@@ -71,6 +73,7 @@ public:
     bool updateTaskInDatabase();
     bool isValid();
     QString getErrorMessages() const { return m_DbErrorMessages; };
+    void addChildTask(std::shared_ptr<GuiTaskModel> child);
     void debugShow();
 
 
