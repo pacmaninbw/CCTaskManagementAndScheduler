@@ -1,6 +1,8 @@
 #ifndef SELECTTASKPARENTDIALOG_H
 #define SELECTTASKPARENTDIALOG_H
 
+class GuiUserModel;
+
 // Project Header Files
 #include "GuiTaskModel.h"
 
@@ -18,6 +20,7 @@
 #include <QVBoxLayout>
 
 // Standard C++ Header Files
+#include <memory>
 
 class SelectTaskParentDialog : public QDialog
 {
@@ -25,12 +28,16 @@ class SelectTaskParentDialog : public QDialog
 
 public:
     explicit SelectTaskParentDialog(QWidget *parent = nullptr);
-    explicit SelectTaskParentDialog(GuiTaskModel* orphanTask, QWidget* parent = nullptr);
+    explicit SelectTaskParentDialog(std::shared_ptr<GuiTaskModel> orphanTask, QWidget* parent = nullptr);
     ~SelectTaskParentDialog();
-    GuiTaskModel* getParentTaskID() { return parentTaskDBID; };
+    std::shared_ptr<GuiTaskModel> getParentTaskID();
+    void setupDialogUI();
+
+private slots:
+    void handleParentTaskTableClicked(const QModelIndex &index);
 
 private:
-    void setupDialogUI();
+    GuiUserModel* getCreatorFromChildTask();
     QGroupBox* setUpGroupBox();
     QDialogButtonBox* setUpDialogButtons();
     QTableView* setUpParentTaskView();
@@ -40,8 +47,9 @@ private:
     QGroupBox* selectParentgroupBox;
     QFormLayout* selectParentGroupBoxLayout;
     QTableView* selectParentTableView;
-    GuiTaskModel* childTaskData;
-    GuiTaskModel* parentTaskDBID;
+    std::shared_ptr<GuiTaskModel> childTaskData;
+    GuiTaskModel* parentTaskModel;
+    GuiUserModel* creator;
 
     const int defaultDialogWidth = 700;
     const int defaultDialogHeight = 450;

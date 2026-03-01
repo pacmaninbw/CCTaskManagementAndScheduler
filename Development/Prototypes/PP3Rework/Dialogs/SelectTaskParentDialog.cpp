@@ -1,13 +1,12 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
 #include "SelectTaskParentDialog.h"
-#include "GuiTaskModel.h"
-//#include "GuiUserModel.h"
+#include "GuiTaskTableBase.h"
+#include "GuiUserModel.h"
 
 // QT Header Files
 #include <QVariant>
 #include <QAbstractButton>
-#include <QAbstractTableModel>
 #include <QApplication>
 #include <QDialog>
 #include <QDialogButtonBox>
@@ -15,6 +14,7 @@
 #include <QHeaderView>
 #include <QHBoxLayout>
 #include <QList>
+#include <QMessageBox>
 #include <QObject>
 #include <QString>
 #include <QTableView>
@@ -24,26 +24,37 @@
 SelectTaskParentDialog::SelectTaskParentDialog(QWidget *parent)
     : QDialog(parent),
     childTaskData{nullptr},
-    parentTaskDBID{nullptr}
+    parentTaskModel{nullptr},
+    creator{nullptr}
 {
-    setupDialogUI();
+    setObjectName("SelectTaskParentDialog");
+
+    setWindowTitle("Select Parent Task");
 }
 
-SelectTaskParentDialog::SelectTaskParentDialog(GuiTaskModel *orphanTask, QWidget *parent)
-    : QDialog(parent),
-    childTaskData{orphanTask},
-    parentTaskDBID{nullptr}
+SelectTaskParentDialog::SelectTaskParentDialog(std::shared_ptr<GuiTaskModel> orphanTask, QWidget *parent)
+    : SelectTaskParentDialog(parent)
 {
-    setupDialogUI();
+    childTaskData = orphanTask;
 }
 
 SelectTaskParentDialog::~SelectTaskParentDialog()
 {
 }
 
+std::shared_ptr<GuiTaskModel> SelectTaskParentDialog::getParentTaskID()
+{
+    return std::make_shared<GuiTaskModel>(parentTaskModel);
+}
+
 void SelectTaskParentDialog::setupDialogUI()
 {
-    setObjectName("SelectTaskParentDialog");
+    if (!childTaskData)
+    {
+        QMessageBox::critical(nullptr, "Critical Error", "No Child Task Data, can't continue!", QMessageBox::Ok);
+    }
+
+    creator = getCreatorFromChildTask();
 
     resize(defaultDialogWidth, defaultDialogHeight);
 
@@ -52,6 +63,29 @@ void SelectTaskParentDialog::setupDialogUI()
     selectTaskParentDialogLayout->addWidget(setUpGroupBox());
 
     setLayout(selectTaskParentDialogLayout);
+}
+
+void SelectTaskParentDialog::handleParentTaskTableClicked(const QModelIndex &index)
+{
+    if (!index.isValid())
+    {
+        return;
+    }
+
+    parentTaskModel = static_cast<GuiTaskModel*>(index.internalPointer());
+}
+
+GuiUserModel *SelectTaskParentDialog::getCreatorFromChildTask()
+{
+    if (!childTaskData)
+    {
+        return nullptr;
+    }
+
+    std::size_t creatorUserId = childTaskData->getCreatorUserId();
+    GuiUserModel* taskCreator = new GuiUserModel(creatorUserId, this);
+
+    return taskCreator;
 }
 
 QGroupBox *SelectTaskParentDialog::setUpGroupBox()
@@ -85,12 +119,18 @@ QDialogButtonBox *SelectTaskParentDialog::setUpDialogButtons()
 QTableView *SelectTaskParentDialog::setUpParentTaskView()
 {
     selectParentTableView = cqtfa_QTWidget<QTableView>("selectParentTableView", this);
+    selectParentTableView->setModel(setUpParentTaskTable());
+    selectParentTableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     selectParentTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+
+    connect(selectParentTableView,  &QTableView::clicked, this, &SelectTaskParentDialog::handleParentTaskTableClicked);
 
     return selectParentTableView;
 }
 
 QAbstractTableModel *SelectTaskParentDialog::setUpParentTaskTable()
 {
-    return nullptr;
+    GuiTaskTableBase* parentTable = new GuiTaskTableBase(creator, this);
+    parentTable->fillTable();
+    return parentTable;
 }
