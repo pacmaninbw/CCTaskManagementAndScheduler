@@ -97,6 +97,9 @@ QVariant GuiTaskTableBase::headerData(int section, Qt::Orientation orientation, 
         case 4: return "Creator ID";
         case 5: return "Assigned ID";
         case 6: return "Status";
+        case 7: return "Parent ID";
+        case 8: return "Due Date";
+        case 9: return "Scheduled Start";
         default: return {};
     }
 }
@@ -129,7 +132,7 @@ int GuiTaskTableBase::columnCount(const QModelIndex &parent) const
         return 0;
     }
 
-    return 3;
+    return 10;
 }
 
 bool GuiTaskTableBase::hasChildren(const QModelIndex &parent) const
@@ -170,6 +173,9 @@ QVariant GuiTaskTableBase::data(const QModelIndex &index, int role) const
         case 4: return QString::number(task->getCreatorUserId());
         case 5: return QString::number(task->getAssigneeUserId());
         case 6: return QString::number(static_cast<int>(task->getStatus()));
+        case 7: return QString::number(task->getParentTaskId());
+        case 8: return task->getDueDate().toString(Qt::ISODate);
+        case 9: return task->getScheduledStart().toString(Qt::ISODate);
         default: return {};
     }
 }
