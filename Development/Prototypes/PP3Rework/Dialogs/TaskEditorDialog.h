@@ -23,6 +23,7 @@
 #include <QVBoxLayout>
 
 // Standard C++ Header Files
+#include <memory>
 
 class TaskEditorDialog : public QDialog
 {
@@ -70,9 +71,9 @@ private:
     void connectEditFieldsToActions();
 
     GuiUserModel* m_Creator;
-    GuiTaskModel* m_TaskData;
+    std::shared_ptr<GuiTaskModel> m_TaskData;
     GuiUserModel* m_Assignee;
-    GuiTaskModel* m_ParentTaskData;
+    std::shared_ptr<GuiTaskModel> m_ParentTaskData;
 
     QVBoxLayout* editTaskMainLayout;
     QDialogButtonBox* editTaskbuttonBox;

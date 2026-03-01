@@ -45,7 +45,7 @@ void TaskEditorDialog::setTaskDataAndInitDisplayFields(GuiTaskModel *taskToEdit)
         return;
     }
 
-    m_TaskData = taskToEdit;
+    m_TaskData = std::make_shared<GuiTaskModel>(taskToEdit);
 
     initDisplayFields();
     initEditFieldsFromTaskData();
@@ -53,7 +53,28 @@ void TaskEditorDialog::setTaskDataAndInitDisplayFields(GuiTaskModel *taskToEdit)
 
 void TaskEditorDialog::accept()
 {
+    std::shared_ptr<GuiTaskModel> errorGenerator = nullptr;
+
     bool updateSuccessful = (m_TaskData->getDbTaskId() > 0)? updateTask() : addTask();
+
+    if (updateSuccessful)
+    {
+        if (m_ParentTaskData)
+        {
+            // Child database task id may not be correct prior to this in the case of
+            // a new task being added.
+            m_ParentTaskData->addChildTask(m_TaskData);
+            updateSuccessful = m_ParentTaskData->updateTaskInDatabase();
+        }
+        if (!updateSuccessful)
+        {
+            errorGenerator = m_ParentTaskData;
+        }
+    }
+    else
+    {
+        errorGenerator = m_TaskData;
+    }
 
     if (updateSuccessful)
     {
@@ -62,7 +83,7 @@ void TaskEditorDialog::accept()
     else
     {
         QString errorReport = "Task edit failed.\n";
-        errorReport += m_TaskData->getErrorMessages();
+        errorReport += errorGenerator->getErrorMessages();
         QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
     }
 }
@@ -104,11 +125,20 @@ void TaskEditorDialog::on_editTaskPersonalCB_stateChanged(int newState)
 
 void TaskEditorDialog::on_editTaskSelectParentPB_Clicked()
 {
-    SelectTaskParentDialog selectParentTask(this);
+    if (m_TaskData->getCreatorUserId() == 0)
+    {
+        // If this is a new task that did not retrive the task from the database
+        // then update the task before using it in the select parent editor.
+        transferAllFieldsToData();
+    }
+
+    SelectTaskParentDialog selectParentTask(m_TaskData, this);
+    selectParentTask.setupDialogUI();
 
     if (selectParentTask.exec() == QDialog::Accepted)
     {
         m_ParentTaskData = selectParentTask.getParentTaskID();
+        m_TaskData->setParentTaskId(m_ParentTaskData->getDbTaskId());
     }
 }
 
@@ -442,7 +472,7 @@ void TaskEditorDialog::initEditFields()
 
     m_Assignee = m_Creator;
 
-    m_TaskData = new GuiTaskModel();
+    m_TaskData = std::make_shared<GuiTaskModel>();
 
     // To prevent any loops caused by updating display fields the connections
     // are implemented after the fields are initialized.
@@ -483,7 +513,7 @@ void TaskEditorDialog::initDisplayFields()
     std::size_t dbParentTaskId = m_TaskData->getParentTaskId();
     if (dbParentTaskId)
     {
-        m_ParentTaskData = new GuiTaskModel(dbParentTaskId);
+        m_ParentTaskData = std::make_shared<GuiTaskModel>(dbParentTaskId);
     }
 }
 
