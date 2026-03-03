@@ -5,6 +5,7 @@
 
 // QT Header Files
 #include <QVariant>
+#include <QCheckBox>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QFormLayout>
@@ -37,6 +38,10 @@ private:
     void limitDialogRowth();
     bool testConnection();
     bool validateAndUpdateProgramOption();
+    void saveConnectionDataToEnvironment();
+    QGroupBox* setUpOptionsGB();
+    std::string makeEnvironmentVariableName(std::string vName);
+    void checkEnvironmentVariables();
     
     const int maxQLineEditCharCount = 40;
     const int marginAndSpacing = 30;
@@ -51,7 +56,14 @@ private:
     QLineEdit* mySqlUrl;
     QLineEdit* mySqlPort;
     QLineEdit* mySqlDBName;
+    QCheckBox* rememberMe;
     QDialogButtonBox* dbConnectionsButtonBox;
+    QGroupBox* optionsGB;
+    QFormLayout* optionsFormLayout;
+    QCheckBox* verboseOutput;
+    QCheckBox* runSelftTest;
+    QCheckBox* forceErrors;
+    QCheckBox* forceExceptions;
 };
 
 #endif // DATABASECONNECTIONDIALOG_H

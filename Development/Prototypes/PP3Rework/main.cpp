@@ -1,5 +1,6 @@
 // Project Header Files
 #include "CommandLineParser.h"
+#include "TestDBConnection.h"
 #include "UserDashboard.h"
 
 // QT Header Files
@@ -18,9 +19,6 @@ ProgramOptions programOptions;
 static void initPlannerOptions(ProgramOptions& programOptions, char* arg0)
 {
     programOptions.progName = arg0;
-    programOptions.mySqlUrl = "127.0.0.1";
-    programOptions.mySqlPort = 3306;
-    programOptions.mySqlDBName = "PlannerTaskScheduleDB";
     programOptions.userTestDataFile = "";
     programOptions.taskTestDataFile = "";
     programOptions.enableExecutionTime = false;

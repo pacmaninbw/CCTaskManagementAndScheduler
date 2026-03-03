@@ -61,6 +61,15 @@ bool TestDBConnection::runTestConnect()
     }    
 }
 
+std::string TestDBConnection::makeEnvironmentVariableName(std::string vName)
+{
+    std::string environmentVariableName("CHERNICKSW_PLANNERORGANIZER_");
+
+    environmentVariableName.append(vName);
+
+    return environmentVariableName;
+}
+
 boost::mysql::format_options TestDBConnection::getConnectionFormatOptsAsync()
 {
     boost::mysql::format_options options;

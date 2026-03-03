@@ -26,6 +26,7 @@ public:
     void debugShowVariables(std::string functionName) const noexcept;
     bool runTestConnect();
     std::string getErrorMessages() { return errorMessages; };
+    static std::string makeEnvironmentVariableName(std::string vName);
     
 private:
     void initConnectionData(ProgramOptions &po);

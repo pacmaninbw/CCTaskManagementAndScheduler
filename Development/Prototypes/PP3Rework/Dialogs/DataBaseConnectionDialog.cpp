@@ -8,10 +8,12 @@
 #include "DataBaseConnectionDialog.h"
 
 // QT Header Files
+#include <QByteArray>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QGroupBox>
+#include <QtGlobal>
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QString>
@@ -27,6 +29,8 @@ DataBaseConnectionDialog::DataBaseConnectionDialog(QWidget *parent)
     maxGroupBoxHeight{0},
     maxButtonBoxHeight{0}
 {
+    checkEnvironmentVariables();
+
     setUpDBConnectionDialogUI();
 }
 
@@ -47,6 +51,8 @@ void DataBaseConnectionDialog::setUpDBConnectionDialogUI()
 
     dbConnectionsDialogLayout->addWidget(dbConnectionsGB);
 
+    dbConnectionsDialogLayout->addWidget(setUpOptionsGB());
+    
     dbConnectionsDialogLayout->addWidget(setUpButtonBox(), 0 , Qt::AlignHCenter);
 
     setLayout(dbConnectionsDialogLayout);
@@ -81,6 +87,10 @@ QFormLayout *DataBaseConnectionDialog::setUpDBConnectionsFormLayout()
     mySqlDBName = cqtfa_LineEditFixedWidthByCharCount("mySqlDBName", dbConnectionsGB, maxQLineEditCharCount);
     mySqlDBName->setText(QString::fromStdString(programOptions.mySqlDBName));
     dbConnectionsFormLayout->addRow("MySQL Database Name:", mySqlDBName);
+
+    rememberMe = cqtfa_QTWidgetWithText<QCheckBox>("Save database connection on this device",
+        "dbConnectionsGB", dbConnectionsGB);
+    dbConnectionsFormLayout->addWidget(rememberMe);
 
     maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(dbConnectionsFormLayout);
 
@@ -166,8 +176,71 @@ bool DataBaseConnectionDialog::validateAndUpdateProgramOption()
     programOptions.mySqlPassword = inputPassword;
     programOptions.mySqlUrl = mySqlUrl->text().toStdString();
     programOptions.mySqlDBName = mySqlDBName->text().toStdString();
+    programOptions.verboseOutput = verboseOutput->isChecked();
+    programOptions.runSelfTest = runSelftTest->isChecked();
+    programOptions.forceErrors = forceErrors->isChecked();
+    programOptions.forceExceptions = forceExceptions->isChecked();
 
     return ok;
+}
+
+void DataBaseConnectionDialog::saveConnectionDataToEnvironment()
+{
+    std::string dbUserEnvVariable = TestDBConnection::makeEnvironmentVariableName("DBUSERNAME");
+    qputenv(dbUserEnvVariable.c_str(), mySqlUser->text().toUtf8());
+    std::cerr << "qputenv " << dbUserEnvVariable << mySqlUser->text().toStdString() << std::endl;
+
+    std::string dbPasswordEnvVariable = TestDBConnection::makeEnvironmentVariableName("DBPASSWORD");
+    qputenv(dbPasswordEnvVariable.c_str(), mySqlPassword->text().toUtf8());
+    std::cerr << "qputenv " << dbPasswordEnvVariable << mySqlPassword->text().toStdString() << std::endl;
+}
+
+QGroupBox *DataBaseConnectionDialog::setUpOptionsGB()
+{
+    optionsGB = new QGroupBox("Program Options", this);
+    optionsGB->setObjectName("optionsGB");
+
+    optionsFormLayout = cqtfa_FormLayoutWithPolicy("optionsFormLayout", optionsGB);
+
+    verboseOutput = cqtfa_QTWidgetWithText<QCheckBox>("Enable Verbose Output",
+        "verboseOutput", optionsGB);
+    optionsFormLayout->addWidget(verboseOutput);
+
+    runSelftTest = cqtfa_QTWidgetWithText<QCheckBox>("Enable Self Test",
+        "runSelftTest", optionsGB);
+    optionsFormLayout->addWidget(runSelftTest);
+
+    forceErrors = cqtfa_QTWidgetWithText<QCheckBox>("Force Errors",
+        "forceErrors", optionsGB);
+    optionsFormLayout->addWidget(forceErrors);
+
+    forceExceptions = cqtfa_QTWidgetWithText<QCheckBox>("Force Exceptions",
+        "forceExceptions", optionsGB);
+    optionsFormLayout->addWidget(forceExceptions);
+
+    return optionsGB;
+}
+
+std::string DataBaseConnectionDialog::makeEnvironmentVariableName(std::string vName)
+{
+    std::string environmentVariableName("CHERNICKSW_PLANNERORGANIZER_");
+
+    environmentVariableName.append(vName);
+
+    return environmentVariableName;
+}
+
+void DataBaseConnectionDialog::checkEnvironmentVariables()
+{
+    programOptions.mySqlUser = qEnvironmentVariable(makeEnvironmentVariableName("DBUSERNAME").c_str()).toStdString();
+
+    programOptions.mySqlPassword = qEnvironmentVariable(makeEnvironmentVariableName("DBPASSWORD").c_str()).toStdString();
+
+    programOptions.mySqlDBName = qEnvironmentVariable(makeEnvironmentVariableName("DATABASE").c_str()).toStdString();
+
+    programOptions.mySqlUrl = qEnvironmentVariable(makeEnvironmentVariableName("DBURL").c_str()).toStdString();
+
+    programOptions.mySqlPort = qEnvironmentVariableIntValue(makeEnvironmentVariableName("DBPORT").c_str());
 }
 
 void DataBaseConnectionDialog::on_dbConnectionsButtonBox_accepted()
@@ -176,6 +249,10 @@ void DataBaseConnectionDialog::on_dbConnectionsButtonBox_accepted()
     {
         if (testConnection())
         {
+            if (rememberMe->isChecked())
+            {
+                saveConnectionDataToEnvironment();
+            }
             QDialog::accept();
         }
         else
