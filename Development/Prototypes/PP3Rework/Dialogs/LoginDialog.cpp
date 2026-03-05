@@ -1,5 +1,6 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
+#include "GuiUserModel.h"
 #include "LoginDialog.h"
 
 // QT Header Files
