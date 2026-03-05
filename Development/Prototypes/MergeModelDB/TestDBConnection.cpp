@@ -73,6 +73,8 @@ TestStatus TestDBConnection::runTestConnect()
             }
         }
 
+        programOptions.canConnectToDatabase = true;
+        
         return TESTPASSED;
     }
     catch(const std::exception& e)
