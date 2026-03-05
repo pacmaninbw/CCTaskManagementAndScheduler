@@ -35,6 +35,7 @@ class UserDashboard : public QMainWindow
 
 public:
     UserDashboard(QWidget *parent = nullptr);
+    UserDashboard(std::shared_ptr<UserModel> loggedInUser, QWidget *parent = nullptr);
     ~UserDashboard();
 
 public slots:

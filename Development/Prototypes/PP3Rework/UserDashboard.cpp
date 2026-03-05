@@ -42,6 +42,29 @@ UserDashboard::UserDashboard(QWidget *parent)
     setUpUserDashboardUi();
 }
 
+UserDashboard::UserDashboard(std::shared_ptr<UserModel> loggedInUser, QWidget *parent)
+    : UserDashboard(parent)
+{
+    if (loggedInUser)
+    {
+        m_UserDataPtr = new GuiUserModel(loggedInUser, this);
+
+        fillUserIdBoxData();
+
+        if (udTaskTableView)
+        {
+            udTaskTableView->setUserId(m_UserDataPtr);
+            updateTaskList();
+        }
+
+        if (udScheduleTableView)
+        {
+            udScheduleTableView->setUserId(m_UserDataPtr);
+            updateSchedule();
+        }
+    }
+}
+
 UserDashboard::~UserDashboard()
 {
 

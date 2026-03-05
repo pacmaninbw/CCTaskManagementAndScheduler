@@ -1,12 +1,14 @@
 // Project Header Files
-#include "CommandLineParser.h"
-#include "TestDBConnection.h"
+#include "DataBaseConnectionDialog.h"
+#include "LoginDialog.h"
+#include "PlannerInitializer.h"
 #include "UserDashboard.h"
 
 // QT Header Files
 #include <QApplication>
 
 // Standard C++ Header Files
+#include <memory>
 
 
 // Standard C++ Header Files
@@ -16,25 +18,28 @@
  */
 ProgramOptions programOptions;
 
-static void initPlannerOptions(ProgramOptions& programOptions, char* arg0)
-{
-    programOptions.progName = arg0;
-    programOptions.userTestDataFile = "";
-    programOptions.taskTestDataFile = "";
-    programOptions.enableExecutionTime = false;
-    programOptions.verboseOutput = false;
-    programOptions.runSelfTest = false;
-    programOptions.forceErrors = false;
-    programOptions.forceExceptions = false;
-    programOptions.quitFirstFail = false;
-}
-
 int main(int argc, char *argv[])
 {
-    initPlannerOptions(programOptions, argv[0]);
-
     QApplication a(argc, argv);
-    UserDashboard userDashboard;
+
+    std::shared_ptr<UserModel> logedInUser;
+
+    PlannerInitializer plannerOptions(argc, argv);
+    
+    plannerOptions.getProgramOptions();
+
+    if (programOptions.canConnectToDatabase)
+    {
+        logedInUser = plannerOptions.getUserDataWhenLoginAvailable();
+    }
+    else
+    {
+        DataBaseConnectionDialog dbConnectionDialog;
+
+        dbConnectionDialog.exec();
+    }
+
+    UserDashboard userDashboard(logedInUser);
     userDashboard.show();
     return a.exec();
 }
