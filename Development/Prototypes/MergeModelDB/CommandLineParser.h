@@ -23,6 +23,9 @@ struct ProgramOptions
     bool forceErrors = false;
     bool forceExceptions = false;
     bool quitFirstFail = false;
+    bool canConnectToDatabase = false;
+    std::string userName;
+    std::string userPassword;
 };
 
 #ifdef TESTCOMMANDLINEENABLED
