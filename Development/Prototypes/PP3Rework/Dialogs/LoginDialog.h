@@ -2,10 +2,10 @@
 #define LOGINDIALOG_H
 
 class GuiUserModel;
+
 // Project Header Files
 
 // QT Header Files
-//#include "GuiUserModel.h"
 #include <QVariant>
 #include <QApplication>
 #include <QDialog>
