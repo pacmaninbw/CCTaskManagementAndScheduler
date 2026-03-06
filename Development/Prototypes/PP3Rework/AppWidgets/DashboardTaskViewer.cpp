@@ -17,7 +17,7 @@ DashboardTaskViewer::DashboardTaskViewer(QWidget *parent)
     m_DashboardDate{QDate::currentDate()},
     m_TaskTable{nullptr}
 {
-    m_TaskTable = new GuiDashboardTaskTable(parent);
+    m_TaskTable = new GuiDashboardTaskTable(m_UserDataPtr, parent);
     m_TaskTable->setObjectName("m_TaskTable");
     m_TaskTable->fillTable();
 
@@ -54,18 +54,15 @@ void DashboardTaskViewer::setUserIdAndDate(GuiUserModel *userDataPtr, QDate dash
 
 void DashboardTaskViewer::update()
 {
-    if (!m_TaskTable)
+    if (m_TaskTable)
     {
-        m_TaskTable =  (!m_UserDataPtr)? new GuiDashboardTaskTable(parent()) :
-                new GuiDashboardTaskTable(m_UserDataPtr, parent());
-        m_TaskTable->setObjectName("m_TaskTable");
-        m_TaskTable->fillTable();
+        delete m_TaskTable;
     }
-    else
-    {
-        m_TaskTable->setUserRefillTable(m_UserDataPtr);
-    }
-
+ 
+    m_TaskTable = new GuiDashboardTaskTable(m_UserDataPtr, parent());
+    m_TaskTable->setObjectName("m_TaskTable");
+    m_TaskTable->fillTable();
+\
     setModel(m_TaskTable);
     horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);

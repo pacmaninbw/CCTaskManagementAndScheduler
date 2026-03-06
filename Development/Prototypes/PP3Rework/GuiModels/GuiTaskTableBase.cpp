@@ -15,14 +15,6 @@
 #include <chrono>
 #include <ranges>
 
-
-GuiTaskTableBase::GuiTaskTableBase(QObject *parent)
-    : QAbstractTableModel(parent),
-    m_UserDataPtr{nullptr}
-{
-
-}
-
 GuiTaskTableBase::GuiTaskTableBase(GuiUserModel *userDataPtr, QObject *parent)
     : QAbstractTableModel(parent),
     m_UserDataPtr{userDataPtr}
@@ -59,6 +51,7 @@ void GuiTaskTableBase::fillTable()
         qDeleteAll(m_data.begin(), m_data.end());
         m_data.clear();
     }
+
     for (const auto& dbTaskPtr: userTasks)
     {
         GuiTaskModel* modelData = new GuiTaskModel(dbTaskPtr, this);

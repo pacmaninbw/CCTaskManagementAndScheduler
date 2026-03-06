@@ -13,8 +13,6 @@ class GuiDashboardTaskTable : public GuiTaskTableBase
     Q_OBJECT
 
 public:
-
-    explicit GuiDashboardTaskTable(QObject *parent = nullptr);
     explicit GuiDashboardTaskTable(GuiUserModel *userDataPtr, QObject* parent=nullptr);
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
@@ -25,7 +23,7 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
 private:
-//    void makeFakeQList();
+
 };
 
 #endif // GUIDASHBOARDTASKTABLE_H

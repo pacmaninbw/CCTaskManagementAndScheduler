@@ -20,7 +20,6 @@ class GuiTaskTableBase : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    explicit GuiTaskTableBase(QObject *parent = nullptr);
     explicit GuiTaskTableBase(GuiUserModel *userDataPtr, QObject *parent = nullptr);
     void setUserRefillTable(GuiUserModel *userDataPtr);
     void fillTable();

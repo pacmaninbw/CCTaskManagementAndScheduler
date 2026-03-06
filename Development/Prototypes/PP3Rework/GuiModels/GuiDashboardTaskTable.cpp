@@ -7,11 +7,6 @@
 
 // Standard C++ Header Files
 
-
-GuiDashboardTaskTable::GuiDashboardTaskTable(QObject *parent)
-    : GuiTaskTableBase(parent)
-{}
-
 GuiDashboardTaskTable::GuiDashboardTaskTable(GuiUserModel *userDataPtr, QObject *parent)
     : GuiTaskTableBase(userDataPtr, parent)
 {
@@ -85,24 +80,3 @@ Qt::ItemFlags GuiDashboardTaskTable::flags(const QModelIndex &index) const
     return QAbstractItemModel::flags(index) | Qt::ItemIsEditable; // FIXME: Implement me!
 }
 
-#if 0
-void GuiDashboardTaskTable::makeFakeQList()
-{
-    if (!m_data.isEmpty())
-    {
-        return;
-    }
-    for (std::size_t priorityGroup: std::views::iota(0, 3))
-    {
-        QString priorityGroupString = "A";
-        for (std::size_t priority : std::views::iota(1, 6))
-        {
-            GuiTaskModel* taskData = new GuiTaskModel(this->parent());
-            taskData->setPriorityGroup(priorityGroupString);
-            taskData->setPriority(QString::number(priority));
-            taskData->setDescription(priorityGroup == 0 && priority == 1 ? "Login to app" : "");
-            append(taskData);
-        }
-    }
-}
-#endif
