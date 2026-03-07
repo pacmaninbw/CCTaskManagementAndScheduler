@@ -45,7 +45,6 @@ public:
 
 private:
     void fillSchedule();
-    std::chrono::system_clock::time_point getLocalMidnight(std::chrono::year_month_day scheduleDate);
     void setUserDay(std::chrono::year_month_day scheduleDate);
     bool hasNoTimeConflicts(std::chrono::system_clock::time_point proposedStartTime);
     void addBlankHoursForDisplay();
