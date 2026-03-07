@@ -4,6 +4,7 @@
 #include "TaskModel.h"
 
 // Standard C++ Header Files
+#include <algorithm>
 #include <chrono>
 #include <exception>
 #include <format>
@@ -572,6 +573,10 @@ std::string TaskModel::buildDependenciesText(std::vector<std::size_t>& dependenc
     if (dependencyList.size() > 1)
     {
         std::sort(dependencyList.begin(), dependencyList.end());
+
+        auto last = std::unique(dependencyList.begin(), dependencyList.end());
+
+        dependencyList.erase(last, dependencyList.end());
     }
 
     std::vector<std::string> dependencyStrings;
