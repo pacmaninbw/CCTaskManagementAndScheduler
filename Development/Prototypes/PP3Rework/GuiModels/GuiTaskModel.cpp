@@ -357,6 +357,7 @@ void GuiTaskModel::transferDbModelDataToFields()
     m_AssigneeUserId = m_DbTaskDataPtr->getAssignToID();
     m_Description = QString::fromStdString(m_DbTaskDataPtr->getDescription());
     m_status = convertFromTaskModel(static_cast<std::size_t>(m_DbTaskDataPtr->getStatus()));
+    m_ParentTaskId = m_DbTaskDataPtr->getParentTaskID();
     m_DueDate = QDate(m_DbTaskDataPtr->getDueDate());
     m_ScheduledStart = QDate(m_DbTaskDataPtr->getScheduledStart());
 
