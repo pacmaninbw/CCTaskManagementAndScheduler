@@ -11,5 +11,6 @@ extern std::chrono::year_month_day getTodaysDatePlus(unsigned int offset);
 extern std::chrono::year_month_day getTodaysDateMinus(unsigned int offset);
 extern std::chrono::year_month_day constantStringToChronoDate(std::string dateStr);
 extern std::chrono::system_clock::time_point constantStringToChronoTimePoint(std::string dateTimeStr);
+extern std::chrono::system_clock::time_point getLocalMidnight(std::chrono::year_month_day scheduleDate);
 
 #endif // COMMONUTILITIES_H_

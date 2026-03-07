@@ -57,3 +57,11 @@ std::chrono::system_clock::time_point constantStringToChronoTimePoint(std::strin
 
     return dateTimeValue;
 }
+
+std::chrono::system_clock::time_point getLocalMidnight(std::chrono::year_month_day scheduleDate)
+{
+    const std::chrono::time_zone* localTimeZone = std::chrono::current_zone();
+    const std::chrono::local_days local_midnight{scheduleDate};
+    const std::chrono::zoned_time zt_midnight = localTimeZone->to_sys(local_midnight);
+    return zt_midnight.get_sys_time();
+}
