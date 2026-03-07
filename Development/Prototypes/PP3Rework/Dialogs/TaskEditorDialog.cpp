@@ -539,6 +539,11 @@ void TaskEditorDialog::initEditFieldsFromTaskData()
     editTaskPersonalCB->setChecked(m_TaskData->getPersonal());
     editTaskStatusSelectorCB->setCurrentIndex(static_cast<int>(m_TaskData->getStatus()));
 
+    if (m_ParentTaskData)
+    {
+        editTaskParentTaskDescriptionDisplay->setText(m_ParentTaskData->getDescription());
+    }
+
     // To prevent any loops caused by updating display fields the connections
     // are implemented after the fields are initialized.
     connectEditFieldsToActions();
