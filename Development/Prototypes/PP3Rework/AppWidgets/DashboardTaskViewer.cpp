@@ -62,7 +62,7 @@ void DashboardTaskViewer::update()
     m_TaskTable = new GuiDashboardTaskTable(m_UserDataPtr, parent());
     m_TaskTable->setObjectName("m_TaskTable");
     m_TaskTable->fillTable();
-\
+
     setModel(m_TaskTable);
     horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
