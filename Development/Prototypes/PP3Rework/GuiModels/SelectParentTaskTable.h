@@ -1,0 +1,24 @@
+#ifndef SELECTPARENTTASKTABLE_H
+#define SELECTPARENTTASKTABLE_H
+
+#include "GuiTaskTableBase.h"
+
+class SelectParentTaskTable : public GuiTaskTableBase
+{
+    Q_OBJECT
+
+public:
+    explicit SelectParentTaskTable(GuiUserModel *userDataPtr, QObject *parent = nullptr);
+
+    // Header:
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+
+    // Basic functionality:
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+
+private:
+};
+
+#endif // SELECTPARENTTASKTABLE_H

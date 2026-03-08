@@ -1,7 +1,7 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
 #include "SelectTaskParentDialog.h"
-#include "GuiTaskTableBase.h"
+#include "SelectParentTaskTable.h"
 #include "GuiUserModel.h"
 
 // QT Header Files
@@ -121,6 +121,7 @@ QTableView *SelectTaskParentDialog::setUpParentTaskView()
     selectParentTableView = cqtfa_QTWidget<QTableView>("selectParentTableView", this);
     selectParentTableView->setModel(setUpParentTaskTable());
     selectParentTableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    selectParentTableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     selectParentTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
 
     connect(selectParentTableView,  &QTableView::clicked, this, &SelectTaskParentDialog::handleParentTaskTableClicked);
@@ -130,7 +131,7 @@ QTableView *SelectTaskParentDialog::setUpParentTaskView()
 
 QAbstractTableModel *SelectTaskParentDialog::setUpParentTaskTable()
 {
-    GuiTaskTableBase* parentTable = new GuiTaskTableBase(creator, this);
+    SelectParentTaskTable* parentTable = new SelectParentTaskTable(creator, this);
     parentTable->fillTable();
     return parentTable;
 }

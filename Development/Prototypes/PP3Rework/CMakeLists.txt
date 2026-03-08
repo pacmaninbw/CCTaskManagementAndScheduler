@@ -106,6 +106,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ../MergeModelDB/common/commonUtilities.cpp
         GuiModels/GuiTaskTableBase.h GuiModels/GuiTaskTableBase.cpp
         PlannerInitializer.h PlannerInitializer.cpp
+        GuiModels/SelectParentTaskTable.h GuiModels/SelectParentTaskTable.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET PP3Rework APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
