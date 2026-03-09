@@ -16,7 +16,7 @@ QVariant GuiDashboardTaskTable::headerData(int section, Qt::Orientation orientat
 {
     if (orientation != Qt::Horizontal || role != Qt::DisplayRole) return {};
     switch (section) {
-        case 0: return "PG";
+        case 0: return "Category";
         case 1: return "Priority";
         case 2: return "Description";
         default: return {};
@@ -51,6 +51,17 @@ QVariant GuiDashboardTaskTable::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
+    if (role == Qt::TextAlignmentRole)
+    {
+        if (index.column() == 0 || index.column() == 1)
+        {
+            return Qt::AlignCenter;
+        }
+        else
+        {
+            return QVariant();
+        }
+    }
 
     if (role != Qt::DisplayRole && role != Qt::EditRole) return {};
     const GuiTaskModel* task = m_data[index.row()];
