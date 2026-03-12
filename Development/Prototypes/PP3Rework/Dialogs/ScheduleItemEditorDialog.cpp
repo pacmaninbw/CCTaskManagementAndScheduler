@@ -58,7 +58,10 @@ void ScheduleItemEditorDialog::setUpScheduleItemEditorDialogUI()
     
     adjustSize();
 
-    QString titleStr = m_ScheduleItemData? "Edit" : "Add";
+    connect(seid_AddItemDate, &QDateEdit::dateChanged, this,
+        &ScheduleItemEditorDialog::handleAddItemDate_DateChanged);
+
+        QString titleStr = m_ScheduleItemData? "Edit" : "Add";
     titleStr += " Schedule Dialog";
     setWindowTitle(titleStr);
 }
@@ -71,21 +74,16 @@ QGroupBox *ScheduleItemEditorDialog::setUpScheduleTimeControls()
 
     seid_groupBoxLayout = cqtfa_FormLayoutWithPolicy("seid_groupBoxLayout", sied_scheduleTimeControls);
 
-    if (!m_ScheduleItemData || m_ScheduleItemData->getScheduleItemId() < 1)
-    {
-        seid_AddItemDate = cqtfa_DateEditWithCalendarPopUpCurrentDate(
-            "seid_AddItemDate", sied_scheduleTimeControls);
-    
-        seid_groupBoxLayout->addRow("Date:", seid_AddItemDate);
+    seid_AddItemDate = cqtfa_DateEditWithCalendarPopUpCurrentDate(
+        "seid_AddItemDate", sied_scheduleTimeControls);
+    seid_groupBoxLayout->addRow("Date:", seid_AddItemDate);
 
-        connect(seid_AddItemDate, &QDateEdit::dateChanged, this,
-            &ScheduleItemEditorDialog::handleAddItemDate_DateChanged);
-    }
-
-    sied_scheduleItemStartTimeDTEdit = createAndInitDateTimeEdit("sied_scheduleItemStartTimeDTEdit");
+    QDateTime initValue = m_ScheduleItemData? m_ScheduleItemData->getStartTime() : QDateTime::currentDateTime(); 
+    sied_scheduleItemStartTimeDTEdit = createAndInitDateTimeEdit("sied_scheduleItemStartTimeTEdit", initValue);
     seid_groupBoxLayout->addRow("Start:", sied_scheduleItemStartTimeDTEdit);
     
-    sied_scheduleItemEndTimeDTEdit = createAndInitDateTimeEdit("sied_scheduleEndTimeDTEdit");
+    initValue = m_ScheduleItemData? m_ScheduleItemData->getEndTime() : QDateTime::currentDateTime(); 
+    sied_scheduleItemEndTimeDTEdit = createAndInitDateTimeEdit("sied_scheduleEndTimeTEdit", initValue);
     seid_groupBoxLayout->addRow("End:", sied_scheduleItemEndTimeDTEdit);
 
     sied_scheduleItemTitleTE = cqtfa_flexibleWidthTextEdit("sied_scheduleItemTitleTE",
@@ -117,27 +115,21 @@ QDialogButtonBox *ScheduleItemEditorDialog::setUpScheduleItemButtonBox()
     return sied_buttonBox;
 }
 
-QDateTimeEdit* ScheduleItemEditorDialog::createAndInitDateTimeEdit(const char *objName)
+QDateTimeEdit* ScheduleItemEditorDialog::createAndInitDateTimeEdit(const char *objName, QDateTime initValue)
 {
-    QDateTime initDateTime = QDateTime::currentDateTime();
+    QDateTime initDateTime = initValidDateTime(initValue);
 
-    if (seid_AddItemDate)
-    {
-        initDateTime.setDate(seid_AddItemDate->date());
-    }
+    QDateTimeEdit* newTimeElement = new QDateTimeEdit(initDateTime, sied_scheduleTimeControls);
+    newTimeElement->setObjectName(objName);
 
-    QDateTimeEdit* newDateTimeElement = new QDateTimeEdit(QDateTime::currentDateTime(),
-        sied_scheduleTimeControls);
-    newDateTimeElement->setObjectName(objName);
+    newTimeElement->setDisplayFormat("HH:mm");
 
-    newDateTimeElement->setDisplayFormat("MM/dd/yyyy HH:mm:ss");
+    newTimeElement->setMinimumDateTime(initDateTime.addDays(-2));
+    newTimeElement->setMaximumDateTime(initDateTime.addYears(1));
+    
+    newTimeElement->setCalendarPopup(false);
 
-    newDateTimeElement->setMinimumDateTime(initDateTime.addDays(-2));
-    newDateTimeElement->setMaximumDateTime(initDateTime.addYears(1));
-
-    newDateTimeElement->setCalendarPopup(true);
-
-    return newDateTimeElement;
+    return newTimeElement;
 }
 
 void ScheduleItemEditorDialog::handleAddItemDate_DateChanged()
@@ -184,13 +176,8 @@ void ScheduleItemEditorDialog::initEditFields()
     }
 
     QDateTime startTime = initValidDateTime(m_ScheduleItemData->getStartTime());
-    if (seid_AddItemDate)
-    {
-        seid_AddItemDate->setDate(startTime.date());
-    }
+    seid_AddItemDate->setDate(startTime.toLocalTime().date());
 
-    sied_scheduleItemStartTimeDTEdit->setDateTime(startTime);
-    sied_scheduleItemEndTimeDTEdit->setDateTime(initValidDateTime(m_ScheduleItemData->getEndTime()));
     sied_scheduleItemTitleTE->setText(m_ScheduleItemData->getTitle());
     sied_locationTE->setText(m_ScheduleItemData->getLocation());
     sied_scheduleItemIsPersonalCB->setChecked(m_ScheduleItemData->getPersonal());

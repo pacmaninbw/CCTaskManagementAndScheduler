@@ -41,7 +41,7 @@ private:
     void setUpScheduleItemEditorDialogUI();
     QGroupBox* setUpScheduleTimeControls();
     QDialogButtonBox* setUpScheduleItemButtonBox();
-    QDateTimeEdit* createAndInitDateTimeEdit(const char* objName);
+    QDateTimeEdit* createAndInitDateTimeEdit(const char* objName, QDateTime initValue);
     bool addToDatabase();
     bool udpateDatabase();
     void transferFieldsToDataModel();
