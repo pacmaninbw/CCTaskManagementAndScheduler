@@ -45,6 +45,7 @@ TestNoteModel::TestNoteModel()
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetNotesForUserEditedDateRange, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetDashboardNoteTable, this));
 
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::negativePathMissingRequiredFields, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testnegativePathNotModified, this));
@@ -191,6 +192,33 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserEditedDateRange()
     if (programOptions.verboseOutput)
     {
         std::cout << std::format("Find all notes for user ({}) edited in date range PASSED!\n", 1);
+        std::cout << std::format("User {} has {} notes\n", 1, allNotesInRange.size());
+        for (auto note: allNotesInRange)
+        {
+            std::cout << *note << "\n";
+        }
+    }
+    
+    return TESTPASSED;
+}
+
+TestStatus TestNoteModel::testPositivePathGetDashboardNoteTable()
+{
+    std::chrono::year_month_day searchDate = commonTestDateValue;
+
+    NoteList NoteListTestInterface;
+    NoteListValues allNotesInRange = NoteListTestInterface.getDashboardNoteTable(1, searchDate);
+
+    if (allNotesInRange.empty())
+    {
+        std::cerr << "test of NoteListTestInterface.getDashboardNoteTable() FAILED\n" <<
+            NoteListTestInterface.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("Find all notes for user ({}) for a date PASSED!\n", 1);
         std::cout << std::format("User {} has {} notes\n", 1, allNotesInRange.size());
         for (auto note: allNotesInRange)
         {
