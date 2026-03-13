@@ -44,6 +44,7 @@ public:
         std::chrono::year_month_day endDay) noexcept;
     std::string formatSelectByUserIdAndUpdateDateRange(std::size_t userId, std::chrono::year_month_day startDay,
         std::chrono::year_month_day endDay) noexcept;
+    std::string formatGetNotesFromUserForDate(std::size_t userId, std::chrono::year_month_day searchDate) noexcept;
 
 /*
  * Required fields.

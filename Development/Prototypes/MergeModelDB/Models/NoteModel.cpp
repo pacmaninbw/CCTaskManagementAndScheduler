@@ -240,3 +240,31 @@ std::string NoteModel::formatSelectByUserIdAndUpdateDateRange(
 
     return std::string();
 }
+
+std::string NoteModel::formatGetNotesFromUserForDate(std::size_t userId, std::chrono::year_month_day searchDate) noexcept
+{
+    errorMessages.clear();
+    std::chrono::system_clock::time_point startDay(getLocalMidnight(searchDate));
+    std::chrono::hours mostHoursInDay{23};
+    std::chrono::minutes minutesInLastHour{59};
+    std::chrono::system_clock::duration oneDayOffset = mostHoursInDay + minutesInLastHour;
+    std::chrono::system_clock::time_point endDay(startDay + oneDayOffset);
+
+    try {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, listQueryBase);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
+        boost::mysql::format_sql_to(fctx, " AND NotationDateTime >= {}", stdChronoTimePointToBoostDateTime(startDay));
+        boost::mysql::format_sql_to(fctx, " AND NotationDateTime <= {}", stdChronoTimePointToBoostDateTime(endDay));
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In NoteModel::formatGetNotesFromUserForDate({}) : {}", userId, e.what()));
+    }
+
+    return std::string();
+}
