@@ -23,6 +23,7 @@ public:
         std::chrono::year_month_day startDate, std::chrono::year_month_day endDate) noexcept;
     NoteListValues getAllNotesForUserEditedInDatgeRange(std::size_t userId,
         std::chrono::year_month_day startDate, std::chrono::year_month_day endDate) noexcept;
+    NoteListValues getDashboardNoteTable(std::size_t userId, std::chrono::year_month_day searchDate) noexcept;
 
 private:
     NoteListValues runQueryFillNoteList();
@@ -33,6 +34,7 @@ private:
     TestStatus testExceptionsGetNotesForUserLikeContent() noexcept;
     TestStatus testExceptionsGetNotesForUserCreatedDateRange() noexcept;
     TestStatus testExceptionsGetNotesForUserEditedDateRange() noexcept;
+    TestStatus testExceptionsGetDashboardNoteTable() noexcept;
 };
 
 #endif // NOTELIST_H_

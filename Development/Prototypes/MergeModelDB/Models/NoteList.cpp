@@ -60,7 +60,7 @@ NoteListValues NoteList::getAllNotesForUserCreatedInDatgeRange(
     std::size_t userId, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate) noexcept
 {
     errorMessages.clear();
-    appendErrorMessage("In NoteList::getNotesForUserSimlarToContent : ");
+    appendErrorMessage("In NoteList::getAllNotesForUserCreatedInDatgeRange : ");
 
     try
     {
@@ -80,11 +80,30 @@ NoteListValues NoteList::getAllNotesForUserEditedInDatgeRange(
     std::size_t userId, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate) noexcept
 {
     errorMessages.clear();
-    appendErrorMessage("In NoteList::getNotesForUserSimlarToContent : ");
+    appendErrorMessage("In NoteList::getAllNotesForUserEditedInDatgeRange : ");
 
     try
     {
         firstFormattedQuery = queryGenerator->formatSelectByUserIdAndUpdateDateRange(userId, startDate, endDate);
+        return runQueryFillNoteList();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(e.what());
+    }
+    
+    return NoteListValues();
+}
+
+NoteListValues NoteList::getDashboardNoteTable(std::size_t userId, std::chrono::year_month_day searchDate) noexcept
+{
+    errorMessages.clear();
+    appendErrorMessage("In NoteList::getDashboardNoteTable : ");
+
+    try
+    {
+        firstFormattedQuery = queryGenerator->formatGetNotesFromUserForDate(userId, searchDate);
         return runQueryFillNoteList();
     }
 
@@ -134,6 +153,7 @@ std::vector<ListExceptionTestElement> NoteList::initListExceptionTests() noexcep
     exceptionTests.push_back({std::bind(&NoteList::testExceptionsGetNotesForUserLikeContent, this), "getNotesForUserSimlarToContent"});
     exceptionTests.push_back({std::bind(&NoteList::testExceptionsGetNotesForUserCreatedDateRange, this), "getAllNotesForUserCreatedInDatgeRange"});
     exceptionTests.push_back({std::bind(&NoteList::testExceptionsGetNotesForUserEditedDateRange, this), "getAllNotesForUserEditedInDatgeRange"});
+    exceptionTests.push_back({std::bind(&NoteList::testExceptionsGetDashboardNoteTable, this), "testExceptionsGetDashboardNoteTable"});
 
     return exceptionTests;
 }
@@ -182,4 +202,16 @@ TestStatus NoteList::testExceptionsGetNotesForUserEditedDateRange() noexcept
     return testListExceptionAndSuccessNArgs("NoteList::testExceptionsGetNotesForUserEditedDateRange()",
         std::bind(&NoteList::getAllNotesForUserEditedInDatgeRange, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), 
         testUserId, startDate, endDate);
+}
+
+TestStatus NoteList::testExceptionsGetDashboardNoteTable() noexcept
+{
+    selfTestResetAllValues();
+
+    std::size_t testUserId = 1;
+    std::chrono::year_month_day searchDate = commonTestDateValue;
+
+    return testListExceptionAndSuccessNArgs("NoteList::testExceptionsGetDashboardNoteTable()",
+        std::bind(&NoteList::getDashboardNoteTable, this, std::placeholders::_1, std::placeholders::_2), 
+        testUserId, searchDate);
 }
