@@ -23,6 +23,8 @@ set(PROJECT_SOURCES
         UserDashboard.cpp
         UserDashboard.h
         UserDashboard.ui
+        PlannerInitializer.h
+        PlannerInitializer.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -68,12 +70,20 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         GuiModels/stdChronoToQTConversions.h
         GuiModels/GuiDashboardScheduleTable.h
         GuiModels/GuiDashboardScheduleTable.cpp
+        GuiModels/GuiTaskTableBase.h
+        GuiModels/GuiTaskTableBase.cpp
+        GuiModels/SelectParentTaskTable.h
+        GuiModels/SelectParentTaskTable.cpp
+        GuiModels/DashboardNoteTable.h
+        GuiModels/DashboardNoteTable.cpp
         AppWidgets/commonQTWidgetsForApp.cpp
         AppWidgets/commonQTWidgetsForApp.h
         AppWidgets/ScheduleTablerViewer.h
         AppWidgets/ScheduleTablerViewer.cpp
         AppWidgets/DashboardTaskViewer.h
         AppWidgets/DashboardTaskViewer.cpp
+        AppWidgets/DashboardNotesViewer.h
+        AppWidgets/DashboardNotesViewer.cpp
         BusinessLogic/TestDBConnection.cpp
         BusinessLogic/TestDBConnection.h
         ../MergeModelDB/CommandLineParser.h
@@ -104,9 +114,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ../MergeModelDB/Models/UserModel.h
         ../MergeModelDB/common/commonTestValues.cpp
         ../MergeModelDB/common/commonUtilities.cpp
-        GuiModels/GuiTaskTableBase.h GuiModels/GuiTaskTableBase.cpp
-        PlannerInitializer.h PlannerInitializer.cpp
-        GuiModels/SelectParentTaskTable.h GuiModels/SelectParentTaskTable.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET PP3Rework APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
