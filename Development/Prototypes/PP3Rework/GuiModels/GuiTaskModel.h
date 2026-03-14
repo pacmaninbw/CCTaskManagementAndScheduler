@@ -77,7 +77,7 @@ public:
     void debugShow();
 
 
-signals:
+Q_SIGNALS:
     void dbTaskIdChanged();
     void creatorIdChanged();
     void assigneeIdChanged();

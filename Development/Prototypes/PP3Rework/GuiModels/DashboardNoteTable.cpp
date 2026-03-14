@@ -99,7 +99,7 @@ bool DashboardNoteTable::setHeaderData(int section, Qt::Orientation orientation,
 {
     if (value != headerData(section, orientation, role)) {
         // FIXME: Implement me!
-        emit headerDataChanged(orientation, section, section);
+        Q_EMIT headerDataChanged(orientation, section, section);
         return true;
     }
     return false;
@@ -150,7 +150,7 @@ bool DashboardNoteTable::setData(const QModelIndex &index, const QVariant &value
 {
     if (data(index, role) != value) {
         // FIXME: Implement me!
-        emit dataChanged(index, index, {role});
+        Q_EMIT dataChanged(index, index, {role});
         return true;
     }
     return false;

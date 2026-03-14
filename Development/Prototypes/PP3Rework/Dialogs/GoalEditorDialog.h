@@ -26,12 +26,6 @@ public:
     explicit GoalEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, GuiGoalModel* goalToEdit=nullptr);
     ~GoalEditorDialog();
 
-public slots:
-
-signals:
-
-private slots:
-
 private:
     void setUpGoalEditorDialogUI();
     QFormLayout* setUpGoalEditorDialogGroupBoxContents();

@@ -41,7 +41,7 @@ void GuiGoalModel::setUserId(std::size_t userId)
     if (m_UserId != userId)
     {
         m_UserId = userId;
-        emit userIdChanged();
+        Q_EMIT userIdChanged();
     }
 }
 
@@ -50,7 +50,7 @@ void GuiGoalModel::setDescription(QString description)
     if (m_Description != description)
     {
         m_Description = description;
-        emit descriptionChanged();
+        Q_EMIT descriptionChanged();
     }
 }
 
@@ -59,7 +59,7 @@ void GuiGoalModel::setPriority(QString priority)
     if (m_Priority != priority)
     {
         m_Priority = priority;
-        emit priorityChanged();
+        Q_EMIT priorityChanged();
     }
 }
 
@@ -68,6 +68,6 @@ void GuiGoalModel::setParentID(std::size_t parentID)
     if (m_ParentId != parentID)
     {
         m_ParentId = parentID;
-        emit parentIdChanged();
+        Q_EMIT parentIdChanged();
     }
 }

@@ -34,12 +34,10 @@ public:
     ~TaskEditorDialog();
     void setTaskDataAndInitDisplayFields(GuiTaskModel* taskToEdit);
 
-public slots:
+public Q_SLOTS:
     void accept() override;
 
-signals:
-
-private slots:
+private Q_SLOTS:
     void on_editTaskPersonalCB_stateChanged(int newState);
     void on_editTaskSelectParentPB_Clicked();
     void on_editTaskAddDependenciesPB_Clicked();

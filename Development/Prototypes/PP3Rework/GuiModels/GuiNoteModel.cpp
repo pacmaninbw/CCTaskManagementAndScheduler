@@ -33,7 +33,7 @@ void GuiNoteModel::setContent(QString newContent)
     {
         m_Content = newContent;
         m_FieldsChangedValue = true;
-        emit contentChanged();
+        Q_EMIT contentChanged();
     }
 }
 
@@ -43,7 +43,7 @@ void GuiNoteModel::setUserId(std::size_t userId)
     {
         m_UserId = userId;
         m_FieldsChangedValue = true;
-        emit userIdChanged();
+        Q_EMIT userIdChanged();
     }
 }
 

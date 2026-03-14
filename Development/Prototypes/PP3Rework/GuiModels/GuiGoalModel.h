@@ -32,7 +32,7 @@ public:
     void setPriority(QString priority);
     void setParentID(std::size_t parentID);
 
-signals:
+Q_SIGNALS:
     void userIdChanged();
     void descriptionChanged();
     void priorityChanged();

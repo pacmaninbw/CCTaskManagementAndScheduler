@@ -24,7 +24,6 @@ public:
     void setUserIdAndDate(GuiUserModel* userDataPtr, QDate searchDate);
     void updateNoteTable();
 
-signals:
 
 private:
     void createTable();

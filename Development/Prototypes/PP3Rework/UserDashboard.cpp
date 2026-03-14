@@ -231,7 +231,7 @@ bool UserDashboard::userIsLoggedIn()
 
     if (m_UserDataPtr == nullptr)
     {
-        emit handleUserLoginAction();
+        Q_EMIT handleUserLoginAction();
         return false;
     }
 
@@ -242,7 +242,7 @@ bool UserDashboard::dbIsConnected()
 {
     if (programOptions.mySqlDBName.empty() || programOptions.mySqlPassword.empty())
     {
-        emit handleDatabaseConnectionAction();
+        Q_EMIT handleDatabaseConnectionAction();
         return false;
     }
     return true;
@@ -503,7 +503,7 @@ void UserDashboard::handleUserLoginAction()
 {
     if (!dbIsConnected())
     {
-        emit handleDatabaseConnectionAction();
+        Q_EMIT handleDatabaseConnectionAction();
     }
 
     LoginDialog userLogin(this);

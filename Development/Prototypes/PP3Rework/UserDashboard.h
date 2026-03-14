@@ -39,11 +39,9 @@ public:
     UserDashboard(std::shared_ptr<UserModel> loggedInUser, QWidget *parent = nullptr);
     ~UserDashboard();
 
-public slots:
+Q_SIGNALS:
 
-signals:
-
-private slots:
+private Q_SLOTS:
     void handleAddTaskAction();
     void handleEditTaskAction();
     void handleTaskTableClicked(const QModelIndex &index);

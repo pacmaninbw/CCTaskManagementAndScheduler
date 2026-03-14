@@ -27,12 +27,8 @@ public:
     explicit UserEditorDialog(QWidget *parent = nullptr, GuiUserModel* userData=nullptr);
     ~UserEditorDialog();
 
-public slots:
+public Q_SLOTS:
     void accept() override;
-
-signals:
-
-private slots:
 
 private:
     void setUpUserEditorDialogUi();

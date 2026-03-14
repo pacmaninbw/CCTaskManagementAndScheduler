@@ -33,7 +33,7 @@ public:
     std::shared_ptr<GuiTaskModel> getParentTaskID();
     void setupDialogUI();
 
-private slots:
+private Q_SLOTS:
     void handleParentTaskTableClicked(const QModelIndex &index);
 
 private:

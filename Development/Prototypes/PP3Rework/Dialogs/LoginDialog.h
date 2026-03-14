@@ -25,11 +25,7 @@ public:
     ~LoginDialog();
     GuiUserModel* GetUserData() { return m_UserDataPtr; };
 
-public slots:
-
-signals:
-
-private slots:
+private Q_SLOTS:
     void onactionLoginAsUserPBClicked();
 
 private:

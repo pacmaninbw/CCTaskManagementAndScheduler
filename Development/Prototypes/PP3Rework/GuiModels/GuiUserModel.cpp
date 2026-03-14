@@ -42,7 +42,7 @@ void GuiUserModel::setLoginName(QString val)
     {
         m_LoginName = val;
         m_FieldsChangedValue = true;
-        emit loginNameChanged();
+        Q_EMIT loginNameChanged();
     }
 }
 
@@ -52,7 +52,7 @@ void GuiUserModel::setPassword(QString val)
     {
         m_Password = val;
         m_FieldsChangedValue = true;
-        emit passwordChanged();
+        Q_EMIT passwordChanged();
     }
 }
 
@@ -62,7 +62,7 @@ void GuiUserModel::setEmail(QString val)
     {
         m_Email = val;
         m_FieldsChangedValue = true;
-        emit emailChanged();
+        Q_EMIT emailChanged();
     }
 }
 
@@ -72,7 +72,7 @@ void GuiUserModel::setLastName(QString val)
     {
         m_LastName = val;
         m_FieldsChangedValue = true;
-        emit lastNameChanged();
+        Q_EMIT lastNameChanged();
     }
 }
 
@@ -82,7 +82,7 @@ void GuiUserModel::setFirstName(QString val)
     {
         m_FirstName = val;
         m_FieldsChangedValue = true;
-        emit firstNameChanged();
+        Q_EMIT firstNameChanged();
     }
 }
 
@@ -92,7 +92,7 @@ void GuiUserModel::setMiddleInitial(QString val)
     {
         m_MiddleInitial = val;
         m_FieldsChangedValue = true;
-        emit middleInitialChanged();
+        Q_EMIT middleInitialChanged();
     }
 }
 
@@ -101,7 +101,7 @@ void GuiUserModel::setAutoGenerateLoginData(bool val)
     if (m_AutoGenerateLoginAndPassword != val)
     {
         m_AutoGenerateLoginAndPassword = val;
-        emit autoGenerateLoginDataChanged();
+        Q_EMIT autoGenerateLoginDataChanged();
     }
 }
 

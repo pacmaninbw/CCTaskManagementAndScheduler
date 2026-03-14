@@ -24,10 +24,6 @@ public:
     void setUserIdAndDate(GuiUserModel* userDataPtr, QDate dashboardDate);
     void update();
 
-signals:
-
-private slots:
-
 private:
     GuiUserModel* m_UserDataPtr;
     QDate m_DashboardDate;

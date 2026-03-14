@@ -128,7 +128,7 @@ bool GuiDashboardScheduleTable::setData(const QModelIndex &index, const QVariant
 {
     if (data(index, role) != value) {
         // FIXME: Implement me!
-        emit dataChanged(index, index, {role});
+        Q_EMIT dataChanged(index, index, {role});
         return true;
     }
 

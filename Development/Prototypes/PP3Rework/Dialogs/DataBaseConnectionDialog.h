@@ -24,11 +24,9 @@ public:
     explicit DataBaseConnectionDialog(QWidget *parent = nullptr);
     ~DataBaseConnectionDialog();
 
-public slots:
+Q_SIGNALS:
 
-signals:
-
-private slots:
+private Q_SLOTS:
     void on_dbConnectionsButtonBox_accepted();
 
 private:

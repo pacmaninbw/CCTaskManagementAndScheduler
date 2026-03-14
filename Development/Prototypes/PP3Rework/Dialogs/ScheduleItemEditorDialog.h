@@ -29,12 +29,10 @@ public:
     explicit ScheduleItemEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, GuiScheduleItemModel* scheduleItemToEdit=nullptr);
     ~ScheduleItemEditorDialog();
 
-public slots:
+public Q_SLOTS:
     void accept() override;
 
-signals:
-
-private slots:
+private Q_SLOTS:
     void handleAddItemDate_DateChanged();
 
 private:

@@ -1,8 +1,10 @@
 #ifndef NOTEEDITORDIALOG_H
 #define NOTEEDITORDIALOG_H
 
+class GuiNoteModel;
+class NoteModel;
+
 // Project Header Files
-#include "GuiNoteModel.h"
 
 // QT Header Files
 #include <QVariant>
@@ -25,12 +27,8 @@ public:
     explicit NoteEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, GuiNoteModel* noteToEdit=nullptr);
     ~NoteEditorDialog();
 
-public slots:
+public Q_SLOTS:
     void accept() override;
-
-signals:
-
-private slots:
 
 private:
     void setUpNoteEditorUI();

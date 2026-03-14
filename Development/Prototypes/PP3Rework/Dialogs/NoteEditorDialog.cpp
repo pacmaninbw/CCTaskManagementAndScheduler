@@ -1,5 +1,7 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
+#include "GuiNoteModel.h"
+#include "NoteModel.h"
 #include "NoteEditorDialog.h"
 
 // QT Header Files

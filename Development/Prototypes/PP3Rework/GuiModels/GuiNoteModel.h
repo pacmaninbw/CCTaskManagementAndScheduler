@@ -26,7 +26,7 @@ public:
     bool updateNote();
     QString getErrorMessages() const { return m_DbErrorMessages; };
 
-signals:
+Q_SIGNALS:
     void contentChanged();
     void userIdChanged();
 

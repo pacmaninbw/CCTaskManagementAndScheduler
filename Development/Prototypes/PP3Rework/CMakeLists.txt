@@ -133,6 +133,8 @@ else()
     endif()
 endif()
 
+target_compile_definitions(PP3Rework PRIVATE QT_NO_KEYWORDS)
+
 target_include_directories(PP3Rework PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common>
@@ -142,6 +144,7 @@ target_include_directories(PP3Rework PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/AppWidgets>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/BusinessLogic>
 )
+
 target_compile_options(PP3Rework PRIVATE -Wall -Wextra -pedantic -Werror)
 
 target_compile_features(PP3Rework PRIVATE cxx_std_23)

@@ -43,7 +43,7 @@ public:
     bool updateInDatabase();
     QString getErrorMessages() const { return m_DbErrorMessages; };
 
-signals:
+Q_SIGNALS:
     void userIdChanged();
     void titleChanged();
     void startTimeChanged();

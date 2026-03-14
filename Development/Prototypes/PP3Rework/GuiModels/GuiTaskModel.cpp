@@ -66,7 +66,7 @@ void GuiTaskModel::setDbTaskId(std::size_t v)
     {
         m_DbTaskId = v;
         m_FieldsChangedValue = true;
-        emit dbTaskIdChanged();
+        Q_EMIT dbTaskIdChanged();
     }
 }
 
@@ -76,7 +76,7 @@ void GuiTaskModel::setCreatorUserId(std::size_t v)
     {
         m_CreatorUserId = v;
         m_FieldsChangedValue = true;
-        emit creatorIdChanged();
+        Q_EMIT creatorIdChanged();
     }
 }
 
@@ -86,7 +86,7 @@ void GuiTaskModel::setAssigneeUserId(std::size_t v)
     {
         m_AssigneeUserId = v;
         m_FieldsChangedValue = true;
-        emit assigneeIdChanged();
+        Q_EMIT assigneeIdChanged();
     }
 }
 
@@ -96,7 +96,7 @@ void GuiTaskModel::setPriorityGroup(QString v)
     {
         m_PriorityGroup = v;
         m_FieldsChangedValue = true;
-        emit priorityGroupChanged();
+        Q_EMIT priorityGroupChanged();
     }
 }
 
@@ -106,7 +106,7 @@ void GuiTaskModel::setPriority(QString v)
     {
         m_Priority = v;
         m_FieldsChangedValue = true;
-        emit priorityChanged();
+        Q_EMIT priorityChanged();
     }
 }
 
@@ -116,7 +116,7 @@ void GuiTaskModel::setDescription(QString v)
     {
         m_Description = v;
         m_FieldsChangedValue = true;
-        emit descriptionChanged();
+        Q_EMIT descriptionChanged();
     }
 }
 
@@ -126,7 +126,7 @@ void GuiTaskModel::setStatus(GUITaskStatus v)
     {
         m_status = v;
         m_FieldsChangedValue = true;
-        emit statusChanged();
+        Q_EMIT statusChanged();
     }
 }
 
@@ -136,7 +136,7 @@ void GuiTaskModel::setParentTaskId(std::size_t v)
     {
         m_ParentTaskId = v;
         m_FieldsChangedValue = true;
-        emit parentTaskIdChanged();
+        Q_EMIT parentTaskIdChanged();
     }
 }
 
@@ -146,7 +146,7 @@ void GuiTaskModel::setDueDate(QDate v)
     {
         m_DueDate = v;
         m_FieldsChangedValue = true;
-        emit dueDateChanged();
+        Q_EMIT dueDateChanged();
     }
 }
 
@@ -156,7 +156,7 @@ void GuiTaskModel::setScheduledStart(QDate v)
     {
         m_ScheduledStart = v;
         m_FieldsChangedValue = true;
-        emit scheduledStartChanged();
+        Q_EMIT scheduledStartChanged();
     }
 }
 
@@ -166,7 +166,7 @@ void GuiTaskModel::setActualStart(QDate v)
     {
         m_ActualStartDate = v;
         m_FieldsChangedValue = true;
-        emit actualStartChanged();
+        Q_EMIT actualStartChanged();
     }
 }
 
@@ -176,7 +176,7 @@ void GuiTaskModel::setEstimatedCompletion(QDate v)
     {
         m_EstimatedCompletion = v;
         m_FieldsChangedValue = true;
-        emit estimatedCompletionChanged();
+        Q_EMIT estimatedCompletionChanged();
     }
 }
 
@@ -186,7 +186,7 @@ void GuiTaskModel::setCompletionDate(QDate v)
     {
         m_CompletionDate = v;
         m_FieldsChangedValue = true;
-        emit completionDateChanged();
+        Q_EMIT completionDateChanged();
     }
 }
 
@@ -196,7 +196,7 @@ void GuiTaskModel::setEstimatedEffort(QString v)
     {
         m_EstimatedEffort = v;
         m_FieldsChangedValue = true;
-        emit estimatedEffortChanged();
+        Q_EMIT estimatedEffortChanged();
     }
 }
 
@@ -206,7 +206,7 @@ void GuiTaskModel::setActualEffortToDate(QString v)
     {
         m_ActualEffortToDate = v;
         m_FieldsChangedValue = true;
-        emit actualEffortToDateChanged();
+        Q_EMIT actualEffortToDateChanged();
     }
 }
 
@@ -216,7 +216,7 @@ void GuiTaskModel::setPersonal(bool v)
     {
         m_Personal = v;
         m_FieldsChangedValue = true;
-        emit personalChanged();
+        Q_EMIT personalChanged();
     }
 }
 

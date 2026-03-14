@@ -23,10 +23,6 @@ public:
     void setUserIdAndDate(GuiUserModel* userDataPtr, QDate scheduleToShow);
     void updateSchedule();
 
-signals:
-
-private slots:
-
 private:
     GuiUserModel* m_DBUserId;
     QDate m_DateOfSchedule;

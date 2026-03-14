@@ -46,7 +46,7 @@ public:
     bool attemptAddUser();
     bool attemptUpdateUser();
 
-signals:
+Q_SIGNALS:
     void loginNameChanged();
     void passwordChanged();
     void emailChanged();

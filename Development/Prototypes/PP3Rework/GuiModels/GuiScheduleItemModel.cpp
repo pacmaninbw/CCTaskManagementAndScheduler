@@ -45,7 +45,7 @@ void GuiScheduleItemModel::setUserID(std::size_t inValue)
     if (m_UserID != inValue)
     {
         m_UserID = inValue;
-        emit userIdChanged();
+        Q_EMIT userIdChanged();
     }
 }
 
@@ -54,7 +54,7 @@ void GuiScheduleItemModel::setTitle(QString inValue)
     if (m_Title != inValue)
     {
         m_Title = inValue;
-        emit titleChanged();
+        Q_EMIT titleChanged();
     }
 }
 
@@ -63,7 +63,7 @@ void GuiScheduleItemModel::setStartTime(QDateTime inValue)
     if (m_StartTime != inValue)
     {
         m_StartTime = inValue;
-        emit startTimeChanged();
+        Q_EMIT startTimeChanged();
     }
 }
 
@@ -72,7 +72,7 @@ void GuiScheduleItemModel::setEndTime(QDateTime inValue)
     if (m_EndTime != inValue)
     {
         m_EndTime = inValue;
-        emit endTimeChanged();
+        Q_EMIT endTimeChanged();
     }
 }
 
@@ -81,7 +81,7 @@ void GuiScheduleItemModel::setPersonal(bool inValue)
     if (m_Personal != inValue)
     {
         m_Personal = inValue;
-        emit personalChanged();
+        Q_EMIT personalChanged();
     }
 }
 
@@ -90,7 +90,7 @@ void GuiScheduleItemModel::setLocation(QString inValue)
     if (m_Location != inValue)
     {
         m_Location = inValue;
-        emit locationChanged();
+        Q_EMIT locationChanged();
     }
 }
 
