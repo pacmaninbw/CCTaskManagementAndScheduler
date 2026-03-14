@@ -18,6 +18,8 @@ public:
     explicit GuiNoteModel(QObject *parent = nullptr);
     explicit GuiNoteModel(std::shared_ptr<NoteModel> dbNoteDataptr,QObject *parent = nullptr);
     QString getContent() const { return m_Content; };
+    QString getDateAdded() const { return m_CreationDateTS; };
+    QString getLastUpdate() const { return m_LastUpdateTS; };
     void setContent(QString newContent);
     void setUserId(std::size_t userId);
     bool addNote();

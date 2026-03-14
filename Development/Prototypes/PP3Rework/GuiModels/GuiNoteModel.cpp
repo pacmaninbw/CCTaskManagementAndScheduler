@@ -20,10 +20,10 @@ GuiNoteModel::GuiNoteModel(std::shared_ptr<NoteModel> dbNoteDataptr, QObject *pa
     m_Content = QString::fromStdString(dbNoteDataptr->getContent());
 
     QDateTime tempqdt = chronoTimePointToQDateTime(dbNoteDataptr->getDateAdded());
-    m_CreationDateTS = tempqdt.toString(Qt::ISODate);
+    m_CreationDateTS = tempqdt.toString("yyyy-MM-dd hh:mm");
 
     tempqdt = chronoTimePointToQDateTime(dbNoteDataptr->getLastModified());
-    m_LastUpdateTS = tempqdt.toString(Qt::ISODate);
+    m_LastUpdateTS = tempqdt.toString("yyyy-MM-dd hh:mm");
 
 }
 
