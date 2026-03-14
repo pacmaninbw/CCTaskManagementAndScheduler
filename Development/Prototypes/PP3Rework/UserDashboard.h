@@ -8,6 +8,7 @@ class GuiGoalModel;
 class GuiScheduleItemModel;
 class DashboardTaskViewer;
 class ScheduleTablerViewer;
+class DashboardNotesViewer;
 
 // Project Header Files
 
@@ -49,6 +50,7 @@ private slots:
     void handleAddUserAction();
     void handleEditUserAction();
     void handleAddNoteAction();
+    void handleNoteTableClicked(const QModelIndex &index);
     void handleUserLoginAction();
     void handleEditNoteAction();
     void handleAddGoalAction();
@@ -75,11 +77,10 @@ private:
     QGroupBox* setUpPerDayTaskGB();
     QGroupBox* setUpPerDayScheduleGB();
     QGroupBox* setUpPerDayNotesGB();
-    void fakeFillGroupBoxLayout(std::string fieldPartialName, QVBoxLayout* layoutToFill);
     void fillUserIdBoxData();
     DashboardTaskViewer* updateTaskList();
     ScheduleTablerViewer* updateSchedule();
-    QGroupBox* listNotes();
+    DashboardNotesViewer* updateNotes();
 
     QString m_ProgNameStr;
     GuiUserModel* m_UserDataPtr;
@@ -120,6 +121,7 @@ private:
     QDateEdit* udDateSelectorDE;
     DashboardTaskViewer* udTaskTableView;
     ScheduleTablerViewer* udScheduleTableView;
+    DashboardNotesViewer* udNotesTableView;
 
 /*
  * Size and positioning constants.

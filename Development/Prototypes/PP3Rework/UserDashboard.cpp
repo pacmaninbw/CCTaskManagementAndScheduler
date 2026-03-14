@@ -1,6 +1,7 @@
 // Project Header
 #include "CommandLineParser.h"
 #include "commonQTWidgetsForApp.h"  // cqtfa_ functions
+#include "DashboardNotesViewer.h"
 #include "DashboardTaskViewer.h"
 #include "DataBaseConnectionDialog.h"
 #include "GoalEditorDialog.h"
@@ -35,7 +36,8 @@ UserDashboard::UserDashboard(QWidget *parent)
     m_ScheduleItemToEdit{nullptr},
     m_DashboardDate{QDate::currentDate()},
     udTaskTableView{nullptr},
-    udScheduleTableView{nullptr}
+    udScheduleTableView{nullptr},
+    udNotesTableView{nullptr}
 {
     m_ProgNameStr = QString::fromStdString(programOptions.progName);
 
@@ -61,6 +63,12 @@ UserDashboard::UserDashboard(std::shared_ptr<UserModel> loggedInUser, QWidget *p
         {
             udScheduleTableView->setUserId(m_UserDataPtr);
             updateSchedule();
+        }
+
+        if (udNotesTableView)
+        {
+            udNotesTableView->setUserIdAndDate(m_UserDataPtr, m_DashboardDate);
+            updateNotes();
         }
     }
 }
@@ -312,25 +320,13 @@ QGroupBox *UserDashboard::setUpPerDayNotesGB()
     udNotesGB = new QGroupBox("Notes:");
     QVBoxLayout* notesGBLayOut = new QVBoxLayout;
 
-    fakeFillGroupBoxLayout("Note", notesGBLayOut);
+    notesGBLayOut->addWidget(updateNotes());
 
     udNotesGB->setLayout(notesGBLayOut);
 
     udNotesGB->setAlignment(Qt::AlignCenter);
 
     return udNotesGB;
-}
-
-void UserDashboard::fakeFillGroupBoxLayout(std::string fieldPartialName, QVBoxLayout *layoutToFill)
-{
-    for (int i = 0; i < 15; ++i)
-    {
-        std::string listElementObjectName(std::format("tempLineEdit{}{}", fieldPartialName, i));
-        QLineEdit* tempElement = cqtfa_LineEditWithWidthAndLength(listElementObjectName.c_str(), this, perDayLineEditWidth);
-        QString qstr = QString::fromStdString(fieldPartialName);
-        tempElement->setText(qstr);
-        layoutToFill->addWidget(tempElement);
-    }
 }
 
 void UserDashboard::fillUserIdBoxData()
@@ -372,6 +368,22 @@ ScheduleTablerViewer* UserDashboard::updateSchedule()
     udScheduleTableView->updateSchedule();
 
     return udScheduleTableView;
+}
+
+DashboardNotesViewer *UserDashboard::updateNotes()
+{
+    if (!udNotesTableView)
+    {
+        udNotesTableView = new DashboardNotesViewer(m_UserDataPtr, m_DashboardDate, this);
+        udNotesTableView->setObjectName("udNotesTableView");
+        connect(udNotesTableView, &QTableView::clicked, this, &UserDashboard::handleNoteTableClicked);
+        connect(udNotesTableView, &QTableView::doubleClicked, this, &UserDashboard::handleNoteTableClicked);
+    }
+
+    udNotesTableView->setUserIdAndDate(m_UserDataPtr, m_DashboardDate);
+    udNotesTableView->update();
+
+    return udNotesTableView;
 }
 
 void UserDashboard::handleAddTaskAction()
@@ -450,6 +462,7 @@ void UserDashboard::handleEditUserAction()
     fillUserIdBoxData();
     updateTaskList();
     updateSchedule();
+    updateNotes();
 }
 
 void UserDashboard::handleAddNoteAction()
@@ -462,6 +475,28 @@ void UserDashboard::handleAddNoteAction()
     NoteEditorDialog addNoteDialog(this, m_UserDataPtr->getDbUserId());
 
     addNoteDialog.exec();
+
+    updateNotes();
+}
+
+void UserDashboard::handleNoteTableClicked(const QModelIndex &index)
+{
+    if (!userIsLoggedIn())
+    {
+        return;
+    }
+
+    if (!index.isValid())
+    {
+        return;
+    }
+
+    m_NoteToEdit = static_cast<GuiNoteModel*>(index.internalPointer());
+    NoteEditorDialog editNoteDialog(this, m_UserDataPtr->getDbUserId(), m_NoteToEdit);
+
+    editNoteDialog.exec();
+
+    updateNotes();
 }
 
 void UserDashboard::handleUserLoginAction()
@@ -490,6 +525,12 @@ void UserDashboard::handleUserLoginAction()
         udScheduleTableView->setUserId(m_UserDataPtr);
         updateSchedule();
     }
+
+    if (udNotesTableView)
+    {
+        udNotesTableView->setUserId(m_UserDataPtr);
+        updateNotes();
+    }
 }
 
 void UserDashboard::handleEditNoteAction()
@@ -502,6 +543,8 @@ void UserDashboard::handleEditNoteAction()
     NoteEditorDialog editNoteDialog(this,  m_UserDataPtr->getDbUserId(), m_NoteToEdit);
 
     editNoteDialog.exec();
+
+    updateNotes();
 }
 
 void UserDashboard::handleAddGoalAction()
@@ -598,6 +641,12 @@ void UserDashboard::handleDateChanged(const QDate &newDate)
     {
         udScheduleTableView->setDate(newDate);
         updateSchedule();
+    }
+
+    if (udNotesTableView)
+    {
+        udNotesTableView->setDate(newDate);
+        updateNotes();
     }
 
     fillUserIdBoxData();
