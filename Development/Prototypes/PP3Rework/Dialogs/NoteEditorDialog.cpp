@@ -10,11 +10,17 @@
 
 #include "NoteEditorDialog.h"
 
-NoteEditorDialog::NoteEditorDialog(QWidget *parent, std::size_t userId, GuiNoteModel* noteToEdit)    : QDialog(parent),
+NoteEditorDialog::NoteEditorDialog(QWidget *parent, std::size_t userId, GuiNoteModel* noteToEdit)
+    : QDialog(parent),
     m_userID{userId},
     m_NoteData{noteToEdit}
 {
     setUpNoteEditorUI();
+
+    if (noteToEdit)
+    {
+        editNoteContentTE->setPlainText(noteToEdit->getContent());
+    }
 }
 
 NoteEditorDialog::~NoteEditorDialog()
