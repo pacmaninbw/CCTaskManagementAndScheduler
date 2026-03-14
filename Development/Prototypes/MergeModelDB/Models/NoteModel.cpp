@@ -257,6 +257,7 @@ std::string NoteModel::formatGetNotesFromUserForDate(std::size_t userId, std::ch
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
         boost::mysql::format_sql_to(fctx, " AND NotationDateTime >= {}", stdChronoTimePointToBoostDateTime(startDay));
         boost::mysql::format_sql_to(fctx, " AND NotationDateTime <= {}", stdChronoTimePointToBoostDateTime(endDay));
+        boost::mysql::format_sql_to(fctx, " ORDER BY NotationDateTime ASC");
 
         return std::move(fctx).get().value();
     }
