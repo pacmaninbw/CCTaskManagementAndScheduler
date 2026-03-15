@@ -1,7 +1,7 @@
 #ifndef DASHBOARDTASKVIEWER_H
 #define DASHBOARDTASKVIEWER_H
 
-class GuiUserModel;
+class UserModel;
 class GuiDashboardTaskTable;
 
 // Project Header Files
@@ -20,12 +20,12 @@ class DashboardTaskViewer : public QTableView
 public:
     explicit DashboardTaskViewer(QWidget *parent = nullptr);
     void setDate(QDate dashboardDate);
-    void setUserId(GuiUserModel* userDataPtr);
-    void setUserIdAndDate(GuiUserModel* userDataPtr, QDate dashboardDate);
+    void setUserId(UserModel* userDataPtr);
+    void setUserIdAndDate(UserModel* userDataPtr, QDate dashboardDate);
     void update();
 
 private:
-    GuiUserModel* m_UserDataPtr;
+    UserModel* m_UserDataPtr;
     QDate m_DashboardDate;
     GuiDashboardTaskTable* m_TaskTable;
 };

@@ -1,7 +1,7 @@
 // Project Header Files
 #include "DashboardTaskViewer.h"
 #include "GuiDashboardTaskTable.h"
-#include "GuiUserModel.h"
+#include "UserModel.h"
 
 // QT Header Files
 #include <QDate>
@@ -32,7 +32,7 @@ void DashboardTaskViewer::setDate(QDate dashboardDate)
     m_DashboardDate = dashboardDate;
 }
 
-void DashboardTaskViewer::setUserId(GuiUserModel *userDataPtr)
+void DashboardTaskViewer::setUserId(UserModel *userDataPtr)
 {
     m_UserDataPtr = userDataPtr;
     if (m_TaskTable)
@@ -41,7 +41,7 @@ void DashboardTaskViewer::setUserId(GuiUserModel *userDataPtr)
     }
 }
 
-void DashboardTaskViewer::setUserIdAndDate(GuiUserModel *userDataPtr, QDate dashboardDate)
+void DashboardTaskViewer::setUserIdAndDate(UserModel *userDataPtr, QDate dashboardDate)
 {
     m_UserDataPtr = userDataPtr;
     m_DashboardDate = dashboardDate;

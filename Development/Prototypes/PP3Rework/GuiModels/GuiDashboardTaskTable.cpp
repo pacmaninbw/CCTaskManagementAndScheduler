@@ -1,13 +1,13 @@
 // Project Header Files
 #include "GuiDashboardTaskTable.h"
 #include "GuiTaskModel.h"
-#include "GuiUserModel.h"
+#include "UserModel.h"
 
 // QT Header Files
 
 // Standard C++ Header Files
 
-GuiDashboardTaskTable::GuiDashboardTaskTable(GuiUserModel *userDataPtr, QObject *parent)
+GuiDashboardTaskTable::GuiDashboardTaskTable(UserModel *userDataPtr, QObject *parent)
     : GuiTaskTableBase(userDataPtr, parent)
 {
 }

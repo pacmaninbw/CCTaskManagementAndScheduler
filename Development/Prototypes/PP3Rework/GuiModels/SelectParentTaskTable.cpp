@@ -1,14 +1,14 @@
 // Project Header Files
 #include "GuiTaskModel.h"
-#include "GuiUserModel.h"
 #include "SelectParentTaskTable.h"
+#include "UserModel.h"
 
 // QT Header Files
 
 // Standard C++ Header Files
 
 
-SelectParentTaskTable::SelectParentTaskTable(GuiUserModel *userDataPtr, QObject *parent)
+SelectParentTaskTable::SelectParentTaskTable(UserModel *userDataPtr, QObject *parent)
     : GuiTaskTableBase(userDataPtr, parent)
 {}
 

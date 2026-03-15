@@ -1,6 +1,6 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
-#include "GuiUserModel.h"
+#include "UserModel.h"
 #include "LoginDialog.h"
 
 // QT Header Files
@@ -54,6 +54,29 @@ void LoginDialog::setUpLoginDialogUI()
     setWindowTitle("User Login");
 }
 
+bool LoginDialog::attemptLogin()
+{
+    bool loginSuccessful = false;
+    std::string loginName = m_UserDataPtr->getLoginName();
+    std::string password = m_UserDataPtr->getPassword();
+
+    if (loginName.empty() || password.empty())
+    {
+        return loginSuccessful;
+    }
+
+    if (m_UserDataPtr->selectByLoginAndPassword(loginName, password))
+    {
+        m_UserDataPtr->setLastLogin(std::chrono::system_clock::now());
+        if (m_UserDataPtr->update())
+        {
+            loginSuccessful = true;
+        }
+    }
+ 
+    return loginSuccessful;
+}
+
 void LoginDialog::onactionLoginAsUserPBClicked()
 {
     QString loginName = userLoginUserNameLE->text();
@@ -68,19 +91,19 @@ void LoginDialog::onactionLoginAsUserPBClicked()
         QMessageBox::critical(nullptr, "Critical Error", "Missing Password", QMessageBox::Ok);
     }
 
-    m_UserDataPtr = new GuiUserModel;
+    m_UserDataPtr = new UserModel;
 
-    m_UserDataPtr->setLoginName(loginName);
-    m_UserDataPtr->setPassword(userLoginPasswordLE->text());
+    m_UserDataPtr->setLoginName(loginName.toStdString());
+    m_UserDataPtr->setPassword(userLoginPasswordLE->text().toStdString());
 
-    if (m_UserDataPtr->attemptLogin())
+    if (attemptLogin())
     {
         accept();
     }
     else
     {
         QString errorReport = "User login failed.\n";
-        errorReport += m_UserDataPtr->getErrorMessages();
+        errorReport += QString::fromStdString(m_UserDataPtr->getAllErrorMessages());
         QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
         delete m_UserDataPtr;
     }

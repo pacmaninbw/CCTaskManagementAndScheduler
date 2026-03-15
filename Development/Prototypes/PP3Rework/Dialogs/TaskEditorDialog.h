@@ -3,7 +3,7 @@
 
 // Project Header Files
 #include "GuiTaskModel.h"
-#include "GuiUserModel.h"
+#include "UserModel.h"
 
 // QT Header Files
 #include <QVariant>
@@ -30,7 +30,7 @@ class TaskEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit TaskEditorDialog(QWidget* parent = nullptr, GuiUserModel* creator = nullptr);
+    explicit TaskEditorDialog(QWidget* parent = nullptr, UserModel* creator = nullptr);
     ~TaskEditorDialog();
     void setTaskDataAndInitDisplayFields(GuiTaskModel* taskToEdit);
 
@@ -62,15 +62,15 @@ private:
     void transferAllFieldsToData();
     void initEditFields();
     QDate initValidDateField(QDate fieldData);
-    GuiUserModel* getUserDataFromTaskData(std::size_t dbUserId);
+    UserModel* getUserDataFromTaskData(std::size_t dbUserId);
     void initDisplayFields();
     void initEditFieldsFromTaskData();
-    void initUserNameFields(QLineEdit* firstNameEditor, QLineEdit* lastNameEditor, GuiUserModel* user);
+    void initUserNameFields(QLineEdit* firstNameEditor, QLineEdit* lastNameEditor, UserModel* user);
     void connectEditFieldsToActions();
 
-    GuiUserModel* m_Creator;
+    UserModel* m_Creator;
     std::shared_ptr<GuiTaskModel> m_TaskData;
-    GuiUserModel* m_Assignee;
+    UserModel* m_Assignee;
     std::shared_ptr<GuiTaskModel> m_ParentTaskData;
 
     QVBoxLayout* editTaskMainLayout;

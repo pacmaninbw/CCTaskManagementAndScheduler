@@ -1,6 +1,7 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
 #include "UserEditorDialog.h"
+#include "UserModel.h"
 
 // QT Header Files
 #include <QVariant>
@@ -20,14 +21,14 @@
 
 // Standard C++ Header Files
 
-UserEditorDialog::UserEditorDialog(QWidget *parent, GuiUserModel* userData)
+UserEditorDialog::UserEditorDialog(QWidget *parent, UserModel* userData)
     : QDialog(parent),
     m_userID{0},
     m_UserData{nullptr}
 {
-    m_UserData = (userData != nullptr)? userData : new GuiUserModel;
+    m_UserData = (userData != nullptr)? userData : new UserModel;
 
-    m_userID = m_UserData->getDbUserId();
+    m_userID = m_UserData->getUserID();
 
     setUpUserEditorDialogUi();
 
@@ -53,7 +54,7 @@ void UserEditorDialog::accept()
     else
     {
         QString errorReport = "User edit failed.\n";
-        errorReport += m_UserData->getErrorMessages();
+        errorReport += QString::fromStdString(m_UserData->getAllErrorMessages());
         QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
     }
 }
@@ -144,36 +145,40 @@ QDialogButtonBox *UserEditorDialog::setUpEditUserButtonBox()
 
 void UserEditorDialog::initAllFieldsFromData()
 {
-    firstNameLE->setText(m_UserData->getFirstName());
-    lastNameLE->setText(m_UserData->getLastName());
-    middleNameLE->setText(m_UserData->getMiddleInitial());
-    emailLE->setText(m_UserData->getEmail());
-    userNameLE->setText(m_UserData->getLoginName());
-    passwordLE->setText(m_UserData->getPassword());
+    firstNameLE->setText(QString::fromStdString(m_UserData->getFirstName()));
+    lastNameLE->setText(QString::fromStdString(m_UserData->getLastName()));
+    middleNameLE->setText(QString::fromStdString(m_UserData->getMiddleInitial()));
+    emailLE->setText(QString::fromStdString(m_UserData->getEmail()));
+    userNameLE->setText(QString::fromStdString(m_UserData->getLoginName()));
+    passwordLE->setText(QString::fromStdString(m_UserData->getPassword()));
 }
 
 bool UserEditorDialog::addUser()
 {
     transferAllFieldsToData();
-    return m_UserData->attemptAddUser();
+    return m_UserData->insert();
 }
 
 bool UserEditorDialog::upDateUser()
 {
     transferAllFieldsToData();
-    return m_UserData->attemptUpdateUser();
+    return m_UserData->update();
 }
 
 void UserEditorDialog::transferAllFieldsToData()
 {
-    m_UserData->setFirstName(firstNameLE->text());
-    m_UserData->setLastName(lastNameLE->text());
-    m_UserData->setMiddleInitial(middleNameLE->text());
-    m_UserData->setEmail(emailLE->text());
-    m_UserData->setLoginName(userNameLE->text());
-    m_UserData->setPassword(passwordLE->text());
-    if (autoGenerateLoginAndPassword != nullptr)
+    m_UserData->setFirstName(firstNameLE->text().toStdString());
+    m_UserData->setLastName(lastNameLE->text().toStdString());
+    m_UserData->setMiddleInitial(middleNameLE->text().toStdString());
+    m_UserData->setEmail(emailLE->text().toStdString());
+    
+    if (autoGenerateLoginAndPassword->isChecked())
     {
-        m_UserData->setAutoGenerateLoginData(autoGenerateLoginAndPassword->isChecked());
+        m_UserData->autoGenerateLoginAndPassword();
+    }
+    else
+    {
+        m_UserData->setLoginName(userNameLE->text().toStdString());
+        m_UserData->setPassword(passwordLE->text().toStdString());
     }
 }

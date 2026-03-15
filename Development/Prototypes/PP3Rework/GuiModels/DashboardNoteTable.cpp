@@ -1,29 +1,29 @@
 // Project Header Files
-#include "NoteList.h"
 #include "DashboardNoteTable.h"
-#include "GuiNoteModel.h"
-#include "GuiUserModel.h"
+#include "NoteList.h"
+#include "NoteModel.h"
 #include "stdChronoToQTConversions.h"
+#include "UserModel.h"
 
 // QT Header Files
 #include <QAbstractTableModel>
 #include <QDateTime>
-#include <QList>
 #include <QObject>
 #include <QString>
 
 // Standard C++ Header Files
 #include <chrono>
 #include <iostream>
+#include <memory>
+#include <vector>
 
-
-DashboardNoteTable::DashboardNoteTable(GuiUserModel *userDataPtr, QDate searchDate, QObject *parent)
+DashboardNoteTable::DashboardNoteTable(UserModel *userDataPtr, QDate searchDate, QObject *parent)
     : QAbstractTableModel(parent),
     m_UserDataPtr{userDataPtr},
     m_SearchDate{searchDate}
 {}
 
-void DashboardNoteTable::setUserRefillTable(GuiUserModel *userDataPtr)
+void DashboardNoteTable::setUserRefillTable(UserModel *userDataPtr)
 {
     m_UserDataPtr = userDataPtr;
 
@@ -32,20 +32,19 @@ void DashboardNoteTable::setUserRefillTable(GuiUserModel *userDataPtr)
 
 void DashboardNoteTable::fillTable()
 {
-    if (!m_UserDataPtr || m_UserDataPtr->getDbUserId() == 0)
+    if (!m_UserDataPtr || m_UserDataPtr->getUserID() == 0)
     {
         NoteModel_shp noNote = std::make_shared<NoteModel>();
         noNote->setContent("Please log in to see today's notes");
         noNote->setDateAdded(std::chrono::system_clock::now());
         noNote->setLastModified(std::chrono::system_clock::now());
-        GuiNoteModel* gNoNote = new GuiNoteModel(noNote, this->parent());
-        append(gNoNote);
+        append(noNote);
         return;
     }
 
     std::chrono::year_month_day searchDate = qDateToChrono(m_SearchDate);
     NoteList currentUserNoteList;
-    NoteListValues userNotes = currentUserNoteList.getDashboardNoteTable(m_UserDataPtr->getDbUserId(), searchDate);
+    NoteListValues userNotes = currentUserNoteList.getDashboardNoteTable(m_UserDataPtr->getUserID(), searchDate);
 
     if (userNotes.empty())
     {
@@ -53,23 +52,21 @@ void DashboardNoteTable::fillTable()
         noNote->setContent("No notes entered yet");
         noNote->setDateAdded(std::chrono::system_clock::now());
         noNote->setLastModified(std::chrono::system_clock::now());
-        GuiNoteModel* gNoNote = new GuiNoteModel(noNote, this->parent());
-        append(gNoNote);
+        append(noNote);
         return;
     }
 
-    for (const auto& dbNotePtr: userNotes)
+    for (auto dbNotePtr: userNotes)
     {
-        GuiNoteModel* modelData = new GuiNoteModel(dbNotePtr, this);
-        m_data.append(modelData);
+        m_data.push_back(dbNotePtr);
     }
 }
 
-void DashboardNoteTable::append(GuiNoteModel *noteData)
+void DashboardNoteTable::append(std::shared_ptr<NoteModel> noteData)
 {
-    beginInsertRows(QModelIndex(), m_data.count(), m_data.count());
+    beginInsertRows(QModelIndex(), m_data.size(), m_data.size());
 
-    m_data.append(noteData);
+    m_data.push_back(noteData);
 
     endInsertRows();
 
@@ -79,7 +76,6 @@ void DashboardNoteTable::clearData()
 {
     beginResetModel();
 
-    qDeleteAll(m_data.begin(), m_data.end());
     m_data.clear();
 
     endResetModel();
@@ -112,7 +108,7 @@ int DashboardNoteTable::rowCount(const QModelIndex &parent) const
         return 0;
     }
 
-    return m_data.count();
+    return m_data.size();
 }
 
 int DashboardNoteTable::columnCount(const QModelIndex &parent) const
@@ -138,10 +134,13 @@ QVariant DashboardNoteTable::data(const QModelIndex &index, int role) const
         return {};
     }
 
-    const GuiNoteModel* note = m_data[index.row()];
+    std::shared_ptr<NoteModel> note = m_data[index.row()];
     switch (index.column()) {
-        case 0: return note->getDateAdded();
-        case 1: return note->getContent();
+        case 0: {
+            QDateTime tempTime(chronoTimePointToQDateTime(note->getDateAdded()));
+            return tempTime.toLocalTime().toString("yyyy-MM-dd hh:mm");
+        }
+        case 1: return QString::fromStdString(note->getContent());
         default: return {};
     }
 }
@@ -171,7 +170,7 @@ bool DashboardNoteTable::insertRows(int position, int count, const QModelIndex &
 
     for (int row = 0; row < count; ++row)
     {
-        m_data.insert(position, nullptr);
+        m_data.insert(m_data.begin() + position, nullptr);
     }
 
     endInsertRows();
@@ -187,9 +186,9 @@ bool DashboardNoteTable::removeRows(int position, int count, const QModelIndex &
 
     for (int row = 0; row < count; ++row)
     {
-        GuiNoteModel* data = m_data.at(position);
-        delete data;
-        m_data.removeAt(position);
+        NoteModel_shp data = m_data.at(position);
+        data.reset();
+        m_data.erase(m_data.begin() + position);
     }
 
     endRemoveRows();
@@ -204,7 +203,7 @@ QModelIndex DashboardNoteTable::index(int row, int column, const QModelIndex &pa
         return QModelIndex();
     }
 
-    GuiNoteModel* noteModelItem = m_data.at(row);
+    NoteModel* noteModelItem = m_data[row].get();
     if (noteModelItem)
     {
         return createIndex(row, column, noteModelItem);

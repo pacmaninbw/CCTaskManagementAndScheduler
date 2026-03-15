@@ -1,7 +1,7 @@
 #ifndef LOGINDIALOG_H
 #define LOGINDIALOG_H
 
-class GuiUserModel;
+class UserModel;
 
 // Project Header Files
 
@@ -23,15 +23,16 @@ class LoginDialog : public QDialog
 public:
     explicit LoginDialog(QWidget* parent = nullptr);
     ~LoginDialog();
-    GuiUserModel* GetUserData() { return m_UserDataPtr; };
+    UserModel* GetUserData() { return m_UserDataPtr; };
 
 private Q_SLOTS:
     void onactionLoginAsUserPBClicked();
 
 private:
     void setUpLoginDialogUI();
+    bool attemptLogin();
 
-    GuiUserModel* m_UserDataPtr;
+    UserModel* m_UserDataPtr;
 
     QGroupBox* userLoginGB;
     QLineEdit* userLoginUserNameLE;

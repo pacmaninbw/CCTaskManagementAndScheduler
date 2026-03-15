@@ -56,16 +56,16 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Dialogs/UserEditorDialog.cpp
         GuiModels/GuiGoalModel.cpp
         GuiModels/GuiGoalModel.h
-        GuiModels/GuiNoteModel.cpp
-        GuiModels/GuiNoteModel.h
+
+
         GuiModels/GuiScheduleItemModel.cpp
         GuiModels/GuiScheduleItemModel.h
         GuiModels/GuiTaskModel.cpp
         GuiModels/GuiTaskModel.h
         GuiModels/GuiDashboardTaskTable.cpp
         GuiModels/GuiDashboardTaskTable.h
-        GuiModels/GuiUserModel.cpp
-        GuiModels/GuiUserModel.h
+
+
         GuiModels/stdChronoToQTConversions.cpp
         GuiModels/stdChronoToQTConversions.h
         GuiModels/GuiDashboardScheduleTable.h

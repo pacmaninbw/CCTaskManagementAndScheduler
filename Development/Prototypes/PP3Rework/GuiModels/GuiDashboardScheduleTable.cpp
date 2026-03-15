@@ -5,7 +5,7 @@
 // QT Header Files
 #include "GuiDashboardScheduleTable.h"
 #include "GuiScheduleItemModel.h"
-#include "GuiUserModel.h"
+#include "UserModel.h"
 #include <QAbstractTableModel>
 #include <QDate>
 #include <QDateTime>
@@ -30,7 +30,7 @@ GuiDashboardScheduleTable::GuiDashboardScheduleTable(QObject *parent)
     fillSchedule();
 }
 
-GuiDashboardScheduleTable::GuiDashboardScheduleTable(GuiUserModel *userData, QDate dateOfSchedule, QObject *parent)
+GuiDashboardScheduleTable::GuiDashboardScheduleTable(UserModel *userData, QDate dateOfSchedule, QObject *parent)
     : QAbstractTableModel(parent),
     m_UserDataPtr{userData},
     m_DateOfSchedule{dateOfSchedule}
@@ -38,7 +38,7 @@ GuiDashboardScheduleTable::GuiDashboardScheduleTable(GuiUserModel *userData, QDa
     m_ChronDateOfSchedule = qDateToChrono(dateOfSchedule);
 }
 
-void GuiDashboardScheduleTable::setUser(GuiUserModel *userData)
+void GuiDashboardScheduleTable::setUser(UserModel *userData)
 {
     m_UserDataPtr = userData;
 }
@@ -48,7 +48,7 @@ void GuiDashboardScheduleTable::setDate(QDate dateOfSchedule)
     m_DateOfSchedule = dateOfSchedule;
 }
 
-void GuiDashboardScheduleTable::setUserAndDateRefillSchedule(GuiUserModel *userData, QDate dateOfSchedule)
+void GuiDashboardScheduleTable::setUserAndDateRefillSchedule(UserModel *userData, QDate dateOfSchedule)
 {
     m_UserDataPtr = userData;
     m_DateOfSchedule = dateOfSchedule;
@@ -200,7 +200,7 @@ void GuiDashboardScheduleTable::fillSchedule()
 
     if (m_UserDataPtr)
     {
-        ScheduleItemList dbScheduleList(m_UserDataPtr->getDbUserId());
+        ScheduleItemList dbScheduleList(m_UserDataPtr->getUserID());
         m_ScheduledItems = dbScheduleList.getUserDaySchedule(dateOfSchedule);
     }
 
@@ -218,7 +218,7 @@ void GuiDashboardScheduleTable::fillSchedule()
         GuiScheduleItemModel* newEntry = new GuiScheduleItemModel(scheduledItem, this->parent());
         if (m_UserDataPtr)
         {
-            newEntry->setUserID(m_UserDataPtr->getDbUserId());
+            newEntry->setUserID(m_UserDataPtr->getUserID());
         }
         append(newEntry);
     }

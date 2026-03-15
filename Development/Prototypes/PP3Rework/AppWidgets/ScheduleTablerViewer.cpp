@@ -1,6 +1,6 @@
 // Project Header Files
 #include "GuiDashboardScheduleTable.h"
-#include "GuiUserModel.h"
+#include "UserModel.h"
 #include "ScheduleTablerViewer.h"
 
 // QT Header Files
@@ -34,7 +34,7 @@ void ScheduleTablerViewer::setDate(QDate scheduleToShow)
     }
 }
 
-void ScheduleTablerViewer::setUserId(GuiUserModel *userDataPtr)
+void ScheduleTablerViewer::setUserId(UserModel *userDataPtr)
 {
     m_DBUserId = userDataPtr;
     if (m_ScheduleTable)
@@ -43,7 +43,7 @@ void ScheduleTablerViewer::setUserId(GuiUserModel *userDataPtr)
     }
 }
 
-void ScheduleTablerViewer::setUserIdAndDate(GuiUserModel *userDataPtr, QDate scheduleToShow)
+void ScheduleTablerViewer::setUserIdAndDate(UserModel *userDataPtr, QDate scheduleToShow)
 {
     m_DBUserId = userDataPtr;
     m_DateOfSchedule = scheduleToShow;

@@ -1,6 +1,5 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
-#include "GuiNoteModel.h"
 #include "NoteModel.h"
 #include "NoteEditorDialog.h"
 
@@ -12,7 +11,7 @@
 
 #include "NoteEditorDialog.h"
 
-NoteEditorDialog::NoteEditorDialog(QWidget *parent, std::size_t userId, GuiNoteModel* noteToEdit)
+NoteEditorDialog::NoteEditorDialog(QWidget *parent, std::size_t userId, NoteModel* noteToEdit)
     : QDialog(parent),
     m_userID{userId},
     m_NoteData{noteToEdit}
@@ -21,7 +20,7 @@ NoteEditorDialog::NoteEditorDialog(QWidget *parent, std::size_t userId, GuiNoteM
 
     if (noteToEdit)
     {
-        editNoteContentTE->setPlainText(noteToEdit->getContent());
+        editNoteContentTE->setPlainText(QString::fromStdString(noteToEdit->getContent()));
     }
 }
 
@@ -34,15 +33,15 @@ void NoteEditorDialog::accept()
     bool updateSuccessful = true;
     if (!m_NoteData)
     {
-        m_NoteData = new GuiNoteModel;
+        m_NoteData = new NoteModel;
         m_NoteData->setUserId(m_userID);
-        m_NoteData->setContent(editNoteContentTE->toPlainText());
-        updateSuccessful = m_NoteData->addNote();
+        m_NoteData->setContent(editNoteContentTE->toPlainText().toStdString());
+        updateSuccessful = m_NoteData->insert();
     }
     else
     {
-        m_NoteData->setContent(editNoteContentTE->toPlainText());
-        updateSuccessful = m_NoteData->updateNote();
+        m_NoteData->setContent(editNoteContentTE->toPlainText().toStdString());
+        updateSuccessful = m_NoteData->update();
     }
 
     if (updateSuccessful)
@@ -52,7 +51,7 @@ void NoteEditorDialog::accept()
     else
     {
         QString errorReport = "User edit failed.\n";
-        errorReport += m_NoteData->getErrorMessages();
+        errorReport += QString::fromStdString(m_NoteData->getAllErrorMessages());
         QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
     }
 

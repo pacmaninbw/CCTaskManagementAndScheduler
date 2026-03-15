@@ -1,10 +1,12 @@
 #ifndef USEREDITORDIALOG_H
 #define USEREDITORDIALOG_H
 
+class UserModel;
+
 // Project Header Files
 
 // QT Header Files
-#include "GuiUserModel.h"
+#include "UserModel.h"
 #include <QVariant>
 #include <QAbstractButton>
 #include <QApplication>
@@ -24,7 +26,7 @@ class UserEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit UserEditorDialog(QWidget *parent = nullptr, GuiUserModel* userData=nullptr);
+    explicit UserEditorDialog(QWidget *parent = nullptr, UserModel* userData=nullptr);
     ~UserEditorDialog();
 
 public Q_SLOTS:
@@ -42,7 +44,7 @@ private:
 
 // Model related variables
     std::size_t m_userID;
-    GuiUserModel* m_UserData;
+    UserModel* m_UserData;
 
 // QT Widgets
     QDialogButtonBox* editUserButtonBox;

@@ -1,6 +1,6 @@
 // Project Header Files
 #include "DashboardNoteTable.h"
-#include "GuiUserModel.h"
+#include "UserModel.h"
 #include "DashboardNotesViewer.h"
 
 // QT Header Files
@@ -21,7 +21,7 @@ DashboardNotesViewer::DashboardNotesViewer(QWidget *parent)
     createTable();
 }
 
-DashboardNotesViewer::DashboardNotesViewer(GuiUserModel *userDataPtr, QDate searchDate, QWidget *parent)
+DashboardNotesViewer::DashboardNotesViewer(UserModel *userDataPtr, QDate searchDate, QWidget *parent)
     : QTableView{parent},
     m_DBUserId{userDataPtr},
     m_SearchDate{searchDate},
@@ -37,14 +37,14 @@ void DashboardNotesViewer::setDate(QDate searchDate)
     updateNoteTable();
 }
 
-void DashboardNotesViewer::setUserId(GuiUserModel *userDataPtr)
+void DashboardNotesViewer::setUserId(UserModel *userDataPtr)
 {
     m_DBUserId = userDataPtr;
 
     updateNoteTable();
 }
 
-void DashboardNotesViewer::setUserIdAndDate(GuiUserModel *userDataPtr, QDate searchDate)
+void DashboardNotesViewer::setUserIdAndDate(UserModel *userDataPtr, QDate searchDate)
 {
     m_DBUserId = userDataPtr;
     m_SearchDate = searchDate;

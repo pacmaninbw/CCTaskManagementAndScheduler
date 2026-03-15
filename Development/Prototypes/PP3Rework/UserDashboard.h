@@ -1,9 +1,9 @@
 #ifndef USERDASHBOARD_H
 #define USERDASHBOARD_H
 
-class GuiUserModel;
+class UserModel;
 class GuiTaskModel;
-class GuiNoteModel;
+class NoteModel;
 class GuiGoalModel;
 class GuiScheduleItemModel;
 class DashboardTaskViewer;
@@ -81,9 +81,9 @@ private:
     DashboardNotesViewer* updateNotes();
 
     QString m_ProgNameStr;
-    GuiUserModel* m_UserDataPtr;
+    UserModel* m_UserDataPtr;
     GuiTaskModel* m_TaskToEdit;
-    GuiNoteModel* m_NoteToEdit;
+    NoteModel* m_NoteToEdit;
     GuiGoalModel* m_GoalToEdit;
     GuiScheduleItemModel* m_ScheduleItemToEdit;
     QDate m_DashboardDate;

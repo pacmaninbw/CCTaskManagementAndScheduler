@@ -13,6 +13,7 @@
 #include "TaskEditorDialog.h"
 #include "UserDashboard.h"
 #include "UserEditorDialog.h"
+#include "UserModel.h"
 
 // QT Header Files
 #include <QFormLayout>
@@ -49,7 +50,7 @@ UserDashboard::UserDashboard(std::shared_ptr<UserModel> loggedInUser, QWidget *p
 {
     if (loggedInUser)
     {
-        m_UserDataPtr = new GuiUserModel(loggedInUser, this);
+        m_UserDataPtr = loggedInUser.get();
 
         fillUserIdBoxData();
 
@@ -331,10 +332,10 @@ QGroupBox *UserDashboard::setUpPerDayNotesGB()
 
 void UserDashboard::fillUserIdBoxData()
 {
-    udUserFirstNameDisplay->setText(m_UserDataPtr->getFirstName());
-    udUserMiddleInitialDisplay->setText(m_UserDataPtr->getMiddleInitial());
-    udUserLastNameDisplay->setText(m_UserDataPtr->getLastName());
-    udUserNameDisplay->setText(m_UserDataPtr->getLoginName());
+    udUserFirstNameDisplay->setText(QString::fromStdString(m_UserDataPtr->getFirstName()));
+    udUserMiddleInitialDisplay->setText(QString::fromStdString(m_UserDataPtr->getMiddleInitial()));
+    udUserLastNameDisplay->setText(QString::fromStdString(m_UserDataPtr->getLastName()));
+    udUserNameDisplay->setText(QString::fromStdString(m_UserDataPtr->getLoginName()));
 }
 
 DashboardTaskViewer* UserDashboard::updateTaskList()
@@ -472,7 +473,7 @@ void UserDashboard::handleAddNoteAction()
         return;
     }
 
-    NoteEditorDialog addNoteDialog(this, m_UserDataPtr->getDbUserId());
+    NoteEditorDialog addNoteDialog(this, m_UserDataPtr->getUserID());
 
     addNoteDialog.exec();
 
@@ -491,8 +492,8 @@ void UserDashboard::handleNoteTableClicked(const QModelIndex &index)
         return;
     }
 
-    m_NoteToEdit = static_cast<GuiNoteModel*>(index.internalPointer());
-    NoteEditorDialog editNoteDialog(this, m_UserDataPtr->getDbUserId(), m_NoteToEdit);
+    m_NoteToEdit = static_cast<NoteModel*>(index.internalPointer());
+    NoteEditorDialog editNoteDialog(this, m_UserDataPtr->getUserID(), m_NoteToEdit);
 
     editNoteDialog.exec();
 
@@ -540,7 +541,7 @@ void UserDashboard::handleEditNoteAction()
         return;
     }
 
-    NoteEditorDialog editNoteDialog(this,  m_UserDataPtr->getDbUserId(), m_NoteToEdit);
+    NoteEditorDialog editNoteDialog(this,  m_UserDataPtr->getUserID(), m_NoteToEdit);
 
     editNoteDialog.exec();
 
@@ -554,7 +555,7 @@ void UserDashboard::handleAddGoalAction()
         return;
     }
 
-    GoalEditorDialog addGoalDialog(this,  m_UserDataPtr->getDbUserId());
+    GoalEditorDialog addGoalDialog(this,  m_UserDataPtr->getUserID());
 
     addGoalDialog.exec();
 }
@@ -566,7 +567,7 @@ void UserDashboard::handleEditGoalAction()
         return;
     }
 
-    GoalEditorDialog editGoalDialog(this,  m_UserDataPtr->getDbUserId(), m_GoalToEdit);
+    GoalEditorDialog editGoalDialog(this,  m_UserDataPtr->getUserID(), m_GoalToEdit);
 
     editGoalDialog.exec();
 }
@@ -578,7 +579,7 @@ void UserDashboard::handleAddScheduleItemAction()
         return;
     }
 
-    ScheduleItemEditorDialog addScheduleItemDialog(this,  m_UserDataPtr->getDbUserId());
+    ScheduleItemEditorDialog addScheduleItemDialog(this,  m_UserDataPtr->getUserID());
 
     addScheduleItemDialog.exec();
     
@@ -592,7 +593,7 @@ void UserDashboard::handleEditScheduleItemAction()
         return;
     }
 
-    ScheduleItemEditorDialog editScheduleItemDialog(this,  m_UserDataPtr->getDbUserId(), m_ScheduleItemToEdit);
+    ScheduleItemEditorDialog editScheduleItemDialog(this,  m_UserDataPtr->getUserID(), m_ScheduleItemToEdit);
 
     editScheduleItemDialog.exec();
 
@@ -613,7 +614,7 @@ void UserDashboard::handleScheduleClicked(const QModelIndex &index)
 
     m_ScheduleItemToEdit = static_cast<GuiScheduleItemModel*>(index.internalPointer());
 
-    ScheduleItemEditorDialog editScheduleItemDialog(this,  m_UserDataPtr->getDbUserId(), m_ScheduleItemToEdit);
+    ScheduleItemEditorDialog editScheduleItemDialog(this,  m_UserDataPtr->getUserID(), m_ScheduleItemToEdit);
 
     editScheduleItemDialog.exec();
     

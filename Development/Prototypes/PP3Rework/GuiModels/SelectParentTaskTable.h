@@ -1,6 +1,8 @@
 #ifndef SELECTPARENTTASKTABLE_H
 #define SELECTPARENTTASKTABLE_H
 
+class UserModel;
+
 #include "GuiTaskTableBase.h"
 
 class SelectParentTaskTable : public GuiTaskTableBase
@@ -8,7 +10,7 @@ class SelectParentTaskTable : public GuiTaskTableBase
     Q_OBJECT
 
 public:
-    explicit SelectParentTaskTable(GuiUserModel *userDataPtr, QObject *parent = nullptr);
+    explicit SelectParentTaskTable(UserModel *userDataPtr, QObject *parent = nullptr);
 
     // Header:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;

@@ -1,7 +1,6 @@
 #ifndef NOTEEDITORDIALOG_H
 #define NOTEEDITORDIALOG_H
 
-class GuiNoteModel;
 class NoteModel;
 
 // Project Header Files
@@ -24,7 +23,7 @@ class NoteEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit NoteEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, GuiNoteModel* noteToEdit=nullptr);
+    explicit NoteEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, NoteModel* noteToEdit=nullptr);
     ~NoteEditorDialog();
 
 public Q_SLOTS:
@@ -37,7 +36,7 @@ private:
     void limitDialogRowth();
 
     std::size_t m_userID;
-    GuiNoteModel* m_NoteData;
+    NoteModel* m_NoteData;
     QDialogButtonBox* buttonBox;
     QGroupBox* editNoteEnterContentGB;
     QFormLayout* noteForm;

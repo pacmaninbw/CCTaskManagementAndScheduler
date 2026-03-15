@@ -2,7 +2,7 @@
 #include "TaskList.h"
 #include "GuiTaskTableBase.h"
 #include "GuiTaskModel.h"
-#include "GuiUserModel.h"
+#include "UserModel.h"
 
 // QT Header Files
 #include <QAbstractTableModel>
@@ -15,14 +15,14 @@
 #include <chrono>
 #include <ranges>
 
-GuiTaskTableBase::GuiTaskTableBase(GuiUserModel *userDataPtr, QObject *parent)
+GuiTaskTableBase::GuiTaskTableBase(UserModel *userDataPtr, QObject *parent)
     : QAbstractTableModel(parent),
     m_UserDataPtr{userDataPtr}
 {
 
 }
 
-void GuiTaskTableBase::setUserRefillTable(GuiUserModel *userDataPtr)
+void GuiTaskTableBase::setUserRefillTable(UserModel *userDataPtr)
 {
     m_UserDataPtr = userDataPtr;
     fillTable();
@@ -30,7 +30,7 @@ void GuiTaskTableBase::setUserRefillTable(GuiUserModel *userDataPtr)
 
 void GuiTaskTableBase::fillTable()
 {
-    if (!m_UserDataPtr || m_UserDataPtr->getDbUserId() == 0)
+    if (!m_UserDataPtr || m_UserDataPtr->getUserID() == 0)
     {
         makeFakeQList();
         return;
@@ -38,7 +38,7 @@ void GuiTaskTableBase::fillTable()
 
     std::chrono::year_month_day searchDate = getTodaysDatePlus(TwoWeeks);
     TaskList currentUserTaskList;
-    TaskListValues userTasks = currentUserTaskList.getDefaultDashboardTaskList(m_UserDataPtr->getDbUserId(), searchDate);
+    TaskListValues userTasks = currentUserTaskList.getDefaultDashboardTaskList(m_UserDataPtr->getUserID(), searchDate);
 
     if (userTasks.empty())
     {

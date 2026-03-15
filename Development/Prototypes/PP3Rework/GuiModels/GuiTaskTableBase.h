@@ -2,7 +2,7 @@
 #define GUITASKTABLEBASE_H
 
 class GuiTaskModel;
-class GuiUserModel;
+class UserModel;
 
 // Project Header Files
 
@@ -20,8 +20,8 @@ class GuiTaskTableBase : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    explicit GuiTaskTableBase(GuiUserModel *userDataPtr, QObject *parent = nullptr);
-    void setUserRefillTable(GuiUserModel *userDataPtr);
+    explicit GuiTaskTableBase(UserModel *userDataPtr, QObject *parent = nullptr);
+    void setUserRefillTable(UserModel *userDataPtr);
     void fillTable();
     void append(GuiTaskModel* taskData);
     void clearData();
@@ -59,7 +59,7 @@ public:
 
 protected:
     void makeFakeQList();
-    GuiUserModel *m_UserDataPtr;
+    UserModel *m_UserDataPtr;
     QList<GuiTaskModel*> m_data;
 };
 

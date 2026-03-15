@@ -1,7 +1,7 @@
 #ifndef SELECTTASKPARENTDIALOG_H
 #define SELECTTASKPARENTDIALOG_H
 
-class GuiUserModel;
+class UserModel;
 
 // Project Header Files
 #include "GuiTaskModel.h"
@@ -37,7 +37,7 @@ private Q_SLOTS:
     void handleParentTaskTableClicked(const QModelIndex &index);
 
 private:
-    GuiUserModel* getCreatorFromChildTask();
+    UserModel* getCreatorFromChildTask();
     QGroupBox* setUpGroupBox();
     QDialogButtonBox* setUpDialogButtons();
     QTableView* setUpParentTaskView();
@@ -49,7 +49,7 @@ private:
     QTableView* selectParentTableView;
     std::shared_ptr<GuiTaskModel> childTaskData;
     GuiTaskModel* parentTaskModel;
-    GuiUserModel* creator;
+    UserModel* creator;
 
     const int defaultDialogWidth = 700;
     const int defaultDialogHeight = 450;

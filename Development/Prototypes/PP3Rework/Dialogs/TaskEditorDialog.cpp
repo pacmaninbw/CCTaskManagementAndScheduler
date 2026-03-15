@@ -1,6 +1,6 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
-#include "GuiUserModel.h"
+#include "UserModel.h"
 #include "SelectTaskParentDialog.h"
 #include "TaskEditorDialog.h"
 
@@ -22,7 +22,7 @@
 
 // Standard C++ Header Files
 
-TaskEditorDialog::TaskEditorDialog(QWidget *parent, GuiUserModel* creator)
+TaskEditorDialog::TaskEditorDialog(QWidget *parent, UserModel* creator)
     : QDialog(parent),
     m_Creator{creator},
     m_TaskData{nullptr},
@@ -440,8 +440,8 @@ bool TaskEditorDialog::updateTask()
 
 void TaskEditorDialog::transferAllFieldsToData()
 {
-    m_TaskData->setCreatorUserId(m_Creator->getDbUserId());
-    m_TaskData->setAssigneeUserId(m_Assignee->getDbUserId());
+    m_TaskData->setCreatorUserId(m_Creator->getUserID());
+    m_TaskData->setAssigneeUserId(m_Assignee->getUserID());
     m_TaskData->setDescription(editTaskDescriptionTE->toPlainText());
     m_TaskData->setDueDate(editTaskDueDateSelectorDE->date());
     m_TaskData->setScheduledStart(editTaskScheduledStartDE->date());
@@ -465,10 +465,10 @@ void TaskEditorDialog::transferAllFieldsToData()
 
 void TaskEditorDialog::initEditFields()
 {
-    editTaskCreatorFirstNameDisplay->setText(m_Creator->getFirstName());
-    editTaskCreatorLastNameDisplay->setText(m_Creator->getLastName());
-    editTaskAssignedToFirstNameDisplay->setText(m_Creator->getFirstName());
-    editTaskAssignedToLastName->setText(m_Creator->getLastName());
+    editTaskCreatorFirstNameDisplay->setText(QString::fromStdString(m_Creator->getFirstName()));
+    editTaskCreatorLastNameDisplay->setText(QString::fromStdString(m_Creator->getLastName()));
+    editTaskAssignedToFirstNameDisplay->setText(QString::fromStdString(m_Creator->getFirstName()));
+    editTaskAssignedToLastName->setText(QString::fromStdString(m_Creator->getLastName()));
 
     m_Assignee = m_Creator;
 
@@ -492,9 +492,11 @@ QDate TaskEditorDialog::initValidDateField(QDate fieldData)
     return tempDate;
 }
 
-GuiUserModel *TaskEditorDialog::getUserDataFromTaskData(std::size_t dbUserId)
+UserModel *TaskEditorDialog::getUserDataFromTaskData(std::size_t dbUserId)
 {
-    return new GuiUserModel(dbUserId);
+    UserModel* newUser = new UserModel();
+    newUser->setUserID(dbUserId);
+    return newUser;
 }
 
 void TaskEditorDialog::initDisplayFields()
@@ -549,10 +551,10 @@ void TaskEditorDialog::initEditFieldsFromTaskData()
     connectEditFieldsToActions();
 }
 
-void TaskEditorDialog::initUserNameFields(QLineEdit *firstNameEditor, QLineEdit *lastNameEditor, GuiUserModel *user)
+void TaskEditorDialog::initUserNameFields(QLineEdit *firstNameEditor, QLineEdit *lastNameEditor, UserModel *user)
 {
-    firstNameEditor->setText(user->getFirstName());
-    lastNameEditor->setText(user->getLastName());
+    firstNameEditor->setText(QString::fromStdString(user->getFirstName()));
+    lastNameEditor->setText(QString::fromStdString(user->getLastName()));
 }
 
 void TaskEditorDialog::connectEditFieldsToActions()

@@ -2,7 +2,7 @@
 #include "commonQTWidgetsForApp.h"
 #include "SelectTaskParentDialog.h"
 #include "SelectParentTaskTable.h"
-#include "GuiUserModel.h"
+#include "UserModel.h"
 
 // QT Header Files
 #include <QVariant>
@@ -75,7 +75,7 @@ void SelectTaskParentDialog::handleParentTaskTableClicked(const QModelIndex &ind
     parentTaskModel = static_cast<GuiTaskModel*>(index.internalPointer());
 }
 
-GuiUserModel *SelectTaskParentDialog::getCreatorFromChildTask()
+UserModel *SelectTaskParentDialog::getCreatorFromChildTask()
 {
     if (!childTaskData)
     {
@@ -83,7 +83,8 @@ GuiUserModel *SelectTaskParentDialog::getCreatorFromChildTask()
     }
 
     std::size_t creatorUserId = childTaskData->getCreatorUserId();
-    GuiUserModel* taskCreator = new GuiUserModel(creatorUserId, this);
+    UserModel* taskCreator = new UserModel();
+    taskCreator->setUserID(creatorUserId);
 
     return taskCreator;
 }

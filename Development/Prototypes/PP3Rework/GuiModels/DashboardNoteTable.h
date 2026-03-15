@@ -1,19 +1,20 @@
 #ifndef DASHBOARDNOTETABLE_H
 #define DASHBOARDNOTETABLE_H
 
-class GuiNoteModel;
-class GuiUserModel;
+class NoteModel;
+class UserModel;
 
 // Project Header Files
 
 // QT Header Files
 #include <QAbstractTableModel>
 #include <QDateTime>
-#include <QList>
 #include <QObject>
 #include <QString>
 
 // Standard C++ Header Files
+#include <memory>
+#include <vector>
 
 
 class DashboardNoteTable : public QAbstractTableModel
@@ -21,10 +22,10 @@ class DashboardNoteTable : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    explicit DashboardNoteTable(GuiUserModel *userDataPtr, QDate searchDate, QObject *parent = nullptr);
-    void setUserRefillTable(GuiUserModel *userDataPtr);
+    explicit DashboardNoteTable(UserModel *userDataPtr, QDate searchDate, QObject *parent = nullptr);
+    void setUserRefillTable(UserModel *userDataPtr);
     void fillTable();
-    void append(GuiNoteModel* noteData);
+    void append(std::shared_ptr<NoteModel> noteData);
     void clearData();
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
@@ -39,8 +40,8 @@ public:
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
 
 private:
-    GuiUserModel *m_UserDataPtr;
-    QList<GuiNoteModel*> m_data;
+    UserModel *m_UserDataPtr;
+    std::vector<std::shared_ptr<NoteModel>> m_data;
     QDate m_SearchDate;
 };
 

@@ -1,7 +1,7 @@
 #ifndef GUIDASHBOARDSCHEDULETABLE_H
 #define GUIDASHBOARDSCHEDULETABLE_H
 
-class GuiUserModel;
+class UserModel;
 class GuiScheduleItemModel;
 class ScheduleItemModel;
 
@@ -25,10 +25,10 @@ class GuiDashboardScheduleTable : public QAbstractTableModel
 
 public:
     explicit GuiDashboardScheduleTable(QObject *parent = nullptr);
-    explicit GuiDashboardScheduleTable(GuiUserModel* userData, QDate dateOfSchedule, QObject *parent = nullptr);
-    void setUser(GuiUserModel* userData);
+    explicit GuiDashboardScheduleTable(UserModel* userData, QDate dateOfSchedule, QObject *parent = nullptr);
+    void setUser(UserModel* userData);
     void setDate(QDate dateOfSchedule);
-    void setUserAndDateRefillSchedule(GuiUserModel* userData, QDate dateOfSchedule);
+    void setUserAndDateRefillSchedule(UserModel* userData, QDate dateOfSchedule);
     void append(GuiScheduleItemModel* scheduledItem);
     void clearData();
 
@@ -48,7 +48,7 @@ private:
     void setUserDay(std::chrono::year_month_day scheduleDate);
     bool hasNoTimeConflicts(std::chrono::system_clock::time_point proposedStartTime);
     void addBlankHoursForDisplay();
-    GuiUserModel *m_UserDataPtr;
+    UserModel *m_UserDataPtr;
     QList<GuiScheduleItemModel*> m_data;
     QDate m_DateOfSchedule;
     std::chrono::system_clock::time_point m_UserStartDay;
