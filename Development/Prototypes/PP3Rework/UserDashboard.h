@@ -2,7 +2,6 @@
 #define USERDASHBOARD_H
 
 class UserModel;
-class NoteModel;
 class GuiGoalModel;
 class GuiScheduleItemModel;
 class DashboardTaskViewer;
@@ -27,6 +26,7 @@ class DashboardNotesViewer;
 #include <QWidget>
 
 // Standard C++ Header Files
+#include <memory>
 #include <string>
 
 class UserDashboard : public QMainWindow
@@ -48,7 +48,6 @@ private Q_SLOTS:
     void handleAddNoteAction();
     void handleNoteTableClicked(const QModelIndex &index);
     void handleUserLoginAction();
-    void handleEditNoteAction();
     void handleAddGoalAction();
     void handleEditGoalAction();
     void handleAddScheduleItemAction();
@@ -79,8 +78,7 @@ private:
     DashboardNotesViewer* updateNotes();
 
     QString m_ProgNameStr;
-    UserModel* m_UserDataPtr;
-    NoteModel* m_NoteToEdit;
+    std::shared_ptr<UserModel> m_UserDataPtr;
     GuiGoalModel* m_GoalToEdit;
     GuiScheduleItemModel* m_ScheduleItemToEdit;
     QDate m_DashboardDate;
@@ -95,7 +93,6 @@ private:
     QAction* udActionAddScheduleItem;
     QAction* udActionEditScheduleItem;
     QAction* udActionAddNote;
-    QAction* udActionEditNote;
     QAction* udActionAddUserProfile;
     QAction* udActionEditUserProfile;
     QAction* udActionUserLogin;

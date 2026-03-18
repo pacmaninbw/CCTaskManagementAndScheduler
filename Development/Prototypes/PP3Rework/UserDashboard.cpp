@@ -32,7 +32,6 @@
 UserDashboard::UserDashboard(QWidget *parent)
     : QMainWindow(parent),
     m_UserDataPtr{nullptr},
-    m_NoteToEdit{nullptr},
     m_ScheduleItemToEdit{nullptr},
     m_DashboardDate{QDate::currentDate()},
     udTaskTableView{nullptr},
@@ -40,6 +39,8 @@ UserDashboard::UserDashboard(QWidget *parent)
     udNotesTableView{nullptr}
 {
     m_ProgNameStr = QString::fromStdString(programOptions.progName);
+
+    m_UserDataPtr = std::make_shared<UserModel>();
 
     setUpUserDashboardUi();
 }
@@ -49,7 +50,7 @@ UserDashboard::UserDashboard(std::shared_ptr<UserModel> loggedInUser, QWidget *p
 {
     if (loggedInUser)
     {
-        m_UserDataPtr = loggedInUser.get();
+        m_UserDataPtr = loggedInUser;
 
         fillUserIdBoxData();
 
@@ -61,13 +62,13 @@ UserDashboard::UserDashboard(std::shared_ptr<UserModel> loggedInUser, QWidget *p
 
         if (udScheduleTableView)
         {
-            udScheduleTableView->setUserId(m_UserDataPtr);
+            udScheduleTableView->setUserId(m_UserDataPtr->getUserID());
             updateSchedule();
         }
 
         if (udNotesTableView)
         {
-            udNotesTableView->setUserIdAndDate(m_UserDataPtr, m_DashboardDate);
+            udNotesTableView->setUserIdAndDate(m_UserDataPtr->getUserID(), m_DashboardDate);
             updateNotes();
         }
     }
@@ -164,13 +165,8 @@ void UserDashboard::setUpNoteMenu()
     udActionAddNote->setStatusTip(tr("Create a new Note"));
     connect(udActionAddNote, &QAction::triggered, this, &UserDashboard::handleAddNoteAction);
 
-    udActionEditNote = new QAction("Edit Note", this);
-    udActionEditNote->setStatusTip(tr("Edit a Note"));
-    connect(udActionEditNote, &QAction::triggered, this, &UserDashboard::handleEditNoteAction);
-
     udNoteMenu = menuBar()->addMenu("&Note");
     udNoteMenu->addAction(udActionAddNote);
-    udNoteMenu->addAction(udActionEditNote);
     udNoteMenu->addSeparator();
 }
 
@@ -359,7 +355,7 @@ ScheduleTablerViewer* UserDashboard::updateSchedule()
         connect(udScheduleTableView, &QTableView::doubleClicked, this, &UserDashboard::handleScheduleClicked);
     }
 
-    udScheduleTableView->setUserIdAndDate(m_UserDataPtr, m_DashboardDate);
+    udScheduleTableView->setUserIdAndDate(m_UserDataPtr->getUserID(), m_DashboardDate);
     udScheduleTableView->updateSchedule();
 
     return udScheduleTableView;
@@ -369,13 +365,13 @@ DashboardNotesViewer *UserDashboard::updateNotes()
 {
     if (!udNotesTableView)
     {
-        udNotesTableView = new DashboardNotesViewer(m_UserDataPtr, m_DashboardDate, this);
+        udNotesTableView = new DashboardNotesViewer(m_UserDataPtr->getUserID(), m_DashboardDate, this);
         udNotesTableView->setObjectName("udNotesTableView");
         connect(udNotesTableView, &QTableView::clicked, this, &UserDashboard::handleNoteTableClicked);
         connect(udNotesTableView, &QTableView::doubleClicked, this, &UserDashboard::handleNoteTableClicked);
     }
 
-    udNotesTableView->setUserIdAndDate(m_UserDataPtr, m_DashboardDate);
+    udNotesTableView->setUserIdAndDate(m_UserDataPtr->getUserID(), m_DashboardDate);
     udNotesTableView->update();
 
     return udNotesTableView;
@@ -446,7 +442,7 @@ void UserDashboard::handleEditUserAction()
         return;
     }
 
-    UserEditorDialog editUserDialog(this, m_UserDataPtr);
+    UserEditorDialog editUserDialog(m_UserDataPtr, this);
 
     editUserDialog.exec();
     fillUserIdBoxData();
@@ -481,8 +477,8 @@ void UserDashboard::handleNoteTableClicked(const QModelIndex &index)
         return;
     }
 
-    m_NoteToEdit = static_cast<NoteModel*>(index.internalPointer());
-    NoteEditorDialog editNoteDialog(this, m_UserDataPtr->getUserID(), m_NoteToEdit);
+    std::size_t noteToEdit = index.internalId();
+    NoteEditorDialog editNoteDialog(this, m_UserDataPtr->getUserID(), noteToEdit);
 
     editNoteDialog.exec();
 
@@ -512,29 +508,15 @@ void UserDashboard::handleUserLoginAction()
 
     if (udScheduleTableView)
     {
-        udScheduleTableView->setUserId(m_UserDataPtr);
+        udScheduleTableView->setUserId(m_UserDataPtr->getUserID());
         updateSchedule();
     }
 
     if (udNotesTableView)
     {
-        udNotesTableView->setUserId(m_UserDataPtr);
+        udNotesTableView->setUserId(m_UserDataPtr->getUserID());
         updateNotes();
     }
-}
-
-void UserDashboard::handleEditNoteAction()
-{
-    if (!userIsLoggedIn())
-    {
-        return;
-    }
-
-    NoteEditorDialog editNoteDialog(this,  m_UserDataPtr->getUserID(), m_NoteToEdit);
-
-    editNoteDialog.exec();
-
-    updateNotes();
 }
 
 void UserDashboard::handleAddGoalAction()
