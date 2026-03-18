@@ -1,7 +1,6 @@
 #ifndef GUIDASHBOARDTASKTABLE_H
 #define GUIDASHBOARDTASKTABLE_H
 
-class UserModel;
 // Project Header Files
 #include "GuiTaskTableBase.h"
 
@@ -14,7 +13,7 @@ class GuiDashboardTaskTable : public GuiTaskTableBase
     Q_OBJECT
 
 public:
-    explicit GuiDashboardTaskTable(UserModel *userDataPtr, QObject* parent=nullptr);
+    explicit GuiDashboardTaskTable(std::size_t userID, QObject* parent=nullptr);
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole) override;

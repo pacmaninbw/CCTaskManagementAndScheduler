@@ -1,14 +1,13 @@
 // Project Header Files
 #include "GuiDashboardTaskTable.h"
-#include "GuiTaskModel.h"
-#include "UserModel.h"
+#include "TaskModel.h"
 
 // QT Header Files
 
 // Standard C++ Header Files
 
-GuiDashboardTaskTable::GuiDashboardTaskTable(UserModel *userDataPtr, QObject *parent)
-    : GuiTaskTableBase(userDataPtr, parent)
+GuiDashboardTaskTable::GuiDashboardTaskTable(std::size_t userID, QObject *parent)
+    : GuiTaskTableBase(userID, parent)
 {
 }
 
@@ -64,11 +63,11 @@ QVariant GuiDashboardTaskTable::data(const QModelIndex &index, int role) const
     }
 
     if (role != Qt::DisplayRole && role != Qt::EditRole) return {};
-    const GuiTaskModel* task = m_data[index.row()];
+    const TaskModel* task = m_data[index.row()].get();
     switch (index.column()) {
         case 0: return task->getPriorityGroup();
         case 1: return task->getPriority();
-        case 2: return task->getDescription();
+        case 2: return QString::fromStdString(task->getDescription());
         default: return {};
     }
 }
