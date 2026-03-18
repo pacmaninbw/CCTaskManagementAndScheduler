@@ -91,7 +91,7 @@ void LoginDialog::onactionLoginAsUserPBClicked()
         QMessageBox::critical(nullptr, "Critical Error", "Missing Password", QMessageBox::Ok);
     }
 
-    m_UserDataPtr = new UserModel;
+    m_UserDataPtr = std::make_shared<UserModel>();
 
     m_UserDataPtr->setLoginName(loginName.toStdString());
     m_UserDataPtr->setPassword(userLoginPasswordLE->text().toStdString());
@@ -105,6 +105,5 @@ void LoginDialog::onactionLoginAsUserPBClicked()
         QString errorReport = "User login failed.\n";
         errorReport += QString::fromStdString(m_UserDataPtr->getAllErrorMessages());
         QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
-        delete m_UserDataPtr;
     }
 }

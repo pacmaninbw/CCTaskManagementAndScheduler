@@ -14,6 +14,7 @@ class UserModel;
 #include <QPushButton>
 
 // Standard C++ Header Files
+#include <memory>
 
 
 class LoginDialog : public QDialog
@@ -23,7 +24,7 @@ class LoginDialog : public QDialog
 public:
     explicit LoginDialog(QWidget* parent = nullptr);
     ~LoginDialog();
-    UserModel* GetUserData() { return m_UserDataPtr; };
+    std::shared_ptr<UserModel> GetUserData() { return m_UserDataPtr; };
 
 private Q_SLOTS:
     void onactionLoginAsUserPBClicked();
@@ -32,7 +33,7 @@ private:
     void setUpLoginDialogUI();
     bool attemptLogin();
 
-    UserModel* m_UserDataPtr;
+    std::shared_ptr<UserModel> m_UserDataPtr;
 
     QGroupBox* userLoginGB;
     QLineEdit* userLoginUserNameLE;
