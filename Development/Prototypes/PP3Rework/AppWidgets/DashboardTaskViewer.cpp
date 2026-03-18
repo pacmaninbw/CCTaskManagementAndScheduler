@@ -1,7 +1,6 @@
 // Project Header Files
 #include "DashboardTaskViewer.h"
 #include "GuiDashboardTaskTable.h"
-#include "UserModel.h"
 
 // QT Header Files
 #include <QDate>
@@ -13,11 +12,11 @@
 
 DashboardTaskViewer::DashboardTaskViewer(QWidget *parent)
     : QTableView{parent},
-    m_UserDataPtr{nullptr},
+    m_UserID{0},
     m_DashboardDate{QDate::currentDate()},
     m_TaskTable{nullptr}
 {
-    m_TaskTable = new GuiDashboardTaskTable(m_UserDataPtr, parent);
+    m_TaskTable = new GuiDashboardTaskTable(m_UserID, parent);
     m_TaskTable->setObjectName("m_TaskTable");
     m_TaskTable->fillTable();
 
@@ -32,23 +31,23 @@ void DashboardTaskViewer::setDate(QDate dashboardDate)
     m_DashboardDate = dashboardDate;
 }
 
-void DashboardTaskViewer::setUserId(UserModel *userDataPtr)
+void DashboardTaskViewer::setUserId(std::size_t userID)
 {
-    m_UserDataPtr = userDataPtr;
+    m_UserID = userID;
     if (m_TaskTable)
     {
-        m_TaskTable->setUserRefillTable(m_UserDataPtr);
+        m_TaskTable->setUserRefillTable(m_UserID);
     }
 }
 
-void DashboardTaskViewer::setUserIdAndDate(UserModel *userDataPtr, QDate dashboardDate)
+void DashboardTaskViewer::setUserIdAndDate(std::size_t userID, QDate dashboardDate)
 {
-    m_UserDataPtr = userDataPtr;
+    m_UserID = userID;
     m_DashboardDate = dashboardDate;
 
     if (m_TaskTable)
     {
-        m_TaskTable->setUserRefillTable(m_UserDataPtr);
+        m_TaskTable->setUserRefillTable(m_UserID);
     }
 }
 
@@ -59,7 +58,7 @@ void DashboardTaskViewer::update()
         delete m_TaskTable;
     }
  
-    m_TaskTable = new GuiDashboardTaskTable(m_UserDataPtr, parent());
+    m_TaskTable = new GuiDashboardTaskTable(m_UserID, parent());
     m_TaskTable->setObjectName("m_TaskTable");
     m_TaskTable->fillTable();
 
