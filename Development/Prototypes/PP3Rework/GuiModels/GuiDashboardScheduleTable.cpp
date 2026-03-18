@@ -23,24 +23,24 @@
 
 GuiDashboardScheduleTable::GuiDashboardScheduleTable(QObject *parent)
     : QAbstractTableModel(parent),
-    m_UserDataPtr{nullptr},
+    m_UserID{0},
     m_DateOfSchedule{QDate::currentDate()}
 {
     m_ChronDateOfSchedule = qDateToChrono(m_DateOfSchedule);
     fillSchedule();
 }
 
-GuiDashboardScheduleTable::GuiDashboardScheduleTable(UserModel *userData, QDate dateOfSchedule, QObject *parent)
+GuiDashboardScheduleTable::GuiDashboardScheduleTable(std::size_t userID, QDate dateOfSchedule, QObject *parent)
     : QAbstractTableModel(parent),
-    m_UserDataPtr{userData},
+    m_UserID{userID},
     m_DateOfSchedule{dateOfSchedule}
 {
     m_ChronDateOfSchedule = qDateToChrono(dateOfSchedule);
 }
 
-void GuiDashboardScheduleTable::setUser(UserModel *userData)
+void GuiDashboardScheduleTable::setUser(std::size_t userID)
 {
-    m_UserDataPtr = userData;
+    m_UserID = userID;
 }
 
 void GuiDashboardScheduleTable::setDate(QDate dateOfSchedule)
@@ -48,9 +48,9 @@ void GuiDashboardScheduleTable::setDate(QDate dateOfSchedule)
     m_DateOfSchedule = dateOfSchedule;
 }
 
-void GuiDashboardScheduleTable::setUserAndDateRefillSchedule(UserModel *userData, QDate dateOfSchedule)
+void GuiDashboardScheduleTable::setUserAndDateRefillSchedule(std::size_t userID, QDate dateOfSchedule)
 {
-    m_UserDataPtr = userData;
+    m_UserID = userID;
     m_DateOfSchedule = dateOfSchedule;
     m_ChronDateOfSchedule = qDateToChrono(dateOfSchedule);
 
@@ -198,9 +198,9 @@ void GuiDashboardScheduleTable::fillSchedule()
     clearData();
     std::chrono::year_month_day dateOfSchedule(qDateToChrono(m_DateOfSchedule));
 
-    if (m_UserDataPtr)
+    if (m_UserID)
     {
-        ScheduleItemList dbScheduleList(m_UserDataPtr->getUserID());
+        ScheduleItemList dbScheduleList(m_UserID);
         m_ScheduledItems = dbScheduleList.getUserDaySchedule(dateOfSchedule);
     }
 
@@ -216,9 +216,9 @@ void GuiDashboardScheduleTable::fillSchedule()
     for (const auto &scheduledItem: m_ScheduledItems)
     {
         GuiScheduleItemModel* newEntry = new GuiScheduleItemModel(scheduledItem, this->parent());
-        if (m_UserDataPtr)
+        if (m_UserID)
         {
-            newEntry->setUserID(m_UserDataPtr->getUserID());
+            newEntry->setUserID(m_UserID);
         }
         append(newEntry);
     }
