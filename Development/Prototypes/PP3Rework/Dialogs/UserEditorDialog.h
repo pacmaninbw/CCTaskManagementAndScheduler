@@ -20,13 +20,15 @@ class UserModel;
 #include <QVBoxLayout>
 
 // Standard C++ Header Files
+#include <memory>
 
 class UserEditorDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit UserEditorDialog(QWidget *parent = nullptr, UserModel* userData=nullptr);
+    explicit UserEditorDialog(QWidget *parent = nullptr);
+    explicit UserEditorDialog( std::shared_ptr<UserModel> userData, QWidget *parent = nullptr);
     ~UserEditorDialog();
 
 public Q_SLOTS:
@@ -44,7 +46,7 @@ private:
 
 // Model related variables
     std::size_t m_userID;
-    UserModel* m_UserData;
+    std::shared_ptr<UserModel> m_UserData;
 
 // QT Widgets
     QDialogButtonBox* editUserButtonBox;

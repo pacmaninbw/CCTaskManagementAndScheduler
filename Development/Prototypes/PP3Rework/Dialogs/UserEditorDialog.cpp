@@ -21,21 +21,23 @@
 
 // Standard C++ Header Files
 
-UserEditorDialog::UserEditorDialog(QWidget *parent, UserModel* userData)
+UserEditorDialog::UserEditorDialog(QWidget *parent)
     : QDialog(parent),
-    m_userID{0},
-    m_UserData{nullptr}
+      m_userID{0}
 {
-    m_UserData = (userData != nullptr)? userData : new UserModel;
-
     m_userID = m_UserData->getUserID();
 
     setUpUserEditorDialogUi();
+}
 
-    if (userData != nullptr)
-    {
-        initAllFieldsFromData();
-    }
+UserEditorDialog::UserEditorDialog(std::shared_ptr<UserModel> userData, QWidget *parent)
+    : QDialog(parent),
+      m_userID{userData->getUserID()},
+      m_UserData{userData}
+{
+    setUpUserEditorDialogUi();
+
+    initAllFieldsFromData();
 }
 
 UserEditorDialog::~UserEditorDialog()
