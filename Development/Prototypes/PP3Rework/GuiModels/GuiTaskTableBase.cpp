@@ -1,11 +1,11 @@
 // Project Header Files
-#include "TaskList.h"
 #include "GuiTaskTableBase.h"
-#include "GuiTaskModel.h"
-#include "UserModel.h"
+#include "TaskList.h"
+#include "TaskModel.h"
 
 // QT Header Files
 #include <QAbstractTableModel>
+#include <QDate>
 #include <QList>
 #include <QMetaEnum>
 #include <QObject>
@@ -13,24 +13,26 @@
 
 // Standard C++ Header Files
 #include <chrono>
+#include <memory>
 #include <ranges>
+#include <vector>
 
-GuiTaskTableBase::GuiTaskTableBase(UserModel *userDataPtr, QObject *parent)
+GuiTaskTableBase::GuiTaskTableBase(std::size_t userID, QObject *parent)
     : QAbstractTableModel(parent),
-    m_UserDataPtr{userDataPtr}
+    m_UserID{userID}
 {
 
 }
 
-void GuiTaskTableBase::setUserRefillTable(UserModel *userDataPtr)
+void GuiTaskTableBase::setUserRefillTable(std::size_t userID)
 {
-    m_UserDataPtr = userDataPtr;
+    m_UserID = userID;
     fillTable();
 }
 
 void GuiTaskTableBase::fillTable()
 {
-    if (!m_UserDataPtr || m_UserDataPtr->getUserID() == 0)
+    if (m_UserID == 0)
     {
         makeFakeQList();
         return;
@@ -38,7 +40,7 @@ void GuiTaskTableBase::fillTable()
 
     std::chrono::year_month_day searchDate = getTodaysDatePlus(TwoWeeks);
     TaskList currentUserTaskList;
-    TaskListValues userTasks = currentUserTaskList.getDefaultDashboardTaskList(m_UserDataPtr->getUserID(), searchDate);
+    TaskListValues userTasks = currentUserTaskList.getDefaultDashboardTaskList(m_UserID, searchDate);
 
     if (userTasks.empty())
     {
@@ -48,31 +50,16 @@ void GuiTaskTableBase::fillTable()
 
     if (!m_data.empty())
     {
-        qDeleteAll(m_data.begin(), m_data.end());
         m_data.clear();
     }
 
-    for (const auto& dbTaskPtr: userTasks)
-    {
-        GuiTaskModel* modelData = new GuiTaskModel(dbTaskPtr, this);
-        m_data.append(modelData);
-    }
-}
-
-void GuiTaskTableBase::append(GuiTaskModel *taskData)
-{
-    beginInsertRows(QModelIndex(), m_data.count(), m_data.count());
-
-    m_data.append(taskData);
-
-    endInsertRows();
+    m_data = userTasks;
 }
 
 void GuiTaskTableBase::clearData()
 {
     beginResetModel();
 
-    qDeleteAll(m_data.begin(), m_data.end());
     m_data.clear();
 
     endResetModel();
@@ -115,7 +102,7 @@ int GuiTaskTableBase::rowCount(const QModelIndex &parent) const
         return 0;
     }
 
-    return m_data.count();
+    return m_data.size();
 }
 
 int GuiTaskTableBase::columnCount(const QModelIndex &parent) const
@@ -157,18 +144,18 @@ QVariant GuiTaskTableBase::data(const QModelIndex &index, int role) const
 
 
     if (role != Qt::DisplayRole && role != Qt::EditRole) return {};
-    const GuiTaskModel* task = m_data[index.row()];
+    const TaskModel* task = m_data[index.row()].get();
     switch (index.column()) {
         case 0: return task->getPriorityGroup();
         case 1: return task->getPriorityGroup();
         case 2: return task->getPriority();
-        case 3: return task->getDescription();
-        case 4: return QString::number(task->getCreatorUserId());
-        case 5: return QString::number(task->getAssigneeUserId());
+        case 3: return QString::fromStdString(task->getDescription());
+        case 4: return QString::number(task->getCreatorID());
+        case 5: return QString::number(task->getAssignToID());
         case 6: return QString::number(static_cast<int>(task->getStatus()));
-        case 7: return QString::number(task->getParentTaskId());
-        case 8: return task->getDueDate().toString(Qt::ISODate);
-        case 9: return task->getScheduledStart().toString(Qt::ISODate);
+        case 7: return QString::number(task->getParentTaskID());
+        case 8: return QDate(task->getDueDate()).toString(Qt::ISODate);
+        case 9: return QDate(task->getScheduledStart()).toString(Qt::ISODate);
         default: return {};
     }
 }
@@ -191,54 +178,6 @@ Qt::ItemFlags GuiTaskTableBase::flags(const QModelIndex &index) const
     return QAbstractItemModel::flags(index) | Qt::ItemIsEditable; // FIXME: Implement me!
 }
 
-bool GuiTaskTableBase::insertRows(int position, int count, const QModelIndex &parent)
-{
-    Q_UNUSED(parent);
-    beginInsertRows(QModelIndex(), position, position + count - 1);
-
-    for (int row = 0; row < count; ++row)
-    {
-        m_data.insert(position, nullptr);
-    }
-
-    endInsertRows();
-
-    return true;
-}
-
-bool GuiTaskTableBase::insertColumns(int column, int count, const QModelIndex &parent)
-{
-    beginInsertColumns(parent, column, column + count - 1);
-    // FIXME: Implement me!
-    endInsertColumns();
-    return true;
-}
-
-bool GuiTaskTableBase::removeRows(int position, int count, const QModelIndex &parent)
-{
-    Q_UNUSED(parent);
-    beginRemoveRows(QModelIndex(), position, position + count - 1);
-
-    for (int row = 0; row < count; ++row)
-    {
-        GuiTaskModel* data = m_data.at(position);
-        delete data;
-        m_data.removeAt(position);
-    }
-
-    endRemoveRows();
-
-    return true;
-}
-
-bool GuiTaskTableBase::removeColumns(int column, int count, const QModelIndex &parent)
-{
-    beginRemoveColumns(parent, column, column + count - 1);
-    // FIXME: Implement me!
-    endRemoveColumns();
-    return true;
-}
-
 QModelIndex GuiTaskTableBase::index(int row, int column, const QModelIndex &parent) const
 {
     if (!hasIndex(row, column, parent))
@@ -246,10 +185,10 @@ QModelIndex GuiTaskTableBase::index(int row, int column, const QModelIndex &pare
         return QModelIndex();
     }
 
-    GuiTaskModel* taskModelItem = m_data.at(row);
+    TaskModel_shp taskModelItem = m_data.at(row);
     if (taskModelItem)
     {
-        return createIndex(row, column, taskModelItem);
+        return createIndex(row, column, taskModelItem->getTaskID());
     }
 
     return QModelIndex();
@@ -257,20 +196,21 @@ QModelIndex GuiTaskTableBase::index(int row, int column, const QModelIndex &pare
 
 void GuiTaskTableBase::makeFakeQList()
 {
-    if (!m_data.isEmpty())
+    if (!m_data.empty())
     {
         return;
     }
+
     for (std::size_t priorityGroup: std::views::iota(0, 3))
     {
         QString priorityGroupString = "A";
         for (std::size_t priority : std::views::iota(1, 6))
         {
-            GuiTaskModel* taskData = new GuiTaskModel(this->parent());
-            taskData->setPriorityGroup(priorityGroupString);
-            taskData->setPriority(QString::number(priority));
+            TaskModel_shp taskData = std::make_shared<TaskModel>();
+            taskData->setPriorityGroup(priorityGroup);
+            taskData->setPriority(priority);
             taskData->setDescription(priorityGroup == 0 && priority == 1 ? "Login to app" : "");
-            append(taskData);
+            m_data.push_back(taskData);
         }
     }
 }
