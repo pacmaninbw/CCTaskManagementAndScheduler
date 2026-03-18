@@ -2,7 +2,6 @@
 #define USERDASHBOARD_H
 
 class UserModel;
-class GuiTaskModel;
 class NoteModel;
 class GuiGoalModel;
 class GuiScheduleItemModel;
@@ -43,7 +42,6 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void handleAddTaskAction();
-    void handleEditTaskAction();
     void handleTaskTableClicked(const QModelIndex &index);
     void handleAddUserAction();
     void handleEditUserAction();
@@ -82,7 +80,6 @@ private:
 
     QString m_ProgNameStr;
     UserModel* m_UserDataPtr;
-    GuiTaskModel* m_TaskToEdit;
     NoteModel* m_NoteToEdit;
     GuiGoalModel* m_GoalToEdit;
     GuiScheduleItemModel* m_ScheduleItemToEdit;
@@ -95,7 +92,6 @@ private:
     QMenu* udScheduleItemMenu;
     QMenu* udDBConnectionMenu;
     QAction* udActionAddTask;
-    QAction* udActionEditTask;
     QAction* udActionAddScheduleItem;
     QAction* udActionEditScheduleItem;
     QAction* udActionAddNote;

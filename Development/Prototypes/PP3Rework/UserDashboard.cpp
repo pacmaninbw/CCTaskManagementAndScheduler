@@ -5,12 +5,12 @@
 #include "DashboardTaskViewer.h"
 #include "DataBaseConnectionDialog.h"
 #include "GoalEditorDialog.h"
-#include "GuiDashboardTaskTable.h"
 #include "LoginDialog.h"
 #include "NoteEditorDialog.h"
 #include "ScheduleItemEditorDialog.h"
 #include "ScheduleTablerViewer.h"
 #include "TaskEditorDialog.h"
+#include "TaskModel.h"
 #include "UserDashboard.h"
 #include "UserEditorDialog.h"
 #include "UserModel.h"
@@ -32,7 +32,6 @@
 UserDashboard::UserDashboard(QWidget *parent)
     : QMainWindow(parent),
     m_UserDataPtr{nullptr},
-    m_TaskToEdit{nullptr},
     m_NoteToEdit{nullptr},
     m_ScheduleItemToEdit{nullptr},
     m_DashboardDate{QDate::currentDate()},
@@ -56,7 +55,7 @@ UserDashboard::UserDashboard(std::shared_ptr<UserModel> loggedInUser, QWidget *p
 
         if (udTaskTableView)
         {
-            udTaskTableView->setUserId(m_UserDataPtr);
+            udTaskTableView->setUserId(m_UserDataPtr->getUserID());
             updateTaskList();
         }
 
@@ -128,13 +127,8 @@ void UserDashboard::setUpTaskMenu()
     udActionAddTask->setStatusTip(tr("Create a new Task"));
     connect(udActionAddTask, &QAction::triggered, this, &UserDashboard::handleAddTaskAction);
 
-    udActionEditTask = new QAction("Edit Task", this);
-    udActionEditTask->setStatusTip(tr("Edit a Task"));
-    connect(udActionEditTask, &QAction::triggered, this, &UserDashboard::handleEditTaskAction);
-
     udTaskMenu = menuBar()->addMenu("&Task");
     udTaskMenu->addAction(udActionAddTask);
-    udTaskMenu->addAction(udActionEditTask);
     udTaskMenu->addSeparator();
 }
 
@@ -202,13 +196,13 @@ void UserDashboard::setUpScheduleItemMenu()
     udActionAddScheduleItem->setStatusTip(tr("Add an item to your schedule"));
     connect(udActionAddScheduleItem, &QAction::triggered, this, &UserDashboard::handleAddScheduleItemAction);
 
-    udActionEditTask = new QAction("Edit Schedule", this);
-    udActionEditTask->setStatusTip(tr("Edit a scheduled event"));
-    connect(udActionEditTask, &QAction::triggered, this, &UserDashboard::handleEditScheduleItemAction);
+    udActionEditScheduleItem = new QAction("Edit Schedule", this);
+    udActionEditScheduleItem->setStatusTip(tr("Edit a scheduled event"));
+    connect(udActionEditScheduleItem, &QAction::triggered, this, &UserDashboard::handleEditScheduleItemAction);
 
     udScheduleItemMenu = menuBar()->addMenu("&Scheduling");
     udScheduleItemMenu->addAction(udActionAddScheduleItem);
-    udScheduleItemMenu->addAction(udActionEditTask);
+    udScheduleItemMenu->addAction(udActionEditScheduleItem);
     udScheduleItemMenu->addSeparator();
 }
 
@@ -401,21 +395,6 @@ void UserDashboard::handleAddTaskAction()
     updateTaskList();
 }
 
-void UserDashboard::handleEditTaskAction()
-{
-    if (!userIsLoggedIn())
-    {
-        return;
-    }
-
-    TaskEditorDialog editTaskDialog(this, m_UserDataPtr);
-    editTaskDialog.setTaskDataAndInitDisplayFields(m_TaskToEdit);
-
-    editTaskDialog.exec();
-
-    updateTaskList();
-}
-
 void UserDashboard::handleTaskTableClicked(const QModelIndex &index)
 {
     if (!userIsLoggedIn())
@@ -428,12 +407,22 @@ void UserDashboard::handleTaskTableClicked(const QModelIndex &index)
         return;
     }
 
-    m_TaskToEdit = static_cast<GuiTaskModel*>(index.internalPointer());
+    TaskModel_shp taskToEdit = std::make_shared<TaskModel>();
+    taskToEdit->setTaskID(static_cast<std::size_t>(index.internalId()));
+    if (taskToEdit->retrieve())
+    {
+        TaskEditorDialog editTaskDialog(this, m_UserDataPtr);
+        editTaskDialog.setTaskDataAndInitDisplayFields(taskToEdit);
 
-    TaskEditorDialog editTaskDialog(this, m_UserDataPtr);
-    editTaskDialog.setTaskDataAndInitDisplayFields(m_TaskToEdit);
+        editTaskDialog.exec();
+    }
+    else
+    {
+        QString errorReport = "Task edit failed: Can't retrieve task from database.\n";
+        errorReport += QString::fromStdString(taskToEdit->getAllErrorMessages());
+        QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
+    }
 
-    editTaskDialog.exec();
 
     updateTaskList();
 }
@@ -517,7 +506,7 @@ void UserDashboard::handleUserLoginAction()
 
     if (udTaskTableView)
     {
-        udTaskTableView->setUserId(m_UserDataPtr);
+        udTaskTableView->setUserId(m_UserDataPtr->getUserID());
         updateTaskList();
     }
 
