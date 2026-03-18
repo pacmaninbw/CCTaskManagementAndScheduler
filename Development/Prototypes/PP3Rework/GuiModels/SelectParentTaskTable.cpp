@@ -1,15 +1,14 @@
 // Project Header Files
-#include "GuiTaskModel.h"
 #include "SelectParentTaskTable.h"
-#include "UserModel.h"
+#include "TaskModel.h"
 
 // QT Header Files
 
 // Standard C++ Header Files
 
 
-SelectParentTaskTable::SelectParentTaskTable(UserModel *userDataPtr, QObject *parent)
-    : GuiTaskTableBase(userDataPtr, parent)
+SelectParentTaskTable::SelectParentTaskTable(std::size_t userID, QObject *parent)
+    : GuiTaskTableBase(userID, parent)
 {}
 
 QVariant SelectParentTaskTable::headerData(int section, Qt::Orientation orientation, int role) const
@@ -47,11 +46,11 @@ QVariant SelectParentTaskTable::data(const QModelIndex &index, int role) const
     {
         return {};
     }
-    const GuiTaskModel* task = m_data[index.row()];
+    const TaskModel* task = m_data[index.row()].get();
 
     switch (index.column()) {
-        case 0: return QString::number(task->getDbTaskId());
-        case 1: return task->getDescription();
+        case 0: return QString::number(task->getTaskID());
+        case 1: return QString::fromStdString(task->getDescription());
         default: return {};
     }
 }
