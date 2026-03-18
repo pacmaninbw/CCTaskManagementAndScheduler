@@ -25,7 +25,7 @@
 // Standard C++ Header Files
 #include <iostream>
 
-TaskEditorDialog::TaskEditorDialog(QWidget *parent, UserModel* creator)
+TaskEditorDialog::TaskEditorDialog(QWidget *parent, std::shared_ptr<UserModel> creator)
     : QDialog(parent),
     m_Creator{creator},
     m_TaskData{nullptr},
@@ -500,9 +500,9 @@ QDate TaskEditorDialog::initValidDateField(QDate fieldData)
     return tempDate;
 }
 
-UserModel *TaskEditorDialog::getUserDataFromTaskData(std::size_t dbUserId)
+std::shared_ptr<UserModel> TaskEditorDialog::getUserDataFromTaskData(std::size_t dbUserId)
 {
-    UserModel* newUser = new UserModel();
+    UserModel_shp newUser = std::make_shared<UserModel>();
     newUser->setUserID(dbUserId);
     newUser->retrieve();
 
@@ -569,7 +569,7 @@ void TaskEditorDialog::initEditFieldsFromTaskData()
     connectEditFieldsToActions();
 }
 
-void TaskEditorDialog::initUserNameFields(QLineEdit *firstNameEditor, QLineEdit *lastNameEditor, UserModel *user)
+void TaskEditorDialog::initUserNameFields(QLineEdit *firstNameEditor, QLineEdit *lastNameEditor, std::shared_ptr<UserModel> user)
 {
     firstNameEditor->setText(QString::fromStdString(user->getFirstName()));
     lastNameEditor->setText(QString::fromStdString(user->getLastName()));

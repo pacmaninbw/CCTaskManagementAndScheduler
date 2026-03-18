@@ -30,7 +30,7 @@ class TaskEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit TaskEditorDialog(QWidget* parent = nullptr, UserModel* creator = nullptr);
+    explicit TaskEditorDialog(QWidget* parent = nullptr, std::shared_ptr<UserModel> creator = nullptr);
     ~TaskEditorDialog();
     void setTaskDataAndInitDisplayFields(std::shared_ptr<TaskModel> taskToEdit);
 
@@ -62,17 +62,17 @@ private:
     void transferAllFieldsToData();
     void initEditFields();
     QDate initValidDateField(QDate fieldData);
-    UserModel* getUserDataFromTaskData(std::size_t dbUserId);
+    std::shared_ptr<UserModel> getUserDataFromTaskData(std::size_t dbUserId);
     void initDisplayFields();
     void initEditFieldsFromTaskData();
-    void initUserNameFields(QLineEdit* firstNameEditor, QLineEdit* lastNameEditor, UserModel* user);
+    void initUserNameFields(QLineEdit* firstNameEditor, QLineEdit* lastNameEditor, std::shared_ptr<UserModel> user);
     void connectEditFieldsToActions();
     void transferEffortToModel();
     void transferPriorityToModel();
 
-    UserModel* m_Creator;
+    std::shared_ptr<UserModel> m_Creator;
     std::shared_ptr<TaskModel> m_TaskData;
-    UserModel* m_Assignee;
+    std::shared_ptr<UserModel> m_Assignee;
     std::shared_ptr<TaskModel> m_ParentTaskData;
     bool m_parentTaskUpdated;
 
