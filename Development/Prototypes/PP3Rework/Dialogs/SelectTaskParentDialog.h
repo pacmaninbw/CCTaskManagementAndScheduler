@@ -1,10 +1,9 @@
 #ifndef SELECTTASKPARENTDIALOG_H
 #define SELECTTASKPARENTDIALOG_H
 
-class UserModel;
+class TaskModel;
 
 // Project Header Files
-#include "GuiTaskModel.h"
 
 // QT Header Files
 #include <QVariant>
@@ -16,6 +15,7 @@ class UserModel;
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QHeaderView>
+#include <QObject>
 #include <QTableView>
 #include <QVBoxLayout>
 
@@ -27,17 +27,15 @@ class SelectTaskParentDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SelectTaskParentDialog(QWidget *parent = nullptr);
-    explicit SelectTaskParentDialog(std::shared_ptr<GuiTaskModel> orphanTask, QWidget* parent = nullptr);
+    explicit SelectTaskParentDialog(std::size_t taskCreatorId, QWidget* parent = nullptr);
     ~SelectTaskParentDialog();
-    std::shared_ptr<GuiTaskModel> getParentTaskID();
+    std::size_t getParentTask();
     void setupDialogUI();
 
 private Q_SLOTS:
     void handleParentTaskTableClicked(const QModelIndex &index);
 
 private:
-    UserModel* getCreatorFromChildTask();
     QGroupBox* setUpGroupBox();
     QDialogButtonBox* setUpDialogButtons();
     QTableView* setUpParentTaskView();
@@ -47,9 +45,8 @@ private:
     QGroupBox* selectParentgroupBox;
     QFormLayout* selectParentGroupBoxLayout;
     QTableView* selectParentTableView;
-    std::shared_ptr<GuiTaskModel> childTaskData;
-    GuiTaskModel* parentTaskModel;
-    UserModel* creator;
+    std::size_t m_ParentTaskID;
+    std::size_t m_CreatorID;
 
     const int defaultDialogWidth = 700;
     const int defaultDialogHeight = 450;

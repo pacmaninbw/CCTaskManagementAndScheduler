@@ -2,7 +2,7 @@
 #include "commonQTWidgetsForApp.h"
 #include "SelectTaskParentDialog.h"
 #include "SelectParentTaskTable.h"
-#include "UserModel.h"
+#include "TaskModel.h"
 
 // QT Header Files
 #include <QVariant>
@@ -21,41 +21,24 @@
 
 // Standard C++ Header Files
 
-SelectTaskParentDialog::SelectTaskParentDialog(QWidget *parent)
+SelectTaskParentDialog::SelectTaskParentDialog(std::size_t taskCreatorId, QWidget *parent)
     : QDialog(parent),
-    childTaskData{nullptr},
-    parentTaskModel{nullptr},
-    creator{nullptr}
+    m_ParentTaskID{0},
+    m_CreatorID{taskCreatorId}
 {
-    setObjectName("SelectTaskParentDialog");
-
-    setWindowTitle("Select Parent Task");
-}
-
-SelectTaskParentDialog::SelectTaskParentDialog(std::shared_ptr<GuiTaskModel> orphanTask, QWidget *parent)
-    : SelectTaskParentDialog(parent)
-{
-    childTaskData = orphanTask;
 }
 
 SelectTaskParentDialog::~SelectTaskParentDialog()
 {
 }
 
-std::shared_ptr<GuiTaskModel> SelectTaskParentDialog::getParentTaskID()
+std::size_t SelectTaskParentDialog::getParentTask()
 {
-    return std::make_shared<GuiTaskModel>(parentTaskModel);
+    return m_ParentTaskID;
 }
 
 void SelectTaskParentDialog::setupDialogUI()
 {
-    if (!childTaskData)
-    {
-        QMessageBox::critical(nullptr, "Critical Error", "No Child Task Data, can't continue!", QMessageBox::Ok);
-    }
-
-    creator = getCreatorFromChildTask();
-
     resize(defaultDialogWidth, defaultDialogHeight);
 
     selectTaskParentDialogLayout = cqtfa_QTWidget<QVBoxLayout>("selectTaskParentDialogLayout", this);
@@ -72,21 +55,7 @@ void SelectTaskParentDialog::handleParentTaskTableClicked(const QModelIndex &ind
         return;
     }
 
-    parentTaskModel = static_cast<GuiTaskModel*>(index.internalPointer());
-}
-
-UserModel *SelectTaskParentDialog::getCreatorFromChildTask()
-{
-    if (!childTaskData)
-    {
-        return nullptr;
-    }
-
-    std::size_t creatorUserId = childTaskData->getCreatorUserId();
-    UserModel* taskCreator = new UserModel();
-    taskCreator->setUserID(creatorUserId);
-
-    return taskCreator;
+    m_ParentTaskID = index.internalId();
 }
 
 QGroupBox *SelectTaskParentDialog::setUpGroupBox()
@@ -132,7 +101,7 @@ QTableView *SelectTaskParentDialog::setUpParentTaskView()
 
 QAbstractTableModel *SelectTaskParentDialog::setUpParentTaskTable()
 {
-    SelectParentTaskTable* parentTable = new SelectParentTaskTable(creator, this);
+    SelectParentTaskTable* parentTable = new SelectParentTaskTable(m_CreatorID, this);
     parentTable->fillTable();
     return parentTable;
 }
