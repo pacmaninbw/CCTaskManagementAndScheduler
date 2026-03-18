@@ -22,8 +22,8 @@ class DashboardNoteTable : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    explicit DashboardNoteTable(UserModel *userDataPtr, QDate searchDate, QObject *parent = nullptr);
-    void setUserRefillTable(UserModel *userDataPtr);
+    explicit DashboardNoteTable(std::size_t userID, QDate searchDate, QObject *parent = nullptr);
+    void setUserRefillTable(std::size_t userID);
     void fillTable();
     void append(std::shared_ptr<NoteModel> noteData);
     void clearData();
@@ -40,7 +40,7 @@ public:
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
 
 private:
-    UserModel *m_UserDataPtr;
+    std::size_t m_UserID;
     std::vector<std::shared_ptr<NoteModel>> m_data;
     QDate m_SearchDate;
 };

@@ -3,7 +3,7 @@
 #include "NoteList.h"
 #include "NoteModel.h"
 #include "stdChronoToQTConversions.h"
-#include "UserModel.h"
+//#include "UserModel.h"
 
 // QT Header Files
 #include <QAbstractTableModel>
@@ -17,22 +17,22 @@
 #include <memory>
 #include <vector>
 
-DashboardNoteTable::DashboardNoteTable(UserModel *userDataPtr, QDate searchDate, QObject *parent)
+DashboardNoteTable::DashboardNoteTable(std::size_t userID, QDate searchDate, QObject *parent)
     : QAbstractTableModel(parent),
-    m_UserDataPtr{userDataPtr},
+    m_UserID{userID},
     m_SearchDate{searchDate}
 {}
 
-void DashboardNoteTable::setUserRefillTable(UserModel *userDataPtr)
+void DashboardNoteTable::setUserRefillTable(std::size_t userID)
 {
-    m_UserDataPtr = userDataPtr;
+    m_UserID = userID;
 
     fillTable();
 }
 
 void DashboardNoteTable::fillTable()
 {
-    if (!m_UserDataPtr || m_UserDataPtr->getUserID() == 0)
+    if (m_UserID == 0)
     {
         NoteModel_shp noNote = std::make_shared<NoteModel>();
         noNote->setContent("Please log in to see today's notes");
@@ -44,7 +44,7 @@ void DashboardNoteTable::fillTable()
 
     std::chrono::year_month_day searchDate = qDateToChrono(m_SearchDate);
     NoteList currentUserNoteList;
-    NoteListValues userNotes = currentUserNoteList.getDashboardNoteTable(m_UserDataPtr->getUserID(), searchDate);
+    NoteListValues userNotes = currentUserNoteList.getDashboardNoteTable(m_UserID, searchDate);
 
     if (userNotes.empty())
     {
@@ -203,10 +203,10 @@ QModelIndex DashboardNoteTable::index(int row, int column, const QModelIndex &pa
         return QModelIndex();
     }
 
-    NoteModel* noteModelItem = m_data[row].get();
+    NoteModel_shp noteModelItem = m_data[row];
     if (noteModelItem)
     {
-        return createIndex(row, column, noteModelItem);
+        return createIndex(row, column, noteModelItem->getNoteId());
     }
 
     return QModelIndex();
