@@ -13,7 +13,7 @@
 
 ScheduleTablerViewer::ScheduleTablerViewer(QWidget *parent)
     : QTableView{parent},
-    m_DBUserId{nullptr},
+    m_DBUserId{0},
     m_DateOfSchedule{QDate::currentDate()},
     m_ScheduleTable{nullptr}
 {
@@ -34,22 +34,22 @@ void ScheduleTablerViewer::setDate(QDate scheduleToShow)
     }
 }
 
-void ScheduleTablerViewer::setUserId(UserModel *userDataPtr)
+void ScheduleTablerViewer::setUserId(std::size_t userID)
 {
-    m_DBUserId = userDataPtr;
+    m_DBUserId = userID;
     if (m_ScheduleTable)
     {
-        m_ScheduleTable->setUser(userDataPtr);
+        m_ScheduleTable->setUser(userID);
     }
 }
 
-void ScheduleTablerViewer::setUserIdAndDate(UserModel *userDataPtr, QDate scheduleToShow)
+void ScheduleTablerViewer::setUserIdAndDate(std::size_t userID, QDate scheduleToShow)
 {
-    m_DBUserId = userDataPtr;
+    m_DBUserId = userID;
     m_DateOfSchedule = scheduleToShow;
     if (m_ScheduleTable)
     {
-        m_ScheduleTable->setUser(userDataPtr);
+        m_ScheduleTable->setUser(userID);
         m_ScheduleTable->setDate(scheduleToShow);
     }
 }

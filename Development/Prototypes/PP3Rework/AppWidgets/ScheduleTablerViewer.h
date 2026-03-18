@@ -1,7 +1,6 @@
 #ifndef SCHEDULETABLERVIEWER_H
 #define SCHEDULETABLERVIEWER_H
 
-class UserModel;
 class GuiDashboardScheduleTable;
 
 // Project Header Files
@@ -19,12 +18,12 @@ class ScheduleTablerViewer : public QTableView
 public:
     explicit ScheduleTablerViewer(QWidget *parent = nullptr);
     void setDate(QDate scheduleToShow);
-    void setUserId(UserModel* userDataPtr);
-    void setUserIdAndDate(UserModel* userDataPtr, QDate scheduleToShow);
+    void setUserId(std::size_t userID);
+    void setUserIdAndDate(std::size_t userID, QDate scheduleToShow);
     void updateSchedule();
 
 private:
-    UserModel* m_DBUserId;
+    std::size_t m_DBUserId;
     QDate m_DateOfSchedule;
     GuiDashboardScheduleTable* m_ScheduleTable;
 };
