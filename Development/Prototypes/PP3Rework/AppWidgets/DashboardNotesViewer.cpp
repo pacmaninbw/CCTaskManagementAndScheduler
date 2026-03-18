@@ -14,16 +14,16 @@
 
 DashboardNotesViewer::DashboardNotesViewer(QWidget *parent)
     : QTableView{parent},
-    m_DBUserId{nullptr},
+    m_DBUserId{0},
     m_SearchDate{QDate::currentDate()},
     m_NoteTable{nullptr}
 {
     createTable();
 }
 
-DashboardNotesViewer::DashboardNotesViewer(UserModel *userDataPtr, QDate searchDate, QWidget *parent)
+DashboardNotesViewer::DashboardNotesViewer(std::size_t userID, QDate searchDate, QWidget *parent)
     : QTableView{parent},
-    m_DBUserId{userDataPtr},
+    m_DBUserId{userID},
     m_SearchDate{searchDate},
     m_NoteTable{nullptr}
 {
@@ -37,16 +37,16 @@ void DashboardNotesViewer::setDate(QDate searchDate)
     updateNoteTable();
 }
 
-void DashboardNotesViewer::setUserId(UserModel *userDataPtr)
+void DashboardNotesViewer::setUserId(std::size_t userID)
 {
-    m_DBUserId = userDataPtr;
+    m_DBUserId = userID;
 
     updateNoteTable();
 }
 
-void DashboardNotesViewer::setUserIdAndDate(UserModel *userDataPtr, QDate searchDate)
+void DashboardNotesViewer::setUserIdAndDate(std::size_t userID, QDate searchDate)
 {
-    m_DBUserId = userDataPtr;
+    m_DBUserId = userID;
     m_SearchDate = searchDate;
 
     updateNoteTable();

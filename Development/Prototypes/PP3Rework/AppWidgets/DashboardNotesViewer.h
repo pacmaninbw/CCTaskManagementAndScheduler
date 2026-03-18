@@ -18,16 +18,16 @@ class DashboardNotesViewer : public QTableView
     Q_OBJECT
 public:
     explicit DashboardNotesViewer(QWidget *parent = nullptr);
-    explicit DashboardNotesViewer(UserModel* userDataPtr, QDate searchDate, QWidget *parent = nullptr);
+    explicit DashboardNotesViewer(std::size_t userDataPtr, QDate searchDate, QWidget *parent = nullptr);
     void setDate(QDate searchDate);
-    void setUserId(UserModel* userDataPtr);
-    void setUserIdAndDate(UserModel* userDataPtr, QDate searchDate);
+    void setUserId(std::size_t userDataPtr);
+    void setUserIdAndDate(std::size_t userDataPtr, QDate searchDate);
     void updateNoteTable();
 
 
 private:
     void createTable();
-    UserModel* m_DBUserId;
+    std::size_t m_DBUserId;
     QDate m_SearchDate;
     DashboardNoteTable* m_NoteTable;
 };
