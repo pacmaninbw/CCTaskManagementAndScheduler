@@ -1,9 +1,9 @@
 #ifndef TASKEDITORDIALOG_H
 #define TASKEDITORDIALOG_H
 
+class TaskModel;
+class UserModel;
 // Project Header Files
-#include "GuiTaskModel.h"
-#include "UserModel.h"
 
 // QT Header Files
 #include <QVariant>
@@ -32,7 +32,7 @@ class TaskEditorDialog : public QDialog
 public:
     explicit TaskEditorDialog(QWidget* parent = nullptr, UserModel* creator = nullptr);
     ~TaskEditorDialog();
-    void setTaskDataAndInitDisplayFields(GuiTaskModel* taskToEdit);
+    void setTaskDataAndInitDisplayFields(std::shared_ptr<TaskModel> taskToEdit);
 
 public Q_SLOTS:
     void accept() override;
@@ -67,11 +67,14 @@ private:
     void initEditFieldsFromTaskData();
     void initUserNameFields(QLineEdit* firstNameEditor, QLineEdit* lastNameEditor, UserModel* user);
     void connectEditFieldsToActions();
+    void transferEffortToModel();
+    void transferPriorityToModel();
 
     UserModel* m_Creator;
-    std::shared_ptr<GuiTaskModel> m_TaskData;
+    std::shared_ptr<TaskModel> m_TaskData;
     UserModel* m_Assignee;
-    std::shared_ptr<GuiTaskModel> m_ParentTaskData;
+    std::shared_ptr<TaskModel> m_ParentTaskData;
+    bool m_parentTaskUpdated;
 
     QVBoxLayout* editTaskMainLayout;
     QDialogButtonBox* editTaskbuttonBox;
