@@ -23,7 +23,7 @@ class NoteEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit NoteEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, NoteModel* noteToEdit=nullptr);
+    explicit NoteEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, std::size_t noteID=0);
     ~NoteEditorDialog();
 
 public Q_SLOTS:
@@ -36,7 +36,7 @@ private:
     void limitDialogRowth();
 
     std::size_t m_userID;
-    NoteModel* m_NoteData;
+    std::shared_ptr<NoteModel> m_NoteData;
     QDialogButtonBox* buttonBox;
     QGroupBox* editNoteEnterContentGB;
     QFormLayout* noteForm;

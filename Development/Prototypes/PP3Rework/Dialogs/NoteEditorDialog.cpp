@@ -11,16 +11,21 @@
 
 #include "NoteEditorDialog.h"
 
-NoteEditorDialog::NoteEditorDialog(QWidget *parent, std::size_t userId, NoteModel* noteToEdit)
+NoteEditorDialog::NoteEditorDialog(QWidget *parent, std::size_t userId, std::size_t noteToEdit)
     : QDialog(parent),
     m_userID{userId},
-    m_NoteData{noteToEdit}
+    m_NoteData{nullptr}
 {
     setUpNoteEditorUI();
 
-    if (noteToEdit)
+    if (noteToEdit != 0)
     {
-        editNoteContentTE->setPlainText(QString::fromStdString(noteToEdit->getContent()));
+        m_NoteData = std::make_shared<NoteModel>();
+        m_NoteData->setNoteId(noteToEdit);
+        if (m_NoteData->retrieve())
+        {
+            editNoteContentTE->setPlainText(QString::fromStdString(m_NoteData->getContent()));
+        }
     }
 }
 
@@ -33,7 +38,7 @@ void NoteEditorDialog::accept()
     bool updateSuccessful = true;
     if (!m_NoteData)
     {
-        m_NoteData = new NoteModel;
+        m_NoteData = std::make_shared<NoteModel>();
         m_NoteData->setUserId(m_userID);
         m_NoteData->setContent(editNoteContentTE->toPlainText().toStdString());
         updateSuccessful = m_NoteData->insert();
