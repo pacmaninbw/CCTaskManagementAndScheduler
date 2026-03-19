@@ -54,8 +54,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Dialogs/ScheduleItemEditorDialog.cpp
         Dialogs/TaskEditorDialog.cpp
         Dialogs/UserEditorDialog.cpp
-        GuiModels/GuiGoalModel.cpp
-        GuiModels/GuiGoalModel.h
         GuiModels/GuiScheduleItemModel.cpp
         GuiModels/GuiScheduleItemModel.h
         GuiModels/GuiDashboardTaskTable.cpp
