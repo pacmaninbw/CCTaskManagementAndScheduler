@@ -20,12 +20,14 @@
 
 
 // Standard C++ Header Files
+#include <memory>
 
 UserEditorDialog::UserEditorDialog(QWidget *parent)
     : QDialog(parent),
-      m_userID{0}
+      m_userID{0},
+      m_UserData{nullptr}
 {
-    m_userID = m_UserData->getUserID();
+    m_UserData = std::make_shared<UserModel>();
 
     setUpUserEditorDialogUi();
 }
@@ -174,7 +176,7 @@ void UserEditorDialog::transferAllFieldsToData()
     m_UserData->setMiddleInitial(middleNameLE->text().toStdString());
     m_UserData->setEmail(emailLE->text().toStdString());
     
-    if (autoGenerateLoginAndPassword->isChecked())
+    if (m_userID == 0 && autoGenerateLoginAndPassword->isChecked())
     {
         m_UserData->autoGenerateLoginAndPassword();
     }

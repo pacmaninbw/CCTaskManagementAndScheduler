@@ -28,7 +28,7 @@ class UserEditorDialog : public QDialog
 
 public:
     explicit UserEditorDialog(QWidget *parent = nullptr);
-    explicit UserEditorDialog( std::shared_ptr<UserModel> userData, QWidget *parent = nullptr);
+    explicit UserEditorDialog(std::shared_ptr<UserModel> userData, QWidget *parent = nullptr);
     ~UserEditorDialog();
 
 public Q_SLOTS:
