@@ -26,7 +26,6 @@ class DashboardNotesViewer;
 
 // Standard C++ Header Files
 #include <memory>
-#include <string>
 
 class UserDashboard : public QMainWindow
 {
