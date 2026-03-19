@@ -2,7 +2,6 @@
 #define USERDASHBOARD_H
 
 class UserModel;
-class UserGoalModel;
 class GuiScheduleItemModel;
 class DashboardTaskViewer;
 class ScheduleTablerViewer;
