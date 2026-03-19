@@ -1,8 +1,9 @@
 #ifndef GOALEDITORDIALOG_H
 #define GOALEDITORDIALOG_H
 
+class UserGoalModel;
+
 // Project Header Files
-#include "GuiGoalModel.h"
 
 // QT Header Files
 #include <QVariant>
@@ -17,13 +18,14 @@
 #include <QTextEdit>
 
 // Standard C++ Header Files
+#include <memory>
 
 class GoalEditorDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit GoalEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, GuiGoalModel* goalToEdit=nullptr);
+    explicit GoalEditorDialog(std::size_t userId, std::size_t goalId, QWidget* parent = nullptr);
     ~GoalEditorDialog();
 
 private:
@@ -33,7 +35,7 @@ private:
     void limitDialogRowth();
 
     std::size_t m_UserID;
-    GuiGoalModel* m_GoalData;
+    std::shared_ptr<UserGoalModel> m_GoalData;
     QDialogButtonBox* buttonBox;
     QGroupBox* editGoalGB;
     QFormLayout* goalEditorDialogFormLayout;

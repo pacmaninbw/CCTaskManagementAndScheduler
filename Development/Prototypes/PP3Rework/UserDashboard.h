@@ -2,7 +2,7 @@
 #define USERDASHBOARD_H
 
 class UserModel;
-class GuiGoalModel;
+class UserGoalModel;
 class GuiScheduleItemModel;
 class DashboardTaskViewer;
 class ScheduleTablerViewer;
@@ -79,7 +79,6 @@ private:
 
     QString m_ProgNameStr;
     std::shared_ptr<UserModel> m_UserDataPtr;
-    GuiGoalModel* m_GoalToEdit;
     GuiScheduleItemModel* m_ScheduleItemToEdit;
     QDate m_DashboardDate;
 

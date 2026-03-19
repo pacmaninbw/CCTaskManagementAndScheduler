@@ -526,7 +526,7 @@ void UserDashboard::handleAddGoalAction()
         return;
     }
 
-    GoalEditorDialog addGoalDialog(this,  m_UserDataPtr->getUserID());
+    GoalEditorDialog addGoalDialog(m_UserDataPtr->getUserID(), 0, this);
 
     addGoalDialog.exec();
 }
@@ -538,7 +538,9 @@ void UserDashboard::handleEditGoalAction()
         return;
     }
 
-    GoalEditorDialog editGoalDialog(this,  m_UserDataPtr->getUserID(), m_GoalToEdit);
+    std::size_t goalToEdit = 0;
+
+    GoalEditorDialog editGoalDialog(m_UserDataPtr->getUserID(), goalToEdit, this);
 
     editGoalDialog.exec();
 }

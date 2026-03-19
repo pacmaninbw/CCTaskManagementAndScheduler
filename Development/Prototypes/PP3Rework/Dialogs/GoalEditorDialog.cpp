@@ -1,6 +1,7 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
 #include "GoalEditorDialog.h"
+#include "UserGoalModel.h"
 
 // QT Header Files
 #include <QVariant>
@@ -18,15 +19,22 @@
 
 // Standard C++ Header Files
 //#include <iostream>
+#include <memory>
 
-
-GoalEditorDialog::GoalEditorDialog(QWidget *parent, std::size_t userId, GuiGoalModel* goalDataToEdit)
+GoalEditorDialog::GoalEditorDialog(std::size_t userId, std::size_t goalId, QWidget *parent)
     : QDialog(parent),
     m_UserID{userId},
-    m_GoalData{goalDataToEdit},
+    m_GoalData{nullptr},
     maxGroupBoxHeight{0},
     maxButtonBoxHeight{0}
 {
+    m_GoalData = std::make_shared<UserGoalModel>();
+    m_GoalData->setGoalId(goalId);
+    if (goalId)
+    {
+        m_GoalData->retrieve();
+    }
+    
     setUpGoalEditorDialogUI();
 }
 
