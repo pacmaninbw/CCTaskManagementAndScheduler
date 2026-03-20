@@ -278,7 +278,7 @@ QHBoxLayout *UserDashboard::setUpPerDayLayout()
 
 QGroupBox *UserDashboard::setUpPerDayTaskGB()
 {
-    udTaskListGB = new QGroupBox("Tasks:");
+    udTaskListGB = new QGroupBox("Prioritized To Do List:");
     QVBoxLayout* taskLisGBLayout = new QVBoxLayout;
 
     taskLisGBLayout->addWidget(updateTaskList());
@@ -292,7 +292,7 @@ QGroupBox *UserDashboard::setUpPerDayTaskGB()
 
 QGroupBox *UserDashboard::setUpPerDayScheduleGB()
 {
-    udScheduleGB = new QGroupBox("Schedule:");
+    udScheduleGB = new QGroupBox(groupBoxTitleWithDate("Schedule"));
     QVBoxLayout* scheduleGBLayout = new QVBoxLayout;
 
     scheduleGBLayout->addWidget(updateSchedule());
@@ -306,7 +306,7 @@ QGroupBox *UserDashboard::setUpPerDayScheduleGB()
 
 QGroupBox *UserDashboard::setUpPerDayNotesGB()
 {
-    udNotesGB = new QGroupBox("Notes:");
+    udNotesGB = new QGroupBox(groupBoxTitleWithDate("Notes"));
     QVBoxLayout* notesGBLayOut = new QVBoxLayout;
 
     notesGBLayOut->addWidget(updateNotes());
@@ -337,8 +337,12 @@ DashboardTaskViewer* UserDashboard::updateTaskList()
     }
     else
     {
+        udTaskTableView->clearSelection();
         udTaskTableView->update();
     }
+
+    udTaskTableView->clearFocus();
+    udTaskListGB->clearFocus();
 
     return udTaskTableView;
 }
@@ -353,8 +357,10 @@ ScheduleTablerViewer* UserDashboard::updateSchedule()
         connect(udScheduleTableView, &QTableView::doubleClicked, this, &UserDashboard::handleScheduleClicked);
     }
 
+    udScheduleTableView->clearSelection();
     udScheduleTableView->setUserIdAndDate(m_UserDataPtr->getUserID(), m_DashboardDate);
     udScheduleTableView->updateSchedule();
+    udScheduleTableView->clearFocus();
 
     return udScheduleTableView;
 }
@@ -369,10 +375,19 @@ DashboardNotesViewer *UserDashboard::updateNotes()
         connect(udNotesTableView, &QTableView::doubleClicked, this, &UserDashboard::handleNoteTableClicked);
     }
 
+    udNotesTableView->clearSelection();
     udNotesTableView->setUserIdAndDate(m_UserDataPtr->getUserID(), m_DashboardDate);
     udNotesTableView->update();
+    udNotesTableView->clearFocus();
 
     return udNotesTableView;
+}
+
+QString UserDashboard::groupBoxTitleWithDate(QString gbTitleBase)
+{
+    QString titleWithDate = gbTitleBase + " for " + m_DashboardDate.toString(Qt::TextDate) + " :";
+
+    return titleWithDate;
 }
 
 void UserDashboard::handleAddTaskAction()
@@ -602,6 +617,9 @@ void UserDashboard::handleDatabaseConnectionAction()
 void UserDashboard::handleDateChanged(const QDate &newDate)
 {
     m_DashboardDate = newDate;
+
+    udScheduleGB->setTitle(groupBoxTitleWithDate("Schedule"));
+    udNotesGB->setTitle(groupBoxTitleWithDate("Notes"));
 
     if (udTaskTableView)
     {

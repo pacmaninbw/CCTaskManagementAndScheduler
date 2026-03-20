@@ -74,6 +74,7 @@ private:
     DashboardTaskViewer* updateTaskList();
     ScheduleTablerViewer* updateSchedule();
     DashboardNotesViewer* updateNotes();
+    QString groupBoxTitleWithDate(QString gbTitleBase);
 
     QString m_ProgNameStr;
     std::shared_ptr<UserModel> m_UserDataPtr;
