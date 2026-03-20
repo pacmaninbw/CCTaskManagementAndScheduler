@@ -20,6 +20,7 @@ class DashboardNotesViewer;
 #include <QLineEdit>
 #include <QMainWindow>
 #include <QMenu>
+#include <QPushButton>
 #include <QTableView>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -57,11 +58,8 @@ private Q_SLOTS:
 private:
     void setUpUserDashboardUi();
     void setUpDashboardMenuBar();
-    void setUpTaskMenu();
     void setUpUserMenu();
-    void setUpNoteMenu();
     void setUpGoalMenu();
-    void setUpScheduleItemMenu();
     void setUpDbConnectionMenu();
     bool userIsLoggedIn();
     bool dbIsConnected();
@@ -81,16 +79,9 @@ private:
     GuiScheduleItemModel* m_ScheduleItemToEdit;
     QDate m_DashboardDate;
 
-    QMenu* udTaskMenu;
     QMenu* udUserMenu;
-    QMenu* udNoteMenu;
     QMenu* udGoalMenu;
-    QMenu* udScheduleItemMenu;
     QMenu* udDBConnectionMenu;
-    QAction* udActionAddTask;
-    QAction* udActionAddScheduleItem;
-    QAction* udActionEditScheduleItem;
-    QAction* udActionAddNote;
     QAction* udActionAddUserProfile;
     QAction* udActionEditUserProfile;
     QAction* udActionUserLogin;
@@ -100,8 +91,11 @@ private:
     QAction* udActionConnectDB;
     QWidget* centralwidget;
     QGroupBox* udTaskListGB;
+    QPushButton* udAddTaskPB;
     QGroupBox* udScheduleGB;
+    QPushButton* udAddEventPB;
     QGroupBox* udNotesGB;
+    QPushButton* udAddNotePB;
     QGroupBox* userDashBoardIDGB;
     QLineEdit* udUserFirstNameDisplay;
     QLineEdit* udUserMiddleInitialDisplay;

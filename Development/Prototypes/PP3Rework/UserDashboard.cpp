@@ -112,23 +112,9 @@ void UserDashboard::setUpUserDashboardUi()
 
 void UserDashboard::setUpDashboardMenuBar()
 {
-    setUpTaskMenu();
     setUpUserMenu();
-    setUpNoteMenu();
     setUpGoalMenu();
-    setUpScheduleItemMenu();
     setUpDbConnectionMenu();
-}
-
-void UserDashboard::setUpTaskMenu()
-{
-    udActionAddTask = new QAction("Add Task", this);
-    udActionAddTask->setStatusTip(tr("Create a new Task"));
-    connect(udActionAddTask, &QAction::triggered, this, &UserDashboard::handleAddTaskAction);
-
-    udTaskMenu = menuBar()->addMenu("&Task");
-    udTaskMenu->addAction(udActionAddTask);
-    udTaskMenu->addSeparator();
 }
 
 void UserDashboard::setUpUserMenu()
@@ -157,17 +143,6 @@ void UserDashboard::setUpUserMenu()
     udUserMenu->addSeparator();
 }
 
-void UserDashboard::setUpNoteMenu()
-{
-    udActionAddNote = new QAction("Add Note", this);
-    udActionAddNote->setStatusTip(tr("Create a new Note"));
-    connect(udActionAddNote, &QAction::triggered, this, &UserDashboard::handleAddNoteAction);
-
-    udNoteMenu = menuBar()->addMenu("&Note");
-    udNoteMenu->addAction(udActionAddNote);
-    udNoteMenu->addSeparator();
-}
-
 void UserDashboard::setUpGoalMenu()
 {
     udActionAddGoal = new QAction("Add Goal", this);
@@ -182,22 +157,6 @@ void UserDashboard::setUpGoalMenu()
     udGoalMenu->addAction(udActionAddGoal);
     udGoalMenu->addAction(udActionEditGoal);
     udGoalMenu->addSeparator();
-}
-
-void UserDashboard::setUpScheduleItemMenu()
-{
-    udActionAddScheduleItem = new QAction("Add to Schedule", this);
-    udActionAddScheduleItem->setStatusTip(tr("Add an item to your schedule"));
-    connect(udActionAddScheduleItem, &QAction::triggered, this, &UserDashboard::handleAddScheduleItemAction);
-
-    udActionEditScheduleItem = new QAction("Edit Schedule", this);
-    udActionEditScheduleItem->setStatusTip(tr("Edit a scheduled event"));
-    connect(udActionEditScheduleItem, &QAction::triggered, this, &UserDashboard::handleEditScheduleItemAction);
-
-    udScheduleItemMenu = menuBar()->addMenu("&Scheduling");
-    udScheduleItemMenu->addAction(udActionAddScheduleItem);
-    udScheduleItemMenu->addAction(udActionEditScheduleItem);
-    udScheduleItemMenu->addSeparator();
 }
 
 void UserDashboard::setUpDbConnectionMenu()
@@ -281,6 +240,10 @@ QGroupBox *UserDashboard::setUpPerDayTaskGB()
     udTaskListGB = new QGroupBox("Prioritized To Do List:");
     QVBoxLayout* taskLisGBLayout = new QVBoxLayout;
 
+    udAddTaskPB = cqtfa_QTWidgetWithText<QPushButton>("Add a To Do Item", "udAddTaskPB", this);
+    connect(udAddTaskPB, &QPushButton::clicked, this, &UserDashboard::handleAddTaskAction);
+    taskLisGBLayout->addWidget(udAddTaskPB);
+
     taskLisGBLayout->addWidget(updateTaskList());
 
     udTaskListGB->setLayout(taskLisGBLayout);
@@ -295,6 +258,10 @@ QGroupBox *UserDashboard::setUpPerDayScheduleGB()
     udScheduleGB = new QGroupBox(groupBoxTitleWithDate("Schedule"));
     QVBoxLayout* scheduleGBLayout = new QVBoxLayout;
 
+    udAddEventPB = cqtfa_QTWidgetWithText<QPushButton>("Add Event to Schedule", "udAddEventPB", this);
+    connect(udAddEventPB, &QPushButton::clicked, this, &UserDashboard::handleAddScheduleItemAction);
+    scheduleGBLayout->addWidget(udAddEventPB);
+
     scheduleGBLayout->addWidget(updateSchedule());
 
     udScheduleGB->setLayout(scheduleGBLayout);
@@ -308,6 +275,10 @@ QGroupBox *UserDashboard::setUpPerDayNotesGB()
 {
     udNotesGB = new QGroupBox(groupBoxTitleWithDate("Notes"));
     QVBoxLayout* notesGBLayOut = new QVBoxLayout;
+
+    udAddNotePB = cqtfa_QTWidgetWithText<QPushButton>("Add a Note", "udAddNotePB", this);
+    connect(udAddNotePB, &QPushButton::clicked, this, &UserDashboard::handleAddNoteAction);
+    notesGBLayOut->addWidget(udAddNotePB);
 
     notesGBLayOut->addWidget(updateNotes());
 
