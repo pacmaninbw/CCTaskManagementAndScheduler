@@ -162,6 +162,7 @@ void TaskEditorDialog::on_editTaskSelectParentPB_Clicked()
         {
             m_TaskData->setParentTaskID(parentTaskid);
             m_parentTaskUpdated = true;
+            editTaskParentTaskDescriptionDisplay->setText(QString::fromStdString(m_ParentTaskData->getDescription()));
         }
     }
 }
@@ -573,8 +574,6 @@ void TaskEditorDialog::initEditFieldsFromTaskData()
 
     if (m_ParentTaskData)
     {
-//        std::cerr << "\n\nParent Description: " << m_ParentTaskData->getDescription() << std::endl;
-//        std::cerr << *m_ParentTaskData;
         editTaskParentTaskDescriptionDisplay->setText(QString::fromStdString(m_ParentTaskData->getDescription()));
     }
 
