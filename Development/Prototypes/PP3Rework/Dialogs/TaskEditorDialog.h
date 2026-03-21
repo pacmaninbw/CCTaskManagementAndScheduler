@@ -32,7 +32,7 @@ class TaskEditorDialog : public QDialog
 public:
     explicit TaskEditorDialog(QWidget* parent = nullptr, std::shared_ptr<UserModel> creator = nullptr);
     ~TaskEditorDialog();
-    void setTaskDataAndInitDisplayFields(std::shared_ptr<TaskModel> taskToEdit);
+    bool setTaskDataAndInitDisplayFields(std::size_t taskToEditId);
 
 public Q_SLOTS:
     void accept() override;

@@ -23,7 +23,6 @@
 #include <QVBoxLayout>
 
 // Standard C++ Header Files
-#include <iostream>
 
 TaskEditorDialog::TaskEditorDialog(QWidget *parent, std::shared_ptr<UserModel> creator)
     : QDialog(parent),
@@ -34,7 +33,10 @@ TaskEditorDialog::TaskEditorDialog(QWidget *parent, std::shared_ptr<UserModel> c
 {
     setUpTaskEditorUI();
 
-    initEditFields();
+    if (creator)
+    {
+        initEditFields();
+    }
 }
 
 TaskEditorDialog::~TaskEditorDialog()
@@ -42,24 +44,36 @@ TaskEditorDialog::~TaskEditorDialog()
 
 }
 
-void TaskEditorDialog::setTaskDataAndInitDisplayFields(std::shared_ptr<TaskModel> taskToEdit)
+bool TaskEditorDialog::setTaskDataAndInitDisplayFields(std::size_t taskToEditId)
 {
-    if (!taskToEdit)
+    if (!taskToEditId)
     {
-        return;
+        QString errorReport = "To Do Item Edit failed.\n";
+        errorReport += " No Task to Edit";
+        QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
+        return false;
     }
 
-    m_TaskData = taskToEdit;
+    m_TaskData = std::make_shared<TaskModel>();
+    m_TaskData->setTaskID(taskToEditId);
+    if (!m_TaskData->retrieve())
+    {
+        QString errorReport = "To Do Item Edit failed.\n";
+        errorReport += " To Do Item not found in database";
+        QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
+        return false;
+    }
 
     initDisplayFields();
     initEditFieldsFromTaskData();
+    return true;
 }
 
 void TaskEditorDialog::accept()
 {
     std::shared_ptr<TaskModel> errorGenerator = nullptr;
 
-    bool updateSuccessful = (m_TaskData->getTaskID() > 0)? updateTask() : addTask();
+    bool updateSuccessful = (m_TaskData->isInDataBase())? updateTask() : addTask();
 
     if (updateSuccessful)
     {

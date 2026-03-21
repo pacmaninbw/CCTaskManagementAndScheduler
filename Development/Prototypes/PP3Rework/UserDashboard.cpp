@@ -10,7 +10,6 @@
 #include "ScheduleItemEditorDialog.h"
 #include "ScheduleTablerViewer.h"
 #include "TaskEditorDialog.h"
-#include "TaskModel.h"
 #include "UserDashboard.h"
 #include "UserEditorDialog.h"
 #include "UserModel.h"
@@ -387,24 +386,13 @@ void UserDashboard::handleTaskTableClicked(const QModelIndex &index)
         return;
     }
 
-    TaskModel_shp taskToEdit = std::make_shared<TaskModel>();
-    taskToEdit->setTaskID(static_cast<std::size_t>(index.internalId()));
-    if (taskToEdit->retrieve())
+    std::size_t taskToEditId = index.internalId();
+    TaskEditorDialog editTaskDialog(this);
+    if (editTaskDialog.setTaskDataAndInitDisplayFields(taskToEditId))
     {
-        TaskEditorDialog editTaskDialog(this, m_UserDataPtr);
-        editTaskDialog.setTaskDataAndInitDisplayFields(taskToEdit);
-
         editTaskDialog.exec();
+        updateTaskList();
     }
-    else
-    {
-        QString errorReport = "Task edit failed: Can't retrieve task from database.\n";
-        errorReport += QString::fromStdString(taskToEdit->getAllErrorMessages());
-        QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
-    }
-
-
-    updateTaskList();
 }
 
 void UserDashboard::handleAddUserAction()
