@@ -32,7 +32,8 @@ TestUserDBInterface::TestUserDBInterface(std::string userFileName)
 
 TestStatus TestUserDBInterface::runPositivePathTests()
 {
-    UserListValues userProfileTestData;
+    UserList databaseEntries;
+    UserListValues userProfileTestData = databaseEntries.getAllUsers();
 
     if (!loadTestUsersFromFile(userProfileTestData))
     {
@@ -44,26 +45,39 @@ TestStatus TestUserDBInterface::runPositivePathTests()
 
     for (auto user: userProfileTestData)
     {
-        user->insert();
+        // Exclude real data from production testing in user integration testing.
+        // The real data is know to work and inserting it again causes errors.
         if (user->isInDataBase())
         {
-            for (auto test: positiveTestFuncs)
+            if (user->insert())
             {
-                if (!test(user))
-                {
-                    allTestsPassed = false;
-                }
+                std::cerr << "Inserted user already in database.\n" << *user << "\n";
             }
         }
         else
         {
-            std::cout << "Primary key for user: " << user->getLastName() << ", " << user->getFirstName() << " not set!\n";
-            std::cout << user->getAllErrorMessages() << "\n";
-            if (verboseOutput)
+            user->insert();
+            // if adding the user was successful, perform other tests with the data.
+            if (user->isInDataBase())
             {
-                std::cout << *user << "\n\n";
+                for (auto test: positiveTestFuncs)
+                {
+                    if (!test(user))
+                    {
+                        allTestsPassed = false;
+                    }
+                }
             }
-            allTestsPassed = false;
+            else
+            {
+                std::cerr << "Primary key for user: " << user->getLastName() << ", " << user->getFirstName() << " not set!\n";
+                std::cerr << user->getAllErrorMessages() << "\n";
+                if (verboseOutput)
+                {
+                    std::cout << *user << "\n\n";
+                }
+                allTestsPassed = false;
+            }
         }
     }
 
@@ -121,6 +135,8 @@ bool TestUserDBInterface::testGetUserByLoginAndPassword(UserModel_shp insertedUs
     {
         std::cerr << "testGetUserByLoginAndPassword(user->getLoginName()) FAILED!\n" <<
             retrievedUser->getAllErrorMessages() << "\n";
+        std::cerr << "Expected user name " << testName << "\n";
+        std::cerr << "Expected user password " << testPassword << "\n";
         return false;
     }
 

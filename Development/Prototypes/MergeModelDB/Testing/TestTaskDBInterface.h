@@ -45,7 +45,7 @@ private:
 
     std::string dataFileName;
     std::vector<std::function<bool(TaskModel_shp)>> positiveTestFuncs;
-    UserModel_shp userOne;
+    UserModel_shp TaskIntegrationTestUserOne;
 };
 
 #endif // TESTTASKDBINTERFACE_H_

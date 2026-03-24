@@ -12,6 +12,7 @@ extern std::chrono::system_clock::time_point commonTestTimeStampValue;
 extern std::chrono::year_month_day commonTestDateValue;
 extern std::chrono::year_month_day commonTestDateRangeStartValue;
 extern std::chrono::year_month_day commonTestDateRangeEndValue;
+extern std::chrono::year_month_day commonProductionTestDataAddedDate;
 
 extern void initCommonTestValues(std::string testTimeStampStr);
 

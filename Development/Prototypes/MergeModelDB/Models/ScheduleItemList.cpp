@@ -40,11 +40,30 @@ ScheduleItemListValues ScheduleItemList::findUserScheduleItemsByContentAndDateRa
 ) noexcept
 {
     errorMessages.clear();
-    appendErrorMessage("In ScheduleItemList::getUserDaySchedule : ");
+    appendErrorMessage("In ScheduleItemList::findUserScheduleItemsByContentAndDateRange : ");
 
     try
     {
         firstFormattedQuery = queryGenerator->formatSelectSiByContentDateRangeUser(searchTitle, searchStart, searchEnd, userID);
+        return runQueryFillScheduleItemList();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(e.what());
+    }
+    
+    return ScheduleItemListValues();
+}
+
+ScheduleItemListValues ScheduleItemList::findEventSToRepeat(std::string searchTitle) noexcept
+{
+    errorMessages.clear();
+    appendErrorMessage("In ScheduleItemList::findEventSToRepeat : ");
+
+    try
+    {
+        firstFormattedQuery = queryGenerator->formatSelectSiByContentAndUserSortByContent(searchTitle, userID);
         return runQueryFillScheduleItemList();
     }
 
@@ -95,6 +114,7 @@ std::vector<ListExceptionTestElement> ScheduleItemList::initListExceptionTests()
     exceptionTests.push_back({std::bind(&ScheduleItemList::testExceptionGetUserDaySchedule, this), "getUserDaySchedule"});
     exceptionTests.push_back({std::bind(&ScheduleItemList::testExceptionFindUserScheduleItemsByContentAndDateRange, this),
         "findUserScheduleItemsByContentAndDateRange"});
+    exceptionTests.push_back({std::bind(&ScheduleItemList::testExceptionFindEventSToRepeat, this), "findEventSToRepeat"});
 
     return exceptionTests;
 }
@@ -119,3 +139,15 @@ TestStatus ScheduleItemList::testExceptionFindUserScheduleItemsByContentAndDateR
          std::bind(&ScheduleItemList::findUserScheduleItemsByContentAndDateRange, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), 
         titleSearch, testStart, testEnd);
 }
+
+TestStatus ScheduleItemList::testExceptionFindEventSToRepeat() noexcept
+{
+    selfTestResetAllValues();
+
+    std::string titleSearch("Title search");
+
+    return testListExceptionAndSuccessNArgs("ScheduleItemList::testExceptionFindUserScheduleItemsByContentAndDateRange()",
+         std::bind(&ScheduleItemList::findEventSToRepeat, this, std::placeholders::_1), titleSearch);
+}
+
+

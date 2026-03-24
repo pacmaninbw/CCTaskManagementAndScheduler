@@ -208,10 +208,10 @@ TestStatus TaskList::testExceptionGetDefaultDashboardTaskList() noexcept
 {
     selfTestResetAllValues();
 
-    std::chrono::year_month_day searchStartDate = commonTestDateValue;
+    std::chrono::year_month_day searchStartDate = commonProductionTestDataAddedDate;
     std::size_t assignedUser = 1;
 
-    return testListExceptionAndSuccessNArgs("TaskList::testExceptionGetTasksCompletedByAssignedAfterDate()",
+    return testListExceptionAndSuccessNArgs("TaskList::testExceptionGetDefaultDashboardTaskList()",
          std::bind(&TaskList::getDefaultDashboardTaskList, this, std::placeholders::_1, std::placeholders::_2),
         assignedUser, searchStartDate);
 }

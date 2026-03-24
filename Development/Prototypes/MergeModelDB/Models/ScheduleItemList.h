@@ -20,6 +20,7 @@ public:
     ScheduleItemListValues getUserDaySchedule(std::chrono::year_month_day scheduleDate) noexcept;
     ScheduleItemListValues findUserScheduleItemsByContentAndDateRange(std::string searchTitle,
         std::chrono::year_month_day searchStart, std::chrono::year_month_day searchEnd) noexcept;
+    ScheduleItemListValues findEventSToRepeat(std::string searchTitle) noexcept;
 
 private:
     ScheduleItemListValues fillScheduleItemList();
@@ -28,6 +29,7 @@ private:
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
     TestStatus testExceptionGetUserDaySchedule() noexcept;
     TestStatus testExceptionFindUserScheduleItemsByContentAndDateRange() noexcept;
+    TestStatus testExceptionFindEventSToRepeat() noexcept;
 
     std::size_t userID;
 };
