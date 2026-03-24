@@ -113,6 +113,7 @@ Test Output: TaskModel:
 	Creator ID: 1
 	Assigned To ID: 2
 	Description: Test task description access
+	Status: 4
 	Percentage Complete: 86.5
 	Creation Date: 2024-05-14 08:31:53.000000000
 	Scheduled Start Date: 2024-05-07
@@ -127,7 +128,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2025-12-26
+	Completed Date: 2026-03-24
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
@@ -270,6 +271,8 @@ Exception Test for TaskList::testExceptionGetTasksCompletedByAssignedAfterDate()
 
 Exception Test for TaskList::testExceptionGetUnstartedDueForStartForAssignedUser()
 
+Exception Test for TaskList::testExceptionGetDefaultDashboardTaskList()
+
 
 ---------------------------------------------------------------------------------
 
@@ -304,6 +307,8 @@ Exception Test for NoteList::testExceptionsGetNotesForUserCreatedDateRange()
 
 Exception Test for NoteList::testExceptionsGetNotesForUserEditedDateRange()
 
+Exception Test for NoteList::testExceptionsGetDashboardNoteTable()
+
 
 ---------------------------------------------------------------------------------
 
@@ -315,6 +320,8 @@ Running ScheduleItemList Self Test
 Running Exception Handling Test Cases ScheduleItemList
 
 Exception Test for ScheduleItemList::testExceptionGgetUserDaySchedule()
+
+Exception Test for ScheduleItemList::testExceptionFindUserScheduleItemsByContentAndDateRange()
 
 Exception Test for ScheduleItemList::testExceptionFindUserScheduleItemsByContentAndDateRange()
 
