@@ -7,6 +7,7 @@ rm -f build/CMakeFiles/protoPersonalPlanner.dir/Models/*.gcda
 rm -f build/CMakeFiles/protoPersonalPlanner.dir/Testing/*.gcda
 mkdir -p TestCoverage
 mysql -u $sqluser -p$sqlpassword < PlannerTaskScheduleDB.sql
+mysql -u $sqluser -p$sqlpassword < AdditionalFunctionalTestData.sql
 build/protoPersonalPlanner -u "$sqluser" -p "$sqlpassword" > Testing/testOut.txt
 echo "Diff"
 diff -w Testing/testOut.txt Testing/testOut_forDiff.txt
