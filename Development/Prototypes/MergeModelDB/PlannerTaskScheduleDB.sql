@@ -189,6 +189,7 @@ CREATE TABLE IF NOT EXISTS `testPTSDB`.`UserScheduleItem` (
     INDEX `ScheduleItem_CreatedTS_idx` (`CreatedTS` DESC),
     INDEX `ScheduleItem_LastUpdateTS_idx` (`LastUpdateTS` DESC),
     INDEX `fk_UserScheduleItem_UserID_idx` (`UserID` ASC),
+    INDEX `ScheduleItem_Location_idx` (`Location` ASC),
     CONSTRAINT `fk_UserScheduleItem_UserID`
       FOREIGN KEY (`UserID`)
       REFERENCES `testPTSDB`.`UserProfile` (`UserID`)

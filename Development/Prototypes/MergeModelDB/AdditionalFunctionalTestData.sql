@@ -10,9 +10,9 @@ USE `testPTSDB`;
 --
 
 INSERT INTO `testPTSDB`.`UserProfile` (`Organization_ID`, `LastName`, `FirstName`, `MiddleInitial`, `EmailAddress`, `LoginName`, `HashedPassWord`, `Preferences`, `UserAdded`, `LastLogin`) VALUES
-(NULL, 'Chernick', 'Paul', 'A', 'paul.chernick@chernicksw.com', 'pacmaninbw', 'M1nus+1r3th', '8:30 AM;5:00 PM;1;1;1;0;', '2026-01-23 15:14:39', '2026-03-22 13:32:27'),
-(NULL, 'Chernick', 'Paul2', 'B', 'pcfriends@chernicksw.com', 'ChernickPaulA', 'pacmaninbw', '8:30 AM;5:00 PM;1;1;1;0;', '2026-03-15 21:01:17', '2026-03-19 14:03:42'),
-(NULL, 'Shiminotitz', 'Eitan', 'Y', 'EitanShiminotitz@google.com', 'ShiminotitzEitanY', 'ShiminotitzEitanY', '8:30 AM;5:00 PM;1;1;1;0;', '2026-03-19 13:51:42', '2026-03-19 13:51:42');
+(NULL, 'Black', 'Paul', 'A', 'paul.black@blacksw.com', 'pacmaninbw', 'mYfAv0r1t3Pas5MorD', '8:30 AM;5:00 PM;1;1;1;0;', '2026-01-23 15:14:39', '2026-03-22 13:32:27'),
+(NULL, 'Black', 'Paul2', 'B', 'pcfriends@blacksw.com', 'BlackPaulA', 'pacmaninbw', '8:30 AM;5:00 PM;1;1;1;0;', '2026-03-15 21:01:17', '2026-03-19 14:03:42'),
+(NULL, 'Shinny', 'Eric', 'Y', 'EricShinny@google.com', 'ShinnyEricY', 'ShinnyEricY', '8:30 AM;5:00 PM;1;1;1;0;', '2026-03-19 13:51:42', '2026-03-19 13:51:42');
 
 -- --------------------------------------------------------
 
