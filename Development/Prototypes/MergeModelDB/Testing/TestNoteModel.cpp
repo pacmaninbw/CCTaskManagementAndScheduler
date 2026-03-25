@@ -50,12 +50,14 @@ TestNoteModel::TestNoteModel()
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::negativePathMissingRequiredFields, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testnegativePathNotModified, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testNegativePathAlreadyInDataBase, this));
+
+    userOne = std::make_shared<UserModel>();
+    userOne->selectByFullName("One", "User", "P");;
+
 }
 
 TestStatus TestNoteModel::testInsertNote(TestNoteInput testNote)
 {
-    UserModel_shp userOne = std::make_shared<UserModel>();
-    userOne->selectByUserID(1);
     NoteModel newNote;
     newNote.setUserId(userOne->getUserID());
     newNote.setContent(testNote.content);
@@ -96,7 +98,7 @@ TestStatus TestNoteModel::testPositivePathNoteInsertions()
 TestStatus TestNoteModel::testPositivePathGetAllNotesForUser()
 {
     NoteList NoteListTestInterface;
-    NoteListValues allUserNotes = NoteListTestInterface.getAllNotesForUser(1);
+    NoteListValues allUserNotes = NoteListTestInterface.getAllNotesForUser(userOne->getUserID());
 
     if (allUserNotes.empty())
     {
@@ -107,8 +109,8 @@ TestStatus TestNoteModel::testPositivePathGetAllNotesForUser()
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all notes for user ({}) PASSED!\n", 1);
-        std::cout << std::format("User {} has {} notes\n", 1, allUserNotes.size());
+        std::cout << std::format("Find all notes for user ({}) PASSED!\n", userOne->getUserID());
+        std::cout << std::format("User {} has {} notes\n", userOne->getUserID(), allUserNotes.size());
         for (auto note: allUserNotes)
         {
             std::cout << *note << "\n";
@@ -122,7 +124,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent()
 {
     std::string searchString("Maintain");
     NoteList NoteListTestInterface;
-    NoteListValues allSimilarUserNotes = NoteListTestInterface.getNotesForUserSimlarToContent(1, searchString);
+    NoteListValues allSimilarUserNotes = NoteListTestInterface.getNotesForUserSimlarToContent(userOne->getUserID(), searchString);
 
     if (allSimilarUserNotes.empty())
     {
@@ -133,8 +135,8 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent()
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all notes for user ({}) similar to {} PASSED!\n", 1, searchString);
-        std::cout << std::format("User {} has {} notes\n", 1, allSimilarUserNotes.size());
+        std::cout << std::format("Find all notes for user ({}) similar to {} PASSED!\n", userOne->getUserID(), searchString);
+        std::cout << std::format("User {} has {} notes\n", userOne->getUserID(), allSimilarUserNotes.size());
         for (auto note: allSimilarUserNotes)
         {
             std::cout << *note << "\n";
@@ -150,7 +152,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange()
     std::chrono::year_month_day endDate = commonTestDateRangeEndValue;
 
     NoteList NoteListTestInterface;
-    NoteListValues allNotesInRange = NoteListTestInterface.getAllNotesForUserCreatedInDatgeRange(1, startDate, endDate);
+    NoteListValues allNotesInRange = NoteListTestInterface.getAllNotesForUserCreatedInDatgeRange(userOne->getUserID(), startDate, endDate);
 
     if (allNotesInRange.empty())
     {
@@ -161,8 +163,8 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange()
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all notes for user ({}) created in date range PASSED!\n", 1);
-        std::cout << std::format("User {} has {} notes\n", 1, allNotesInRange.size());
+        std::cout << std::format("Find all notes for user ({}) created in date range PASSED!\n", userOne->getUserID());
+        std::cout << std::format("User {} has {} notes\n", userOne->getUserID(), allNotesInRange.size());
         for (auto note: allNotesInRange)
         {
             std::cout << *note << "\n";
@@ -180,7 +182,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserEditedDateRange()
     std::chrono::year_month_day endDate = commonTestDateRangeEndValue;
 
     NoteList NoteListTestInterface;
-    NoteListValues allNotesInRange = NoteListTestInterface.getAllNotesForUserEditedInDatgeRange(1, startDate, endDate);
+    NoteListValues allNotesInRange = NoteListTestInterface.getAllNotesForUserEditedInDatgeRange(userOne->getUserID(), startDate, endDate);
 
     if (allNotesInRange.empty())
     {
@@ -191,8 +193,8 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserEditedDateRange()
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all notes for user ({}) edited in date range PASSED!\n", 1);
-        std::cout << std::format("User {} has {} notes\n", 1, allNotesInRange.size());
+        std::cout << std::format("Find all notes for user ({}) edited in date range PASSED!\n", userOne->getUserID());
+        std::cout << std::format("User {} has {} notes\n", userOne->getUserID(), allNotesInRange.size());
         for (auto note: allNotesInRange)
         {
             std::cout << *note << "\n";
@@ -207,7 +209,7 @@ TestStatus TestNoteModel::testPositivePathGetDashboardNoteTable()
     std::chrono::year_month_day searchDate = commonTestDateValue;
 
     NoteList NoteListTestInterface;
-    NoteListValues allNotesInRange = NoteListTestInterface.getDashboardNoteTable(1, searchDate);
+    NoteListValues allNotesInRange = NoteListTestInterface.getDashboardNoteTable(userOne->getUserID(), searchDate);
 
     if (allNotesInRange.empty())
     {
@@ -218,8 +220,8 @@ TestStatus TestNoteModel::testPositivePathGetDashboardNoteTable()
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all notes for user ({}) for a date PASSED!\n", 1);
-        std::cout << std::format("User {} has {} notes\n", 1, allNotesInRange.size());
+        std::cout << std::format("Find all notes for user ({}) for a date PASSED!\n", userOne->getUserID());
+        std::cout << std::format("User {} has {} notes\n", userOne->getUserID(), allNotesInRange.size());
         for (auto note: allNotesInRange)
         {
             std::cout << *note << "\n";
@@ -310,7 +312,7 @@ TestStatus TestNoteModel::testMissingRequiredFieldsAddUserID(
         testInsertionFailureMessages(&testNote, expectedErrors);
 
     expectedErrors.erase(expectedErrors.begin());
-    testNote.setUserId(1);
+    testNote.setUserId(userOne->getUserID());
 
     return testStatus;
 }

@@ -39,12 +39,13 @@ TestScheduleItemModel::TestScheduleItemModel()
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::negativePathMissingRequiredFields, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testnegativePathNotModified, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testNegativePathAlreadyInDataBase, this));
+
+    userOne = std::make_shared<UserModel>();
+    userOne->selectByFullName("One", "User", "P");;
 }
 
 TestStatus TestScheduleItemModel::testInsertScheduleItem(TestScheduleItemInput testScheduleItem)
 {
-    UserModel_shp userOne = std::make_shared<UserModel>();
-    userOne->selectByUserID(1);
     ScheduleItemModel newScheduleItem;
     newScheduleItem.setUserID(userOne->getUserID());
     newScheduleItem.setTitle(testScheduleItem.title);
@@ -60,6 +61,11 @@ TestStatus TestScheduleItemModel::testInsertScheduleItem(TestScheduleItemInput t
         std::cout << "Insertion failed for ScheduleItem: " << newScheduleItem << " :\n";
         std::cout << newScheduleItem.getAllErrorMessages() << "\n";
         return TESTFAILED;
+    }
+
+    if (userOneFirstScheduleItem == 0)
+    {
+        userOneFirstScheduleItem = newScheduleItem.getScheduleItemID();
     }
 
     return TESTPASSED;
@@ -91,8 +97,8 @@ TestStatus TestScheduleItemModel::testPositivePathUpdateScheduleItem()
     TestStatus testStatus = TESTPASSED;
 
     ScheduleItemModel_shp scheduleitemToUpdate = std::make_shared<ScheduleItemModel>();
-    scheduleitemToUpdate->setScheduleItemID(1);
-    scheduleitemToUpdate->setUserID(1);
+    scheduleitemToUpdate->setScheduleItemID(userOneFirstScheduleItem);
+    scheduleitemToUpdate->setUserID(userOne->getUserID());
     if (!scheduleitemToUpdate->retrieve())
     {
         std::cout << "ScheduleItem 1 not found in database!!\n";
@@ -116,8 +122,6 @@ TestStatus TestScheduleItemModel::testPositivePathUpdateScheduleItem()
 
 TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSimilarTitleDateRange()
 {
-    UserModel_shp userOne = std::make_shared<UserModel>();
-    userOne->selectByUserID(1);
     std::chrono::year_month_day searchStart(constantStringToChronoDate("2024-12-1"));
     std::chrono::year_month_day searchEnd(constantStringToChronoDate("2024-12-31"));
 
@@ -135,8 +139,8 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSim
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all schedule items for user ({}) similar to {} PASSED!\n", 1, searchString);
-        std::cout << std::format("User {} has {} schedule items\n", 1, allSimilarUserScheduleItems.size());
+        std::cout << std::format("Find all schedule items for user ({}) similar to {} PASSED!\n", userOne->getUserID(), searchString);
+        std::cout << std::format("User {} has {} schedule items\n", userOne->getUserID(), allSimilarUserScheduleItems.size());
         for (auto scheduleitems: allSimilarUserScheduleItems)
         {
             std::cout << *scheduleitems << "\n";
@@ -148,9 +152,6 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSim
 
 TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate()
 {
-    UserModel_shp userOne = std::make_shared<UserModel>();
-    userOne->selectByUserID(1);
-
     std::chrono::year_month_day startDate(constantStringToChronoDate("2024-12-13"));
 
     ScheduleItemList schediList(userOne->getUserID());
@@ -165,8 +166,8 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate(
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all schedule items for user ({}) edited in date range PASSED!\n", 1);
-        std::cout << std::format("User {} has {} schedule items\n", 1, allScheduleItemsInRange.size());
+        std::cout << std::format("Find all schedule items for user ({}) edited in date range PASSED!\n", userOne->getUserID());
+        std::cout << std::format("User {} has {} schedule items\n", userOne->getUserID(), allScheduleItemsInRange.size());
         for (auto scheduleitem: allScheduleItemsInRange)
         {
             std::cout << *scheduleitem << "\n";
@@ -179,8 +180,8 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate(
 TestStatus TestScheduleItemModel::testNegativePathAlreadyInDataBase()
 {
     ScheduleItemModel_shp scheduleitemsAlreadyInDB = std::make_shared<ScheduleItemModel>();
-    scheduleitemsAlreadyInDB->setScheduleItemID(1);
-    scheduleitemsAlreadyInDB->setUserID(1);
+    scheduleitemsAlreadyInDB->setScheduleItemID(userOneFirstScheduleItem);
+    scheduleitemsAlreadyInDB->setUserID(userOne->getUserID());
     if (!scheduleitemsAlreadyInDB->retrieve())
     {
         std::cout << "ScheduleItem 1 not found in database!!\n";
@@ -194,8 +195,8 @@ TestStatus TestScheduleItemModel::testNegativePathAlreadyInDataBase()
 TestStatus TestScheduleItemModel::testnegativePathNotModified()
 {
     ScheduleItemModel_shp scheduleitemsNotModified = std::make_shared<ScheduleItemModel>();
-    scheduleitemsNotModified->setScheduleItemID(1);
-    scheduleitemsNotModified->setUserID(1);
+    scheduleitemsNotModified->setScheduleItemID(userOneFirstScheduleItem);
+    scheduleitemsNotModified->setUserID(userOne->getUserID());
     if (!scheduleitemsNotModified->retrieve())
     {
         std::cout << "ScheduleItem 1 not found in database!!\n";
@@ -260,7 +261,7 @@ TestStatus TestScheduleItemModel::testMissingRequiredFieldsAddUserID(
     TestStatus testStatus = testInsertionFailureMessages(&testScheduleItem, expectedErrors);
 
     expectedErrors.erase(expectedErrors.begin());
-    testScheduleItem.setUserID(1);
+    testScheduleItem.setUserID(userOne->getUserID());
 
     return testStatus;
 }

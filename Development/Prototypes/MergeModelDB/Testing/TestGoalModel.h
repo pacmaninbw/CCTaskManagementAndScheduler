@@ -1,6 +1,7 @@
 #ifndef TESTGOALMODEL_H_
 #define TESTGOALMODEL_H_
 
+class UserModel;
 // Project Header Files
 #include "TestDBInterfaceCore.h"
 #include "UserGoalList.h"
@@ -8,6 +9,7 @@
 
 // Standard C++ Header Files
 #include <functional>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -42,6 +44,7 @@ private:
     std::vector<std::function<bool(UserGoalModel_shp)>>positiveTestFuncs;
     std::vector<std::function<bool(void)>> negativePathTestFuncs;
     std::vector<TestGoalInput> testInput;
+    std::shared_ptr<UserModel> userOne;
 };
 
 #endif // TESTGOALMODEL_H_

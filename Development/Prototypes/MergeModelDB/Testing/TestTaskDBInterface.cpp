@@ -220,7 +220,7 @@ TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskList()
 {
     TaskList taskDBInteface;
     UserModel_shp realUser = std::make_shared<UserModel>();
-    realUser->selectByFullName("Chernick", "Paul", "A");
+    realUser->selectByFullName("Black", "Paul", "A");
 
     TaskListValues defaultTaskList = taskDBInteface.getDefaultDashboardTaskList(realUser->getUserID(),
         commonProductionTestDataAddedDate);

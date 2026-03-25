@@ -48,12 +48,13 @@ TestGoalModel::TestGoalModel()
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::negativePathMissingRequiredFields, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testnegativePathNotModified, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testNegativePathAlreadyInDataBase, this));
+
+    userOne = std::make_shared<UserModel>();
+    userOne->selectByFullName("One", "User", "P");;
 }
 
 TestStatus TestGoalModel::testInsertAndGetParent(TestGoalInput testGoal)
 {
-    UserModel_shp userOne = std::make_shared<UserModel>();
-    userOne->selectByUserID(1);
     UserGoalModel newGoal;
     newGoal.setUserId(userOne->getUserID());
     newGoal.setDescription(testGoal.description);
@@ -105,7 +106,7 @@ TestStatus TestGoalModel::testPositivePathGoalInsertions()
 TestStatus TestGoalModel::testPositivePathGetListofChildrenFromParent()
 {
     UserGoalModel parentGoal;
-    if (!parentGoal.selectByUserIDAndDescription(1, "Get a Job in Software Engineering"))
+    if (!parentGoal.selectByUserIDAndDescription(userOne->getUserID(), "Get a Job in Software Engineering"))
     {
         std::cerr << "Failed to find Parent Goal! Test FAILED\n";
         std::cerr << parentGoal.getAllErrorMessages() << "\n";
@@ -139,7 +140,7 @@ TestStatus TestGoalModel::testPositivePathGetListofChildrenFromParent()
 TestStatus TestGoalModel::testPositivePathGetAllGoalsForUser()
 {
     UserGoalList goalListTestInterface;
-    UserGoalListValues allUserGoals = goalListTestInterface.getAllGoalsForUser(1);
+    UserGoalListValues allUserGoals = goalListTestInterface.getAllGoalsForUser(userOne->getUserID());
 
     if (allUserGoals.empty())
     {
@@ -150,8 +151,8 @@ TestStatus TestGoalModel::testPositivePathGetAllGoalsForUser()
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all goals for user ({}) PASSED!\n", 1);
-        std::cout << std::format("User {} has {} goals\n", 1, allUserGoals.size());
+        std::cout << std::format("Find all goals for user ({}) PASSED!\n", userOne->getUserID());
+        std::cout << std::format("User {} has {} goals\n", userOne->getUserID(), allUserGoals.size());
         for (auto goal: allUserGoals)
         {
             std::cout << *goal << "\n";
@@ -165,7 +166,7 @@ TestStatus TestGoalModel::testPositivePathFindGoalsWithSimilarDescription()
 {
     UserGoalList goalListTestInterface;
     std::string searchString("Maintain");
-    std::size_t userId = 1;
+    std::size_t userId = userOne->getUserID();
 
     UserGoalListValues goalsWithSimilarDescription = goalListTestInterface.findGoalsByUserIdAndSimilarDescription(userId, searchString);
     if (goalsWithSimilarDescription.empty())
@@ -178,7 +179,7 @@ TestStatus TestGoalModel::testPositivePathFindGoalsWithSimilarDescription()
     if (programOptions.verboseOutput)
     {
         std::cout << std::format("Find all goals for user ({}) containing {} PASSED!\n", userId, searchString);
-        std::cout << std::format("User {} has {} goals\n", 1, goalsWithSimilarDescription.size());
+        std::cout << std::format("User {} has {} goals\n", userOne->getUserID(), goalsWithSimilarDescription.size());
         for (auto goal: goalsWithSimilarDescription)
         {
             std::cout << *goal << "\n";

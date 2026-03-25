@@ -1,6 +1,8 @@
 #ifndef TESTNOTEMODEL_H_
 #define TESTNOTEMODEL_H_
 
+class UserModel;
+
 // Project Header Files
 #include "TestDBInterfaceCore.h"
 #include "NoteModel.h"
@@ -41,6 +43,8 @@ private:
     std::vector<std::function<bool(NoteModel_shp)>>positiveTestFuncs;
     std::vector<std::function<bool(void)>> negativePathTestFuncs;
     std::vector<TestNoteInput> testInput;
+    std::shared_ptr<UserModel> userOne;
+
 };
 
 #endif // TESTNOTEMODEL_H_

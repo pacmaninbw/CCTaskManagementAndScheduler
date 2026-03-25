@@ -1,12 +1,15 @@
 #ifndef TESTSCHEDULEITEMMODEL_H_
 #define TESTSCHEDULEITEMMODEL_H_
 
+class UserModel;
+
 // Project Header Files
 #include "TestDBInterfaceCore.h"
 #include "ScheduleItemModel.h"
 
 // Standard C++ Header Files
 #include <functional>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -47,6 +50,8 @@ private:
     std::vector<std::function<bool(ScheduleItemModel_shp)>>positiveTestFuncs;
     std::vector<std::function<bool(void)>> negativePathTestFuncs;
     std::vector<TestScheduleItemInput> testInput;
+    std::shared_ptr<UserModel> userOne;
+    std::size_t userOneFirstScheduleItem = 0;
 };
 
 #endif // TESTSCHEDULEITEMMODEL_H_
