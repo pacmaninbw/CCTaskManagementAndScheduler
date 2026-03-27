@@ -46,6 +46,7 @@ public:
     std::string formatSelectSiByContentDateRangeUser(std::string content, std::chrono::year_month_day searchStart, 
         std::chrono::year_month_day searchEnd, std::size_t userId) noexcept;
     std::string formatSelectSiByContentAndUserSortByContent(std::string content, std::size_t userId) noexcept;
+    std::string formatGetUniqueContentsByUserSortByContent(std::string content, std::size_t userId) noexcept;
 
 /*
  * Required fields.

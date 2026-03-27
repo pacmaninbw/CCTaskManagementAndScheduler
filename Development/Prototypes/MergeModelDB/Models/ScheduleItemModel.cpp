@@ -159,6 +159,27 @@ std::string ScheduleItemModel::formatSelectSiByContentAndUserSortByContent(std::
     return std::string();
 }
 
+std::string ScheduleItemModel::formatGetUniqueContentsByUserSortByContent(std::string content, std::size_t userId) noexcept
+{
+    errorMessages.clear();
+
+    try {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "CALL ScheduleItemContentSelectionList({}, {})", content, userId);
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In ScheduleItemModel::formatSelectSiByContentDateRangeUser({}) : {}", userId, e.what()));
+    }
+
+    return std::string();
+}
+
+
 bool ScheduleItemModel::diffScheduleItem(ScheduleItemModel &other)
 {
     std::chrono::system_clock::time_point localStartTime = startTime.value_or(std::chrono::system_clock::now());
