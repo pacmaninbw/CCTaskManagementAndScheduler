@@ -8,6 +8,7 @@
 // Standard C++ Header Files
 #include <chrono>
 #include <string>
+#include <vector>
 
 using ScheduleItemListValues = std::vector<ScheduleItemModel_shp>;
 
@@ -20,7 +21,7 @@ public:
     ScheduleItemListValues getUserDaySchedule(std::chrono::year_month_day scheduleDate) noexcept;
     ScheduleItemListValues findUserScheduleItemsByContentAndDateRange(std::string searchTitle,
         std::chrono::year_month_day searchStart, std::chrono::year_month_day searchEnd) noexcept;
-    ScheduleItemListValues findEventSToRepeat(std::string searchTitle) noexcept;
+    std::vector<std::string> findEventSToRepeat(std::string searchTitle) noexcept;
 
 private:
     ScheduleItemListValues fillScheduleItemList();

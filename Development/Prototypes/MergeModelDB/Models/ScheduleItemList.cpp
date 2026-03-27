@@ -56,15 +56,47 @@ ScheduleItemListValues ScheduleItemList::findUserScheduleItemsByContentAndDateRa
     return ScheduleItemListValues();
 }
 
-ScheduleItemListValues ScheduleItemList::findEventSToRepeat(std::string searchTitle) noexcept
+std::vector<std::string> ScheduleItemList::findEventSToRepeat(std::string searchTitle) noexcept
 {
     errorMessages.clear();
+    std::vector<std::string> matchingEvents;
     appendErrorMessage("In ScheduleItemList::findEventSToRepeat : ");
 
     try
     {
-        firstFormattedQuery = queryGenerator->formatSelectSiByContentAndUserSortByContent(searchTitle, userID);
-        return runQueryFillScheduleItemList();
+        firstFormattedQuery = queryGenerator->formatGetUniqueContentsByUserSortByContent(searchTitle, userID);
+        if (firstFormattedQuery.empty())
+        {
+            appendErrorMessage(std::format("Formatting stored procedure query string failed {}",
+                queryGenerator->getAllErrorMessages()));
+
+            return matchingEvents;
+        }
+
+        boost::mysql::results localResult = runQueryAsync(firstFormattedQuery);
+        if (!inSelfTest)
+        {
+            // localresult will abort with an assert in self test
+            if (localResult.rows().empty())
+            {
+                appendErrorMessage("No matching events found!");
+            } else
+            {
+                for (auto row: localResult.rows())
+                {
+                    matchingEvents.push_back(row.at(0).as_string());    
+                }
+            }
+        }
+        else
+        {
+            if (!forceException)
+            {
+                matchingEvents.push_back("Test String");
+            }
+        }
+
+        return matchingEvents;
     }
 
     catch(const std::exception& e)
@@ -72,7 +104,7 @@ ScheduleItemListValues ScheduleItemList::findEventSToRepeat(std::string searchTi
         appendErrorMessage(e.what());
     }
     
-    return ScheduleItemListValues();
+    return matchingEvents;
 }
 
 ScheduleItemListValues ScheduleItemList::fillScheduleItemList()
@@ -146,7 +178,7 @@ TestStatus ScheduleItemList::testExceptionFindEventSToRepeat() noexcept
 
     std::string titleSearch("Title search");
 
-    return testListExceptionAndSuccessNArgs("ScheduleItemList::testExceptionFindUserScheduleItemsByContentAndDateRange()",
+    return testListExceptionAndSuccessNArgs("ScheduleItemList::testExceptionFindEventSToRepeat()",
          std::bind(&ScheduleItemList::findEventSToRepeat, this, std::placeholders::_1), titleSearch);
 }
 
