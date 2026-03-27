@@ -301,5 +301,30 @@ END$$
 
 DELIMITER ;
 
+-- -----------------------------------------------------
+-- Stored Procedures
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`ScheduleItemContentSelectionList`;
+
+CREATE PROCEDURE `testPTSDB`.`ScheduleItemContentSelectionList`
+(
+    IN Content VARCHAR(128),
+    IN IDUser INT
+)
+
+BEGIN
+
+    SELECT DISTINCT UserScheduleItem.Title FROM UserScheduleItem
+    WHERE
+        UserScheduleItem.UserID = IDUser AND UserScheduleItem.Title LIKE CONCAT('%', Content, '%')
+        ORDER BY UserScheduleItem.Title ASC;
+
+END$$
+
+DELIMITER ;
+
 COMMIT;
 
