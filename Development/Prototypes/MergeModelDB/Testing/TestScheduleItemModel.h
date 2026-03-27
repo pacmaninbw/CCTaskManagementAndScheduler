@@ -34,6 +34,7 @@ private:
     TestStatus testPositivePathGetScheduleItemsForUserWithSimilarTitleDateRange();
     TestStatus testPositivePathGetScheduleItemsForUserByDate();
     TestStatus testPositivePathUpdateScheduleItem();
+    TestStatus testPositivePathFindEventSToRepeat();
     TestStatus testNegativePathAlreadyInDataBase();
     TestStatus testnegativePathNotModified();
     TestStatus negativePathMissingRequiredFields();

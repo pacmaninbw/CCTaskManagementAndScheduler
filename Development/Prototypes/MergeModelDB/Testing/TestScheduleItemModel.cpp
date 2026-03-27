@@ -35,6 +35,7 @@ TestScheduleItemModel::TestScheduleItemModel()
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSimilarTitleDateRange, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathUpdateScheduleItem, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathFindEventSToRepeat, this));
 
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::negativePathMissingRequiredFields, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testnegativePathNotModified, this));
@@ -176,6 +177,33 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate(
     
     return TESTPASSED;
 }
+
+TestStatus TestScheduleItemModel::testPositivePathFindEventSToRepeat()
+{
+    std::string searchString("birthday");
+    ScheduleItemList ScheduleItemListTestInterface(userOne->getUserID());
+    std::vector<std::string> matchingEvents = ScheduleItemListTestInterface.findEventSToRepeat(searchString);
+
+    if (matchingEvents.empty())
+    {
+        std::cerr << "test of ScheduleItemListTestInterface.getScheduleItemsForUserSimlarToContent() FAILED\n" <<
+            ScheduleItemListTestInterface.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("Find all schedule items for user ({}) similar to {} PASSED!\n", userOne->getUserID(), searchString);
+        std::cout << std::format("User {} has {} schedule items\n", userOne->getUserID(), matchingEvents.size());
+        for (auto scheduleitems: matchingEvents)
+        {
+            std::cout << scheduleitems << "\n";
+        }
+    }
+    
+    return TESTPASSED;
+}
+
 
 TestStatus TestScheduleItemModel::testNegativePathAlreadyInDataBase()
 {
