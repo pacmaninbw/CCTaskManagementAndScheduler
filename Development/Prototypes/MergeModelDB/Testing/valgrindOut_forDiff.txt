@@ -102,7 +102,7 @@ In Self Test Query is:
 	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (1, 2, 'Testing Exception handling', 1, 0, 0e+00, '2024-05-14 08:31:53.000000', '2024-05-21', '2024-05-14', NULL, NULL, NULL, 6, 0e+00, 65, 1, 0, 3, '3;5;7;', '2024-05-14 08:31:53.000000')
 Caught expected exception from TaskSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
-	UPDATE Tasks SET CreatedBy = 1, AsignedTo = 2, Description = 'Testing Exception handling', ParentTask = NULL, Status = 0, PercentageComplete = 0e+00, CreatedOn = '2024-05-14 08:31:53.000000', RequiredDelivery = '2024-05-21', ScheduledStart = '2024-05-14', ActualStart = NULL, EstimatedCompletion = NULL, Completed = NULL, EstimatedEffortHours = 6, ActualEffortHours = 0e+00, SchedulePriorityGroup = 65, PriorityInGroup = 1, Personal = 0, DependencyCount = 3, Dependencies = '2;4;6;', LastUpdateTS = '2026-03-25 13:29:10.726786' WHERE TaskID = 1 
+	UPDATE Tasks SET CreatedBy = 1, AsignedTo = 2, Description = 'Testing Exception handling', ParentTask = NULL, Status = 0, PercentageComplete = 0e+00, CreatedOn = '2024-05-14 08:31:53.000000', RequiredDelivery = '2024-05-21', ScheduledStart = '2024-05-14', ActualStart = NULL, EstimatedCompletion = NULL, Completed = NULL, EstimatedEffortHours = 6, ActualEffortHours = 0e+00, SchedulePriorityGroup = 65, PriorityInGroup = 1, Personal = 0, DependencyCount = 3, Dependencies = '2;4;6;', LastUpdateTS = '2026-03-27 14:36:25.729286' WHERE TaskID = 1 
 Caught expected exception from TaskSelfTest::formatSelectStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 37
@@ -172,7 +172,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-03-25
+	Completed Date: 2026-03-27
 
 Task::testAllInsertFailures before successful insert this = 
 TaskModel:
@@ -213,7 +213,7 @@ In Self Test Query is:
 In Self Test Query is: 
 	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal) VALUES (27, 'Testing insertion exception', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', NULL, NULL)
 In Self Test Query is: 
-	UPDATE UserGoals SET UserGoals.UserID = 23, UserGoals.Description = 'Testing insertion exception', UserGoals.CreationTS = '2024-05-14 08:31:53.000000', UserGoals.LastUpdateTS = '2026-03-25 13:29:12.116208' UserGoals.Priority = NULL UserGoals.ParentGoal = NULL WHERE UserGoals.idUserGoals = 37
+	UPDATE UserGoals SET UserGoals.UserID = 23, UserGoals.Description = 'Testing insertion exception', UserGoals.CreationTS = '2024-05-14 08:31:53.000000', UserGoals.LastUpdateTS = '2026-03-27 14:36:27.105832' UserGoals.Priority = NULL UserGoals.ParentGoal = NULL WHERE UserGoals.idUserGoals = 37
 In Self Test Query is: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1
 
@@ -315,7 +315,7 @@ In Self Test Query is:
 	INSERT INTO UserScheduleItem (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS)  VALUES (1, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Testing Exception handling for Schedule Item Insert', 0, NULL, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000')
 Caught expected exception from ScheduleItemSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
-	UPDATE UserScheduleItem SET StartDateTime = '2024-05-14 08:31:53.000000', EndDateTime = '2024-05-14 08:31:53.000000', Title = 'Testing Exception handling for Schedule Item Update', Personal = 0, Location = NULL, LastUpdateTS = '2026-03-25 13:29:14.770172' WHERE idUserScheduleItem = 57 AND UserID = 1 
+	UPDATE UserScheduleItem SET StartDateTime = '2024-05-14 08:31:53.000000', EndDateTime = '2024-05-14 08:31:53.000000', Title = 'Testing Exception handling for Schedule Item Update', Personal = 0, Location = NULL, LastUpdateTS = '2026-03-27 14:36:29.751239' WHERE idUserScheduleItem = 57 AND UserID = 1 
 Caught expected exception from ScheduleItemSelfTest::formatSelectStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
 	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS FROM UserScheduleItem  WHERE idUserScheduleItem = 57 AND UserID = 1
@@ -403,7 +403,7 @@ Running:
 
 Exception Test for TaskList::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND ScheduledStart < '2026-04-01' AND (Status IS NULL OR Status = 0)
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND ScheduledStart < '2026-04-03' AND (Status IS NULL OR Status = 0)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 1
 
@@ -518,11 +518,9 @@ In Self Test Query is:
 Running: 
 	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS FROM UserScheduleItem  WHERE idUserScheduleItem = 1 AND UserID = 1
 
-Exception Test for ScheduleItemList::testExceptionFindUserScheduleItemsByContentAndDateRange()
+Exception Test for ScheduleItemList::testExceptionFindEventSToRepeat()
 In Self Test Query is: 
-	SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 1 AND Title LIKE '%Title search%' ORDER BY Title
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS FROM UserScheduleItem  WHERE idUserScheduleItem = 1 AND UserID = 1
+	CALL ScheduleItemContentSelectionList('Title search', 1)
 
 
 ScheduleItemList PASSED Self Test
@@ -722,7 +720,7 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Design UML Diagram for Personal Planner' AND AsignedTo = 4
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (4, 4, 'Grocery Shopping', 0, 0, 0e+00, '2024-05-14 08:31:53.000000', '2025-04-12', '2025-04-11', NULL, '2026-03-25', NULL, 2, 2e+00, 67, 1, 0, 0, NULL, '2024-05-14 08:31:53.000000')
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (4, 4, 'Grocery Shopping', 0, 0, 0e+00, '2024-05-14 08:31:53.000000', '2025-04-12', '2025-04-11', NULL, '2026-03-27', NULL, 2, 2e+00, 67, 1, 0, 0, NULL, '2024-05-14 08:31:53.000000')
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 58
 Running: 
@@ -734,13 +732,13 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Daily 30 minute walk' AND AsignedTo = 4
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (4, 4, 'Clean apartment', 0, 0, 0e+00, '2024-05-14 08:31:53.000000', '2025-04-12', '2025-04-12', NULL, '2026-03-25', NULL, 2, 0e+00, 67, 3, 0, 0, NULL, '2024-05-14 08:31:53.000000')
+	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS) VALUES (4, 4, 'Clean apartment', 0, 0, 0e+00, '2024-05-14 08:31:53.000000', '2025-04-12', '2025-04-12', NULL, '2026-03-27', NULL, 2, 0e+00, 67, 3, 0, 0, NULL, '2024-05-14 08:31:53.000000')
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 60
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Clean apartment' AND AsignedTo = 4
 Running: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-04-01' AND (Status IS NULL OR Status = 0)
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-04-03' AND (Status IS NULL OR Status = 0)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 50
 Running: 
@@ -899,7 +897,7 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-03-25
+	Estimated Completion Date: 2026-03-27
 
 TaskModel:
 	Task ID: 59
@@ -939,7 +937,7 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-03-25
+	Estimated Completion Date: 2026-03-27
 
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile  WHERE LastName = 'Black' AND FirstName = 'Paul' AND MiddleInitial = 'A'
@@ -1345,7 +1343,7 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 47
 Running: 
-	UPDATE Tasks SET CreatedBy = 4, AsignedTo = 4, Description = 'Archive BHHS74Reunion website to external SSD', ParentTask = 0, Status = 4, PercentageComplete = 0e+00, CreatedOn = '2024-05-14 08:31:53.000000', RequiredDelivery = '2025-05-05', ScheduledStart = '2025-04-08', ActualStart = '2025-04-08', EstimatedCompletion = '2025-05-05', Completed = '2026-03-25', EstimatedEffortHours = 12, ActualEffortHours = 6e+00, SchedulePriorityGroup = 65, PriorityInGroup = 1, Personal = 0, DependencyCount = 0, Dependencies = NULL, LastUpdateTS = '2026-03-25 13:29:24.664119' WHERE TaskID = 47 
+	UPDATE Tasks SET CreatedBy = 4, AsignedTo = 4, Description = 'Archive BHHS74Reunion website to external SSD', ParentTask = 0, Status = 4, PercentageComplete = 0e+00, CreatedOn = '2024-05-14 08:31:53.000000', RequiredDelivery = '2025-05-05', ScheduledStart = '2025-04-08', ActualStart = '2025-04-08', EstimatedCompletion = '2025-05-05', Completed = '2026-03-27', EstimatedEffortHours = 12, ActualEffortHours = 6e+00, SchedulePriorityGroup = 65, PriorityInGroup = 1, Personal = 0, DependencyCount = 0, Dependencies = NULL, LastUpdateTS = '2026-03-27 14:36:39.598082' WHERE TaskID = 47 
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 47
 Running: 
@@ -1353,7 +1351,7 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Install a WordPress Archive Plugin' AND AsignedTo = 4
 Running: 
-	UPDATE Tasks SET CreatedBy = 4, AsignedTo = 4, Description = 'Install a WordPress Archive Plugin', ParentTask = 1, Status = 0, PercentageComplete = 0e+00, CreatedOn = '2024-05-14 08:31:53.000000', RequiredDelivery = '2025-05-01', ScheduledStart = '2025-05-01', ActualStart = NULL, EstimatedCompletion = '2025-05-01', Completed = NULL, EstimatedEffortHours = 1, ActualEffortHours = 0e+00, SchedulePriorityGroup = 66, PriorityInGroup = 2, Personal = 0, DependencyCount = 1, Dependencies = '49;', LastUpdateTS = '2026-03-25 13:29:24.845710' WHERE TaskID = 50 
+	UPDATE Tasks SET CreatedBy = 4, AsignedTo = 4, Description = 'Install a WordPress Archive Plugin', ParentTask = 1, Status = 0, PercentageComplete = 0e+00, CreatedOn = '2024-05-14 08:31:53.000000', RequiredDelivery = '2025-05-01', ScheduledStart = '2025-05-01', ActualStart = NULL, EstimatedCompletion = '2025-05-01', Completed = NULL, EstimatedEffortHours = 1, ActualEffortHours = 0e+00, SchedulePriorityGroup = 66, PriorityInGroup = 2, Personal = 0, DependencyCount = 1, Dependencies = '49;', LastUpdateTS = '2026-03-27 14:36:39.779262' WHERE TaskID = 50 
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Log into PHPMyAdmin and save Database to disk' AND AsignedTo = 4
 Running: 
@@ -1365,7 +1363,7 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE Description = 'Run Archive Plugin' AND AsignedTo = 4
 Running: 
-	UPDATE Tasks SET CreatedBy = 4, AsignedTo = 4, Description = 'Log into PHPMyAdmin and save Database to disk', ParentTask = 1, Status = 0, PercentageComplete = 0e+00, CreatedOn = '2024-05-14 08:31:53.000000', RequiredDelivery = '2025-05-04', ScheduledStart = '2025-05-04', ActualStart = NULL, EstimatedCompletion = '2025-05-04', Completed = NULL, EstimatedEffortHours = 1, ActualEffortHours = 0e+00, SchedulePriorityGroup = 66, PriorityInGroup = 5, Personal = 0, DependencyCount = 4, Dependencies = '49;50;51;52;', LastUpdateTS = '2026-03-25 13:29:25.116089' WHERE TaskID = 53 
+	UPDATE Tasks SET CreatedBy = 4, AsignedTo = 4, Description = 'Log into PHPMyAdmin and save Database to disk', ParentTask = 1, Status = 0, PercentageComplete = 0e+00, CreatedOn = '2024-05-14 08:31:53.000000', RequiredDelivery = '2025-05-04', ScheduledStart = '2025-05-04', ActualStart = NULL, EstimatedCompletion = '2025-05-04', Completed = NULL, EstimatedEffortHours = 1, ActualEffortHours = 0e+00, SchedulePriorityGroup = 66, PriorityInGroup = 5, Personal = 0, DependencyCount = 4, Dependencies = '49;50;51;52;', LastUpdateTS = '2026-03-27 14:36:40.050917' WHERE TaskID = 53 
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks  WHERE TaskID = 53
 Running: 
@@ -2765,7 +2763,14 @@ Optional Fields
 Running: 
 	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS FROM UserScheduleItem  WHERE idUserScheduleItem = 300 AND UserID = 4
 Running: 
-	UPDATE UserScheduleItem SET StartDateTime = '2024-12-02 09:30:00.000000', EndDateTime = '2024-12-02 10:30:00.000000', Title = 'Dr. David Aftergood', Personal = 0, Location = '99. N. La Cienega', LastUpdateTS = '2026-03-25 13:29:34.507009' WHERE idUserScheduleItem = 300 AND UserID = 4 
+	UPDATE UserScheduleItem SET StartDateTime = '2024-12-02 09:30:00.000000', EndDateTime = '2024-12-02 10:30:00.000000', Title = 'Dr. David Aftergood', Personal = 0, Location = '99. N. La Cienega', LastUpdateTS = '2026-03-27 14:36:49.437274' WHERE idUserScheduleItem = 300 AND UserID = 4 
+Running: 
+	CALL ScheduleItemContentSelectionList('birthday', 4)
+Find all schedule items for user (4) similar to birthday PASSED!
+User 4 has 3 schedule items
+Bill McCandless birthday call
+Dina birthday call
+Jean Hom birthday call
 All positive path tests for database insertions and retrievals of ScheduleItem PASSED!
 Expected error was; ScheduleItem is missing required values!
 Missing ScheduleItem required User ID!
@@ -2811,7 +2816,7 @@ All tests Passed
 
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
-  total heap usage: 87,705 allocs, 87,705 frees, 12,441,022 bytes allocated
+  total heap usage: 87,722 allocs, 87,722 frees, 12,439,466 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 
