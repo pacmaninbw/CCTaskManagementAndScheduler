@@ -91,7 +91,7 @@ QFormLayout* NoteEditorDialog::setUpNoteEditorGBForm()
 {
     noteForm = cqtfa_FormLayoutWithPolicy("NoteForm", editNoteEnterContentGB);
 
-    editNoteContentTE = cqtfa_flexibleTextEditEbasedOnCharCount("editNoteContentTE",
+    editNoteContentTE = cqtfa_flexiblePlainTextEditEbasedOnCharCount("editNoteContentTE",
         editNoteEnterContentGB, minNoteContentWidth, maxNoteContentWidth, noteLineCount);
     noteForm->addRow("Content:", editNoteContentTE);
 

@@ -13,7 +13,7 @@ class NoteModel;
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QGroupBox>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QVBoxLayout>
 
 // Standard C++ Header Files
@@ -41,7 +41,7 @@ private:
     QGroupBox* editNoteEnterContentGB;
     QFormLayout* noteForm;
     QVBoxLayout* editNoteLayOut;
-    QTextEdit* editNoteContentTE;
+    QPlainTextEdit* editNoteContentTE;
     int maxGroupBoxHeight;
     int maxButtonBoxHeight;
 
