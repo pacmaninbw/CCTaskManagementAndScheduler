@@ -13,7 +13,7 @@
 #include <QGroupBox>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QVBoxLayout>
 
 
@@ -72,7 +72,7 @@ QFormLayout *GoalEditorDialog::setUpGoalEditorDialogGroupBoxContents()
 {
     goalEditorDialogFormLayout = cqtfa_FormLayoutWithPolicy("goalEditorDialogFormLayout", editGoalGB);
 
-    editGoalDescriptionTE = cqtfa_flexibleTextEditEbasedOnCharCount("editGoalDescriptionTE", editGoalGB,
+    editGoalDescriptionTE = cqtfa_flexiblePlainTextEditEbasedOnCharCount("editGoalDescriptionTE", editGoalGB,
         goalDescriptionMinCharWidth, goalDescriptionMaxCharWidth, goalDescriptionLineCount);
     goalEditorDialogFormLayout->addRow("Goal Description:", editGoalDescriptionTE);
 

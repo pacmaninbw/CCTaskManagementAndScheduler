@@ -14,8 +14,8 @@ class UserGoalModel;
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QLineEdit>
+#include <QPlainTextEdit>
 #include <QPushButton>
-#include <QTextEdit>
 
 // Standard C++ Header Files
 #include <memory>
@@ -39,7 +39,7 @@ private:
     QDialogButtonBox* buttonBox;
     QGroupBox* editGoalGB;
     QFormLayout* goalEditorDialogFormLayout;
-    QTextEdit* editGoalDescriptionTE;
+    QPlainTextEdit* editGoalDescriptionTE;
     QLineEdit* editGoalPriorityLE;
     QPushButton* editGoalSelectParentGoalPB;
     int maxGroupBoxHeight;
