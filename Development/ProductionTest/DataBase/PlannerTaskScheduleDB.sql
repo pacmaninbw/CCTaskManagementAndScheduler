@@ -194,6 +194,7 @@ CREATE TABLE IF NOT EXISTS `PlannerTaskScheduleDB`.`UserScheduleItem` (
     INDEX `ScheduleItem_CreatedTS_idx` (`CreatedTS` DESC),
     INDEX `ScheduleItem_LastUpdateTS_idx` (`LastUpdateTS` DESC),
     INDEX `fk_UserScheduleItem_UserID_idx` (`UserID` ASC),
+    INDEX `ScheduleItem_Location_idx` (`Location` ASC),
     CONSTRAINT `fk_UserScheduleItem_UserID`
       FOREIGN KEY (`UserID`)
       REFERENCES `PlannerTaskScheduleDB`.`UserProfile` (`UserID`)
@@ -300,6 +301,31 @@ BEGIN
     END IF;
 
     RETURN @isValid;
+
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- Stored Procedures
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`;
+DROP PROCEDURE IF EXISTS `PlannerTaskScheduleDB`.`ScheduleItemContentSelectionList`;
+
+CREATE PROCEDURE `PlannerTaskScheduleDB`.`ScheduleItemContentSelectionList`
+(
+    IN Content VARCHAR(128),
+    IN IDUser INT
+)
+
+BEGIN
+
+    SELECT DISTINCT UserScheduleItem.Title FROM UserScheduleItem
+    WHERE
+        UserScheduleItem.UserID = IDUser AND UserScheduleItem.Title LIKE CONCAT('%', Content, '%')
+        ORDER BY UserScheduleItem.Title ASC;
 
 END$$
 
