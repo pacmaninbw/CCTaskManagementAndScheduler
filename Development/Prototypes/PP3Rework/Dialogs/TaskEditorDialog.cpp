@@ -19,7 +19,7 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QPushButton>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QVBoxLayout>
 
 // Standard C++ Header Files
@@ -337,7 +337,7 @@ QGroupBox *TaskEditorDialog::setUpTaskDescriptionAndStatusGroupBox()
     editTaskDescriptionAndStatusForm = cqtfa_FormLayoutWithPolicy(
         "editTaskDescriptionAndStatusForm", editTaskDescriptionAndStatusGB);
 
-    editTaskDescriptionTE = cqtfa_QTWidget<QTextEdit>("editTaskDescriptionTE", editTaskDescriptionAndStatusGB);
+    editTaskDescriptionTE = cqtfa_QTWidget<QPlainTextEdit>("editTaskDescriptionTE", editTaskDescriptionAndStatusGB);
     editTaskDescriptionTE->resize(taskDescriptionTEWidth, taskDescriptionTEHeight);
     editTaskDescriptionAndStatusForm->addRow("Task Description:", editTaskDescriptionTE);
 
@@ -557,7 +557,7 @@ void TaskEditorDialog::initEditFieldsFromTaskData()
         return;
     }
 
-    editTaskDescriptionTE->setText(QString::fromStdString(m_TaskData->getDescription()));
+    editTaskDescriptionTE->setPlainText(QString::fromStdString(m_TaskData->getDescription()));
 
     editTaskDueDateSelectorDE->setDate(initValidDateField(m_TaskData->getDueDate()));
     editTaskScheduledStartDE->setDate(initValidDateField(m_TaskData->getScheduledStart()));

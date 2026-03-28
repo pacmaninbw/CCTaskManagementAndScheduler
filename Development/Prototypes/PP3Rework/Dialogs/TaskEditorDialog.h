@@ -18,8 +18,8 @@ class UserModel;
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLineEdit>
+#include <QPlainTextEdit>
 #include <QPushButton>
-#include <QTextEdit>
 #include <QVBoxLayout>
 
 // Standard C++ Header Files
@@ -89,7 +89,7 @@ private:
     QPushButton* editTaskChangeAssignedUserPB;
     QGroupBox* editTaskDescriptionAndStatusGB;
     QFormLayout* editTaskDescriptionAndStatusForm;
-    QTextEdit* editTaskDescriptionTE;
+    QPlainTextEdit* editTaskDescriptionTE;
     QComboBox* editTaskStatusSelectorCB;
     QGroupBox* editTaskParentTaskGB;
     QFormLayout* editTaskParentForm;
