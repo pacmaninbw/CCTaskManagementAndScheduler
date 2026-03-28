@@ -16,6 +16,7 @@
 #include <QDateEdit>
 #include <QFormLayout>
 #include <QLineEdit>
+#include <QPlainTextEdit>
 #include <QTextEdit>
 #include <QWidget>
 
@@ -51,6 +52,10 @@ extern QFormLayout* cqtfa_FormLayoutWithPolicy(const char* formName, QWidget* pa
     QFormLayout::FieldGrowthPolicy policy=QFormLayout::ExpandingFieldsGrow);
 
 extern QDateEdit* cqtfa_DateEditWithCalendarPopUpCurrentDate(const char* formName, QWidget* parent);
+
+extern QPlainTextEdit* cqtfa_flexibleWidthPlainTextEdit(const char* objName, QWidget* parent, int boxWidthMin, int boxWidthMax, int rowCount);
+
+extern QPlainTextEdit* cqtfa_flexiblePlainTextEditEbasedOnCharCount(const char* objName, QWidget* parent, int minCharCount, int maxCharCount, int rowCount);
 
 extern QTextEdit* cqtfa_flexibleWidthTextEdit(const char* objName, QWidget* parent, int boxWidthMin, int boxWidthMax, int rowCount);
 

@@ -5,6 +5,7 @@
 #include <QDateEdit>
 #include <QFormLayout>
 #include <QLineEdit>
+#include <QPlainTextEdit>
 #include <QSizePolicy>
 #include <QStyleOptionFrame>
 #include <QTextEdit>
@@ -67,6 +68,51 @@ QDateEdit *cqtfa_DateEditWithCalendarPopUpCurrentDate(const char *formName, QWid
     newDateEdit->setMaximumDate(QDate::currentDate().addDays(OneYear));
 
     return newDateEdit;
+}
+
+QPlainTextEdit *cqtfa_flexibleWidthPlainTextEdit(const char *objName, QWidget *parent, int boxWidthMin, int boxWidthMax, int rowCount)
+{
+    QPlainTextEdit* newPTextEdit = new QPlainTextEdit(parent);
+
+    newPTextEdit->setObjectName(objName);
+
+    newPTextEdit->setMinimumHeight(newPTextEdit->fontMetrics().height() * rowCount);
+
+    newPTextEdit->setMaximumHeight(newPTextEdit->fontMetrics().height() * (rowCount + 2));
+
+    newPTextEdit->setMinimumWidth(boxWidthMin);
+
+    newPTextEdit->setMaximumWidth(boxWidthMax);
+
+    newPTextEdit->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+
+    newPTextEdit->setTabChangesFocus(true);
+
+    return newPTextEdit;
+}
+
+QPlainTextEdit *cqtfa_flexiblePlainTextEditEbasedOnCharCount(const char *objName, QWidget *parent, int minCharCount, int maxCharCount, int rowCount)
+{
+    QPlainTextEdit* newPTextEdit = new QPlainTextEdit(parent);
+    QFontMetrics qfm(newPTextEdit->font());
+
+    newPTextEdit->setObjectName(objName);
+
+    newPTextEdit->setObjectName(objName);
+
+    newPTextEdit->setMinimumHeight(qfm.height() * rowCount);
+
+    newPTextEdit->setMaximumHeight(qfm.height() * (rowCount + 2));
+
+    newPTextEdit->setMinimumWidth(qfm.horizontalAdvance(QString(minCharCount, 'x')));
+
+    newPTextEdit->setMaximumWidth(qfm.horizontalAdvance(QString(maxCharCount, 'x')));
+
+    newPTextEdit->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+
+    newPTextEdit->setTabChangesFocus(true);
+
+    return newPTextEdit;
 }
 
 QTextEdit *cqtfa_flexibleWidthTextEdit(const char *objName, QWidget *parent, int boxWidthMin, int boxWidthMax, int rowCount)
@@ -176,4 +222,6 @@ int cqtfa_calculateFormLayoutMaxHeight(QFormLayout *formToSize)
 
     return maxHeight;
 }
+
+
 
