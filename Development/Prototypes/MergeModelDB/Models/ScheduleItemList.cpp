@@ -77,10 +77,7 @@ std::vector<std::string> ScheduleItemList::findEventSToRepeat(std::string search
         if (!inSelfTest)
         {
             // localresult will abort with an assert in self test
-            if (localResult.rows().empty())
-            {
-                appendErrorMessage("No matching events found!");
-            } else
+            if (!localResult.rows().empty())
             {
                 for (auto row: localResult.rows())
                 {
@@ -96,6 +93,7 @@ std::vector<std::string> ScheduleItemList::findEventSToRepeat(std::string search
             }
         }
 
+        errorMessages.clear();
         return matchingEvents;
     }
 
