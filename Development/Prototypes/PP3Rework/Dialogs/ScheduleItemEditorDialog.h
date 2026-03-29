@@ -15,7 +15,7 @@
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QGroupBox>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QVBoxLayout>
 
 // Standard C++ Header Files
@@ -34,6 +34,7 @@ public Q_SLOTS:
 
 private Q_SLOTS:
     void handleAddItemDate_DateChanged();
+    void handleScheduleItemTitle_TextChanged();
 
 private:
     void setUpScheduleItemEditorDialogUI();
@@ -56,8 +57,8 @@ private:
     QDateEdit* seid_AddItemDate;
     QDateTimeEdit* sied_scheduleItemStartTimeDTEdit;
     QDateTimeEdit* sied_scheduleItemEndTimeDTEdit;
-    QTextEdit* sied_scheduleItemTitleTE;
-    QTextEdit* sied_locationTE;
+    QPlainTextEdit* sied_scheduleItemTitleTE;
+    QPlainTextEdit* sied_locationTE;
     QCheckBox* sied_scheduleItemIsPersonalCB;
 
     const int sied_TextEditMinWidth = 300;

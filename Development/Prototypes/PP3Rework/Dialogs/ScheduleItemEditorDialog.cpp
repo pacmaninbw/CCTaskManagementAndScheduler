@@ -1,11 +1,15 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
+#include "SelectPreviousEventDialog.h"
 #include "ScheduleItemEditorDialog.h"
+#include "ScheduleItemList.h"
 
 // QT Header Files
 #include <QMessageBox>
 
 // Standard C++ Header Files
+#include <string>
+#include <vector>
 
 ScheduleItemEditorDialog::ScheduleItemEditorDialog(QWidget* parent, std::size_t userId, GuiScheduleItemModel* scheduleItemToEdit)
     : QDialog(parent),
@@ -61,7 +65,10 @@ void ScheduleItemEditorDialog::setUpScheduleItemEditorDialogUI()
     connect(seid_AddItemDate, &QDateEdit::dateChanged, this,
         &ScheduleItemEditorDialog::handleAddItemDate_DateChanged);
 
-        QString titleStr = m_ScheduleItemData? "Edit" : "Add";
+    connect(sied_scheduleItemTitleTE, &QPlainTextEdit::textChanged, this,
+        &ScheduleItemEditorDialog::handleScheduleItemTitle_TextChanged);
+
+    QString titleStr = m_ScheduleItemData? "Edit" : "Add";
     titleStr += " Schedule Dialog";
     setWindowTitle(titleStr);
 }
@@ -86,11 +93,11 @@ QGroupBox *ScheduleItemEditorDialog::setUpScheduleTimeControls()
     sied_scheduleItemEndTimeDTEdit = createAndInitDateTimeEdit("sied_scheduleEndTimeTEdit", initValue);
     seid_groupBoxLayout->addRow("End:", sied_scheduleItemEndTimeDTEdit);
 
-    sied_scheduleItemTitleTE = cqtfa_flexibleWidthTextEdit("sied_scheduleItemTitleTE",
+    sied_scheduleItemTitleTE = cqtfa_flexibleWidthPlainTextEdit("sied_scheduleItemTitleTE",
         sied_scheduleTimeControls, sied_TextEditMinWidth, sied_TextEditMaxWidth, 2);
     seid_groupBoxLayout->addRow("What:", sied_scheduleItemTitleTE);
 
-    sied_locationTE = cqtfa_flexibleWidthTextEdit("sied_locationTE", sied_scheduleTimeControls,
+    sied_locationTE = cqtfa_flexibleWidthPlainTextEdit("sied_locationTE", sied_scheduleTimeControls,
         sied_TextEditMinWidth, sied_TextEditMaxWidth, 3);
     seid_groupBoxLayout->addRow("Where:", sied_locationTE);
 
@@ -146,6 +153,50 @@ void ScheduleItemEditorDialog::handleAddItemDate_DateChanged()
     sied_scheduleItemEndTimeDTEdit->setMaximumDate(sied_scheduleItemStartTimeDTEdit->maximumDate());
 }
 
+void ScheduleItemEditorDialog::handleScheduleItemTitle_TextChanged()
+{
+    std::string searchString = sied_scheduleItemTitleTE->toPlainText().toStdString();
+    if (searchString.size() >= 5)
+    {
+        ScheduleItemList previousTitleFind(m_UserID);
+        std::vector<std::string> previousEvents = previousTitleFind.findEventSToRepeat(searchString);
+        if (previousEvents.size())
+        {
+            // Prevent re-entering this function until it has completed
+            disconnect(sied_scheduleItemTitleTE, &QPlainTextEdit::textChanged, this,
+                &ScheduleItemEditorDialog::handleScheduleItemTitle_TextChanged);
+
+            SelectPreviousEventDialog previousEventFinder(m_UserID, previousEvents, this);
+            previousEventFinder.exec();
+            QString selectedEvent = previousEventFinder.getSelectedEvent();
+            // Don't replace contents if nothing was returned!
+            if (selectedEvent.size() > 0)
+            {
+                sied_scheduleItemTitleTE->setPlainText(previousEventFinder.getSelectedEvent());
+            }
+
+            connect(sied_scheduleItemTitleTE, &QPlainTextEdit::textChanged, this,
+                &ScheduleItemEditorDialog::handleScheduleItemTitle_TextChanged);
+            // Change the focus so that we don't re-enter this function unless the user
+            // wants to change the returned string.
+            focusNextChild();
+        }
+        else
+        {
+            std::string errors = previousTitleFind.getAllErrorMessages();
+            if (errors.size() && errors.size() > 3)
+            {
+                disconnect(sied_scheduleItemTitleTE, &QPlainTextEdit::textChanged, this,
+                    &ScheduleItemEditorDialog::handleScheduleItemTitle_TextChanged);
+                QString myqErrors = "previousTitleFind.findEventSToRepeat()";
+                myqErrors += QString::fromStdString(errors);
+                QMessageBox::critical(nullptr, "Critical Error", myqErrors, QMessageBox::Ok);
+                return;
+            }
+        }
+    }
+}
+
 bool ScheduleItemEditorDialog::addToDatabase()
 {
     transferFieldsToDataModel();
@@ -178,8 +229,8 @@ void ScheduleItemEditorDialog::initEditFields()
     QDateTime startTime = initValidDateTime(m_ScheduleItemData->getStartTime());
     seid_AddItemDate->setDate(startTime.toLocalTime().date());
 
-    sied_scheduleItemTitleTE->setText(m_ScheduleItemData->getTitle());
-    sied_locationTE->setText(m_ScheduleItemData->getLocation());
+    sied_scheduleItemTitleTE->setPlainText(m_ScheduleItemData->getTitle());
+    sied_locationTE->setPlainText(m_ScheduleItemData->getLocation());
     sied_scheduleItemIsPersonalCB->setChecked(m_ScheduleItemData->getPersonal());
 }
 
