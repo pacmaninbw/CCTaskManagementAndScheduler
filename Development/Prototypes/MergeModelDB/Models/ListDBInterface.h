@@ -83,6 +83,24 @@ public:
         }
     };
 
+    bool runStringOnlyQuery()
+    {
+        errorMessages.clear();
+
+        try
+        {
+            stringOnlyResults.clear();
+            boost::mysql::results localResult = runQueryAsync(firstFormattedQuery);
+            return processStringOnlyResults(localResult);
+        }
+
+        catch(const std::exception& e)
+        {
+            appendErrorMessage(std::format("In {}List.runStringOnlyQuery() : {}", listTypeName, e.what()));
+            return false;
+        }
+    }
+
     virtual TestStatus runSelfTest() noexcept
     {
         selfTestResetAllValues();
@@ -118,6 +136,32 @@ protected:
     
         }
         return primaryKeyResults;
+    }
+
+    virtual bool processStringOnlyResults(boost::mysql::results& results)
+    {
+        if (inSelfTest)
+        {
+            stringOnlyResults.push_back("Test String");
+            return true;
+        }
+
+        if (results.rows().empty())
+        {
+            return true;
+        }
+
+        for (auto row: results.rows())
+        {
+            std::string returnedValue = row.at(0).as_string();
+            if (returnedValue != "NULL")
+            {
+                stringOnlyResults.push_back(row.at(0).as_string());
+            }
+    
+        }
+
+        return true;
     }
 
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept = 0;
@@ -249,6 +293,7 @@ protected:
     std::string firstFormattedQuery;
     std::vector<std::size_t> primaryKeyResults;
     std::vector<std::shared_ptr<ListType>> returnType;
+    std::vector<std::string> stringOnlyResults;
 };
 
 #endif // LISTDBINTERFACECORE_H_
