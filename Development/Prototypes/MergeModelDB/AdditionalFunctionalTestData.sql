@@ -347,7 +347,7 @@ INSERT INTO `testPTSDB`.`UserScheduleItem` (`idUserScheduleItem`, `UserID`, `Sta
 (243, 1, '2026-03-15 12:00:00', '2026-03-15 12:29:59', 'Code review moderator oversight', 0, 'Starbucks', '2026-03-15 11:47:26', '2026-03-15 11:47:46'),
 (244, 1, '2026-03-15 12:30:00', '2026-03-15 15:59:59', 'Continue removing Gui Models from planning software ', 0, 'Starbuck', '2026-03-15 11:49:34', '2026-03-15 11:49:34'),
 (245, 1, '2026-03-15 16:00:00', '2026-03-15 16:14:59', 'Get blueberries and Onion powder ', 1, 'Vons', '2026-03-15 11:51:44', '2026-03-15 11:51:44'),
-(246, 1, '2026-03-15 16:15:00', '2026-03-15 17:59:59', 'Breakfast and science fiction ', 1, 'Honme', '2026-03-15 11:52:27', '2026-03-15 11:52:27'),
+(246, 1, '2026-03-15 16:15:00', '2026-03-15 17:59:59', 'Breakfast and science fiction ', 1, 'Home', '2026-03-15 11:52:27', '2026-03-15 11:52:27'),
 (247, 1, '2026-03-15 18:00:00', '2026-03-15 18:59:59', ' Freeze chicken!!!', 1, 'Home', '2026-03-15 11:53:45', '2026-03-15 11:53:45'),
 (248, 1, '2026-03-15 19:00:00', '2026-03-15 20:59:59', 'Continue removing GuiModels ', 0, 'Home', '2026-03-15 11:54:26', '2026-03-15 11:54:26'),
 (249, 1, '2026-03-16 11:30:00', '2026-03-16 11:44:59', 'Check vital signs, log data on iPhone and in spreadsheet ', 1, 'Home', '2026-03-16 12:05:14', '2026-03-16 12:05:14'),
@@ -401,5 +401,6 @@ INSERT INTO `testPTSDB`.`UserScheduleItem` (`idUserScheduleItem`, `UserID`, `Sta
 (297, 1, '2026-03-22 12:45:00', '2026-03-22 15:59:59', 'Allow a previously scheduled event to be used as source for a new event', 0, 'Starbucks', '2026-03-22 12:32:25', '2026-03-22 12:32:25'),
 (298, 1, '2026-03-22 16:00:00', '2026-03-22 16:59:59', 'Breakfast, science fiction ', 1, 'Home', '2026-03-22 12:33:12', '2026-03-22 12:33:12'),
 (299, 1, '2026-03-21 22:00:00', '2026-03-21 22:59:59', ' Lunch at Steve\'s burgers', 1, 'Steve\'s Burgers', '2026-03-22 13:39:40', '2026-03-22 13:39:40');
+
 
 
