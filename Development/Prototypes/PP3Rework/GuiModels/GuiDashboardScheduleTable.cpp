@@ -1,15 +1,14 @@
 // Project Header Files
 #include "commonUtilities.h"
 #include "ScheduleItemList.h"
+#include "ScheduleItemModel.h"
 
 // QT Header Files
 #include "GuiDashboardScheduleTable.h"
-#include "GuiScheduleItemModel.h"
 #include "UserModel.h"
 #include <QAbstractTableModel>
 #include <QDate>
 #include <QDateTime>
-#include <QList>
 #include <QObject>
 #include <QString>
 #include <QTime>
@@ -19,6 +18,8 @@
 // Standard C++ Header Files
 #include <algorithm>
 #include <chrono>
+#include <memory>
+#include <vector>
 
 
 GuiDashboardScheduleTable::GuiDashboardScheduleTable(QObject *parent)
@@ -57,11 +58,11 @@ void GuiDashboardScheduleTable::setUserAndDateRefillSchedule(std::size_t userID,
     fillSchedule();
 }
 
-void GuiDashboardScheduleTable::append(GuiScheduleItemModel *scheduledItem)
+void GuiDashboardScheduleTable::append(std::shared_ptr<ScheduleItemModel> scheduledItem)
 {
-    beginInsertRows(QModelIndex(), m_data.count(), m_data.count());
+    beginInsertRows(QModelIndex(), m_data.size(), m_data.size());
 
-    m_data.append(scheduledItem);
+    m_data.push_back(scheduledItem);
     
     endInsertRows();
 }
@@ -72,10 +73,41 @@ void GuiDashboardScheduleTable::clearData()
 
     beginResetModel();
 
-    qDeleteAll(m_data.begin(), m_data.end());
     m_data.clear();
 
     endResetModel();
+}
+
+std::chrono::system_clock::time_point GuiDashboardScheduleTable::getScheduleItemStartTime(const QModelIndex &index)
+{
+    std::chrono::system_clock::time_point startTime;
+
+    if (!index.isValid())
+    {
+        return startTime;
+    }
+
+    std::shared_ptr<ScheduleItemModel> todoItem = m_data[index.row()];
+
+    startTime = todoItem->getStartTime();
+
+    return startTime;
+}
+
+std::chrono::system_clock::time_point GuiDashboardScheduleTable::getScheduleItemEndTime(const QModelIndex &index)
+{
+    std::chrono::system_clock::time_point endTime;
+
+    if (!index.isValid())
+    {
+        return endTime;
+    }
+
+    std::shared_ptr<ScheduleItemModel> todoItem = m_data[index.row()];
+
+    endTime = todoItem->getEndTime();
+
+    return endTime;
 }
 
 QVariant GuiDashboardScheduleTable::headerData(int section, Qt::Orientation orientation, int role) const
@@ -95,7 +127,7 @@ int GuiDashboardScheduleTable::rowCount(const QModelIndex &parent) const
         return 0;
     }
 
-    return m_data.count();
+    return m_data.size();
 }
 
 int GuiDashboardScheduleTable::columnCount(const QModelIndex &parent) const
@@ -116,10 +148,13 @@ QVariant GuiDashboardScheduleTable::data(const QModelIndex &index, int role) con
     }
 
     if (role != Qt::DisplayRole && role != Qt::EditRole) return {};
-    const GuiScheduleItemModel* todoItem = m_data[index.row()];
+    const ScheduleItemModel* todoItem = m_data[index.row()].get();
     switch (index.column()) {
-        case 0: return todoItem->getStartTime().toLocalTime().time().toString("h:mm ap");
-        case 1: return todoItem->getTitle();
+        case 0: {
+            QDateTime startTime(chronoTimePointToQDateTime(todoItem->getStartTime()));
+            return startTime.toLocalTime().time().toString("h:mm ap");
+        }
+        case 1: return QString::fromStdString(todoItem->getTitle());
         default: return {};
     }
 }
@@ -145,38 +180,6 @@ Qt::ItemFlags GuiDashboardScheduleTable::flags(const QModelIndex &index) const
     return QAbstractItemModel::flags(index) | Qt::ItemIsEditable; // FIXME: Implement me!
 }
 
-bool GuiDashboardScheduleTable::insertRows(int position, int count, const QModelIndex &parent)
-{
-    Q_UNUSED(parent);
-    beginInsertRows(QModelIndex(), position, position + count - 1);
-
-    for (int row = 0; row < count; ++row)
-    {
-        m_data.insert(position, nullptr);
-    }
-
-    endInsertRows();
-
-    return true;
-}
-
-bool GuiDashboardScheduleTable::removeRows(int position, int count, const QModelIndex &parent)
-{
-    Q_UNUSED(parent);
-    beginRemoveRows(QModelIndex(), position, position + count - 1);
-
-    for (int row = 0; row < count; ++row)
-    {
-        GuiScheduleItemModel* data = m_data.at(position);
-        delete data;
-        m_data.removeAt(position);
-    }
-
-    endRemoveRows();
-
-    return true;
-}
-
 QModelIndex GuiDashboardScheduleTable::index(int row, int column, const QModelIndex &parent) const
 {
     if (!hasIndex(row, column, parent))
@@ -184,10 +187,10 @@ QModelIndex GuiDashboardScheduleTable::index(int row, int column, const QModelIn
         return QModelIndex();
     }
 
-    GuiScheduleItemModel* scheduleItem = m_data.at(row);
+    std::shared_ptr<ScheduleItemModel> scheduleItem = m_data.at(row);
     if (scheduleItem)
     {
-        return createIndex(row, column, scheduleItem);
+        return createIndex(row, column, scheduleItem->getScheduleItemID());
     }
 
     return QModelIndex();
@@ -215,12 +218,11 @@ void GuiDashboardScheduleTable::fillSchedule()
 
     for (const auto &scheduledItem: m_ScheduledItems)
     {
-        GuiScheduleItemModel* newEntry = new GuiScheduleItemModel(scheduledItem, this->parent());
         if (m_UserID)
         {
-            newEntry->setUserID(m_UserID);
+            scheduledItem->setUserID(m_UserID);
         }
-        append(newEntry);
+        append(scheduledItem);
     }
 }
 

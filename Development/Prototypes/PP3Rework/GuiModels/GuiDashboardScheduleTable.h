@@ -11,12 +11,12 @@ class ScheduleItemModel;
 #include <QAbstractTableModel>
 #include <QDate>
 #include <QDateTime>
-#include <QList>
 #include <QObject>
 #include <QString>
 
 // Standard C++ Header Files
 #include <chrono>
+#include <memory>
 #include <vector>
 
 class GuiDashboardScheduleTable : public QAbstractTableModel
@@ -29,8 +29,10 @@ public:
     void setUser(std::size_t userID);
     void setDate(QDate dateOfSchedule);
     void setUserAndDateRefillSchedule(std::size_t userID, QDate dateOfSchedule);
-    void append(GuiScheduleItemModel* scheduledItem);
+    void append(std::shared_ptr<ScheduleItemModel> scheduledItem);
     void clearData();
+    std::chrono::system_clock::time_point getScheduleItemStartTime(const QModelIndex &index);
+    std::chrono::system_clock::time_point getScheduleItemEndTime(const QModelIndex &index);
 
     QVariant headerData(int section, Qt::Orientation orientation,
             int role = Qt::DisplayRole) const override;
@@ -39,8 +41,6 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
-    bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
-    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
 
 private:
@@ -49,7 +49,7 @@ private:
     bool hasNoTimeConflicts(std::chrono::system_clock::time_point proposedStartTime);
     void addBlankHoursForDisplay();
     std::size_t m_UserID;
-    QList<GuiScheduleItemModel*> m_data;
+    std::vector<std::shared_ptr<ScheduleItemModel>> m_data;
     QDate m_DateOfSchedule;
     std::chrono::system_clock::time_point m_UserStartDay;
     std::chrono::system_clock::time_point m_UserEndDay;
