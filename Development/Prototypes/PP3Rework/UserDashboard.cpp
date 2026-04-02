@@ -29,7 +29,6 @@
 UserDashboard::UserDashboard(QWidget *parent)
     : QMainWindow(parent),
     m_UserDataPtr{nullptr},
-    m_ScheduleItemToEdit{nullptr},
     m_DashboardDate{QDate::currentDate()},
     udTaskTableView{nullptr},
     udScheduleTableView{nullptr},
@@ -524,24 +523,12 @@ void UserDashboard::handleAddScheduleItemAction()
         return;
     }
 
-    ScheduleItemEditorDialog addScheduleItemDialog(this,  m_UserDataPtr->getUserID());
+    ScheduleItemEditorDialog addScheduleItemDialog(m_UserDataPtr->getUserID(), this);
+
+    addScheduleItemDialog.initEditFields();
 
     addScheduleItemDialog.exec();
     
-    updateSchedule();
-}
-
-void UserDashboard::handleEditScheduleItemAction()
-{
-    if (!userIsLoggedIn())
-    {
-        return;
-    }
-
-    ScheduleItemEditorDialog editScheduleItemDialog(this,  m_UserDataPtr->getUserID(), m_ScheduleItemToEdit);
-
-    editScheduleItemDialog.exec();
-
     updateSchedule();
 }
 
@@ -557,11 +544,23 @@ void UserDashboard::handleScheduleClicked(const QModelIndex &index)
         return;
     }
 
-    m_ScheduleItemToEdit = static_cast<GuiScheduleItemModel*>(index.internalPointer());
+    std::size_t sheduleItemToEdit = static_cast<std::size_t>(index.internalId());
 
-    ScheduleItemEditorDialog editScheduleItemDialog(this,  m_UserDataPtr->getUserID(), m_ScheduleItemToEdit);
+    ScheduleItemEditorDialog* editScheduleItemDialog;
+    if (sheduleItemToEdit)
+    {
+        editScheduleItemDialog = new ScheduleItemEditorDialog(m_UserDataPtr->getUserID(), sheduleItemToEdit, this);
+    }
+    else
+    {
+        std::chrono::system_clock::time_point startTime = udScheduleTableView->getScheduleItemStartTime(index);
+        std::chrono::system_clock::time_point endTime = udScheduleTableView->getScheduleItemEndTime(index);
+        editScheduleItemDialog = new ScheduleItemEditorDialog(m_UserDataPtr->getUserID(), startTime,  endTime, this);
+    }
 
-    editScheduleItemDialog.exec();
+    editScheduleItemDialog->initEditFields();
+
+    editScheduleItemDialog->exec();
     
     updateSchedule();
 }

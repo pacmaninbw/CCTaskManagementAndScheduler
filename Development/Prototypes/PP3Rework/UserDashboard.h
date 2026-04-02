@@ -2,7 +2,7 @@
 #define USERDASHBOARD_H
 
 class UserModel;
-class GuiScheduleItemModel;
+class ScheduleItemModel;
 class DashboardTaskViewer;
 class ScheduleTablerViewer;
 class DashboardNotesViewer;
@@ -50,7 +50,6 @@ private Q_SLOTS:
     void handleAddGoalAction();
     void handleEditGoalAction();
     void handleAddScheduleItemAction();
-    void handleEditScheduleItemAction();
     void handleScheduleClicked(const QModelIndex &index);
     void handleDatabaseConnectionAction();
     void handleDateChanged(const QDate &newDate);
@@ -76,7 +75,6 @@ private:
 
     QString m_ProgNameStr;
     std::shared_ptr<UserModel> m_UserDataPtr;
-    GuiScheduleItemModel* m_ScheduleItemToEdit;
     QDate m_DashboardDate;
 
     QMenu* udUserMenu;
