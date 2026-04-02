@@ -56,8 +56,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Dialogs/UserEditorDialog.cpp
         Dialogs/SelectPreviousEventDialog.h
         Dialogs/SelectPreviousEventDialog.cpp
-        GuiModels/GuiScheduleItemModel.cpp
-        GuiModels/GuiScheduleItemModel.h
         GuiModels/GuiDashboardTaskTable.cpp
         GuiModels/GuiDashboardTaskTable.h
         GuiModels/stdChronoToQTConversions.cpp
