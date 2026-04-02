@@ -1,14 +1,16 @@
 #ifndef SCHEDULEITEMEDITORDIALOG_H
 #define SCHEDULEITEMEDITORDIALOG_H
 
+class ScheduleItemModel;
+
 // Project Header Files
-#include "GuiScheduleItemModel.h"
 
 // QT Header Files
 #include <QVariant>
 #include <QAbstractButton>
 #include <QApplication>
 #include <QCheckBox>
+#include <QCompleter>
 #include <QDateEdit>
 #include <QDateTimeEdit>
 #include <QDialog>
@@ -19,6 +21,8 @@
 #include <QVBoxLayout>
 
 // Standard C++ Header Files
+#include <chrono>
+#include <memory>
 
 
 class ScheduleItemEditorDialog : public QDialog
@@ -26,8 +30,12 @@ class ScheduleItemEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ScheduleItemEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, GuiScheduleItemModel* scheduleItemToEdit=nullptr);
+    explicit ScheduleItemEditorDialog(std::size_t userId, QWidget* parent = nullptr);
+    explicit ScheduleItemEditorDialog(std::size_t userId, std::size_t eventId, QWidget* parent = nullptr);
+    explicit ScheduleItemEditorDialog(std::size_t userId, std::chrono::system_clock::time_point startTime,
+            std::chrono::system_clock::time_point endTime, QWidget* parent = nullptr);
     ~ScheduleItemEditorDialog();
+    void initEditFields();
 
 public Q_SLOTS:
     void accept() override;
@@ -40,15 +48,21 @@ private:
     void setUpScheduleItemEditorDialogUI();
     QGroupBox* setUpScheduleTimeControls();
     QDialogButtonBox* setUpScheduleItemButtonBox();
-    QDateTimeEdit* createAndInitDateTimeEdit(const char* objName, QDateTime initValue);
+    void initDateTimeEdit(QDateTimeEdit* dtEdit, std::chrono::system_clock::time_point initValue);
     bool addToDatabase();
     bool udpateDatabase();
     void transferFieldsToDataModel();
-    void initEditFields();
-    QDateTime initValidDateTime(QDateTime fieldData);
+    void initCompletersFromDB();
+    QDateTime initValidDateTime(std::chrono::system_clock::time_point dateTime);
+    void connectAllSignalsAndSlots();
+    void disconnectAllSignalsAndSlots();
 
     std::size_t m_UserID;
-    GuiScheduleItemModel* m_ScheduleItemData;
+    std::size_t m_ScheduleItemDBId;
+    std::shared_ptr<ScheduleItemModel> m_ScheduleItemData;
+    std::chrono::system_clock::time_point m_StartTime;
+    std::chrono::system_clock::time_point m_EndTime;
+    bool m_UserPresetTime = false;
 
     QVBoxLayout* seid_scheduleItemEditorDialogLayout;
     QDialogButtonBox* sied_buttonBox;
@@ -58,7 +72,9 @@ private:
     QDateTimeEdit* sied_scheduleItemStartTimeDTEdit;
     QDateTimeEdit* sied_scheduleItemEndTimeDTEdit;
     QPlainTextEdit* sied_scheduleItemTitleTE;
+    QCompleter* sied_titleCompleter;
     QPlainTextEdit* sied_locationTE;
+    QCompleter* sied_locationCompleter;
     QCheckBox* sied_scheduleItemIsPersonalCB;
 
     const int sied_TextEditMinWidth = 300;
