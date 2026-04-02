@@ -11,6 +11,7 @@ class GuiDashboardScheduleTable;
 #include <QDate>
 
 // Standard C++ Header Files
+#include <chrono>
 
 class ScheduleTablerViewer : public QTableView
 {
@@ -21,6 +22,8 @@ public:
     void setUserId(std::size_t userID);
     void setUserIdAndDate(std::size_t userID, QDate scheduleToShow);
     void updateSchedule();
+    std::chrono::system_clock::time_point getScheduleItemStartTime(const QModelIndex &index);
+    std::chrono::system_clock::time_point getScheduleItemEndTime(const QModelIndex &index);
 
 private:
     std::size_t m_DBUserId;

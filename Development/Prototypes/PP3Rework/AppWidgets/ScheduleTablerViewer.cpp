@@ -68,3 +68,13 @@ void ScheduleTablerViewer::updateSchedule()
     horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
 }
+
+std::chrono::system_clock::time_point ScheduleTablerViewer::getScheduleItemStartTime(const QModelIndex &index)
+{
+    return m_ScheduleTable->getScheduleItemStartTime(index);
+}
+
+std::chrono::system_clock::time_point ScheduleTablerViewer::getScheduleItemEndTime(const QModelIndex &index)
+{
+    return m_ScheduleTable->getScheduleItemEndTime(index);
+}
