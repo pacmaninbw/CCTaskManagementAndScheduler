@@ -17,6 +17,7 @@ class ScheduleItemModel;
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QGroupBox>
+#include <QLineEdit>
 #include <QPlainTextEdit>
 #include <QVBoxLayout>
 
@@ -41,13 +42,12 @@ public Q_SLOTS:
     void accept() override;
 
 private Q_SLOTS:
-    void handleAddItemDate_DateChanged();
-    void handleScheduleItemTitle_TextChanged();
+    void handleEventDate_DateChanged();
 
 private:
-    void setUpScheduleItemEditorDialogUI();
-    QGroupBox* setUpScheduleTimeControls();
-    QDialogButtonBox* setUpScheduleItemButtonBox();
+    void setUpDialogUI();
+    QGroupBox* setUpGroupBoxForm();
+    QDialogButtonBox* setUpDialogButtonBox();
     void initDateTimeEdit(QDateTimeEdit* dtEdit, std::chrono::system_clock::time_point initValue);
     bool addToDatabase();
     bool udpateDatabase();
@@ -58,27 +58,32 @@ private:
     void disconnectAllSignalsAndSlots();
 
     std::size_t m_UserID;
-    std::size_t m_ScheduleItemDBId;
-    std::shared_ptr<ScheduleItemModel> m_ScheduleItemData;
+    std::size_t m_DBModelID;
+    std::shared_ptr<ScheduleItemModel> m_DBModelData;
     std::chrono::system_clock::time_point m_StartTime;
     std::chrono::system_clock::time_point m_EndTime;
     bool m_UserPresetTime = false;
 
-    QVBoxLayout* seid_scheduleItemEditorDialogLayout;
-    QDialogButtonBox* sied_buttonBox;
-    QGroupBox* sied_scheduleTimeControls;
-    QFormLayout* seid_groupBoxLayout;
-    QDateEdit* seid_AddItemDate;
-    QDateTimeEdit* sied_scheduleItemStartTimeDTEdit;
-    QDateTimeEdit* sied_scheduleItemEndTimeDTEdit;
-    QPlainTextEdit* sied_scheduleItemTitleTE;
-    QCompleter* sied_titleCompleter;
-    QPlainTextEdit* sied_locationTE;
-    QCompleter* sied_locationCompleter;
-    QCheckBox* sied_scheduleItemIsPersonalCB;
+    QVBoxLayout* dialogLayout = nullptr;
+    QDialogButtonBox* dialogButtonBox = nullptr;
+    QGroupBox* formGroupBox = nullptr;
+    QFormLayout* formGroupBoxLayout = nullptr;
+    QDateEdit* eventDateDE = nullptr;
+    QDateTimeEdit* startTimeDTE = nullptr;
+    QDateTimeEdit* endTimeDTE = nullptr;
+    QPlainTextEdit* eventTitleTE = nullptr;
+    QLineEdit* eventTitleLE = nullptr;
+    QCompleter* titleCompleterQC = nullptr;
+    QLineEdit* locationLE = nullptr;
+    QPlainTextEdit* locationTE = nullptr;
+    QCompleter* locationCompleterQC = nullptr;
+    QCheckBox* isPersonalCB = nullptr;
 
     const int sied_TextEditMinWidth = 300;
     const int sied_TextEditMaxWidth = 700;
+    const int MaxCharLineEdit = 128;
+    const int TitleLineCount = 2;
+    const int LocationLineCount = 3;
 };
 
 #endif // SCHEDULEITEMEDITORDIALOG_H

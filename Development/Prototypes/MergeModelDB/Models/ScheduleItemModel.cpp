@@ -173,12 +173,51 @@ std::string ScheduleItemModel::formatGetUniqueContentsByUserSortByContent(std::s
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In ScheduleItemModel::formatSelectSiByContentDateRangeUser({}) : {}", userId, e.what()));
+        appendErrorMessage(std::format("In ScheduleItemModel::formatGetUniqueContentsByUserSortByContent({}) : {}", userId, e.what()));
     }
 
     return std::string();
 }
 
+std::string ScheduleItemModel::formatGetAllUniqueContentsByUserSortByContent(std::size_t userId) noexcept
+{
+    errorMessages.clear();
+
+    try {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "CALL EventTitlesForCompleter({})", userId);
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In ScheduleItemModel::formatGetAllUniqueContentsByUserSortByContent({}) : {}", userId, e.what()));
+    }
+
+    return std::string();
+}
+
+std::string ScheduleItemModel::formatGetAllUniqueLocationsByUserSortByContent(std::size_t userId) noexcept
+{
+    errorMessages.clear();
+
+    try {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "CALL EventLocationsForCompleter({})", userId);
+
+        return std::move(fctx).get().value();
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In ScheduleItemModel::formatGetAllUniqueLocationsByUserSortByContent({}) : {}", userId, e.what()));
+    }
+
+    return std::string();
+}
 
 bool ScheduleItemModel::diffScheduleItem(ScheduleItemModel &other)
 {

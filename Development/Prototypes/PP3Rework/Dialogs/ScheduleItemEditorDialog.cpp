@@ -17,6 +17,7 @@
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QGroupBox>
+#include <QLineEdit>
 #include <QMessageBox>
 #include <QPlainTextEdit>
 #include <QVariant>
@@ -28,26 +29,33 @@
 #include <string>
 #include <vector>
 
+const std::chrono::seconds nextHour{3599}; // There are 3600 seconds in an hour.
+
+// Create a new event
 ScheduleItemEditorDialog::ScheduleItemEditorDialog(std::size_t userId, QWidget *parent)
     : QDialog(parent),
     m_UserID{userId},
-    m_ScheduleItemDBId{0},
-    m_ScheduleItemData{nullptr},
-    seid_AddItemDate{nullptr}
+    m_DBModelID{0},
+    m_DBModelData{nullptr},
+    m_StartTime{std::chrono::system_clock::now()},
+    m_EndTime{m_StartTime + nextHour},
+    eventDateDE{nullptr}
 {
-    setUpScheduleItemEditorDialogUI();
+    setUpDialogUI();
 }
 
+// Edit an existing scheduled event
 ScheduleItemEditorDialog::ScheduleItemEditorDialog(std::size_t userId, std::size_t eventId, QWidget *parent)
     : QDialog(parent),
     m_UserID{userId},
-    m_ScheduleItemDBId{eventId},
-    m_ScheduleItemData{nullptr},
-    seid_AddItemDate{nullptr}
+    m_DBModelID{eventId},
+    m_DBModelData{nullptr},
+    eventDateDE{nullptr}
 {
-    setUpScheduleItemEditorDialogUI();
+    setUpDialogUI();
 }
 
+// Edit an empty event in the day schedule
 ScheduleItemEditorDialog::ScheduleItemEditorDialog(
     std::size_t userId,
     std::chrono::system_clock::time_point startTime,
@@ -56,15 +64,15 @@ ScheduleItemEditorDialog::ScheduleItemEditorDialog(
 )
     : QDialog(parent),
     m_UserID{userId},
-    m_ScheduleItemDBId{0},
-    m_ScheduleItemData{nullptr},
-    seid_AddItemDate{nullptr}
+    m_DBModelID{0},
+    m_DBModelData{nullptr},
+    m_StartTime{startTime},
+    m_EndTime{endTime},
+    eventDateDE{nullptr}
 {
-    m_StartTime = startTime;
-    m_EndTime = endTime;
     m_UserPresetTime = true;
 
-    setUpScheduleItemEditorDialogUI();
+    setUpDialogUI();
 }
 
 ScheduleItemEditorDialog::~ScheduleItemEditorDialog()
@@ -75,34 +83,36 @@ ScheduleItemEditorDialog::~ScheduleItemEditorDialog()
 // be called after the constructor has been executed.
 void ScheduleItemEditorDialog::initEditFields()
 {
-    m_ScheduleItemData = std::make_shared<ScheduleItemModel>();
-    m_ScheduleItemData->setUserID(m_UserID);
-    m_ScheduleItemData->setScheduleItemID(m_ScheduleItemDBId);
+    m_DBModelData = std::make_shared<ScheduleItemModel>();
+    m_DBModelData->setUserID(m_UserID);
+    m_DBModelData->setScheduleItemID(m_DBModelID);
 
     // If we are editing a previously existing schedule item
-    if (m_ScheduleItemDBId)
+    if (m_DBModelID)
     {
-        m_ScheduleItemData->retrieve();
+        m_DBModelData->retrieve();
 
-        sied_scheduleItemTitleTE->setPlainText(QString::fromStdString(m_ScheduleItemData->getTitle()));
-        sied_locationTE->setPlainText(QString::fromStdString(m_ScheduleItemData->getLocation()));
-        sied_scheduleItemIsPersonalCB->setChecked(m_ScheduleItemData->isPersonal());
+        eventTitleTE->setPlainText(QString::fromStdString(m_DBModelData->getTitle()));
+        locationTE->setPlainText(QString::fromStdString(m_DBModelData->getLocation()));
+        isPersonalCB->setChecked(m_DBModelData->isPersonal());
 
-        m_StartTime = m_ScheduleItemData->getStartTime();
-        m_EndTime = m_ScheduleItemData->getEndTime();
+        m_StartTime = m_DBModelData->getStartTime();
+        m_EndTime = m_DBModelData->getEndTime();
     }
 
     QDateTime startTime = initValidDateTime(m_StartTime);
-    seid_AddItemDate->setDate(startTime.toLocalTime().date());
-    initDateTimeEdit(sied_scheduleItemStartTimeDTEdit, m_StartTime);
-    initDateTimeEdit(sied_scheduleItemEndTimeDTEdit, m_EndTime);
+    eventDateDE->setDate(startTime.toLocalTime().date());
+    initDateTimeEdit(startTimeDTE, m_StartTime);
+    initDateTimeEdit(endTimeDTE, m_EndTime);
+
+    initCompletersFromDB();
 
     connectAllSignalsAndSlots();
 }
 
 void ScheduleItemEditorDialog::accept()
 {
-    bool updateSuccessful = (m_ScheduleItemData->getScheduleItemID() > 0)
+    bool updateSuccessful = (m_DBModelData->getScheduleItemID() > 0)
             ? udpateDatabase()
             : addToDatabase();
 
@@ -113,81 +123,94 @@ void ScheduleItemEditorDialog::accept()
     else
     {
         QString errorReport = "Schedule edit failed.\n";
-        errorReport += QString::fromStdString(m_ScheduleItemData->getAllErrorMessages());
+        errorReport += QString::fromStdString(m_DBModelData->getAllErrorMessages());
         QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
     }
 }
 
-void ScheduleItemEditorDialog::setUpScheduleItemEditorDialogUI()
+void ScheduleItemEditorDialog::setUpDialogUI()
 {
-    seid_scheduleItemEditorDialogLayout = new QVBoxLayout(this);
-    seid_scheduleItemEditorDialogLayout->setObjectName("seid_scheduleItemEditorDialogLayout");
+    dialogLayout = new QVBoxLayout(this);
+    dialogLayout->setObjectName("dialogLayout");
 
-    setLayout(seid_scheduleItemEditorDialogLayout);
+    setLayout(dialogLayout);
 
-    seid_scheduleItemEditorDialogLayout->addWidget(setUpScheduleTimeControls());
+    dialogLayout->addWidget(setUpGroupBoxForm());
 
-    seid_scheduleItemEditorDialogLayout->addWidget(setUpScheduleItemButtonBox());
+    dialogLayout->addWidget(setUpDialogButtonBox());
 
-    seid_scheduleItemEditorDialogLayout->setContentsMargins(20, 20, 20, 20);
-    seid_scheduleItemEditorDialogLayout->setSpacing(15);
+    dialogLayout->setContentsMargins(20, 20, 20, 20);
+    dialogLayout->setSpacing(15);
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     
     adjustSize();
 
-    QString titleStr = m_ScheduleItemDBId? "Edit" : "Add";
+    QString titleStr = m_DBModelID? "Edit" : "Add";
     titleStr += " Schedule Dialog";
     setWindowTitle(titleStr);
 }
 
-QGroupBox *ScheduleItemEditorDialog::setUpScheduleTimeControls()
+QGroupBox *ScheduleItemEditorDialog::setUpGroupBoxForm()
 {
-    sied_scheduleTimeControls = new QGroupBox("Event Details:", this);
-    sied_scheduleTimeControls->setObjectName("sied_scheduleTimeControls");
-    sied_scheduleTimeControls->setAlignment(Qt::AlignHCenter);
+    formGroupBox = new QGroupBox("Event Details:", this);
+    formGroupBox->setObjectName("formGroupBox");
+    formGroupBox->setAlignment(Qt::AlignHCenter);
 
-    seid_groupBoxLayout = cqtfa_FormLayoutWithPolicy("seid_groupBoxLayout", sied_scheduleTimeControls);
+    formGroupBoxLayout = cqtfa_FormLayoutWithPolicy("formGroupBoxLayout", formGroupBox);
 
-    seid_AddItemDate = cqtfa_DateEditWithCalendarPopUpCurrentDate(
-        "seid_AddItemDate", sied_scheduleTimeControls);
-    seid_groupBoxLayout->addRow("Date:", seid_AddItemDate);
+    eventDateDE = cqtfa_DateEditWithCalendarPopUpCurrentDate("eventDateDE", formGroupBox);
+    formGroupBoxLayout->addRow("Date:", eventDateDE);
 
-    sied_scheduleItemStartTimeDTEdit = new QDateTimeEdit(sied_scheduleTimeControls);
-    sied_scheduleItemStartTimeDTEdit->setObjectName("sied_scheduleItemStartTimeDTEdit");
-    seid_groupBoxLayout->addRow("Start:", sied_scheduleItemStartTimeDTEdit);
+    startTimeDTE = new QDateTimeEdit(formGroupBox);
+    startTimeDTE->setObjectName("startTimeDTE");
+    formGroupBoxLayout->addRow("Start:", startTimeDTE);
     
-    sied_scheduleItemEndTimeDTEdit = new QDateTimeEdit(sied_scheduleTimeControls);
-    sied_scheduleItemEndTimeDTEdit->setObjectName("sied_scheduleItemEndTimeDTEdit");
-    seid_groupBoxLayout->addRow("End:", sied_scheduleItemEndTimeDTEdit);
+    endTimeDTE = new QDateTimeEdit(formGroupBox);
+    endTimeDTE->setObjectName("endTimeDTE");
+    formGroupBoxLayout->addRow("End:", endTimeDTE);
 
-    sied_scheduleItemTitleTE = cqtfa_flexibleWidthPlainTextEdit("sied_scheduleItemTitleTE",
-        sied_scheduleTimeControls, sied_TextEditMinWidth, sied_TextEditMaxWidth, 2);
-    seid_groupBoxLayout->addRow("What:", sied_scheduleItemTitleTE);
+    if (m_DBModelID)
+    {
+        eventTitleTE = cqtfa_flexibleWidthPlainTextEdit("eventTitleTE",
+            formGroupBox, sied_TextEditMinWidth, sied_TextEditMaxWidth, TitleLineCount);
+        formGroupBoxLayout->addRow("What:", eventTitleTE);
 
-    sied_locationTE = cqtfa_flexibleWidthPlainTextEdit("sied_locationTE", sied_scheduleTimeControls,
-        sied_TextEditMinWidth, sied_TextEditMaxWidth, 3);
-    seid_groupBoxLayout->addRow("Where:", sied_locationTE);
+        locationTE = cqtfa_flexibleWidthPlainTextEdit("locationTE", formGroupBox,
+            sied_TextEditMinWidth, sied_TextEditMaxWidth, LocationLineCount);
+        formGroupBoxLayout->addRow("Where:", locationTE);
+    }
+    else
+    {
+        eventTitleLE = cqtfa_LineEditFixedWidthByCharCount("eventTitleLE", formGroupBox, MaxCharLineEdit);
+        formGroupBoxLayout->addRow("What:", eventTitleLE);
 
-    sied_scheduleItemIsPersonalCB = cqtfa_QTWidgetWithText<QCheckBox>("Personal",
-        "sied_scheduleItemIsPersonalCB", sied_scheduleTimeControls);
-    seid_groupBoxLayout->addRow(sied_scheduleItemIsPersonalCB);
+        locationLE = cqtfa_LineEditFixedWidthByCharCount("locationLE", formGroupBox, MaxCharLineEdit);
+        formGroupBoxLayout->addRow("Where:", locationLE);
+    }
 
-    return sied_scheduleTimeControls;
+    isPersonalCB = cqtfa_QTWidgetWithText<QCheckBox>("Personal",
+        "isPersonalCB", formGroupBox);
+    formGroupBoxLayout->addRow(isPersonalCB);
+
+    return formGroupBox;
 }
 
-QDialogButtonBox *ScheduleItemEditorDialog::setUpScheduleItemButtonBox()
+QDialogButtonBox *ScheduleItemEditorDialog::setUpDialogButtonBox()
 {
-    sied_buttonBox = new QDialogButtonBox(this);
+    dialogButtonBox = new QDialogButtonBox(this);
 
-    sied_buttonBox->setObjectName(QString::fromUtf8("sied_buttonBox"));
-    sied_buttonBox->setOrientation(Qt::Horizontal);
-    sied_buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
+    dialogButtonBox->setObjectName(QString::fromUtf8("dialogButtonBox"));
+    dialogButtonBox->setOrientation(Qt::Horizontal);
+    dialogButtonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
 
-    return sied_buttonBox;
+    return dialogButtonBox;
 }
 
-void ScheduleItemEditorDialog::initDateTimeEdit(QDateTimeEdit* dtEdit, std::chrono::system_clock::time_point initValue)
+void ScheduleItemEditorDialog::initDateTimeEdit(
+    QDateTimeEdit* dtEdit,
+    std::chrono::system_clock::time_point initValue
+)
 {
     QDateTime initDateTime = initValidDateTime(initValue);
 
@@ -201,86 +224,78 @@ void ScheduleItemEditorDialog::initDateTimeEdit(QDateTimeEdit* dtEdit, std::chro
     dtEdit->setCalendarPopup(false);
 }
 
-void ScheduleItemEditorDialog::handleAddItemDate_DateChanged()
+void ScheduleItemEditorDialog::handleEventDate_DateChanged()
 {
-    QDate newDate = seid_AddItemDate->date();
+    QDate newDate = eventDateDE->date();
 
-    sied_scheduleItemStartTimeDTEdit->setDate(newDate);
-    sied_scheduleItemEndTimeDTEdit->setDate(newDate);
+    startTimeDTE->setDate(newDate);
+    endTimeDTE->setDate(newDate);
 
-    sied_scheduleItemStartTimeDTEdit->setMinimumDate(newDate.addDays(-2));
-    sied_scheduleItemEndTimeDTEdit->setMinimumDate(sied_scheduleItemStartTimeDTEdit->minimumDate());
+    startTimeDTE->setMinimumDate(newDate.addDays(-2));
+    endTimeDTE->setMinimumDate(startTimeDTE->minimumDate());
 
-    sied_scheduleItemStartTimeDTEdit->setMaximumDate(newDate.addYears(1));
-    sied_scheduleItemEndTimeDTEdit->setMaximumDate(sied_scheduleItemStartTimeDTEdit->maximumDate());
-}
-
-void ScheduleItemEditorDialog::handleScheduleItemTitle_TextChanged()
-{
-    std::string searchString = sied_scheduleItemTitleTE->toPlainText().toStdString();
-    if (searchString.size() >= 5)
-    {
-        ScheduleItemList previousTitleFind(m_UserID);
-        std::vector<std::string> previousEvents = previousTitleFind.findEventSToRepeat(searchString);
-        if (previousEvents.size())
-        {
-            // Prevent re-entering this function until it has completed
-            disconnectAllSignalsAndSlots();
-
-            SelectPreviousEventDialog previousEventFinder(m_UserID, previousEvents, this);
-            previousEventFinder.exec();
-            QString selectedEvent = previousEventFinder.getSelectedEvent();
-            // Don't replace contents if nothing was returned!
-            if (selectedEvent.size() > 0)
-            {
-                sied_scheduleItemTitleTE->setPlainText(previousEventFinder.getSelectedEvent());
-            }
-
-            connectAllSignalsAndSlots();
-            // Change the focus so that we don't re-enter this function unless the user
-            // wants to change the returned string.
-            focusNextChild();
-        }
-        else
-        {
-            std::string errors = previousTitleFind.getAllErrorMessages();
-            if (errors.size() && errors.size() > 3)
-            {
-                disconnect(sied_scheduleItemTitleTE, &QPlainTextEdit::textChanged, this,
-                    &ScheduleItemEditorDialog::handleScheduleItemTitle_TextChanged);
-                QString myqErrors = "previousTitleFind.findEventSToRepeat()";
-                myqErrors += QString::fromStdString(errors);
-                QMessageBox::critical(nullptr, "Critical Error", myqErrors, QMessageBox::Ok);
-                return;
-            }
-        }
-    }
+    startTimeDTE->setMaximumDate(newDate.addYears(1));
+    endTimeDTE->setMaximumDate(startTimeDTE->maximumDate());
 }
 
 bool ScheduleItemEditorDialog::addToDatabase()
 {
     transferFieldsToDataModel();
-    return m_ScheduleItemData->insert();
+    return m_DBModelData->insert();
 }
 
 bool ScheduleItemEditorDialog::udpateDatabase()
 {
     transferFieldsToDataModel();
-    return m_ScheduleItemData->update();
+    return m_DBModelData->update();
 }
 
 void ScheduleItemEditorDialog::transferFieldsToDataModel()
 {
-    m_ScheduleItemData->setTitle(sied_scheduleItemTitleTE->toPlainText().toStdString());
-    m_ScheduleItemData->setStartDateAndTime(qDateTimeToChrono(sied_scheduleItemStartTimeDTEdit->dateTime()));
-    m_ScheduleItemData->setEndDateAndTime(qDateTimeToChrono(sied_scheduleItemEndTimeDTEdit->dateTime()));
-    m_ScheduleItemData->setLocation(sied_locationTE->toPlainText().toStdString());
-    m_ScheduleItemData->setPersonal(sied_scheduleItemIsPersonalCB->isChecked());
+    if (eventTitleTE)
+    {
+        m_DBModelData->setTitle(eventTitleTE->toPlainText().toStdString());
+        m_DBModelData->setLocation(locationTE->toPlainText().toStdString());
+    }
+    else
+    {
+        m_DBModelData->setTitle(eventTitleLE->text().toStdString());
+        m_DBModelData->setLocation(locationLE->text().toStdString());
+    }
+
+    m_DBModelData->setStartDateAndTime(qDateTimeToChrono(startTimeDTE->dateTime()));
+    m_DBModelData->setEndDateAndTime(qDateTimeToChrono(endTimeDTE->dateTime()));
+    m_DBModelData->setPersonal(isPersonalCB->isChecked());
 }
     
 void ScheduleItemEditorDialog::initCompletersFromDB()
 {
+    // QCompleter doesn't work with QPlainTextEdit
+    if (eventTitleTE)
+    {
+        return;
+    }
 
+    ScheduleItemList previousEventFinder(m_UserID);
+    std::vector<std::string> previousEventTitles = previousEventFinder.findEventsForRepeatCompletion();
+    QStringList previousEventList;
+
+    for (const std::string& str : previousEventTitles) {
+        previousEventList.append(QString::fromStdString(str));
+    }
+
+    titleCompleterQC = new QCompleter(previousEventList, formGroupBox);
+    eventTitleLE->setCompleter(titleCompleterQC);
+
+    std::vector<std::string> previousLocations = previousEventFinder.findLocationsForRepeatCompletion();
+    QStringList locationList;
+
+    for (const std::string& str : previousLocations) {
+        locationList.append(QString::fromStdString(str));
+    }
+
+    locationCompleterQC = new QCompleter(locationList, formGroupBox);
+    locationLE->setCompleter(locationCompleterQC);
 }
 
 QDateTime ScheduleItemEditorDialog::initValidDateTime(std::chrono::system_clock::time_point dateTime)
@@ -296,24 +311,18 @@ QDateTime ScheduleItemEditorDialog::initValidDateTime(std::chrono::system_clock:
 
 void ScheduleItemEditorDialog::connectAllSignalsAndSlots()
 {
-    connect(seid_AddItemDate, &QDateEdit::dateChanged, this,
-        &ScheduleItemEditorDialog::handleAddItemDate_DateChanged);
+    connect(eventDateDE, &QDateEdit::dateChanged, this,
+        &ScheduleItemEditorDialog::handleEventDate_DateChanged);
 
-    connect(sied_scheduleItemTitleTE, &QPlainTextEdit::textChanged, this,
-        &ScheduleItemEditorDialog::handleScheduleItemTitle_TextChanged);
-
-    connect(sied_buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
-    connect(sied_buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+    connect(dialogButtonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(dialogButtonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 }
 
 void ScheduleItemEditorDialog::disconnectAllSignalsAndSlots()
 {
-    disconnect(seid_AddItemDate, &QDateEdit::dateChanged, this,
-        &ScheduleItemEditorDialog::handleAddItemDate_DateChanged);
+    disconnect(eventDateDE, &QDateEdit::dateChanged, this,
+        &ScheduleItemEditorDialog::handleEventDate_DateChanged);
 
-    disconnect(sied_scheduleItemTitleTE, &QPlainTextEdit::textChanged, this,
-        &ScheduleItemEditorDialog::handleScheduleItemTitle_TextChanged);
-
-    disconnect(sied_buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
-    disconnect(sied_buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+    disconnect(dialogButtonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    disconnect(dialogButtonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 }
