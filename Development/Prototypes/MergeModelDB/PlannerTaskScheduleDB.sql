@@ -331,5 +331,45 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`EventTitlesForCompleter`;
+
+CREATE PROCEDURE `testPTSDB`.`EventTitlesForCompleter`
+(
+    IN IDUser INT
+)
+
+BEGIN
+
+    SELECT DISTINCT UserScheduleItem.Title FROM UserScheduleItem
+    WHERE
+        UserScheduleItem.UserID = IDUser
+        ORDER BY UserScheduleItem.Title ASC;
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`EventLocationsForCompleter`;
+
+CREATE PROCEDURE `testPTSDB`.`EventLocationsForCompleter`
+(
+    IN IDUser INT
+)
+
+BEGIN
+
+    SELECT DISTINCT UserScheduleItem.Location FROM UserScheduleItem
+    WHERE
+        UserScheduleItem.UserID = IDUser
+        ORDER BY UserScheduleItem.Location ASC;
+
+END$$
+
+DELIMITER ;
+
 COMMIT;
 

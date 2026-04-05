@@ -331,5 +331,47 @@ END$$
 
 DELIMITER ;
 
+DELIMITER ;
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`;
+DROP PROCEDURE IF EXISTS `PlannerTaskScheduleDB`.`EventTitlesForCompleter`;
+
+CREATE PROCEDURE `PlannerTaskScheduleDB`.`EventTitlesForCompleter`
+(
+    IN IDUser INT
+)
+
+BEGIN
+
+    SELECT DISTINCT UserScheduleItem.Title FROM UserScheduleItem
+    WHERE
+        UserScheduleItem.UserID = IDUser
+        ORDER BY UserScheduleItem.Title ASC;
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+USE `PlannerTaskScheduleDB`;
+DROP PROCEDURE IF EXISTS `PlannerTaskScheduleDB`.`EventLocationsForCompleter`;
+
+CREATE PROCEDURE `PlannerTaskScheduleDB`.`EventLocationsForCompleter`
+(
+    IN IDUser INT
+)
+
+BEGIN
+
+    SELECT DISTINCT UserScheduleItem.Location FROM UserScheduleItem
+    WHERE
+        UserScheduleItem.UserID = IDUser
+        ORDER BY UserScheduleItem.Location ASC;
+
+END$$
+
+DELIMITER ;
+
 COMMIT;
 
