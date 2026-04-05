@@ -35,6 +35,8 @@ private:
     TestStatus testPositivePathGetScheduleItemsForUserByDate();
     TestStatus testPositivePathUpdateScheduleItem();
     TestStatus testPositivePathFindEventSToRepeat();
+    TestStatus testPositivePathFindEventsToRepeatCompletion();
+    TestStatus testPositivePathFindLocationsToRepeatCompletion();
     TestStatus testNegativePathAlreadyInDataBase();
     TestStatus testnegativePathNotModified();
     TestStatus negativePathMissingRequiredFields();

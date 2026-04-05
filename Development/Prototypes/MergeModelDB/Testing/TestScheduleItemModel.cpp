@@ -36,6 +36,8 @@ TestScheduleItemModel::TestScheduleItemModel()
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathUpdateScheduleItem, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathFindEventSToRepeat, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathFindEventsToRepeatCompletion, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathFindLocationsToRepeatCompletion, this));
 
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::negativePathMissingRequiredFields, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testnegativePathNotModified, this));
@@ -204,6 +206,55 @@ TestStatus TestScheduleItemModel::testPositivePathFindEventSToRepeat()
     return TESTPASSED;
 }
 
+TestStatus TestScheduleItemModel::testPositivePathFindEventsToRepeatCompletion()
+{
+    ScheduleItemList ScheduleItemListTestInterface(userOne->getUserID());
+    std::vector<std::string> matchingEvents = ScheduleItemListTestInterface.findEventsForRepeatCompletion();
+
+    if (matchingEvents.empty())
+    {
+        std::cerr << "test of ScheduleItemListTestInterface.findEventsForRepeatCompletion() FAILED\n" <<
+            ScheduleItemListTestInterface.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("Find all schedule items for user ({}) PASSED!\n", userOne->getUserID());
+        std::cout << std::format("User {} has {} schedule items\n", userOne->getUserID(), matchingEvents.size());
+        for (auto scheduleitems: matchingEvents)
+        {
+            std::cout << scheduleitems << "\n";
+        }
+    }
+    
+    return TESTPASSED;
+}
+
+TestStatus TestScheduleItemModel::testPositivePathFindLocationsToRepeatCompletion()
+{
+    ScheduleItemList ScheduleItemListTestInterface(userOne->getUserID());
+    std::vector<std::string> matchingLocations = ScheduleItemListTestInterface.findLocationsForRepeatCompletion();
+
+    if (matchingLocations.empty())
+    {
+        std::cerr << "test of ScheduleItemListTestInterface.findLocationsForRepeatCompletion() FAILED\n" <<
+            ScheduleItemListTestInterface.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("Find all schedule locations for user ({}) PASSED!\n", userOne->getUserID());
+        std::cout << std::format("User {} has {} schedule locations\n", userOne->getUserID(), matchingLocations.size());
+        for (auto scheduleitems: matchingLocations)
+        {
+            std::cout << scheduleitems << "\n";
+        }
+    }
+    
+    return TESTPASSED;
+}
 
 TestStatus TestScheduleItemModel::testNegativePathAlreadyInDataBase()
 {
