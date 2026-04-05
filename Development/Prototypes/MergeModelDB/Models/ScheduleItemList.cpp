@@ -105,6 +105,74 @@ std::vector<std::string> ScheduleItemList::findEventSToRepeat(std::string search
     return matchingEvents;
 }
 
+std::vector<std::string> ScheduleItemList::findEventsForRepeatCompletion() noexcept
+{
+    errorMessages.clear();
+    std::vector<std::string> matchingEvents;
+    appendErrorMessage("In ScheduleItemList::findEventsForRepeatCompletion : ");
+
+    try
+    {
+        firstFormattedQuery = queryGenerator->formatGetAllUniqueContentsByUserSortByContent(userID);
+        if (firstFormattedQuery.empty())
+        {
+            appendErrorMessage(std::format("Formatting stored procedure query string failed {}",
+                queryGenerator->getAllErrorMessages()));
+
+            return matchingEvents;
+        }
+
+        if (runStringOnlyQuery())
+        {
+            matchingEvents = stringOnlyResults;
+        }
+
+        errorMessages.clear();
+        return matchingEvents;
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(e.what());
+    }
+    
+    return matchingEvents;
+}
+
+std::vector<std::string> ScheduleItemList::findLocationsForRepeatCompletion() noexcept
+{
+    errorMessages.clear();
+    std::vector<std::string> matchingLocations;
+    appendErrorMessage("In ScheduleItemList::findLocationsForRepeatCompletion : ");
+
+    try
+    {
+        firstFormattedQuery = queryGenerator->formatGetAllUniqueLocationsByUserSortByContent(userID);
+        if (firstFormattedQuery.empty())
+        {
+            appendErrorMessage(std::format("Formatting stored procedure query string failed {}",
+                queryGenerator->getAllErrorMessages()));
+
+            return matchingLocations;
+        }
+
+        if (runStringOnlyQuery())
+        {
+            matchingLocations = stringOnlyResults;
+        }
+
+        errorMessages.clear();
+        return matchingLocations;
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(e.what());
+    }
+    
+    return matchingLocations;
+}
+
 ScheduleItemListValues ScheduleItemList::fillScheduleItemList()
 {
     ScheduleItemListValues scheduleItemList;
@@ -145,6 +213,9 @@ std::vector<ListExceptionTestElement> ScheduleItemList::initListExceptionTests()
     exceptionTests.push_back({std::bind(&ScheduleItemList::testExceptionFindUserScheduleItemsByContentAndDateRange, this),
         "findUserScheduleItemsByContentAndDateRange"});
     exceptionTests.push_back({std::bind(&ScheduleItemList::testExceptionFindEventSToRepeat, this), "findEventSToRepeat"});
+    exceptionTests.push_back({std::bind(&ScheduleItemList::testExceptionFindEventsForRepeatCompletion, this), "findEventsToRepeatCompletion"});
+    exceptionTests.push_back({std::bind(&ScheduleItemList::testExceptionFindLocationsForRepeatCompletion, this),
+        "findLocationsForRepeatCompletion"});
 
     return exceptionTests;
 }
@@ -180,4 +251,18 @@ TestStatus ScheduleItemList::testExceptionFindEventSToRepeat() noexcept
          std::bind(&ScheduleItemList::findEventSToRepeat, this, std::placeholders::_1), titleSearch);
 }
 
+TestStatus ScheduleItemList::testExceptionFindEventsForRepeatCompletion() noexcept
+{
+    selfTestResetAllValues();
 
+    return testListExceptionAndSuccessNArgs("ScheduleItemList::testExceptionFindEventsForRepeatCompletion()",
+         std::bind(&ScheduleItemList::findEventsForRepeatCompletion, this));
+}
+
+TestStatus ScheduleItemList::testExceptionFindLocationsForRepeatCompletion() noexcept
+{
+    selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("ScheduleItemList::testExceptionFindLocationsForRepeatCompletion()",
+         std::bind(&ScheduleItemList::findLocationsForRepeatCompletion, this));
+}

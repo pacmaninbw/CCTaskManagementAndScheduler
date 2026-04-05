@@ -22,6 +22,8 @@ public:
     ScheduleItemListValues findUserScheduleItemsByContentAndDateRange(std::string searchTitle,
         std::chrono::year_month_day searchStart, std::chrono::year_month_day searchEnd) noexcept;
     std::vector<std::string> findEventSToRepeat(std::string searchTitle) noexcept;
+    std::vector<std::string> findEventsForRepeatCompletion() noexcept;
+    std::vector<std::string> findLocationsForRepeatCompletion() noexcept; 
 
 private:
     ScheduleItemListValues fillScheduleItemList();
@@ -31,6 +33,8 @@ private:
     TestStatus testExceptionGetUserDaySchedule() noexcept;
     TestStatus testExceptionFindUserScheduleItemsByContentAndDateRange() noexcept;
     TestStatus testExceptionFindEventSToRepeat() noexcept;
+    TestStatus testExceptionFindEventsForRepeatCompletion() noexcept;
+    TestStatus testExceptionFindLocationsForRepeatCompletion() noexcept;
 
     std::size_t userID;
 };
