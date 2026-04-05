@@ -77,32 +77,32 @@ private:
     std::shared_ptr<UserModel> m_UserDataPtr;
     QDate m_DashboardDate;
 
-    QMenu* udUserMenu;
-    QMenu* udGoalMenu;
-    QMenu* udDBConnectionMenu;
-    QAction* udActionAddUserProfile;
-    QAction* udActionEditUserProfile;
-    QAction* udActionUserLogin;
-    QAction* udActionUserLogout;
-    QAction* udActionAddGoal;
-    QAction* udActionEditGoal;
-    QAction* udActionConnectDB;
-    QWidget* centralwidget;
-    QGroupBox* udTaskListGB;
-    QPushButton* udAddTaskPB;
-    QGroupBox* udScheduleGB;
-    QPushButton* udAddEventPB;
-    QGroupBox* udNotesGB;
-    QPushButton* udAddNotePB;
-    QGroupBox* userDashBoardIDGB;
-    QLineEdit* udUserFirstNameDisplay;
-    QLineEdit* udUserMiddleInitialDisplay;
-    QLineEdit* udUserLastNameDisplay;
-    QLineEdit* udUserNameDisplay;
-    QDateEdit* udDateSelectorDE;
-    DashboardTaskViewer* udTaskTableView;
-    ScheduleTablerViewer* udScheduleTableView;
-    DashboardNotesViewer* udNotesTableView;
+    QMenu* udUserMenu = nullptr;
+    QMenu* udGoalMenu = nullptr;
+    QMenu* udDBConnectionMenu = nullptr;
+    QAction* udActionAddUserProfile = nullptr;
+    QAction* udActionEditUserProfile = nullptr;
+    QAction* udActionUserLogin = nullptr;
+    QAction* udActionUserLogout = nullptr;
+    QAction* udActionAddGoal = nullptr;
+    QAction* udActionEditGoal = nullptr;
+    QAction* udActionConnectDB = nullptr;
+    QWidget* centralwidget = nullptr;
+    QGroupBox* udTaskListGB = nullptr;
+    QPushButton* udAddTaskPB = nullptr;
+    QGroupBox* udScheduleGB = nullptr;
+    QPushButton* udAddEventPB = nullptr;
+    QGroupBox* udNotesGB = nullptr;
+    QPushButton* udAddNotePB = nullptr;
+    QGroupBox* userDashBoardIDGB = nullptr;
+    QLineEdit* udUserFirstNameDisplay = nullptr;
+    QLineEdit* udUserMiddleInitialDisplay = nullptr;
+    QLineEdit* udUserLastNameDisplay = nullptr;
+    QLineEdit* udUserNameDisplay = nullptr;
+    QDateEdit* udDateSelectorDE = nullptr;
+    DashboardTaskViewer* udTaskTableView = nullptr;
+    ScheduleTablerViewer* udScheduleTableView = nullptr;
+    DashboardNotesViewer* udNotesTableView = nullptr;
 
 /*
  * Size and positioning constants.

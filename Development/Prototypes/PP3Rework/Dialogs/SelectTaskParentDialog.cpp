@@ -2,7 +2,6 @@
 #include "commonQTWidgetsForApp.h"
 #include "SelectTaskParentDialog.h"
 #include "SelectParentTaskTable.h"
-#include "TaskModel.h"
 
 // QT Header Files
 #include <QVariant>

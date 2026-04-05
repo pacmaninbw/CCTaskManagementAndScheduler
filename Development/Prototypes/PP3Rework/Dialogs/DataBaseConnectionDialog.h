@@ -46,22 +46,22 @@ private:
     int maxGroupBoxHeight;
     int maxButtonBoxHeight;
 
-    QVBoxLayout* dbConnectionsDialogLayout;
-    QGroupBox* dbConnectionsGB;
-    QFormLayout* dbConnectionsFormLayout;
-    QLineEdit* mySqlUser;
-    QLineEdit* mySqlPassword;
-    QLineEdit* mySqlUrl;
-    QLineEdit* mySqlPort;
-    QLineEdit* mySqlDBName;
-    QCheckBox* rememberMe;
-    QDialogButtonBox* dbConnectionsButtonBox;
-    QGroupBox* optionsGB;
-    QFormLayout* optionsFormLayout;
-    QCheckBox* verboseOutput;
-    QCheckBox* runSelftTest;
-    QCheckBox* forceErrors;
-    QCheckBox* forceExceptions;
+    QVBoxLayout* dbConnectionsDialogLayout = nullptr;
+    QGroupBox* dbConnectionsGB = nullptr;
+    QFormLayout* dbConnectionsFormLayout = nullptr;
+    QLineEdit* mySqlUser = nullptr;
+    QLineEdit* mySqlPassword = nullptr;
+    QLineEdit* mySqlUrl = nullptr;
+    QLineEdit* mySqlPort = nullptr;
+    QLineEdit* mySqlDBName = nullptr;
+    QCheckBox* rememberMe = nullptr;
+    QDialogButtonBox* dbConnectionsButtonBox = nullptr;
+    QGroupBox* optionsGB = nullptr;
+    QFormLayout* optionsFormLayout = nullptr;
+    QCheckBox* verboseOutput = nullptr;
+    QCheckBox* runSelftTest = nullptr;
+    QCheckBox* forceErrors = nullptr;
+    QCheckBox* forceExceptions = nullptr;
 };
 
 #endif // DATABASECONNECTIONDIALOG_H

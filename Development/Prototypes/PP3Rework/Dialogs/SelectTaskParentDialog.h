@@ -20,7 +20,6 @@ class TaskModel;
 #include <QVBoxLayout>
 
 // Standard C++ Header Files
-#include <memory>
 
 class SelectTaskParentDialog : public QDialog
 {
@@ -40,11 +39,11 @@ private:
     QDialogButtonBox* setUpDialogButtons();
     QTableView* setUpParentTaskView();
     QAbstractTableModel* setUpParentTaskTable();
-    QVBoxLayout* selectTaskParentDialogLayout;
-    QDialogButtonBox* buttonBox;
-    QGroupBox* selectParentgroupBox;
-    QFormLayout* selectParentGroupBoxLayout;
-    QTableView* selectParentTableView;
+    QVBoxLayout* selectTaskParentDialogLayout = nullptr;
+    QDialogButtonBox* buttonBox = nullptr;
+    QGroupBox* selectParentgroupBox = nullptr;
+    QFormLayout* selectParentGroupBoxLayout = nullptr;
+    QTableView* selectParentTableView = nullptr;
     std::size_t m_ParentTaskID;
     std::size_t m_CreatorID;
 

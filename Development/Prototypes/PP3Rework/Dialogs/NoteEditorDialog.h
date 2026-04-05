@@ -37,13 +37,13 @@ private:
 
     std::size_t m_userID;
     std::shared_ptr<NoteModel> m_NoteData;
-    QDialogButtonBox* buttonBox;
-    QGroupBox* editNoteEnterContentGB;
-    QFormLayout* noteForm;
-    QVBoxLayout* editNoteLayOut;
-    QPlainTextEdit* editNoteContentTE;
-    int maxGroupBoxHeight;
-    int maxButtonBoxHeight;
+    QDialogButtonBox* buttonBox = nullptr;
+    QGroupBox* editNoteEnterContentGB = nullptr;
+    QFormLayout* noteForm = nullptr;
+    QVBoxLayout* editNoteLayOut = nullptr;
+    QPlainTextEdit* editNoteContentTE = nullptr;
+    int maxGroupBoxHeight = 0;
+    int maxButtonBoxHeight = 0;
 
     const int minNoteContentWidth = 60;
     const int maxNoteContentWidth = 90;

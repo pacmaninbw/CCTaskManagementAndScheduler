@@ -35,10 +35,10 @@ private:
 
     std::shared_ptr<UserModel> m_UserDataPtr;
 
-    QGroupBox* userLoginGB;
-    QLineEdit* userLoginUserNameLE;
-    QLineEdit* userLoginPasswordLE;
-    QPushButton* actionLoginAsUserPB;
+    QGroupBox* userLoginGB = nullptr;
+    QLineEdit* userLoginUserNameLE = nullptr;
+    QLineEdit* userLoginPasswordLE = nullptr;
+    QPushButton* actionLoginAsUserPB = nullptr;
 
     const int userLoginDialogWidth = 400;
     const int userLoginDialogHeight = 200;

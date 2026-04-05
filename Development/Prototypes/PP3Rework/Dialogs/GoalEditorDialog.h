@@ -36,12 +36,12 @@ private:
 
     std::size_t m_UserID;
     std::shared_ptr<UserGoalModel> m_GoalData;
-    QDialogButtonBox* buttonBox;
-    QGroupBox* editGoalGB;
-    QFormLayout* goalEditorDialogFormLayout;
-    QPlainTextEdit* editGoalDescriptionTE;
-    QLineEdit* editGoalPriorityLE;
-    QPushButton* editGoalSelectParentGoalPB;
+    QDialogButtonBox* buttonBox = nullptr;
+    QGroupBox* editGoalGB = nullptr;
+    QFormLayout* goalEditorDialogFormLayout = nullptr;
+    QPlainTextEdit* editGoalDescriptionTE = nullptr;
+    QLineEdit* editGoalPriorityLE = nullptr;
+    QPushButton* editGoalSelectParentGoalPB = nullptr;
     int maxGroupBoxHeight;
     int maxButtonBoxHeight;
 

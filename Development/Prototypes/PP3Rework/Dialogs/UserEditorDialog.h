@@ -49,19 +49,19 @@ private:
     std::shared_ptr<UserModel> m_UserData;
 
 // QT Widgets
-    QDialogButtonBox* editUserButtonBox;
-    QVBoxLayout* editUserLayout;
-    QGroupBox* userProfileGB;
-    QFormLayout* userProfileForm;
-    QLineEdit* firstNameLE;
-    QLineEdit* lastNameLE;
-    QLineEdit* middleNameLE;
-    QLineEdit* emailLE;
-    QGroupBox* loginDataGB;
-    QFormLayout* loginDataForm;
-    QLineEdit* userNameLE;
-    QLineEdit* passwordLE;
-    QCheckBox* autoGenerateLoginAndPassword;
+    QDialogButtonBox* editUserButtonBox = nullptr;
+    QVBoxLayout* editUserLayout = nullptr;
+    QGroupBox* userProfileGB = nullptr;
+    QFormLayout* userProfileForm = nullptr;
+    QLineEdit* firstNameLE = nullptr;
+    QLineEdit* lastNameLE = nullptr;
+    QLineEdit* middleNameLE = nullptr;
+    QLineEdit* emailLE = nullptr;
+    QGroupBox* loginDataGB = nullptr;
+    QFormLayout* loginDataForm = nullptr;
+    QLineEdit* userNameLE = nullptr;
+    QLineEdit* passwordLE = nullptr;
+    QCheckBox* autoGenerateLoginAndPassword = nullptr;
 
     const int groupBoxSpacing = 60;
     const int emailWidth = 300;

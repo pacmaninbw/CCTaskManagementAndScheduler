@@ -1,6 +1,5 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
-#include "SelectPreviousEventDialog.h"
 #include "ScheduleItemEditorDialog.h"
 #include "ScheduleItemList.h"
 #include "ScheduleItemModel.h"
