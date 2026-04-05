@@ -153,10 +153,11 @@ protected:
 
         for (auto row: results.rows())
         {
-            std::string returnedValue = row.at(0).as_string();
-            if (returnedValue != "NULL")
+            boost::mysql::field_view fieldView = row.at(0);
+            if (fieldView.kind() == boost::mysql::field_kind::string)
             {
-                stringOnlyResults.push_back(row.at(0).as_string());
+                std::string returnedValue = fieldView.as_string();
+                stringOnlyResults.push_back(returnedValue);
             }
     
         }
