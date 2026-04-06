@@ -128,7 +128,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-03-27
+	Completed Date: 2026-04-06
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
@@ -324,6 +324,10 @@ Exception Test for ScheduleItemList::testExceptionGgetUserDaySchedule()
 Exception Test for ScheduleItemList::testExceptionFindUserScheduleItemsByContentAndDateRange()
 
 Exception Test for ScheduleItemList::testExceptionFindEventSToRepeat()
+
+Exception Test for ScheduleItemList::testExceptionFindEventsForRepeatCompletion()
+
+Exception Test for ScheduleItemList::testExceptionFindLocationsForRepeatCompletion()
 
 
 ---------------------------------------------------------------------------------
