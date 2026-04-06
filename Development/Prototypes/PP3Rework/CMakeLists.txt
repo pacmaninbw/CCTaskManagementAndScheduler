@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.31)
 
 project(PP3Rework VERSION 0.1 LANGUAGES CXX)
 
-set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
@@ -22,7 +21,6 @@ set(PROJECT_SOURCES
         main.cpp
         UserDashboard.cpp
         UserDashboard.h
-        UserDashboard.ui
         PlannerInitializer.h
         PlannerInitializer.cpp
 )
@@ -32,13 +30,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         Dialogs/DataBaseConnectionDialog.cpp
-        Dialogs/DataBaseConnectionDialog.ui
-        Dialogs/GoalEditorDialog.ui
-        Dialogs/LoginDialog.ui
-        Dialogs/NoteEditorDialog.ui
-        Dialogs/ScheduleItemEditorDialog.ui
-        Dialogs/TaskEditorDialog.ui
-        Dialogs/UserEditorDialog.ui
         Dialogs/DataBaseConnectionDialog.h
         Dialogs/GoalEditorDialog.h
         Dialogs/LoginDialog.h
