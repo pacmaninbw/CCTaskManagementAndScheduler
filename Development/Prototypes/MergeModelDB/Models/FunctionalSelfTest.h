@@ -60,6 +60,7 @@ protected:
         ModelDBInterface::modified = false;
         ModelDBInterface::primaryKey = 0;
         std::string_view modelName(ModelDBInterface::modelName);
+        ModelDBInterface::deleted = false;
 
         if (ModelDBInterface::save())
         {
