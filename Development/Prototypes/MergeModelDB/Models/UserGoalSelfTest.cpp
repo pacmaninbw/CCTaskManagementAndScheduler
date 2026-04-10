@@ -179,6 +179,7 @@ std::vector<ExceptionTestElement> UserGoalSelfTest::initExceptionTests() noexcep
     exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionInsert, this), "testExceptionInsert"});
     exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
     exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
+    exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionHide, this), "testExceptionHide"});
 
     return exceptionTests;
 }
@@ -215,6 +216,17 @@ TestStatus UserGoalSelfTest::testExceptionRetrieve() noexcept
     setGoalId(1);
 
     return testExceptionAndSuccessNArgs("UserGoalModel::retrieve", std::bind(&UserGoalModel::retrieve, this));
+}
+
+TestStatus UserGoalSelfTest::testExceptionHide() noexcept
+{
+    selfTestResetAllValues();
+    std::size_t testUserId = 1;
+
+    setGoalId(1);
+    setUserId(testUserId);
+
+    return testExceptionAndSuccessNArgs("UserGoalModel::hide", std::bind(&UserGoalModel::hide, this, std::placeholders::_1), testUserId);
 }
 
 TestStatus UserGoalSelfTest::testExceptionSelectByGoalID() noexcept

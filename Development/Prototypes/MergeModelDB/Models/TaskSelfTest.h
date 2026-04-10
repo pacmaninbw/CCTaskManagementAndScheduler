@@ -32,6 +32,7 @@ private:
     virtual TestStatus testExceptionInsert() noexcept override;
     virtual TestStatus testExceptionUpdate() noexcept override;
     virtual TestStatus testExceptionRetrieve() noexcept override;
+    virtual TestStatus testExceptionHide() noexcept override;
     virtual TestStatus testAllInsertFailures() override;
     virtual TestStatus testEqualityOperator() noexcept override;
     virtual void testOutput() noexcept override;

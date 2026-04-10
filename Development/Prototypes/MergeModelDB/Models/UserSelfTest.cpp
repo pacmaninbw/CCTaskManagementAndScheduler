@@ -265,6 +265,7 @@ std::vector<ExceptionTestElement> UserSelfTest::initExceptionTests() noexcept
     exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionInsert, this), "testExceptionInsert"});
     exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
     exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
+    exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionHide, this), "testExceptionHide"});
 
     return exceptionTests;
 }
@@ -355,6 +356,17 @@ TestStatus UserSelfTest::testExceptionRetrieve() noexcept
     setUserID(1);
 
     return testExceptionAndSuccessNArgs("UserModel::retrieve", std::bind(&UserModel::retrieve, this));
+}
+
+TestStatus UserSelfTest::testExceptionHide() noexcept
+{
+    selfTestResetAllValues();
+
+    std::size_t testUserId = 1;
+
+    setUserID(testUserId);
+
+    return testExceptionAndSuccessNArgs("UserModel::hide", std::bind(&UserModel::hide, this, std::placeholders::_1), testUserId);
 }
 
 TestStatus UserSelfTest::testAllInsertFailures()

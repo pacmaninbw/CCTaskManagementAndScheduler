@@ -120,6 +120,7 @@ std::vector<ExceptionTestElement> NoteSelfTest::initExceptionTests() noexcept
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionInsert, this), "testExceptionInsert"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
+    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionHide, this), "testExceptionHide"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionFormatSelectByUserId, this), "selectByUserId"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionFormatSelectByUserIdAndSimilarContent, this), "selectByUserIdAndSimilarContent"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionFormatSelectByUserIdAndCreationDateRange, this), "selectByUserIdAndCreationDateRange"});
@@ -163,6 +164,22 @@ TestStatus NoteSelfTest::testExceptionRetrieve() noexcept
 
     return testExceptionAndSuccessNArgs("NoteModel::retrieve", std::bind(&NoteModel::retrieve, this));
 }
+
+TestStatus NoteSelfTest::testExceptionHide() noexcept
+{
+   selfTestResetAllValues();
+   std::size_t testUserId = 27;
+
+    std::chrono::system_clock::time_point timeStamp = commonTestTimeStampValue;
+    setNoteId(1);
+    setContent("Testing insertion exception");
+    setUserId(testUserId);
+    setDateAdded(timeStamp);
+    setLastModified(timeStamp);
+
+    return testExceptionAndSuccessNArgs("NoteModel::hide", std::bind(&NoteModel::hide, this, std::placeholders::_1), testUserId);
+}
+
 
 TestStatus NoteSelfTest::testExceptionSelectByNoteID() noexcept
 {

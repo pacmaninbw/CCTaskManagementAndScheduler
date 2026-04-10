@@ -119,6 +119,7 @@ std::vector<ExceptionTestElement> ScheduleItemSelfTest::initExceptionTests() noe
     exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionInsert, this), "testExceeptionInsert"});
     exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
     exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
+    exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionHide, this), "testExceptionHide"});
 
     return exceptionTests;
 }
@@ -182,6 +183,21 @@ TestStatus ScheduleItemSelfTest::testExceptionRetrieve() noexcept
 
     return testExceptionAndSuccessNArgs("ScheduleItemModel::retrieve", std::bind(&ScheduleItemModel::retrieve, this));
 }
+
+TestStatus ScheduleItemSelfTest::testExceptionHide() noexcept
+{
+    selfTestResetAllValues();
+    std::size_t testUserId = 1;
+
+    setScheduleItemID(57);
+    setUserID(testUserId);
+    setTitle("Testing Exception handling for Schedule Item Update");
+    setStartDateAndTime(commonTestTimeStampValue);
+    setEndDateAndTime(commonTestTimeStampValue);
+    setCreationDate(commonTestTimeStampValue);
+    setLastUpdate(commonTestTimeStampValue);
+
+    return testExceptionAndSuccessNArgs("ScheduleItemModel::hide", std::bind(&ScheduleItemModel::hide, this, std::placeholders::_1), testUserId);}
 
 TestStatus ScheduleItemSelfTest::testExceptionFormatSelectScheduleItemsByDateAndUser() noexcept
 {

@@ -128,6 +128,7 @@ std::vector<ExceptionTestElement> TaskSelfTest::initExceptionTests() noexcept
     exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionInsert, this), "testExceeptionInsert"});
     exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
     exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
+    exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionHide, this), "testExceptionHide"});
     exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionFormatSelectActiveTasksForAssignedUser, this),
         "selectByDescriptionAndAssignedUser"});
     exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionFormatSelectUnstartedDueForStartForAssignedUser, this),
@@ -272,6 +273,30 @@ TestStatus TaskSelfTest::testExceptionRetrieve() noexcept
     return testExceptionAndSuccessNArgs("TaskSelfTest::retrieve", std::bind(&TaskModel::retrieve, this));
 }
 
+TestStatus TaskSelfTest::testExceptionHide() noexcept
+{
+    selfTestResetAllValues();
+    forceException = true;
+
+    std::size_t creatorIDTestValue = 1;
+
+    setTaskID(53);
+    setCreatorID(creatorIDTestValue);
+    setAssignToID(2);
+    setDescription("Testing Exception handling");
+    setEstimatedEffort(6);
+    setScheduledStart(commonTestDateValue);
+    setDueDate(commonTestDateRangeEndValue);
+    setPriorityGroup('A');
+    setPriority(1);
+    setParentTaskID(1);
+    addDependency(3);
+    addDependency(5);
+    addDependency(7);
+    setCreationDate(commonTestTimeStampValue);
+
+    return testExceptionAndSuccessNArgs("TaskSelfTest::hide", std::bind(&TaskModel::hide, this, std::placeholders::_1), creatorIDTestValue);
+}
 
 TestStatus TaskSelfTest::testAllInsertFailures()
 {
