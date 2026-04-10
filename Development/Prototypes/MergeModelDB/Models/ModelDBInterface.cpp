@@ -133,7 +133,7 @@ bool ModelDBInterface::retrieve() noexcept
     }
 }
 
-bool ModelDBInterface::hide([[maybe_unused]]std::size_t userID) noexcept
+bool ModelDBInterface::hide([[maybe_unused]]std::size_t userRequestingDelete) noexcept
 {
     errorMessages.clear();
 

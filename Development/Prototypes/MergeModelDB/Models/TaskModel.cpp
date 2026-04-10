@@ -57,7 +57,7 @@ TaskModel::TaskModel(std::size_t creatorID, std::string description)
     setDescription(description);
 }
 
-bool TaskModel::hide(std::size_t userID) noexcept
+bool TaskModel::hide(std::size_t userRequestingDelete) noexcept
 {
     errorMessages.clear();
 
@@ -68,9 +68,9 @@ bool TaskModel::hide(std::size_t userID) noexcept
         return false;
     }
 
-    if (userID != creatorID)
+    if (userRequestingDelete != creatorID)
     {
-        appendErrorMessage(std::format("Permission denied, deleting user ({}) is not the creator ({}) of the task", userID, creatorID));
+        appendErrorMessage(std::format("Permission denied, deleting user ({}) is not the creator ({}) of the task", userRequestingDelete, creatorID));
 
         return false;
     }

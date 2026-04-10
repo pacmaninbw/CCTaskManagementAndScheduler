@@ -28,7 +28,7 @@ public:
     TaskModel(std::size_t creatorID, std::string descriptionIn);
     virtual ~TaskModel() = default;
 
-    virtual bool hide(std::size_t userID) noexcept override;
+    virtual bool hide(std::size_t userRequestingDelete) noexcept override;
     void addEffortHours(double hours);
     void markComplete()
     {

@@ -27,7 +27,7 @@ public:
     bool insert() noexcept;
     bool update() noexcept;
     bool retrieve() noexcept;    // Only select object by object ID.
-    virtual bool hide(std::size_t userID) noexcept;
+    virtual bool hide(std::size_t userRequestingDelete) noexcept;
     bool isInDataBase() const noexcept { return (primaryKey > 0); };
     bool isModified() const noexcept { return modified; };
     void clearModified() { modified = false; };
