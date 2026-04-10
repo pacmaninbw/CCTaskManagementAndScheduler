@@ -57,6 +57,40 @@ TaskModel::TaskModel(std::size_t creatorID, std::string description)
     setDescription(description);
 }
 
+bool TaskModel::hide(std::size_t userID) noexcept
+{
+    errorMessages.clear();
+
+    if (!isInDataBase())
+    {
+        appendErrorMessage(std::format("{} not in Database, nothing to delete!", modelName));
+
+        return false;
+    }
+
+    if (userID != creatorID)
+    {
+        appendErrorMessage(std::format("Permission denied, deleting user ({}) is not the creator ({}) of the task", userID, creatorID));
+
+        return false;
+    }
+
+    try
+    {
+        boost::mysql::results localResult = runQueryAsync(formatDeleteStatement());
+
+        deleted = true;
+        
+        return true;
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In {}.hide() : {}", modelName, e.what()));
+        return false;
+    }
+}
+
 void TaskModel::addEffortHours(double hours)
 {
     double actualEffortHours = getactualEffortToDate();
@@ -441,8 +475,8 @@ std::string TaskModel::formatInsertStatement()
     return boost::mysql::format_sql(format_opts.value(),
         "INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, "
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
-            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS)"
-            " VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, {18}, {19})",
+            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden)"
+            " VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, {18}, {19}, 0)",
             creatorID,
             assignToID,
             description,
@@ -501,8 +535,9 @@ std::string TaskModel::formatUpdateStatement()
             " Personal = {16},"
             " DependencyCount = {17},"
             " Dependencies = {18},"
-            " LastUpdateTS = {19}"
-        " WHERE TaskID = {20} ",
+            " LastUpdateTS = {19},"
+            " Hidden = {20}"
+        " WHERE TaskID = {21} ",
             creatorID,
             assignToID,
             description,
@@ -523,8 +558,16 @@ std::string TaskModel::formatUpdateStatement()
             dependencyCount,
             depenenciesText,
             optionalDateTimeConversion(lastUpdate),
+            deleted? 1 : 0,
         primaryKey
     );
+}
+
+std::string TaskModel::formatDeleteStatement()
+{
+    initFormatOptions();
+
+    return boost::mysql::format_sql(format_opts.value(), "CALL HideTask({}, {})", creatorID, primaryKey);
 }
 
 std::string TaskModel::formatSelectStatement()
@@ -631,6 +674,11 @@ void TaskModel::processResultRow(boost::mysql::row_view rv)
     if (!rv.at(completedIdx).is_null())
     {
         completionDate = boostMysqlDateToChronoDate(rv.at(completedIdx).as_date());
+    }
+
+    if (!rv.at(hidden_Idx).is_null())
+    {
+        deleted = rv.at(hidden_Idx).as_int64() == 1? true : false;
     }
 
     std::size_t dependencyCount = rv.at(dependencyCountIdx).as_uint64();

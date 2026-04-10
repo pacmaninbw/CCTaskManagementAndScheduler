@@ -82,9 +82,9 @@ std::string NoteModel::formatInsertStatement()
     }
 
     std::string insertStatement = boost::mysql::format_sql(format_opts.value(),
-        "INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate) VALUES ({0}, {1}, {2}, {3})",
+        "INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate, Hidden) VALUES ({0}, {1}, {2}, {3}, {4})",
         userID, stdChronoTimePointToBoostDateTime(creationDate.value()),
-        content, stdChronoTimePointToBoostDateTime(lastUpdate.value()));
+        content, stdChronoTimePointToBoostDateTime(lastUpdate.value()), deleted? 1 : 0);
 
     return insertStatement;
 }
@@ -99,11 +99,20 @@ std::string NoteModel::formatUpdateStatement()
             " UserNotes.NotationDateTime = {1},"
             " UserNotes.Content = {2},"
             " UserNotes.LastUpdate = {3}" 
+            " UserNotes.Hidden = {4}," 
         " WHERE UserNotes.idUserNotes = {4}",
             userID, stdChronoTimePointToBoostDateTime(creationDate.value()),
-            content, stdChronoTimePointToBoostDateTime(lastUpdate.value()), primaryKey);
+            content, stdChronoTimePointToBoostDateTime(lastUpdate.value()),
+            deleted? 1 : 0, primaryKey);
         
     return updateStatement;
+}
+
+std::string NoteModel::formatDeleteStatement()
+{
+    initFormatOptions();
+
+    return boost::mysql::format_sql(format_opts.value(), "CALL HideNote({}, {})", userID, primaryKey);
 }
 
 std::string NoteModel::formatSelectStatement()
@@ -125,6 +134,10 @@ void NoteModel::processResultRow(boost::mysql::row_view rv)
     creationDate = boostMysqlDateTimeToChronoTimePoint(rv.at(NotationDateTimeIdx).as_datetime());
     content = rv.at(ContentIdx).as_string();
     lastUpdate = boostMysqlDateTimeToChronoTimePoint(rv.at(LastUpdateIdx).as_datetime());
+    if (!rv.at(HiddenIdx).is_null())
+    {
+        deleted = rv.at(HiddenIdx).as_int64() == 1? true : false;
+    }
 }
 
 bool NoteModel::selectByNoteID(std::size_t noteID)
@@ -269,3 +282,5 @@ std::string NoteModel::formatGetNotesFromUserForDate(std::size_t userId, std::ch
 
     return std::string();
 }
+
+

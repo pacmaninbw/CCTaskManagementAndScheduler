@@ -126,6 +126,7 @@ protected:
     bool diffUser(UserModel& other) const noexcept;
     std::string formatInsertStatement() override;
     std::string formatUpdateStatement() override;
+    std::string formatDeleteStatement() override;
     std::string formatSelectStatement() override;
 
     std::string buildPreferenceText() noexcept;
@@ -154,7 +155,7 @@ private:
  */
     boost::mysql::constant_string_view baseQuery = 
         "SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, UserAdded, LastLogin, Preferences FROM UserProfile ";
+            "HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile ";
 
     static const std::size_t UserIdIdx = 0;
     static const std::size_t LastNameIdx = 1;
@@ -166,6 +167,7 @@ private:
     static const std::size_t UserAddedIdx = 7;
     static const std::size_t LastLoginIdx = 8;
     static const std::size_t PreferencesIdx = 9;
+    static const std::size_t HiddenIdx = 10;
 // Preference subfield indexes
     static const std::size_t PrefDayStartIdx = 0;
     static const std::size_t PrefDayEndIdx = 1;

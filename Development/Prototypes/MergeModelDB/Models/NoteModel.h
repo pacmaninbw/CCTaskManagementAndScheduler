@@ -86,6 +86,7 @@ protected:
     bool diffNote(NoteModel& other);
     std::string formatInsertStatement() override;
     std::string formatUpdateStatement() override;
+    virtual std::string formatDeleteStatement() override;
     std::string formatSelectStatement() override;
 
     void processResultRow(boost::mysql::row_view rv) override;
@@ -103,13 +104,14 @@ protected:
  * returned are known.
  */
     boost::mysql::constant_string_view baseQuery = 
-        "SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate FROM UserNotes ";
+        "SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes ";
 
     static const std::size_t NoteIdIdx = 0;
     static const std::size_t UserIdIdx = 1;
     static const std::size_t NotationDateTimeIdx = 2;
     static const std::size_t ContentIdx = 3;
     static const std::size_t LastUpdateIdx = 4;
+    static const std::size_t HiddenIdx = 5;
 
     boost::mysql::constant_string_view listQueryBase = "SELECT idUserNotes FROM UserNotes ";
 };

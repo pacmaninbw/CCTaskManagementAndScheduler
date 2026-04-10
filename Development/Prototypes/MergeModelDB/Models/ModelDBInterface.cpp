@@ -24,6 +24,7 @@ ModelDBInterface::ModelDBInterface(std::string modelNameIn)
     modelName = modelNameIn;
     modified = false;
     delimiter = ';';  
+    deleted = false;
 }
 
 bool ModelDBInterface::save() noexcept
@@ -131,6 +132,34 @@ bool ModelDBInterface::retrieve() noexcept
         return false;
     }
 }
+
+bool ModelDBInterface::hide([[maybe_unused]]std::size_t userID) noexcept
+{
+    errorMessages.clear();
+
+    if (!isInDataBase())
+    {
+        appendErrorMessage(std::format("{} not in Database, nothing to delete!", modelName));
+
+        return false;
+    }
+
+    try
+    {
+        boost::mysql::results localResult = runQueryAsync(formatDeleteStatement());
+
+        deleted = true;
+        
+        return true;
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In {}.hide() : {}", modelName, e.what()));
+        return false;
+    }
+}
+
 
 bool ModelDBInterface::hasRequiredValues()
 {

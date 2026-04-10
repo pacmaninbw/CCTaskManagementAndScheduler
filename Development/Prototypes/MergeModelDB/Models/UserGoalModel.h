@@ -87,6 +87,7 @@ protected:
     void processResultRow(boost::mysql::row_view rv) override;
     std::string formatInsertStatement() override;
     std::string formatUpdateStatement() override;
+    std::string formatDeleteStatement() override;
     std::string formatSelectStatement() override;
     
     std::size_t userID;
@@ -115,6 +116,7 @@ private:
     static const std::size_t LastUpdateIdx = 4;
     static const std::size_t PriorityIdx = 5;
     static const std::size_t ParentGoalIDIdx = 6;
+    static const std::size_t HiddenIdx = 6;
 
     boost::mysql::constant_string_view listQueryBase = "SELECT idUserGoals FROM UserGoals ";
 };

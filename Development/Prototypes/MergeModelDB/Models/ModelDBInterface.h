@@ -27,12 +27,14 @@ public:
     bool insert() noexcept;
     bool update() noexcept;
     bool retrieve() noexcept;    // Only select object by object ID.
+    virtual bool hide(std::size_t userID) noexcept;
     bool isInDataBase() const noexcept { return (primaryKey > 0); };
     bool isModified() const noexcept { return modified; };
     void clearModified() { modified = false; };
     bool hasRequiredValues();
     void reportMissingFields() noexcept;
     std::string getModelName() { return modelName; };
+    bool isDeleted() const noexcept { return deleted; };
 
 protected:
 /*
@@ -41,11 +43,12 @@ protected:
  */
     virtual void initRequiredFields() = 0;
 /*
- * Each model must provide formating for Insert, Update and Select by object ID.
- * Additional select statements will be handled by each model as necessary.
+ * Each model must provide formating for Delete, Insert, Update and Select by
+ * object ID. Additional select statements will be handled by each model as necessary.
  */
     virtual std::string formatInsertStatement() = 0;
     virtual std::string formatUpdateStatement() = 0;
+    virtual std::string formatDeleteStatement() = 0;
     virtual std::string formatSelectStatement() = 0;
     virtual bool processResult(boost::mysql::results& results);
 /*
@@ -79,6 +82,7 @@ protected:
     std::size_t primaryKey;
     std::string modelName;
     bool modified;
+    bool deleted;
     char delimiter;
     struct RequireField
     {

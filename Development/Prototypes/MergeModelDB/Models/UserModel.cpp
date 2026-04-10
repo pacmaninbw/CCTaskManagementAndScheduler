@@ -200,7 +200,7 @@ std::string UserModel::formatInsertStatement()
 
     std::string insertStatement = boost::mysql::format_sql(format_opts.value(),
         "INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-        "HashedPassWord, UserAdded, LastLogin, Preferences) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8})",
+        "HashedPassWord, UserAdded, LastLogin, Preferences, Hidden) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, 0)",
         lastName, firstName, middleInitial, email, loginName, password,
         optionalDateTimeConversion(created),
         optionalDateTimeConversion(lastLogin), buildPreferenceText()
@@ -222,12 +222,20 @@ std::string UserModel::formatUpdateStatement()
             " UserProfile.LoginName = {4},"
             " UserProfile.HashedPassWord = {5},"
             " UserProfile.Preferences = {6},"
-            " UserProfile.LastLogin = {7}"
-        " WHERE UserProfile.UserID = {8}",
+            " UserProfile.LastLogin = {7},"
+            " UserProfile.Hidden = {8}"
+        " WHERE UserProfile.UserID = {9}",
             lastName, firstName, middleInitial, email, loginName,password, 
-            buildPreferenceText(), optionalDateTimeConversion(lastLogin), primaryKey);
+            buildPreferenceText(), optionalDateTimeConversion(lastLogin), deleted? 1 : 0, primaryKey);
         
     return updateStatement;
+}
+
+std::string UserModel::formatDeleteStatement()
+{
+    initFormatOptions();
+
+    return boost::mysql::format_sql(format_opts.value(), "CALL HideUser({})", primaryKey);
 }
 
 std::string UserModel::formatSelectStatement()
@@ -268,6 +276,10 @@ void UserModel::processResultRow(boost::mysql::row_view rv)
     if (!rv.at(LastLoginIdx).is_null())
     {
         lastLogin = boostMysqlDateTimeToChronoTimePoint(rv.at(LastLoginIdx).as_datetime());
+    }
+    if (!rv.at(HiddenIdx).is_null())
+    {
+        deleted = rv.at(HiddenIdx).as_int64() == 1? true : false;
     }
     std::string preferences = rv.at(PreferencesIdx).as_string();
     parsePrefenceText(preferences);
@@ -420,5 +432,4 @@ bool UserModel::selectByUserID(std::size_t UserID) noexcept
         return false;
     }
 }
-
 

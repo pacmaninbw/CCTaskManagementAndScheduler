@@ -91,7 +91,7 @@ std::string ScheduleItemModel::formatSelectScheduleItemsByDateAndUser(std::chron
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Hidden <> 1", userId);
         boost::mysql::format_sql_to(fctx, " AND StartDateTime >= {}", stdChronoTimePointToBoostDateTime(startSearch));
         boost::mysql::format_sql_to(fctx, " AND StartDateTime <= {}", stdChronoTimePointToBoostDateTime(endSearch));
         boost::mysql::format_sql_to(fctx, " ORDER BY StartDateTime ASC");
@@ -122,6 +122,7 @@ std::string ScheduleItemModel::formatSelectSiByContentDateRangeUser(
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
         boost::mysql::format_sql_to(fctx, " AND Title LIKE {}", wrapSearchContentSQLPatternMatch(content));
+        boost::mysql::format_sql_to(fctx, " AND Hidden <> {}", 1);
         boost::mysql::format_sql_to(fctx, " AND StartDateTime >= {}", stdchronoDateToBoostMySQLDate(searchStart));
         boost::mysql::format_sql_to(fctx, " AND StartDateTime <= {}", stdchronoDateToBoostMySQLDate(searchEnd));
 
@@ -146,6 +147,7 @@ std::string ScheduleItemModel::formatSelectSiByContentAndUserSortByContent(std::
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
         boost::mysql::format_sql_to(fctx, " AND Title LIKE {}", wrapSearchContentSQLPatternMatch(content));
+        boost::mysql::format_sql_to(fctx, " AND Hidden <> {}", 1);
         boost::mysql::format_sql_to(fctx, " ORDER BY Title");
 
         return std::move(fctx).get().value();
@@ -250,8 +252,8 @@ std::string ScheduleItemModel::formatInsertStatement()
     initFormatOptions();
 
     return boost::mysql::format_sql(format_opts.value(),
-        "INSERT INTO UserScheduleItem (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS) "
-            " VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})",
+        "INSERT INTO UserScheduleItem (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden) "
+            " VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, 0)",
             userID,
             optionalDateTimeConversion(startTime.value()),
             optionalDateTimeConversion(endTime.value()),
@@ -276,16 +278,25 @@ std::string ScheduleItemModel::formatUpdateStatement()
             " Title = {2},"
             " Personal = {3},"
             " Location = {4},"
-            " LastUpdateTS = {5}"
-        " WHERE idUserScheduleItem = {6} AND UserID = {7} ",
+            " LastUpdateTS = {5},"
+            " Hidden = {6}"
+        " WHERE idUserScheduleItem = {7} AND UserID = {8} ",
             optionalDateTimeConversion(startTime),
             optionalDateTimeConversion(endTime),
             title,
             static_cast<unsigned int>(personal?1:0),
             location,
             optionalDateTimeConversion(lastUpdate),
+            deleted? 1 : 0,
         primaryKey, userID
     );
+}
+
+std::string ScheduleItemModel::formatDeleteStatement()
+{
+    initFormatOptions();
+
+    return boost::mysql::format_sql(format_opts.value(), "CALL HideScheduleItem({}, {})", userID, primaryKey);
 }
 
 std::string ScheduleItemModel::formatSelectStatement()
@@ -295,7 +306,7 @@ std::string ScheduleItemModel::formatSelectStatement()
     initFormatOptions();
     boost::mysql::format_context fctx(format_opts.value());
     boost::mysql::format_sql_to(fctx, baseQuery);
-    boost::mysql::format_sql_to(fctx, " WHERE idUserScheduleItem = {} AND UserID = {}", primaryKey, userID);
+    boost::mysql::format_sql_to(fctx, " WHERE idUserScheduleItem = {} AND UserID = {} AND Hidden <> 1", primaryKey, userID);
 
     return std::move(fctx).get().value();
 }

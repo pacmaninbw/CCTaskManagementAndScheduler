@@ -28,6 +28,7 @@ public:
     TaskModel(std::size_t creatorID, std::string descriptionIn);
     virtual ~TaskModel() = default;
 
+    virtual bool hide(std::size_t userID) noexcept override;
     void addEffortHours(double hours);
     void markComplete()
     {
@@ -178,6 +179,7 @@ protected:
     bool diffTask(TaskModel& other);
     virtual std::string formatInsertStatement() override;
     virtual std::string formatUpdateStatement() override;
+    virtual std::string formatDeleteStatement() override;
     virtual std::string formatSelectStatement() override;
     void initRequiredFields() override;
     void addDependencies(const std::string& dependenciesText);
@@ -220,7 +222,7 @@ protected:
  */
     boost::mysql::constant_string_view baseQuery = "SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,"
             "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
-            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS FROM Tasks ";
+            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks ";
 
     static const std::size_t taskIdIdx = 0;
     static const std::size_t createdByIdx = 1;
@@ -243,6 +245,7 @@ protected:
     static const std::size_t dependencyCountIdx = 18;
     static const std::size_t depenedenciesTextIdx = 19;
     static const std::size_t lastUpdate_Idx = 20;
+    static const std::size_t hidden_Idx = 21;
 
     boost::mysql::constant_string_view listQueryBase = "SELECT TaskID FROM Tasks ";
 };
