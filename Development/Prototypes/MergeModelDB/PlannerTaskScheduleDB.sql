@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS  `testPTSDB`.`OrganizationProfile` (
     `Nation` VARCHAR(64),
     `CreatedTS` DATETIME NOT NULL,
     `LastUpdateTS` DATETIME NOT NULL,
+    `Hidden` TINYINT,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (`OrganizationID`),
     UNIQUE INDEX `OrgName_idx` (`Organization_Name` ASC),
     INDEX `fk_OrganizationProfile_PrimaryContact_idx` (`PrimaryContactUser` ASC)
@@ -41,6 +42,7 @@ CREATE TABLE IF NOT EXISTS  `testPTSDB`.`UserProfile` (
     `Preferences` MEDIUMTEXT NOT NULL,
     `UserAdded` DATETIME NOT NULL,
     `LastLogin` DATETIME,
+    `Hidden` TINYINT,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (`UserID`, `LastName`, `LoginName`),
     UNIQUE INDEX `UP_UserID_UNIQUE` (`UserID` ASC),
     UNIQUE INDEX `UP_FullName_UNIQUE` (`LastName`, `FirstName`, `MiddleInitial`),
@@ -66,6 +68,7 @@ CREATE TABLE IF NOT EXISTS  `testPTSDB`.`UserGoals` (
     `ParentGoal` INT UNSIGNED DEFAULT NULL,
     `CreationTS` DATETIME NOT NULL,
     `LastUpdateTS` DATETIME NOT NULL,
+    `Hidden` TINYINT,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (`idUserGoals`, `UserID`),
     UNIQUE INDEX `idUserGoals_UNIQUE` (`idUserGoals` ASC),
     INDEX `UG_Description_idx` (`Description` ASC),
@@ -88,6 +91,7 @@ CREATE TABLE IF NOT EXISTS `testPTSDB`.`UserNotes` (
     `NotationDateTime` DATETIME NOT NULL,
     `Content` VARCHAR(1024) NOT NULL,
     `LastUpdate` DATETIME NOT NULL,
+    `Hidden` TINYINT,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (`idUserNotes`, `UserID`),
     INDEX `NotationDateTime` (`NotationDateTime` DESC),
     INDEX `UserNotesLastUpdate` (`LastUpdate` DESC),
@@ -126,6 +130,7 @@ CREATE TABLE IF NOT EXISTS  `testPTSDB`.`Tasks` (
     `DependencyCount` INT UNSIGNED,
     `Dependencies` MEDIUMTEXT,
     `LastUpdateTS` DATETIME NOT NULL,
+    `Hidden` TINYINT,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (`TaskID`, `CreatedBy`),
     UNIQUE INDEX `TaskID_UNIQUE` (`TaskID` ASC),
     INDEX `fk_Tasks_CreatedBy_idx` (`CreatedBy` ASC),
@@ -158,6 +163,7 @@ CREATE TABLE IF NOT EXISTS  `testPTSDB`.`UserTaskGoals` (
     `TaskGoalList` VARCHAR(45) NOT NULL,
     `CreationTS` DATETIME NOT NULL,
     `LastUpdateTS` DATETIME NOT NULL,
+    `Hidden` TINYINT,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (`UserID`,`TaskID`),
     INDEX `UTG_Task_idx` (`TaskID` ASC),
     INDEX `UTG_CreationTS_idx` (`CreationTS` DESC),
@@ -187,6 +193,7 @@ CREATE TABLE IF NOT EXISTS `testPTSDB`.`UserScheduleItem` (
     `Location` VARCHAR(128) DEFAULT NULL,
     `CreatedTS` DATETIME NOT NULL,
     `LastUpdateTS` DATETIME NOT NULL,
+    `Hidden` TINYINT,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (`idUserScheduleItem`, `UserID`),
     UNIQUE INDEX `idUserScheduleItem_UNIQUE` (`idUserScheduleItem` ASC),
     INDEX `ScheduleItem_Title_idx` (`Title` ASC),
@@ -371,5 +378,128 @@ END$$
 
 DELIMITER ;
 
+-- -----------------------------------------------------
+-- Stored procedures to hide a record the user wants to delete
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`HideOrganization`;
+
+CREATE PROCEDURE `testPTSDB`.`HideOrganization`
+(
+    IN OrgID INT 
+)
+
+BEGIN
+
+    UPDATE OrganizationProfile
+        SET Hidden = 1
+        WHERE Organization_ID = OrgID;
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`HideUser`;
+
+CREATE PROCEDURE `testPTSDB`.`HideUser`
+(
+    IN IDUser INT 
+)
+
+BEGIN
+
+    UPDATE UserProfile
+        SET Hidden = 1
+        WHERE UserID = IDUser;
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`HideGoal`;
+
+CREATE PROCEDURE `testPTSDB`.`HideGoal`
+(
+    IN IDUser INT,
+    IN GoalID INT
+)
+
+BEGIN
+
+    UPDATE UserGoals
+        SET Hidden = 1
+        WHERE UserID = IDUser AND idUserGoals = GoalID;
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`HideNote`;
+
+CREATE PROCEDURE `testPTSDB`.`HideNote`
+(
+    IN IDUser INT,
+    IN NoteID INT
+)
+
+BEGIN
+
+    UPDATE UserNotes
+        SET Hidden = 1
+        WHERE UserID = IDUser AND idUserNotes = NoteID;
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`HideTask`;
+
+CREATE PROCEDURE `testPTSDB`.`HideTask`
+(
+    IN IDUser INT,
+    IN IDTask INT
+)
+
+BEGIN
+
+    UPDATE Tasks
+        SET Hidden = 1
+        WHERE UserID = IDUser AND TaskID = IDTask;
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`HideScheduleItem`;
+
+CREATE PROCEDURE `testPTSDB`.`HideScheduleItem`
+(
+    IN IDUser INT,
+    IN ScheduleItemID INT
+)
+
+BEGIN
+
+    UPDATE UserScheduleItem
+        SET Hidden = 1
+        WHERE UserID = IDUser AND idUserScheduleItem = ScheduleItemID;
+
+END$$
+
+DELIMITER ;
+
 COMMIT;
+
 
