@@ -404,3 +404,26 @@ INSERT INTO `testPTSDB`.`UserScheduleItem` (`idUserScheduleItem`, `UserID`, `Sta
 
 
 
+DELIMITER $$
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`TestStoredProceduresAndFunctions`;
+
+CREATE PROCEDURE `testPTSDB`.`TestStoredProceduresAndFunctions`()
+
+BEGIN
+
+   CALL HideTask(4, 59);
+
+   CALL HideScheduleItem(1, 53);
+
+   CALL HideNote(1, 12);
+
+   SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND RequiredDelivery < '2026-03-22' AND Completed IS NULL AND (Hidden IS NULL OR Hidden <> 1) ORDER BY SchedulePriorityGroup 
+ASC, PriorityInGroup ASC;
+
+END$$
+
+DELIMITER ;
+
+#    CALL TestStoredProceduresAndFunctions();
+
