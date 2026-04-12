@@ -474,7 +474,7 @@ BEGIN
 
     UPDATE Tasks
         SET Hidden = 1
-        WHERE UserID = IDUser AND TaskID = IDTask;
+        WHERE CreatedBy = IDUser AND TaskID = IDTask;
 
 END$$
 
