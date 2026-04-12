@@ -269,6 +269,7 @@ bool TaskModel::selectByDescriptionAndAssignedUser(std::string_view description,
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, baseQuery);
         boost::mysql::format_sql_to(fctx, " WHERE Description = {} AND AsignedTo = {}", description, assignedUserID);
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
 
@@ -317,6 +318,7 @@ std::string TaskModel::formatSelectActiveTasksForAssignedUser(std::size_t assign
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND Completed IS NULL AND (Status IS NOT NULL AND Status <> {})",
             assignedUserID, notStarted);
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
         return std::move(fctx).get().value();
     }
@@ -341,6 +343,7 @@ std::string TaskModel::formatSelectUnstartedDueForStartForAssignedUser(std::size
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND ScheduledStart < {} AND (Status IS NULL OR Status = {})",
             assignedUserID, stdchronoDateToBoostMySQLDate(getTodaysDatePlus(OneWeek)), notStarted);
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
         return std::move(fctx).get().value();
     }
@@ -384,6 +387,7 @@ std::string TaskModel::formatSelectTasksByAssignedIDandParentID(std::size_t assi
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND ParentTask = {}", assignedUserID, parentID);
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
         return std::move(fctx).get().value();
     }
@@ -404,8 +408,10 @@ std::string TaskModel::formatDefaultTaskTableSelect(std::size_t assignedUserID, 
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
-        boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND RequiredDelivery < {} AND Completed IS NULL",
-            assignedUserID, stdchronoDateToBoostMySQLDate(searchStartDate));
+        boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {}", assignedUserID);
+        boost::mysql::format_sql_to(fctx, " AND RequiredDelivery < {} AND Completed IS NULL",
+            stdchronoDateToBoostMySQLDate(searchStartDate));
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
         boost::mysql::format_sql_to(fctx, " ORDER BY SchedulePriorityGroup ASC, PriorityInGroup ASC");
 
         return std::move(fctx).get().value();
@@ -446,6 +452,7 @@ bool TaskModel::diffTask(TaskModel& other)
         priorityGroup == other.priorityGroup &&
         priority == other.priority &&
         personal == other.personal &&
+        deleted == other.deleted &&
         dependencies.size() == other.dependencies.size()
     );
 }

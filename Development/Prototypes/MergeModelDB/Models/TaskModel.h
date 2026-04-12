@@ -167,6 +167,8 @@ public:
             os << std::format(outFmtStr, "Completed Date", task.completionDate.value());
         }
 
+        os << std::format(outFmtStr, "Deleted ", (task.deleted? "TRUE" : "FALSE"));
+
         return os;
     };
 
