@@ -31,6 +31,7 @@ private:
     TestStatus testGetDefaultDashboardTaskList();
     TestStatus testGetActiveTasks();
     TestStatus testTaskUpdates();
+    TestStatus testHideUnstartedTask();
     bool testTaskUpdate(TaskModel_shp changedTask);
     bool testAddDepenedcies();
     bool testGetCompletedList();

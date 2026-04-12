@@ -27,6 +27,7 @@ TestTaskDBInterface::TestTaskDBInterface(std::string taskFileName)
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetDefaultDashboardTaskList, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testTaskUpdates, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetActiveTasks, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testHideUnstartedTask, this));
 
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testNegativePathAlreadyInDataBase, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testnegativePathNotModified, this));
@@ -292,6 +293,57 @@ TestStatus TestTaskDBInterface::testTaskUpdates()
     }
 
     return TESTPASSED;
+}
+
+TestStatus TestTaskDBInterface::testHideUnstartedTask()
+{
+    TaskList taskDBInteface;
+    std::size_t userIdForTaskDeletion = TaskIntegrationTestUserOne->getUserID();
+    TaskListValues notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(userIdForTaskDeletion);
+    if (!notStartedList.empty())
+    {
+        std::size_t taskToHideIndex = notStartedList.size() > 3? notStartedList.size() - 2 : notStartedList.size() - 1;
+        TaskModel_shp taskToHide = notStartedList[taskToHideIndex];
+        // userIdForTaskDeletion may not be the owner of the task.
+        if (!taskToHide->hide(taskToHide->getCreatorID()))
+        {
+            std::cerr << std::format("taskToHide->hide(taskToHide->getCreatorID({}) FAILED!\n", TaskIntegrationTestUserOne->getUserID()) <<
+                taskDBInteface.getAllErrorMessages() << "\n";
+            return TESTFAILED;
+        }
+        if (!taskToHide->isDeleted())
+        {
+            std::cerr << std::format("Task ({}) for user ({}) was not marked Deleted. TEST FAILED\n", taskToHide->getTaskID(), userIdForTaskDeletion);
+            return TESTFAILED;
+        }
+
+        TaskListValues alteredList = taskDBInteface.getUnstartedDueForStartForAssignedUser(userIdForTaskDeletion);
+        if (!(alteredList.size() < notStartedList.size()))
+        {
+            std::cerr << std::format("Deleted task ({}) did not decrease the size of the unstarted task list. TEST FAILED\n", taskToHide->getTaskID());
+            return TESTFAILED;
+        }
+
+        for (auto taskInList: alteredList)
+        {
+            if (taskInList->getTaskID() == taskToHide->getTaskID())
+            {
+                std::cerr << "The wrong task was deleted. TEST FAILED\n";
+                return TESTFAILED;
+            }
+        }
+
+        if (verboseOutput)
+        {
+            std::cout << std::format("Task ({}) for user ({}) marked Deleted. TEST PASSED\n", taskToHide->getTaskID(), userIdForTaskDeletion);
+        }
+        return TESTPASSED; 
+    }
+
+    std::cerr << std::format("taskDBInteface.getUnstartedDueForStartForAssignedUser({}) FAILED!\n", TaskIntegrationTestUserOne->getUserID()) <<
+        taskDBInteface.getAllErrorMessages() << "\n";
+
+    return TESTFAILED;
 }
 
 bool TestTaskDBInterface::testTaskUpdate(TaskModel_shp changedTask)
