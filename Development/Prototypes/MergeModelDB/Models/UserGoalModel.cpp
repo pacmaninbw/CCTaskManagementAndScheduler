@@ -64,7 +64,8 @@ bool UserGoalModel::selectByGoalID(std::size_t noteID)
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, baseQuery);
-        boost::mysql::format_sql_to(fctx, " WHERE idUserGoals = {} AND Hidden <> 1", noteID);
+        boost::mysql::format_sql_to(fctx, " WHERE idUserGoals = {}", noteID);
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
 
@@ -87,7 +88,8 @@ bool UserGoalModel::selectByUserIDAndDescription(std::size_t userID, std::string
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, baseQuery);
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} and Description = {} AND Hidden <> 1", userID, targetDesciption);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} and Description = {}", userID, targetDesciption);
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
 
@@ -115,7 +117,8 @@ std::string UserGoalModel::formatSelectAllByUserId(std::size_t userId)
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Hidden <> 1", userId);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
         return std::move(fctx).get().value();
     }
@@ -136,7 +139,8 @@ std::string UserGoalModel::formatSelectAllChildGoalsWithParentFromUser(std::size
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND ParentGoal = {} AND Hidden <> 1", userId, parentId);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND ParentGoal = {}", userId, parentId);
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
         return std::move(fctx).get().value();
     }
@@ -162,7 +166,8 @@ std::string UserGoalModel::formatSelectByExactDescription(std::string fullDescri
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Description = {} AND Hidden <> 1", userId, fullDescription);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Description = {}", userId, fullDescription);
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
         return std::move(fctx).get().value();
     }
@@ -183,8 +188,9 @@ std::string UserGoalModel::formatSelectBySimilarDescription(std::string partialD
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Description LIKE {} AND Hidden <> 1", userId,
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Description LIKE {}", userId,
             wrapSearchContentSQLPatternMatch(partialDescription));
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
         return std::move(fctx).get().value();
     }
@@ -258,7 +264,8 @@ std::string UserGoalModel::formatSelectStatement()
 
     boost::mysql::format_context fctx(format_opts.value());
     boost::mysql::format_sql_to(fctx, baseQuery);
-    boost::mysql::format_sql_to(fctx, " WHERE idUserGoals = {} AND Hidden <> 1", primaryKey);
+    boost::mysql::format_sql_to(fctx, " WHERE idUserGoals = {}", primaryKey);
+    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
     return std::move(fctx).get().value();
 }
