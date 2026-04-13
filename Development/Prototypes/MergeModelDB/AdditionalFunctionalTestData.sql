@@ -421,9 +421,12 @@ BEGIN
    SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND RequiredDelivery < '2026-03-22' AND Completed IS NULL AND (Hidden IS NULL OR Hidden <> 1) ORDER BY SchedulePriorityGroup 
 ASC, PriorityInGroup ASC;
 
+   SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2026-03-08 08:00:00.000000' AND StartDateTime <= '20
+26-03-09 07:59:59.000000' ORDER BY StartDateTime ASC;
+
 END$$
 
 DELIMITER ;
 
-#    CALL TestStoredProceduresAndFunctions();
+#   CALL TestStoredProceduresAndFunctions();
 
