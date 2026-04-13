@@ -91,7 +91,8 @@ std::string ScheduleItemModel::formatSelectScheduleItemsByDateAndUser(std::chron
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Hidden <> 1", userId);
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
         boost::mysql::format_sql_to(fctx, " AND StartDateTime >= {}", stdChronoTimePointToBoostDateTime(startSearch));
         boost::mysql::format_sql_to(fctx, " AND StartDateTime <= {}", stdChronoTimePointToBoostDateTime(endSearch));
         boost::mysql::format_sql_to(fctx, " ORDER BY StartDateTime ASC");
@@ -122,7 +123,7 @@ std::string ScheduleItemModel::formatSelectSiByContentDateRangeUser(
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
         boost::mysql::format_sql_to(fctx, " AND Title LIKE {}", wrapSearchContentSQLPatternMatch(content));
-        boost::mysql::format_sql_to(fctx, " AND Hidden <> {}", 1);
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
         boost::mysql::format_sql_to(fctx, " AND StartDateTime >= {}", stdchronoDateToBoostMySQLDate(searchStart));
         boost::mysql::format_sql_to(fctx, " AND StartDateTime <= {}", stdchronoDateToBoostMySQLDate(searchEnd));
 
@@ -147,7 +148,7 @@ std::string ScheduleItemModel::formatSelectSiByContentAndUserSortByContent(std::
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
         boost::mysql::format_sql_to(fctx, " AND Title LIKE {}", wrapSearchContentSQLPatternMatch(content));
-        boost::mysql::format_sql_to(fctx, " AND Hidden <> {}", 1);
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
         boost::mysql::format_sql_to(fctx, " ORDER BY Title");
 
         return std::move(fctx).get().value();
@@ -306,7 +307,8 @@ std::string ScheduleItemModel::formatSelectStatement()
     initFormatOptions();
     boost::mysql::format_context fctx(format_opts.value());
     boost::mysql::format_sql_to(fctx, baseQuery);
-    boost::mysql::format_sql_to(fctx, " WHERE idUserScheduleItem = {} AND UserID = {} AND Hidden <> 1", primaryKey, userID);
+    boost::mysql::format_sql_to(fctx, " WHERE idUserScheduleItem = {} AND UserID = {}", primaryKey, userID);
+    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
     return std::move(fctx).get().value();
 }
