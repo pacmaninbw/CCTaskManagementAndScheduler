@@ -38,13 +38,14 @@ TestScheduleItemModel::TestScheduleItemModel()
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathFindEventSToRepeat, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathFindEventsToRepeatCompletion, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathFindLocationsToRepeatCompletion, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathDeleteScheduleItem, this));
 
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::negativePathMissingRequiredFields, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testnegativePathNotModified, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testNegativePathAlreadyInDataBase, this));
 
     userOne = std::make_shared<UserModel>();
-    userOne->selectByFullName("One", "User", "P");;
+    userOne->selectByFullName("One", "User", "P");
 }
 
 TestStatus TestScheduleItemModel::testInsertScheduleItem(TestScheduleItemInput testScheduleItem)
@@ -255,6 +256,70 @@ TestStatus TestScheduleItemModel::testPositivePathFindLocationsToRepeatCompletio
     
     return TESTPASSED;
 }
+
+TestStatus TestScheduleItemModel::testPositivePathDeleteScheduleItem()
+{
+    std::string funcUnderTest("Delete Schedule Item");
+    UserModel_shp realUserOne = std::make_shared<UserModel>();
+    realUserOne->selectByFullName("Black", "Paul", "A");
+
+    if (!realUserOne->isInDataBase())
+    {
+        std::cerr << std::format("{}: {} {} FAILED\n", funcUnderTest, "realUserOne not found in database", realUserOne->getAllErrorMessages());
+        return TESTFAILED;
+    }
+
+    std::chrono::year_month_day testDate(constantStringToChronoDate("2026-03-08"));
+    ScheduleItemList schediList(realUserOne->getUserID());
+    ScheduleItemListValues testUserSchedule = schediList.getUserDaySchedule(testDate);
+    if (testUserSchedule.empty())
+    {
+        std::cerr << std::format("{}: {} {} FAILED\n", funcUnderTest, "realUserOne schedule is empty", schediList.getAllErrorMessages());
+        return TESTFAILED;
+    }
+
+    std::size_t itemToHideIndex = testUserSchedule.size() > 3? testUserSchedule.size() - 2 : testUserSchedule.size() - 1;
+    ScheduleItemModel_shp itemToHide = testUserSchedule[itemToHideIndex];
+    if (!itemToHide->hide(realUserOne->getUserID()))
+    {
+        std::cerr << std::format("itemToHide->hide({}) FAILED!", realUserOne->getUserID()) << itemToHide->getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (!itemToHide->isDeleted())
+    {
+        std::cerr << std::format("{}: schedule item ({}) was not marked as deleted {} FAILED\n", funcUnderTest,
+            itemToHide->getScheduleItemID(), itemToHide->getAllErrorMessages());
+        return TESTFAILED;
+    }
+
+    ScheduleItemListValues alteredList = schediList.getUserDaySchedule(testDate);
+    if (!(alteredList.size() < testUserSchedule.size()))
+    {
+        std::cerr << std::format("Deleted schedule item ({}) did not decrease the size of the user schedule. TEST FAILED\n",
+            itemToHide->getScheduleItemID());
+        return TESTFAILED;
+    }
+
+    for (auto itemInList: alteredList)
+    {
+        if (itemInList->getScheduleItemID() == itemToHide->getScheduleItemID())
+        {
+            std::cerr << "The wrong Schedule Item was deleted. TEST FAILED\n";
+            return TESTFAILED;
+        }
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << "Original schedule size: " << testUserSchedule.size() << " Altered schedule size: " << alteredList.size() << "\n";
+        std::cout << std::format("Schedule Item ({}) for user ({}) marked Deleted. TEST PASSED\n",
+            itemToHide->getScheduleItemID(), realUserOne->getUserID());
+    }
+
+    return TESTPASSED;
+}
+
 
 TestStatus TestScheduleItemModel::testNegativePathAlreadyInDataBase()
 {

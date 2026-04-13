@@ -2878,6 +2878,50 @@ User 4 has 3 schedule locations
 
 99 N. La Cienega Blvd.
 99. N. La Cienega
+Running: 
+	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LastName = 'Black' AND FirstName = 'Paul' AND MiddleInitial = 'A'
+Running: 
+	SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2026-03-08 08:00:00.000000' AND StartDateTime <= '2026-03-09 07:59:59.000000' ORDER BY StartDateTime ASC
+Running: 
+	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 182 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 183 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 184 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 185 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 186 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 187 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 188 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 189 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 190 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	CALL HideScheduleItem(1, 189)
+Running: 
+	SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2026-03-08 08:00:00.000000' AND StartDateTime <= '2026-03-09 07:59:59.000000' ORDER BY StartDateTime ASC
+Running: 
+	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 182 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 183 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 184 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 185 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 186 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 187 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 188 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 190 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Original schedule size: 9 Altered schedule size: 8
+Schedule Item (189) for user (1) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of ScheduleItem PASSED!
 Expected error was; ScheduleItem is missing required values!
 Missing ScheduleItem required User ID!

@@ -37,6 +37,7 @@ private:
     TestStatus testPositivePathFindEventSToRepeat();
     TestStatus testPositivePathFindEventsToRepeatCompletion();
     TestStatus testPositivePathFindLocationsToRepeatCompletion();
+    TestStatus testPositivePathDeleteScheduleItem();
     TestStatus testNegativePathAlreadyInDataBase();
     TestStatus testnegativePathNotModified();
     TestStatus negativePathMissingRequiredFields();
