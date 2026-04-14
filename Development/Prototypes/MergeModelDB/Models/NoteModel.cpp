@@ -122,6 +122,7 @@ std::string NoteModel::formatSelectStatement()
     boost::mysql::format_context fctx(format_opts.value());
     boost::mysql::format_sql_to(fctx, baseQuery);
     boost::mysql::format_sql_to(fctx, " WHERE idUserNotes = {}", primaryKey);
+    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
     return std::move(fctx).get().value();
 }
@@ -150,6 +151,7 @@ bool NoteModel::selectByNoteID(std::size_t noteID)
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, baseQuery);
         boost::mysql::format_sql_to(fctx, " WHERE idUserNotes = {}", noteID);
+    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
 
@@ -172,6 +174,7 @@ std::string NoteModel::formatSelectByUserId(std::size_t userId) noexcept
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
         return std::move(fctx).get().value();
     }
@@ -194,6 +197,7 @@ std::string NoteModel::formatSelectByUserIdAndSimilarContent(std::size_t userId,
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Content LIKE {}", userId,
             wrapSearchContentSQLPatternMatch(similarContent));
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
         return std::move(fctx).get().value();
     }
@@ -218,6 +222,7 @@ std::string NoteModel::formatSelectByUserIdAndCreationDateRange(
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
         boost::mysql::format_sql_to(fctx, " AND NotationDateTime >= {}", stdchronoDateToBoostMySQLDate(startDay));
         boost::mysql::format_sql_to(fctx, " AND NotationDateTime <= {}", stdchronoDateToBoostMySQLDate(endDay));
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
         return std::move(fctx).get().value();
     }
@@ -242,6 +247,7 @@ std::string NoteModel::formatSelectByUserIdAndUpdateDateRange(
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
         boost::mysql::format_sql_to(fctx, " AND LastUpdate >= {}", stdchronoDateToBoostMySQLDate(startDay));
         boost::mysql::format_sql_to(fctx, " AND LastUpdate <= {}", stdchronoDateToBoostMySQLDate(endDay));
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
         return std::move(fctx).get().value();
     }
@@ -270,6 +276,7 @@ std::string NoteModel::formatGetNotesFromUserForDate(std::size_t userId, std::ch
         boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
         boost::mysql::format_sql_to(fctx, " AND NotationDateTime >= {}", stdChronoTimePointToBoostDateTime(startDay));
         boost::mysql::format_sql_to(fctx, " AND NotationDateTime <= {}", stdChronoTimePointToBoostDateTime(endDay));
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
         boost::mysql::format_sql_to(fctx, " ORDER BY NotationDateTime ASC");
 
         return std::move(fctx).get().value();
