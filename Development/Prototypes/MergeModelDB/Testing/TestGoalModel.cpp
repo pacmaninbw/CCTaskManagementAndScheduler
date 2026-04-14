@@ -44,13 +44,14 @@ TestGoalModel::TestGoalModel()
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testPositivePathGetListofChildrenFromParent, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testPositivePathGetAllGoalsForUser, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testPositivePathFindGoalsWithSimilarDescription, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testPositivePathDeleteGoal, this));
 
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::negativePathMissingRequiredFields, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testnegativePathNotModified, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testNegativePathAlreadyInDataBase, this));
 
     userOne = std::make_shared<UserModel>();
-    userOne->selectByFullName("One", "User", "P");;
+    userOne->selectByFullName("One", "User", "P");
 }
 
 TestStatus TestGoalModel::testInsertAndGetParent(TestGoalInput testGoal)
@@ -186,6 +187,61 @@ TestStatus TestGoalModel::testPositivePathFindGoalsWithSimilarDescription()
         }
     }
     
+    return TESTPASSED;
+}
+
+TestStatus TestGoalModel::testPositivePathDeleteGoal()
+{
+    std::string funcUnderTest("Delete Goal");
+
+    std::chrono::year_month_day testDate(constantStringToChronoDate("2026-03-08"));
+    UserGoalList goalListTestInterface;
+    UserGoalListValues testGoalList = goalListTestInterface.getAllGoalsForUser(userOne->getUserID());
+    if (testGoalList.empty())
+    {
+        std::cerr << std::format("{}: {} {} FAILED\n", funcUnderTest, "userOne schedule is empty", goalListTestInterface.getAllErrorMessages());
+        return TESTFAILED;
+    }
+
+    std::size_t itemToHideIndex = testGoalList.size() > 3? testGoalList.size() - 2 : testGoalList.size() - 1;
+    UserGoalModel_shp goalToHide = testGoalList[itemToHideIndex];
+    if (!goalToHide->hide(userOne->getUserID()))
+    {
+        std::cerr << std::format("itemToHide->hide({}) FAILED!", userOne->getUserID()) << goalToHide->getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (!goalToHide->isDeleted())
+    {
+        std::cerr << std::format("{}: goal ({}) was not marked as deleted {} FAILED\n", funcUnderTest,
+            goalToHide->getGoalId(), goalToHide->getAllErrorMessages());
+        return TESTFAILED;
+    }
+
+    UserGoalListValues alteredList = goalListTestInterface.getAllGoalsForUser(userOne->getUserID());
+    if (!(alteredList.size() < testGoalList.size()))
+    {
+        std::cerr << std::format("Deleted goal ({}) did not decrease the size of the user schedule. TEST FAILED\n",
+            goalToHide->getGoalId());
+        return TESTFAILED;
+    }
+
+    for (auto itemInList: alteredList)
+    {
+        if (itemInList->getGoalId() == goalToHide->getGoalId())
+        {
+            std::cerr << "The wrong goal was deleted. TEST FAILED\n";
+            return TESTFAILED;
+        }
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << "Original goal list size: " << testGoalList.size() << " Altered schedule size: " << alteredList.size() << "\n";
+        std::cout << std::format("goal ({}) for user ({}) marked Deleted. TEST PASSED\n",
+            goalToHide->getGoalId(), userOne->getUserID());
+    }
+
     return TESTPASSED;
 }
 
