@@ -199,7 +199,7 @@ TestStatus TestGoalModel::testPositivePathDeleteGoal()
     UserGoalListValues testGoalList = goalListTestInterface.getAllGoalsForUser(userOne->getUserID());
     if (testGoalList.empty())
     {
-        std::cerr << std::format("{}: {} {} FAILED\n", funcUnderTest, "userOne schedule is empty", goalListTestInterface.getAllErrorMessages());
+        std::cerr << std::format("{}: {} {} FAILED\n", funcUnderTest, "userOne goal list is empty", goalListTestInterface.getAllErrorMessages());
         return TESTFAILED;
     }
 
@@ -221,7 +221,7 @@ TestStatus TestGoalModel::testPositivePathDeleteGoal()
     UserGoalListValues alteredList = goalListTestInterface.getAllGoalsForUser(userOne->getUserID());
     if (!(alteredList.size() < testGoalList.size()))
     {
-        std::cerr << std::format("Deleted goal ({}) did not decrease the size of the user schedule. TEST FAILED\n",
+        std::cerr << std::format("Deleted goal ({}) did not decrease the size of the user goal list. TEST FAILED\n",
             goalToHide->getGoalId());
         return TESTFAILED;
     }
@@ -237,7 +237,7 @@ TestStatus TestGoalModel::testPositivePathDeleteGoal()
 
     if (programOptions.verboseOutput)
     {
-        std::cout << "Original goal list size: " << testGoalList.size() << " Altered schedule size: " << alteredList.size() << "\n";
+        std::cout << "Original goal list size: " << testGoalList.size() << " Altered goal list size: " << alteredList.size() << "\n";
         std::cout << std::format("goal ({}) for user ({}) marked Deleted. TEST PASSED\n",
             goalToHide->getGoalId(), userOne->getUserID());
     }
