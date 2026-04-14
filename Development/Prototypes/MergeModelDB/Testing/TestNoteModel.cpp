@@ -46,6 +46,7 @@ TestNoteModel::TestNoteModel()
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetNotesForUserEditedDateRange, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetDashboardNoteTable, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathDeleteNote, this));
 
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::negativePathMissingRequiredFields, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testnegativePathNotModified, this));
@@ -228,6 +229,61 @@ TestStatus TestNoteModel::testPositivePathGetDashboardNoteTable()
         }
     }
     
+    return TESTPASSED;
+}
+
+TestStatus TestNoteModel::testPositivePathDeleteNote()
+{
+    std::string funcUnderTest("Delete Note");
+
+    std::chrono::year_month_day testDate(constantStringToChronoDate("2026-03-08"));
+    NoteList NoteListTestInterface;
+    NoteListValues testNoteList = NoteListTestInterface.getAllNotesForUser(userOne->getUserID());
+    if (testNoteList.empty())
+    {
+        std::cerr << std::format("{}: {} {} FAILED\n", funcUnderTest, "userOne schedule is empty", NoteListTestInterface.getAllErrorMessages());
+        return TESTFAILED;
+    }
+
+    std::size_t itemToHideIndex = testNoteList.size() > 3? testNoteList.size() - 2 : testNoteList.size() - 1;
+    NoteModel_shp noteToHide = testNoteList[itemToHideIndex];
+    if (!noteToHide->hide(userOne->getUserID()))
+    {
+        std::cerr << std::format("itemToHide->hide({}) FAILED!", userOne->getUserID()) << noteToHide->getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (!noteToHide->isDeleted())
+    {
+        std::cerr << std::format("{}: note ({}) was not marked as deleted {} FAILED\n", funcUnderTest,
+            noteToHide->getNoteId(), noteToHide->getAllErrorMessages());
+        return TESTFAILED;
+    }
+
+    NoteListValues alteredList = NoteListTestInterface.getAllNotesForUser(userOne->getUserID());
+    if (!(alteredList.size() < testNoteList.size()))
+    {
+        std::cerr << std::format("Deleted note ({}) did not decrease the size of the user note list. TEST FAILED\n",
+            noteToHide->getNoteId());
+        return TESTFAILED;
+    }
+
+    for (auto itemInList: alteredList)
+    {
+        if (itemInList->getNoteId() == noteToHide->getNoteId())
+        {
+            std::cerr << "The wrong note was deleted. TEST FAILED\n";
+            return TESTFAILED;
+        }
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << "Original note list size: " << testNoteList.size() << " Altered schedule size: " << alteredList.size() << "\n";
+        std::cout << std::format("note ({}) for user ({}) marked Deleted. TEST PASSED\n",
+            noteToHide->getNoteId(), userOne->getUserID());
+    }
+
     return TESTPASSED;
 }
 

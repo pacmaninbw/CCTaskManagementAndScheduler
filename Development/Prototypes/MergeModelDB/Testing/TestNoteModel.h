@@ -31,6 +31,7 @@ private:
     TestStatus testPositivePathGetNotesForUserCreatedDateRange();
     TestStatus testPositivePathGetNotesForUserEditedDateRange();
     TestStatus testPositivePathGetDashboardNoteTable();
+    TestStatus testPositivePathDeleteNote();
     TestStatus testNegativePathAlreadyInDataBase();
     TestStatus testnegativePathNotModified();
     TestStatus negativePathMissingRequiredFields();
