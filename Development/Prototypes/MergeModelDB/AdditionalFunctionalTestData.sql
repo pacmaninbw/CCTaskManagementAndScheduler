@@ -1,70 +1,93 @@
 --
 -- Database: `testPTSDB`
 --
+# USE `testPTSDB`;
+
+DELIMITER $$
 USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`AddTestUsers`;
+
+CREATE PROCEDURE `testPTSDB`.`AddTestUsers`()
+
+BEGIN
+
+CALL AddUser(1, 'Black', 'Paul', 'A', 'paul.black@blacksw.com', 'pacmaninbw', 'mYfAv0r1t3Pas5MorD', '8:30 AM;5:00 PM;1;1;1;0;');
+CALL AddUser(1, 'Black', 'Paul2', 'B', 'pcfriends@blacksw.com', 'BlackPaulA', 'pacmaninbw', '8:30 AM;5:00 PM;1;1;1;0;');
+CALL AddUser(1, 'Shinny', 'Eric', 'Y', 'EricShinny@google.com', 'ShinnyEricY', 'ShinnyEricY', '8:30 AM;5:00 PM;1;1;1;0;');
+
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`AddTestTasks`;
+
+CREATE PROCEDURE `testPTSDB`.`AddTestTasks`()
+
+BEGIN
+
+CALL AddTask(1, 1, 'Create a personal planner program that allows task mangement using QT and C++.', NULL, 3, '2026-02-20', '2026-02-20', '2026-02-23', '2026-04-30', NULL, 1000, 500, 1, 1, 0, 24, '2;3;5;10;12;13;14;15;19;20;24;25;26;27;30;31;33;35;37;38;39;40;43;46;');
+CALL AddTask(1, 1, 'Add creation of notes in Database.', 1, 4, '2026-02-28', '2026-02-28', NULL, '2026-02-28', '2026-03-14', 8, 8, 1, 3, 0, 0, NULL);
+CALL AddTask(1, 1, 'Add editing of note to update database.', 1, 4, '2026-02-28', '2026-02-28', NULL, '2026-02-28', '2026-03-14', 4, 4, 1, 4, 0, 0, NULL);
+CALL AddTask(1, 1, 'Get toenails trimmed', NULL, 4, '2026-02-07', '2026-02-07', NULL, '2026-02-07', '2026-02-21', 1, 0, 3, 1, 0, 0, NULL);
+CALL AddTask(1, 1, 'Connect goal creation and editing to database.', 1, 0, '2026-03-08', '2026-03-08', NULL, '2026-03-08', NULL, 6, 0, 1, 5, 0, 0, NULL);
+CALL AddTask(1, 1, 'Implement task editing.', NULL, 4, '2026-02-07', '2026-02-07', NULL, '2026-02-07', '2026-02-21', 8, 0, 1, 5, 0, 0, NULL);
+CALL AddTask(1, 1, 'Redisplay schedule after adding or editing a schedule item.', NULL, 4, '2026-02-16', '2026-02-14', '2026-02-22', '2026-02-22', '2026-02-22', 4, 6, 1, 4, 0, 0, NULL);
+CALL AddTask(1, 1, 'Redisplay tasks after adding or editing a task.', NULL, 4, '2026-02-17', '2026-02-16', NULL, '2026-02-17', '2026-02-22', 4, 0, 1, 3, 0, 0, NULL);
+CALL AddTask(1, 1, 'Sort tasks by group priority and priority.', NULL, 4, '2026-02-15', '2026-02-13', '2026-02-21', '2026-02-16', '2026-02-21', 6, 4, 1, 3, 0, 0, NULL);
+CALL AddTask(1, 1, 'Implement editing of existing tasks', 1, 3, '2026-03-08', '2026-03-08', '2026-02-21', '2026-03-08', NULL, 8, 24, 1, 9, 0, 0, NULL);
+CALL AddTask(1, 1, 'Implement editing of schedule.', NULL, 4,'2026-02-19', '2026-02-18', NULL, '2026-02-19', '2026-02-21', 8, 0, 1, 5, 0, 0, NULL);
+CALL AddTask(1, 1, 'Finish the ability to edit tasks. Implement select parent task, add dependencies, display of dependencies.', 1, 3, '2026-03-11', '2026-03-08', '2026-03-07', '2026-03-11', NULL, 16, 20, 1, 8, 0, 1, '44;');
+CALL AddTask(1, 1, 'Figure out how to use signals and slots to implement table view updates.', 0, 0, '2026-03-06', '2026-03-06', NULL, '2026-03-06', NULL, 4, 1, 2, 5, 0, 0, NULL);
+CALL AddTask(1, 1, 'Clear selections after table edits.', 1, 4, '2026-03-06', '2026-03-06', NULL, '2026-03-06', '2026-03-20', 4, 1, 2, 1, 0, 0, NULL);
+CALL AddTask(1, 1, 'Create Task View Table for select parent task', 1, 4, '2026-02-28', '2026-02-28', '2026-03-06', '2026-02-28', '2026-03-14', 8, 8, 1, 11, 0, 0, NULL);
+CALL AddTask(1, 1, 'Create Requirement system to augment the planning system', NULL, 0, '2026-05-31', '2026-04-30', NULL, '2026-05-31', NULL, 300, 0, 3, 1, 0, 0, NULL);
+CALL AddTask(1, 1, 'Implement user preferences in planner', NULL, 0, '2026-03-04', '2026-03-01', NULL, '2026-03-04', NULL, 24, 0, 3, 1, 0, 0, NULL);
+CALL AddTask(1, 1, 'Find a Silver Sneakers program   ', NULL, 0, '2026-03-06', '2026-03-06', NULL, '2026-03-06', NULL, 4, 0, 2, 4, 0, 0, NULL);
+CALL AddTask(1, 1, 'Add alternate methods of connecting to the database and logging in. Use environment variable and or command line flags.', 1, 3, '2026-03-08', '2026-03-08', '2026-03-06', '2026-03-08', NULL, 16, 20, 1, 6, 0, 0, NULL);
+CALL AddTask(1, 1, 'Add the ability to repeat schedule items on a daily basis.', 1, 0, '2026-03-06', '2026-03-06', NULL, '2026-03-06', NULL, 16, 0, 2, 2, 0, 0, NULL);
+CALL AddTask(1, 1, 'Add the ability to find an old schedule item and add it again to a new schedule', NULL, 0, '2026-02-27', '2026-02-27', NULL, '2026-02-27', NULL, 16, 0, 3, 2, 0, 0, NULL);
+CALL AddTask(1, 1, 'Add the ability to reuse locations in the schedule.', NULL, 0, '2026-02-27', '2026-02-27', NULL, '2026-02-27', NULL, 24, 0, 3, 3, 0, 0, NULL);
+CALL AddTask(1, 1, 'Freeze Chicken fillets', NULL, 4, '2026-03-05', '2026-02-27', NULL, '2026-02-27', '2026-03-03', 1, 0.25, 1, 1, 0, 0, NULL);
+CALL AddTask(1, 1, 'Fix bug in scheduler where late appointments appear in the next day schedule.', 0, 4, '2026-02-28', '2026-02-28', NULL, '2026-02-28', '2026-03-07', 8, 1.5, 1, 4, 0, 0, NULL);
+CALL AddTask(1, 1, 'Debug parent task id not being set in the database when the parent has been selected', 0, 4, '2026-03-01', '2026-03-01', '2026-03-01', '2026-03-01', '2026-03-06', 2, 3, 1, 4, 0, 0, NULL);
+CALL AddTask(1, 1, 'Add production test database contents to unit/integration tests.2 ', 0, 0, '2026-03-01', '2026-03-01', NULL, '2026-03-01', NULL, 2, 0, 3, 4, 0, 0, NULL);
+CALL AddTask(1, 1, 'Schedule date is based on GMT rather than local time, this causes some schedule items to appear on the wrong date.', 0, 4, '2026-03-03', '2026-03-03', NULL, '2026-03-03', '2026-03-07', 2, 1.5, 1, 2, 0, 0, NULL);
+CALL AddTask(1, 1, 'Get a replacement blood pressure monitor', NULL, 4, '2026-03-04', '2026-03-04', NULL, '2026-03-04', '2026-03-06', 1, 1, 1, 1, 0, 0, NULL);
+CALL AddTask(1, 1, 'Find a dentist. Make an appointment', NULL, 0, '2026-03-05', '2026-03-05', NULL, '2026-03-05', NULL, 3, 0, 3, 5, 0, 0, NULL);
+CALL AddTask(1, 1, 'Add the ability to move tasks up and down in the todo list.', 1, 0, '2026-03-06', '2026-03-06', NULL, '2026-03-06', NULL, 16, 0, 2, 3, 0, 0, NULL);
+CALL AddTask(1, 1, 'Prevent duplicate dependent tasks from occurring.', 1, 0, '2026-03-11', '2026-03-10', NULL, '2026-03-11', NULL, 4, 0, 1, 7, 0, 0, NULL);
+CALL AddTask(1, 1, 'Do the laundry', NULL, 0, '2026-03-09', '2026-03-07', NULL, '2026-03-10', NULL, 3, 0, 3, 6, 0, 0, NULL);
+CALL AddTask(1, 1, 'Change PG to Cat, short for category in Dashboard display task list', 1, 4, '2026-03-11', '2026-03-10', NULL, '2026-03-11', '2026-03-10', 1, 0.25, 3, 6, 0, 0, NULL);
+CALL AddTask(1, 1, 'Buy proper tools for grill pan maintenance\n1) oil brush\n2) soft cloths for washing pan', NULL, 4, '2026-03-07', '2026-03-07', NULL, '2026-03-07', '2026-03-09', 2, 1, 2, 1, 0, 0, NULL);
+CALL AddTask(1, 1, 'Rework the build and the code so that the GuiModels are not required.', 1, 4, '2026-03-21', '2026-03-12', '2026-03-14', '2026-03-21', '2026-03-19', 3, 23, 1, 3, 0, 1, '41;');
+CALL AddTask(1, 1, 'Create a personal website using WordPress.', NULL, 0, '2026-03-27', '2026-03-23', NULL, '2026-03-28', NULL, 32, 0, 1, 2, 0, 0, NULL);
+CALL AddTask(1, 1, 'Provide a method to sort the potential parent tasks in the select parent task dialog.', 1, 0, '2026-03-09', '2026-03-09', NULL, '2026-03-09', NULL, 6, 0, 2, 1, 0, 0, NULL);
+CALL AddTask(1, 1, 'Change PG to Category in the dashboard task list.', 1, 4, '2026-03-09', '2026-03-09', NULL, '2026-03-09', '2026-03-09', 1, 0, 2, 7, 0, 0, NULL);
+CALL AddTask(1, 1, 'Create an Organizational editor', 1, 0, '2026-03-09', '2026-03-09', NULL, '2026-03-09', NULL, 24, 0, 1, 4, 0, 0, NULL);
+CALL AddTask(1, 1, 'Change the Date time editor field for a time edit field for schedule items start and end time', 1, 4, '2026-03-10', '2026-03-10', '2026-03-11', '2026-03-10', '2026-03-12', 2, 8, 1, 2, 0, 0, NULL);
+CALL AddTask(1, 1, 'Change all pointers to model classes to database table IDs wherever possible', 35, 4, '2026-03-18', '2026-03-18', '2026-03-18', '2026-03-18', '2026-03-19', 4, 8, 1, 10, 0, 0, NULL);
+CALL AddTask(1, 1, 'Testing the new push button interface for add task', NULL, 4, '2026-03-20', '2026-03-20', '2026-03-20', '2026-03-20', '2026-03-20', 1, 0.25, 1, 1, 0, 0, NULL);
+CALL AddTask(1, 1, 'Remove dependencies on TaskModel from user dashboard', 1, 4, '2026-03-21', '2026-03-21', '2026-03-21', '2026-03-21', '2026-03-21', 1, 1, 1, 1, 0, 0, NULL);
+CALL AddTask(1, 1, 'Show parent task name in task editor after it is selected.', 12, 4, '2026-03-21', '2026-03-21', NULL, '2026-03-21', '2026-03-21', 2, 0.5, 1, 9, 0, 1, '45;');
+CALL AddTask(1, 1, 'Test add parent task display', 44, 4, '2026-03-21', '2026-03-21', NULL, '2026-03-21', '2026-03-21', 1, 0.25, 1, 10, 0, 0, NULL);
+CALL AddTask(1, 1, 'Create a non-modal pop-up with similar contents for the user to select as the basis for a new schedule item', 1, 0, '2026-03-22', '2026-03-22', NULL, '2026-03-22', NULL, 24, 2, 1, 3, 0, 0, NULL);
+
+END$$
+
+DELIMITER ;
 
 -- --------------------------------------------------------
+DELIMITER $$
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`AddTestNotes`;
 
---
--- Dumping data for table `UserProfile`
---
+CREATE PROCEDURE `testPTSDB`.`AddTestNotes`()
 
-INSERT INTO `testPTSDB`.`UserProfile` (`Organization_ID`, `LastName`, `FirstName`, `MiddleInitial`, `EmailAddress`, `LoginName`, `HashedPassWord`, `Preferences`, `UserAdded`, `LastLogin`) VALUES
-(NULL, 'Black', 'Paul', 'A', 'paul.black@blacksw.com', 'pacmaninbw', 'mYfAv0r1t3Pas5MorD', '8:30 AM;5:00 PM;1;1;1;0;', '2026-01-23 15:14:39', '2026-03-22 13:32:27'),
-(NULL, 'Black', 'Paul2', 'B', 'pcfriends@blacksw.com', 'BlackPaulA', 'pacmaninbw', '8:30 AM;5:00 PM;1;1;1;0;', '2026-03-15 21:01:17', '2026-03-19 14:03:42'),
-(NULL, 'Shinny', 'Eric', 'Y', 'EricShinny@google.com', 'ShinnyEricY', 'ShinnyEricY', '8:30 AM;5:00 PM;1;1;1;0;', '2026-03-19 13:51:42', '2026-03-19 13:51:42');
+BEGIN
 
--- --------------------------------------------------------
-
-INSERT INTO `testPTSDB`.`Tasks` (`CreatedBy`, `AsignedTo`, `Description`, `ParentTask`, `Status`, `PercentageComplete`, `CreatedOn`, `RequiredDelivery`, `ScheduledStart`, `ActualStart`, `EstimatedCompletion`, `Completed`, `EstimatedEffortHours`, `ActualEffortHours`, `SchedulePriorityGroup`, `PriorityInGroup`, `Personal`, `DependencyCount`, `Dependencies`, `LastUpdateTS`) VALUES
-(1, 1, 'Create a personal planner program that allows task mangement using QT and C++.', NULL, 3, 0, '2026-01-26 14:49:02', '2026-02-20', '2026-02-20', '2026-02-23', '2026-04-30', NULL, 1000, 500, 1, 1, 0, 24, '2;3;5;10;12;13;14;15;19;20;24;25;26;27;30;31;33;35;37;38;39;40;43;46;', '2026-03-22 13:34:38'),
-(1, 1, 'Add creation of notes in Database.', 1, 4, 0, '2026-01-26 15:18:38', '2026-02-28', '2026-02-28', NULL, '2026-02-28', '2026-03-14', 8, 8, 1, 3, 0, 0, NULL, '2026-03-14 14:40:10'),
-(1, 1, 'Add editing of note to update database.', 1, 4, 0, '2026-01-26 15:19:47', '2026-02-28', '2026-02-28', NULL, '2026-02-28', '2026-03-14', 4, 4, 1, 4, 0, 0, NULL, '2026-03-14 14:40:20'),
-(1, 1, 'Get toenails trimmed', NULL, 4, 0, '2026-01-26 15:21:21', '2026-02-07', '2026-02-07', NULL, '2026-02-07', '2026-02-21', 1, 0, 3, 1, 0, 0, NULL, '2026-02-21 22:14:07'),
-(1, 1, 'Connect goal creation and editing to database.', 1, 0, 0, '2026-01-26 15:23:03', '2026-03-08', '2026-03-08', NULL, '2026-03-08', NULL, 6, 0, 1, 5, 0, 0, NULL, '2026-03-22 13:36:02'),
-(1, 1, 'Implement task editing.', NULL, 4, 0, '2026-01-26 15:24:39', '2026-02-07', '2026-02-07', NULL, '2026-02-07', '2026-02-21', 8, 0, 1, 5, 0, 0, NULL, '2026-02-21 22:13:39'),
-(1, 1, 'Redisplay schedule after adding or editing a schedule item.', NULL, 4, 0, '2026-02-13 15:07:13', '2026-02-16', '2026-02-14', '2026-02-22', '2026-02-22', '2026-02-22', 4, 6, 1, 4, 0, 0, NULL, '2026-02-22 16:14:56'),
-(1, 1, 'Redisplay tasks after adding or editing a task.', NULL, 4, 0, '2026-02-13 15:08:37', '2026-02-17', '2026-02-16', NULL, '2026-02-17', '2026-02-22', 4, 0, 1, 3, 0, 0, NULL, '2026-02-22 16:14:27'),
-(1, 1, 'Sort tasks by group priority and priority.', NULL, 4, 0, '2026-02-13 15:11:09', '2026-02-15', '2026-02-13', '2026-02-21', '2026-02-16', '2026-02-21', 6, 4, 1, 3, 0, 0, NULL, '2026-02-21 22:12:22'),
-(1, 1, 'Implement editing of existing tasks', 1, 3, 0, '2026-02-13 15:12:44', '2026-03-08', '2026-03-08', '2026-02-21', '2026-03-08', NULL, 8, 24, 1, 9, 0, 0, NULL, '2026-03-22 13:35:01'),
-(1, 1, 'Implement editing of schedule.', NULL, 4, 0, '2026-02-13 15:13:49', '2026-02-19', '2026-02-18', NULL, '2026-02-19', '2026-02-21', 8, 0, 1, 5, 0, 0, NULL, '2026-02-21 22:24:39'),
-(1, 1, 'Finish the ability to edit tasks. Implement select parent task, add dependencies, display of dependencies.', 1, 3, 0, '2026-02-22 16:13:38', '2026-03-11', '2026-03-08', '2026-03-07', '2026-03-11', NULL, 16, 20, 1, 8, 0, 1, '44;', '2026-03-22 13:35:16'),
-(1, 1, 'Figure out how to use signals and slots to implement table view updates.', 0, 0, 0, '2026-02-22 16:18:48', '2026-03-06', '2026-03-06', NULL, '2026-03-06', NULL, 4, 1, 2, 5, 0, 0, NULL, '2026-03-20 13:13:24'),
-(1, 1, 'Clear selections after table edits.', 1, 4, 0, '2026-02-22 16:21:28', '2026-03-06', '2026-03-06', NULL, '2026-03-06', '2026-03-20', 4, 1, 2, 1, 0, 0, NULL, '2026-03-20 13:12:04'),
-(1, 1, 'Create Task View Table for select parent task', 1, 4, 0, '2026-02-23 14:46:41', '2026-02-28', '2026-02-28', '2026-03-06', '2026-02-28', '2026-03-14', 8, 8, 1, 11, 0, 0, NULL, '2026-03-14 14:41:43'),
-(1, 1, 'Create Requirement system to augment the planning system', NULL, 0, 0, '2026-02-23 14:50:03', '2026-05-31', '2026-04-30', NULL, '2026-05-31', NULL, 300, 0, 3, 1, 0, 0, NULL, '2026-02-23 14:50:03'),
-(1, 1, 'Implement user preferences in planner', NULL, 0, 0, '2026-02-23 14:52:01', '2026-03-04', '2026-03-01', NULL, '2026-03-04', NULL, 24, 0, 3, 1, 0, 0, NULL, '2026-03-06 15:04:31'),
-(1, 1, 'Find a Silver Sneakers program   ', NULL, 0, 0, '2026-02-25 12:47:09', '2026-03-06', '2026-03-06', NULL, '2026-03-06', NULL, 4, 0, 2, 4, 0, 0, NULL, '2026-03-20 13:13:13'),
-(1, 1, 'Add alternate methods of connecting to the database and logging in. Use environment variable and or command line flags.', 1, 3, 0, '2026-02-27 13:25:42', '2026-03-08', '2026-03-08', '2026-03-06', '2026-03-08', NULL, 16, 20, 1, 6, 0, 0, NULL, '2026-03-22 13:35:54'),
-(1, 1, 'Add the ability to repeat schedule items on a daily basis.', 1, 0, 0, '2026-02-27 13:29:45', '2026-03-06', '2026-03-06', NULL, '2026-03-06', NULL, 16, 0, 2, 2, 0, 0, NULL, '2026-03-20 13:12:36'),
-(1, 1, 'Add the ability to find an old schedule item and add it again to a new schedule', NULL, 0, 0, '2026-02-27 13:32:10', '2026-02-27', '2026-02-27', NULL, '2026-02-27', NULL, 16, 0, 3, 2, 0, 0, NULL, '2026-03-06 15:04:40'),
-(1, 1, 'Add the ability to reuse locations in the schedule.', NULL, 0, 0, '2026-02-27 13:33:22', '2026-02-27', '2026-02-27', NULL, '2026-02-27', NULL, 24, 0, 3, 3, 0, 0, NULL, '2026-03-06 15:04:51'),
-(1, 1, 'Freeze Chicken fillets', NULL, 4, 0, '2026-02-27 23:25:15', '2026-03-05', '2026-02-27', NULL, '2026-02-27', '2026-03-03', 1, 0.25, 1, 1, 0, 0, NULL, '2026-03-03 12:35:26'),
-(1, 1, 'Fix bug in scheduler where late appointments appear in the next day schedule.', 0, 4, 0, '2026-02-28 12:55:47', '2026-02-28', '2026-02-28', NULL, '2026-02-28', '2026-03-07', 8, 1.5, 1, 4, 0, 0, NULL, '2026-03-07 15:09:11'),
-(1, 1, 'Debug parent task id not being set in the database when the parent has been selected', 0, 4, 0, '2026-03-01 14:31:51', '2026-03-01', '2026-03-01', '2026-03-01', '2026-03-01', '2026-03-06', 2, 3, 1, 4, 0, 0, NULL, '2026-03-06 15:00:15'),
-(1, 1, 'Add production test database contents to unit/integration tests.2 ', 0, 0, 0, '2026-03-01 16:21:30', '2026-03-01', '2026-03-01', NULL, '2026-03-01', NULL, 2, 0, 3, 4, 0, 0, NULL, '2026-03-06 15:05:02'),
-(1, 1, 'Schedule date is based on GMT rather than local time, this causes some schedule items to appear on the wrong date.', 0, 4, 0, '2026-03-04 03:10:24', '2026-03-03', '2026-03-03', NULL, '2026-03-03', '2026-03-07', 2, 1.5, 1, 2, 0, 0, NULL, '2026-03-07 15:08:44'),
-(1, 1, 'Get a replacement blood pressure monitor', NULL, 4, 0, '2026-03-04 12:40:26', '2026-03-04', '2026-03-04', NULL, '2026-03-04', '2026-03-06', 1, 1, 1, 1, 0, 0, NULL, '2026-03-06 14:59:14'),
-(1, 1, 'Find a dentist. Make an appointment', NULL, 0, 0, '2026-03-05 14:03:50', '2026-03-05', '2026-03-05', NULL, '2026-03-05', NULL, 3, 0, 3, 5, 0, 0, NULL, '2026-03-05 14:03:50'),
-(1, 1, 'Add the ability to move tasks up and down in the todo list.', 1, 0, 0, '2026-03-06 15:06:34', '2026-03-06', '2026-03-06', NULL, '2026-03-06', NULL, 16, 0, 2, 3, 0, 0, NULL, '2026-03-20 13:13:01'),
-(1, 1, 'Prevent duplicate dependent tasks from occurring.', 1, 0, 0, '2026-03-06 15:12:10', '2026-03-11', '2026-03-10', NULL, '2026-03-11', NULL, 4, 0, 1, 7, 0, 0, NULL, '2026-03-22 13:35:37'),
-(1, 1, 'Do the laundry', NULL, 0, 0, '2026-03-07 13:31:35', '2026-03-09', '2026-03-07', NULL, '2026-03-10', NULL, 3, 0, 3, 6, 0, 0, NULL, '2026-03-10 12:13:09'),
-(1, 1, 'Change PG to Cat, short for category in Dashboard display task list', 1, 4, 0, '2026-03-07 13:35:11', '2026-03-11', '2026-03-10', NULL, '2026-03-11', '2026-03-10', 1, 0.25, 3, 6, 0, 0, NULL, '2026-03-10 12:12:50'),
-(1, 1, 'Buy proper tools for grill pan maintenance\n1) oil brush\n2) soft cloths for washing pan', NULL, 4, 0, '2026-03-07 13:37:40', '2026-03-07', '2026-03-07', NULL, '2026-03-07', '2026-03-09', 2, 1, 2, 1, 0, 0, NULL, '2026-03-09 13:10:54'),
-(1, 1, 'Rework the build and the code so that the GuiModels are not required.', 1, 4, 0, '2026-03-07 15:53:44', '2026-03-21', '2026-03-12', '2026-03-14', '2026-03-21', '2026-03-19', 3, 23, 1, 3, 0, 1, '41;', '2026-03-19 14:35:11'),
-(1, 1, 'Create a personal website using WordPress.', NULL, 0, 0, '2026-03-08 15:36:02', '2026-03-27', '2026-03-23', NULL, '2026-03-28', NULL, 32, 0, 1, 2, 0, 0, NULL, '2026-03-21 14:19:43'),
-(1, 1, 'Provide a method to sort the potential parent tasks in the select parent task dialog.', 1, 0, 0, '2026-03-09 13:10:12', '2026-03-09', '2026-03-09', NULL, '2026-03-09', NULL, 6, 0, 2, 1, 0, 0, NULL, '2026-03-20 13:12:28'),
-(1, 1, 'Change PG to Category in the dashboard task list.', 1, 4, 0, '2026-03-09 13:22:55', '2026-03-09', '2026-03-09', NULL, '2026-03-09', '2026-03-09', 1, 0, 2, 7, 0, 0, NULL, '2026-03-09 14:10:56'),
-(1, 1, 'Create an Organizational editor', 1, 0, 0, '2026-03-09 13:26:42', '2026-03-09', '2026-03-09', NULL, '2026-03-09', NULL, 24, 0, 1, 4, 0, 0, NULL, '2026-03-22 13:36:11'),
-(1, 1, 'Change the Date time editor field for a time edit field for schedule items start and end time', 1, 4, 0, '2026-03-10 12:30:20', '2026-03-10', '2026-03-10', '2026-03-11', '2026-03-10', '2026-03-12', 2, 8, 1, 2, 0, 0, NULL, '2026-03-12 13:45:28'),
-(1, 1, 'Change all pointers to model classes to database table IDs wherever possible', 35, 4, 0, '2026-03-18 14:48:27', '2026-03-18', '2026-03-18', '2026-03-18', '2026-03-18', '2026-03-19', 4, 8, 1, 10, 0, 0, NULL, '2026-03-19 14:36:58'),
-(1, 1, 'Testing the new push button interface for add task', NULL, 4, 0, '2026-03-20 15:12:37', '2026-03-20', '2026-03-20', '2026-03-20', '2026-03-20', '2026-03-20', 1, 0.25, 1, 1, 0, 0, NULL, '2026-03-20 15:12:55'),
-(1, 1, 'Remove dependencies on TaskModel from user dashboard', 1, 4, 0, '2026-03-21 14:25:17', '2026-03-21', '2026-03-21', '2026-03-21', '2026-03-21', '2026-03-21', 1, 1, 1, 1, 0, 0, NULL, '2026-03-21 14:25:37'),
-(1, 1, 'Show parent task name in task editor after it is selected.', 12, 4, 0, '2026-03-21 14:53:12', '2026-03-21', '2026-03-21', NULL, '2026-03-21', '2026-03-21', 2, 0.5, 1, 9, 0, 1, '45;', '2026-03-21 15:02:42'),
-(1, 1, 'Test add parent task display', 44, 4, 0, '2026-03-21 15:01:51', '2026-03-21', '2026-03-21', NULL, '2026-03-21', '2026-03-21', 1, 0.25, 1, 10, 0, 0, NULL, '2026-03-21 15:02:20'),
-(1, 1, 'Create a non-modal pop-up with similar contents for the user to select as the basis for a new schedule item', 1, 0, 0, '2026-03-22 13:34:38', '2026-03-22', '2026-03-22', NULL, '2026-03-22', NULL, 24, 2, 1, 3, 0, 0, NULL, '2026-03-22 13:34:38');
-
--- --------------------------------------------------------
 
 INSERT INTO `testPTSDB`.`UserNotes` (`idUserNotes`, `UserID`, `NotationDateTime`, `Content`, `LastUpdate`) VALUES
 (1, 1, '2026-03-12 13:51:37', 'This is a test of the add note dialog!', '2026-03-12 13:51:37'),
@@ -94,12 +117,20 @@ INSERT INTO `testPTSDB`.`UserNotes` (`idUserNotes`, `UserID`, `NotationDateTime`
 (25, 1, '2026-03-21 16:14:50', 'Need to add an index for Location in schedule item!', '2026-03-21 16:14:50'),
 (26, 1, '2026-03-21 16:16:05', 'Need to figure out how to use location in repeat schedule items.', '2026-03-21 16:16:05');
 
--- --------------------------------------------------------
+END$$
+
+DELIMITER ;
+
 
 -- --------------------------------------------------------
---
--- Dumping data for table `UserScheduleItem`
---
+DELIMITER $$
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`AddTestSchedule`;
+
+CREATE PROCEDURE `testPTSDB`.`AddTestSchedule`()
+
+BEGIN
+
 
 INSERT INTO `testPTSDB`.`UserScheduleItem` (`idUserScheduleItem`, `UserID`, `StartDateTime`, `EndDateTime`, `Title`, `Personal`, `Location`, `CreatedTS`, `LastUpdateTS`) VALUES
 (1, 1, '2026-02-05 15:29:05', '2026-02-05 15:29:05', 'CDC Chinese New Year luncheon', 1, 'China Buffet', '2026-02-05 15:29:05', '2026-02-05 15:29:05'),
@@ -403,14 +434,49 @@ INSERT INTO `testPTSDB`.`UserScheduleItem` (`idUserScheduleItem`, `UserID`, `Sta
 (299, 1, '2026-03-21 22:00:00', '2026-03-21 22:59:59', ' Lunch at Steve\'s burgers', 1, 'Steve\'s Burgers', '2026-03-22 13:39:40', '2026-03-22 13:39:40');
 
 
+END$$
+
+DELIMITER ;
 
 DELIMITER $$
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`AddTestData`;
+
+CREATE PROCEDURE `testPTSDB`.`AddTestData`()
+
+BEGIN
+
+   CALL AddOrganization('Organization Name', 'anyemailaddress@anyURL.org', '(800) 555-1212', NULL, NULL, '1 Nowhere Street', 'Big City', 'Any state', 'postal code', 'any country');
+
+   CALL AddTestUsers();
+
+   CALL AddTestTasks();
+
+   CALL AddTestNotes();
+
+   CALL AddTestSchedule();
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+
 USE `testPTSDB`;
 DROP PROCEDURE IF EXISTS `testPTSDB`.`TestStoredProceduresAndFunctions`;
 
 CREATE PROCEDURE `testPTSDB`.`TestStoredProceduresAndFunctions`()
 
 BEGIN
+
+   CALL UpdateUserAllFields(3, 1, 'AlteredLast', 'AlteredFirst', 'D', 'AlteredEmail', 'AlteredUname', 'AlteredPW', 'AlteredPreffs', '2026-04-17 22:00:00');
+
+   CALL AddUserNote(1, 'Test AddUserNote SQL implementation.');
+
+   CALL AddUserGoal(1, 'Test AddUserGoal SQL implementation.', 0, 0);
+
+   CALL AddScheduleEvent(1, '2026-04-17 22:00:00', '2026-04-17 23:00:00', 'Test AddScheduleEvent', 0, 'Starbucks');
 
    CALL HideTask(4, 59);
 
@@ -428,5 +494,7 @@ END$$
 
 DELIMITER ;
 
-#   CALL TestStoredProceduresAndFunctions();
+   CALL AddTestData();
+
+   CALL TestStoredProceduresAndFunctions();
 
