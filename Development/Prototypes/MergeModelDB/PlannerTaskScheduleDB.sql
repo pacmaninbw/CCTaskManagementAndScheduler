@@ -433,7 +433,7 @@ CREATE PROCEDURE `testPTSDB`.`HideGoal`
 BEGIN
 
     UPDATE UserGoals
-        SET Hidden = 1
+        SET Hidden = 1, LastUpdateTS = NOW()
         WHERE UserID = IDUser AND idUserGoals = GoalID;
 
 END$$
@@ -453,7 +453,7 @@ CREATE PROCEDURE `testPTSDB`.`HideNote`
 BEGIN
 
     UPDATE UserNotes
-        SET Hidden = 1
+        SET Hidden = 1, LastUpdate = NOW()
         WHERE UserID = IDUser AND idUserNotes = NoteID;
 
 END$$
@@ -473,7 +473,7 @@ CREATE PROCEDURE `testPTSDB`.`HideTask`
 BEGIN
 
     UPDATE Tasks
-        SET Hidden = 1
+        SET Hidden = 1, LastUpdateTS = NOW()
         WHERE CreatedBy = IDUser AND TaskID = IDTask;
 
 END$$
@@ -493,11 +493,315 @@ CREATE PROCEDURE `testPTSDB`.`HideScheduleItem`
 BEGIN
 
     UPDATE UserScheduleItem
-        SET Hidden = 1
+        SET Hidden = 1, LastUpdateTS = NOW()
         WHERE UserID = IDUser AND idUserScheduleItem = ScheduleItemID;
 
 END$$
 
+DELIMITER ;
+
+USE `testPTSDB`;
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `AddOrganization`$$
+
+CREATE PROCEDURE `AddOrganization`
+(
+    IN `orgName` VARCHAR(256),
+    IN `email` VARCHAR(256),
+    IN `phoneNo` VARCHAR(32),
+    IN `primaryContact` INT UNSIGNED,
+    IN `secondaryContact` INT UNSIGNED,
+    IN `streetAddress` VARCHAR(256),
+    IN `city` VARCHAR(64),
+    IN `postalCode` VARCHAR(32),
+    IN `stateOrProvince` VARCHAR(64),
+    IN `nation` VARCHAR(64)
+)
+BEGIN
+
+    INSERT INTO OrganizationProfile (
+        Organization_Name,
+        EmailAddress,
+        PhoneNumber,
+        PrimaryContactUser,
+        SecondaryContactUser,
+        Street_Address,
+        City_Address,
+        State_or_Province,
+        Postal_Code,
+        Nation,
+        CreatedTS,
+        LastUpdateTS,
+        Hidden
+        )
+    VALUES (
+        orgName, email, phoneNo, primaryContact, secondaryContact, streetAddress, city, stateOrProvince, postalCode, nation, NOW(), NOW(), 0
+    ) RETURNING OrganizationID;
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `AddUser`$$
+
+CREATE PROCEDURE `AddUser`
+(
+    IN `OrgId` INT UNSIGNED,
+    IN `lastName` VARCHAR(45),
+    IN `firstName` VARCHAR(45),
+    IN `middleInitial` VARCHAR(45),
+    IN `email` VARCHAR(256),
+    IN `username` VARCHAR(45),
+    IN `password` VARCHAR(45),
+    IN `preferrences` MEDIUMTEXT
+)
+BEGIN
+
+	INSERT INTO UserProfile
+    	(
+            Organization_ID,
+            LastName,
+            FirstName,
+            MiddleInitial,
+            EmailAddress,
+            LoginName,
+            HashedPassWord,
+            UserAdded,
+            Preferences,
+            Hidden
+        )
+        VALUES
+        (
+            OrgId,
+            lastName,
+            firstName,
+            middleInitial,
+            email,
+            username,
+            password,
+            NOW(),
+            preferrences,
+            0
+        )
+        RETURNING UserID;
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `UpdateUserAllFields`$$
+
+CREATE PROCEDURE `UpdateUserAllFields`
+(
+    IN `userId` INT UNSIGNED,
+    IN `OrgId` INT UNSIGNED,
+    IN `lastName` VARCHAR(45),
+    IN `firstName` VARCHAR(45),
+    IN `middleInitial` VARCHAR(45),
+    IN `email` VARCHAR(256),
+    IN `username` VARCHAR(45),
+    IN `password` VARCHAR(45),
+    IN `preferrences` MEDIUMTEXT,
+    IN `lastLogin` DATETIME
+)
+
+BEGIN
+
+    UPDATE UserProfile SET
+        UserProfile.Organization_ID = OrgId,
+        UserProfile.LastName = lastName,
+        UserProfile.FirstName = firstName,
+        UserProfile.MiddleInitial = middleInitial,
+        UserProfile.EmailAddress = email,
+        UserProfile.LoginName = username,
+        UserProfile.HashedPassWord = password,
+        UserProfile.Preferences = preferrences,
+        UserProfile.LastLogin = lastLogin
+    WHERE UserProfile.UserID = userId;
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `AddUserGoal`$$
+
+CREATE PROCEDURE `AddUserGoal`
+(
+    IN `userId` INT UNSIGNED,
+    IN `description` VARCHAR(1024),
+    IN `priority` INT ZEROFILL,
+    IN `parentGoalId` INT UNSIGNED ZEROFILL
+)
+
+BEGIN
+
+    INSERT INTO UserGoals
+        (
+            UserID,
+            Description,
+            CreationTS,
+            LastUpdateTS,
+            Priority,
+            ParentGoal,
+            Hidden
+        )
+        VALUES
+        (
+            userId,
+            description,
+            NOW(),
+            NOW(),
+            priority,
+            parentGoalId,
+            0
+        )
+        RETURNING idUserGoals;
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `AddTask`$$
+
+CREATE PROCEDURE `AddTask`
+(
+    IN `creatorID` INT UNSIGNED,
+    IN `assignedID` INT UNSIGNED,
+    IN `description` VARCHAR(256),
+    IN `parentTaskID` INT UNSIGNED,
+    IN `taskStatus` INT UNSIGNED,
+    IN `dueDate` DATE,
+    IN `planStart` DATE,
+    IN `startDate` DATE,
+    IN `expectedDate` DATE,
+    IN `completedDate` DATE,
+    IN `estimatedEffort` INT UNSIGNED,
+    IN `effortToDate` DOUBLE,
+    IN `priorityCategory` INT UNSIGNED,
+    IN `priority` INT UNSIGNED,
+    IN `isPersonal` TINYINT,
+    IN `dependencyCount` INT UNSIGNED,
+    IN `dependencies` MEDIUMTEXT
+)
+BEGIN
+
+	INSERT INTO Tasks
+    (
+        CreatedBy,
+        AsignedTo,
+        Description,
+        ParentTask,
+        Status,
+        PercentageComplete,
+        CreatedOn,
+        RequiredDelivery,
+        ScheduledStart,
+        ActualStart,
+        EstimatedCompletion,
+        Completed,
+        EstimatedEffortHours,
+        ActualEffortHours,
+        SchedulePriorityGroup,
+        PriorityInGroup,
+        Personal,
+        DependencyCount,
+        Dependencies,
+        LastUpdateTS,
+        Hidden
+    )
+    VALUES
+    (
+        creatorID,
+        assignedID,
+        description,
+        parentTaskID,
+        taskStatus,
+        0.0,
+        NOW(),
+        dueDate,
+        planStart,
+        startDate,
+        expectedDate,
+        completedDate,
+        estimatedEffort,
+        effortToDate,
+        priorityCategory,
+        priority,
+        isPersonal,
+        dependencyCount,
+        dependencies,
+        NOW(),
+        0
+    )
+    RETURNING TaskID;
+
+END$$
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `AddUserNote`$$
+
+CREATE PROCEDURE `AddUserNote`
+(
+    IN `userId` INT UNSIGNED,
+    IN `content` VARCHAR(1024)
+)
+
+BEGIN
+
+	INSERT INTO UserNotes(UserID, NotationDateTime, Content, LastUpdate, Hidden)
+        VALUES (userId, NOW(), content, NOW(), 0)
+        RETURNING idUserNotes;
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `AddScheduleEvent`$$
+
+CREATE PROCEDURE `AddScheduleEvent`
+(
+    IN `userId` INT UNSIGNED,
+    IN `eventStart` DATETIME,
+    IN `eventEnd` DATETIME,
+    IN `eventTitle` VARCHAR(128),
+    IN `isPersonal` TINYINT,
+    IN `location` VARCHAR(128)
+)
+
+BEGIN
+
+INSERT INTO UserScheduleItem
+	(
+        UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden
+    )
+    VALUES
+    (
+        userId,
+        eventStart,
+        eventEnd,
+        eventTitle,
+        isPersonal,
+        location,
+        NOW(),
+        NOW(),
+        0
+    )
+    RETURNING idUserScheduleItem;
+    
+END$$
 DELIMITER ;
 
 COMMIT;
