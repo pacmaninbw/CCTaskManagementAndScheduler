@@ -23,9 +23,9 @@ In Self Test Query is:
 In Self Test Query is: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'TestValue' AND HashedPassWord = 'TestValue'
 In Self Test Query is: 
-	INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden) VALUES ('LastName', 'FirstName', 'M', 'FirstName.LastName@LastName.com', 'LastNameFirstNameM', 'LastNameFirstNameM', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', '8:30 AM;5:00 PM;1;1;1;0;', 0)
+	CALL AddUser(NULL, 'LastName', 'FirstName', 'M', 'FirstName.LastName@LastName.com', 'LastNameFirstNameM', 'LastNameFirstNameM', '8:30 AM;5:00 PM;1;1;1;0;')
 In Self Test Query is: 
-	UPDATE UserProfile SET UserProfile.LastName = 'LastName', UserProfile.FirstName = 'FirstName', UserProfile.MiddleInitial = 'M', UserProfile.EmailAddress = 'FirstName.LastName@LastName.com', UserProfile.LoginName = 'LastNameFirstNameM', UserProfile.HashedPassWord = 'LastNameFirstNameM', UserProfile.Preferences = '8:30 AM;5:00 PM;1;1;1;0;', UserProfile.LastLogin = '2024-05-14 08:31:53.000000', UserProfile.Hidden = 0 WHERE UserProfile.UserID = 1
+	CALL UpdateUserAllFields(1, NULL, 'LastName', 'FirstName', 'M', 'FirstName.LastName@LastName.com', 'LastNameFirstNameM', 'LastNameFirstNameM', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
 In Self Test Query is: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 1
 In Self Test Query is: 
@@ -82,7 +82,7 @@ User::testAllInsertFailures before successful insert this =
 	PassWord: teststringvalue
 
 In Self Test Query is: 
-	INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden) VALUES ('teststringvalue', 'teststringvalue', '', 'teststringvalue', 'teststringvalue', 'teststringvalue', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', '4:30 AM;4:15 PM;1;1;1;1;', 0)
+	CALL AddUser(NULL, 'teststringvalue', 'teststringvalue', '', 'teststringvalue', 'teststringvalue', 'teststringvalue', '4:30 AM;4:15 PM;1;1;1;1;')
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
 User Self Test PASSED
@@ -272,13 +272,13 @@ Running Note Self Test
 
 Running Exception Handling Test Cases
 In Self Test Query is: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
 In Self Test Query is: 
 	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate, Hidden) VALUES (27, '2024-05-14 08:31:53.000000', 'Testing insertion exception', '2024-05-14 08:31:53.000000', 0)
 In Self Test Query is: 
 	UPDATE UserNotes SET UserNotes.UserID = 27, UserNotes.NotationDateTime = '2024-05-14 08:31:53.000000', UserNotes.Content = 'Testing insertion exception', UserNotes.LastUpdate = '2024-05-14 08:31:53.000000' UserNotes.Hidden = 0, WHERE UserNotes.idUserNotes = 0
 In Self Test Query is: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
 In Self Test Query is: 
 	CALL HideNote(27, 1)
 
@@ -479,33 +479,33 @@ Running Exception Handling Test Cases NoteList
 
 Exception Test for NoteList::testExceptionsGetAllNotes()
 In Self Test Query is: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
 
 Exception Test for NoteList::testExceptionsGetNotesForUserLikeContent()
 In Self Test Query is: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND Content LIKE '%Test Content%'
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND Content LIKE '%Test Content%' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
 
 Exception Test for NoteList::testExceptionsGetNotesForUserCreatedDateRange()
 In Self Test Query is: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND NotationDateTime >= '2024-05-07' AND NotationDateTime <= '2024-05-14'
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND NotationDateTime >= '2024-05-07' AND NotationDateTime <= '2024-05-14' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
 
 Exception Test for NoteList::testExceptionsGetNotesForUserEditedDateRange()
 In Self Test Query is: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND LastUpdate >= '2024-05-07' AND LastUpdate <= '2024-05-14'
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND LastUpdate >= '2024-05-07' AND LastUpdate <= '2024-05-14' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
 
 Exception Test for NoteList::testExceptionsGetDashboardNoteTable()
 In Self Test Query is: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND NotationDateTime >= '2024-05-14 07:00:00.000000' AND NotationDateTime <= '2024-05-15 06:59:00.000000' ORDER BY NotationDateTime ASC
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND NotationDateTime >= '2024-05-14 07:00:00.000000' AND NotationDateTime <= '2024-05-15 06:59:00.000000' AND (Hidden IS NULL OR Hidden <> 1) ORDER BY NotationDateTime ASC
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
 
 
 NoteList PASSED Self Test
@@ -558,7 +558,7 @@ Running:
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 3
 Running: 
-	INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden) VALUES ('One', 'User', 'P', 'UserOne@gmail.com', 'OneUserP', 'OneUserP', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', '8:30 AM;5:00 PM;1;1;1;0;', 0)
+	CALL AddUser(NULL, 'One', 'User', 'P', 'UserOne@gmail.com', 'OneUserP', 'OneUserP', '8:30 AM;5:00 PM;1;1;1;0;')
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'OneUserP'
 Running: 
@@ -570,11 +570,11 @@ Running:
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE EmailAddress = 'UserOne@gmail.com'
 Running: 
-	UPDATE UserProfile SET UserProfile.LastName = 'One', UserProfile.FirstName = 'User', UserProfile.MiddleInitial = 'P', UserProfile.EmailAddress = 'UserOne@gmail.com', UserProfile.LoginName = 'OneUserP', UserProfile.HashedPassWord = 'MyNew**&pAs5Word4', UserProfile.Preferences = '8:30 AM;5:00 PM;1;1;1;0;', UserProfile.LastLogin = '2024-05-14 08:31:53.000000', UserProfile.Hidden = 0 WHERE UserProfile.UserID = 4
+	CALL UpdateUserAllFields(4, NULL, 'One', 'User', 'P', 'UserOne@gmail.com', 'OneUserP', 'MyNew**&pAs5Word4', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 4
 Running: 
-	INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden) VALUES ('Doe', 'John', 'Q', 'johndoe@gmail.com', 'DoeJohnQ', 'DoeJohnQ', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', '8:30 AM;5:00 PM;1;1;1;0;', 0)
+	CALL AddUser(NULL, 'Doe', 'John', 'Q', 'johndoe@gmail.com', 'DoeJohnQ', 'DoeJohnQ', '8:30 AM;5:00 PM;1;1;1;0;')
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'DoeJohnQ'
 Running: 
@@ -586,11 +586,11 @@ Running:
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE EmailAddress = 'johndoe@gmail.com'
 Running: 
-	UPDATE UserProfile SET UserProfile.LastName = 'Doe', UserProfile.FirstName = 'John', UserProfile.MiddleInitial = 'Q', UserProfile.EmailAddress = 'johndoe@gmail.com', UserProfile.LoginName = 'DoeJohnQ', UserProfile.HashedPassWord = 'MyNew**&pAs5Word5', UserProfile.Preferences = '8:30 AM;5:00 PM;1;1;1;0;', UserProfile.LastLogin = '2024-05-14 08:31:53.000000', UserProfile.Hidden = 0 WHERE UserProfile.UserID = 5
+	CALL UpdateUserAllFields(5, NULL, 'Doe', 'John', 'Q', 'johndoe@gmail.com', 'DoeJohnQ', 'MyNew**&pAs5Word5', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 5
 Running: 
-	INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden) VALUES ('Public', 'John', 'Q', 'anyone@gmail.com', 'PublicJohnQ', 'PublicJohnQ', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', '8:30 AM;5:00 PM;1;1;1;0;', 0)
+	CALL AddUser(NULL, 'Public', 'John', 'Q', 'anyone@gmail.com', 'PublicJohnQ', 'PublicJohnQ', '8:30 AM;5:00 PM;1;1;1;0;')
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'PublicJohnQ'
 Running: 
@@ -602,11 +602,11 @@ Running:
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE EmailAddress = 'anyone@gmail.com'
 Running: 
-	UPDATE UserProfile SET UserProfile.LastName = 'Public', UserProfile.FirstName = 'John', UserProfile.MiddleInitial = 'Q', UserProfile.EmailAddress = 'anyone@gmail.com', UserProfile.LoginName = 'PublicJohnQ', UserProfile.HashedPassWord = 'MyNew**&pAs5Word6', UserProfile.Preferences = '8:30 AM;5:00 PM;1;1;1;0;', UserProfile.LastLogin = '2024-05-14 08:31:53.000000', UserProfile.Hidden = 0 WHERE UserProfile.UserID = 6
+	CALL UpdateUserAllFields(6, NULL, 'Public', 'John', 'Q', 'anyone@gmail.com', 'PublicJohnQ', 'MyNew**&pAs5Word6', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 6
 Running: 
-	INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden) VALUES ('Doe', 'Jane', 'R', 'jdr@gmail.com', 'DoeJaneR', 'DoeJaneR', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', '8:30 AM;5:00 PM;1;1;1;0;', 0)
+	CALL AddUser(NULL, 'Doe', 'Jane', 'R', 'jdr@gmail.com', 'DoeJaneR', 'DoeJaneR', '8:30 AM;5:00 PM;1;1;1;0;')
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'DoeJaneR'
 Running: 
@@ -618,11 +618,11 @@ Running:
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE EmailAddress = 'jdr@gmail.com'
 Running: 
-	UPDATE UserProfile SET UserProfile.LastName = 'Doe', UserProfile.FirstName = 'Jane', UserProfile.MiddleInitial = 'R', UserProfile.EmailAddress = 'jdr@gmail.com', UserProfile.LoginName = 'DoeJaneR', UserProfile.HashedPassWord = 'MyNew**&pAs5Word7', UserProfile.Preferences = '8:30 AM;5:00 PM;1;1;1;0;', UserProfile.LastLogin = '2024-05-14 08:31:53.000000', UserProfile.Hidden = 0 WHERE UserProfile.UserID = 7
+	CALL UpdateUserAllFields(7, NULL, 'Doe', 'Jane', 'R', 'jdr@gmail.com', 'DoeJaneR', 'MyNew**&pAs5Word7', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 7
 Running: 
-	INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden) VALUES ('Case', 'Space', 'O', 'spacecase@gmail.com', 'CaseSpaceO', 'CaseSpaceO', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', '8:30 AM;5:00 PM;1;1;1;0;', 0)
+	CALL AddUser(NULL, 'Case', 'Space', 'O', 'spacecase@gmail.com', 'CaseSpaceO', 'CaseSpaceO', '8:30 AM;5:00 PM;1;1;1;0;')
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'CaseSpaceO'
 Running: 
@@ -634,7 +634,7 @@ Running:
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE EmailAddress = 'spacecase@gmail.com'
 Running: 
-	UPDATE UserProfile SET UserProfile.LastName = 'Case', UserProfile.FirstName = 'Space', UserProfile.MiddleInitial = 'O', UserProfile.EmailAddress = 'spacecase@gmail.com', UserProfile.LoginName = 'CaseSpaceO', UserProfile.HashedPassWord = 'MyNew**&pAs5Word8', UserProfile.Preferences = '8:30 AM;5:00 PM;1;1;1;0;', UserProfile.LastLogin = '2024-05-14 08:31:53.000000', UserProfile.Hidden = 0 WHERE UserProfile.UserID = 8
+	CALL UpdateUserAllFields(8, NULL, 'Case', 'Space', 'O', 'spacecase@gmail.com', 'CaseSpaceO', 'MyNew**&pAs5Word8', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 8
 Running: 
@@ -2128,7 +2128,7 @@ Running:
         SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 15 AND (Hidden IS NULL OR Hidden <> 1)
 Running:
         SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 17 AND (Hidden IS NULL OR Hidden <> 1)
-Original goal list size: 17 Altered schedule size: 16
+Original goal list size: 17 Altered goal list size: 16
 goal (16) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of Goal PASSED!
 Expected error was; UserGoalModel is missing required values!
@@ -2193,41 +2193,41 @@ Running:
 Running: 
 	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate, Hidden) VALUES (4, '2024-05-14 08:31:53.000000', 'Effectively moderate the code review site on stack exchange', '2024-05-14 08:31:53.000000', 0)
 Running: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 33
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 33 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 34
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 34 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 35
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 35 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 36
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 36 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 38
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 38 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 39
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 39 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 40
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 40 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 41
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 41 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 42
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 42 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43 AND (Hidden IS NULL OR Hidden <> 1)
 Find all notes for user (4) PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2333,19 +2333,19 @@ User 4 has 17 notes
 	Last Update: 2024-05-14 08:31:53.000000000
 
 Running: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND Content LIKE '%Maintain%'
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND Content LIKE '%Maintain%' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37 AND (Hidden IS NULL OR Hidden <> 1)
 Find all notes for user (4) similar to Maintain PASSED!
 User 4 has 6 notes
 	Note ID: 28
@@ -2385,41 +2385,41 @@ User 4 has 6 notes
 	Last Update: 2024-05-14 08:31:53.000000000
 
 Running: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND NotationDateTime >= '2024-05-07' AND NotationDateTime <= '2024-05-21'
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND NotationDateTime >= '2024-05-07' AND NotationDateTime <= '2024-05-21' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 33
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 33 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 34
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 34 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 35
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 35 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 36
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 36 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 38
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 38 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 39
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 39 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 40
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 40 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 41
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 41 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 42
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 42 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43 AND (Hidden IS NULL OR Hidden <> 1)
 Find all notes for user (4) created in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2525,41 +2525,41 @@ User 4 has 17 notes
 	Last Update: 2024-05-14 08:31:53.000000000
 
 Running: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND LastUpdate >= '2024-05-07' AND LastUpdate <= '2024-05-21'
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND LastUpdate >= '2024-05-07' AND LastUpdate <= '2024-05-21' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 33
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 33 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 34
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 34 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 35
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 35 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 36
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 36 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 38
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 38 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 39
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 39 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 40
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 40 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 41
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 41 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 42
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 42 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43 AND (Hidden IS NULL OR Hidden <> 1)
 Find all notes for user (4) edited in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2665,41 +2665,41 @@ User 4 has 17 notes
 	Last Update: 2024-05-14 08:31:53.000000000
 
 Running: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND NotationDateTime >= '2024-05-14 07:00:00.000000' AND NotationDateTime <= '2024-05-15 06:59:00.000000' ORDER BY NotationDateTime ASC
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND NotationDateTime >= '2024-05-14 07:00:00.000000' AND NotationDateTime <= '2024-05-15 06:59:00.000000' AND (Hidden IS NULL OR Hidden <> 1) ORDER BY NotationDateTime ASC
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 42
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 42 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 41
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 41 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 40
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 40 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 39
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 39 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 38
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 38 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 36
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 36 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 35
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 35 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 34
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 34 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 33
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 33 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
 Find all notes for user (4) for a date PASSED!
 User 4 has 17 notes
 	Note ID: 43
@@ -2804,6 +2804,80 @@ User 4 has 17 notes
 	Created: 2024-05-14 08:31:53.000000000
 	Last Update: 2024-05-14 08:31:53.000000000
 
+Running: 
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 33 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 34 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 35 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 36 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 38 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 39 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 40 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 41 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 42 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	CALL HideNote(4, 42)
+Running: 
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 33 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 34 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 35 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 36 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 38 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 39 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 40 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 41 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43 AND (Hidden IS NULL OR Hidden <> 1)
+Original note list size: 17 Altered schedule size: 16
+note (42) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of Note PASSED!
 Expected error was; Note is missing required values!
 Missing Note required User ID!
@@ -2816,11 +2890,11 @@ Missing Note required Content!
 Running: 
 	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate, Hidden) VALUES (4, '2024-05-14 08:31:53.000000', 'Test missing field Content', '2024-05-14 08:31:53.000000', 0)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
 Expected error was; Note not modified!
 
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
 Expected error was; Note already in Database, use Update!
 
 All negative path tests for database insertions and retrievals of Note PASSED!
