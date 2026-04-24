@@ -14,7 +14,7 @@
 #include <vector>
 
 UserGoalModel::UserGoalModel()
-: ModelDBInterface("UserGoalModel")
+: ModelDBInterface("UserGoalModel", "idUserGoals")
 {
     userID = 0;
 }
@@ -213,18 +213,8 @@ std::string UserGoalModel::formatInsertStatement()
 {
     initFormatOptions();
 
-    if (!creationDate.has_value())
-    {
-        creationDate = std::chrono::system_clock::now();
-    }
-
-    lastUpdate = creationDate.value();
-
     std::string insertStatement = boost::mysql::format_sql(format_opts.value(),
-        "INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, "
-            "Priority, ParentGoal, Hidden) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, 0)",
-        userID, description, optionalDateTimeConversion(creationDate),
-        optionalDateTimeConversion(lastUpdate), priority, parentID);
+        "CALL AddUserGoal({0}, {1}, {2}, {3})", userID, description, priority, parentID);
 
     return insertStatement;
 }
