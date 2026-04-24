@@ -17,11 +17,12 @@
 #include <utility>
 #include <vector>
 
-ModelDBInterface::ModelDBInterface(std::string modelNameIn)
+ModelDBInterface::ModelDBInterface(std::string modelNameIn, std::string primaryKeyNameIn)
 : CoreDBInterface()
 {
     primaryKey = 0;
     modelName = modelNameIn;
+    primaryKeyName = primaryKeyNameIn;
     modified = false;
     delimiter = ';';  
     deleted = false;
@@ -71,7 +72,7 @@ bool ModelDBInterface::insert() noexcept
     try
     {
         boost::mysql::results localResult = runQueryAsync(formatInsertStatement());
-        primaryKey =  (!inSelfTest)? localResult.last_insert_id() : 1;
+        primaryKey =  getPrimaryKeyValue(localResult);
         modified = false;
     }
 
@@ -296,3 +297,41 @@ std::optional<boost::mysql::datetime> ModelDBInterface::optionalDateTimeConversi
     return timeStamp;
 };
 
+std::size_t ModelDBInterface::getPrimaryKeyValue(boost::mysql::results &dbResultSet)
+{
+    // If this is self test then we don't actually connect to the database, the code that
+    // tests insert statements still needs a value returned.
+    if (inSelfTest)
+    {
+        return 1;
+    }
+
+    // Old method: boost::mysql executes last_insert_id and returns the value, this
+    // this doesn't work with stored procedures, the stored procedure returns
+    // a value in the result set with the primary key name. 
+    std::size_t pKeyValue = dbResultSet.last_insert_id();
+
+    if (pKeyValue == 0)
+    {
+        boost::mysql::resultset_view resultview0 = dbResultSet[0];
+        if (resultview0.rows().num_columns() > 0)
+        {
+            std::vector<std::string> columnNames;
+            for (auto metaIter: resultview0.meta())
+            {
+                columnNames.push_back(metaIter.column_name());
+            }
+
+            if (columnNames[0] == primaryKeyName)
+            {
+                boost::mysql::field_view fv = resultview0.rows().at(0).at(0);
+                if (fv.kind() == boost::mysql::field_kind::uint64)
+                {
+                    pKeyValue = fv.as_uint64();
+                }
+            }
+        }
+    }
+
+    return pKeyValue;
+}

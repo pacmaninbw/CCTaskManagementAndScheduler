@@ -21,7 +21,7 @@
 class ModelDBInterface : public CoreDBInterface
 {
 public:
-    ModelDBInterface(std::string modelNameIn);
+    ModelDBInterface(std::string modelNameIn, std::string primaryKeyNameIn);
     virtual ~ModelDBInterface() = default;
     bool save() noexcept;
     bool insert() noexcept;
@@ -78,9 +78,15 @@ protected:
     std::optional<boost::mysql::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate);
     std::optional<boost::mysql::datetime> optionalDateTimeConversion(std::optional<std::chrono::system_clock::time_point> optDateTime);
 
+/*
+ * Get the primary key value after a record is inserted in the database.
+ */
+    std::size_t getPrimaryKeyValue(boost::mysql::results& dbResultSet);
+
 protected:
     std::size_t primaryKey;
     std::string modelName;
+    std::string primaryKeyName;
     bool modified;
     bool deleted;
     char delimiter;
