@@ -16,7 +16,7 @@
 #include <vector>
 
 UserModel::UserModel()
-: ModelDBInterface("User")
+: ModelDBInterface("User", "UserID")
 {
     preferences.includePriorityInSchedule = true;
     preferences.includeMinorPriorityInSchedule = true;
@@ -188,22 +188,9 @@ std::string UserModel::formatInsertStatement()
 {
     initFormatOptions();
 
-    if (isMissingDateAdded())
-    {
-        created = std::chrono::system_clock::now();
-    }
-
-    if (!lastLogin.has_value())
-    {
-        lastLogin = created;
-    }
-
     std::string insertStatement = boost::mysql::format_sql(format_opts.value(),
-        "INSERT INTO UserProfile (LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-        "HashedPassWord, UserAdded, LastLogin, Preferences, Hidden) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, 0)",
-        lastName, firstName, middleInitial, email, loginName, password,
-        optionalDateTimeConversion(created),
-        optionalDateTimeConversion(lastLogin), buildPreferenceText()
+        "CALL AddUser({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})",
+        organizationId, lastName, firstName, middleInitial, email, loginName, password, buildPreferenceText()
     );
 
     return insertStatement;
@@ -214,19 +201,9 @@ std::string UserModel::formatUpdateStatement()
     initFormatOptions();
 
     std::string updateStatement = boost::mysql::format_sql(format_opts.value(),
-        "UPDATE UserProfile SET"
-            " UserProfile.LastName = {0},"
-            " UserProfile.FirstName = {1},"
-            " UserProfile.MiddleInitial = {2},"
-            " UserProfile.EmailAddress = {3}," 
-            " UserProfile.LoginName = {4},"
-            " UserProfile.HashedPassWord = {5},"
-            " UserProfile.Preferences = {6},"
-            " UserProfile.LastLogin = {7},"
-            " UserProfile.Hidden = {8}"
-        " WHERE UserProfile.UserID = {9}",
-            lastName, firstName, middleInitial, email, loginName,password, 
-            buildPreferenceText(), optionalDateTimeConversion(lastLogin), deleted? 1 : 0, primaryKey);
+        "CALL UpdateUserAllFields({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9})",
+            primaryKey, organizationId, lastName, firstName, middleInitial, email, loginName, password, 
+            buildPreferenceText(), optionalDateTimeConversion(lastLogin));
         
     return updateStatement;
 }
@@ -287,7 +264,17 @@ void UserModel::processResultRow(boost::mysql::row_view rv)
 
 void UserModel::parsePrefenceText(std::string preferences) noexcept
 {
+    // If user data was altered using SQL in a seperate process then preferences may not
+    // have values or enough values.
+    if (preferences.empty())
+    {
+        return;
+    }
     std::vector<std::string> subfields = explodeTextField(preferences);
+    if (subfields.size() <= PrefUsingDotIdx)
+    {
+        return;
+    }
 
     setStartTime(subfields[PrefDayStartIdx]);
     setEndTime(subfields[PrefDayEndIdx]);
@@ -295,6 +282,8 @@ void UserModel::parsePrefenceText(std::string preferences) noexcept
     setMinorPriorityInSchedule(std::stoi(subfields[PrefMinorPriorityIdx]));
     setUsingLettersForMaorPriority(std::stoi(subfields[PrefUsingLetterIdx]));
     setSeparatingPriorityWithDot(std::stoi(subfields[PrefUsingDotIdx]));
+
+    // Since we are using the setter functions we have to clear the modified flag.
     clearModified();
 }
 

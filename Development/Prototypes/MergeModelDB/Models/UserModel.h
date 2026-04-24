@@ -142,6 +142,7 @@ protected:
     UserPreferences preferences;
     std::optional<std::chrono::system_clock::time_point> created;
     std::optional<std::chrono::system_clock::time_point> lastLogin;
+    std::optional<std::size_t> organizationId;
 
     static const std::size_t minNameLenght = 2;
     static const std::size_t minPasswordLenght = 8;
