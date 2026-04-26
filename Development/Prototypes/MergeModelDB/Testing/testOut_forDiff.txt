@@ -114,8 +114,6 @@ Test Output: TaskModel:
 	Assigned To ID: 2
 	Description: Test task description access
 	Status: 4
-	Percentage Complete: 86.5
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Scheduled Start Date: 2024-05-07
 	Due Date: 2024-05-14
 	Estimated Effort Hours: 1024
@@ -128,7 +126,8 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-04-10
+	Completed Date: 2026-04-26
+	Deleted : FALSE
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
@@ -161,8 +160,6 @@ Test Output: Model Name UserGoalModel
 	Description: Test note content access
 	Priority: 1
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 1970-01-01 00:00:00.000000000
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
@@ -190,8 +187,6 @@ Self test on set and get functions for Note::Date Added PASSED
 Test Output: 	Note ID: 27
 	User ID: 31
 	Content: Test note content access
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
@@ -231,13 +226,11 @@ Test Output: ScheduleItemModel:
 	ScheduleItem ID: 57
 	User ID: 1
 	Title: Testing schedule item Title string access
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Start Date and Time: 2024-05-14 08:31:53.000000000
 	End Date and Time: 2024-05-14 08:31:53.000000000
 	Personal: TRUE
 	location: Home Office
 Optional Fields
-	Last Update: 2024-05-14 08:31:53.000000000
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!

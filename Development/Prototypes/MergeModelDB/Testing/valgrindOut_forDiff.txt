@@ -25,7 +25,7 @@ In Self Test Query is:
 In Self Test Query is: 
 	CALL AddUser(NULL, 'LastName', 'FirstName', 'M', 'FirstName.LastName@LastName.com', 'LastNameFirstNameM', 'LastNameFirstNameM', '8:30 AM;5:00 PM;1;1;1;0;')
 In Self Test Query is: 
-	CALL UpdateUserAllFields(1, NULL, 'LastName', 'FirstName', 'M', 'FirstName.LastName@LastName.com', 'LastNameFirstNameM', 'LastNameFirstNameM', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
+	CALL UpdateUserAllFields(1, NULL, 'LastName', 'FirstName', 'M', 'FirstName.LastName@LastName.com', 'LastNameFirstNameM', 'LastNameFirstNameM', '8:30 AM;5:00 PM;1;1;1;0;', '2024-05-14 08:31:53.000000')
 In Self Test Query is: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 1
 In Self Test Query is: 
@@ -101,10 +101,10 @@ In Self Test Query is:
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'A task description' AND AsignedTo = 1 AND (Hidden IS NULL OR Hidden <> 1)
 Caught expected exception from TaskModel::formatInsertStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (1, 2, 'Testing Exception handling', 1, 0, 0e+00, '2024-05-14 08:31:53.000000', '2024-05-21', '2024-05-14', NULL, NULL, NULL, 6, 0e+00, 65, 1, 0, 3, '3;5;7;', '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(1, 2, 'Testing Exception handling', 1, 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 6, 0e+00, 65, 1, 0, 3, '3;5;7;')
 Caught expected exception from TaskSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
-	UPDATE Tasks SET CreatedBy = 1, AsignedTo = 2, Description = 'Testing Exception handling', ParentTask = NULL, Status = 0, PercentageComplete = 0e+00, CreatedOn = '2024-05-14 08:31:53.000000', RequiredDelivery = '2024-05-21', ScheduledStart = '2024-05-14', ActualStart = NULL, EstimatedCompletion = NULL, Completed = NULL, EstimatedEffortHours = 6, ActualEffortHours = 0e+00, SchedulePriorityGroup = 65, PriorityInGroup = 1, Personal = 0, DependencyCount = 3, Dependencies = '2;4;6;', LastUpdateTS = '2026-04-10 12:45:31.498996', Hidden = 0 WHERE TaskID = 1 
+	CALL UpdateTaskAllFields(1, 1, 2, 'Testing Exception handling', NULL, 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 6, 0e+00, 65, 1, 0, 3, '2;4;6;')
 Caught expected exception from TaskSelfTest::formatSelectStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 37
@@ -162,8 +162,6 @@ Test Output: TaskModel:
 	Assigned To ID: 2
 	Description: Test task description access
 	Status: 4
-	Percentage Complete: 86.5
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Scheduled Start Date: 2024-05-07
 	Due Date: 2024-05-14
 	Estimated Effort Hours: 1024
@@ -176,7 +174,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-04-14
+	Completed Date: 2026-04-25
 	Deleted : FALSE
 
 Task::testAllInsertFailures before successful insert this = 
@@ -186,8 +184,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Test missing required fields: Set Description
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Scheduled Start Date: 2024-05-07
 	Due Date: 2024-05-21
 	Estimated Effort Hours: 5
@@ -199,7 +195,7 @@ Optional Fields
 	Deleted : FALSE
 
 In Self Test Query is: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (1, 1, 'Test missing required fields: Set Description', NULL, 0, 0e+00, '2024-05-14 08:31:53.000000', '2024-05-21', '2024-05-07', NULL, NULL, NULL, 5, 0e+00, 1, 0, 0, 0, NULL, '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(1, 1, 'Test missing required fields: Set Description', NULL, 0, '2024-05-21', '2024-05-07', NULL, NULL, NULL, 5, 0e+00, 1, 0, 0, 0, NULL)
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
 Task Self Test PASSED
@@ -217,9 +213,9 @@ In Self Test Query is:
 In Self Test Query is: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 1 and Description = 'Test SelectByUserIDAndDescription Exception Handling' AND (Hidden IS NULL OR Hidden <> 1)
 In Self Test Query is: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (27, 'Testing insertion exception', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', NULL, NULL, 0)
+	CALL AddUserGoal(27, 'Testing insertion exception', NULL, NULL)
 In Self Test Query is: 
-	UPDATE UserGoals SET UserGoals.UserID = 23, UserGoals.Description = 'Testing insertion exception', UserGoals.CreationTS = '2024-05-14 08:31:53.000000', UserGoals.LastUpdateTS = '2026-04-10 12:45:32.923666', UserGoals.Priority = NULL, UserGoals.ParentGoal = NULL, UserGoals.Hidden = 0 WHERE UserGoals.idUserGoals = 37
+	UPDATE UserGoals SET UserGoals.UserID = 23, UserGoals.Description = 'Testing insertion exception', UserGoals.CreationTS = '2024-05-14 08:31:53.000000', UserGoals.LastUpdateTS = '2026-04-25 15:34:45.540206', UserGoals.Priority = NULL, UserGoals.ParentGoal = NULL, UserGoals.Hidden = 0 WHERE UserGoals.idUserGoals = 37
 In Self Test Query is: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
 In Self Test Query is: 
@@ -244,8 +240,6 @@ Test Output: Model Name UserGoalModel
 	Description: Test note content access
 	Priority: 1
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 1970-01-01 00:00:00.000000000
 
 UserGoalModel::testAllInsertFailures before successful insert this = 
 Model Name UserGoalModel
@@ -254,11 +248,9 @@ Model Name UserGoalModel
 	Description: Testing negative note insertion path
 	Priority: 0
 	Parent ID: 0
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 1970-01-01 00:00:00.000000000
 
 In Self Test Query is: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (51, 'Testing negative note insertion path', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', NULL, NULL, 0)
+	CALL AddUserGoal(51, 'Testing negative note insertion path', NULL, NULL)
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
 UserGoalModel Self Test PASSED
@@ -296,15 +288,11 @@ Self test on set and get functions for Note::Date Added PASSED
 Test Output: 	Note ID: 27
 	User ID: 31
 	Content: Test note content access
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 Note::testAllInsertFailures before successful insert this = 
 	Note ID: 0
 	User ID: 27
 	Content: Testing negative note insertion path
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 In Self Test Query is: 
 	INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate, Hidden) VALUES (27, '2024-05-14 08:31:53.000000', 'Testing negative note insertion path', '2024-05-14 08:31:53.000000', 0)
@@ -322,10 +310,10 @@ Running ScheduleItem Self Test
 Running Exception Handling Test Cases
 Caught expected exception from ScheduleItemSelfTest::formatInsertStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
-	INSERT INTO UserScheduleItem (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden)  VALUES (1, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Testing Exception handling for Schedule Item Insert', 0, NULL, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 0)
+	CALL AddScheduleEvent(1, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Testing Exception handling for Schedule Item Insert', 0, NULL)
 Caught expected exception from ScheduleItemSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
-	UPDATE UserScheduleItem SET StartDateTime = '2024-05-14 08:31:53.000000', EndDateTime = '2024-05-14 08:31:53.000000', Title = 'Testing Exception handling for Schedule Item Update', Personal = 0, Location = NULL, LastUpdateTS = '2026-04-10 12:45:35.650901', Hidden = 0 WHERE idUserScheduleItem = 57 AND UserID = 1 
+	UPDATE UserScheduleItem SET StartDateTime = '2024-05-14 08:31:53.000000', EndDateTime = '2024-05-14 08:31:53.000000', Title = 'Testing Exception handling for Schedule Item Update', Personal = 0, Location = NULL, LastUpdateTS = '2026-04-25 15:34:48.216055', Hidden = 0 WHERE idUserScheduleItem = 57 AND UserID = 1 
 Caught expected exception from ScheduleItemSelfTest::formatSelectStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
 	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 57 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
@@ -355,20 +343,17 @@ Test Output: ScheduleItemModel:
 	ScheduleItem ID: 57
 	User ID: 1
 	Title: Testing schedule item Title string access
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Start Date and Time: 2024-05-14 08:31:53.000000000
 	End Date and Time: 2024-05-14 08:31:53.000000000
 	Personal: TRUE
 	location: Home Office
 Optional Fields
-	Last Update: 2024-05-14 08:31:53.000000000
 
 ScheduleItem::testAllInsertFailures before successful insert this = 
 ScheduleItemModel:
 	ScheduleItem ID: 0
 	User ID: 1
 	Title: Test missing required fields: Set title
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Start Date and Time: 2024-05-14 08:31:53.000000000
 	End Date and Time: 2024-05-14 08:31:53.000000000
 	Personal: FALSE
@@ -376,7 +361,7 @@ ScheduleItemModel:
 Optional Fields
 
 In Self Test Query is: 
-	INSERT INTO UserScheduleItem (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden)  VALUES (1, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Test missing required fields: Set title', 0, NULL, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 0)
+	CALL AddScheduleEvent(1, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Test missing required fields: Set title', 0, NULL)
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
 ScheduleItem Self Test PASSED
@@ -415,7 +400,7 @@ Running:
 
 Exception Test for TaskList::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND ScheduledStart < '2026-04-21' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND ScheduledStart < '2026-05-02' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 1
 
@@ -674,91 +659,91 @@ Running task Integration Tests
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LastName = 'One' AND FirstName = 'User' AND MiddleInitial = 'P'
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 3, 0e+00, '2024-05-14 08:31:53.000000', '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', NULL, 12, 1e+00, 65, 1, 0, 0, NULL, '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 3, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', NULL, 12, 1e+00, 65, 1, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 47
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Archive BHHS74Reunion website to external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (4, 4, 'Develop Personal Planning Tool', 0, 3, 0e+00, '2024-05-14 08:31:53.000000', '2025-05-05', '2025-03-20', '2025-03-20', '2025-05-15', NULL, 300, 4e+01, 65, 2, 0, 0, NULL, '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(4, 4, 'Develop Personal Planning Tool', 0, 3, '2025-05-05', '2025-03-20', '2025-03-20', '2025-05-15', NULL, 300, 4e+01, 65, 2, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 48
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Develop Personal Planning Tool' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (4, 4, 'Check with GoDaddy about providing service to archive website to external SSD', 1, 3, 0e+00, '2024-05-14 08:31:53.000000', '2025-04-15', '2025-04-15', '2025-04-15', '2025-04-15', NULL, 2, 1e+00, 65, 1, 0, 0, NULL, '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(4, 4, 'Check with GoDaddy about providing service to archive website to external SSD', 1, 3, '2025-04-15', '2025-04-15', '2025-04-15', '2025-04-15', NULL, 2, 1e+00, 65, 1, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 49
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Check with GoDaddy about providing service to archive website to external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (4, 4, 'Install a WordPress Archive Plugin', 1, 0, 0e+00, '2024-05-14 08:31:53.000000', '2025-05-01', '2025-05-01', NULL, '2025-05-01', NULL, 1, 0e+00, 66, 2, 0, 0, NULL, '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(4, 4, 'Install a WordPress Archive Plugin', 1, 0, '2025-05-01', '2025-05-01', NULL, '2025-05-01', NULL, 1, 0e+00, 66, 2, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 50
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Install a WordPress Archive Plugin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (4, 4, 'Have GoDaddy install PHPMyAdmin', 1, 0, 0e+00, '2024-05-14 08:31:53.000000', '2025-05-02', '2025-05-02', NULL, '2025-05-03', NULL, 1, 0e+00, 66, 3, 0, 0, NULL, '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(4, 4, 'Have GoDaddy install PHPMyAdmin', 1, 0, '2025-05-02', '2025-05-02', NULL, '2025-05-03', NULL, 1, 0e+00, 66, 3, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 51
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Have GoDaddy install PHPMyAdmin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (4, 4, 'Run Archive Plugin', 1, 0, 0e+00, '2024-05-14 08:31:53.000000', '2025-05-03', '2025-05-03', NULL, '2025-05-03', NULL, 2, 0e+00, 66, 4, 0, 0, NULL, '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(4, 4, 'Run Archive Plugin', 1, 0, '2025-05-03', '2025-05-03', NULL, '2025-05-03', NULL, 2, 0e+00, 66, 4, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 52
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Run Archive Plugin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (4, 4, 'Log into PHPMyAdmin and save Database to disk', 1, 0, 0e+00, '2024-05-14 08:31:53.000000', '2025-05-04', '2025-05-04', NULL, '2025-05-04', NULL, 1, 0e+00, 66, 5, 0, 0, NULL, '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(4, 4, 'Log into PHPMyAdmin and save Database to disk', 1, 0, '2025-05-04', '2025-05-04', NULL, '2025-05-04', NULL, 1, 0e+00, 66, 5, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 53
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Log into PHPMyAdmin and save Database to disk' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (4, 4, 'FTP all website files to computer', 1, 0, 0e+00, '2024-05-14 08:31:53.000000', '2025-05-05', '2025-05-05', NULL, '2025-05-05', NULL, 3, 0e+00, 66, 6, 0, 0, NULL, '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(4, 4, 'FTP all website files to computer', 1, 0, '2025-05-05', '2025-05-05', NULL, '2025-05-05', NULL, 3, 0e+00, 66, 6, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 54
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'FTP all website files to computer' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (4, 4, 'Store all website files on external SSD', 1, 0, 0e+00, '2024-05-14 08:31:53.000000', '2025-05-05', '2025-05-05', NULL, '2025-05-05', NULL, 2, 0e+00, 66, 7, 0, 0, NULL, '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(4, 4, 'Store all website files on external SSD', 1, 0, '2025-05-05', '2025-05-05', NULL, '2025-05-05', NULL, 2, 0e+00, 66, 7, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 55
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Store all website files on external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (4, 4, 'Design Database for Personal Planner', 2, 3, 0e+00, '2024-05-14 08:31:53.000000', '2025-04-08', '2025-03-20', '2025-03-20', '2025-05-01', NULL, 24, 1.6e+01, 65, 0, 0, 0, NULL, '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(4, 4, 'Design Database for Personal Planner', 2, 3, '2025-04-08', '2025-03-20', '2025-03-20', '2025-05-01', NULL, 24, 1.6e+01, 65, 0, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 56
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Design Database for Personal Planner' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (4, 4, 'Design UML Diagram for Personal Planner', 2, 3, 0e+00, '2024-05-14 08:31:53.000000', '2025-04-12', '2025-04-08', '2025-04-08', '2025-04-15', NULL, 16, 5.25e+00, 65, 0, 0, 0, NULL, '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(4, 4, 'Design UML Diagram for Personal Planner', 2, 3, '2025-04-12', '2025-04-08', '2025-04-08', '2025-04-15', NULL, 16, 5.25e+00, 65, 0, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 57
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Design UML Diagram for Personal Planner' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (4, 4, 'Grocery Shopping', 0, 0, 0e+00, '2024-05-14 08:31:53.000000', '2025-04-12', '2025-04-11', NULL, '2026-04-10', NULL, 2, 2e+00, 67, 1, 0, 0, NULL, '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(4, 4, 'Grocery Shopping', 0, 0, '2025-04-12', '2025-04-11', NULL, '2026-04-25', NULL, 2, 2e+00, 67, 1, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 58
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Grocery Shopping' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (4, 4, 'Daily 30 minute walk', 0, 0, 0e+00, '2024-05-14 08:31:53.000000', '2025-04-11', '2025-04-11', NULL, '2056-07-07', NULL, 1, 0e+00, 67, 2, 0, 0, NULL, '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(4, 4, 'Daily 30 minute walk', 0, 0, '2025-04-11', '2025-04-11', NULL, '2056-07-07', NULL, 1, 0e+00, 67, 2, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 59
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Daily 30 minute walk' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (4, 4, 'Clean apartment', 0, 0, 0e+00, '2024-05-14 08:31:53.000000', '2025-04-12', '2025-04-12', NULL, '2026-04-10', NULL, 2, 0e+00, 67, 3, 0, 0, NULL, '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(4, 4, 'Clean apartment', 0, 0, '2025-04-12', '2025-04-12', NULL, '2026-04-25', NULL, 2, 0e+00, 67, 3, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 60
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Clean apartment' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-04-21' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-02' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 50
 Running: 
@@ -785,8 +770,6 @@ TaskModel:
 	Assigned To ID: 4
 	Description: Install a WordPress Archive Plugin
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Scheduled Start Date: 2025-05-01
 	Due Date: 2025-05-01
 	Estimated Effort Hours: 1
@@ -806,8 +789,6 @@ TaskModel:
 	Assigned To ID: 4
 	Description: Have GoDaddy install PHPMyAdmin
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Scheduled Start Date: 2025-05-02
 	Due Date: 2025-05-02
 	Estimated Effort Hours: 1
@@ -827,8 +808,6 @@ TaskModel:
 	Assigned To ID: 4
 	Description: Run Archive Plugin
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Scheduled Start Date: 2025-05-03
 	Due Date: 2025-05-03
 	Estimated Effort Hours: 2
@@ -848,8 +827,6 @@ TaskModel:
 	Assigned To ID: 4
 	Description: Log into PHPMyAdmin and save Database to disk
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Scheduled Start Date: 2025-05-04
 	Due Date: 2025-05-04
 	Estimated Effort Hours: 1
@@ -869,8 +846,6 @@ TaskModel:
 	Assigned To ID: 4
 	Description: FTP all website files to computer
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Scheduled Start Date: 2025-05-05
 	Due Date: 2025-05-05
 	Estimated Effort Hours: 3
@@ -890,8 +865,6 @@ TaskModel:
 	Assigned To ID: 4
 	Description: Store all website files on external SSD
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Scheduled Start Date: 2025-05-05
 	Due Date: 2025-05-05
 	Estimated Effort Hours: 2
@@ -911,8 +884,6 @@ TaskModel:
 	Assigned To ID: 4
 	Description: Grocery Shopping
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Scheduled Start Date: 2025-04-11
 	Due Date: 2025-04-12
 	Estimated Effort Hours: 2
@@ -923,7 +894,7 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-04-14
+	Estimated Completion Date: 2026-04-25
 	Deleted : FALSE
 
 TaskModel:
@@ -932,8 +903,6 @@ TaskModel:
 	Assigned To ID: 4
 	Description: Daily 30 minute walk
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Scheduled Start Date: 2025-04-11
 	Due Date: 2025-04-11
 	Estimated Effort Hours: 1
@@ -953,8 +922,6 @@ TaskModel:
 	Assigned To ID: 4
 	Description: Clean apartment
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Scheduled Start Date: 2025-04-12
 	Due Date: 2025-04-12
 	Estimated Effort Hours: 2
@@ -965,7 +932,7 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-04-14
+	Estimated Completion Date: 2026-04-25
 	Deleted : FALSE
 
 Running: 
@@ -1016,8 +983,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Create a personal planner program that allows task mangement using QT and C++.
 	Status: 3
-	Percentage Complete: 0
-	Creation Date: 2026-01-26 14:49:02.000000000
 	Scheduled Start Date: 2026-02-20
 	Due Date: 2026-02-20
 	Estimated Effort Hours: 1000
@@ -1037,8 +1002,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Create an Organizational editor
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2026-03-09 13:26:42.000000000
 	Scheduled Start Date: 2026-03-09
 	Due Date: 2026-03-09
 	Estimated Effort Hours: 24
@@ -1058,8 +1021,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Connect goal creation and editing to database.
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2026-01-26 15:23:03.000000000
 	Scheduled Start Date: 2026-03-08
 	Due Date: 2026-03-08
 	Estimated Effort Hours: 6
@@ -1079,8 +1040,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Add alternate methods of connecting to the database and logging in. Use environment variable and or command line flags.
 	Status: 3
-	Percentage Complete: 0
-	Creation Date: 2026-02-27 13:25:42.000000000
 	Scheduled Start Date: 2026-03-08
 	Due Date: 2026-03-08
 	Estimated Effort Hours: 16
@@ -1101,8 +1060,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Prevent duplicate dependent tasks from occurring.
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2026-03-06 15:12:10.000000000
 	Scheduled Start Date: 2026-03-10
 	Due Date: 2026-03-11
 	Estimated Effort Hours: 4
@@ -1122,8 +1079,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Finish the ability to edit tasks. Implement select parent task, add dependencies, display of dependencies.
 	Status: 3
-	Percentage Complete: 0
-	Creation Date: 2026-02-22 16:13:38.000000000
 	Scheduled Start Date: 2026-03-08
 	Due Date: 2026-03-11
 	Estimated Effort Hours: 16
@@ -1144,8 +1099,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Implement editing of existing tasks
 	Status: 3
-	Percentage Complete: 0
-	Creation Date: 2026-02-13 15:12:44.000000000
 	Scheduled Start Date: 2026-03-08
 	Due Date: 2026-03-08
 	Estimated Effort Hours: 8
@@ -1166,8 +1119,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Provide a method to sort the potential parent tasks in the select parent task dialog.
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2026-03-09 13:10:12.000000000
 	Scheduled Start Date: 2026-03-09
 	Due Date: 2026-03-09
 	Estimated Effort Hours: 6
@@ -1187,8 +1138,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Add the ability to repeat schedule items on a daily basis.
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2026-02-27 13:29:45.000000000
 	Scheduled Start Date: 2026-03-06
 	Due Date: 2026-03-06
 	Estimated Effort Hours: 16
@@ -1208,8 +1157,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Add the ability to move tasks up and down in the todo list.
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2026-03-06 15:06:34.000000000
 	Scheduled Start Date: 2026-03-06
 	Due Date: 2026-03-06
 	Estimated Effort Hours: 16
@@ -1229,8 +1176,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Find a Silver Sneakers program   
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2026-02-25 12:47:09.000000000
 	Scheduled Start Date: 2026-03-06
 	Due Date: 2026-03-06
 	Estimated Effort Hours: 4
@@ -1249,8 +1194,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Figure out how to use signals and slots to implement table view updates.
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2026-02-22 16:18:48.000000000
 	Scheduled Start Date: 2026-03-06
 	Due Date: 2026-03-06
 	Estimated Effort Hours: 4
@@ -1270,8 +1213,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Implement user preferences in planner
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2026-02-23 14:52:01.000000000
 	Scheduled Start Date: 2026-03-01
 	Due Date: 2026-03-04
 	Estimated Effort Hours: 24
@@ -1290,8 +1231,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Add the ability to find an old schedule item and add it again to a new schedule
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2026-02-27 13:32:10.000000000
 	Scheduled Start Date: 2026-02-27
 	Due Date: 2026-02-27
 	Estimated Effort Hours: 16
@@ -1310,8 +1249,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Add the ability to reuse locations in the schedule.
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2026-02-27 13:33:22.000000000
 	Scheduled Start Date: 2026-02-27
 	Due Date: 2026-02-27
 	Estimated Effort Hours: 24
@@ -1330,8 +1267,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Add production test database contents to unit/integration tests.2 
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2026-03-01 16:21:30.000000000
 	Scheduled Start Date: 2026-03-01
 	Due Date: 2026-03-01
 	Estimated Effort Hours: 2
@@ -1351,8 +1286,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Find a dentist. Make an appointment
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2026-03-05 14:03:50.000000000
 	Scheduled Start Date: 2026-03-05
 	Due Date: 2026-03-05
 	Estimated Effort Hours: 3
@@ -1371,8 +1304,6 @@ TaskModel:
 	Assigned To ID: 1
 	Description: Do the laundry
 	Status: 0
-	Percentage Complete: 0
-	Creation Date: 2026-03-07 13:31:35.000000000
 	Scheduled Start Date: 2026-03-07
 	Due Date: 2026-03-09
 	Estimated Effort Hours: 3
@@ -1390,7 +1321,7 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 47
 Running: 
-	UPDATE Tasks SET CreatedBy = 4, AsignedTo = 4, Description = 'Archive BHHS74Reunion website to external SSD', ParentTask = 0, Status = 4, PercentageComplete = 0e+00, CreatedOn = '2024-05-14 08:31:53.000000', RequiredDelivery = '2025-05-05', ScheduledStart = '2025-04-08', ActualStart = '2025-04-08', EstimatedCompletion = '2025-05-05', Completed = '2026-04-10', EstimatedEffortHours = 12, ActualEffortHours = 6e+00, SchedulePriorityGroup = 65, PriorityInGroup = 1, Personal = 0, DependencyCount = 0, Dependencies = NULL, LastUpdateTS = '2026-04-10 12:45:45.689118', Hidden = 0 WHERE TaskID = 47 
+	CALL UpdateTaskAllFields(47, 4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 4, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', '2026-04-25', 12, 6e+00, 65, 1, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 47
 Running: 
@@ -1398,7 +1329,7 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Install a WordPress Archive Plugin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	UPDATE Tasks SET CreatedBy = 4, AsignedTo = 4, Description = 'Install a WordPress Archive Plugin', ParentTask = 1, Status = 0, PercentageComplete = 0e+00, CreatedOn = '2024-05-14 08:31:53.000000', RequiredDelivery = '2025-05-01', ScheduledStart = '2025-05-01', ActualStart = NULL, EstimatedCompletion = '2025-05-01', Completed = NULL, EstimatedEffortHours = 1, ActualEffortHours = 0e+00, SchedulePriorityGroup = 66, PriorityInGroup = 2, Personal = 0, DependencyCount = 1, Dependencies = '49;', LastUpdateTS = '2026-04-10 12:45:45.869832', Hidden = 0 WHERE TaskID = 50 
+	CALL UpdateTaskAllFields(50, 4, 4, 'Install a WordPress Archive Plugin', 1, 0, '2025-05-01', '2025-05-01', NULL, '2025-05-01', NULL, 1, 0e+00, 66, 2, 0, 1, '49;')
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Log into PHPMyAdmin and save Database to disk' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
@@ -1410,7 +1341,7 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Run Archive Plugin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	UPDATE Tasks SET CreatedBy = 4, AsignedTo = 4, Description = 'Log into PHPMyAdmin and save Database to disk', ParentTask = 1, Status = 0, PercentageComplete = 0e+00, CreatedOn = '2024-05-14 08:31:53.000000', RequiredDelivery = '2025-05-04', ScheduledStart = '2025-05-04', ActualStart = NULL, EstimatedCompletion = '2025-05-04', Completed = NULL, EstimatedEffortHours = 1, ActualEffortHours = 0e+00, SchedulePriorityGroup = 66, PriorityInGroup = 5, Personal = 0, DependencyCount = 4, Dependencies = '49;50;51;52;', LastUpdateTS = '2026-04-10 12:45:46.141989', Hidden = 0 WHERE TaskID = 53 
+	CALL UpdateTaskAllFields(53, 4, 4, 'Log into PHPMyAdmin and save Database to disk', 1, 0, '2025-05-04', '2025-05-04', NULL, '2025-05-04', NULL, 1, 0e+00, 66, 5, 0, 4, '49;50;51;52;')
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 53
 Running: 
@@ -1439,8 +1370,6 @@ TaskModel:
 	Assigned To ID: 4
 	Description: Develop Personal Planning Tool
 	Status: 3
-	Percentage Complete: 0
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Scheduled Start Date: 2025-03-20
 	Due Date: 2025-05-05
 	Estimated Effort Hours: 300
@@ -1461,8 +1390,6 @@ TaskModel:
 	Assigned To ID: 4
 	Description: Check with GoDaddy about providing service to archive website to external SSD
 	Status: 3
-	Percentage Complete: 0
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Scheduled Start Date: 2025-04-15
 	Due Date: 2025-04-15
 	Estimated Effort Hours: 2
@@ -1483,8 +1410,6 @@ TaskModel:
 	Assigned To ID: 4
 	Description: Design Database for Personal Planner
 	Status: 3
-	Percentage Complete: 0
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Scheduled Start Date: 2025-03-20
 	Due Date: 2025-04-08
 	Estimated Effort Hours: 24
@@ -1505,8 +1430,6 @@ TaskModel:
 	Assigned To ID: 4
 	Description: Design UML Diagram for Personal Planner
 	Status: 3
-	Percentage Complete: 0
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Scheduled Start Date: 2025-04-08
 	Due Date: 2025-04-12
 	Estimated Effort Hours: 16
@@ -1522,7 +1445,7 @@ Optional Fields
 	Deleted : FALSE
 
 Running: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-04-21' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-02' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 50
 Running: 
@@ -1544,7 +1467,7 @@ Running:
 Running: 
 	CALL HideTask(4, 59)
 Running: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-04-21' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-02' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 50
 Running: 
@@ -1597,7 +1520,7 @@ Expected error was; Task is missing required values!
 Missing Task required priority!
 
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (4, 4, 'Test missing required fields: Set Description', NULL, 0, 0e+00, '2024-05-14 08:31:53.000000', '2024-05-21', '2024-05-14', NULL, NULL, NULL, 3, 0e+00, 65, 1, 0, 0, NULL, '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(4, 4, 'Test missing required fields: Set Description', NULL, 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 3, 0e+00, 65, 1, 0, 0, NULL)
 Expected error was; Task is missing required values!
 Missing Task required description!
 Missing Task required estimated effort in hours!
@@ -1624,7 +1547,7 @@ Expected error was; Task is missing required values!
 Missing Task required priority!
 
 Running: 
-	INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden) VALUES (4, 4, 'Test shared pointer interaction in missing required fields', NULL, 0, 0e+00, '2024-05-14 08:31:53.000000', '2024-05-21', '2024-05-14', NULL, NULL, NULL, 3, 0e+00, 65, 1, 0, 0, NULL, '2024-05-14 08:31:53.000000', 0)
+	CALL AddTask(4, 4, 'Test shared pointer interaction in missing required fields', NULL, 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 3, 0e+00, 65, 1, 0, 0, NULL)
 All negative path tests for database insertions and retrievals of task PASSED!
 All tests for database insertions and retrievals of task PASSED!
 ---------------------------------------------------------------------------------
@@ -1635,63 +1558,63 @@ Running:
 
 Running Goal Integration Tests
 Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (4, 'Get a Job in Software Engineering', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 1, NULL, 0)
+	CALL AddUserGoal(4, 'Get a Job in Software Engineering', 1, NULL)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (4, 'Maintain and improve my software engineering skills', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 1, 1, 0)
+	CALL AddUserGoal(4, 'Maintain and improve my software engineering skills', 1, 1)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (4, 'Maintain and improve my C++ programming skills', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 1, 1, 0)
+	CALL AddUserGoal(4, 'Maintain and improve my C++ programming skills', 1, 1)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (4, 'Maintain and improve my  C programming skills', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 2, 1, 0)
+	CALL AddUserGoal(4, 'Maintain and improve my  C programming skills', 2, 1)
 Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (4, 'Maintain or archive the BHHS 74 Reunion website', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 2, NULL, 0)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (4, 'Maintain and improve my SQL skills', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 3, 1, 0)
+	CALL AddUserGoal(4, 'Maintain or archive the BHHS 74 Reunion website', 2, NULL)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (4, 'Learn QT graphic system', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 4, 1, 0)
+	CALL AddUserGoal(4, 'Maintain and improve my SQL skills', 3, 1)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (4, 'Improve my Linux Programming skills', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 5, 1, 0)
+	CALL AddUserGoal(4, 'Learn QT graphic system', 4, 1)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (4, 'Get an embedded programming certificate', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 4, 1, 0)
+	CALL AddUserGoal(4, 'Improve my Linux Programming skills', 5, 1)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (4, 'Learn open source Linux Core Programming', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 4, 1, 0)
+	CALL AddUserGoal(4, 'Get an embedded programming certificate', 4, 1)
 Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (4, 'Maintain my health', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 2, NULL, 0)
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	CALL AddUserGoal(4, 'Learn open source Linux Core Programming', 4, 1)
+Running: 
+	CALL AddUserGoal(4, 'Maintain my health', 2, NULL)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Maintain my health' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (4, 'Eat as healthy as possible', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 3, 11, 0)
+	CALL AddUserGoal(4, 'Eat as healthy as possible', 3, 11)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Maintain my health' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (4, 'Walk 30 minutes a day', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 4, 11, 0)
+	CALL AddUserGoal(4, 'Walk 30 minutes a day', 4, 11)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Maintain my health' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (4, 'Track my vital signs', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 3, 11, 0)
+	CALL AddUserGoal(4, 'Track my vital signs', 3, 11)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Maintain my health' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (4, 'Get my weight down to 190 pounds', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 4, 11, 0)
+	CALL AddUserGoal(4, 'Get my weight down to 190 pounds', 4, 11)
 Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (4, 'Be more organized', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 1, NULL, 0)
+	CALL AddUserGoal(4, 'Be more organized', 1, NULL)
 Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (4, 'Effectively moderate the code review site on stack exchange', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 1, NULL, 0)
+	CALL AddUserGoal(4, 'Effectively moderate the code review site on stack exchange', 1, NULL)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
@@ -1718,8 +1641,6 @@ Model Name UserGoalModel
 	Description: Get a Job in Software Engineering
 	Priority: 1
 	Parent ID: 0
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Find all child goals for(1) PASSED!
 Goal 1 has 8 child goals
@@ -1729,8 +1650,6 @@ Model Name UserGoalModel
 	Description: Maintain and improve my software engineering skills
 	Priority: 1
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 3
@@ -1738,8 +1657,6 @@ Model Name UserGoalModel
 	Description: Maintain and improve my C++ programming skills
 	Priority: 1
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 4
@@ -1747,8 +1664,6 @@ Model Name UserGoalModel
 	Description: Maintain and improve my  C programming skills
 	Priority: 2
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 6
@@ -1756,8 +1671,6 @@ Model Name UserGoalModel
 	Description: Maintain and improve my SQL skills
 	Priority: 3
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 7
@@ -1765,8 +1678,6 @@ Model Name UserGoalModel
 	Description: Learn QT graphic system
 	Priority: 4
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 8
@@ -1774,8 +1685,6 @@ Model Name UserGoalModel
 	Description: Improve my Linux Programming skills
 	Priority: 5
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 9
@@ -1783,8 +1692,6 @@ Model Name UserGoalModel
 	Description: Get an embedded programming certificate
 	Priority: 4
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 10
@@ -1792,8 +1699,6 @@ Model Name UserGoalModel
 	Description: Learn open source Linux Core Programming
 	Priority: 4
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Running: 
 	SELECT idUserGoals FROM UserGoals  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
@@ -1839,8 +1744,6 @@ Model Name UserGoalModel
 	Description: Get a Job in Software Engineering
 	Priority: 1
 	Parent ID: 0
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 2
@@ -1848,8 +1751,6 @@ Model Name UserGoalModel
 	Description: Maintain and improve my software engineering skills
 	Priority: 1
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 3
@@ -1857,8 +1758,6 @@ Model Name UserGoalModel
 	Description: Maintain and improve my C++ programming skills
 	Priority: 1
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 4
@@ -1866,8 +1765,6 @@ Model Name UserGoalModel
 	Description: Maintain and improve my  C programming skills
 	Priority: 2
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 5
@@ -1875,8 +1772,6 @@ Model Name UserGoalModel
 	Description: Maintain or archive the BHHS 74 Reunion website
 	Priority: 2
 	Parent ID: 0
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 6
@@ -1884,8 +1779,6 @@ Model Name UserGoalModel
 	Description: Maintain and improve my SQL skills
 	Priority: 3
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 7
@@ -1893,8 +1786,6 @@ Model Name UserGoalModel
 	Description: Learn QT graphic system
 	Priority: 4
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 8
@@ -1902,8 +1793,6 @@ Model Name UserGoalModel
 	Description: Improve my Linux Programming skills
 	Priority: 5
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 9
@@ -1911,8 +1800,6 @@ Model Name UserGoalModel
 	Description: Get an embedded programming certificate
 	Priority: 4
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 10
@@ -1920,8 +1807,6 @@ Model Name UserGoalModel
 	Description: Learn open source Linux Core Programming
 	Priority: 4
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 11
@@ -1929,8 +1814,6 @@ Model Name UserGoalModel
 	Description: Maintain my health
 	Priority: 2
 	Parent ID: 0
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 12
@@ -1938,8 +1821,6 @@ Model Name UserGoalModel
 	Description: Eat as healthy as possible
 	Priority: 3
 	Parent ID: 11
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 13
@@ -1947,8 +1828,6 @@ Model Name UserGoalModel
 	Description: Walk 30 minutes a day
 	Priority: 4
 	Parent ID: 11
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 14
@@ -1956,8 +1835,6 @@ Model Name UserGoalModel
 	Description: Track my vital signs
 	Priority: 3
 	Parent ID: 11
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 15
@@ -1965,8 +1842,6 @@ Model Name UserGoalModel
 	Description: Get my weight down to 190 pounds
 	Priority: 4
 	Parent ID: 11
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 16
@@ -1974,8 +1849,6 @@ Model Name UserGoalModel
 	Description: Be more organized
 	Priority: 1
 	Parent ID: 0
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 17
@@ -1983,8 +1856,6 @@ Model Name UserGoalModel
 	Description: Effectively moderate the code review site on stack exchange
 	Priority: 1
 	Parent ID: 0
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Running: 
 	SELECT idUserGoals FROM UserGoals  WHERE UserID = 4 AND Description LIKE '%Maintain%' AND (Hidden IS NULL OR Hidden <> 1)
@@ -2008,8 +1879,6 @@ Model Name UserGoalModel
 	Description: Maintain and improve my software engineering skills
 	Priority: 1
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 3
@@ -2017,8 +1886,6 @@ Model Name UserGoalModel
 	Description: Maintain and improve my C++ programming skills
 	Priority: 1
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 4
@@ -2026,8 +1893,6 @@ Model Name UserGoalModel
 	Description: Maintain and improve my  C programming skills
 	Priority: 2
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 5
@@ -2035,8 +1900,6 @@ Model Name UserGoalModel
 	Description: Maintain or archive the BHHS 74 Reunion website
 	Priority: 2
 	Parent ID: 0
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 6
@@ -2044,8 +1907,6 @@ Model Name UserGoalModel
 	Description: Maintain and improve my SQL skills
 	Priority: 3
 	Parent ID: 1
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Model Name UserGoalModel
 	Goal ID: 11
@@ -2053,81 +1914,79 @@ Model Name UserGoalModel
 	Description: Maintain my health
 	Priority: 2
 	Parent ID: 0
-	Creation Timestamp: 2024-05-14 08:31:53.000000000
-	Last Update Timestamp: 2024-05-14 08:31:53.000000000
 
 Running: 
-        SELECT idUserGoals FROM UserGoals  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT idUserGoals FROM UserGoals  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 2 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 2 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 3 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 3 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 5 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 5 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 6 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 6 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 7 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 7 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 8 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 9 AND (Hidden IS NULL OR Hidden <> 1)
-Running:  
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 10 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 11 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 12 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 13 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 14 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 15 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 16 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 17 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        CALL HideGoal(4, 16)
-Running:
-        SELECT idUserGoals FROM UserGoals  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 2 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 3 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 4 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 5 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 6 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 7 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 8 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 9 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 10 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 11 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 12 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 13 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 14 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 15 AND (Hidden IS NULL OR Hidden <> 1)
-Running:
-        SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 17 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 8 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 9 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 10 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 11 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 12 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 13 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 14 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 15 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 16 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 17 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	CALL HideGoal(4, 16)
+Running: 
+	SELECT idUserGoals FROM UserGoals  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 2 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 3 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 4 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 5 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 6 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 7 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 8 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 9 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 10 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 11 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 12 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 13 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 14 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 15 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 17 AND (Hidden IS NULL OR Hidden <> 1)
 Original goal list size: 17 Altered goal list size: 16
 goal (16) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of Goal PASSED!
@@ -2140,7 +1999,7 @@ Missing UserGoalModel required Description!
 Missing UserGoalModel required Description!
 
 Running: 
-	INSERT INTO UserGoals (UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal, Hidden) VALUES (1, 'Test missing field Description', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', NULL, NULL, 0)
+	CALL AddUserGoal(1, 'Test missing field Description', NULL, NULL)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
 Expected error was; UserGoalModel not modified!
@@ -2233,104 +2092,70 @@ User 4 has 17 notes
 	Note ID: 27
 	User ID: 4
 	Content: Get a Job in Software Engineering
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 28
 	User ID: 4
 	Content: Maintain and improve my software engineering skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 29
 	User ID: 4
 	Content: Maintain and improve my C++ programming skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 30
 	User ID: 4
 	Content: Maintain and improve my  C programming skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 31
 	User ID: 4
 	Content: Maintain or archive the BHHS 74 Reunion website
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 32
 	User ID: 4
 	Content: Maintain and improve my SQL skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 33
 	User ID: 4
 	Content: Learn QT graphic system
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 34
 	User ID: 4
 	Content: Improve my Linux Programming skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 35
 	User ID: 4
 	Content: Get an embedded programming certificate
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 36
 	User ID: 4
 	Content: Learn open source Linux Core Programming
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 37
 	User ID: 4
 	Content: Maintain my health
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 38
 	User ID: 4
 	Content: Eat as healthy as possible
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 39
 	User ID: 4
 	Content: Walk 30 minutes a day
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 40
 	User ID: 4
 	Content: Track my vital signs
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 41
 	User ID: 4
 	Content: Get my weight down to 190 pounds
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 42
 	User ID: 4
 	Content: Be more organized
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 43
 	User ID: 4
 	Content: Effectively moderate the code review site on stack exchange
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 Running: 
 	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND Content LIKE '%Maintain%' AND (Hidden IS NULL OR Hidden <> 1)
@@ -2351,38 +2176,26 @@ User 4 has 6 notes
 	Note ID: 28
 	User ID: 4
 	Content: Maintain and improve my software engineering skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 29
 	User ID: 4
 	Content: Maintain and improve my C++ programming skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 30
 	User ID: 4
 	Content: Maintain and improve my  C programming skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 31
 	User ID: 4
 	Content: Maintain or archive the BHHS 74 Reunion website
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 32
 	User ID: 4
 	Content: Maintain and improve my SQL skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 37
 	User ID: 4
 	Content: Maintain my health
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 Running: 
 	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND NotationDateTime >= '2024-05-07' AND NotationDateTime <= '2024-05-21' AND (Hidden IS NULL OR Hidden <> 1)
@@ -2425,104 +2238,70 @@ User 4 has 17 notes
 	Note ID: 27
 	User ID: 4
 	Content: Get a Job in Software Engineering
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 28
 	User ID: 4
 	Content: Maintain and improve my software engineering skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 29
 	User ID: 4
 	Content: Maintain and improve my C++ programming skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 30
 	User ID: 4
 	Content: Maintain and improve my  C programming skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 31
 	User ID: 4
 	Content: Maintain or archive the BHHS 74 Reunion website
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 32
 	User ID: 4
 	Content: Maintain and improve my SQL skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 33
 	User ID: 4
 	Content: Learn QT graphic system
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 34
 	User ID: 4
 	Content: Improve my Linux Programming skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 35
 	User ID: 4
 	Content: Get an embedded programming certificate
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 36
 	User ID: 4
 	Content: Learn open source Linux Core Programming
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 37
 	User ID: 4
 	Content: Maintain my health
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 38
 	User ID: 4
 	Content: Eat as healthy as possible
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 39
 	User ID: 4
 	Content: Walk 30 minutes a day
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 40
 	User ID: 4
 	Content: Track my vital signs
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 41
 	User ID: 4
 	Content: Get my weight down to 190 pounds
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 42
 	User ID: 4
 	Content: Be more organized
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 43
 	User ID: 4
 	Content: Effectively moderate the code review site on stack exchange
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 Running: 
 	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND LastUpdate >= '2024-05-07' AND LastUpdate <= '2024-05-21' AND (Hidden IS NULL OR Hidden <> 1)
@@ -2565,109 +2344,75 @@ User 4 has 17 notes
 	Note ID: 27
 	User ID: 4
 	Content: Get a Job in Software Engineering
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 28
 	User ID: 4
 	Content: Maintain and improve my software engineering skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 29
 	User ID: 4
 	Content: Maintain and improve my C++ programming skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 30
 	User ID: 4
 	Content: Maintain and improve my  C programming skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 31
 	User ID: 4
 	Content: Maintain or archive the BHHS 74 Reunion website
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 32
 	User ID: 4
 	Content: Maintain and improve my SQL skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 33
 	User ID: 4
 	Content: Learn QT graphic system
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 34
 	User ID: 4
 	Content: Improve my Linux Programming skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 35
 	User ID: 4
 	Content: Get an embedded programming certificate
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 36
 	User ID: 4
 	Content: Learn open source Linux Core Programming
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 37
 	User ID: 4
 	Content: Maintain my health
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 38
 	User ID: 4
 	Content: Eat as healthy as possible
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 39
 	User ID: 4
 	Content: Walk 30 minutes a day
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 40
 	User ID: 4
 	Content: Track my vital signs
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 41
 	User ID: 4
 	Content: Get my weight down to 190 pounds
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 42
 	User ID: 4
 	Content: Be more organized
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 43
 	User ID: 4
 	Content: Effectively moderate the code review site on stack exchange
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 Running: 
 	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND NotationDateTime >= '2024-05-14 07:00:00.000000' AND NotationDateTime <= '2024-05-15 06:59:00.000000' AND (Hidden IS NULL OR Hidden <> 1) ORDER BY NotationDateTime ASC
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 42 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
@@ -2699,110 +2444,76 @@ Running:
 Running: 
 	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43 AND (Hidden IS NULL OR Hidden <> 1)
 Find all notes for user (4) for a date PASSED!
 User 4 has 17 notes
-	Note ID: 43
+	Note ID: 27
 	User ID: 4
-	Content: Effectively moderate the code review site on stack exchange
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
+	Content: Get a Job in Software Engineering
 
 	Note ID: 42
 	User ID: 4
 	Content: Be more organized
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 41
 	User ID: 4
 	Content: Get my weight down to 190 pounds
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 40
 	User ID: 4
 	Content: Track my vital signs
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 39
 	User ID: 4
 	Content: Walk 30 minutes a day
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 38
 	User ID: 4
 	Content: Eat as healthy as possible
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 37
 	User ID: 4
 	Content: Maintain my health
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 36
 	User ID: 4
 	Content: Learn open source Linux Core Programming
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 35
 	User ID: 4
 	Content: Get an embedded programming certificate
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 34
 	User ID: 4
 	Content: Improve my Linux Programming skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 33
 	User ID: 4
 	Content: Learn QT graphic system
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 32
 	User ID: 4
 	Content: Maintain and improve my SQL skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 31
 	User ID: 4
 	Content: Maintain or archive the BHHS 74 Reunion website
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 30
 	User ID: 4
 	Content: Maintain and improve my  C programming skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 29
 	User ID: 4
 	Content: Maintain and improve my C++ programming skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
 	Note ID: 28
 	User ID: 4
 	Content: Maintain and improve my software engineering skills
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
 
-	Note ID: 27
+	Note ID: 43
 	User ID: 4
-	Content: Get a Job in Software Engineering
-	Created: 2024-05-14 08:31:53.000000000
-	Last Update: 2024-05-14 08:31:53.000000000
+	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
 	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
@@ -2907,21 +2618,21 @@ Running:
 
 Running ScheduleItem Integration Tests
 Running: 
-	INSERT INTO UserScheduleItem (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden)  VALUES (4, '2024-12-02 09:30:00.000000', '2024-12-02 10:30:00.000000', 'Dr. Cinman', 1, '8635 W. Third Street', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 0)
+	CALL AddScheduleEvent(4, '2024-12-02 09:30:00.000000', '2024-12-02 10:30:00.000000', 'Dr. Cinman', 1, '8635 W. Third Street')
 Running: 
-	INSERT INTO UserScheduleItem (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden)  VALUES (4, '2024-12-11 09:00:00.000000', '2024-12-11 10:30:00.000000', 'Bill McCandless birthday call', 1, '', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 0)
+	CALL AddScheduleEvent(4, '2024-12-11 09:00:00.000000', '2024-12-11 10:30:00.000000', 'Bill McCandless birthday call', 1, '')
 Running: 
-	INSERT INTO UserScheduleItem (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden)  VALUES (4, '2024-12-13 09:00:00.000000', '2024-12-13 10:30:00.000000', 'Jean Hom birthday call', 1, '', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 0)
+	CALL AddScheduleEvent(4, '2024-12-13 09:00:00.000000', '2024-12-13 10:30:00.000000', 'Jean Hom birthday call', 1, '')
 Running: 
-	INSERT INTO UserScheduleItem (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden)  VALUES (4, '2024-12-13 10:00:00.000000', '2024-12-13 11:00:00.000000', 'Dr. David Aftergood', 1, '99 N. La Cienega Blvd.', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 0)
+	CALL AddScheduleEvent(4, '2024-12-13 10:00:00.000000', '2024-12-13 11:00:00.000000', 'Dr. David Aftergood', 1, '99 N. La Cienega Blvd.')
 Running: 
-	INSERT INTO UserScheduleItem (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden)  VALUES (4, '2024-12-18 09:00:00.000000', '2024-12-18 10:30:00.000000', 'Dina birthday call', 1, '', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 0)
+	CALL AddScheduleEvent(4, '2024-12-18 09:00:00.000000', '2024-12-18 10:30:00.000000', 'Dina birthday call', 1, '')
 Running: 
-	INSERT INTO UserScheduleItem (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden)  VALUES (4, '2025-12-11 09:00:00.000000', '2025-12-11 10:30:00.000000', 'Bill McCandless birthday call', 1, '', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 0)
+	CALL AddScheduleEvent(4, '2025-12-11 09:00:00.000000', '2025-12-11 10:30:00.000000', 'Bill McCandless birthday call', 1, '')
 Running: 
-	INSERT INTO UserScheduleItem (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden)  VALUES (4, '2025-12-13 09:00:00.000000', '2025-12-11 10:30:00.000000', 'Jean Hom birthday call', 1, '', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 0)
+	CALL AddScheduleEvent(4, '2025-12-13 09:00:00.000000', '2025-12-11 10:30:00.000000', 'Jean Hom birthday call', 1, '')
 Running: 
-	INSERT INTO UserScheduleItem (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden)  VALUES (4, '2025-12-18 11:00:00.000000', '2025-12-18 11:15:00.000000', 'Dina birthday call', 1, '', '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 0)
+	CALL AddScheduleEvent(4, '2025-12-18 11:00:00.000000', '2025-12-18 11:15:00.000000', 'Dina birthday call', 1, '')
 Running: 
 	SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 4 AND Title LIKE '%birthday%' AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2024-12-01' AND StartDateTime <= '2024-12-31'
 Running: 
@@ -2936,37 +2647,31 @@ ScheduleItemModel:
 	ScheduleItem ID: 301
 	User ID: 4
 	Title: Bill McCandless birthday call
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Start Date and Time: 2024-12-11 09:00:00.000000000
 	End Date and Time: 2024-12-11 10:30:00.000000000
 	Personal: TRUE
 	location: 
 Optional Fields
-	Last Update: 2024-05-14 08:31:53.000000000
 
 ScheduleItemModel:
 	ScheduleItem ID: 302
 	User ID: 4
 	Title: Jean Hom birthday call
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Start Date and Time: 2024-12-13 09:00:00.000000000
 	End Date and Time: 2024-12-13 10:30:00.000000000
 	Personal: TRUE
 	location: 
 Optional Fields
-	Last Update: 2024-05-14 08:31:53.000000000
 
 ScheduleItemModel:
 	ScheduleItem ID: 304
 	User ID: 4
 	Title: Dina birthday call
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Start Date and Time: 2024-12-18 09:00:00.000000000
 	End Date and Time: 2024-12-18 10:30:00.000000000
 	Personal: TRUE
 	location: 
 Optional Fields
-	Last Update: 2024-05-14 08:31:53.000000000
 
 Running: 
 	SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2024-12-13 08:00:00.000000' AND StartDateTime <= '2024-12-14 07:59:59.000000' ORDER BY StartDateTime ASC
@@ -2980,30 +2685,26 @@ ScheduleItemModel:
 	ScheduleItem ID: 302
 	User ID: 4
 	Title: Jean Hom birthday call
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Start Date and Time: 2024-12-13 09:00:00.000000000
 	End Date and Time: 2024-12-13 10:30:00.000000000
 	Personal: TRUE
 	location: 
 Optional Fields
-	Last Update: 2024-05-14 08:31:53.000000000
 
 ScheduleItemModel:
 	ScheduleItem ID: 303
 	User ID: 4
 	Title: Dr. David Aftergood
-	Creation Date: 2024-05-14 08:31:53.000000000
 	Start Date and Time: 2024-12-13 10:00:00.000000000
 	End Date and Time: 2024-12-13 11:00:00.000000000
 	Personal: TRUE
 	location: 99 N. La Cienega Blvd.
 Optional Fields
-	Last Update: 2024-05-14 08:31:53.000000000
 
 Running: 
 	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 300 AND UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	UPDATE UserScheduleItem SET StartDateTime = '2024-12-02 09:30:00.000000', EndDateTime = '2024-12-02 10:30:00.000000', Title = 'Dr. David Aftergood', Personal = 0, Location = '99. N. La Cienega', LastUpdateTS = '2026-04-10 12:45:55.549040', Hidden = 0 WHERE idUserScheduleItem = 300 AND UserID = 4 
+	UPDATE UserScheduleItem SET StartDateTime = '2024-12-02 09:30:00.000000', EndDateTime = '2024-12-02 10:30:00.000000', Title = 'Dr. David Aftergood', Personal = 0, Location = '99. N. La Cienega', LastUpdateTS = '2026-04-25 15:35:11.314355', Hidden = 0 WHERE idUserScheduleItem = 300 AND UserID = 4 
 Running: 
 	CALL ScheduleItemContentSelectionList('birthday', 4)
 Find all schedule items for user (4) similar to birthday PASSED!
@@ -3100,7 +2801,7 @@ Missing ScheduleItem required End Time!
 Missing ScheduleItem required End Time!
 
 Running: 
-	INSERT INTO UserScheduleItem (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden)  VALUES (4, '2024-12-31 08:30:00.000000', '2024-12-31 10:00:00.000000', 'Test missing field Title', 0, NULL, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 0)
+	CALL AddScheduleEvent(4, '2024-12-31 08:30:00.000000', '2024-12-31 10:00:00.000000', 'Test missing field Title', 0, NULL)
 Running: 
 	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 300 AND UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Expected error was; ScheduleItem not modified!
@@ -3115,7 +2816,7 @@ All tests Passed
 
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
-  total heap usage: 89,106 allocs, 89,106 frees, 12,688,834 bytes allocated
+  total heap usage: 110,456 allocs, 110,456 frees, 15,319,959 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 
