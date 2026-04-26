@@ -149,8 +149,8 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent()
 
 TestStatus TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange()
 {
-    std::chrono::year_month_day startDate = commonTestDateRangeStartValue;
-    std::chrono::year_month_day endDate = commonTestDateRangeEndValue;
+    std::chrono::year_month_day startDate = getTodaysDateMinus(OneWeek);
+    std::chrono::year_month_day endDate = getTodaysDatePlus(OneWeek);
 
     NoteList NoteListTestInterface;
     NoteListValues allNotesInRange = NoteListTestInterface.getAllNotesForUserCreatedInDatgeRange(userOne->getUserID(), startDate, endDate);
@@ -177,10 +177,8 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange()
 
 TestStatus TestNoteModel::testPositivePathGetNotesForUserEditedDateRange()
 {
-//    std::chrono::year_month_day startDate = getTodaysDateMinus(OneWeek);
-//    std::chrono::year_month_day endDate = getTodaysDatePlus(OneWeek);
-    std::chrono::year_month_day startDate = commonTestDateRangeStartValue;
-    std::chrono::year_month_day endDate = commonTestDateRangeEndValue;
+    std::chrono::year_month_day startDate = getTodaysDateMinus(OneWeek);
+    std::chrono::year_month_day endDate = getTodaysDatePlus(OneWeek);
 
     NoteList NoteListTestInterface;
     NoteListValues allNotesInRange = NoteListTestInterface.getAllNotesForUserEditedInDatgeRange(userOne->getUserID(), startDate, endDate);
@@ -207,7 +205,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserEditedDateRange()
 
 TestStatus TestNoteModel::testPositivePathGetDashboardNoteTable()
 {
-    std::chrono::year_month_day searchDate = commonTestDateValue;
+    std::chrono::year_month_day searchDate = getTodaysDate();
 
     NoteList NoteListTestInterface;
     NoteListValues allNotesInRange = NoteListTestInterface.getDashboardNoteTable(userOne->getUserID(), searchDate);
