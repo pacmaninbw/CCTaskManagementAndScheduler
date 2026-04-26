@@ -68,7 +68,7 @@ BEGIN
         Hidden
         )
     VALUES (
-        orgName, email, phoneNo, primaryContact, secondaryContact, streetAddress, city, stateOrProvince, postalCode, nation, NOW(), NOW(), 0
+        orgName, email, phoneNo, primaryContact, secondaryContact, streetAddress, city, stateOrProvince, postalCode, nation, UTC_TIMESTAMP(), UTC_TIMESTAMP(), 0
     ) RETURNING OrganizationID;
 
 END$$
@@ -187,7 +187,7 @@ BEGIN
             email,
             username,
             password,
-            NOW(),
+            UTC_TIMESTAMP(),
             preferrences,
             0
         )
@@ -380,7 +380,7 @@ CREATE PROCEDURE `testPTSDB`.`HideGoal`
 BEGIN
 
     UPDATE UserGoals
-        SET Hidden = 1, LastUpdateTS = NOW()
+        SET Hidden = 1, LastUpdateTS = UTC_TIMESTAMP()
         WHERE UserID = IDUser AND idUserGoals = GoalID;
 
 END$$
@@ -416,8 +416,8 @@ BEGIN
         (
             userId,
             description,
-            NOW(),
-            NOW(),
+            UTC_TIMESTAMP(),
+            UTC_TIMESTAMP(),
             priority,
             parentGoalId,
             0
@@ -469,7 +469,7 @@ CREATE PROCEDURE `testPTSDB`.`HideNote`
 BEGIN
 
     UPDATE UserNotes
-        SET Hidden = 1, LastUpdate = NOW()
+        SET Hidden = 1, LastUpdate = UTC_TIMESTAMP()
         WHERE UserID = IDUser AND idUserNotes = NoteID;
 
 END$$
@@ -489,7 +489,7 @@ CREATE PROCEDURE `AddUserNote`
 BEGIN
 
 	INSERT INTO UserNotes(UserID, NotationDateTime, Content, LastUpdate, Hidden)
-        VALUES (userId, NOW(), content, NOW(), 0)
+        VALUES (userId, UTC_TIMESTAMP(), content, UTC_TIMESTAMP(), 0)
         RETURNING idUserNotes;
 
 END$$
@@ -564,7 +564,7 @@ CREATE PROCEDURE `testPTSDB`.`HideTask`
 BEGIN
 
     UPDATE Tasks
-        SET Hidden = 1, LastUpdateTS = NOW()
+        SET Hidden = 1, LastUpdateTS = UTC_TIMESTAMP()
         WHERE CreatedBy = IDUser AND TaskID = IDTask;
 
 END$$
@@ -629,7 +629,7 @@ BEGIN
         parentTaskID,
         taskStatus,
         0.0,
-        NOW(),
+        UTC_TIMESTAMP(),
         dueDate,
         planStart,
         startDate,
@@ -642,15 +642,68 @@ BEGIN
         isPersonal,
         dependencyCount,
         dependencies,
-        NOW(),
+        UTC_TIMESTAMP(),
         0
     )
     RETURNING TaskID;
 
 END$$
+
 DELIMITER ;
 
+DELIMITER $$
 
+DROP PROCEDURE IF EXISTS `UpdateTaskAllFields`$$
+
+CREATE PROCEDURE `UpdateTaskAllFields`
+(
+    IN `primaryKeyValue` INT UNSIGNED,
+    IN `creatorID` INT UNSIGNED,
+    IN `assignedID` INT UNSIGNED,
+    IN `description` VARCHAR(256),
+    IN `parentTaskID` INT UNSIGNED,
+    IN `taskStatus` INT UNSIGNED,
+    IN `dueDate` DATE,
+    IN `planStart` DATE,
+    IN `startDate` DATE,
+    IN `expectedDate` DATE,
+    IN `completedDate` DATE,
+    IN `estimatedEffort` INT UNSIGNED,
+    IN `effortToDate` DOUBLE,
+    IN `priorityCategory` INT UNSIGNED,
+    IN `priority` INT UNSIGNED,
+    IN `isPersonal` TINYINT,
+    IN `dependencyCount` INT UNSIGNED,
+    IN `dependencies` MEDIUMTEXT
+)
+
+BEGIN
+
+	UPDATE Tasks SET
+		CreatedBy = creatorID,
+		AsignedTo = assignedID,
+		Description = description,
+		ParentTask = parentTaskID,
+		Status = taskStatus,
+		RequiredDelivery = dueDate,
+		ScheduledStart = planStart,
+		ActualStart = startDate,
+		EstimatedCompletion = expectedDate,
+		Completed = completedDate,
+		EstimatedEffortHours = estimatedEffort,
+		ActualEffortHours = effortToDate,
+		SchedulePriorityGroup = priorityCategory,
+		PriorityInGroup = priority,
+		Personal = isPersonal,
+		DependencyCount = dependencyCount,
+		Dependencies = dependencies,
+		LastUpdateTS = UTC_TIMESTAMP(),
+		Hidden = 0
+	WHERE TaskID = primaryKeyValue;
+    
+END$$
+
+DELIMITER ;
 -- --------------------------------------------------------
 
 DROP TABLE IF EXISTS `testPTSDB`.`UserTaskGoals`;
@@ -792,7 +845,7 @@ CREATE PROCEDURE `testPTSDB`.`HideScheduleItem`
 BEGIN
 
     UPDATE UserScheduleItem
-        SET Hidden = 1, LastUpdateTS = NOW()
+        SET Hidden = 1, LastUpdateTS = UTC_TIMESTAMP()
         WHERE UserID = IDUser AND idUserScheduleItem = ScheduleItemID;
 
 END$$
@@ -827,8 +880,8 @@ INSERT INTO UserScheduleItem
         eventTitle,
         isPersonal,
         location,
-        NOW(),
-        NOW(),
+        UTC_TIMESTAMP(),
+        UTC_TIMESTAMP(),
         0
     )
     RETURNING idUserScheduleItem;
