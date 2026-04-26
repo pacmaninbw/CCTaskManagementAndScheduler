@@ -29,7 +29,7 @@ static std::vector<GenericDictionary<TaskModel::TaskStatus, std::string>::DictTy
 static GenericDictionary<TaskModel::TaskStatus, std::string> taskStatusConversionTable(statusConversionsDefs);
 
 TaskModel::TaskModel()
-: ModelDBInterface("Task")
+: ModelDBInterface("Task", "TaskID")
 {
   creatorID = 0;
   assignToID = 0;
@@ -467,30 +467,15 @@ std::string TaskModel::formatInsertStatement()
         depenenciesText = buildDependenciesText(dependencyList);
     }
 
-    if (isMissingCreationDate())
-    {
-        creationTimeStamp = std::chrono::system_clock::now();
-    }
-
-    if (!lastUpdate.has_value())
-    {
-        lastUpdate = creationTimeStamp;
-    }
-
     initFormatOptions();
 
     return boost::mysql::format_sql(format_opts.value(),
-        "INSERT INTO Tasks (CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn, "
-            "RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, "
-            "ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden)"
-            " VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, {18}, {19}, 0)",
+        "CALL AddTask({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16})",
             creatorID,
             assignToID,
             description,
             parentTaskID,
             getStatusIntVal(),
-            percentageComplete,
-            optionalDateTimeConversion(creationTimeStamp),
             stdchronoDateToBoostMySQLDate(dueDate.value()),
             stdchronoDateToBoostMySQLDate(scheduledStart.value()),
             optionalDateConversion(actualStartDate),
@@ -502,8 +487,7 @@ std::string TaskModel::formatInsertStatement()
             priority,
             personal,
             dependencyCount,
-            depenenciesText,
-            optionalDateTimeConversion(lastUpdate)
+            depenenciesText
     );
 }
 
@@ -519,54 +503,16 @@ std::string TaskModel::formatUpdateStatement()
 
     initFormatOptions();
 
-    lastUpdate = std::chrono::system_clock::now();
-
     return boost::mysql::format_sql(format_opts.value(),
-        "UPDATE Tasks SET"
-            " CreatedBy = {0},"
-            " AsignedTo = {1},"
-            " Description = {2},"
-            " ParentTask = {3},"
-            " Status = {4},"
-            " PercentageComplete = {5},"
-            " CreatedOn = {6},"
-            " RequiredDelivery = {7},"
-            " ScheduledStart = {8},"
-            " ActualStart = {9},"
-            " EstimatedCompletion = {10},"
-            " Completed = {11},"
-            " EstimatedEffortHours = {12},"
-            " ActualEffortHours = {13},"
-            " SchedulePriorityGroup = {14},"
-            " PriorityInGroup = {15},"
-            " Personal = {16},"
-            " DependencyCount = {17},"
-            " Dependencies = {18},"
-            " LastUpdateTS = {19},"
-            " Hidden = {20}"
-        " WHERE TaskID = {21} ",
-            creatorID,
-            assignToID,
-            description,
-            parentTaskID,
-            getStatusIntVal(),
-            percentageComplete,
-            optionalDateTimeConversion(creationTimeStamp),
+        "CALL UpdateTaskAllFields({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17})",
+        primaryKey, creatorID, assignToID, description, parentTaskID, getStatusIntVal(),
             stdchronoDateToBoostMySQLDate(dueDate.value()),
             stdchronoDateToBoostMySQLDate(scheduledStart.value()),
             optionalDateConversion(actualStartDate),
             optionalDateConversion(estimatedCompletion),
             optionalDateConversion(completionDate),
-            estimatedEffort,
-            actualEffortToDate,
-            priorityGroup,
-            priority,
-            personal,
-            dependencyCount,
-            depenenciesText,
-            optionalDateTimeConversion(lastUpdate),
-            deleted? 1 : 0,
-        primaryKey
+            estimatedEffort, actualEffortToDate, priorityGroup,priority, personal,
+            dependencyCount, depenenciesText
     );
 }
 
