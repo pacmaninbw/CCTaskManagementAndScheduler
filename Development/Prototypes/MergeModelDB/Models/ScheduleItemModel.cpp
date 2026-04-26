@@ -15,7 +15,7 @@
 #include <vector>
 
 ScheduleItemModel::ScheduleItemModel()
-: ModelDBInterface("ScheduleItem")
+: ModelDBInterface("ScheduleItem", "idUserScheduleItem")
 {
     userID = 0;
     title = "";
@@ -240,29 +240,16 @@ bool ScheduleItemModel::diffScheduleItem(ScheduleItemModel &other)
 
 std::string ScheduleItemModel::formatInsertStatement()
 {
-    if (isMissingCreationDate())
-    {
-        creationTimeStamp = std::chrono::system_clock::now();
-    }
-
-    if (!lastUpdate.has_value())
-    {
-        lastUpdate = creationTimeStamp;
-    }
-
     initFormatOptions();
 
     return boost::mysql::format_sql(format_opts.value(),
-        "INSERT INTO UserScheduleItem (UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden) "
-            " VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, 0)",
+        "CALL AddScheduleEvent({0}, {1}, {2}, {3}, {4}, {5})",
             userID,
             optionalDateTimeConversion(startTime.value()),
             optionalDateTimeConversion(endTime.value()),
             title,
             static_cast<unsigned int>(personal?1:0),
-            location,
-            optionalDateTimeConversion(creationTimeStamp),
-            optionalDateTimeConversion(lastUpdate)
+            location
     );
 }
 

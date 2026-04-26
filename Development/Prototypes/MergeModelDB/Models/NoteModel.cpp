@@ -15,7 +15,7 @@
 #include <vector>
 
 NoteModel::NoteModel()
-: ModelDBInterface("Note")
+: ModelDBInterface("Note", "idUserNotes")
 {
     userID = 0;
     creationDate = std::chrono::system_clock::now();
@@ -71,20 +71,8 @@ std::string NoteModel::formatInsertStatement()
 {
     initFormatOptions();
 
-    if (!creationDate.has_value())
-    {
-        creationDate = std::chrono::system_clock::now();
-    }
-
-    if (!lastUpdate.has_value())
-    {
-        lastUpdate = creationDate;
-    }
-
     std::string insertStatement = boost::mysql::format_sql(format_opts.value(),
-        "INSERT INTO UserNotes (UserID, NotationDateTime, Content, LastUpdate, Hidden) VALUES ({0}, {1}, {2}, {3}, {4})",
-        userID, stdChronoTimePointToBoostDateTime(creationDate.value()),
-        content, stdChronoTimePointToBoostDateTime(lastUpdate.value()), deleted? 1 : 0);
+        "CALL AddUserNote({0}, {1})", userID, content);
 
     return insertStatement;
 }
