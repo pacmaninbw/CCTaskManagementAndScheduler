@@ -24,6 +24,7 @@ struct ProgramOptions
     bool forceExceptions = false;
     bool quitFirstFail = false;
     bool canConnectToDatabase = false;
+    bool showTimeStamps = false;
     std::string userName;
     std::string userPassword;
 };

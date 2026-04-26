@@ -78,16 +78,19 @@ public:
         os << std::format(outFmtStr, "ScheduleItem ID", scheduleItem.primaryKey);
         os << std::format(outFmtStr, "User ID", scheduleItem.userID);
         os << std::format(outFmtStr, "Title", scheduleItem.title);
-        os << std::format(outFmtStr, "Creation Date", scheduleItem.creationTimeStamp.value_or(std::chrono::system_clock::now()));
         os << std::format(outFmtStr, "Start Date and Time", scheduleItem.startTime.value_or(std::chrono::system_clock::now()));
         os << std::format(outFmtStr, "End Date and Time", scheduleItem.endTime.value_or(std::chrono::system_clock::now()));
         os << std::format(outFmtStr, "Personal", (scheduleItem.personal? "TRUE": "FALSE"));
         os << std::format(outFmtStr, "location", scheduleItem.getLocation());
 
         os << "Optional Fields\n";
-        if (scheduleItem.lastUpdate.has_value())
+        if (programOptions.showTimeStamps)
         {
-            os << std::format(outFmtStr, "Last Update", scheduleItem.lastUpdate.value());
+            os << std::format(outFmtStr, "Creation Date", scheduleItem.creationTimeStamp.value_or(std::chrono::system_clock::now()));
+            if (scheduleItem.lastUpdate.has_value())
+            {
+                os << std::format(outFmtStr, "Last Update", scheduleItem.lastUpdate.value());
+            }
         }
 
         return os;

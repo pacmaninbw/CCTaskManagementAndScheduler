@@ -70,13 +70,16 @@ public:
         os << std::format(outFmtStr, "Note ID", note.primaryKey);
         os << std::format(outFmtStr, "User ID", note.userID);
         os << std::format(outFmtStr, "Content", note.content);
-        if (note.creationDate.has_value())
+        if (programOptions.showTimeStamps)
         {
-            os << std::format(outFmtStr, "Created", note.creationDate.value());
-        }
-        if (note.lastUpdate.has_value())
-        {
-            os << std::format(outFmtStr, "Last Update", note.lastUpdate.value());
+            if (note.creationDate.has_value())
+            {
+                os << std::format(outFmtStr, "Created", note.creationDate.value());
+            }
+            if (note.lastUpdate.has_value())
+            {
+                os << std::format(outFmtStr, "Last Update", note.lastUpdate.value());
+            }
         }
 
         return os;

@@ -73,11 +73,15 @@ public:
         os << std::format(outFmtStr, "Description", goal.description);
         os << std::format(outFmtStr, "Priority", goal.getPriority());
         os << std::format(outFmtStr, "Parent ID", goal.getParentId());
-        if (goal.creationDate.has_value())
-        {
-            os << std::format(outFmtStr, "Creation Timestamp", goal.creationDate.value());
+
+        if (programOptions.showTimeStamps)
+            {
+            if (goal.creationDate.has_value())
+            {
+                os << std::format(outFmtStr, "Creation Timestamp", goal.creationDate.value());
+            }
+            os << std::format(outFmtStr, "Last Update Timestamp", goal.getLastUpdateTimeStamp());
         }
-        os << std::format(outFmtStr, "Last Update Timestamp", goal.getLastUpdateTimeStamp());
 
         return os;
     };
