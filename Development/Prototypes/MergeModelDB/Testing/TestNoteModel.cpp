@@ -41,6 +41,7 @@ TestNoteModel::TestNoteModel()
     }
 
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathNoteInsertions, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathNoteUpdate, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetAllNotesForUser, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange, this));
@@ -94,6 +95,37 @@ TestStatus TestNoteModel::testPositivePathNoteInsertions()
     }
 
     return testStatus;
+}
+
+TestStatus TestNoteModel::testPositivePathNoteUpdate()
+{
+    std::string searchString("Be more organized");
+    NoteList NoteListTestInterface;
+    NoteListValues allSimilarUserNotes = NoteListTestInterface.getNotesForUserSimlarToContent(userOne->getUserID(), searchString);
+
+    if (allSimilarUserNotes.empty())
+    {
+        std::cerr << "testPositivePathNoteUpdate: NoteListTestInterface.getNotesForUserSimlarToContent() FAILED\n" <<
+            NoteListTestInterface.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    NoteModel_shp noteToUpdate = allSimilarUserNotes[0];
+    noteToUpdate->setContent("Use a planner / organizer");
+    if (!noteToUpdate->update())
+    {
+        std::cerr << "testPositivePathNoteUpdate: noteToUpdate->update() FAILED\n" <<
+            noteToUpdate->getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << "Update UserNote Passed integration test\n";
+        std::cout << *noteToUpdate << "\n";
+    }
+
+    return TESTPASSED;
 }
 
 TestStatus TestNoteModel::testPositivePathGetAllNotesForUser()

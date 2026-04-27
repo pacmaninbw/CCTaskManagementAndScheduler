@@ -26,6 +26,7 @@ public:
 private:
     TestStatus testInsertNote(TestNoteInput testNote);
     TestStatus testPositivePathNoteInsertions();
+    TestStatus testPositivePathNoteUpdate();
     TestStatus testPositivePathGetAllNotesForUser();
     TestStatus testPositivePathGetNotesForUserWithSimilarContent();
     TestStatus testPositivePathGetNotesForUserCreatedDateRange();
@@ -45,7 +46,6 @@ private:
     std::vector<std::function<bool(void)>> negativePathTestFuncs;
     std::vector<TestNoteInput> testInput;
     std::shared_ptr<UserModel> userOne;
-
 };
 
 #endif // TESTNOTEMODEL_H_
