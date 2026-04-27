@@ -86,9 +86,9 @@ std::string NoteModel::formatUpdateStatement()
             " UserNotes.UserID = {0},"
             " UserNotes.NotationDateTime = {1},"
             " UserNotes.Content = {2},"
-            " UserNotes.LastUpdate = {3}" 
-            " UserNotes.Hidden = {4}," 
-        " WHERE UserNotes.idUserNotes = {4}",
+            " UserNotes.LastUpdate = {3}," 
+            " UserNotes.Hidden = {4}" 
+        " WHERE UserNotes.idUserNotes = {5}",
             userID, stdChronoTimePointToBoostDateTime(creationDate.value()),
             content, stdChronoTimePointToBoostDateTime(lastUpdate.value()),
             deleted? 1 : 0, primaryKey);
