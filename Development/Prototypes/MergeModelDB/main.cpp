@@ -293,7 +293,7 @@ int main(int argc, char* argv[])
             std::cout << "All tests Passed\n";
 			if (programOptions.enableExecutionTime)
 			{
-                stopWatch.stopTimerAndReport("Testing of Insertion and retrieval of users and tasks in MySQL database\n");
+                stopWatch.stopTimerAndReport("Unit and Integration testing of all models MySQL database\n");
 			}
         }
         else
