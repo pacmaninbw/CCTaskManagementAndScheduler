@@ -223,20 +223,9 @@ std::string UserGoalModel::formatUpdateStatement()
 {
     initFormatOptions();
 
-    lastUpdate = std::chrono::system_clock::now();
-
     std::string updateStatement = boost::mysql::format_sql(format_opts.value(),
-        "UPDATE UserGoals SET"
-            " UserGoals.UserID = {0},"
-            " UserGoals.Description = {1},"
-            " UserGoals.CreationTS = {2},"
-            " UserGoals.LastUpdateTS = {3}," 
-            " UserGoals.Priority = {4}," 
-            " UserGoals.ParentGoal = {5}," 
-            " UserGoals.Hidden = {6}" 
-        " WHERE UserGoals.idUserGoals = {7}",
-        userID, description, optionalDateTimeConversion(creationDate),
-        optionalDateTimeConversion(lastUpdate), priority, parentID, deleted? 1 : 0, primaryKey);
+        "CALL UpdateUserGoalAllFields({0}, {1}, {2}, {3}, {4})",
+        userID, primaryKey, description, priority, parentID);
         
     return updateStatement;
 }

@@ -257,26 +257,14 @@ std::string ScheduleItemModel::formatUpdateStatement()
 {
     initFormatOptions();
 
-    lastUpdate = std::chrono::system_clock::now();
-
     return boost::mysql::format_sql(format_opts.value(),
-        "UPDATE UserScheduleItem SET"
-            " StartDateTime = {0},"
-            " EndDateTime = {1},"
-            " Title = {2},"
-            " Personal = {3},"
-            " Location = {4},"
-            " LastUpdateTS = {5},"
-            " Hidden = {6}"
-        " WHERE idUserScheduleItem = {7} AND UserID = {8} ",
+        "CALL UpdateScheduleItemAllFields({0}, {1}, {2}, {3}, {4}, {5}, {6})",
+            userID, primaryKey,
             optionalDateTimeConversion(startTime),
             optionalDateTimeConversion(endTime),
             title,
             static_cast<unsigned int>(personal?1:0),
-            location,
-            optionalDateTimeConversion(lastUpdate),
-            deleted? 1 : 0,
-        primaryKey, userID
+            location
     );
 }
 
