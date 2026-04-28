@@ -476,6 +476,8 @@ BEGIN
 
    CALL AddUserGoal(1, 'Test AddUserGoal SQL implementation.', 0, 0);
 
+   CALL UpdateUserGoalAllFields(1, 1, 'Test AddUserGoal SQL implementation.', 2, 1);
+
    CALL AddScheduleEvent(1, '2026-04-17 22:00:00', '2026-04-17 23:00:00', 'Test AddScheduleEvent', 0, 'Starbucks');
 
    CALL HideTask(4, 59);
@@ -491,6 +493,10 @@ ASC, PriorityInGroup ASC;
 
    SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2026-03-08 08:00:00.000000' AND StartDateTime <= '20
 26-03-09 07:59:59.000000' ORDER BY StartDateTime ASC;
+
+   CALL UpdateScheduleItemAllFields(1, 238, '2026-03-15 01:00:00', '2026-03-15 02:29:59', 'Sorry, no pea soup today.', 1, 'Norm\'s');
+
+   CALL UpdateNoteAllFields(1, 25, 'An index for Location in schedule item is now added.');
 
 END$$
 
