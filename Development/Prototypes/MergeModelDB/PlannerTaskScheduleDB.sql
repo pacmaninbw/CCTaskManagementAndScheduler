@@ -428,6 +428,31 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `UpdateUserGoalAllFields`$$
+
+CREATE PROCEDURE `UpdateUserGoalAllFields`
+(
+    IN `userIdIn` INT UNSIGNED,
+    IN `goalId` INT UNSIGNED,
+    IN `description` VARCHAR(1024),
+    IN `priority` INT UNSIGNED,
+    IN `parentGoalID` INT UNSIGNED
+)
+BEGIN
+
+    UPDATE UserGoals SET
+        UserGoals.Description = description,
+        UserGoals.LastUpdateTS = UTC_TIMESTAMP(),
+        UserGoals.Priority = priority,
+        UserGoals.ParentGoal = parentGoalID
+    WHERE UserGoals.UserID = userIdIn AND UserGoals.idUserGoals = goalId;
+
+END$$
+
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 DROP TABLE IF EXISTS `testPTSDB`.`UserNotes`;
@@ -496,6 +521,28 @@ END$$
 
 DELIMITER ;
 
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `UpdateNoteAllFields`$$
+
+CREATE PROCEDURE `UpdateNoteAllFields`
+(
+    IN `userId` INT UNSIGNED,
+    IN `noteId` INT UNSIGNED,
+    IN `content` VARCHAR(1024)
+)
+
+BEGIN
+
+	UPDATE UserNotes SET
+		UserNotes.Content = content,
+		UserNotes.LastUpdate = UTC_TIMESTAMP()
+	WHERE UserNotes.idUserNotes = noteId AND UserNotes.UserID = userId;
+    
+END$$
+
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -889,6 +936,31 @@ INSERT INTO UserScheduleItem
 END$$
 DELIMITER ;
 
+DELIMITER $$
+
+CREATE PROCEDURE `UpdateScheduleItemAllFields`
+(
+    IN `userId` INT UNSIGNED,
+    IN `eventId` INT UNSIGNED,
+    IN `startTime` DATETIME,
+    IN `endTime` DATETIME,
+    IN `title` VARCHAR(128),
+    IN `personal` TINYINT,
+    IN `location` VARCHAR(128)
+)
+BEGIN
+
+	UPDATE UserScheduleItem SET
+		UserScheduleItem.StartDateTime = startTime,
+		UserScheduleItem.EndDateTime = endTime,
+		UserScheduleItem.Title = title,
+		UserScheduleItem.Personal = personal,
+		UserScheduleItem.Location = location,
+		UserScheduleItem.LastUpdateTS = UTC_TIMESTAMP()
+	WHERE UserScheduleItem.idUserScheduleItem = eventId AND UserScheduleItem.UserID = userId;
+	
+END$$
+DELIMITER ;
 
 COMMIT;
 
