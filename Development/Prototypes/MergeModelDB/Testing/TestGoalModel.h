@@ -4,7 +4,7 @@
 class UserModel;
 // Project Header Files
 #include "TestDBInterfaceCore.h"
-#include "UserGoalList.h"
+#include "GoalQueryProcessor.h"
 #include "UserGoalModel.h"
 
 // Standard C++ Header Files

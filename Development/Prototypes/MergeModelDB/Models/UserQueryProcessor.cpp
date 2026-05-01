@@ -1,23 +1,23 @@
 // Project Header Files
-#include "ListDBInterface.h"
-#include "UserList.h"
+#include "QueryProcessor.h"
+#include "UserQueryProcessor.h"
 #include "UserModel.h"
 
 // Standard C++ Header Files
 #include <format>
 #include <iostream>
 
-UserList::UserList()
-: ListDBInterface<UserModel>()
+UserQueryProcessor::UserQueryProcessor()
+: QueryProcessor<UserModel>()
 {
 
 }
 
-UserListValues UserList::getAllUsers() noexcept
+UserQueryProcessorValues UserQueryProcessor::getAllUsers() noexcept
 {
     errorMessages.clear();
     
-    UserListValues allUsers;
+    UserQueryProcessorValues allUsers;
 
     try
     {
@@ -42,24 +42,24 @@ UserListValues UserList::getAllUsers() noexcept
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In UserList::getAllUsers : {}", e.what()));
+        appendErrorMessage(std::format("In UserQueryProcessor::getAllUsers : {}", e.what()));
     }
     
     return allUsers;
 }
 
-std::vector<ListExceptionTestElement> UserList::initListExceptionTests() noexcept 
+std::vector<ListExceptionTestElement> UserQueryProcessor::initListExceptionTests() noexcept 
 {
     std::vector<ListExceptionTestElement> exceptionTests;
-    exceptionTests.push_back({std::bind(&UserList::testExceptionsGetAllUsers, this), "selectByUserID"});
+    exceptionTests.push_back({std::bind(&UserQueryProcessor::testExceptionsGetAllUsers, this), "selectByUserID"});
 
     return exceptionTests;
 }
 
-TestStatus UserList::testExceptionsGetAllUsers() noexcept
+TestStatus UserQueryProcessor::testExceptionsGetAllUsers() noexcept
 {
     selfTestResetAllValues();
 
-    return testListExceptionAndSuccessNArgs("UserListSelfTest::testExceptionsGetAllUsers()", std::bind(&UserList::getAllUsers, this));
+    return testListExceptionAndSuccessNArgs("UserQueryProcessorSelfTest::testExceptionsGetAllUsers()", std::bind(&UserQueryProcessor::getAllUsers, this));
 }
 

@@ -1,7 +1,7 @@
 // Project Header Files
 #include "TestGoalModel.h"
 #include "TestDBInterfaceCore.h"
-#include "UserGoalList.h"
+#include "GoalQueryProcessor.h"
 #include "UserGoalModel.h"
 #include "UserModel.h"
 
@@ -114,8 +114,8 @@ TestStatus TestGoalModel::testPositivePathGetListofChildrenFromParent()
         return TESTFAILED;
     }
 
-    UserGoalList goalListTestInterface;
-    UserGoalListValues jobRelatedgoals = goalListTestInterface.getAllChildrenFromParent(parentGoal);
+    GoalQueryProcessor goalListTestInterface;
+    GoalQueryProcessorValues jobRelatedgoals = goalListTestInterface.getAllChildrenFromParent(parentGoal);
 
     if (jobRelatedgoals.empty())
     {
@@ -140,8 +140,8 @@ TestStatus TestGoalModel::testPositivePathGetListofChildrenFromParent()
 
 TestStatus TestGoalModel::testPositivePathGetAllGoalsForUser()
 {
-    UserGoalList goalListTestInterface;
-    UserGoalListValues allUserGoals = goalListTestInterface.getAllGoalsForUser(userOne->getUserID());
+    GoalQueryProcessor goalListTestInterface;
+    GoalQueryProcessorValues allUserGoals = goalListTestInterface.getAllGoalsForUser(userOne->getUserID());
 
     if (allUserGoals.empty())
     {
@@ -165,11 +165,11 @@ TestStatus TestGoalModel::testPositivePathGetAllGoalsForUser()
 
 TestStatus TestGoalModel::testPositivePathFindGoalsWithSimilarDescription()
 {
-    UserGoalList goalListTestInterface;
+    GoalQueryProcessor goalListTestInterface;
     std::string searchString("Maintain");
     std::size_t userId = userOne->getUserID();
 
-    UserGoalListValues goalsWithSimilarDescription = goalListTestInterface.findGoalsByUserIdAndSimilarDescription(userId, searchString);
+    GoalQueryProcessorValues goalsWithSimilarDescription = goalListTestInterface.findGoalsByUserIdAndSimilarDescription(userId, searchString);
     if (goalsWithSimilarDescription.empty())
     {
         std::cerr << "test of goalListTestInterface.findGoalsByUserIdAndSimilarDescription() FAILED\n" <<
@@ -195,8 +195,8 @@ TestStatus TestGoalModel::testPositivePathDeleteGoal()
     std::string funcUnderTest("Delete Goal");
 
     std::chrono::year_month_day testDate(constantStringToChronoDate("2026-03-08"));
-    UserGoalList goalListTestInterface;
-    UserGoalListValues testGoalList = goalListTestInterface.getAllGoalsForUser(userOne->getUserID());
+    GoalQueryProcessor goalListTestInterface;
+    GoalQueryProcessorValues testGoalList = goalListTestInterface.getAllGoalsForUser(userOne->getUserID());
     if (testGoalList.empty())
     {
         std::cerr << std::format("{}: {} {} FAILED\n", funcUnderTest, "userOne goal list is empty", goalListTestInterface.getAllErrorMessages());
@@ -218,7 +218,7 @@ TestStatus TestGoalModel::testPositivePathDeleteGoal()
         return TESTFAILED;
     }
 
-    UserGoalListValues alteredList = goalListTestInterface.getAllGoalsForUser(userOne->getUserID());
+    GoalQueryProcessorValues alteredList = goalListTestInterface.getAllGoalsForUser(userOne->getUserID());
     if (!(alteredList.size() < testGoalList.size()))
     {
         std::cerr << std::format("Deleted goal ({}) did not decrease the size of the user goal list. TEST FAILED\n",

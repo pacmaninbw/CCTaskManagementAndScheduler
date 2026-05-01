@@ -24,7 +24,7 @@ TestTaskDBInterface::TestTaskDBInterface(std::string taskFileName)
 
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testTasksFromDataFile, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetUnstartedTasks, this));
-    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetDefaultDashboardTaskList, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetDefaultDashboardTaskQueryProcessor, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testTaskUpdates, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetActiveTasks, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testHideUnstartedTask, this));
@@ -113,10 +113,10 @@ bool TestTaskDBInterface::testGetTaskByID(TaskModel_shp insertedTask)
     }
 }
 
-TaskListValues TestTaskDBInterface::loadTasksFromDataFile()
+TaskQueryProcessorValues TestTaskDBInterface::loadTasksFromDataFile()
 {
     std::size_t lCount = 0;
-    TaskListValues inputTaskData;
+    TaskQueryProcessorValues inputTaskData;
 
     std::ifstream taskDataFile(dataFileName);
     
@@ -194,8 +194,8 @@ TaskModel_shp TestTaskDBInterface::creatEvenTask(CSVRow taskData)
 
 TestStatus TestTaskDBInterface::testGetUnstartedTasks()
 {
-    TaskList taskDBInteface;
-    TaskListValues notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(TaskIntegrationTestUserOne->getUserID());
+    TaskQueryProcessor taskDBInteface;
+    TaskQueryProcessorValues notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(TaskIntegrationTestUserOne->getUserID());
     if (!notStartedList.empty())
     {    
         if (verboseOutput)
@@ -217,21 +217,21 @@ TestStatus TestTaskDBInterface::testGetUnstartedTasks()
     return TESTFAILED;
 }
 
-TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskList()
+TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskQueryProcessor()
 {
-    TaskList taskDBInteface;
+    TaskQueryProcessor taskDBInteface;
     UserModel_shp realUser = std::make_shared<UserModel>();
     realUser->selectByFullName("Black", "Paul", "A");
 
-    TaskListValues defaultTaskList = taskDBInteface.getDefaultDashboardTaskList(realUser->getUserID(),
+    TaskQueryProcessorValues defaultTaskQueryProcessor = taskDBInteface.getDefaultDashboardTaskQueryProcessor(realUser->getUserID(),
         commonProductionTestDataAddedDate);
-    if (!defaultTaskList.empty())
+    if (!defaultTaskQueryProcessor.empty())
     {    
         if (verboseOutput)
         {
             std::cout << std::format("Find default task list for user({}) PASSED!\n", realUser->getUserID());
-            std::cout << std::format("User {} dashboard has {} tasks\n", realUser->getUserID(), defaultTaskList.size());
-            for (auto task: defaultTaskList)
+            std::cout << std::format("User {} dashboard has {} tasks\n", realUser->getUserID(), defaultTaskQueryProcessor.size());
+            for (auto task: defaultTaskQueryProcessor)
             {
                 std::cout << *task << "\n";
             }
@@ -239,7 +239,7 @@ TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskList()
         return TESTPASSED; 
     }
 
-    std::cerr << std::format("taskDBInterface.getDefaultDashboardTaskList({}) FAILED!\n", realUser->getUserID()) <<
+    std::cerr << std::format("taskDBInterface.getDefaultDashboardTaskQueryProcessor({}) FAILED!\n", realUser->getUserID()) <<
         taskDBInteface.getAllErrorMessages() << "\n";
 
     return TESTFAILED;
@@ -248,8 +248,8 @@ TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskList()
 
 TestStatus TestTaskDBInterface::testGetActiveTasks()
 {
-    TaskList taskDBInteface;
-    TaskListValues activeTasks = taskDBInteface.getActiveTasksForAssignedUser(TaskIntegrationTestUserOne->getUserID());
+    TaskQueryProcessor taskDBInteface;
+    TaskQueryProcessorValues activeTasks = taskDBInteface.getActiveTasksForAssignedUser(TaskIntegrationTestUserOne->getUserID());
     if (!activeTasks.empty())
     {    
         if (verboseOutput)
@@ -297,9 +297,9 @@ TestStatus TestTaskDBInterface::testTaskUpdates()
 
 TestStatus TestTaskDBInterface::testHideUnstartedTask()
 {
-    TaskList taskDBInteface;
+    TaskQueryProcessor taskDBInteface;
     std::size_t userIdForTaskDeletion = TaskIntegrationTestUserOne->getUserID();
-    TaskListValues notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(userIdForTaskDeletion);
+    TaskQueryProcessorValues notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(userIdForTaskDeletion);
     if (!notStartedList.empty())
     {
         std::size_t taskToHideIndex = notStartedList.size() > 3? notStartedList.size() - 2 : notStartedList.size() - 1;
@@ -317,7 +317,7 @@ TestStatus TestTaskDBInterface::testHideUnstartedTask()
             return TESTFAILED;
         }
 
-        TaskListValues alteredList = taskDBInteface.getUnstartedDueForStartForAssignedUser(userIdForTaskDeletion);
+        TaskQueryProcessorValues alteredList = taskDBInteface.getUnstartedDueForStartForAssignedUser(userIdForTaskDeletion);
         if (!(alteredList.size() < notStartedList.size()))
         {
             std::cerr << std::format("Deleted task ({}) did not decrease the size of the unstarted task list. TEST FAILED\n", taskToHide->getTaskID());
@@ -442,9 +442,9 @@ bool TestTaskDBInterface::testGetCompletedList()
         return false;
     }
 
-    TaskList taskSearch;
+    TaskQueryProcessor taskSearch;
 
-    TaskListValues tasksToMarkComplete = taskSearch.getTasksByAssignedIDandParentID(user1ID, parentTask->getTaskID());
+    TaskQueryProcessorValues tasksToMarkComplete = taskSearch.getTasksByAssignedIDandParentID(user1ID, parentTask->getTaskID());
     for (auto task: tasksToMarkComplete)
     {
         task->setCompletionDate(completedDate);
@@ -457,7 +457,7 @@ bool TestTaskDBInterface::testGetCompletedList()
     }
 
     std::chrono::year_month_day searchAfter = stringToDate("2025-5-11");
-    TaskListValues completedTasks = taskSearch.getTasksCompletedByAssignedAfterDate(user1ID, searchAfter);
+    TaskQueryProcessorValues completedTasks = taskSearch.getTasksCompletedByAssignedAfterDate(user1ID, searchAfter);
 
     if (completedTasks.size() != (tasksToMarkComplete.size() + 1))
     {
@@ -581,7 +581,7 @@ TestStatus TestTaskDBInterface::testNegativePathMissingRequiredFields()
 TestStatus TestTaskDBInterface::testTasksFromDataFile()
 {
     TestStatus allTestsPassed = TESTPASSED;
-    TaskListValues userTaskTestData = loadTasksFromDataFile();
+    TaskQueryProcessorValues userTaskTestData = loadTasksFromDataFile();
 
     for (auto testTask: userTaskTestData)
     {

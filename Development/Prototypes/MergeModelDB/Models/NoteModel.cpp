@@ -15,12 +15,16 @@
 #include <vector>
 
 NoteModel::NoteModel()
-: ModelDBInterface("Note", "idUserNotes")
+: ModelDBInterface("Note", "idUserNotes"), userID{0}
 {
-    userID = 0;
-    creationDate = std::chrono::system_clock::now();
-    lastUpdate = creationDate;
 }
+
+NoteModel::NoteModel(boost::mysql::row_view& rv)
+: NoteModel()
+{
+    processResultRow(rv);
+}
+
 
 void NoteModel::setNoteId(std::size_t noteId)
 {
@@ -108,17 +112,26 @@ std::string NoteModel::formatSelectStatement()
     return std::move(fctx).get().value();
 }
 
+void NoteModel::initColumnNameToIndexMap()
+{
+    columnNameToIndexMap["idUserNotes"] = columnIndexNotSet;
+    columnNameToIndexMap["UserID"] = columnIndexNotSet;
+    columnNameToIndexMap["NotationDateTime"] = columnIndexNotSet;
+    columnNameToIndexMap["Content"] = columnIndexNotSet;
+    columnNameToIndexMap["LastUpdate"] = columnIndexNotSet;
+    columnNameToIndexMap["Hidden"] = columnIndexNotSet;
+}
 
 void NoteModel::processResultRow(boost::mysql::row_view rv)
 {
-    primaryKey = rv.at(NoteIdIdx).as_uint64();
-    userID = rv.at(UserIdIdx).as_uint64();
-    creationDate = boostMysqlDateTimeToChronoTimePoint(rv.at(NotationDateTimeIdx).as_datetime());
-    content = rv.at(ContentIdx).as_string();
-    lastUpdate = boostMysqlDateTimeToChronoTimePoint(rv.at(LastUpdateIdx).as_datetime());
-    if (!rv.at(HiddenIdx).is_null())
+    primaryKey = rv.at(getIndexByName("idUserNotes")).as_uint64();
+    userID = rv.at(getIndexByName("UserID")).as_uint64();
+    creationDate = boostMysqlDateTimeToChronoTimePoint(rv.at(getIndexByName("NotationDateTime")).as_datetime());
+    content = rv.at(getIndexByName("Content")).as_string();
+    lastUpdate = boostMysqlDateTimeToChronoTimePoint(rv.at(getIndexByName("LastUpdate")).as_datetime());
+    if (!rv.at(getIndexByName("Hidden")).is_null())
     {
-        deleted = rv.at(HiddenIdx).as_int64() == 1? true : false;
+        deleted = rv.at(getIndexByName("Hidden")).as_int64() == 1? true : false;
     }
 }
 
@@ -132,7 +145,7 @@ bool NoteModel::selectByNoteID(std::size_t noteID)
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::format_sql_to(fctx, baseQuery);
         boost::mysql::format_sql_to(fctx, " WHERE idUserNotes = {}", noteID);
-    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
 
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
 
@@ -270,5 +283,4 @@ std::string NoteModel::formatGetNotesFromUserForDate(std::size_t userId, std::ch
 
     return std::string();
 }
-
 

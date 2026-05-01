@@ -359,7 +359,7 @@ INSERT INTO `testPTSDB`.`UserScheduleItem` (`idUserScheduleItem`, `UserID`, `Sta
 (224, 1, '2026-03-13 11:15:00', '2026-03-13 11:29:59', 'Wash pots and pans from last nights dinner ', 1, 'Home', '2026-03-13 11:54:12', '2026-03-13 11:54:12'),
 (225, 1, '2026-03-13 11:45:00', '2026-03-13 12:14:59', 'Read email, Plan day using PP3Rework app ', 1, 'Starbucks', '2026-03-13 11:55:14', '2026-03-13 11:55:14'),
 (226, 1, '2026-03-13 12:15:00', '2026-03-13 12:44:59', 'Code Review Moderator oversight', 0, 'Starbucks', '2026-03-13 11:56:18', '2026-03-13 11:56:18'),
-(227, 1, '2026-03-13 12:45:00', '2026-03-13 15:59:59', 'Add unit and integration test for new NoteList search ', 0, 'Starbucks', '2026-03-13 11:58:04', '2026-03-13 11:58:04'),
+(227, 1, '2026-03-13 12:45:00', '2026-03-13 15:59:59', 'Add unit and integration test for new NoteQueryProcessor search ', 0, 'Starbucks', '2026-03-13 11:58:04', '2026-03-13 11:58:04'),
 (228, 1, '2026-03-13 16:00:00', '2026-03-13 16:59:59', ' Grocery shopping', 0, NULL, '2026-03-13 11:58:26', '2026-03-13 11:58:26'),
 (229, 1, '2026-03-13 17:00:00', '2026-03-13 17:59:59', 'Breakfast and Science Fiction ', 1, 'Home', '2026-03-13 11:59:02', '2026-03-13 11:59:02'),
 (230, 1, '2026-03-13 18:00:00', '2026-03-13 18:59:59', ' Pay Amex credit card bill', 1, 'Home', '2026-03-13 11:59:40', '2026-03-13 11:59:40'),

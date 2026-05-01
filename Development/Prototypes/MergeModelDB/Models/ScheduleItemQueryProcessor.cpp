@@ -1,6 +1,6 @@
 // Project Header Files
-#include "ListDBInterface.h"
-#include "ScheduleItemList.h"
+#include "QueryProcessor.h"
+#include "ScheduleItemQueryProcessor.h"
 #include "ScheduleItemModel.h"
 
 // Standard C++ Header Files
@@ -8,21 +8,21 @@
 #include <format>
 #include <iostream>
 
-ScheduleItemList::ScheduleItemList(std::size_t userId)
-: ListDBInterface<ScheduleItemModel>()
+ScheduleItemQueryProcessor::ScheduleItemQueryProcessor(std::size_t userId)
+: QueryProcessor<ScheduleItemModel>()
 {
     userID = userId;
 }
 
-ScheduleItemListValues ScheduleItemList::getUserDaySchedule(std::chrono::year_month_day scheduleDate) noexcept
+ScheduleItemQueryProcessorValues ScheduleItemQueryProcessor::getUserDaySchedule(std::chrono::year_month_day scheduleDate) noexcept
 {
     errorMessages.clear();
-    appendErrorMessage("In ScheduleItemList::getUserDaySchedule : ");
+    appendErrorMessage("In ScheduleItemQueryProcessor::getUserDaySchedule : ");
 
     try
     {
         firstFormattedQuery = queryGenerator->formatSelectScheduleItemsByDateAndUser(scheduleDate, userID);
-        return runQueryFillScheduleItemList();
+        return runQueryFillScheduleItemQueryProcessor();
     }
 
     catch(const std::exception& e)
@@ -30,22 +30,22 @@ ScheduleItemListValues ScheduleItemList::getUserDaySchedule(std::chrono::year_mo
         appendErrorMessage(e.what());
     }
     
-    return ScheduleItemListValues();
+    return ScheduleItemQueryProcessorValues();
 }
 
-ScheduleItemListValues ScheduleItemList::findUserScheduleItemsByContentAndDateRange(
+ScheduleItemQueryProcessorValues ScheduleItemQueryProcessor::findUserScheduleItemsByContentAndDateRange(
     std::string searchTitle,
     std::chrono::year_month_day searchStart,
     std::chrono::year_month_day searchEnd
 ) noexcept
 {
     errorMessages.clear();
-    appendErrorMessage("In ScheduleItemList::findUserScheduleItemsByContentAndDateRange : ");
+    appendErrorMessage("In ScheduleItemQueryProcessor::findUserScheduleItemsByContentAndDateRange : ");
 
     try
     {
         firstFormattedQuery = queryGenerator->formatSelectSiByContentDateRangeUser(searchTitle, searchStart, searchEnd, userID);
-        return runQueryFillScheduleItemList();
+        return runQueryFillScheduleItemQueryProcessor();
     }
 
     catch(const std::exception& e)
@@ -53,14 +53,14 @@ ScheduleItemListValues ScheduleItemList::findUserScheduleItemsByContentAndDateRa
         appendErrorMessage(e.what());
     }
     
-    return ScheduleItemListValues();
+    return ScheduleItemQueryProcessorValues();
 }
 
-std::vector<std::string> ScheduleItemList::findEventSToRepeat(std::string searchTitle) noexcept
+std::vector<std::string> ScheduleItemQueryProcessor::findEventSToRepeat(std::string searchTitle) noexcept
 {
     errorMessages.clear();
     std::vector<std::string> matchingEvents;
-    appendErrorMessage("In ScheduleItemList::findEventSToRepeat : ");
+    appendErrorMessage("In ScheduleItemQueryProcessor::findEventSToRepeat : ");
 
     try
     {
@@ -105,11 +105,11 @@ std::vector<std::string> ScheduleItemList::findEventSToRepeat(std::string search
     return matchingEvents;
 }
 
-std::vector<std::string> ScheduleItemList::findEventsForRepeatCompletion() noexcept
+std::vector<std::string> ScheduleItemQueryProcessor::findEventsForRepeatCompletion() noexcept
 {
     errorMessages.clear();
     std::vector<std::string> matchingEvents;
-    appendErrorMessage("In ScheduleItemList::findEventsForRepeatCompletion : ");
+    appendErrorMessage("In ScheduleItemQueryProcessor::findEventsForRepeatCompletion : ");
 
     try
     {
@@ -139,11 +139,11 @@ std::vector<std::string> ScheduleItemList::findEventsForRepeatCompletion() noexc
     return matchingEvents;
 }
 
-std::vector<std::string> ScheduleItemList::findLocationsForRepeatCompletion() noexcept
+std::vector<std::string> ScheduleItemQueryProcessor::findLocationsForRepeatCompletion() noexcept
 {
     errorMessages.clear();
     std::vector<std::string> matchingLocations;
-    appendErrorMessage("In ScheduleItemList::findLocationsForRepeatCompletion : ");
+    appendErrorMessage("In ScheduleItemQueryProcessor::findLocationsForRepeatCompletion : ");
 
     try
     {
@@ -173,9 +173,9 @@ std::vector<std::string> ScheduleItemList::findLocationsForRepeatCompletion() no
     return matchingLocations;
 }
 
-ScheduleItemListValues ScheduleItemList::fillScheduleItemList()
+ScheduleItemQueryProcessorValues ScheduleItemQueryProcessor::fillScheduleItemQueryProcessor()
 {
-    ScheduleItemListValues scheduleItemList;
+    ScheduleItemQueryProcessorValues ScheduleItemQueryProcessor;
 
     for (auto scheduleItemID: primaryKeyResults)
     {
@@ -183,52 +183,52 @@ ScheduleItemListValues ScheduleItemList::fillScheduleItemList()
         newScheduleItem->setScheduleItemID(scheduleItemID);
         newScheduleItem->setUserID(userID);
         newScheduleItem->retrieve();
-        scheduleItemList.push_back(newScheduleItem);
+        ScheduleItemQueryProcessor.push_back(newScheduleItem);
     }
 
-    return scheduleItemList;
+    return ScheduleItemQueryProcessor;
 }
 
-ScheduleItemListValues ScheduleItemList::runQueryFillScheduleItemList()
+ScheduleItemQueryProcessorValues ScheduleItemQueryProcessor::runQueryFillScheduleItemQueryProcessor()
 {
     if (firstFormattedQuery.empty())
     {
         appendErrorMessage(std::format("Formatting select multiple schedule items query string failed {}",
             queryGenerator->getAllErrorMessages()));
-        return ScheduleItemListValues();
+        return ScheduleItemQueryProcessorValues();
     }
     
     if (runFirstQuery())
     {
-        return fillScheduleItemList();
+        return fillScheduleItemQueryProcessor();
     }
 
-    return ScheduleItemListValues();
+    return ScheduleItemQueryProcessorValues();
 }
 
-std::vector<ListExceptionTestElement> ScheduleItemList::initListExceptionTests() noexcept
+std::vector<ListExceptionTestElement> ScheduleItemQueryProcessor::initListExceptionTests() noexcept
 {
     std::vector<ListExceptionTestElement> exceptionTests;
-    exceptionTests.push_back({std::bind(&ScheduleItemList::testExceptionGetUserDaySchedule, this), "getUserDaySchedule"});
-    exceptionTests.push_back({std::bind(&ScheduleItemList::testExceptionFindUserScheduleItemsByContentAndDateRange, this),
+    exceptionTests.push_back({std::bind(&ScheduleItemQueryProcessor::testExceptionGetUserDaySchedule, this), "getUserDaySchedule"});
+    exceptionTests.push_back({std::bind(&ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByContentAndDateRange, this),
         "findUserScheduleItemsByContentAndDateRange"});
-    exceptionTests.push_back({std::bind(&ScheduleItemList::testExceptionFindEventSToRepeat, this), "findEventSToRepeat"});
-    exceptionTests.push_back({std::bind(&ScheduleItemList::testExceptionFindEventsForRepeatCompletion, this), "findEventsToRepeatCompletion"});
-    exceptionTests.push_back({std::bind(&ScheduleItemList::testExceptionFindLocationsForRepeatCompletion, this),
+    exceptionTests.push_back({std::bind(&ScheduleItemQueryProcessor::testExceptionFindEventSToRepeat, this), "findEventSToRepeat"});
+    exceptionTests.push_back({std::bind(&ScheduleItemQueryProcessor::testExceptionFindEventsForRepeatCompletion, this), "findEventsToRepeatCompletion"});
+    exceptionTests.push_back({std::bind(&ScheduleItemQueryProcessor::testExceptionFindLocationsForRepeatCompletion, this),
         "findLocationsForRepeatCompletion"});
 
     return exceptionTests;
 }
 
-TestStatus ScheduleItemList::testExceptionGetUserDaySchedule() noexcept
+TestStatus ScheduleItemQueryProcessor::testExceptionGetUserDaySchedule() noexcept
 {
     selfTestResetAllValues();
 
-    return testListExceptionAndSuccessNArgs("ScheduleItemList::testExceptionGgetUserDaySchedule()",
-         std::bind(&ScheduleItemList::getUserDaySchedule, this, std::placeholders::_1), commonTestDateValue);
+    return testListExceptionAndSuccessNArgs("ScheduleItemQueryProcessor::testExceptionGgetUserDaySchedule()",
+         std::bind(&ScheduleItemQueryProcessor::getUserDaySchedule, this, std::placeholders::_1), commonTestDateValue);
 }
 
-TestStatus ScheduleItemList::testExceptionFindUserScheduleItemsByContentAndDateRange() noexcept
+TestStatus ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByContentAndDateRange() noexcept
 {
     selfTestResetAllValues();
 
@@ -236,33 +236,33 @@ TestStatus ScheduleItemList::testExceptionFindUserScheduleItemsByContentAndDateR
     std::chrono::year_month_day testStart(commonTestDateRangeStartValue);
     std::chrono::year_month_day testEnd(commonTestDateRangeEndValue);
 
-    return testListExceptionAndSuccessNArgs("ScheduleItemList::testExceptionFindUserScheduleItemsByContentAndDateRange()",
-         std::bind(&ScheduleItemList::findUserScheduleItemsByContentAndDateRange, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), 
+    return testListExceptionAndSuccessNArgs("ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByContentAndDateRange()",
+         std::bind(&ScheduleItemQueryProcessor::findUserScheduleItemsByContentAndDateRange, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), 
         titleSearch, testStart, testEnd);
 }
 
-TestStatus ScheduleItemList::testExceptionFindEventSToRepeat() noexcept
+TestStatus ScheduleItemQueryProcessor::testExceptionFindEventSToRepeat() noexcept
 {
     selfTestResetAllValues();
 
     std::string titleSearch("Title search");
 
-    return testListExceptionAndSuccessNArgs("ScheduleItemList::testExceptionFindEventSToRepeat()",
-         std::bind(&ScheduleItemList::findEventSToRepeat, this, std::placeholders::_1), titleSearch);
+    return testListExceptionAndSuccessNArgs("ScheduleItemQueryProcessor::testExceptionFindEventSToRepeat()",
+         std::bind(&ScheduleItemQueryProcessor::findEventSToRepeat, this, std::placeholders::_1), titleSearch);
 }
 
-TestStatus ScheduleItemList::testExceptionFindEventsForRepeatCompletion() noexcept
+TestStatus ScheduleItemQueryProcessor::testExceptionFindEventsForRepeatCompletion() noexcept
 {
     selfTestResetAllValues();
 
-    return testListExceptionAndSuccessNArgs("ScheduleItemList::testExceptionFindEventsForRepeatCompletion()",
-         std::bind(&ScheduleItemList::findEventsForRepeatCompletion, this));
+    return testListExceptionAndSuccessNArgs("ScheduleItemQueryProcessor::testExceptionFindEventsForRepeatCompletion()",
+         std::bind(&ScheduleItemQueryProcessor::findEventsForRepeatCompletion, this));
 }
 
-TestStatus ScheduleItemList::testExceptionFindLocationsForRepeatCompletion() noexcept
+TestStatus ScheduleItemQueryProcessor::testExceptionFindLocationsForRepeatCompletion() noexcept
 {
     selfTestResetAllValues();
 
-    return testListExceptionAndSuccessNArgs("ScheduleItemList::testExceptionFindLocationsForRepeatCompletion()",
-         std::bind(&ScheduleItemList::findLocationsForRepeatCompletion, this));
+    return testListExceptionAndSuccessNArgs("ScheduleItemQueryProcessor::testExceptionFindLocationsForRepeatCompletion()",
+         std::bind(&ScheduleItemQueryProcessor::findLocationsForRepeatCompletion, this));
 }

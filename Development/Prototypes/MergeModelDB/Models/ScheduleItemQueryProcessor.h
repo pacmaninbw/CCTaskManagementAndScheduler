@@ -1,8 +1,8 @@
-#ifndef SCHEDULEITEMLIST_H_
-#define SCHEDULEITEMLIST_H_
+#ifndef SCHEDULEITEMLQUERYPROCESSOR_H_
+#define SCHEDULEITEMLQUERYPROCESSOR_H_
 
 // Project Header Files
-#include "ListDBInterface.h"
+#include "QueryProcessor.h"
 #include "ScheduleItemModel.h"
 
 // Standard C++ Header Files
@@ -10,24 +10,24 @@
 #include <string>
 #include <vector>
 
-using ScheduleItemListValues = std::vector<ScheduleItemModel_shp>;
+using ScheduleItemQueryProcessorValues = std::vector<ScheduleItemModel_shp>;
 
-class ScheduleItemList : public ListDBInterface<ScheduleItemModel>
+class ScheduleItemQueryProcessor : public QueryProcessor<ScheduleItemModel>
 {
 public:
-    ScheduleItemList(std::size_t userId);
-    virtual ~ScheduleItemList() = default;
+    ScheduleItemQueryProcessor(std::size_t userId);
+    virtual ~ScheduleItemQueryProcessor() = default;
 
-    ScheduleItemListValues getUserDaySchedule(std::chrono::year_month_day scheduleDate) noexcept;
-    ScheduleItemListValues findUserScheduleItemsByContentAndDateRange(std::string searchTitle,
+    ScheduleItemQueryProcessorValues getUserDaySchedule(std::chrono::year_month_day scheduleDate) noexcept;
+    ScheduleItemQueryProcessorValues findUserScheduleItemsByContentAndDateRange(std::string searchTitle,
         std::chrono::year_month_day searchStart, std::chrono::year_month_day searchEnd) noexcept;
     std::vector<std::string> findEventSToRepeat(std::string searchTitle) noexcept;
     std::vector<std::string> findEventsForRepeatCompletion() noexcept;
     std::vector<std::string> findLocationsForRepeatCompletion() noexcept; 
 
 private:
-    ScheduleItemListValues fillScheduleItemList();
-    ScheduleItemListValues runQueryFillScheduleItemList();
+    ScheduleItemQueryProcessorValues fillScheduleItemQueryProcessor();
+    ScheduleItemQueryProcessorValues runQueryFillScheduleItemQueryProcessor();
 
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
     TestStatus testExceptionGetUserDaySchedule() noexcept;
@@ -39,5 +39,5 @@ private:
     std::size_t userID;
 };
 
-#endif // SCHEDULEITEMLIST_H_
+#endif // SCHEDULEITEMLQUERYPROCESSOR_H_
 

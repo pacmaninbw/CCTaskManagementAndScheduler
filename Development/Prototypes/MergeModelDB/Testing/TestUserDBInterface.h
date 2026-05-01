@@ -3,7 +3,7 @@
 
 // Project Header Files
 #include "TestDBInterfaceCore.h"
-#include "UserList.h"
+#include "UserQueryProcessor.h"
 #include "UserModel.h"
 
 // StandardS C++ Header Files
@@ -24,8 +24,8 @@ private:
     bool testGetUserByFullName(UserModel_shp insertedUser);
     bool testGetUserByEmail(UserModel_shp insertedUser);
     bool testUpdateUserPassword(UserModel_shp insertedUser);
-    bool loadTestUsersFromFile(UserListValues& userProfileTestData);
-    bool testGetAllUsers(UserListValues userProfileTestData);
+    bool loadTestUsersFromFile(UserQueryProcessorValues& userProfileTestData);
+    bool testGetAllUsers(UserQueryProcessorValues userProfileTestData);
     TestStatus testnegativePathNotModified();
     TestStatus testNegativePathAlreadyInDataBase();
 

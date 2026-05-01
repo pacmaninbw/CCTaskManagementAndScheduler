@@ -20,6 +20,7 @@ class NoteModel : public ModelDBInterface
 public:
 
     NoteModel();
+    NoteModel(boost::mysql::row_view& rv);
     ~NoteModel() = default;
 
     std::size_t getNoteId() const { return primaryKey; };
@@ -93,6 +94,7 @@ protected:
     std::string formatSelectStatement() override;
 
     void processResultRow(boost::mysql::row_view rv) override;
+    void initColumnNameToIndexMap() override;
     
     std::size_t userID;
     std::string content;
@@ -106,15 +108,9 @@ protected:
  * baseQuery could be SELECT * FROM UserProfile, but this way the order of the columns
  * returned are known.
  */
+    bool mapColumnsToIndexes();
     boost::mysql::constant_string_view baseQuery = 
         "SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes ";
-
-    static const std::size_t NoteIdIdx = 0;
-    static const std::size_t UserIdIdx = 1;
-    static const std::size_t NotationDateTimeIdx = 2;
-    static const std::size_t ContentIdx = 3;
-    static const std::size_t LastUpdateIdx = 4;
-    static const std::size_t HiddenIdx = 5;
 
     boost::mysql::constant_string_view listQueryBase = "SELECT idUserNotes FROM UserNotes ";
 };

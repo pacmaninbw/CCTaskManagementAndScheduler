@@ -216,6 +216,58 @@ bool ModelDBInterface::processResult(boost::mysql::results& results)
     return true;
 }
 
+void ModelDBInterface::addColumnToIndexMapping(std::string columnName, std::size_t indexValue)
+{
+    columnNameToIndexMap.insert({columnName, indexValue});
+}
+
+std::size_t ModelDBInterface::getIndexByName(std::string columnName)
+{
+    auto columnToMap = columnNameToIndexMap.find(columnName);
+    if (columnToMap != columnNameToIndexMap.end())
+    {
+        return columnToMap->second;
+    }
+
+    return 0;
+}
+
+void ModelDBInterface::initColumnNameToIndexMap()
+{
+}
+
+bool ModelDBInterface::mapColumnNamesToIndexes(boost::mysql::resultset_view &resultSet)
+{
+    bool allColumnsMapped = true;
+    std::size_t columnIndexValue = 0;
+
+    for (auto metaIter: resultSet.meta())
+    {
+        std::string columnName = metaIter.column_name();
+        auto columnToMap = columnNameToIndexMap.find(columnName);
+        if (columnToMap != columnNameToIndexMap.end())
+        {
+            columnToMap->second = columnIndexValue;
+        }
+        else
+        {
+            appendErrorMessage(std::format("Programmer Error: New column name {} found, no match in columnNameToIndexMap!\n", columnName));
+            allColumnsMapped = false;
+        }
+    }
+
+    for (const auto& columnToCheck: columnNameToIndexMap)
+    {
+        if (columnToCheck.second == columnIndexNotSet)
+        {
+            appendErrorMessage(std::format("Programmer Error: Missing Expected column in database output {}!\n", columnToCheck.first));
+            allColumnsMapped = false;
+        }
+    }
+
+    return allColumnsMapped;
+}
+
 std::string ModelDBInterface::wrapSearchContentSQLPatternMatch(std::string searchString) noexcept
 {
     std::string patternMatchString("%");
@@ -335,3 +387,4 @@ std::size_t ModelDBInterface::getPrimaryKeyValue(boost::mysql::results &dbResult
 
     return pKeyValue;
 }
+

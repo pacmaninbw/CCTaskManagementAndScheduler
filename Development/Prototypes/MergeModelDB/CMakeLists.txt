@@ -18,18 +18,18 @@ add_executable(protoPersonalPlanner
     Models/UserSelfTest.cpp
     Models/TaskModel.cpp
     Models/TaskSelfTest.cpp
-    Models/ListDBInterface.h
-    Models/UserList.cpp
-    Models/TaskList.cpp
+    Models/QueryProcessor.h
+    Models/UserQueryProcessor.cpp
+    Models/TaskQueryProcessor.cpp
     Models/NoteModel.cpp
     Models/NoteSelfTest.cpp
-    Models/NoteList.cpp
+    Models/NoteQueryProcessor.cpp
     Models/ScheduleItemModel.cpp
     Models/ScheduleItemSelfTest.cpp
-    Models/ScheduleItemList.cpp
+    Models/ScheduleItemQueryProcessor.cpp
     Models/UserGoalModel.cpp
     Models/UserGoalSelfTest.cpp
-    Models/UserGoalList.cpp
+    Models/GoalQueryProcessor.cpp
     main.cpp
     TestDBConnection.cpp
     Testing/TestDBInterfaceCore.cpp

@@ -1,13 +1,15 @@
 // Project Header Files
 #include "CommandLineParser.h"
 #include "commonTestValues.h"
-#include "NoteList.h"
+#include "GoalQueryProcessor.h"
+#include "NoteQueryProcessor.h"
 #include "NoteModel.h"
 #include "NoteSelfTest.h"
 #include "ScheduleItemModel.h"
+#include "ScheduleItemQueryProcessor.h"
 #include "ScheduleItemSelfTest.h"
-#include "ScheduleItemList.h"
 #include "TaskModel.h"
+#include "TaskQueryProcessor.h"
 #include "TaskSelfTest.h"
 #include "TestDBConnection.h"
 #include "TestTaskDBInterface.h"
@@ -20,9 +22,7 @@
 #include "UserGoalSelfTest.h"
 #include "UserModel.h"
 #include "UserSelfTest.h"
-#include "TaskList.h"
-#include "UserList.h"
-#include "UserGoalList.h"
+#include "UserQueryProcessor.h"
 #include "UtilityTimer.h"
 
 // Standard C++ Header Files
@@ -122,7 +122,7 @@ static TestStatus runAllUnitTests()
 }
 
 template <class A>
-static TestStatus runListUnitTest(ListDBInterface<A>* unitTest)
+static TestStatus runListUnitTest(QueryProcessor<A>* unitTest)
 {
     separateTestCaseOutput();
 
@@ -152,32 +152,32 @@ static TestStatus runAllListUnitTests()
 {
     TestStatus allUnintTestsPassed = TESTPASSED;
 
-    UserList userListTest;
-    if (runListUnitTest(&userListTest) == TESTFAILED)
+    UserQueryProcessor UserQueryProcessorTest;
+    if (runListUnitTest(&UserQueryProcessorTest) == TESTFAILED)
     {
         allUnintTestsPassed = TESTFAILED;
     }
 
-    TaskList taskListTest;
-    if (runListUnitTest(&taskListTest) == TESTFAILED)
+    TaskQueryProcessor TaskQueryProcessorTest;
+    if (runListUnitTest(&TaskQueryProcessorTest) == TESTFAILED)
     {
         allUnintTestsPassed = TESTFAILED;
     }
 
-    UserGoalList goalListTest;
+    GoalQueryProcessor goalListTest;
     if (runListUnitTest(&goalListTest) == TESTFAILED)
     {
         allUnintTestsPassed = TESTFAILED;
     }
     
-    NoteList noteListTest;
-    if (runListUnitTest(&noteListTest) == TESTFAILED)
+    NoteQueryProcessor NoteQueryProcessorTest;
+    if (runListUnitTest(&NoteQueryProcessorTest) == TESTFAILED)
     {
         allUnintTestsPassed = TESTFAILED;
     }
 
-    ScheduleItemList scheduleItemList(1);
-    if (runListUnitTest(&scheduleItemList) == TESTFAILED)
+    ScheduleItemQueryProcessor ScheduleItemQueryProcessor(1);
+    if (runListUnitTest(&ScheduleItemQueryProcessor) == TESTFAILED)
     {
         allUnintTestsPassed = TESTFAILED;
     }

@@ -17,6 +17,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 class ModelDBInterface : public CoreDBInterface
 {
@@ -51,6 +52,13 @@ protected:
     virtual std::string formatDeleteStatement() = 0;
     virtual std::string formatSelectStatement() = 0;
     virtual bool processResult(boost::mysql::results& results);
+/*
+ * RESULT PROCESSING
+ */
+    void addColumnToIndexMapping(std::string columnName, std::size_t indexValue);
+    std::size_t getIndexByName(std::string columnName);
+    virtual void initColumnNameToIndexMap();
+    bool mapColumnNamesToIndexes(boost::mysql::resultset_view& resultSet);
 /*
  * Each model must provide the process by which the database information will
  * be translated into the specific model.
@@ -96,6 +104,8 @@ protected:
         std::string fieldName;
     };
     std::vector<RequireField> missingRequiredFieldsTests;
+    std::unordered_map<std::string, std::size_t> columnNameToIndexMap;
+    static const std::size_t columnIndexNotSet = 0xffff;    // This should be greater than any possible column index value.
 };
 
 using AnyModel_shp = std::shared_ptr<ModelDBInterface>;

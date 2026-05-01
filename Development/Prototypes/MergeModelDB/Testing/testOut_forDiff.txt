@@ -239,32 +239,32 @@ ScheduleItem Self Test PASSED
 
 ---------------------------------------------------------------------------------
 
-Running UserList Self Test
+Running UserQueryProcessor Self Test
 
 
-Running Exception Handling Test Cases UserList
+Running Exception Handling Test Cases UserQueryProcessor
 
-Exception Test for UserListSelfTest::testExceptionsGetAllUsers()
+Exception Test for UserQueryProcessorSelfTest::testExceptionsGetAllUsers()
 
 
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
 
-Running TaskList Self Test
+Running TaskQueryProcessor Self Test
 
 
-Running Exception Handling Test Cases TaskList
+Running Exception Handling Test Cases TaskQueryProcessor
 
-Exception Test for TaskList::testExceptionGetActiveTasksForAssignedUser()
+Exception Test for TaskQueryProcessor::testExceptionGetActiveTasksForAssignedUser()
 
-Exception Test for TaskList::testExceptionGetUnstartedDueForStartForAssignedUser()
+Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 
-Exception Test for TaskList::testExceptionGetTasksCompletedByAssignedAfterDate()
+Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
 
-Exception Test for TaskList::testExceptionGetUnstartedDueForStartForAssignedUser()
+Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 
-Exception Test for TaskList::testExceptionGetDefaultDashboardTaskList()
+Exception Test for TaskQueryProcessor::testExceptionGetDefaultDashboardTaskQueryProcessor()
 
 
 ---------------------------------------------------------------------------------
@@ -276,51 +276,51 @@ Running UserGoalModelList Self Test
 
 Running Exception Handling Test Cases UserGoalModelList
 
-Exception Test for UserGoalList::testExceptionsGetAllGoalsForUser()
+Exception Test for GoalQueryProcessor::testExceptionsGetAllGoalsForUser()
 
-Exception Test for UserGoalList::testExceptionsGetAllChildrenFromParent()
+Exception Test for GoalQueryProcessor::testExceptionsGetAllChildrenFromParent()
 
-Exception Test for UserGoalList::findGoalsByUserIdAndSimilarDescription()
-
-
----------------------------------------------------------------------------------
-
----------------------------------------------------------------------------------
-
-Running NoteList Self Test
-
-
-Running Exception Handling Test Cases NoteList
-
-Exception Test for NoteList::testExceptionsGetAllNotes()
-
-Exception Test for NoteList::testExceptionsGetNotesForUserLikeContent()
-
-Exception Test for NoteList::testExceptionsGetNotesForUserCreatedDateRange()
-
-Exception Test for NoteList::testExceptionsGetNotesForUserEditedDateRange()
-
-Exception Test for NoteList::testExceptionsGetDashboardNoteTable()
+Exception Test for GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription()
 
 
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
 
-Running ScheduleItemList Self Test
+Running NoteQueryProcessor Self Test
 
 
-Running Exception Handling Test Cases ScheduleItemList
+Running Exception Handling Test Cases NoteQueryProcessor
 
-Exception Test for ScheduleItemList::testExceptionGgetUserDaySchedule()
+Exception Test for NoteQueryProcessor::testExceptionsGetAllNotes()
 
-Exception Test for ScheduleItemList::testExceptionFindUserScheduleItemsByContentAndDateRange()
+Exception Test for NoteQueryProcessor::testExceptionsGetNotesForUserLikeContent()
 
-Exception Test for ScheduleItemList::testExceptionFindEventSToRepeat()
+Exception Test for NoteQueryProcessor::testExceptionsGetNotesForUserCreatedDateRange()
 
-Exception Test for ScheduleItemList::testExceptionFindEventsForRepeatCompletion()
+Exception Test for NoteQueryProcessor::testExceptionsGetNotesForUserEditedDateRange()
 
-Exception Test for ScheduleItemList::testExceptionFindLocationsForRepeatCompletion()
+Exception Test for NoteQueryProcessor::testExceptionsGetDashboardNoteTable()
+
+
+---------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------
+
+Running ScheduleItemQueryProcessor Self Test
+
+
+Running Exception Handling Test Cases ScheduleItemQueryProcessor
+
+Exception Test for ScheduleItemQueryProcessor::testExceptionGgetUserDaySchedule()
+
+Exception Test for ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByContentAndDateRange()
+
+Exception Test for ScheduleItemQueryProcessor::testExceptionFindEventSToRepeat()
+
+Exception Test for ScheduleItemQueryProcessor::testExceptionFindEventsForRepeatCompletion()
+
+Exception Test for ScheduleItemQueryProcessor::testExceptionFindLocationsForRepeatCompletion()
 
 
 ---------------------------------------------------------------------------------

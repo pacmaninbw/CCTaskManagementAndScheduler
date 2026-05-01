@@ -4,7 +4,7 @@
 #include "commonUtilities.h"
 #include "CSVReader.h"
 #include "TestUserDBInterface.h"
-#include "UserList.h"
+#include "UserQueryProcessor.h"
 #include "UserModel.h"
 
 // C++ Header Files
@@ -32,8 +32,8 @@ TestUserDBInterface::TestUserDBInterface(std::string userFileName)
 
 TestStatus TestUserDBInterface::runPositivePathTests()
 {
-    UserList databaseEntries;
-    UserListValues userProfileTestData = databaseEntries.getAllUsers();
+    UserQueryProcessor databaseEntries;
+    UserQueryProcessorValues userProfileTestData = databaseEntries.getAllUsers();
 
     if (!loadTestUsersFromFile(userProfileTestData))
     {
@@ -225,7 +225,7 @@ bool TestUserDBInterface::testUpdateUserPassword(UserModel_shp insertedUser)
     return testPassed;
 }
 
-bool TestUserDBInterface::loadTestUsersFromFile(UserListValues& userProfileTestData)
+bool TestUserDBInterface::loadTestUsersFromFile(UserQueryProcessorValues& userProfileTestData)
 {
     std::ifstream userData(dataFileName);
 
@@ -256,11 +256,11 @@ bool TestUserDBInterface::loadTestUsersFromFile(UserListValues& userProfileTestD
     return true;
 }
 
-bool TestUserDBInterface::testGetAllUsers(UserListValues userProfileTestData)
+bool TestUserDBInterface::testGetAllUsers(UserQueryProcessorValues userProfileTestData)
 {
     bool testPassed = false;
-    UserList testULists;
-    UserListValues allUsers = testULists.getAllUsers();
+    UserQueryProcessor testULists;
+    UserQueryProcessorValues allUsers = testULists.getAllUsers();
 
     if ((userProfileTestData.size() == allUsers.size()) &&
         std::equal(userProfileTestData.begin(), userProfileTestData.end(), allUsers.begin(),

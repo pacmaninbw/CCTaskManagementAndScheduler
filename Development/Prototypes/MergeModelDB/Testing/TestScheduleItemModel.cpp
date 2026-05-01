@@ -1,5 +1,5 @@
 // Project Header Files
-#include "ScheduleItemList.h"
+#include "ScheduleItemQueryProcessor.h"
 #include "ScheduleItemModel.h"
 #include "TestDBInterfaceCore.h"
 #include "TestScheduleItemModel.h"
@@ -130,14 +130,14 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSim
     std::chrono::year_month_day searchEnd(constantStringToChronoDate("2024-12-31"));
 
     std::string searchString("birthday");
-    ScheduleItemList ScheduleItemListTestInterface(userOne->getUserID());
-    ScheduleItemListValues allSimilarUserScheduleItems = ScheduleItemListTestInterface.findUserScheduleItemsByContentAndDateRange(
+    ScheduleItemQueryProcessor ScheduleItemQueryProcessorTestInterface(userOne->getUserID());
+    ScheduleItemQueryProcessorValues allSimilarUserScheduleItems = ScheduleItemQueryProcessorTestInterface.findUserScheduleItemsByContentAndDateRange(
         searchString, searchStart, searchEnd);
 
     if (allSimilarUserScheduleItems.empty())
     {
-        std::cerr << "test of ScheduleItemListTestInterface.getScheduleItemsForUserSimlarToContent() FAILED\n" <<
-            ScheduleItemListTestInterface.getAllErrorMessages() << "\n";
+        std::cerr << "test of ScheduleItemQueryProcessorTestInterface.getScheduleItemsForUserSimlarToContent() FAILED\n" <<
+            ScheduleItemQueryProcessorTestInterface.getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 
@@ -158,12 +158,12 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate(
 {
     std::chrono::year_month_day startDate(constantStringToChronoDate("2024-12-13"));
 
-    ScheduleItemList schediList(userOne->getUserID());
-    ScheduleItemListValues allScheduleItemsInRange = schediList.getUserDaySchedule(startDate);
+    ScheduleItemQueryProcessor schediList(userOne->getUserID());
+    ScheduleItemQueryProcessorValues allScheduleItemsInRange = schediList.getUserDaySchedule(startDate);
 
     if (allScheduleItemsInRange.empty())
     {
-        std::cerr << "test of ScheduleItemListTestInterface.getAllScheduleItemsForUserEditedInDatgeRange() FAILED\n" <<
+        std::cerr << "test of ScheduleItemQueryProcessorTestInterface.getAllScheduleItemsForUserEditedInDatgeRange() FAILED\n" <<
             schediList.getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
@@ -184,13 +184,13 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate(
 TestStatus TestScheduleItemModel::testPositivePathFindEventSToRepeat()
 {
     std::string searchString("birthday");
-    ScheduleItemList ScheduleItemListTestInterface(userOne->getUserID());
-    std::vector<std::string> matchingEvents = ScheduleItemListTestInterface.findEventSToRepeat(searchString);
+    ScheduleItemQueryProcessor ScheduleItemQueryProcessorTestInterface(userOne->getUserID());
+    std::vector<std::string> matchingEvents = ScheduleItemQueryProcessorTestInterface.findEventSToRepeat(searchString);
 
     if (matchingEvents.empty())
     {
-        std::cerr << "test of ScheduleItemListTestInterface.getScheduleItemsForUserSimlarToContent() FAILED\n" <<
-            ScheduleItemListTestInterface.getAllErrorMessages() << "\n";
+        std::cerr << "test of ScheduleItemQueryProcessorTestInterface.getScheduleItemsForUserSimlarToContent() FAILED\n" <<
+            ScheduleItemQueryProcessorTestInterface.getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 
@@ -209,13 +209,13 @@ TestStatus TestScheduleItemModel::testPositivePathFindEventSToRepeat()
 
 TestStatus TestScheduleItemModel::testPositivePathFindEventsToRepeatCompletion()
 {
-    ScheduleItemList ScheduleItemListTestInterface(userOne->getUserID());
-    std::vector<std::string> matchingEvents = ScheduleItemListTestInterface.findEventsForRepeatCompletion();
+    ScheduleItemQueryProcessor ScheduleItemQueryProcessorTestInterface(userOne->getUserID());
+    std::vector<std::string> matchingEvents = ScheduleItemQueryProcessorTestInterface.findEventsForRepeatCompletion();
 
     if (matchingEvents.empty())
     {
-        std::cerr << "test of ScheduleItemListTestInterface.findEventsForRepeatCompletion() FAILED\n" <<
-            ScheduleItemListTestInterface.getAllErrorMessages() << "\n";
+        std::cerr << "test of ScheduleItemQueryProcessorTestInterface.findEventsForRepeatCompletion() FAILED\n" <<
+            ScheduleItemQueryProcessorTestInterface.getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 
@@ -234,13 +234,13 @@ TestStatus TestScheduleItemModel::testPositivePathFindEventsToRepeatCompletion()
 
 TestStatus TestScheduleItemModel::testPositivePathFindLocationsToRepeatCompletion()
 {
-    ScheduleItemList ScheduleItemListTestInterface(userOne->getUserID());
-    std::vector<std::string> matchingLocations = ScheduleItemListTestInterface.findLocationsForRepeatCompletion();
+    ScheduleItemQueryProcessor ScheduleItemQueryProcessorTestInterface(userOne->getUserID());
+    std::vector<std::string> matchingLocations = ScheduleItemQueryProcessorTestInterface.findLocationsForRepeatCompletion();
 
     if (matchingLocations.empty())
     {
-        std::cerr << "test of ScheduleItemListTestInterface.findLocationsForRepeatCompletion() FAILED\n" <<
-            ScheduleItemListTestInterface.getAllErrorMessages() << "\n";
+        std::cerr << "test of ScheduleItemQueryProcessorTestInterface.findLocationsForRepeatCompletion() FAILED\n" <<
+            ScheduleItemQueryProcessorTestInterface.getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 
@@ -270,8 +270,8 @@ TestStatus TestScheduleItemModel::testPositivePathDeleteScheduleItem()
     }
 
     std::chrono::year_month_day testDate(constantStringToChronoDate("2026-03-08"));
-    ScheduleItemList schediList(realUserOne->getUserID());
-    ScheduleItemListValues testUserSchedule = schediList.getUserDaySchedule(testDate);
+    ScheduleItemQueryProcessor schediList(realUserOne->getUserID());
+    ScheduleItemQueryProcessorValues testUserSchedule = schediList.getUserDaySchedule(testDate);
     if (testUserSchedule.empty())
     {
         std::cerr << std::format("{}: {} {} FAILED\n", funcUnderTest, "realUserOne schedule is empty", schediList.getAllErrorMessages());
@@ -293,7 +293,7 @@ TestStatus TestScheduleItemModel::testPositivePathDeleteScheduleItem()
         return TESTFAILED;
     }
 
-    ScheduleItemListValues alteredList = schediList.getUserDaySchedule(testDate);
+    ScheduleItemQueryProcessorValues alteredList = schediList.getUserDaySchedule(testDate);
     if (!(alteredList.size() < testUserSchedule.size()))
     {
         std::cerr << std::format("Deleted schedule item ({}) did not decrease the size of the user schedule. TEST FAILED\n",

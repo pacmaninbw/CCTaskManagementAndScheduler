@@ -1,5 +1,5 @@
-#ifndef LISTDBINTERFACECORE_H_
-#define LISTDBINTERFACECORE_H_
+#ifndef QueryProcessorCORE_H_
+#define QueryProcessorCORE_H_
 
 // Project Header Files
 #include "CoreDBInterface.h"
@@ -46,10 +46,10 @@ struct ListExceptionTestElement
 
 template<typename ListType>
 requires std::is_base_of<ModelDBInterface, ListType>::value
-class ListDBInterface : public CoreDBInterface
+class QueryProcessor : public CoreDBInterface
 {
 public:
-    ListDBInterface()
+    QueryProcessor()
     : CoreDBInterface()
     {
         queryGenerator = std::make_unique<ListType>();
@@ -58,7 +58,7 @@ public:
         tempListType.append("List");
         listTypeName = tempListType;
     }
-    virtual ~ListDBInterface() = default;
+    virtual ~QueryProcessor() = default;
 
     std::string getListTypeName() const noexcept { return listTypeName; };
     
@@ -297,6 +297,6 @@ protected:
     std::vector<std::string> stringOnlyResults;
 };
 
-#endif // LISTDBINTERFACECORE_H_
+#endif // QueryProcessorCORE_H_
 
 

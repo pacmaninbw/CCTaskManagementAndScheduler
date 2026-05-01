@@ -2,7 +2,7 @@
 #define TESTTASKDBINTERFACE_H_
 
 // Project Header Files
-#include "TaskList.h"
+#include "TaskQueryProcessor.h"
 #include "TaskModel.h"
 #include "TestDBInterfaceCore.h"
 #include "UserModel.h"
@@ -23,12 +23,12 @@ public:
 private:
     bool testGetTaskByDescription(TaskModel_shp task);
     bool testGetTaskByID(TaskModel_shp task);
-    TaskListValues loadTasksFromDataFile();
+    TaskQueryProcessorValues loadTasksFromDataFile();
     void commonTaskInit(TaskModel_shp newTask, CSVRow taskData);
     TaskModel_shp creatOddTask(CSVRow taskData);
     TaskModel_shp creatEvenTask(CSVRow taskData);
     TestStatus testGetUnstartedTasks();
-    TestStatus testGetDefaultDashboardTaskList();
+    TestStatus testGetDefaultDashboardTaskQueryProcessor();
     TestStatus testGetActiveTasks();
     TestStatus testTaskUpdates();
     TestStatus testHideUnstartedTask();
