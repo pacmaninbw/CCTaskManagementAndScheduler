@@ -1,7 +1,7 @@
 Memcheck, a memory error detector
 Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
 Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
-Command: protoPersonalPlanner -u pacman -p M1nus+1r3th --verbose
+Command: protoPersonalPlanner -u -p --verbose --time-tests
 
 Connected to testPTSDB
 ---------------------------------------------------------------------------------
@@ -174,7 +174,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-04-26
+	Completed Date: 2026-04-28
 	Deleted : FALSE
 
 Task::testAllInsertFailures before successful insert this = 
@@ -215,7 +215,7 @@ In Self Test Query is:
 In Self Test Query is: 
 	CALL AddUserGoal(27, 'Testing insertion exception', NULL, NULL)
 In Self Test Query is: 
-	UPDATE UserGoals SET UserGoals.UserID = 23, UserGoals.Description = 'Testing insertion exception', UserGoals.CreationTS = '2024-05-14 08:31:53.000000', UserGoals.LastUpdateTS = '2026-04-26 14:36:35.190874', UserGoals.Priority = NULL, UserGoals.ParentGoal = NULL, UserGoals.Hidden = 0 WHERE UserGoals.idUserGoals = 37
+	CALL UpdateUserGoalAllFields(23, 37, 'Testing insertion exception', NULL, NULL)
 In Self Test Query is: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
 In Self Test Query is: 
@@ -268,7 +268,7 @@ In Self Test Query is:
 In Self Test Query is: 
 	CALL AddUserNote(27, 'Testing insertion exception')
 In Self Test Query is: 
-	UPDATE UserNotes SET UserNotes.UserID = 27, UserNotes.NotationDateTime = '2024-05-14 08:31:53.000000', UserNotes.Content = 'Testing insertion exception', UserNotes.LastUpdate = '2024-05-14 08:31:53.000000' UserNotes.Hidden = 0, WHERE UserNotes.idUserNotes = 0
+	CALL UpdateNoteAllFields(27, 1, 'Testing insertion exception')
 In Self Test Query is: 
 	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
 In Self Test Query is: 
@@ -313,8 +313,7 @@ In Self Test Query is:
 	CALL AddScheduleEvent(1, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Testing Exception handling for Schedule Item Insert', 0, NULL)
 Caught expected exception from ScheduleItemSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
-	UPDATE UserScheduleItem SET StartDateTime = '2024-05-14 08:31:53.000000', EndDateTime = '2024-05-14 08:31:53.000000', Title = 'Testing Exception handling for Schedule Item Update', Personal = 0, Location = NULL, LastUpdateTS = '2026-04-26 14:36:37.861543', Hidden = 0 WHERE idUserScheduleItem = 57 AND UserID = 1 
-Caught expected exception from ScheduleItemSelfTest::formatSelectStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
+	CALL UpdateScheduleItemAllFields(1, 57, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Testing Exception handling for Schedule Item Update', 0, NULL)
 In Self Test Query is: 
 	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 57 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
 In Self Test Query is: 
@@ -400,7 +399,7 @@ Running:
 
 Exception Test for TaskList::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND ScheduledStart < '2026-05-03' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND ScheduledStart < '2026-05-05' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 1
 
@@ -433,19 +432,19 @@ Running UserGoalModelList Self Test
 
 Running Exception Handling Test Cases UserGoalModelList
 
-Exception Test for UserGoalList::testExceptionsGetAllGoalsForUser()
+Exception Test for GoalList::testExceptionsGetAllGoalsForUser()
 In Self Test Query is: 
 	SELECT idUserGoals FROM UserGoals  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
 
-Exception Test for UserGoalList::testExceptionsGetAllChildrenFromParent()
+Exception Test for GoalList::testExceptionsGetAllChildrenFromParent()
 In Self Test Query is: 
 	SELECT idUserGoals FROM UserGoals  WHERE UserID = 0 AND ParentGoal = 1 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
 
-Exception Test for UserGoalList::findGoalsByUserIdAndSimilarDescription()
+Exception Test for GoalList::findGoalsByUserIdAndSimilarDescription()
 In Self Test Query is: 
 	SELECT idUserGoals FROM UserGoals  WHERE UserID = 1 AND Description LIKE '%Maintain%' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
@@ -725,7 +724,7 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Design UML Diagram for Personal Planner' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	CALL AddTask(4, 4, 'Grocery Shopping', 0, 0, '2025-04-12', '2025-04-11', NULL, '2026-04-26', NULL, 2, 2e+00, 67, 1, 0, 0, NULL)
+	CALL AddTask(4, 4, 'Grocery Shopping', 0, 0, '2025-04-12', '2025-04-11', NULL, '2026-04-28', NULL, 2, 2e+00, 67, 1, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 58
 Running: 
@@ -737,13 +736,13 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Daily 30 minute walk' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	CALL AddTask(4, 4, 'Clean apartment', 0, 0, '2025-04-12', '2025-04-12', NULL, '2026-04-26', NULL, 2, 0e+00, 67, 3, 0, 0, NULL)
+	CALL AddTask(4, 4, 'Clean apartment', 0, 0, '2025-04-12', '2025-04-12', NULL, '2026-04-28', NULL, 2, 0e+00, 67, 3, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 60
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Clean apartment' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-03' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-05' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 50
 Running: 
@@ -894,7 +893,7 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-04-26
+	Estimated Completion Date: 2026-04-28
 	Deleted : FALSE
 
 TaskModel:
@@ -932,7 +931,7 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-04-26
+	Estimated Completion Date: 2026-04-28
 	Deleted : FALSE
 
 Running: 
@@ -1321,7 +1320,7 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 47
 Running: 
-	CALL UpdateTaskAllFields(47, 4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 4, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', '2026-04-26', 12, 6e+00, 65, 1, 0, 0, NULL)
+	CALL UpdateTaskAllFields(47, 4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 4, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', '2026-04-28', 12, 6e+00, 65, 1, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 47
 Running: 
@@ -1445,7 +1444,7 @@ Optional Fields
 	Deleted : FALSE
 
 Running: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-03' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-05' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 50
 Running: 
@@ -1467,7 +1466,7 @@ Running:
 Running: 
 	CALL HideTask(4, 59)
 Running: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-03' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-05' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 50
 Running: 
@@ -2052,6 +2051,17 @@ Running:
 Running: 
 	CALL AddUserNote(4, 'Effectively moderate the code review site on stack exchange')
 Running: 
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND Content LIKE '%Be more organized%' AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 42 AND (Hidden IS NULL OR Hidden <> 1)
+Running: 
+	CALL UpdateNoteAllFields(4, 42, 'Use a planner / organizer')
+Update UserNote Passed integration test
+	Note ID: 42
+	User ID: 4
+	Content: Use a planner / organizer
+
+Running: 
 	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
@@ -2151,7 +2161,7 @@ User 4 has 17 notes
 
 	Note ID: 42
 	User ID: 4
-	Content: Be more organized
+	Content: Use a planner / organizer
 
 	Note ID: 43
 	User ID: 4
@@ -2198,7 +2208,7 @@ User 4 has 6 notes
 	Content: Maintain my health
 
 Running: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND NotationDateTime >= '2026-04-19' AND NotationDateTime <= '2026-05-03' AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND NotationDateTime >= '2026-04-21' AND NotationDateTime <= '2026-05-05' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
@@ -2297,14 +2307,14 @@ User 4 has 17 notes
 
 	Note ID: 42
 	User ID: 4
-	Content: Be more organized
+	Content: Use a planner / organizer
 
 	Note ID: 43
 	User ID: 4
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND LastUpdate >= '2026-04-19' AND LastUpdate <= '2026-05-03' AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND LastUpdate >= '2026-04-21' AND LastUpdate <= '2026-05-05' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
@@ -2403,14 +2413,14 @@ User 4 has 17 notes
 
 	Note ID: 42
 	User ID: 4
-	Content: Be more organized
+	Content: Use a planner / organizer
 
 	Note ID: 43
 	User ID: 4
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND NotationDateTime >= '2026-04-26 07:00:00.000000' AND NotationDateTime <= '2026-04-27 06:59:00.000000' AND (Hidden IS NULL OR Hidden <> 1) ORDER BY NotationDateTime ASC
+	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND NotationDateTime >= '2026-04-28 07:00:00.000000' AND NotationDateTime <= '2026-04-29 06:59:00.000000' AND (Hidden IS NULL OR Hidden <> 1) ORDER BY NotationDateTime ASC
 Running: 
 	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
@@ -2485,7 +2495,7 @@ User 4 has 17 notes
 
 	Note ID: 42
 	User ID: 4
-	Content: Be more organized
+	Content: Use a planner / organizer
 
 	Note ID: 41
 	User ID: 4
@@ -2704,7 +2714,7 @@ Optional Fields
 Running: 
 	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 300 AND UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	UPDATE UserScheduleItem SET StartDateTime = '2024-12-02 09:30:00.000000', EndDateTime = '2024-12-02 10:30:00.000000', Title = 'Dr. David Aftergood', Personal = 0, Location = '99. N. La Cienega', LastUpdateTS = '2026-04-26 14:37:01.137676', Hidden = 0 WHERE idUserScheduleItem = 300 AND UserID = 4 
+	CALL UpdateScheduleItemAllFields(4, 300, '2024-12-02 09:30:00.000000', '2024-12-02 10:30:00.000000', 'Dr. David Aftergood', 0, '99. N. La Cienega')
 Running: 
 	CALL ScheduleItemContentSelectionList('birthday', 4)
 Find all schedule items for user (4) similar to birthday PASSED!
@@ -2813,10 +2823,15 @@ Expected error was; ScheduleItem already in Database, use Update!
 All negative path tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
+finished Unit and Integration testing of all models MySQL database
+Mon Apr 27 10:25:16 2026
+elapsed time in seconds: 26.365
+
+
 
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
-  total heap usage: 110,498 allocs, 110,498 frees, 15,310,801 bytes allocated
+  total heap usage: 110,987 allocs, 110,987 frees, 15,378,608 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 
