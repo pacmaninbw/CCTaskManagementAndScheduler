@@ -636,6 +636,28 @@ DELIMITER ;
 
 DELIMITER $$
 
+DROP PROCEDURE IF EXISTS `GetAllNotesForUserEditedInDatgeRange`$$
+
+CREATE PROCEDURE `GetAllNotesForUserEditedInDatgeRange`
+(
+    IN `UserID` INT UNSIGNED,
+    IN `timePeriodStart` DATE,
+    IN `timePeriodEnd` DATE
+) 
+BEGIN
+
+    SELECT * FROM UserNotes
+    WHERE UserNotes.UserID = 4
+    	AND UserNotes.LastUpdate >= timePeriodStart
+    	AND UserNotes.LastUpdate <= timePeriodEnd
+    	AND (UserNotes.Hidden IS NULL OR UserNotes.Hidden <> 1);
+ 
+END$$
+ 
+DELIMITER ;
+
+DELIMITER $$
+
 DROP PROCEDURE IF EXISTS `GetDashboardNoteTable`$$
 
 CREATE PROCEDURE `GetDashboardNoteTable` 
