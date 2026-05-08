@@ -544,6 +544,119 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `GetNoteByID`$$
+
+CREATE PROCEDURE `GetNoteByID`
+(
+    IN `noteId` INT UNSIGNED
+)
+
+BEGIN
+ 
+    SELECT * FROM UserNotes  WHERE UserNotes.idUserNotes = noteId;
+ 
+END$$
+ 
+DELIMITER ;
+ 
+DELIMITER $$
+ 
+DROP PROCEDURE IF EXISTS `GetAllNotesForUser`$$
+ 
+CREATE PROCEDURE `GetAllNotesForUser` (IN `userId` INT UNSIGNED)   BEGIN
+  
+    SELECT * FROM UserNotes WHERE UserNotes.UserID = userId;
+
+END$$
+ 
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `GetAllUndeletedNotesForUser`$$
+
+CREATE PROCEDURE `GetAllUndeletedNotesForUser`
+(
+    IN `userId` INT UNSIGNED
+)
+
+BEGIN
+
+    SELECT * FROM UserNotes
+    WHERE UserNotes.UserID = userId
+        AND (UserNotes.Hidden IS NULL OR UserNotes.Hidden <> 1);
+ 
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+ 
+DROP PROCEDURE IF EXISTS `GetNotesForUserSimlarToContent`$$
+ 
+CREATE PROCEDURE `GetNotesForUserSimlarToContent`
+(
+    IN `userId` INT UNSIGNED,
+    IN `likeContent` VARCHAR(1024)
+)
+BEGIN
+ 
+    SELECT * FROM UserNotes 
+    WHERE UserNotes.UserID = userId
+    	AND UserNotes.Content LIKE CONCAT('%', likeContent, '%')
+    	AND (UserNotes.Hidden IS NULL OR UserNotes.Hidden <> 1);
+    
+END$$    
+ 
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `GetAllNotesForUserCreatedInDatgeRange`$$
+
+CREATE PROCEDURE `GetAllNotesForUserCreatedInDatgeRange`
+(
+    IN `UserID` INT UNSIGNED,
+    IN `timePeriodStart` DATE,
+    IN `timePeriodEnd` DATE
+) 
+BEGIN
+
+    SELECT * FROM UserNotes
+    WHERE UserNotes.UserID = 4
+    	AND UserNotes.NotationDateTime >= timePeriodStart
+    	AND UserNotes.NotationDateTime <= timePeriodEnd
+    	AND (UserNotes.Hidden IS NULL OR UserNotes.Hidden <> 1);
+ 
+END$$
+ 
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `GetDashboardNoteTable`$$
+
+CREATE PROCEDURE `GetDashboardNoteTable` 
+(
+    IN `userId` INT UNSIGNED,
+    IN `startDay` DATETIME,
+    IN `endDay` DATETIME
+)
+BEGIN
+
+    SELECT * FROM UserNotes
+    WHERE UserNotes.UserID = userId
+        AND UserNotes.NotationDateTime >= startDay
+        AND UserNotes.NotationDateTime <= endDay
+        AND (UserNotes.Hidden IS NULL OR UserNotes.Hidden <> 1)
+    ORDER BY UserNotes.NotationDateTime ASC;
+
+END$$
+
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 DROP TABLE IF EXISTS `testPTSDB`.`Tasks`;
