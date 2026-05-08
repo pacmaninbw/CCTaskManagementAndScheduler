@@ -174,7 +174,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-04-28
+	Completed Date: 2026-05-08
 	Deleted : FALSE
 
 Task::testAllInsertFailures before successful insert this = 
@@ -314,6 +314,7 @@ In Self Test Query is:
 Caught expected exception from ScheduleItemSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
 	CALL UpdateScheduleItemAllFields(1, 57, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Testing Exception handling for Schedule Item Update', 0, NULL)
+Caught expected exception from ScheduleItemSelfTest::formatSelectStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
 	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 57 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
 In Self Test Query is: 
@@ -369,165 +370,124 @@ ScheduleItem PASSED Self Test
 
 ---------------------------------------------------------------------------------
 
-Running UserList Self Test
+Running UserQueryProcessor Self Test
 
 
-Running Exception Handling Test Cases UserList
+Running Exception Handling Test Cases UserQueryProcessor
 
-Exception Test for UserListSelfTest::testExceptionsGetAllUsers()
+Exception Test for UserQueryProcessorSelfTest::testExceptionsGetAllUsers()
 In Self Test Query is: 
 	SELECT UserID FROM UserProfile 
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 1
 
 
-UserList PASSED Self Test
+UserQueryProcessor PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
 
-Running TaskList Self Test
+Running TaskQueryProcessor Self Test
 
 
-Running Exception Handling Test Cases TaskList
+Running Exception Handling Test Cases TaskQueryProcessor
 
-Exception Test for TaskList::testExceptionGetActiveTasksForAssignedUser()
+Exception Test for TaskQueryProcessor::testExceptionGetActiveTasksForAssignedUser()
 In Self Test Query is: 
 	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND Completed IS NULL AND (Status IS NOT NULL AND Status <> 0) AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 1
 
-Exception Test for TaskList::testExceptionGetUnstartedDueForStartForAssignedUser()
+Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND ScheduledStart < '2026-05-05' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND ScheduledStart < '2026-05-15' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 1
 
-Exception Test for TaskList::testExceptionGetTasksCompletedByAssignedAfterDate()
+Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
 In Self Test Query is: 
 	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND Completed >= '2024-05-14'
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 1
 
-Exception Test for TaskList::testExceptionGetUnstartedDueForStartForAssignedUser()
+Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
 	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND ParentTask = 1 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 1
 
-Exception Test for TaskList::testExceptionGetDefaultDashboardTaskList()
+Exception Test for TaskQueryProcessor::testExceptionGetDefaultDashboardTaskList()
 In Self Test Query is: 
 	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND RequiredDelivery < '2026-03-22' AND Completed IS NULL AND (Hidden IS NULL OR Hidden <> 1) ORDER BY SchedulePriorityGroup ASC, PriorityInGroup ASC
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 1
 
 
-TaskList PASSED Self Test
+TaskQueryProcessor PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
 
-Running UserGoalModelList Self Test
+Running UserGoalModelQueryProcessor Self Test
 
 
-Running Exception Handling Test Cases UserGoalModelList
+Running Exception Handling Test Cases UserGoalModelQueryProcessor
 
-Exception Test for GoalList::testExceptionsGetAllGoalsForUser()
+Exception Test for GoalQueryProcessor::testExceptionsGetAllGoalsForUser()
 In Self Test Query is: 
 	SELECT idUserGoals FROM UserGoals  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
 
-Exception Test for GoalList::testExceptionsGetAllChildrenFromParent()
+Exception Test for GoalQueryProcessor::testExceptionsGetAllChildrenFromParent()
 In Self Test Query is: 
 	SELECT idUserGoals FROM UserGoals  WHERE UserID = 0 AND ParentGoal = 1 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
 
-Exception Test for GoalList::findGoalsByUserIdAndSimilarDescription()
+Exception Test for GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription()
 In Self Test Query is: 
 	SELECT idUserGoals FROM UserGoals  WHERE UserID = 1 AND Description LIKE '%Maintain%' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
 
 
-UserGoalModelList PASSED Self Test
+UserGoalModelQueryProcessor PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
 
-Running NoteList Self Test
+Running ScheduleItemQueryProcessor Self Test
 
 
-Running Exception Handling Test Cases NoteList
+Running Exception Handling Test Cases ScheduleItemQueryProcessor
 
-Exception Test for NoteList::testExceptionsGetAllNotes()
-In Self Test Query is: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
-
-Exception Test for NoteList::testExceptionsGetNotesForUserLikeContent()
-In Self Test Query is: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND Content LIKE '%Test Content%' AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
-
-Exception Test for NoteList::testExceptionsGetNotesForUserCreatedDateRange()
-In Self Test Query is: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND NotationDateTime >= '2024-05-07' AND NotationDateTime <= '2024-05-14' AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
-
-Exception Test for NoteList::testExceptionsGetNotesForUserEditedDateRange()
-In Self Test Query is: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND LastUpdate >= '2024-05-07' AND LastUpdate <= '2024-05-14' AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
-
-Exception Test for NoteList::testExceptionsGetDashboardNoteTable()
-In Self Test Query is: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 1 AND NotationDateTime >= '2024-05-14 07:00:00.000000' AND NotationDateTime <= '2024-05-15 06:59:00.000000' AND (Hidden IS NULL OR Hidden <> 1) ORDER BY NotationDateTime ASC
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
-
-
-NoteList PASSED Self Test
----------------------------------------------------------------------------------
-
----------------------------------------------------------------------------------
-
-Running ScheduleItemList Self Test
-
-
-Running Exception Handling Test Cases ScheduleItemList
-
-Exception Test for ScheduleItemList::testExceptionGgetUserDaySchedule()
+Exception Test for ScheduleItemQueryProcessor::testExceptionGgetUserDaySchedule()
 In Self Test Query is: 
 	SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2024-05-14 07:00:00.000000' AND StartDateTime <= '2024-05-15 06:59:59.000000' ORDER BY StartDateTime ASC
 Running: 
 	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 1 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
 
-Exception Test for ScheduleItemList::testExceptionFindUserScheduleItemsByContentAndDateRange()
+Exception Test for ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByContentAndDateRange()
 In Self Test Query is: 
 	SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 1 AND Title LIKE '%Title search%' AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2024-05-07' AND StartDateTime <= '2024-05-21'
 Running: 
 	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 1 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
 
-Exception Test for ScheduleItemList::testExceptionFindEventSToRepeat()
+Exception Test for ScheduleItemQueryProcessor::testExceptionFindEventSToRepeat()
 In Self Test Query is: 
 	CALL ScheduleItemContentSelectionList('Title search', 1)
 
-Exception Test for ScheduleItemList::testExceptionFindEventsForRepeatCompletion()
+Exception Test for ScheduleItemQueryProcessor::testExceptionFindEventsForRepeatCompletion()
 In Self Test Query is: 
 	CALL EventTitlesForCompleter(1)
 
-Exception Test for ScheduleItemList::testExceptionFindLocationsForRepeatCompletion()
+Exception Test for ScheduleItemQueryProcessor::testExceptionFindLocationsForRepeatCompletion()
 In Self Test Query is: 
 	CALL EventLocationsForCompleter(1)
 
 
-ScheduleItemList PASSED Self Test
+ScheduleItemQueryProcessor PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
@@ -724,7 +684,7 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Design UML Diagram for Personal Planner' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	CALL AddTask(4, 4, 'Grocery Shopping', 0, 0, '2025-04-12', '2025-04-11', NULL, '2026-04-28', NULL, 2, 2e+00, 67, 1, 0, 0, NULL)
+	CALL AddTask(4, 4, 'Grocery Shopping', 0, 0, '2025-04-12', '2025-04-11', NULL, '2026-05-08', NULL, 2, 2e+00, 67, 1, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 58
 Running: 
@@ -736,13 +696,13 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Daily 30 minute walk' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	CALL AddTask(4, 4, 'Clean apartment', 0, 0, '2025-04-12', '2025-04-12', NULL, '2026-04-28', NULL, 2, 0e+00, 67, 3, 0, 0, NULL)
+	CALL AddTask(4, 4, 'Clean apartment', 0, 0, '2025-04-12', '2025-04-12', NULL, '2026-05-08', NULL, 2, 0e+00, 67, 3, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 60
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Clean apartment' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-05' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-15' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 50
 Running: 
@@ -893,7 +853,7 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-04-28
+	Estimated Completion Date: 2026-05-08
 	Deleted : FALSE
 
 TaskModel:
@@ -931,7 +891,7 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-04-28
+	Estimated Completion Date: 2026-05-08
 	Deleted : FALSE
 
 Running: 
@@ -1320,7 +1280,7 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 47
 Running: 
-	CALL UpdateTaskAllFields(47, 4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 4, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', '2026-04-28', 12, 6e+00, 65, 1, 0, 0, NULL)
+	CALL UpdateTaskAllFields(47, 4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 4, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', '2026-05-08', 12, 6e+00, 65, 1, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 47
 Running: 
@@ -1444,7 +1404,7 @@ Optional Fields
 	Deleted : FALSE
 
 Running: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-05' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-15' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 50
 Running: 
@@ -1466,7 +1426,7 @@ Running:
 Running: 
 	CALL HideTask(4, 59)
 Running: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-05' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-15' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 50
 Running: 
@@ -2051,9 +2011,7 @@ Running:
 Running: 
 	CALL AddUserNote(4, 'Effectively moderate the code review site on stack exchange')
 Running: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND Content LIKE '%Be more organized%' AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 42 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetNotesForUserSimlarToContent(4, 'Be more organized')
 Running: 
 	CALL UpdateNoteAllFields(4, 42, 'Use a planner / organizer')
 Update UserNote Passed integration test
@@ -2062,41 +2020,7 @@ Update UserNote Passed integration test
 	Content: Use a planner / organizer
 
 Running: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 33 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 34 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 35 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 36 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 38 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 39 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 40 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 41 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 42 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetAllUndeletedNotesForUser(4)
 Find all notes for user (4) PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2168,19 +2092,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND Content LIKE '%Maintain%' AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetNotesForUserSimlarToContent(4, 'Maintain')
 Find all notes for user (4) similar to Maintain PASSED!
 User 4 has 6 notes
 	Note ID: 28
@@ -2208,41 +2120,7 @@ User 4 has 6 notes
 	Content: Maintain my health
 
 Running: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND NotationDateTime >= '2026-04-21' AND NotationDateTime <= '2026-05-05' AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 33 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 34 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 35 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 36 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 38 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 39 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 40 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 41 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 42 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetAllNotesForUserCreatedInDatgeRange(4, '2026-05-01', '2026-05-15')
 Find all notes for user (4) created in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2314,41 +2192,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND LastUpdate >= '2026-04-21' AND LastUpdate <= '2026-05-05' AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 33 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 34 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 35 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 36 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 38 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 39 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 40 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 41 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 42 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetAllNotesForUserEditedInDatgeRange(4, '2026-05-01', '2026-05-15')
 Find all notes for user (4) edited in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2420,183 +2264,83 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND NotationDateTime >= '2026-04-28 07:00:00.000000' AND NotationDateTime <= '2026-04-29 06:59:00.000000' AND (Hidden IS NULL OR Hidden <> 1) ORDER BY NotationDateTime ASC
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 35 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 34 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 33 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 42 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 41 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 40 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 39 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 38 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 36 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetDashboardNoteTable(4, '2026-05-08 07:00:00.000000', '2026-05-09 06:59:00.000000')
 Find all notes for user (4) for a date PASSED!
 User 4 has 17 notes
 	Note ID: 27
 	User ID: 4
 	Content: Get a Job in Software Engineering
 
-	Note ID: 35
+	Note ID: 28
 	User ID: 4
-	Content: Get an embedded programming certificate
-
-	Note ID: 34
-	User ID: 4
-	Content: Improve my Linux Programming skills
-
-	Note ID: 33
-	User ID: 4
-	Content: Learn QT graphic system
-
-	Note ID: 32
-	User ID: 4
-	Content: Maintain and improve my SQL skills
-
-	Note ID: 31
-	User ID: 4
-	Content: Maintain or archive the BHHS 74 Reunion website
-
-	Note ID: 30
-	User ID: 4
-	Content: Maintain and improve my  C programming skills
+	Content: Maintain and improve my software engineering skills
 
 	Note ID: 29
 	User ID: 4
 	Content: Maintain and improve my C++ programming skills
 
-	Note ID: 28
+	Note ID: 30
 	User ID: 4
-	Content: Maintain and improve my software engineering skills
+	Content: Maintain and improve my  C programming skills
 
-	Note ID: 42
+	Note ID: 31
 	User ID: 4
-	Content: Use a planner / organizer
+	Content: Maintain or archive the BHHS 74 Reunion website
 
-	Note ID: 41
+	Note ID: 32
 	User ID: 4
-	Content: Get my weight down to 190 pounds
+	Content: Maintain and improve my SQL skills
 
-	Note ID: 40
+	Note ID: 33
 	User ID: 4
-	Content: Track my vital signs
+	Content: Learn QT graphic system
 
-	Note ID: 39
+	Note ID: 34
 	User ID: 4
-	Content: Walk 30 minutes a day
+	Content: Improve my Linux Programming skills
 
-	Note ID: 38
+	Note ID: 35
 	User ID: 4
-	Content: Eat as healthy as possible
+	Content: Get an embedded programming certificate
+
+	Note ID: 36
+	User ID: 4
+	Content: Learn open source Linux Core Programming
 
 	Note ID: 37
 	User ID: 4
 	Content: Maintain my health
 
-	Note ID: 36
+	Note ID: 38
 	User ID: 4
-	Content: Learn open source Linux Core Programming
+	Content: Eat as healthy as possible
+
+	Note ID: 39
+	User ID: 4
+	Content: Walk 30 minutes a day
+
+	Note ID: 40
+	User ID: 4
+	Content: Track my vital signs
+
+	Note ID: 41
+	User ID: 4
+	Content: Get my weight down to 190 pounds
+
+	Note ID: 42
+	User ID: 4
+	Content: Use a planner / organizer
 
 	Note ID: 43
 	User ID: 4
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 33 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 34 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 35 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 36 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 38 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 39 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 40 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 41 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 42 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetAllUndeletedNotesForUser(4)
 Running: 
 	CALL HideNote(4, 42)
 Running: 
-	SELECT idUserNotes FROM UserNotes  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 27 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 28 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 29 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 30 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 31 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 32 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 33 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 34 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 35 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 36 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 37 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 38 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 39 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 40 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 41 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 43 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetAllUndeletedNotesForUser(4)
 Original note list size: 17 Altered schedule size: 16
 note (42) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of Note PASSED!
@@ -2824,14 +2568,14 @@ All negative path tests for database insertions and retrievals of ScheduleItem P
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Mon Apr 27 10:25:16 2026
-elapsed time in seconds: 26.365
+Fri May  8 07:11:59 2026
+elapsed time in seconds: 28.6727
 
 
 
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
-  total heap usage: 110,987 allocs, 110,987 frees, 15,378,608 bytes allocated
+  total heap usage: 89,715 allocs, 89,715 frees, 12,555,295 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 
