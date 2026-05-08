@@ -101,7 +101,7 @@ TestStatus TestNoteModel::testPositivePathNoteUpdate()
 {
     std::string searchString("Be more organized");
     NoteQueryProcessor NoteQueryProcessorTestInterface;
-    NoteQueryProcessorValues allSimilarUserNotes = NoteQueryProcessorTestInterface.getNotesForUserSimlarToContent(userOne->getUserID(), searchString);
+    NoteList allSimilarUserNotes = NoteQueryProcessorTestInterface.getNotesForUserSimlarToContent(userOne->getUserID(), searchString);
 
     if (allSimilarUserNotes.empty())
     {
@@ -131,7 +131,7 @@ TestStatus TestNoteModel::testPositivePathNoteUpdate()
 TestStatus TestNoteModel::testPositivePathGetAllNotesForUser()
 {
     NoteQueryProcessor NoteQueryProcessorTestInterface;
-    NoteQueryProcessorValues allUserNotes = NoteQueryProcessorTestInterface.getAllNotesForUser(userOne->getUserID());
+    NoteList allUserNotes = NoteQueryProcessorTestInterface.getAllNotesForUser(userOne->getUserID());
 
     if (allUserNotes.empty())
     {
@@ -157,7 +157,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent()
 {
     std::string searchString("Maintain");
     NoteQueryProcessor NoteQueryProcessorTestInterface;
-    NoteQueryProcessorValues allSimilarUserNotes = NoteQueryProcessorTestInterface.getNotesForUserSimlarToContent(userOne->getUserID(), searchString);
+    NoteList allSimilarUserNotes = NoteQueryProcessorTestInterface.getNotesForUserSimlarToContent(userOne->getUserID(), searchString);
 
     if (allSimilarUserNotes.empty())
     {
@@ -185,7 +185,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange()
     std::chrono::year_month_day endDate = getTodaysDatePlus(OneWeek);
 
     NoteQueryProcessor NoteQueryProcessorTestInterface;
-    NoteQueryProcessorValues allNotesInRange = NoteQueryProcessorTestInterface.getAllNotesForUserCreatedInDatgeRange(userOne->getUserID(), startDate, endDate);
+    NoteList allNotesInRange = NoteQueryProcessorTestInterface.getAllNotesForUserCreatedInDatgeRange(userOne->getUserID(), startDate, endDate);
 
     if (allNotesInRange.empty())
     {
@@ -213,7 +213,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserEditedDateRange()
     std::chrono::year_month_day endDate = getTodaysDatePlus(OneWeek);
 
     NoteQueryProcessor NoteQueryProcessorTestInterface;
-    NoteQueryProcessorValues allNotesInRange = NoteQueryProcessorTestInterface.getAllNotesForUserEditedInDatgeRange(userOne->getUserID(), startDate, endDate);
+    NoteList allNotesInRange = NoteQueryProcessorTestInterface.getAllNotesForUserEditedInDatgeRange(userOne->getUserID(), startDate, endDate);
 
     if (allNotesInRange.empty())
     {
@@ -240,7 +240,7 @@ TestStatus TestNoteModel::testPositivePathGetDashboardNoteTable()
     std::chrono::year_month_day searchDate = getTodaysDate();
 
     NoteQueryProcessor NoteQueryProcessorTestInterface;
-    NoteQueryProcessorValues allNotesInRange = NoteQueryProcessorTestInterface.getDashboardNoteTable(userOne->getUserID(), searchDate);
+    NoteList allNotesInRange = NoteQueryProcessorTestInterface.getDashboardNoteTable(userOne->getUserID(), searchDate);
 
     if (allNotesInRange.empty())
     {
@@ -268,7 +268,7 @@ TestStatus TestNoteModel::testPositivePathDeleteNote()
 
     std::chrono::year_month_day testDate(constantStringToChronoDate("2026-03-08"));
     NoteQueryProcessor NoteQueryProcessorTestInterface;
-    NoteQueryProcessorValues testNoteQueryProcessor = NoteQueryProcessorTestInterface.getAllNotesForUser(userOne->getUserID());
+    NoteList testNoteQueryProcessor = NoteQueryProcessorTestInterface.getAllNotesForUser(userOne->getUserID());
     if (testNoteQueryProcessor.empty())
     {
         std::cerr << std::format("{}: {} {} FAILED\n", funcUnderTest, "userOne schedule is empty", NoteQueryProcessorTestInterface.getAllErrorMessages());
@@ -290,7 +290,7 @@ TestStatus TestNoteModel::testPositivePathDeleteNote()
         return TESTFAILED;
     }
 
-    NoteQueryProcessorValues alteredList = NoteQueryProcessorTestInterface.getAllNotesForUser(userOne->getUserID());
+    NoteList alteredList = NoteQueryProcessorTestInterface.getAllNotesForUser(userOne->getUserID());
     if (!(alteredList.size() < testNoteQueryProcessor.size()))
     {
         std::cerr << std::format("Deleted note ({}) did not decrease the size of the user note list. TEST FAILED\n",
