@@ -463,6 +463,36 @@ DELIMITER ;
 DELIMITER $$
 
 
+
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`TestNoteStoredProcedures`;
+
+CREATE PROCEDURE `testPTSDB`.`TestNoteStoredProcedures`()
+
+BEGIN
+
+   CALL GetNoteByID(12);
+
+   CALL GetAllNotesForUser(1);
+
+   CALL GetAllUndeletedNotesForUser(1);
+
+   CALL GetNotesForUserSimlarToContent(1, 'This is a test ');
+
+   CALL GetAllNotesForUserCreatedInDatgeRange(1, '2026-03-12', '2026-05-14');
+
+   CALL GetAllNotesForUserEditedInDatgeRange(1, '2026-03-12', '2026-05-14');
+
+
+   CALL GetDashboardNoteTable(1, '2026-05-08 07:00:00.000000', '2026-05-09 06:59:00.000000');
+
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
 USE `testPTSDB`;
 DROP PROCEDURE IF EXISTS `testPTSDB`.`TestStoredProceduresAndFunctions`;
 
@@ -497,6 +527,8 @@ ASC, PriorityInGroup ASC;
    CALL UpdateScheduleItemAllFields(1, 238, '2026-03-15 01:00:00', '2026-03-15 02:29:59', 'Sorry, no pea soup today.', 1, 'Norm\'s');
 
    CALL UpdateNoteAllFields(1, 25, 'An index for Location in schedule item is now added.');
+
+   CALL TestNoteStoredProcedures();
 
 END$$
 
