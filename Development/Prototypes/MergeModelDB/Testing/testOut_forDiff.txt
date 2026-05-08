@@ -264,17 +264,17 @@ Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedA
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 
-Exception Test for TaskQueryProcessor::testExceptionGetDefaultDashboardTaskQueryProcessor()
+Exception Test for TaskQueryProcessor::testExceptionGetDefaultDashboardTaskList()
 
 
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
 
-Running UserGoalModelList Self Test
+Running UserGoalModelQueryProcessor Self Test
 
 
-Running Exception Handling Test Cases UserGoalModelList
+Running Exception Handling Test Cases UserGoalModelQueryProcessor
 
 Exception Test for GoalQueryProcessor::testExceptionsGetAllGoalsForUser()
 
