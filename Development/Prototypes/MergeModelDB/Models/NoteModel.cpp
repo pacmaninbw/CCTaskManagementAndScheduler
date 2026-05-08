@@ -19,12 +19,24 @@ NoteModel::NoteModel()
 {
 }
 
-NoteModel::NoteModel(boost::mysql::row_view& rv)
+NoteModel::NoteModel
+(
+    std::size_t nId,
+    std::size_t uId,
+    std::string newContent,
+    std::chrono::system_clock::time_point created,
+    std::chrono::system_clock::time_point lastModification,
+    bool hidden
+)
 : NoteModel()
 {
-    processResultRow(rv);
+    primaryKey = nId;
+    userID = uId;
+    content = newContent;
+    creationDate = created;
+    lastUpdate = lastModification;
+    deleted = hidden;
 }
-
 
 void NoteModel::setNoteId(std::size_t noteId)
 {
@@ -67,8 +79,6 @@ void NoteModel::initRequiredFields()
 {
     missingRequiredFieldsTests.push_back({std::bind(&NoteModel::isMissingUserID, this), "User ID"});
     missingRequiredFieldsTests.push_back({std::bind(&NoteModel::isMissingContent, this), "Content"});
-    missingRequiredFieldsTests.push_back({std::bind(&NoteModel::isMissingCreationDate, this), "Date Created"});
-    missingRequiredFieldsTests.push_back({std::bind(&NoteModel::isMissingLastUpdate, this), "Last Update"});
 }
 
 std::string NoteModel::formatInsertStatement()
@@ -112,27 +122,8 @@ std::string NoteModel::formatSelectStatement()
     return std::move(fctx).get().value();
 }
 
-void NoteModel::initColumnNameToIndexMap()
+void NoteModel::processResultRow([[maybe_unused]]boost::mysql::row_view rv)
 {
-    columnNameToIndexMap["idUserNotes"] = columnIndexNotSet;
-    columnNameToIndexMap["UserID"] = columnIndexNotSet;
-    columnNameToIndexMap["NotationDateTime"] = columnIndexNotSet;
-    columnNameToIndexMap["Content"] = columnIndexNotSet;
-    columnNameToIndexMap["LastUpdate"] = columnIndexNotSet;
-    columnNameToIndexMap["Hidden"] = columnIndexNotSet;
-}
-
-void NoteModel::processResultRow(boost::mysql::row_view rv)
-{
-    primaryKey = rv.at(getIndexByName("idUserNotes")).as_uint64();
-    userID = rv.at(getIndexByName("UserID")).as_uint64();
-    creationDate = boostMysqlDateTimeToChronoTimePoint(rv.at(getIndexByName("NotationDateTime")).as_datetime());
-    content = rv.at(getIndexByName("Content")).as_string();
-    lastUpdate = boostMysqlDateTimeToChronoTimePoint(rv.at(getIndexByName("LastUpdate")).as_datetime());
-    if (!rv.at(getIndexByName("Hidden")).is_null())
-    {
-        deleted = rv.at(getIndexByName("Hidden")).as_int64() == 1? true : false;
-    }
 }
 
 bool NoteModel::selectByNoteID(std::size_t noteID)
@@ -157,130 +148,5 @@ bool NoteModel::selectByNoteID(std::size_t noteID)
         appendErrorMessage(std::format("In NoteModel::selectByNoteID : {}", e.what()));
         return false;
     }
-}
-
-std::string NoteModel::formatSelectByUserId(std::size_t userId) noexcept
-{
-    errorMessages.clear();
-
-    try {
-        initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, listQueryBase);
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
-        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
-
-        return std::move(fctx).get().value();
-    }
-
-    catch(const std::exception& e)
-    {
-        appendErrorMessage(std::format("In NoteModel::formatSelectByUserId({}) : {}", userId, e.what()));
-    }
-
-    return std::string();
-}
-
-std::string NoteModel::formatSelectByUserIdAndSimilarContent(std::size_t userId, std::string similarContent) noexcept
-{
-    errorMessages.clear();
-
-    try {
-        initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, listQueryBase);
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Content LIKE {}", userId,
-            wrapSearchContentSQLPatternMatch(similarContent));
-        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
-
-        return std::move(fctx).get().value();
-    }
-
-    catch(const std::exception& e)
-    {
-        appendErrorMessage(std::format("In NoteModel::formatSelectByUserId({}) : {}", userId, e.what()));
-    }
-
-    return std::string();
-}
-
-std::string NoteModel::formatSelectByUserIdAndCreationDateRange(
-    std::size_t userId, std::chrono::year_month_day startDay, std::chrono::year_month_day endDay) noexcept
-{
-    errorMessages.clear();
-
-    try {
-        initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, listQueryBase);
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
-        boost::mysql::format_sql_to(fctx, " AND NotationDateTime >= {}", stdchronoDateToBoostMySQLDate(startDay));
-        boost::mysql::format_sql_to(fctx, " AND NotationDateTime <= {}", stdchronoDateToBoostMySQLDate(endDay));
-        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
-
-        return std::move(fctx).get().value();
-    }
-
-    catch(const std::exception& e)
-    {
-        appendErrorMessage(std::format("In NoteModel::formatSelectByUserId({}) : {}", userId, e.what()));
-    }
-
-    return std::string();
-}
-
-std::string NoteModel::formatSelectByUserIdAndUpdateDateRange(
-    std::size_t userId, std::chrono::year_month_day startDay, std::chrono::year_month_day endDay) noexcept
-{
-    errorMessages.clear();
-
-    try {
-        initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, listQueryBase);
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
-        boost::mysql::format_sql_to(fctx, " AND LastUpdate >= {}", stdchronoDateToBoostMySQLDate(startDay));
-        boost::mysql::format_sql_to(fctx, " AND LastUpdate <= {}", stdchronoDateToBoostMySQLDate(endDay));
-        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
-
-        return std::move(fctx).get().value();
-    }
-
-    catch(const std::exception& e)
-    {
-        appendErrorMessage(std::format("In NoteModel::formatSelectByUserId({}) : {}", userId, e.what()));
-    }
-
-    return std::string();
-}
-
-std::string NoteModel::formatGetNotesFromUserForDate(std::size_t userId, std::chrono::year_month_day searchDate) noexcept
-{
-    errorMessages.clear();
-    std::chrono::system_clock::time_point startDay(getLocalMidnight(searchDate));
-    std::chrono::hours mostHoursInDay{23};
-    std::chrono::minutes minutesInLastHour{59};
-    std::chrono::system_clock::duration oneDayOffset = mostHoursInDay + minutesInLastHour;
-    std::chrono::system_clock::time_point endDay(startDay + oneDayOffset);
-
-    try {
-        initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, listQueryBase);
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
-        boost::mysql::format_sql_to(fctx, " AND NotationDateTime >= {}", stdChronoTimePointToBoostDateTime(startDay));
-        boost::mysql::format_sql_to(fctx, " AND NotationDateTime <= {}", stdChronoTimePointToBoostDateTime(endDay));
-        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
-        boost::mysql::format_sql_to(fctx, " ORDER BY NotationDateTime ASC");
-
-        return std::move(fctx).get().value();
-    }
-
-    catch(const std::exception& e)
-    {
-        appendErrorMessage(std::format("In NoteModel::formatGetNotesFromUserForDate({}) : {}", userId, e.what()));
-    }
-
-    return std::string();
 }
 

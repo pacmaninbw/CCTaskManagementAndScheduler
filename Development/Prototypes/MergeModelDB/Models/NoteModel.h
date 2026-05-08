@@ -20,7 +20,14 @@ class NoteModel : public ModelDBInterface
 public:
 
     NoteModel();
-    NoteModel(boost::mysql::row_view& rv);
+    NoteModel(
+        std::size_t nId,
+        std::size_t uId,
+        std::string newContent,
+        std::chrono::system_clock::time_point created,
+        std::chrono::system_clock::time_point lastModification,
+        bool deleted = false
+    );
     ~NoteModel() = default;
 
     std::size_t getNoteId() const { return primaryKey; };
@@ -38,22 +45,12 @@ public:
  * Select with arguments
  */
     bool selectByNoteID(std::size_t noteID);
-    // Lists of notes
-    std::string formatSelectByUserId(std::size_t userId) noexcept;
-    std::string formatSelectByUserIdAndSimilarContent(std::size_t userId, std::string similarContent) noexcept;
-    std::string formatSelectByUserIdAndCreationDateRange(std::size_t userId, std::chrono::year_month_day startDay,
-        std::chrono::year_month_day endDay) noexcept;
-    std::string formatSelectByUserIdAndUpdateDateRange(std::size_t userId, std::chrono::year_month_day startDay,
-        std::chrono::year_month_day endDay) noexcept;
-    std::string formatGetNotesFromUserForDate(std::size_t userId, std::chrono::year_month_day searchDate) noexcept;
 
 /*
  * Required fields.
  */
     bool isMissingUserID()  { return userID == 0; };;
     bool isMissingContent() { return (content.empty() || content.size() < 10); };
-    bool isMissingCreationDate() { return !creationDate.has_value(); };
-    bool isMissingLastUpdate() { return !lastUpdate.has_value(); };
     void initRequiredFields() override;
 
     bool operator==(NoteModel& other)
@@ -94,7 +91,6 @@ protected:
     std::string formatSelectStatement() override;
 
     void processResultRow(boost::mysql::row_view rv) override;
-    void initColumnNameToIndexMap() override;
     
     std::size_t userID;
     std::string content;
@@ -108,7 +104,6 @@ protected:
  * baseQuery could be SELECT * FROM UserProfile, but this way the order of the columns
  * returned are known.
  */
-    bool mapColumnsToIndexes();
     boost::mysql::constant_string_view baseQuery = 
         "SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes ";
 
