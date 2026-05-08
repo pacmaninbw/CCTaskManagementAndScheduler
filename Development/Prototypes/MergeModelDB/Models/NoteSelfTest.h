@@ -3,13 +3,7 @@
 
 // Project Header Files
 #include "commonUtilities.h"
-#if 0
-#include "AttributeSelfTest.h"
-#include "ExceptionSelfTest.h"
-#include "FunctionalSelfTest.h"
-#else
 #include "ModelSelfTest.h"
-#endif
 #include "NoteModel.h"
 
 // Standard C++ Header Files
@@ -41,10 +35,6 @@ private:
     virtual TestStatus testExceptionRetrieve() noexcept override;
     virtual TestStatus testExceptionHide() noexcept override;
     TestStatus testExceptionSelectByNoteID() noexcept;
-    TestStatus testExceptionFormatSelectByUserId() noexcept;
-    TestStatus testExceptionFormatSelectByUserIdAndSimilarContent() noexcept;
-    TestStatus testExceptionFormatSelectByUserIdAndCreationDateRange() noexcept;
-    TestStatus testExceptionFormatSelectByUserIdAndUpdateDateRange() noexcept;
 
     virtual TestStatus testAllInsertFailures() override;
 

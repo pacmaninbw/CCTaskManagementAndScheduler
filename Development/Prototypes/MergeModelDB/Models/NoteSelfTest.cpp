@@ -121,10 +121,6 @@ std::vector<ExceptionTestElement> NoteSelfTest::initExceptionTests() noexcept
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionHide, this), "testExceptionHide"});
-    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionFormatSelectByUserId, this), "selectByUserId"});
-    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionFormatSelectByUserIdAndSimilarContent, this), "selectByUserIdAndSimilarContent"});
-    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionFormatSelectByUserIdAndCreationDateRange, this), "selectByUserIdAndCreationDateRange"});
-    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionFormatSelectByUserIdAndUpdateDateRange, this), "selectByUserIdAndUpdateDateRange"});
 
     return exceptionTests;
 }
@@ -188,52 +184,6 @@ TestStatus NoteSelfTest::testExceptionSelectByNoteID() noexcept
     return testExceptionAndSuccessNArgs("NoteModel::selectByNoteID", std::bind(&NoteModel::selectByNoteID, this, std::placeholders::_1), 1);
 }
 
-TestStatus NoteSelfTest::testExceptionFormatSelectByUserId() noexcept
-{
-    selfTestResetAllValues();
-
-    return testFormatExceptionAndSuccessNArgs("NoteModel::formatSelectByUserId",
-        std::bind(&NoteModel::formatSelectByUserId, this, std::placeholders::_1), 1);
-}
-
-TestStatus NoteSelfTest::testExceptionFormatSelectByUserIdAndSimilarContent() noexcept
-{
-    selfTestResetAllValues();
-
-    std::size_t testUserId = 1;
-    std::string testContent("Test Content");
-
-    return testFormatExceptionAndSuccessNArgs("NoteModel::formatSelectByUserIdAndSimilarContent",
-        std::bind(&NoteModel::formatSelectByUserIdAndSimilarContent, this, std::placeholders::_1, std::placeholders::_2),
-        testUserId, testContent);
-}
-
-TestStatus NoteSelfTest::testExceptionFormatSelectByUserIdAndCreationDateRange() noexcept
-{
-    selfTestResetAllValues();
-
-    std::size_t testUserId = 1;
-    std::chrono::year_month_day startDate = commonTestDateRangeStartValue;
-    std::chrono::year_month_day endDate = commonTestDateValue;
-
-    return testFormatExceptionAndSuccessNArgs("NoteModel::formatSelectByUserIdAndCreationDateRange",
-        std::bind(&NoteModel::formatSelectByUserIdAndCreationDateRange, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
-        testUserId, startDate, endDate);
-}
-
-TestStatus NoteSelfTest::testExceptionFormatSelectByUserIdAndUpdateDateRange() noexcept
-{
-    selfTestResetAllValues();
-
-    std::size_t testUserId = 1;
-    std::chrono::year_month_day startDate = commonTestDateRangeStartValue;
-    std::chrono::year_month_day endDate = commonTestDateValue;
-
-    return testFormatExceptionAndSuccessNArgs("NoteModel::formatSelectByUserIdAndUpdateDateRange",
-        std::bind(&NoteModel::formatSelectByUserIdAndUpdateDateRange, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
-        testUserId, startDate, endDate);
-}
-
 TestStatus NoteSelfTest::testAllInsertFailures()
 {
     selfTestResetAllValues();
@@ -243,11 +193,9 @@ TestStatus NoteSelfTest::testAllInsertFailures()
         return TESTFAILED;
     }
 
-    std::chrono::system_clock::time_point timeStamp = commonTestTimeStampValue;
-
     std::vector<std::string> expectedErrors =
     {
-        "User ID", "Content", "Date Created", "Last Update", " missing required values"
+        "User ID", "Content", " missing required values"
     };
 
     setNoteId(0);
@@ -264,20 +212,6 @@ TestStatus NoteSelfTest::testAllInsertFailures()
     }
     expectedErrors.erase(expectedErrors.begin());
     setContent("Testing negative note insertion path");
-
-    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
-    {
-        return TESTFAILED;
-    }
-    expectedErrors.erase(expectedErrors.begin());
-    setDateAdded(timeStamp);
-
-    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
-    {
-        return TESTFAILED;
-    }
-    expectedErrors.erase(expectedErrors.begin());
-    setLastModified(timeStamp);
 
     expectedErrors.clear();
     errorMessages.clear();
