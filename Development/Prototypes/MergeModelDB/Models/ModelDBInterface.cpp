@@ -216,67 +216,6 @@ bool ModelDBInterface::processResult(boost::mysql::results& results)
     return true;
 }
 
-void ModelDBInterface::addColumnToIndexMapping(std::string columnName, std::size_t indexValue)
-{
-    columnNameToIndexMap.insert({columnName, indexValue});
-}
-
-std::size_t ModelDBInterface::getIndexByName(std::string columnName)
-{
-    auto columnToMap = columnNameToIndexMap.find(columnName);
-    if (columnToMap != columnNameToIndexMap.end())
-    {
-        return columnToMap->second;
-    }
-
-    return 0;
-}
-
-void ModelDBInterface::initColumnNameToIndexMap()
-{
-}
-
-bool ModelDBInterface::mapColumnNamesToIndexes(boost::mysql::resultset_view &resultSet)
-{
-    bool allColumnsMapped = true;
-    std::size_t columnIndexValue = 0;
-
-    for (auto metaIter: resultSet.meta())
-    {
-        std::string columnName = metaIter.column_name();
-        auto columnToMap = columnNameToIndexMap.find(columnName);
-        if (columnToMap != columnNameToIndexMap.end())
-        {
-            columnToMap->second = columnIndexValue;
-        }
-        else
-        {
-            appendErrorMessage(std::format("Programmer Error: New column name {} found, no match in columnNameToIndexMap!\n", columnName));
-            allColumnsMapped = false;
-        }
-    }
-
-    for (const auto& columnToCheck: columnNameToIndexMap)
-    {
-        if (columnToCheck.second == columnIndexNotSet)
-        {
-            appendErrorMessage(std::format("Programmer Error: Missing Expected column in database output {}!\n", columnToCheck.first));
-            allColumnsMapped = false;
-        }
-    }
-
-    return allColumnsMapped;
-}
-
-std::string ModelDBInterface::wrapSearchContentSQLPatternMatch(std::string searchString) noexcept
-{
-    std::string patternMatchString("%");
-    patternMatchString.append(searchString);
-    patternMatchString.append("%");
-
-    return patternMatchString;
-}
-
 std::vector<std::string> ModelDBInterface::explodeTextField(std::string const& textField) noexcept
 {
     std::vector<std::string> subFields;
@@ -301,53 +240,6 @@ std::string ModelDBInterface::implodeTextField(std::vector<std::string> &fields)
 
     return textField;
 }
-
-boost::mysql::date ModelDBInterface::stdchronoDateToBoostMySQLDate(const std::chrono::year_month_day &source) noexcept
-{
-    std::chrono::sys_days tp = source;
-    return boost::mysql::date(tp);
-}
-
-std::chrono::year_month_day ModelDBInterface::boostMysqlDateToChronoDate(const boost::mysql::date &source) noexcept
-{
-    const std::chrono::year year{source.year()};
-    const std::chrono::month month{source.month()};
-    const std::chrono::day day{source.day()};
-    return std::chrono::year_month_day{year, month, day};
-}
-
-boost::mysql::datetime ModelDBInterface::stdChronoTimePointToBoostDateTime(std::chrono::system_clock::time_point source) noexcept
-{
-    return boost::mysql::datetime(std::chrono::time_point_cast<boost::mysql::datetime::time_point::duration>(source));
-}
-
-std::chrono::system_clock::time_point ModelDBInterface::boostMysqlDateTimeToChronoTimePoint(boost::mysql::datetime dbDateTime)
-{
-    return std::chrono::time_point_cast<std::chrono::system_clock::time_point::duration>(dbDateTime.as_time_point());
-}
-
-std::optional<boost::mysql::date> ModelDBInterface::optionalDateConversion(std::optional<std::chrono::year_month_day> optDate)
-{
-    std::optional<boost::mysql::date> mySqlDate;
-
-    if (optDate.has_value())
-    {
-        mySqlDate = stdchronoDateToBoostMySQLDate(optDate.value());
-    }
-
-    return mySqlDate;
-}
-std::optional<boost::mysql::datetime> ModelDBInterface::optionalDateTimeConversion(std::optional<std::chrono::system_clock::time_point> optDateTime)
-{
-    std::optional<boost::mysql::datetime> timeStamp;
-
-    if (optDateTime.has_value())
-    {
-        timeStamp = stdChronoTimePointToBoostDateTime(optDateTime.value());
-    }
-
-    return timeStamp;
-};
 
 std::size_t ModelDBInterface::getPrimaryKeyValue(boost::mysql::results &dbResultSet)
 {

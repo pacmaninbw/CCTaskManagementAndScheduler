@@ -55,20 +55,12 @@ protected:
 /*
  * RESULT PROCESSING
  */
-    void addColumnToIndexMapping(std::string columnName, std::size_t indexValue);
-    std::size_t getIndexByName(std::string columnName);
-    virtual void initColumnNameToIndexMap();
-    bool mapColumnNamesToIndexes(boost::mysql::resultset_view& resultSet);
 /*
  * Each model must provide the process by which the database information will
  * be translated into the specific model.
  */
     virtual void processResultRow(boost::mysql::row_view rv) = 0;
 
-/*
- * for MySQL pattern match of string
- */
-    std::string wrapSearchContentSQLPatternMatch(std::string searchString) noexcept;
 
 /*
  * To process TEXT fields that contain model fields.
@@ -76,15 +68,6 @@ protected:
     std::vector<std::string> explodeTextField(std::string const& textField) noexcept;
     std::string implodeTextField(std::vector<std::string>& fields) noexcept;
 
-/*
- * Conversions from std::chrono to boost::mysql
- */
-    boost::mysql::date stdchronoDateToBoostMySQLDate(const std::chrono::year_month_day& source) noexcept;
-    std::chrono::year_month_day boostMysqlDateToChronoDate(const boost::mysql::date& source) noexcept;
-    boost::mysql::datetime stdChronoTimePointToBoostDateTime(std::chrono::system_clock::time_point source) noexcept;
-    std::chrono::system_clock::time_point boostMysqlDateTimeToChronoTimePoint(boost::mysql::datetime dbDateTime);
-    std::optional<boost::mysql::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate);
-    std::optional<boost::mysql::datetime> optionalDateTimeConversion(std::optional<std::chrono::system_clock::time_point> optDateTime);
 
 /*
  * Get the primary key value after a record is inserted in the database.
@@ -104,8 +87,6 @@ protected:
         std::string fieldName;
     };
     std::vector<RequireField> missingRequiredFieldsTests;
-    std::unordered_map<std::string, std::size_t> columnNameToIndexMap;
-    static const std::size_t columnIndexNotSet = 0xffff;    // This should be greater than any possible column index value.
 };
 
 using AnyModel_shp = std::shared_ptr<ModelDBInterface>;

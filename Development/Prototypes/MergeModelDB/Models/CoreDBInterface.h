@@ -9,6 +9,7 @@
 #include <boost/mysql.hpp>
 
 // Standard C++ Header Files
+#include <chrono>
 #include <iostream>
 #include <optional>
 #include <string>
@@ -28,6 +29,24 @@ public:
 protected:
     void initFormatOptions();
     void appendErrorMessage(const std::string& newError) { errorMessages.append(newError); errorMessages.append("\n");};
+/*
+ * Utility functions to perform conversions from C++ class fields to 
+ * database fields and back. 
+ */
+/*
+ * Conversions from std::chrono to boost::mysql
+ */
+    boost::mysql::date stdchronoDateToBoostMySQLDate(const std::chrono::year_month_day& source) noexcept;
+    std::chrono::year_month_day boostMysqlDateToChronoDate(const boost::mysql::date& source) noexcept;
+    boost::mysql::datetime stdChronoTimePointToBoostDateTime(std::chrono::system_clock::time_point source) noexcept;
+    std::chrono::system_clock::time_point boostMysqlDateTimeToChronoTimePoint(boost::mysql::datetime dbDateTime);
+    std::optional<boost::mysql::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate);
+    std::optional<boost::mysql::datetime> optionalDateTimeConversion(std::optional<std::chrono::system_clock::time_point> optDateTime);
+/*
+ * for MySQL pattern match of string
+ */
+    std::string wrapSearchContentSQLPatternMatch(std::string searchString) noexcept;
+
 /*
  * All calls to runQueryAsync and getConnectionFormatOptsAsync should be
  * implemented within try blocks.

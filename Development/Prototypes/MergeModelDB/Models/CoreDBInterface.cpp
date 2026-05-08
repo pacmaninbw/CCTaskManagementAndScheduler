@@ -35,6 +35,62 @@ void CoreDBInterface::debugShowVariables(std::string functionName) const noexcep
     std::cout << std::endl;
 }
 
+boost::mysql::date CoreDBInterface::stdchronoDateToBoostMySQLDate(const std::chrono::year_month_day &source) noexcept
+{
+    std::chrono::sys_days tp = source;
+    return boost::mysql::date(tp);
+}
+
+std::chrono::year_month_day CoreDBInterface::boostMysqlDateToChronoDate(const boost::mysql::date &source) noexcept
+{
+    const std::chrono::year year{source.year()};
+    const std::chrono::month month{source.month()};
+    const std::chrono::day day{source.day()};
+    return std::chrono::year_month_day{year, month, day};
+}
+
+boost::mysql::datetime CoreDBInterface::stdChronoTimePointToBoostDateTime(std::chrono::system_clock::time_point source) noexcept
+{
+    return boost::mysql::datetime(std::chrono::time_point_cast<boost::mysql::datetime::time_point::duration>(source));
+}
+
+std::chrono::system_clock::time_point CoreDBInterface::boostMysqlDateTimeToChronoTimePoint(boost::mysql::datetime dbDateTime)
+{
+    return std::chrono::time_point_cast<std::chrono::system_clock::time_point::duration>(dbDateTime.as_time_point());
+}
+
+std::optional<boost::mysql::date> CoreDBInterface::optionalDateConversion(std::optional<std::chrono::year_month_day> optDate)
+{
+    std::optional<boost::mysql::date> mySqlDate;
+
+    if (optDate.has_value())
+    {
+        mySqlDate = stdchronoDateToBoostMySQLDate(optDate.value());
+    }
+
+    return mySqlDate;
+}
+std::optional<boost::mysql::datetime> CoreDBInterface::optionalDateTimeConversion(std::optional<std::chrono::system_clock::time_point> optDateTime)
+{
+    std::optional<boost::mysql::datetime> timeStamp;
+
+    if (optDateTime.has_value())
+    {
+        timeStamp = stdChronoTimePointToBoostDateTime(optDateTime.value());
+    }
+
+    return timeStamp;
+};
+
+std::string CoreDBInterface::wrapSearchContentSQLPatternMatch(std::string searchString) noexcept
+{
+    std::string patternMatchString("%");
+    patternMatchString.append(searchString);
+    patternMatchString.append("%");
+
+    return patternMatchString;
+}
+
 void CoreDBInterface::initFormatOptions()
 {
     if (!format_opts.has_value())
