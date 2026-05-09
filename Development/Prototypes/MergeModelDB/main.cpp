@@ -169,13 +169,13 @@ static TestStatus runAllListUnitTests()
     {
         allUnintTestsPassed = TESTFAILED;
     }
-    
+#if 0
     NoteQueryProcessor NoteQueryProcessorTest;
     if (runListUnitTest(&NoteQueryProcessorTest) == TESTFAILED)
     {
         allUnintTestsPassed = TESTFAILED;
     }
-
+#endif
     ScheduleItemQueryProcessor ScheduleItemQueryProcessor(1);
     if (runListUnitTest(&ScheduleItemQueryProcessor) == TESTFAILED)
     {

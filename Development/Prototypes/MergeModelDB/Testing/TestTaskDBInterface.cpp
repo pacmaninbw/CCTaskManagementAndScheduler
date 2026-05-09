@@ -24,7 +24,7 @@ TestTaskDBInterface::TestTaskDBInterface(std::string taskFileName)
 
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testTasksFromDataFile, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetUnstartedTasks, this));
-    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetDefaultDashboardTaskQueryProcessor, this));
+    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetDefaultDashboardTaskList, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testTaskUpdates, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetActiveTasks, this));
     positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testHideUnstartedTask, this));
@@ -217,13 +217,13 @@ TestStatus TestTaskDBInterface::testGetUnstartedTasks()
     return TESTFAILED;
 }
 
-TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskQueryProcessor()
+TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskList()
 {
     TaskQueryProcessor taskDBInteface;
     UserModel_shp realUser = std::make_shared<UserModel>();
     realUser->selectByFullName("Black", "Paul", "A");
 
-    TaskQueryProcessorValues defaultTaskQueryProcessor = taskDBInteface.getDefaultDashboardTaskQueryProcessor(realUser->getUserID(),
+    TaskQueryProcessorValues defaultTaskQueryProcessor = taskDBInteface.getDefaultDashboardTaskList(realUser->getUserID(),
         commonProductionTestDataAddedDate);
     if (!defaultTaskQueryProcessor.empty())
     {    
@@ -239,7 +239,7 @@ TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskQueryProcessor()
         return TESTPASSED; 
     }
 
-    std::cerr << std::format("taskDBInterface.getDefaultDashboardTaskQueryProcessor({}) FAILED!\n", realUser->getUserID()) <<
+    std::cerr << std::format("taskDBInterface.getDefaultDashboardTaskList({}) FAILED!\n", realUser->getUserID()) <<
         taskDBInteface.getAllErrorMessages() << "\n";
 
     return TESTFAILED;

@@ -28,7 +28,7 @@ private:
     TaskModel_shp creatOddTask(CSVRow taskData);
     TaskModel_shp creatEvenTask(CSVRow taskData);
     TestStatus testGetUnstartedTasks();
-    TestStatus testGetDefaultDashboardTaskQueryProcessor();
+    TestStatus testGetDefaultDashboardTaskList();
     TestStatus testGetActiveTasks();
     TestStatus testTaskUpdates();
     TestStatus testHideUnstartedTask();

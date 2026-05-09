@@ -96,10 +96,10 @@ TaskQueryProcessorValues TaskQueryProcessor::getTasksByAssignedIDandParentID(std
     return TaskQueryProcessorValues();
 }
 
-TaskQueryProcessorValues TaskQueryProcessor::getDefaultDashboardTaskQueryProcessor(std::size_t assignedUserID, std::chrono::year_month_day searchStartDate) noexcept
+TaskQueryProcessorValues TaskQueryProcessor::getDefaultDashboardTaskList(std::size_t assignedUserID, std::chrono::year_month_day searchStartDate) noexcept
 {
     errorMessages.clear();
-    appendErrorMessage("In TaskQueryProcessor::getDefaultDashboardTaskQueryProcessor : ");
+    appendErrorMessage("In TaskQueryProcessor::getDefaultDashboardTaskList : ");
 
     try
     {
@@ -157,8 +157,8 @@ std::vector<ListExceptionTestElement> TaskQueryProcessor::initListExceptionTests
         "getTasksCompletedByAssignedAfterDate"});
     exceptionTests.push_back({std::bind(&TaskQueryProcessor::testExceptionGetTasksByAssignedIDandParentID, this),
         "getTasksByAssignedIDandParentID"});
-    exceptionTests.push_back({std::bind(&TaskQueryProcessor::testExceptionGetDefaultDashboardTaskQueryProcessor, this),
-        "getDefaultDashboardTaskQueryProcessor"});
+    exceptionTests.push_back({std::bind(&TaskQueryProcessor::testExceptionGetDefaultDashboardTaskList, this),
+        "getDefaultDashboardTaskList"});
 
     return exceptionTests;
 }
@@ -204,14 +204,14 @@ TestStatus TaskQueryProcessor::testExceptionGetTasksByAssignedIDandParentID() no
 
 }
 
-TestStatus TaskQueryProcessor::testExceptionGetDefaultDashboardTaskQueryProcessor() noexcept
+TestStatus TaskQueryProcessor::testExceptionGetDefaultDashboardTaskList() noexcept
 {
     selfTestResetAllValues();
 
     std::chrono::year_month_day searchStartDate = commonProductionTestDataAddedDate;
     std::size_t assignedUser = 1;
 
-    return testListExceptionAndSuccessNArgs("TaskQueryProcessor::testExceptionGetDefaultDashboardTaskQueryProcessor()",
-         std::bind(&TaskQueryProcessor::getDefaultDashboardTaskQueryProcessor, this, std::placeholders::_1, std::placeholders::_2),
+    return testListExceptionAndSuccessNArgs("TaskQueryProcessor::testExceptionGetDefaultDashboardTaskList()",
+         std::bind(&TaskQueryProcessor::getDefaultDashboardTaskList, this, std::placeholders::_1, std::placeholders::_2),
         assignedUser, searchStartDate);
 }

@@ -55,7 +55,7 @@ public:
         queryGenerator = std::make_unique<ListType>();
 
         std::string tempListType = queryGenerator->getModelName();
-        tempListType.append("List");
+        tempListType.append("QueryProcessor");
         listTypeName = tempListType;
     }
     virtual ~QueryProcessor() = default;

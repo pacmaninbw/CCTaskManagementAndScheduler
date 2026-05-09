@@ -21,7 +21,7 @@ public:
     TaskQueryProcessorValues getTasksCompletedByAssignedAfterDate(std::size_t assignedUserID,
         std::chrono::year_month_day searchStartDate) noexcept;
     TaskQueryProcessorValues getTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID) noexcept;
-    TaskQueryProcessorValues getDefaultDashboardTaskQueryProcessor(std::size_t assignedUserID,
+    TaskQueryProcessorValues getDefaultDashboardTaskList(std::size_t assignedUserID,
         std::chrono::year_month_day searchStartDate) noexcept;
 
 private:
@@ -33,7 +33,7 @@ private:
     TestStatus testExceptionGetUnstartedDueForStartForAssignedUser() noexcept;
     TestStatus testExceptionGetTasksCompletedByAssignedAfterDate() noexcept;
     TestStatus testExceptionGetTasksByAssignedIDandParentID() noexcept;
-    TestStatus testExceptionGetDefaultDashboardTaskQueryProcessor() noexcept;
+    TestStatus testExceptionGetDefaultDashboardTaskList() noexcept;
 };
 
 #endif // TASKQUERYPROCESSOR_H_
