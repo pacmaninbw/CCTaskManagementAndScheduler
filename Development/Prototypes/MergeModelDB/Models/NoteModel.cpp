@@ -85,22 +85,15 @@ std::string NoteModel::formatInsertStatement()
 {
     initFormatOptions();
 
-    std::string insertStatement = boost::mysql::format_sql(format_opts.value(),
-        "CALL AddUserNote({0}, {1})", userID, content);
-
-    return insertStatement;
+    return boost::mysql::format_sql(format_opts.value(), "CALL AddUserNote({0}, {1})", userID, content);
 }
 
 std::string NoteModel::formatUpdateStatement()
 {
     initFormatOptions();
 
-//   CALL UpdateNoteAllFields(1, 25, 'An index for Location in schedule item is now added.');
-
-    std::string updateStatement = boost::mysql::format_sql(format_opts.value(),
+    return boost::mysql::format_sql(format_opts.value(),
         "CALL UpdateNoteAllFields({0}, {1}, {2})", userID, primaryKey, content);
-        
-    return updateStatement;
 }
 
 std::string NoteModel::formatDeleteStatement()
