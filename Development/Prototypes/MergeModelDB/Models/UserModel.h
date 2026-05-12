@@ -29,6 +29,18 @@ public:
     };
 
     UserModel();
+    UserModel(std::size_t userID,
+        std::string lastNameP,
+        std::string firstNameP,
+        std::string middleinitP,
+        std::string emailP,
+        std::string loginNameP,
+        std::string passwordP,
+        std::string preferences,
+        std::chrono::system_clock::time_point dateAdded,
+        std::chrono::system_clock::time_point lastLogin,
+        std::size_t orgId
+    );
     ~UserModel() = default;
 
     void autoGenerateLoginAndPassword() noexcept;

@@ -26,6 +26,36 @@ UserModel::UserModel()
     preferences.endTime = "5:00 PM";
 }
 
+UserModel::UserModel(
+    std::size_t userID,
+    std::string lastNameP,
+    std::string firstNameP,
+    std::string middleinitP,
+    std::string emailP,
+    std::string loginNameP,
+    std::string passwordP,
+    std::string preferences,
+    std::chrono::system_clock::time_point dateAdded,
+    std::chrono::system_clock::time_point lastLoginP,
+    std::size_t orgId
+)
+: UserModel()
+{
+    primaryKey = userID;
+    lastName = lastNameP;
+    firstName = firstNameP;
+    middleInitial = middleinitP;
+    email = emailP;
+    loginName = loginNameP;
+    password = passwordP;
+    parsePrefenceText(preferences);
+    created = dateAdded;
+    lastLogin = lastLoginP;
+    organizationId = orgId;
+}
+
+
+
 void UserModel::autoGenerateLoginAndPassword() noexcept
 {
     if (loginName.empty() && password.empty())
