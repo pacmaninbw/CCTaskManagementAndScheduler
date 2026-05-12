@@ -1,5 +1,4 @@
 // Project Header Files
-#include "QueryProcessor.h"
 #include "NoteQueryProcessor.h"
 #include "NoteModel.h"
 
@@ -16,7 +15,7 @@
 #include <vector>
 
 NoteQueryProcessor::NoteQueryProcessor()
-: CoreDBInterface()
+: QueryProcessor<NoteModel>()
 {
     requiredColumns =  {"idUserNotes", "UserID", "Content", "Hidden", "NotationDateTime",  "LastUpdate"};
     for (auto columnName: requiredColumns)
@@ -35,7 +34,9 @@ NoteList NoteQueryProcessor::getAllNotesForUser(std::size_t userId) noexcept
 
     try
     {
-        boost::mysql::results localResult = runQueryAsync(formatSelectByUserId(userId));
+        initFormatOptions();
+        boost::mysql::results localResult = runQueryAsync(boost::mysql::format_sql(
+            format_opts.value(), "CALL GetAllUndeletedNotesForUser({})", userId));
         return processResults(localResult);
     }
 
@@ -54,7 +55,11 @@ NoteList NoteQueryProcessor::getNotesForUserSimlarToContent(std::size_t userId, 
 
     try
     {
-        boost::mysql::results localResult = runQueryAsync(formatSelectByUserIdAndSimilarContent(userId, likeContent));
+        initFormatOptions();
+        boost::mysql::results localResult = runQueryAsync(
+            boost::mysql::format_sql(format_opts.value(), 
+                "CALL GetNotesForUserSimlarToContent({}, {})", userId, likeContent
+        ));
         return processResults(localResult);
     }
 
@@ -74,7 +79,12 @@ NoteList NoteQueryProcessor::getAllNotesForUserCreatedInDatgeRange(
 
     try
     {
-        boost::mysql::results localResult = runQueryAsync(formatSelectByUserIdAndCreationDateRange(userId, startDate, endDate));
+        initFormatOptions();
+        boost::mysql::results localResult = runQueryAsync(
+            boost::mysql::format_sql(format_opts.value(),
+                "CALL GetAllNotesForUserCreatedInDatgeRange({}, {}, {})", userId,
+                stdchronoDateToBoostMySQLDate(startDate), stdchronoDateToBoostMySQLDate(endDate)
+        ));
         return processResults(localResult);
     }
 
@@ -94,7 +104,12 @@ NoteList NoteQueryProcessor::getAllNotesForUserEditedInDatgeRange(
 
     try
     {
-        boost::mysql::results localResult = runQueryAsync(formatSelectByUserIdAndUpdateDateRange(userId, startDate, endDate));
+        initFormatOptions();
+        boost::mysql::results localResult = runQueryAsync(
+            boost::mysql::format_sql(format_opts.value(),
+                "CALL GetAllNotesForUserEditedInDatgeRange({}, {}, {})", userId,
+                stdchronoDateToBoostMySQLDate(startDate), stdchronoDateToBoostMySQLDate(endDate))
+        );
         return processResults(localResult);
     }
 
@@ -125,46 +140,9 @@ NoteList NoteQueryProcessor::getDashboardNoteTable(std::size_t userId, std::chro
     return NoteList();
 }
 
-std::string NoteQueryProcessor::formatSelectByUserId(std::size_t userId)
-{
-    initFormatOptions();
-    boost::mysql::format_context fctx(format_opts.value());
-    boost::mysql::format_sql_to(fctx, "CALL GetAllUndeletedNotesForUser({})", userId);
-
-    return std::move(fctx).get().value();
-}
-
-std::string NoteQueryProcessor::formatSelectByUserIdAndSimilarContent(std::size_t userId, std::string similarContent)
-{
-    initFormatOptions();
-    boost::mysql::format_context fctx(format_opts.value());
-    boost::mysql::format_sql_to(fctx, "CALL GetNotesForUserSimlarToContent({}, {})", userId, similarContent);
-
-    return std::move(fctx).get().value();
-}
-
-std::string NoteQueryProcessor::formatSelectByUserIdAndCreationDateRange(
-    std::size_t userId, std::chrono::year_month_day startDay, std::chrono::year_month_day endDay)
-{
-    initFormatOptions();
-    boost::mysql::format_context fctx(format_opts.value());
-    boost::mysql::format_sql_to(fctx, "CALL GetAllNotesForUserCreatedInDatgeRange({}, {}, {})", userId,
-        stdchronoDateToBoostMySQLDate(startDay), stdchronoDateToBoostMySQLDate(endDay));
-
-    return std::move(fctx).get().value();
-}
-
-std::string NoteQueryProcessor::formatSelectByUserIdAndUpdateDateRange(
-    std::size_t userId, std::chrono::year_month_day startDay, std::chrono::year_month_day endDay)
-{
-    initFormatOptions();
-    boost::mysql::format_context fctx(format_opts.value());
-    boost::mysql::format_sql_to(fctx, "CALL GetAllNotesForUserEditedInDatgeRange({}, {}, {})", userId,
-        stdchronoDateToBoostMySQLDate(startDay), stdchronoDateToBoostMySQLDate(endDay));
-
-    return std::move(fctx).get().value();
-}
-
+/*
+ * Get the notes for the date requested. Adjust for local time to GMT.
+ */
 std::string NoteQueryProcessor::formatGetNotesFromUserForDate(std::size_t userId, std::chrono::year_month_day searchDate)
 {
     std::chrono::system_clock::time_point startDay(getLocalMidnight(searchDate));
@@ -181,65 +159,6 @@ std::string NoteQueryProcessor::formatGetNotesFromUserForDate(std::size_t userId
     return std::move(fctx).get().value();
 }
 
-/*
- * Map the column names to the indexes for the columns, the order of the columns
- * in the result set is not guarenteed. Ensure that the columns necessary to fill
- * the model are present. Currently there is no error if there are too many fields.
- */
-void NoteQueryProcessor::mapColumnNameToIndex(boost::mysql::resultset_view &noteQueryresultSet)
-{
-    std::vector<std::string> columnNames;
-    bool hasAllRequiredColumns = true;
-
-    for (auto metaIter: noteQueryresultSet.meta())
-    {
-        columnNames.push_back(metaIter.column_name());
-    }
-
-    for (std::size_t i = 0; i < columnToIndexMap.size(); ++i)
-    {
-        std::string nameToFind = columnToIndexMap[i].columnName;
-        auto iterToIndex = std::find(columnNames.begin(), columnNames.end(), nameToFind);
-        if (iterToIndex != columnNames.end())
-        {
-            columnToIndexMap[i].columnIndex = std::distance(columnNames.begin(), iterToIndex);
-        }
-        else
-        {
-            appendErrorMessage(std::format("Required field {} not found in results", nameToFind));
-            hasAllRequiredColumns = false;
-        }
-    }
-
-    if (!hasAllRequiredColumns)
-    {
-        throw std::out_of_range("Results missing required fields");
-    }
-
-    fillRequiredIndexes();
-}
-
-void NoteQueryProcessor::assignValueToIndex(std::string columnName, std::size_t &columnIndex)
-{
-        auto iterToIndex = std::find_if(columnToIndexMap.begin(), columnToIndexMap.end(),
-            [columnName](const ColumnNameToIndexmapping& ctim){ return ctim.columnName == columnName; });
-        if (iterToIndex != columnToIndexMap.end())
-        {
-            if (iterToIndex->columnIndex.has_value())
-            {
-                columnIndex = iterToIndex->columnIndex.value();
-            }
-            else
-            {
-                appendErrorMessage(std::format("NULL Value to index for {}", columnName));
-            }
-        }
-        else
-        {
-            appendErrorMessage(std::format("Column Name: {} NOT FOUND in assignValueToIndex()", columnName));
-        }
-}
-
 void NoteQueryProcessor::fillRequiredIndexes()
 {
     assignValueToIndex("idUserNotes", noteIDX);
@@ -248,49 +167,6 @@ void NoteQueryProcessor::fillRequiredIndexes()
     assignValueToIndex("Hidden", hiddenIDX);
     assignValueToIndex("NotationDateTime", createdIDX);
     assignValueToIndex("LastUpdate", lastmodIDX);
-}
-
-/*
- * The boost::mysql::results class should contain all the results from the current
- * query, the results may span multiple result sets. The processResults method
- * should return all the results found in a single list.
- */
-NoteList NoteQueryProcessor::processResults(boost::mysql::results &noteQueryResults)
-{
-    NoteList queryResultValues;
-
-    for (std::size_t i = 0; i < noteQueryResults.size(); ++i)
-    {
-        boost::mysql::resultset_view resultview = noteQueryResults[i];
-        NoteList intermediateResults = processResultSet(resultview);
-        queryResultValues.insert(queryResultValues.end(), intermediateResults.begin(), intermediateResults.end());
-    }
-
-    return queryResultValues;
-}
-
-/*
- * Each boost::mysql result set contain a list of the column names in the result set.
- * Given the current implementation these columns should be in the same order for 
- * every result set, but we can't depend on that so we need to map the column names
- * to the indexes for every result set. For performance reasons we want to map the
- * indexes once per result set rather than doing a string search for each row of 
- * data. Create an object of the proper model for each row of data in the result set.
- */
-NoteList NoteQueryProcessor::processResultSet(boost::mysql::resultset_view &noteQueryresultSet)
-{
-    NoteList intermediateResults;
-
-    if (noteQueryresultSet.rows().num_columns() > 0)
-    {
-        mapColumnNameToIndex(noteQueryresultSet);
-        for (auto rv: noteQueryresultSet.rows())
-        {
-            intermediateResults.push_back(processResultRow(rv));
-        }
-    }
-
-    return intermediateResults;
 }
 
 NoteModel_shp NoteQueryProcessor::processResultRow(boost::mysql::row_view &noteQueryRow)
@@ -312,7 +188,6 @@ NoteModel_shp NoteQueryProcessor::processResultRow(boost::mysql::row_view &noteQ
     return noteListMember;
 }
 
-#if 0
 std::vector<ListExceptionTestElement> NoteQueryProcessor::initListExceptionTests() noexcept 
 {
     std::vector<ListExceptionTestElement> exceptionTests;
@@ -382,5 +257,4 @@ TestStatus NoteQueryProcessor::testExceptionsGetDashboardNoteTable() noexcept
         std::bind(&NoteQueryProcessor::getDashboardNoteTable, this, std::placeholders::_1, std::placeholders::_2), 
         testUserId, searchDate);
 }
-#endif
 
