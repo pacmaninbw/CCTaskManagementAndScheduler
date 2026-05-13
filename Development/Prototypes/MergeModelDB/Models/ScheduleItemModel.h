@@ -19,6 +19,17 @@ class ScheduleItemModel : public ModelDBInterface
 {
 public:
     ScheduleItemModel();
+    ScheduleItemModel(
+        std::size_t newID,
+        std::size_t userId,
+        std::string titleIn,
+        std::chrono::system_clock::time_point startTimeTS,
+        std::chrono::system_clock::time_point endTimeTS,
+        std::string locationStr,
+        bool personalIn,
+        std::chrono::system_clock::time_point creationDateTS,
+        std::chrono::system_clock::time_point lastUpdateTS
+    );
     virtual ~ScheduleItemModel() = default;
 
     std::size_t getScheduleItemID() const { return primaryKey; };

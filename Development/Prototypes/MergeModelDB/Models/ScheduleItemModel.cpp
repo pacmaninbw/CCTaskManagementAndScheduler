@@ -22,6 +22,32 @@ ScheduleItemModel::ScheduleItemModel()
     personal = false;
 }
 
+ScheduleItemModel::ScheduleItemModel(
+    std::size_t newID,
+    std::size_t userId,
+    std::string titleIn,
+    std::chrono::system_clock::time_point startTimeTS,
+    std::chrono::system_clock::time_point endTimeTS,
+    std::string locationStr,
+    bool personalIn,
+    std::chrono::system_clock::time_point creationDateTS,
+    std::chrono::system_clock::time_point lastUpdateTS
+)
+: ScheduleItemModel()
+{
+    primaryKey = newID;
+    userID = userId;
+    title = titleIn;
+    startTime = startTimeTS;
+    endTime = endTimeTS;
+    personal = personalIn;
+    location = locationStr;
+    creationTimeStamp = creationDateTS;
+    lastUpdate = lastUpdateTS;
+    deleted = false;
+}
+
+
 void ScheduleItemModel::setUserID(std::size_t userId)
 {
     modified = true;
