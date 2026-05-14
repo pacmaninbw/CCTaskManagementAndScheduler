@@ -73,10 +73,6 @@ BEGIN
 
 END$$
 
-DELIMITER ;
-
-DELIMITER $$
-USE `testPTSDB`;
 DROP PROCEDURE IF EXISTS `testPTSDB`.`HideOrganization`;
 
 CREATE PROCEDURE `testPTSDB`.`HideOrganization`
@@ -145,11 +141,6 @@ BEGIN
 
 END$$
 
-DELIMITER ;
-
-USE `testPTSDB`;
-DELIMITER $$
-
 DROP PROCEDURE IF EXISTS `AddUser`$$
 
 CREATE PROCEDURE `AddUser`
@@ -195,10 +186,6 @@ BEGIN
 
 END$$
 
-DELIMITER ;
-
-DELIMITER $$
-
 DROP PROCEDURE IF EXISTS `UpdateUserAllFields`$$
 
 CREATE PROCEDURE `UpdateUserAllFields`
@@ -231,7 +218,6 @@ BEGIN
 
 END$$
 
-DELIMITER ;
 
 -- -----------------------------------------------------
 -- Stored Functions
@@ -244,8 +230,6 @@ DELIMITER ;
 USE `testPTSDB`;
 DROP function IF EXISTS `testPTSDB`.`findUserIDKeyByLoginName`;
 
-DELIMITER $$
-USE `testPTSDB`$$
 CREATE FUNCTION `findUserIDKeyByLoginName`(
     LoginName VARCHAR(45)
 ) RETURNS INT
@@ -265,17 +249,13 @@ BEGIN
     
 END$$
 
-DELIMITER ;
 
 -- -----------------------------------------------------
 -- function findUserIDKeyByFullName
 -- -----------------------------------------------------
 
-USE `testPTSDB`;
 DROP function IF EXISTS `testPTSDB`.`findUserIDKeyByFullName`;
 
-DELIMITER $$
-USE `testPTSDB`$$
 CREATE FUNCTION `findUserIDKeyByFullName`(
     LastName VARCHAR(45),
     FirstName TINYTEXT,
@@ -299,17 +279,13 @@ BEGIN
     
 END$$
 
-DELIMITER ;
 
 -- -----------------------------------------------------
 -- function isValidUserLoginAndPassword
 -- -----------------------------------------------------
 
-USE `testPTSDB`;
 DROP function IF EXISTS `isValidUserLoginAndPassword`;
 
-DELIMITER $$
-USE `testPTSDB`$$
 CREATE FUNCTION `isValidUserLoginAndPassword`
 (
     LoginName VARCHAR(45),
@@ -385,11 +361,6 @@ BEGIN
 
 END$$
 
-DELIMITER ;
-
-
-DELIMITER $$
-
 DROP PROCEDURE IF EXISTS `AddUserGoal`$$
 
 CREATE PROCEDURE `AddUserGoal`
@@ -425,10 +396,6 @@ BEGIN
         RETURNING idUserGoals;
 
 END$$
-
-DELIMITER ;
-
-DELIMITER $$
 
 DROP PROCEDURE IF EXISTS `UpdateUserGoalAllFields`$$
 
@@ -499,10 +466,6 @@ BEGIN
 
 END$$
 
-DELIMITER ;
-
-DELIMITER $$
-
 DROP PROCEDURE IF EXISTS `AddUserNote`$$
 
 CREATE PROCEDURE `AddUserNote`
@@ -518,11 +481,6 @@ BEGIN
         RETURNING idUserNotes;
 
 END$$
-
-DELIMITER ;
-
-
-DELIMITER $$
 
 DROP PROCEDURE IF EXISTS `UpdateNoteAllFields`$$
 
@@ -542,10 +500,6 @@ BEGIN
     
 END$$
 
-DELIMITER ;
-
-DELIMITER $$
-
 DROP PROCEDURE IF EXISTS `GetNoteByID`$$
 
 CREATE PROCEDURE `GetNoteByID`
@@ -559,10 +513,6 @@ BEGIN
  
 END$$
  
-DELIMITER ;
- 
-DELIMITER $$
- 
 DROP PROCEDURE IF EXISTS `GetAllNotesForUser`$$
  
 CREATE PROCEDURE `GetAllNotesForUser` (IN `userId` INT UNSIGNED)   BEGIN
@@ -571,10 +521,6 @@ CREATE PROCEDURE `GetAllNotesForUser` (IN `userId` INT UNSIGNED)   BEGIN
 
 END$$
  
-DELIMITER ;
-
-DELIMITER $$
-
 DROP PROCEDURE IF EXISTS `GetAllUndeletedNotesForUser`$$
 
 CREATE PROCEDURE `GetAllUndeletedNotesForUser`
@@ -590,10 +536,6 @@ BEGIN
  
 END$$
 
-DELIMITER ;
-
-DELIMITER $$
- 
 DROP PROCEDURE IF EXISTS `GetNotesForUserSimlarToContent`$$
  
 CREATE PROCEDURE `GetNotesForUserSimlarToContent`
@@ -610,10 +552,6 @@ BEGIN
     
 END$$    
  
-DELIMITER ;
-
-DELIMITER $$
-
 DROP PROCEDURE IF EXISTS `GetAllNotesForUserCreatedInDatgeRange`$$
 
 CREATE PROCEDURE `GetAllNotesForUserCreatedInDatgeRange`
@@ -632,10 +570,6 @@ BEGIN
  
 END$$
  
-DELIMITER ;
-
-DELIMITER $$
-
 DROP PROCEDURE IF EXISTS `GetAllNotesForUserEditedInDatgeRange`$$
 
 CREATE PROCEDURE `GetAllNotesForUserEditedInDatgeRange`
@@ -654,10 +588,6 @@ BEGIN
  
 END$$
  
-DELIMITER ;
-
-DELIMITER $$
-
 DROP PROCEDURE IF EXISTS `GetDashboardNoteTable`$$
 
 CREATE PROCEDURE `GetDashboardNoteTable` 
@@ -751,10 +681,6 @@ BEGIN
 
 END$$
 
-DELIMITER ;
-
-DELIMITER $$
-
 DROP PROCEDURE IF EXISTS `AddTask`$$
 
 CREATE PROCEDURE `AddTask`
@@ -830,10 +756,6 @@ BEGIN
     RETURNING TaskID;
 
 END$$
-
-DELIMITER ;
-
-DELIMITER $$
 
 DROP PROCEDURE IF EXISTS `UpdateTaskAllFields`$$
 
@@ -972,10 +894,6 @@ BEGIN
 
 END$$
 
-DELIMITER ;
-
-DELIMITER $$
-USE `testPTSDB`;
 DROP PROCEDURE IF EXISTS `testPTSDB`.`EventTitlesForCompleter`;
 
 CREATE PROCEDURE `testPTSDB`.`EventTitlesForCompleter`
@@ -992,10 +910,6 @@ BEGIN
 
 END$$
 
-DELIMITER ;
-
-DELIMITER $$
-USE `testPTSDB`;
 DROP PROCEDURE IF EXISTS `testPTSDB`.`EventLocationsForCompleter`;
 
 CREATE PROCEDURE `testPTSDB`.`EventLocationsForCompleter`
@@ -1012,10 +926,6 @@ BEGIN
 
 END$$
 
-DELIMITER ;
-
-DELIMITER $$
-USE `testPTSDB`;
 DROP PROCEDURE IF EXISTS `testPTSDB`.`HideScheduleItem`;
 
 CREATE PROCEDURE `testPTSDB`.`HideScheduleItem`
@@ -1031,10 +941,6 @@ BEGIN
         WHERE UserID = IDUser AND idUserScheduleItem = ScheduleItemID;
 
 END$$
-
-DELIMITER ;
-
-DELIMITER $$
 
 DROP PROCEDURE IF EXISTS `AddScheduleEvent`$$
 
@@ -1069,9 +975,6 @@ INSERT INTO UserScheduleItem
     RETURNING idUserScheduleItem;
     
 END$$
-DELIMITER ;
-
-DELIMITER $$
 
 CREATE PROCEDURE `UpdateScheduleItemAllFields`
 (
