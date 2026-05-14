@@ -59,12 +59,10 @@ requires std::is_base_of<ModelDBInterface, ListType>::value
 class QueryProcessor : public CoreDBInterface
 {
 public:
-    QueryProcessor()
+    QueryProcessor(std::string modelName)
     : CoreDBInterface()
     {
-        queryGenerator = std::make_unique<ListType>();
-
-        std::string tempListType = queryGenerator->getModelName();
+        std::string tempListType = modelName;
         tempListType.append("QueryProcessor");
         listTypeName = tempListType;
     }
@@ -72,27 +70,6 @@ public:
 
     std::string getListTypeName() const noexcept { return listTypeName; };
     
-    bool runFirstQuery()
-    {
-        errorMessages.clear();
-
-        try
-        {
-            primaryKeyResults.clear();
-            boost::mysql::results localResult = runQueryAsync(firstFormattedQuery);
-            primaryKeyResults = processFirstQueryResults(localResult);
-
-            return primaryKeyResults.size() > 0;
-        }
-
-        catch(const std::exception& e)
-        {
-            appendErrorMessage(std::format("In {}List.runFirstQuery() : {}",
-                listTypeName, e.what()));
-            return false;
-        }
-    };
-
     bool runStringOnlyQuery()
     {
         errorMessages.clear();
@@ -155,9 +132,11 @@ protected:
         std::vector<std::string> columnNames;
         bool hasAllRequiredColumns = true;
 
+        std::cerr << "Columns Found:\n";
         for (auto metaIter: noteQueryresultSet.meta())
         {
             columnNames.push_back(metaIter.column_name());
+            std::cerr << metaIter.column_name() << std::endl;
         }
 
         for (std::size_t i = 0; i < columnToIndexMap.size(); ++i)
@@ -250,28 +229,6 @@ protected:
         firstFormattedQuery = formattedQueryStatement;
     }
     
-    virtual std::vector<std::size_t> processFirstQueryResults(boost::mysql::results& results)
-    {
-        if (inSelfTest)
-        {
-            primaryKeyResults.push_back(1);
-            return primaryKeyResults;
-        }
-
-        if (results.rows().empty())
-        {
-            appendErrorMessage(std::format("No {}s found!", queryGenerator->getModelName()));
-            return primaryKeyResults;
-        }
-
-        for (auto row: results.rows())
-        {
-            primaryKeyResults.push_back(row.at(0).as_uint64());
-    
-        }
-        return primaryKeyResults;
-    }
-
     virtual bool processStringOnlyResults(boost::mysql::results& results)
     {
         if (inSelfTest)
@@ -306,8 +263,6 @@ protected:
         inSelfTest = true;
         format_opts.reset();
         errorMessages.clear();
-
-        primaryKeyResults.clear();
     }
 
     virtual TestStatus testListExceptionHandling() noexcept
@@ -387,7 +342,6 @@ protected:
         std::string debugName(funcName);
 
         forceException = true;
-        std::cout << std::format("Force Exception {} Force Error {}", (forceException? "TRUE" : "FALSE"), (forceException? "TRUE" : "FALSE")) << std::endl;
         if (!funcUnderTest(args...).empty())
         {
             return testListExceptionReportFailure(false, false, funcName);
@@ -395,7 +349,6 @@ protected:
 
         selfTestResetAllValues();
         forceException = false;
-        std::cout << std::format("Force Exception {} Force Error {}", (forceException? "TRUE" : "FALSE"), (forceException? "TRUE" : "FALSE")) << std::endl;
         if (funcUnderTest(args...).empty())
         {
             return testListExceptionReportFailure(true, false, funcName);
@@ -406,10 +359,8 @@ protected:
 
     static const std::size_t IndexNotSet = 0xffff;
 
-    std::unique_ptr<ListType> queryGenerator;
     std::string listTypeName;
     std::string firstFormattedQuery;
-    std::vector<std::size_t> primaryKeyResults;
     std::vector<std::string> stringOnlyResults;
     std::vector<ColumnNameToIndexmapping> columnToIndexMap;
     std::vector<std::string> requiredColumns;
