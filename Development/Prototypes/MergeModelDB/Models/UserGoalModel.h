@@ -21,7 +21,7 @@ public:
     UserGoalModel();
     UserGoalModel(std::size_t goalId, std::size_t userId, std::string description, unsigned int priority,
         std::size_t parentID, std::chrono::system_clock::time_point creationDate,
-        std::chrono::system_clock::time_point lastUpdate
+        std::chrono::system_clock::time_point lastUpdate, bool hidden
     );
     ~UserGoalModel() = default;
 

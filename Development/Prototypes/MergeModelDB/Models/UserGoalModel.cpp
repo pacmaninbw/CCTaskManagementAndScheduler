@@ -26,7 +26,8 @@ UserGoalModel::UserGoalModel(
     unsigned int priorityIn,
     std::size_t parentIdIn,
     std::chrono::system_clock::time_point creationDateIn,
-    std::chrono::system_clock::time_point lastUpdateIn
+    std::chrono::system_clock::time_point lastUpdateIn,
+    bool hidden
 )
 : UserGoalModel()
 {
@@ -37,6 +38,7 @@ UserGoalModel::UserGoalModel(
     parentID = parentIdIn;
     creationDate = creationDateIn;
     lastUpdate = lastUpdateIn;
+    deleted = hidden;
 }
 
 void UserGoalModel::setGoalId(std::size_t userGoalId)
