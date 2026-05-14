@@ -8,7 +8,7 @@
 #include <iostream>
 
 UserQueryProcessor::UserQueryProcessor()
-: QueryProcessor<UserModel>()
+: QueryProcessor<UserModel>("User")
 {
     requiredColumns =  {"UserID", "Organization_ID", "LastName", "FirstName", "MiddleInitial",  "EmailAddress", "LoginName", "HashedPassWord", "UserAdded", "LastLogin", "Preferences", "Hidden"};
     for (auto columnName: requiredColumns)
@@ -32,7 +32,6 @@ UserModelList UserQueryProcessor::getAllUsers() noexcept
         boost::mysql::results localResult = runQueryAsync(boost::mysql::format_sql(
             format_opts.value(), "SELECT * FROM UserProfile "));
         allUsers = processResults(localResult);
-        std::cout << "UserQueryProcessor::getAllUsers() allusers " << allUsers.size() << std::endl;
     }
         
     catch(const std::exception& e)
