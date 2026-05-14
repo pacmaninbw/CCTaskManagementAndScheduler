@@ -33,7 +33,7 @@ TestUserDBInterface::TestUserDBInterface(std::string userFileName)
 TestStatus TestUserDBInterface::runPositivePathTests()
 {
     UserQueryProcessor databaseEntries;
-    UserQueryProcessorValues userProfileTestData = databaseEntries.getAllUsers();
+    UserModelList userProfileTestData = databaseEntries.getAllUsers();
 
     if (!loadTestUsersFromFile(userProfileTestData))
     {
@@ -225,7 +225,7 @@ bool TestUserDBInterface::testUpdateUserPassword(UserModel_shp insertedUser)
     return testPassed;
 }
 
-bool TestUserDBInterface::loadTestUsersFromFile(UserQueryProcessorValues& userProfileTestData)
+bool TestUserDBInterface::loadTestUsersFromFile(UserModelList& userProfileTestData)
 {
     std::ifstream userData(dataFileName);
 
@@ -256,11 +256,11 @@ bool TestUserDBInterface::loadTestUsersFromFile(UserQueryProcessorValues& userPr
     return true;
 }
 
-bool TestUserDBInterface::testGetAllUsers(UserQueryProcessorValues userProfileTestData)
+bool TestUserDBInterface::testGetAllUsers(UserModelList userProfileTestData)
 {
     bool testPassed = false;
     UserQueryProcessor testULists;
-    UserQueryProcessorValues allUsers = testULists.getAllUsers();
+    UserModelList allUsers = testULists.getAllUsers();
 
     if ((userProfileTestData.size() == allUsers.size()) &&
         std::equal(userProfileTestData.begin(), userProfileTestData.end(), allUsers.begin(),

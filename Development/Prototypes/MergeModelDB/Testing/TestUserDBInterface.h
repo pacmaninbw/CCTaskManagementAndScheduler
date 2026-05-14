@@ -24,8 +24,8 @@ private:
     bool testGetUserByFullName(UserModel_shp insertedUser);
     bool testGetUserByEmail(UserModel_shp insertedUser);
     bool testUpdateUserPassword(UserModel_shp insertedUser);
-    bool loadTestUsersFromFile(UserQueryProcessorValues& userProfileTestData);
-    bool testGetAllUsers(UserQueryProcessorValues userProfileTestData);
+    bool loadTestUsersFromFile(UserModelList& userProfileTestData);
+    bool testGetAllUsers(UserModelList userProfileTestData);
     TestStatus testnegativePathNotModified();
     TestStatus testNegativePathAlreadyInDataBase();
 
