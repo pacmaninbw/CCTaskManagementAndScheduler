@@ -8,33 +8,12 @@
 #include <iostream>
 
 GoalQueryProcessor::GoalQueryProcessor()
-: QueryProcessor<UserGoalModel>()
+: QueryProcessor<UserGoalModel>("UserGoalModel")
 {
+    requiredColumns = {"idUserGoals", "UserID", "Description", "CreationTS", "LastUpdateTS", "Priority", "ParentGoal", "Hidden"};
 }
 
-GoalQueryProcessorValues GoalQueryProcessor::getAllGoalsForUser(std::size_t userID) noexcept
-{
-    errorMessages.clear();
-/*
- * Prepend function name to any error messages.
- */
-    appendErrorMessage("In GoalQueryProcessor::getActiveGoalsForAssignedUser : ");
-
-    try
-    {
-        firstFormattedQuery = queryGenerator->formatSelectAllByUserId(userID);
-        return runQueryFillGoalQueryProcessor();
-    }
-
-    catch(const std::exception& e)
-    {
-        appendErrorMessage(e.what());
-    }
-    
-    return GoalQueryProcessorValues();
-}
-
-GoalQueryProcessorValues GoalQueryProcessor::getAllChildrenFromParent(UserGoalModel parentGoal) noexcept
+UserGoalList GoalQueryProcessor::getAllGoalsForUser(std::size_t userID) noexcept
 {
     errorMessages.clear();
 /*
@@ -44,8 +23,8 @@ GoalQueryProcessorValues GoalQueryProcessor::getAllChildrenFromParent(UserGoalMo
 
     try
     {
-        firstFormattedQuery = queryGenerator->formatSelectAllChildGoalsWithParent(parentGoal);
-        return runQueryFillGoalQueryProcessor();
+        boost::mysql::results localResult = runQueryAsync(formatSelectAllByUserId(userID));
+        return processResults(localResult);
     }
 
     catch(const std::exception& e)
@@ -53,10 +32,32 @@ GoalQueryProcessorValues GoalQueryProcessor::getAllChildrenFromParent(UserGoalMo
         appendErrorMessage(e.what());
     }
     
-    return GoalQueryProcessorValues();
+    return UserGoalList();
 }
 
-GoalQueryProcessorValues GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription(std::size_t userID, std::string searchString) noexcept
+UserGoalList GoalQueryProcessor::getAllChildrenFromParent(UserGoalModel parentGoal) noexcept
+{
+    errorMessages.clear();
+/*
+ * Prepend function name to any error messages.
+ */
+    appendErrorMessage("In GoalQueryProcessor::getActiveGoalsForAssignedUser : ");
+
+    try
+    {
+        boost::mysql::results localResult = runQueryAsync(formatSelectAllChildGoalsWithParent(parentGoal));
+        return processResults(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(e.what());
+    }
+    
+    return UserGoalList();
+}
+
+UserGoalList GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription(std::size_t userID, std::string searchString) noexcept
 {
     errorMessages.clear();
 
@@ -64,8 +65,8 @@ GoalQueryProcessorValues GoalQueryProcessor::findGoalsByUserIdAndSimilarDescript
 
     try
     {
-        firstFormattedQuery = queryGenerator->formatSelectBySimilarDescription(searchString, userID);
-        return runQueryFillGoalQueryProcessor();
+        boost::mysql::results localResult = runQueryAsync(formatSelectBySimilarDescription(searchString, userID));
+        return processResults(localResult);
     }
 
     catch(const std::exception& e)
@@ -73,37 +74,99 @@ GoalQueryProcessorValues GoalQueryProcessor::findGoalsByUserIdAndSimilarDescript
         appendErrorMessage(e.what());
     }
     
-    return GoalQueryProcessorValues();
+    return UserGoalList();
 }
 
-GoalQueryProcessorValues GoalQueryProcessor::fillGoalQueryProcessor()
+UserGoalModel_shp GoalQueryProcessor::processResultRow(boost::mysql::row_view& queryRow)
 {
-    GoalQueryProcessorValues GoalQueryProcessor;
+    std::size_t goalId = queryRow.at(GoalIdIdx).as_uint64();
+    std::size_t userID = queryRow.at(UserIdIdx).as_uint64();
+    std::chrono::system_clock::time_point creationDate = boostMysqlDateTimeToChronoTimePoint(queryRow.at(CreationTSIdx).as_datetime());
+    std::string description = queryRow.at(DescriptionIdx).as_string();
+    std::chrono::system_clock::time_point lastUpdate = boostMysqlDateTimeToChronoTimePoint(queryRow.at(LastUpdateIdx).as_datetime());
+    unsigned int priority;
+    std::size_t parentID;
+    [[maybe_unused]]bool deleted;
 
-    for (auto GoalID: primaryKeyResults)
+    // Optional fields.
+    if (!queryRow.at(PriorityIdx).is_null())
     {
-        UserGoalModel_shp newGoal = std::make_shared<UserGoalModel>(UserGoalModel());
-        newGoal->selectByGoalID(GoalID);
-        GoalQueryProcessor.push_back(newGoal);
+        priority = queryRow.at(PriorityIdx).as_int64();
     }
 
-    return GoalQueryProcessor;
+    if (!queryRow.at(ParentGoalIDIdx).is_null())
+    {
+        parentID = queryRow.at(ParentGoalIDIdx).as_uint64();
+    }
+
+    if (!queryRow.at(HiddenIdx).is_null())
+    {
+        deleted = queryRow.at(HiddenIdx).as_uint64() == 1? true : false;
+    }
+
+    return std::make_shared<UserGoalModel>(goalId, userID, description, priority, parentID, creationDate, lastUpdate);
 }
 
-GoalQueryProcessorValues GoalQueryProcessor::runQueryFillGoalQueryProcessor()
+void GoalQueryProcessor::fillRequiredIndexes()
 {
-    if (firstFormattedQuery.empty())
-    {
-        appendErrorMessage(std::format("Formatting select multiple Goals query string failed {}",
-            queryGenerator->getAllErrorMessages()));
-        return GoalQueryProcessorValues();
-    }
-    if (runFirstQuery())
-    {
-        return fillGoalQueryProcessor();
-    }
+    assignValueToIndex("idUserGoals", GoalIdIdx);
+    assignValueToIndex("UserID", UserIdIdx);
+    assignValueToIndex("Description", DescriptionIdx);
+    assignValueToIndex("CreationTS", CreationTSIdx);
+    assignValueToIndex("LastUpdateTS", LastUpdateIdx);
+    assignValueToIndex("Priority",PriorityIdx);
+    assignValueToIndex("ParentGoal",ParentGoalIDIdx);
+    assignValueToIndex("Hidden",HiddenIdx);
+}
 
-    return GoalQueryProcessorValues();
+std::string GoalQueryProcessor::formatSelectAllByUserId(std::size_t userId)
+{
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserGoals ");
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
+
+        return std::move(fctx).get().value();
+}
+
+std::string GoalQueryProcessor::formatSelectAllChildGoalsWithParentFromUser(std::size_t parentId, std::size_t userId)
+{
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserGoals ");
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND ParentGoal = {}", userId, parentId);
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
+
+        return std::move(fctx).get().value();
+}
+
+std::string GoalQueryProcessor::formatSelectAllChildGoalsWithParent(UserGoalModel &parentGoal)
+{
+    return formatSelectAllChildGoalsWithParentFromUser(parentGoal.getGoalId(), parentGoal.getUserId());
+}
+
+std::string GoalQueryProcessor::formatSelectByExactDescription(std::string fullDescription, std::size_t userId)
+{
+    initFormatOptions();
+    boost::mysql::format_context fctx(format_opts.value());
+    boost::mysql::format_sql_to(fctx, "SELECT * FROM UserGoals ");
+    boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Description = {}", userId, fullDescription);
+    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
+
+    return std::move(fctx).get().value();
+}
+
+std::string GoalQueryProcessor::formatSelectBySimilarDescription(std::string partialDescription, std::size_t userId)
+{
+    initFormatOptions();
+    boost::mysql::format_context fctx(format_opts.value());
+    boost::mysql::format_sql_to(fctx, "SELECT * FROM UserGoals ");
+    boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Description LIKE {}", userId,
+        wrapSearchContentSQLPatternMatch(partialDescription));
+    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
+
+    return std::move(fctx).get().value();
 }
 
 std::vector<ListExceptionTestElement> GoalQueryProcessor::initListExceptionTests() noexcept
@@ -147,3 +210,4 @@ TestStatus GoalQueryProcessor::testExceptionsFindGoalsWithSimilarDescription() n
          std::bind(&GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription, this, std::placeholders::_1, std::placeholders::_2),
          userId, searchString);
 }
+

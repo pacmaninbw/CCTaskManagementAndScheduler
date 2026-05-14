@@ -19,6 +19,26 @@ UserGoalModel::UserGoalModel()
     userID = 0;
 }
 
+UserGoalModel::UserGoalModel(
+    std::size_t goalId,
+    std::size_t userId,
+    std::string descriptionIn,
+    unsigned int priorityIn,
+    std::size_t parentIdIn,
+    std::chrono::system_clock::time_point creationDateIn,
+    std::chrono::system_clock::time_point lastUpdateIn
+)
+: UserGoalModel()
+{
+    primaryKey = goalId;
+    userID = userId;
+    description = descriptionIn;
+    priority = priorityIn;
+    parentID = parentIdIn;
+    creationDate = creationDateIn;
+    lastUpdate = lastUpdateIn;
+}
+
 void UserGoalModel::setGoalId(std::size_t userGoalId)
 {
     modified = true;

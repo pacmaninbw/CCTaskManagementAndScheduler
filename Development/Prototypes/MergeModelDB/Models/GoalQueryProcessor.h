@@ -9,7 +9,7 @@
 #include <iostream>
 #include <string>
 
-using GoalQueryProcessorValues = std::vector<UserGoalModel_shp>;
+using UserGoalList = std::vector<UserGoalModel_shp>;
 
 class GoalQueryProcessor : public QueryProcessor<UserGoalModel>
 {
@@ -17,18 +17,32 @@ public:
     GoalQueryProcessor();
     virtual ~GoalQueryProcessor() = default;
 
-    GoalQueryProcessorValues getAllGoalsForUser(std::size_t userID) noexcept;
-    GoalQueryProcessorValues getAllChildrenFromParent(UserGoalModel parentGoal) noexcept;
-    GoalQueryProcessorValues findGoalsByUserIdAndSimilarDescription(std::size_t userID, std::string searchString) noexcept;
+    UserGoalList getAllGoalsForUser(std::size_t userID) noexcept;
+    UserGoalList getAllChildrenFromParent(UserGoalModel parentGoal) noexcept;
+    UserGoalList findGoalsByUserIdAndSimilarDescription(std::size_t userID, std::string searchString) noexcept;
 
 private:
-    GoalQueryProcessorValues fillGoalQueryProcessor();
-    GoalQueryProcessorValues runQueryFillGoalQueryProcessor();
+    virtual UserGoalModel_shp processResultRow(boost::mysql::row_view& queryRow) override;
+    virtual void fillRequiredIndexes() override;
+    std::string formatSelectAllByUserId(std::size_t userId);
+    std::string formatSelectAllChildGoalsWithParentFromUser(std::size_t parentId, std::size_t userId);
+    std::string formatSelectAllChildGoalsWithParent(UserGoalModel& parentGoal);
+    std::string formatSelectByExactDescription(std::string fullDescription, std::size_t userId);
+    std::string formatSelectBySimilarDescription(std::string partialDescription, std::size_t userId);
 
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
     TestStatus testExceptionsGetAllGoalsForUser() noexcept;
     TestStatus testExceptionsGetAllChildrenFromParent() noexcept;
     TestStatus testExceptionsFindGoalsWithSimilarDescription() noexcept;
+
+    std::size_t GoalIdIdx = IndexNotSet;
+    std::size_t UserIdIdx = IndexNotSet;
+    std::size_t DescriptionIdx = IndexNotSet;
+    std::size_t CreationTSIdx = IndexNotSet;
+    std::size_t LastUpdateIdx = IndexNotSet;
+    std::size_t PriorityIdx = IndexNotSet;
+    std::size_t ParentGoalIDIdx = IndexNotSet;
+    std::size_t HiddenIdx = IndexNotSet;
 };
 
 #endif // GOALQUERYPROCESSOR_H_
