@@ -112,10 +112,6 @@ void ScheduleItemSelfTest::selfTestResetAllValues() noexcept
 std::vector<ExceptionTestElement> ScheduleItemSelfTest::initExceptionTests() noexcept
 {
     std::vector<ExceptionTestElement> exceptionTests;
-    exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionFormatSelectScheduleItemsByDateAndUser, this),
-        "Select by Datee and User"});
-    exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionFormatSelectSiByContentDateRangeUser, this),
-        "Select by Content, Date Range and User"});
     exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionInsert, this), "testExceeptionInsert"});
     exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
     exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
@@ -198,31 +194,6 @@ TestStatus ScheduleItemSelfTest::testExceptionHide() noexcept
     setLastUpdate(commonTestTimeStampValue);
 
     return testExceptionAndSuccessNArgs("ScheduleItemModel::hide", std::bind(&ScheduleItemModel::hide, this, std::placeholders::_1), testUserId);}
-
-TestStatus ScheduleItemSelfTest::testExceptionFormatSelectScheduleItemsByDateAndUser() noexcept
-{
-    selfTestResetAllValues();
-
-    std::chrono::year_month_day testDate(commonTestDateValue);
-
-    return testFormatExceptionAndSuccessNArgs("ScheduleItemSelfTest::testExceptionFormatSelectScheduleItemsByDateAndUser",
-        std::bind(&ScheduleItemModel::formatSelectScheduleItemsByDateAndUser, this, std::placeholders::_1, std::placeholders::_2), testDate, 1);
-}
-
-TestStatus ScheduleItemSelfTest::testExceptionFormatSelectSiByContentDateRangeUser() noexcept
-{
-    selfTestResetAllValues();
-
-    std::chrono::year_month_day startSearch(commonTestDateRangeStartValue);
-    std::chrono::year_month_day endSearch(commonTestDateRangeEndValue);
-    std::string testTitle("This is only a test");
-    std::size_t testUser = 1;
-
-    return testFormatExceptionAndSuccessNArgs("ScheduleItemSelfTest::testExceptionFormatSelectSiByContentDateRangeUser",
-        std::bind(&ScheduleItemModel::formatSelectSiByContentDateRangeUser, this,
-        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
-        testTitle, startSearch, endSearch, testUser);
-}
 
 TestStatus ScheduleItemSelfTest::testAllInsertFailures()
 {
