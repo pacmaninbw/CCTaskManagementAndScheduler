@@ -23,7 +23,7 @@ public:
 private:
     bool testGetTaskByDescription(TaskModel_shp task);
     bool testGetTaskByID(TaskModel_shp task);
-    TaskQueryProcessorValues loadTasksFromDataFile();
+    TaskList loadTasksFromDataFile();
     void commonTaskInit(TaskModel_shp newTask, CSVRow taskData);
     TaskModel_shp creatOddTask(CSVRow taskData);
     TaskModel_shp creatEvenTask(CSVRow taskData);

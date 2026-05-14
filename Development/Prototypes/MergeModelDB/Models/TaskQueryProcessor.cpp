@@ -9,141 +9,276 @@
 #include <iostream>
 
 TaskQueryProcessor::TaskQueryProcessor()
-: QueryProcessor<TaskModel>()
+: QueryProcessor<TaskModel>("Task")
 {
+    requiredColumns = {
+        "TaskID", "CreatedBy", "AsignedTo", "Description", "ParentTask", "Status", "CreatedOn",
+        "RequiredDelivery", "ScheduledStart", "ActualStart", "EstimatedCompletion", "Completed",
+        "EstimatedEffortHours", "ActualEffortHours", "SchedulePriorityGroup", "PriorityInGroup",
+        "Personal", "DependencyCount", "Dependencies", "LastUpdateTS", "Hidden"
+    };
+
+    for (auto columnName: requiredColumns)
+    {
+        columnToIndexMap.push_back(columnName);
+    }
 
 }
 
-TaskQueryProcessorValues TaskQueryProcessor::getActiveTasksForAssignedUser(std::size_t assignedUserID) noexcept
+TaskList TaskQueryProcessor::getActiveTasksForAssignedUser(std::size_t assignedUserID) noexcept
 {
     errorMessages.clear();
-/*
- * Prepend function name to any error messages.
- */
-    appendErrorMessage("In TaskQueryProcessor::getActiveTasksForAssignedUser : ");
 
     try
     {
-        firstFormattedQuery = queryGenerator->formatSelectActiveTasksForAssignedUser(assignedUserID);
-        return runQueryFillTaskQueryProcessor();
+        boost::mysql::results localResult = runQueryAsync(formatSelectActiveTasksForAssignedUser(assignedUserID));
+        return processResults(localResult);
     }
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(e.what());
+        appendErrorMessage(std::format("In TaskQueryProcessor::{}({}) : {}", __func__, assignedUserID, e.what()));
     }
     
-    return TaskQueryProcessorValues();
+    return TaskList();
 }
 
-TaskQueryProcessorValues TaskQueryProcessor::getUnstartedDueForStartForAssignedUser(std::size_t assignedUserID) noexcept
+TaskList TaskQueryProcessor::getUnstartedDueForStartForAssignedUser(std::size_t assignedUserID) noexcept
 {
     errorMessages.clear();
-    appendErrorMessage("In TaskQueryProcessor::getUnstartedDueForStartForAssignedUser : ");
 
     try
     {
-        firstFormattedQuery = queryGenerator->formatSelectUnstartedDueForStartForAssignedUser(assignedUserID);
-        return runQueryFillTaskQueryProcessor();
+        boost::mysql::results localResult = runQueryAsync(formatSelectUnstartedDueForStartForAssignedUser(assignedUserID));
+        return processResults(localResult);
     }
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(e.what());
+        appendErrorMessage(std::format("In TaskQueryProcessor::{}({}) : {}", __func__, assignedUserID, e.what()));
     }
     
-    return TaskQueryProcessorValues();
+    return TaskList();
 }
 
-TaskQueryProcessorValues TaskQueryProcessor::getTasksCompletedByAssignedAfterDate(std::size_t assignedUserID,
+TaskList TaskQueryProcessor::getTasksCompletedByAssignedAfterDate(std::size_t assignedUserID,
     std::chrono::year_month_day searchStartDate) noexcept
 {
     errorMessages.clear();
-    appendErrorMessage("In TaskQueryProcessor::getTasksCompletedByAssignedAfterDate : ");
 
     try
     {
-        firstFormattedQuery = queryGenerator->formatSelectTasksCompletedByAssignedAfterDate(
-            assignedUserID, searchStartDate);
-        return runQueryFillTaskQueryProcessor();
+        boost::mysql::results localResult = runQueryAsync(formatSelectTasksCompletedByAssignedAfterDate(
+            assignedUserID, searchStartDate));
+        return processResults(localResult);
     }
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(e.what());
+        appendErrorMessage(std::format("In TaskQueryProcessor::{}({}) : {}", __func__, assignedUserID, e.what()));
     }
     
-    return TaskQueryProcessorValues();
+    return TaskList();
 }
 
-TaskQueryProcessorValues TaskQueryProcessor::getTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID) noexcept
+TaskList TaskQueryProcessor::getTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID) noexcept
 {
     errorMessages.clear();
-    appendErrorMessage("In TaskQueryProcessor::getTasksByAssignedIDandParentID : ");
 
     try
     {
-        firstFormattedQuery = queryGenerator->formatSelectTasksByAssignedIDandParentID(
-            assignedUserID, parentID);
-        return runQueryFillTaskQueryProcessor();
+        boost::mysql::results localResult = runQueryAsync(formatSelectTasksByAssignedIDandParentID(
+            assignedUserID, parentID));
+        return processResults(localResult);
     }
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(e.what());
+        appendErrorMessage(std::format("In TaskQueryProcessor::{}({}) : {}", __func__, assignedUserID, e.what()));
     }
     
-    return TaskQueryProcessorValues();
+    return TaskList();
 }
 
-TaskQueryProcessorValues TaskQueryProcessor::getDefaultDashboardTaskList(std::size_t assignedUserID, std::chrono::year_month_day searchStartDate) noexcept
+TaskList TaskQueryProcessor::getDefaultDashboardTaskList(std::size_t assignedUserID, std::chrono::year_month_day searchStartDate) noexcept
 {
     errorMessages.clear();
-    appendErrorMessage("In TaskQueryProcessor::getDefaultDashboardTaskList : ");
 
     try
     {
-        firstFormattedQuery = queryGenerator->formatDefaultTaskTableSelect(assignedUserID, searchStartDate);
-        return runQueryFillTaskQueryProcessor();
+        boost::mysql::results localResult = runQueryAsync(formatDefaultTaskTableSelect(assignedUserID, searchStartDate));
+        return processResults(localResult);
     }
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(e.what());
+        appendErrorMessage(std::format("In TaskQueryProcessor::{}({}) : {}", __func__, assignedUserID, e.what()));
     }
     
-    return TaskQueryProcessorValues();
+    return TaskList();
 }
 
-TaskQueryProcessorValues TaskQueryProcessor::fillTaskQueryProcessor()
-{
-    TaskQueryProcessorValues TaskQueryProcessor;
 
-    for (auto taskID: primaryKeyResults)
+TaskModel_shp TaskQueryProcessor::processResultRow(boost::mysql::row_view &queryRow)
+{
+    std::optional<TaskModel::TaskStatus> statusVal;
+    std::optional<std::size_t> parentTaskID;
+    std::optional<std::chrono::system_clock::time_point> creationTimeStamp;
+    std::optional<std::chrono::year_month_day> dueDate;
+    std::optional<std::chrono::year_month_day> scheduledStart;
+    std::optional<std::chrono::year_month_day> actualStartDate;
+    std::optional<std::chrono::year_month_day> estimatedCompletion;
+    std::optional<std::chrono::year_month_day> completionDate;
+    unsigned int estimatedEffort;
+    double actualEffortToDate;
+    unsigned int priorityGroup;
+    unsigned int priority;
+    bool personal;
+    std::optional<std::chrono::system_clock::time_point> lastUpdate;
+    std::size_t dependencyCount;
+    std::string dependenciesText;
+
+    // Required fields.
+    std::size_t taskId = queryRow.at(taskIdIdx).as_uint64();
+    std::size_t creatorID = queryRow.at(createdByIdx).as_uint64();
+    std::size_t assignToID = queryRow.at(assignedToIdx).as_uint64();
+    std::string description = queryRow.at(descriptionIdx).as_string();
+    creationTimeStamp = boostMysqlDateTimeToChronoTimePoint(queryRow.at(createdOnIdx).as_datetime());
+    dueDate = boostMysqlDateToChronoDate(queryRow.at(requiredDeliveryIdx).as_date());
+    scheduledStart = boostMysqlDateToChronoDate(queryRow.at(scheduledStartIdx).as_date());
+    estimatedEffort = queryRow.at(estimatedEffortHoursIdx).as_uint64();
+    actualEffortToDate = queryRow.at(actualEffortHoursIdx).as_double();
+    priorityGroup = queryRow.at(schedulePriorityGroupIdx).as_uint64();
+    priority = queryRow.at(priorityInGroupIdx).as_uint64();
+    personal = queryRow.at(personalIdx).as_int64();
+    lastUpdate = boostMysqlDateTimeToChronoTimePoint(queryRow.at(lastUpdate_Idx).as_datetime());
+
+
+    // Optional fields.
+    if (!queryRow.at(parentTaskIdx).is_null())
     {
-        TaskModel_shp newTask = std::make_shared<TaskModel>(TaskModel());
-        newTask->selectByTaskID(taskID);
-        TaskQueryProcessor.push_back(newTask);
+        parentTaskID = queryRow.at(parentTaskIdx).as_uint64();
     }
 
-    return TaskQueryProcessor;
+    if (!queryRow.at(statusIdx).is_null())
+    {
+        statusVal = static_cast<TaskModel::TaskStatus>(queryRow.at(statusIdx).as_uint64());
+    }
+
+    if (!queryRow.at(actualStartIdx).is_null())
+    {
+        actualStartDate = boostMysqlDateToChronoDate(queryRow.at(actualStartIdx).as_date());
+    }
+
+    if (!queryRow.at(estimatedCompletionIdx).is_null())
+    {
+        estimatedCompletion = boostMysqlDateToChronoDate(queryRow.at(estimatedCompletionIdx).as_date());
+    }
+
+    if (!queryRow.at(completedIdx).is_null())
+    {
+        completionDate = boostMysqlDateToChronoDate(queryRow.at(completedIdx).as_date());
+    }
+
+    dependencyCount = queryRow.at(dependencyCountIdx).as_uint64();
+    if (dependencyCount > 0)
+    {
+        dependenciesText = queryRow.at(depenedenciesTextIdx).as_string();
+    }
+
+    return std::make_shared<TaskModel>(taskId, creatorID, assignToID, description, statusVal, parentTaskID, dueDate, scheduledStart,
+        actualStartDate, estimatedCompletion, completionDate, estimatedEffort,actualEffortToDate, priorityGroup, priority, personal,
+        dependencyCount, dependenciesText, creationTimeStamp, lastUpdate);
+
 }
 
-TaskQueryProcessorValues TaskQueryProcessor::runQueryFillTaskQueryProcessor()
+void TaskQueryProcessor::fillRequiredIndexes()
 {
-    if (firstFormattedQuery.empty())
-    {
-        appendErrorMessage(std::format("Formatting select multiple tasks query string failed {}",
-            queryGenerator->getAllErrorMessages()));
-        return TaskQueryProcessorValues();
-    }
-    
-    if (runFirstQuery())
-    {
-        return fillTaskQueryProcessor();
-    }
+    assignValueToIndex("TaskID", taskIdIdx);
+    assignValueToIndex("CreatedBy", createdByIdx);
+    assignValueToIndex("AsignedTo", assignedToIdx);
+    assignValueToIndex("Description", descriptionIdx);
+    assignValueToIndex("ParentTask", parentTaskIdx);
+    assignValueToIndex("Status", statusIdx);
+    assignValueToIndex("CreatedOn", createdOnIdx);
+    assignValueToIndex("RequiredDelivery", requiredDeliveryIdx);
+    assignValueToIndex("ScheduledStart", scheduledStartIdx);
+    assignValueToIndex("ActualStart", actualStartIdx);
+    assignValueToIndex("EstimatedCompletion", estimatedCompletionIdx);
+    assignValueToIndex("Completed", completedIdx);
+    assignValueToIndex("EstimatedEffortHours", estimatedEffortHoursIdx);
+    assignValueToIndex("ActualEffortHours", actualEffortHoursIdx);
+    assignValueToIndex("SchedulePriorityGroup", schedulePriorityGroupIdx);
+    assignValueToIndex("PriorityInGroup", priorityInGroupIdx);
+    assignValueToIndex("Personal", personalIdx);
+    assignValueToIndex("DependencyCount", dependencyCountIdx);
+    assignValueToIndex("Dependencies", depenedenciesTextIdx);
+    assignValueToIndex("LastUpdateTS", lastUpdate_Idx);
+    assignValueToIndex("Hidden", hidden_Idx);
+}
 
-    return TaskQueryProcessorValues();
+std::string TaskQueryProcessor::formatSelectActiveTasksForAssignedUser(std::size_t assignedUserID)
+{
+    constexpr unsigned int notStarted = static_cast<unsigned int>(TaskModel::TaskStatus::Not_Started);
+
+    initFormatOptions();
+    boost::mysql::format_context fctx(format_opts.value());
+    boost::mysql::format_sql_to(fctx, listQueryBase);
+    boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND Completed IS NULL AND (Status IS NOT NULL AND Status <> {})",
+        assignedUserID, notStarted);
+    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
+
+    return std::move(fctx).get().value();
+}
+
+std::string TaskQueryProcessor::formatSelectUnstartedDueForStartForAssignedUser(std::size_t assignedUserID)
+{
+    constexpr unsigned int notStarted = static_cast<unsigned int>(TaskModel::TaskStatus::Not_Started);
+
+    initFormatOptions();
+    boost::mysql::format_context fctx(format_opts.value());
+    boost::mysql::format_sql_to(fctx, listQueryBase);
+    boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND ScheduledStart < {} AND (Status IS NULL OR Status = {})",
+        assignedUserID, stdchronoDateToBoostMySQLDate(getTodaysDatePlus(OneWeek)), notStarted);
+    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
+
+    return std::move(fctx).get().value();
+}
+
+std::string TaskQueryProcessor::formatSelectTasksCompletedByAssignedAfterDate(std::size_t assignedUserID, std::chrono::year_month_day searchStartDate)
+{
+    initFormatOptions();
+    boost::mysql::format_context fctx(format_opts.value());
+    boost::mysql::format_sql_to(fctx, listQueryBase);
+    boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND Completed >= {}",
+        assignedUserID, stdchronoDateToBoostMySQLDate(searchStartDate));
+
+    return std::move(fctx).get().value();
+}
+
+std::string TaskQueryProcessor::formatSelectTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID)
+{
+    initFormatOptions();
+    boost::mysql::format_context fctx(format_opts.value());
+    boost::mysql::format_sql_to(fctx, listQueryBase);
+    boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND ParentTask = {}", assignedUserID, parentID);
+    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
+
+    return std::move(fctx).get().value();
+}
+
+std::string TaskQueryProcessor::formatDefaultTaskTableSelect(std::size_t assignedUserID, std::chrono::year_month_day searchStartDate)
+{
+    initFormatOptions();
+    boost::mysql::format_context fctx(format_opts.value());
+    boost::mysql::format_sql_to(fctx, listQueryBase);
+    boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {}", assignedUserID);
+    boost::mysql::format_sql_to(fctx, " AND RequiredDelivery < {} AND Completed IS NULL",
+        stdchronoDateToBoostMySQLDate(searchStartDate));
+    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
+    boost::mysql::format_sql_to(fctx, " ORDER BY SchedulePriorityGroup ASC, PriorityInGroup ASC");
+
+    return std::move(fctx).get().value();
 }
 
 std::vector<ListExceptionTestElement> TaskQueryProcessor::initListExceptionTests() noexcept
@@ -215,3 +350,4 @@ TestStatus TaskQueryProcessor::testExceptionGetDefaultDashboardTaskList() noexce
          std::bind(&TaskQueryProcessor::getDefaultDashboardTaskList, this, std::placeholders::_1, std::placeholders::_2),
         assignedUser, searchStartDate);
 }
+

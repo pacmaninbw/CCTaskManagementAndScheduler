@@ -42,6 +42,59 @@ TaskModel::TaskModel()
   personal = false;
 }
 
+TaskModel::TaskModel(
+    std::size_t taskId,
+    std::size_t creator,
+    std::size_t assignTo,
+    std::string descriptionStr,
+    std::optional<TaskStatus> statusIn,
+    std::optional<std::size_t> parentTask,
+    std::optional<std::chrono::year_month_day> dueDateIn,
+    std::optional<std::chrono::year_month_day> scheduledStartIn,
+    std::optional<std::chrono::year_month_day> actualStartDateIn,
+    std::optional<std::chrono::year_month_day> estimatedCompletionIn,
+    std::optional<std::chrono::year_month_day> completionDateIn,
+    unsigned int estimatedEffortIn,
+    double actualEffortToDateIn,
+    unsigned int priorityGroupIn,
+    unsigned int priorityIn,
+    bool personalIn,
+    std::size_t dependencyCount,
+    std::string dependencies,
+    std::optional<std::chrono::system_clock::time_point> creationTS,
+    std::optional<std::chrono::system_clock::time_point> lastUpdateTS,
+    bool hidden
+)
+: TaskModel()
+{
+    primaryKey = taskId;
+    creatorID = creator;
+    assignToID = assignTo;
+    description = descriptionStr;
+    status = statusIn;
+    parentTaskID = parentTask;
+    dueDate = dueDateIn;
+    scheduledStart = scheduledStartIn;
+    actualStartDate = actualStartDateIn;
+    estimatedCompletion = estimatedCompletionIn;
+    completionDate = completionDateIn;
+    estimatedEffort = estimatedEffortIn;
+    actualEffortToDate = actualEffortToDateIn;
+    priorityGroup = priorityGroupIn;
+    priority = priorityIn;
+    personal = personalIn;
+    creationTimeStamp = creationTS;
+    lastUpdate = lastUpdateTS;
+    deleted = hidden;
+
+    if (dependencyCount)
+    {
+        addDependencies(dependencies);
+    }
+}
+
+
+
 TaskModel::TaskModel(std::size_t creatorID)
 : TaskModel()
 {

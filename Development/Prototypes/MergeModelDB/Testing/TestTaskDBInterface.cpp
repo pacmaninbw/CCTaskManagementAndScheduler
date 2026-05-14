@@ -113,10 +113,10 @@ bool TestTaskDBInterface::testGetTaskByID(TaskModel_shp insertedTask)
     }
 }
 
-TaskQueryProcessorValues TestTaskDBInterface::loadTasksFromDataFile()
+TaskList TestTaskDBInterface::loadTasksFromDataFile()
 {
     std::size_t lCount = 0;
-    TaskQueryProcessorValues inputTaskData;
+    TaskList inputTaskData;
 
     std::ifstream taskDataFile(dataFileName);
     
@@ -195,7 +195,7 @@ TaskModel_shp TestTaskDBInterface::creatEvenTask(CSVRow taskData)
 TestStatus TestTaskDBInterface::testGetUnstartedTasks()
 {
     TaskQueryProcessor taskDBInteface;
-    TaskQueryProcessorValues notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(TaskIntegrationTestUserOne->getUserID());
+    TaskList notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(TaskIntegrationTestUserOne->getUserID());
     if (!notStartedList.empty())
     {    
         if (verboseOutput)
@@ -223,7 +223,7 @@ TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskList()
     UserModel_shp realUser = std::make_shared<UserModel>();
     realUser->selectByFullName("Black", "Paul", "A");
 
-    TaskQueryProcessorValues defaultTaskQueryProcessor = taskDBInteface.getDefaultDashboardTaskList(realUser->getUserID(),
+    TaskList defaultTaskQueryProcessor = taskDBInteface.getDefaultDashboardTaskList(realUser->getUserID(),
         commonProductionTestDataAddedDate);
     if (!defaultTaskQueryProcessor.empty())
     {    
@@ -249,7 +249,7 @@ TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskList()
 TestStatus TestTaskDBInterface::testGetActiveTasks()
 {
     TaskQueryProcessor taskDBInteface;
-    TaskQueryProcessorValues activeTasks = taskDBInteface.getActiveTasksForAssignedUser(TaskIntegrationTestUserOne->getUserID());
+    TaskList activeTasks = taskDBInteface.getActiveTasksForAssignedUser(TaskIntegrationTestUserOne->getUserID());
     if (!activeTasks.empty())
     {    
         if (verboseOutput)
@@ -299,7 +299,7 @@ TestStatus TestTaskDBInterface::testHideUnstartedTask()
 {
     TaskQueryProcessor taskDBInteface;
     std::size_t userIdForTaskDeletion = TaskIntegrationTestUserOne->getUserID();
-    TaskQueryProcessorValues notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(userIdForTaskDeletion);
+    TaskList notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(userIdForTaskDeletion);
     if (!notStartedList.empty())
     {
         std::size_t taskToHideIndex = notStartedList.size() > 3? notStartedList.size() - 2 : notStartedList.size() - 1;
@@ -317,7 +317,7 @@ TestStatus TestTaskDBInterface::testHideUnstartedTask()
             return TESTFAILED;
         }
 
-        TaskQueryProcessorValues alteredList = taskDBInteface.getUnstartedDueForStartForAssignedUser(userIdForTaskDeletion);
+        TaskList alteredList = taskDBInteface.getUnstartedDueForStartForAssignedUser(userIdForTaskDeletion);
         if (!(alteredList.size() < notStartedList.size()))
         {
             std::cerr << std::format("Deleted task ({}) did not decrease the size of the unstarted task list. TEST FAILED\n", taskToHide->getTaskID());
@@ -444,7 +444,7 @@ bool TestTaskDBInterface::testGetCompletedList()
 
     TaskQueryProcessor taskSearch;
 
-    TaskQueryProcessorValues tasksToMarkComplete = taskSearch.getTasksByAssignedIDandParentID(user1ID, parentTask->getTaskID());
+    TaskList tasksToMarkComplete = taskSearch.getTasksByAssignedIDandParentID(user1ID, parentTask->getTaskID());
     for (auto task: tasksToMarkComplete)
     {
         task->setCompletionDate(completedDate);
@@ -457,7 +457,7 @@ bool TestTaskDBInterface::testGetCompletedList()
     }
 
     std::chrono::year_month_day searchAfter = stringToDate("2025-5-11");
-    TaskQueryProcessorValues completedTasks = taskSearch.getTasksCompletedByAssignedAfterDate(user1ID, searchAfter);
+    TaskList completedTasks = taskSearch.getTasksCompletedByAssignedAfterDate(user1ID, searchAfter);
 
     if (completedTasks.size() != (tasksToMarkComplete.size() + 1))
     {
@@ -581,7 +581,7 @@ TestStatus TestTaskDBInterface::testNegativePathMissingRequiredFields()
 TestStatus TestTaskDBInterface::testTasksFromDataFile()
 {
     TestStatus allTestsPassed = TESTPASSED;
-    TaskQueryProcessorValues userTaskTestData = loadTasksFromDataFile();
+    TaskList userTaskTestData = loadTasksFromDataFile();
 
     for (auto testTask: userTaskTestData)
     {

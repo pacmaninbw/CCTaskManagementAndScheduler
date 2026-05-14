@@ -26,6 +26,28 @@ public:
     TaskModel();
     TaskModel(std::size_t creatorID);
     TaskModel(std::size_t creatorID, std::string descriptionIn);
+    TaskModel(std::size_t taskId,
+        std::size_t creatorID,
+        std::size_t assignToID,
+        std::string description,
+        std::optional<TaskStatus> status,
+        std::optional<std::size_t> parentTaskID,
+        std::optional<std::chrono::year_month_day> dueDate,
+        std::optional<std::chrono::year_month_day> scheduledStart,
+        std::optional<std::chrono::year_month_day> actualStartDate,
+        std::optional<std::chrono::year_month_day> estimatedCompletion,
+        std::optional<std::chrono::year_month_day> completionDate,
+        unsigned int estimatedEffort,
+        double actualEffortToDate,
+        unsigned int priorityGroup,
+        unsigned int priority,
+        bool personal,
+        std::size_t dependencyCount,
+        std::string dependencies,
+        std::optional<std::chrono::system_clock::time_point> creationTimeStamp,
+        std::optional<std::chrono::system_clock::time_point> lastUpdate,
+        bool hidden = false
+    );
     virtual ~TaskModel() = default;
 
     virtual bool hide(std::size_t userRequestingDelete) noexcept override;
