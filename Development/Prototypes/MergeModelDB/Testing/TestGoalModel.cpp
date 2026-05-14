@@ -115,7 +115,7 @@ TestStatus TestGoalModel::testPositivePathGetListofChildrenFromParent()
     }
 
     GoalQueryProcessor goalListTestInterface;
-    GoalQueryProcessorValues jobRelatedgoals = goalListTestInterface.getAllChildrenFromParent(parentGoal);
+    UserGoalList jobRelatedgoals = goalListTestInterface.getAllChildrenFromParent(parentGoal);
 
     if (jobRelatedgoals.empty())
     {
@@ -141,7 +141,7 @@ TestStatus TestGoalModel::testPositivePathGetListofChildrenFromParent()
 TestStatus TestGoalModel::testPositivePathGetAllGoalsForUser()
 {
     GoalQueryProcessor goalListTestInterface;
-    GoalQueryProcessorValues allUserGoals = goalListTestInterface.getAllGoalsForUser(userOne->getUserID());
+    UserGoalList allUserGoals = goalListTestInterface.getAllGoalsForUser(userOne->getUserID());
 
     if (allUserGoals.empty())
     {
@@ -169,7 +169,7 @@ TestStatus TestGoalModel::testPositivePathFindGoalsWithSimilarDescription()
     std::string searchString("Maintain");
     std::size_t userId = userOne->getUserID();
 
-    GoalQueryProcessorValues goalsWithSimilarDescription = goalListTestInterface.findGoalsByUserIdAndSimilarDescription(userId, searchString);
+    UserGoalList goalsWithSimilarDescription = goalListTestInterface.findGoalsByUserIdAndSimilarDescription(userId, searchString);
     if (goalsWithSimilarDescription.empty())
     {
         std::cerr << "test of goalListTestInterface.findGoalsByUserIdAndSimilarDescription() FAILED\n" <<
@@ -196,7 +196,7 @@ TestStatus TestGoalModel::testPositivePathDeleteGoal()
 
     std::chrono::year_month_day testDate(constantStringToChronoDate("2026-03-08"));
     GoalQueryProcessor goalListTestInterface;
-    GoalQueryProcessorValues testGoalList = goalListTestInterface.getAllGoalsForUser(userOne->getUserID());
+    UserGoalList testGoalList = goalListTestInterface.getAllGoalsForUser(userOne->getUserID());
     if (testGoalList.empty())
     {
         std::cerr << std::format("{}: {} {} FAILED\n", funcUnderTest, "userOne goal list is empty", goalListTestInterface.getAllErrorMessages());
@@ -218,7 +218,7 @@ TestStatus TestGoalModel::testPositivePathDeleteGoal()
         return TESTFAILED;
     }
 
-    GoalQueryProcessorValues alteredList = goalListTestInterface.getAllGoalsForUser(userOne->getUserID());
+    UserGoalList alteredList = goalListTestInterface.getAllGoalsForUser(userOne->getUserID());
     if (!(alteredList.size() < testGoalList.size()))
     {
         std::cerr << std::format("Deleted goal ({}) did not decrease the size of the user goal list. TEST FAILED\n",
