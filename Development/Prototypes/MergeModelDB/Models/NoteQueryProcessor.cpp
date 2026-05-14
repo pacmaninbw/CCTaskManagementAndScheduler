@@ -15,7 +15,7 @@
 #include <vector>
 
 NoteQueryProcessor::NoteQueryProcessor()
-: QueryProcessor<NoteModel>()
+: QueryProcessor<NoteModel>("NoteModel")
 {
     requiredColumns =  {"idUserNotes", "UserID", "Content", "Hidden", "NotationDateTime",  "LastUpdate"};
     for (auto columnName: requiredColumns)
