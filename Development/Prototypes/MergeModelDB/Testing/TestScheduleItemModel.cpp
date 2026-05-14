@@ -131,7 +131,7 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSim
 
     std::string searchString("birthday");
     ScheduleItemQueryProcessor ScheduleItemQueryProcessorTestInterface(userOne->getUserID());
-    ScheduleItemQueryProcessorValues allSimilarUserScheduleItems = ScheduleItemQueryProcessorTestInterface.findUserScheduleItemsByContentAndDateRange(
+    ScheduleItemList allSimilarUserScheduleItems = ScheduleItemQueryProcessorTestInterface.findUserScheduleItemsByContentAndDateRange(
         searchString, searchStart, searchEnd);
 
     if (allSimilarUserScheduleItems.empty())
@@ -159,7 +159,7 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate(
     std::chrono::year_month_day startDate(constantStringToChronoDate("2024-12-13"));
 
     ScheduleItemQueryProcessor schediList(userOne->getUserID());
-    ScheduleItemQueryProcessorValues allScheduleItemsInRange = schediList.getUserDaySchedule(startDate);
+    ScheduleItemList allScheduleItemsInRange = schediList.getUserDaySchedule(startDate);
 
     if (allScheduleItemsInRange.empty())
     {
@@ -271,7 +271,7 @@ TestStatus TestScheduleItemModel::testPositivePathDeleteScheduleItem()
 
     std::chrono::year_month_day testDate(constantStringToChronoDate("2026-03-08"));
     ScheduleItemQueryProcessor schediList(realUserOne->getUserID());
-    ScheduleItemQueryProcessorValues testUserSchedule = schediList.getUserDaySchedule(testDate);
+    ScheduleItemList testUserSchedule = schediList.getUserDaySchedule(testDate);
     if (testUserSchedule.empty())
     {
         std::cerr << std::format("{}: {} {} FAILED\n", funcUnderTest, "realUserOne schedule is empty", schediList.getAllErrorMessages());
@@ -293,7 +293,7 @@ TestStatus TestScheduleItemModel::testPositivePathDeleteScheduleItem()
         return TESTFAILED;
     }
 
-    ScheduleItemQueryProcessorValues alteredList = schediList.getUserDaySchedule(testDate);
+    ScheduleItemList alteredList = schediList.getUserDaySchedule(testDate);
     if (!(alteredList.size() < testUserSchedule.size()))
     {
         std::cerr << std::format("Deleted schedule item ({}) did not decrease the size of the user schedule. TEST FAILED\n",
