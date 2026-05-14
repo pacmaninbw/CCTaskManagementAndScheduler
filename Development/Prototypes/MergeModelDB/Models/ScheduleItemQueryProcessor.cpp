@@ -9,7 +9,7 @@
 #include <iostream>
 
 ScheduleItemQueryProcessor::ScheduleItemQueryProcessor(std::size_t userId)
-: QueryProcessor<ScheduleItemModel>()
+: QueryProcessor<ScheduleItemModel>("ScheduleItem")
 {
     userID = userId;
     requiredColumns =  {"idUserScheduleItem", "UserID", "StartDateTime", "EndDateTime", "Title", "Personal", "Location", "CreatedTS", "LastUpdateTS", "Hidden"};
