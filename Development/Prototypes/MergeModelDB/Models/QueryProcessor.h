@@ -26,28 +26,23 @@
 
 /*
  * Templated Class to handle model select queries with multiple results.
- * 
- * The model itself is used to create the select statement. The first query will
- * only return the primary key of each instance of the model that matches the
- * search parameters of the query. Once the list of primary keys is established
- * the model will be used to select the object by primary key for the full data.
- * 
- * This is done primarily to keep the table related information for a model in
- * the model. A second reason for this design is that the is a maximum size that
- * a boost::mysql::results class can reach; to reduce the possiblity of reaching
- * that maximum queries that can return a large amount of data will be reduced
- * to returning only the primary keys of the data.
- * 
- * This design may be revisited if there is too much a performance degradation.
  */
 struct ListExceptionTestElement
 {
+    /*
+     * this struct is used during self testing to exercise all paths through a function
+     * including the catch clause of a try / catch block.
+     */
     std::function<TestStatus(void)> testExceptionFunction;
     const char* functionUnderTest;
 };
 
 struct ColumnNameToIndexmapping
 {
+    /*
+     * this struct is used while processing query results. boost::mysql returns
+     * results that include the column names,
+     */
     std::string columnName;
     std::optional<std::size_t> columnIndex;
     ColumnNameToIndexmapping(std::string name) : columnName{name}{};
@@ -62,6 +57,9 @@ public:
     QueryProcessor(std::string modelName)
     : CoreDBInterface()
     {
+        /*
+         * The listTypeName variable is used during testing and debugging.
+         */
         std::string tempListType = modelName;
         tempListType.append("QueryProcessor");
         listTypeName = tempListType;
@@ -98,6 +96,9 @@ public:
     };
 
 protected:
+    /*
+     * assignValueToIndex is called multiple times in the implementations of fillRequiredIndexes().
+     */
     void assignValueToIndex(std::string columnName, std::size_t &columnIndex)
     {
             auto iterToIndex = std::find_if(columnToIndexMap.begin(), columnToIndexMap.end(),
@@ -132,13 +133,18 @@ protected:
         std::vector<std::string> columnNames;
         bool hasAllRequiredColumns = true;
 
-        std::cerr << "Columns Found:\n";
+        /*
+         * Get all the column names in the result set.
+         */
         for (auto metaIter: noteQueryresultSet.meta())
         {
             columnNames.push_back(metaIter.column_name());
-            std::cerr << metaIter.column_name() << std::endl;
         }
 
+        /*
+         * For each expected column, search the column names and set the index
+         * based on the column name location.
+         */
         for (std::size_t i = 0; i < columnToIndexMap.size(); ++i)
         {
             std::string nameToFind = columnToIndexMap[i].columnName;
@@ -151,6 +157,12 @@ protected:
             {
                 appendErrorMessage(std::format("Required field {} not found in results", nameToFind));
                 hasAllRequiredColumns = false;
+                std::cerr << std::format("Required field {} not found in:\n", nameToFind);
+                for (auto columnName: columnNames)
+                {
+                    std::cerr << std::format("{}, ", columnName);
+                }
+                std::cerr << std::endl;
             }
         }
 
@@ -224,11 +236,6 @@ protected:
         return queryResultValues;
     }
 
-    void setFirstQuery(std::string formattedQueryStatement) noexcept
-    {
-        firstFormattedQuery = formattedQueryStatement;
-    }
-    
     virtual bool processStringOnlyResults(boost::mysql::results& results)
     {
         if (inSelfTest)
