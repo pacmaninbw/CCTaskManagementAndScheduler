@@ -11,15 +11,15 @@ GoalQueryProcessor::GoalQueryProcessor()
 : QueryProcessor<UserGoalModel>("UserGoalModel")
 {
     requiredColumns = {"idUserGoals", "UserID", "Description", "CreationTS", "LastUpdateTS", "Priority", "ParentGoal", "Hidden"};
+    for (auto columnName: requiredColumns)
+    {
+        columnToIndexMap.push_back(columnName);
+    }
 }
 
 UserGoalList GoalQueryProcessor::getAllGoalsForUser(std::size_t userID) noexcept
 {
     errorMessages.clear();
-/*
- * Prepend function name to any error messages.
- */
-    appendErrorMessage("In GoalQueryProcessor::getActiveGoalsForAssignedUser : ");
 
     try
     {
@@ -29,7 +29,7 @@ UserGoalList GoalQueryProcessor::getAllGoalsForUser(std::size_t userID) noexcept
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(e.what());
+        appendErrorMessage(std::format("In GoalQueryProcessor::{} : {}", __func__, e.what()));
     }
     
     return UserGoalList();
@@ -38,10 +38,6 @@ UserGoalList GoalQueryProcessor::getAllGoalsForUser(std::size_t userID) noexcept
 UserGoalList GoalQueryProcessor::getAllChildrenFromParent(UserGoalModel parentGoal) noexcept
 {
     errorMessages.clear();
-/*
- * Prepend function name to any error messages.
- */
-    appendErrorMessage("In GoalQueryProcessor::getActiveGoalsForAssignedUser : ");
 
     try
     {
@@ -51,7 +47,7 @@ UserGoalList GoalQueryProcessor::getAllChildrenFromParent(UserGoalModel parentGo
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(e.what());
+        appendErrorMessage(std::format("In GoalQueryProcessor::{} : {}", __func__, e.what()));
     }
     
     return UserGoalList();
@@ -61,8 +57,6 @@ UserGoalList GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription(std::siz
 {
     errorMessages.clear();
 
-    appendErrorMessage("In GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription : ");
-
     try
     {
         boost::mysql::results localResult = runQueryAsync(formatSelectBySimilarDescription(searchString, userID));
@@ -71,7 +65,7 @@ UserGoalList GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription(std::siz
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(e.what());
+        appendErrorMessage(std::format("In GoalQueryProcessor::{} : {}", __func__, e.what()));
     }
     
     return UserGoalList();
@@ -84,9 +78,9 @@ UserGoalModel_shp GoalQueryProcessor::processResultRow(boost::mysql::row_view& q
     std::chrono::system_clock::time_point creationDate = boostMysqlDateTimeToChronoTimePoint(queryRow.at(CreationTSIdx).as_datetime());
     std::string description = queryRow.at(DescriptionIdx).as_string();
     std::chrono::system_clock::time_point lastUpdate = boostMysqlDateTimeToChronoTimePoint(queryRow.at(LastUpdateIdx).as_datetime());
-    unsigned int priority;
-    std::size_t parentID;
-    [[maybe_unused]]bool deleted;
+    unsigned int priority = 0;
+    std::size_t parentID = 0;
+    bool deleted = false;
 
     // Optional fields.
     if (!queryRow.at(PriorityIdx).is_null())
@@ -101,10 +95,10 @@ UserGoalModel_shp GoalQueryProcessor::processResultRow(boost::mysql::row_view& q
 
     if (!queryRow.at(HiddenIdx).is_null())
     {
-        deleted = queryRow.at(HiddenIdx).as_uint64() == 1? true : false;
+        deleted = queryRow.at(HiddenIdx).as_int64() == 1? true : false;
     }
 
-    return std::make_shared<UserGoalModel>(goalId, userID, description, priority, parentID, creationDate, lastUpdate);
+    return std::make_shared<UserGoalModel>(goalId, userID, description, priority, parentID, creationDate, lastUpdate, deleted);
 }
 
 void GoalQueryProcessor::fillRequiredIndexes()
