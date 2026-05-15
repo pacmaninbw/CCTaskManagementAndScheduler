@@ -8,13 +8,9 @@
 #include <iostream>
 
 UserQueryProcessor::UserQueryProcessor()
-: QueryProcessor<UserModel>("User")
+: QueryProcessor<UserModel>("User", {"UserID", "Organization_ID", "LastName", "FirstName", "MiddleInitial",  "EmailAddress", "LoginName", "HashedPassWord", "UserAdded", "LastLogin", "Preferences", "Hidden"})
 {
-    requiredColumns =  {"UserID", "Organization_ID", "LastName", "FirstName", "MiddleInitial",  "EmailAddress", "LoginName", "HashedPassWord", "UserAdded", "LastLogin", "Preferences", "Hidden"};
-    for (auto columnName: requiredColumns)
-    {
-        columnToIndexMap.push_back(columnName);
-    }
+
 }
 
 UserModelList UserQueryProcessor::getAllUsers() noexcept

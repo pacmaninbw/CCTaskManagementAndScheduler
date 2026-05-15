@@ -15,6 +15,7 @@
 #include <concepts>
 #include <exception>
 #include <format>
+#include <initializer_list>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -53,8 +54,16 @@ template<typename ListType>
 requires std::is_base_of<ModelDBInterface, ListType>::value
 class QueryProcessor : public CoreDBInterface
 {
+protected:
+/*
+ * The details of each of the subclasses are required for the following functions,
+ * each class must define these functions.
+ */
+    virtual void fillRequiredIndexes() = 0;
+    virtual std::shared_ptr<ListType> processResultRow(boost::mysql::row_view &queryRow) = 0;
+
 public:
-    QueryProcessor(std::string modelName)
+    QueryProcessor(std::string modelName, std::initializer_list<std::string> requiredColumns)
     : CoreDBInterface()
     {
         /*
@@ -63,19 +72,25 @@ public:
         std::string tempListType = modelName;
         tempListType.append("QueryProcessor");
         listTypeName = tempListType;
+
+        for (auto columnName: requiredColumns)
+        {
+            columnToIndexMap.push_back(columnName);
+        }
+
     }
     virtual ~QueryProcessor() = default;
 
     std::string getListTypeName() const noexcept { return listTypeName; };
     
-    bool runStringOnlyQuery()
+    bool runStringOnlyQuery(std::string queryString)
     {
         errorMessages.clear();
 
         try
         {
             stringOnlyResults.clear();
-            boost::mysql::results localResult = runQueryAsync(firstFormattedQuery);
+            boost::mysql::results localResult = runQueryAsync(queryString);
             return processStringOnlyResults(localResult);
         }
 
@@ -101,27 +116,30 @@ protected:
      */
     void assignValueToIndex(std::string columnName, std::size_t &columnIndex)
     {
-            auto iterToIndex = std::find_if(columnToIndexMap.begin(), columnToIndexMap.end(),
-                [columnName](const ColumnNameToIndexmapping& ctim){ return ctim.columnName == columnName; });
-            if (iterToIndex != columnToIndexMap.end())
+        if (columnToIndexMap.empty())
+        {
+            appendErrorMessage(std::format("In {} columnToIndexMap not initialized", listTypeName));
+            return;
+        }
+        auto iterToIndex = std::find_if(columnToIndexMap.begin(), columnToIndexMap.end(),
+            [columnName](const ColumnNameToIndexmapping& ctim){ return ctim.columnName == columnName; });
+        if (iterToIndex != columnToIndexMap.end())
+        {
+            if (iterToIndex->columnIndex.has_value())
             {
-                if (iterToIndex->columnIndex.has_value())
-                {
-                    columnIndex = iterToIndex->columnIndex.value();
-                }
-                else
-                {
-                    appendErrorMessage(std::format("NULL Value to index for {}", columnName));
-                }
+                columnIndex = iterToIndex->columnIndex.value();
             }
             else
             {
-                appendErrorMessage(std::format("Column Name: {} NOT FOUND in assignValueToIndex()", columnName));
+                appendErrorMessage(std::format("NULL Value to index for {}", columnName));
             }
+        }
+        else
+        {
+            appendErrorMessage(std::format("Column Name: {} NOT FOUND in assignValueToIndex()", columnName));
+        }
     }
 
-
-    virtual void fillRequiredIndexes() = 0;
 
     /*
     * Map the column names to the indexes for the columns, the order of the columns
@@ -130,6 +148,12 @@ protected:
     */
     void mapColumnNameToIndex(boost::mysql::resultset_view &noteQueryresultSet)
     {
+        if (columnToIndexMap.empty())
+        {
+            appendErrorMessage(std::format("In {} columnToIndexMap not initialized", listTypeName));
+            throw std::out_of_range("Results missing required fields");
+        }
+
         std::vector<std::string> columnNames;
         bool hasAllRequiredColumns = true;
 
@@ -173,8 +197,6 @@ protected:
 
         fillRequiredIndexes();
     }
-
-    virtual std::shared_ptr<ListType> processResultRow(boost::mysql::row_view &queryRow) = 0;
 
     /*
     * Each boost::mysql result set contain a list of the column names in the result set.
@@ -367,10 +389,8 @@ protected:
     static const std::size_t IndexNotSet = 0xffff;
 
     std::string listTypeName;
-    std::string firstFormattedQuery;
     std::vector<std::string> stringOnlyResults;
     std::vector<ColumnNameToIndexmapping> columnToIndexMap;
-    std::vector<std::string> requiredColumns;
 };
 
 #endif // QUERYPROCESSOR_H_

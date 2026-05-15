@@ -9,14 +9,9 @@
 #include <iostream>
 
 ScheduleItemQueryProcessor::ScheduleItemQueryProcessor(std::size_t userId)
-: QueryProcessor<ScheduleItemModel>("ScheduleItem")
+: QueryProcessor<ScheduleItemModel>("ScheduleItem", {"idUserScheduleItem", "UserID", "StartDateTime", "EndDateTime", "Title", "Personal", "Location", "CreatedTS", "LastUpdateTS", "Hidden"})
 {
     userID = userId;
-    requiredColumns =  {"idUserScheduleItem", "UserID", "StartDateTime", "EndDateTime", "Title", "Personal", "Location", "CreatedTS", "LastUpdateTS", "Hidden"};
-    for (auto columnName: requiredColumns)
-    {
-        columnToIndexMap.push_back(columnName);
-    }
 }
 
 ScheduleItemList ScheduleItemQueryProcessor::getUserDaySchedule(std::chrono::year_month_day scheduleDate) noexcept
@@ -109,8 +104,7 @@ std::vector<std::string> ScheduleItemQueryProcessor::findEventsForRepeatCompleti
 
     try
     {
-        firstFormattedQuery = formatGetAllUniqueContentsByUserSortByContent(userID);
-        if (runStringOnlyQuery())
+        if (runStringOnlyQuery(formatGetAllUniqueContentsByUserSortByContent(userID)))
         {
             matchingEvents = stringOnlyResults;
         }
@@ -135,8 +129,7 @@ std::vector<std::string> ScheduleItemQueryProcessor::findLocationsForRepeatCompl
 
     try
     {
-        firstFormattedQuery = formatGetAllUniqueLocationsByUserSortByContent(userID);
-        if (runStringOnlyQuery())
+        if (runStringOnlyQuery(formatGetAllUniqueLocationsByUserSortByContent(userID)))
         {
             matchingLocations = stringOnlyResults;
         }

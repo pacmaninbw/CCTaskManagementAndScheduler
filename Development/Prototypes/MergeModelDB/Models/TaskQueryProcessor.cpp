@@ -9,19 +9,14 @@
 #include <iostream>
 
 TaskQueryProcessor::TaskQueryProcessor()
-: QueryProcessor<TaskModel>("Task")
-{
-    requiredColumns = {
+: QueryProcessor<TaskModel>("Task", {
         "TaskID", "CreatedBy", "AsignedTo", "Description", "ParentTask", "Status", "CreatedOn",
         "RequiredDelivery", "ScheduledStart", "ActualStart", "EstimatedCompletion", "Completed",
         "EstimatedEffortHours", "ActualEffortHours", "SchedulePriorityGroup", "PriorityInGroup",
         "Personal", "DependencyCount", "Dependencies", "LastUpdateTS", "Hidden"
-    };
-
-    for (auto columnName: requiredColumns)
-    {
-        columnToIndexMap.push_back(columnName);
     }
+)
+{
 
 }
 

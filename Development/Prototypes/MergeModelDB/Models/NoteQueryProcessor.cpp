@@ -15,13 +15,8 @@
 #include <vector>
 
 NoteQueryProcessor::NoteQueryProcessor()
-: QueryProcessor<NoteModel>("NoteModel")
+: QueryProcessor<NoteModel>("NoteModel", {"idUserNotes", "UserID", "Content", "Hidden", "NotationDateTime",  "LastUpdate"})
 {
-    requiredColumns =  {"idUserNotes", "UserID", "Content", "Hidden", "NotationDateTime",  "LastUpdate"};
-    for (auto columnName: requiredColumns)
-    {
-        columnToIndexMap.push_back(columnName);
-    }
 }
 
 NoteList NoteQueryProcessor::getAllNotesForUser(std::size_t userId) noexcept

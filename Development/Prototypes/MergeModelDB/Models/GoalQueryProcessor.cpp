@@ -8,13 +8,8 @@
 #include <iostream>
 
 GoalQueryProcessor::GoalQueryProcessor()
-: QueryProcessor<UserGoalModel>("UserGoalModel")
+: QueryProcessor<UserGoalModel>("UserGoalModel",{"idUserGoals", "UserID", "Description", "CreationTS", "LastUpdateTS", "Priority", "ParentGoal", "Hidden"} )
 {
-    requiredColumns = {"idUserGoals", "UserID", "Description", "CreationTS", "LastUpdateTS", "Priority", "ParentGoal", "Hidden"};
-    for (auto columnName: requiredColumns)
-    {
-        columnToIndexMap.push_back(columnName);
-    }
 }
 
 UserGoalList GoalQueryProcessor::getAllGoalsForUser(std::size_t userID) noexcept

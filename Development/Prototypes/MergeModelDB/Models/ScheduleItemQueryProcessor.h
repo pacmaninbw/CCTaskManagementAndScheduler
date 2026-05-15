@@ -43,6 +43,7 @@ private:
     TestStatus testExceptionFindEventsForRepeatCompletion() noexcept;
     TestStatus testExceptionFindLocationsForRepeatCompletion() noexcept;
 
+
     std::size_t userID;
     std::size_t scheduleItemIdIdx = IndexNotSet;
     std::size_t userIdIdx = IndexNotSet;
