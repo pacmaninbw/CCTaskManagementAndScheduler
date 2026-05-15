@@ -126,7 +126,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-04-26
+	Completed Date: 2026-05-15
 	Deleted : FALSE
 
 Common Insertion Failure Test PASSED!
@@ -287,10 +287,10 @@ Exception Test for GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription()
 
 ---------------------------------------------------------------------------------
 
-Running NoteQueryProcessor Self Test
+Running NoteModelQueryProcessor Self Test
 
 
-Running Exception Handling Test Cases NoteQueryProcessor
+Running Exception Handling Test Cases NoteModelQueryProcessor
 
 Exception Test for NoteQueryProcessor::testExceptionsGetAllNotes()
 
@@ -364,3 +364,8 @@ All positive path tests for database insertions and retrievals of ScheduleItem P
 All negative path tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
+finished Unit and Integration testing of all models MySQL database
+Fri May 15 05:53:56 2026
+elapsed time in seconds: 1.07838
+
+

@@ -174,7 +174,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-05-08
+	Completed Date: 2026-05-15
 	Deleted : FALSE
 
 Task::testAllInsertFailures before successful insert this = 
@@ -377,9 +377,7 @@ Running Exception Handling Test Cases UserQueryProcessor
 
 Exception Test for UserQueryProcessorSelfTest::testExceptionsGetAllUsers()
 In Self Test Query is: 
-	SELECT UserID FROM UserProfile 
-Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 1
+	SELECT * FROM UserProfile 
 
 
 UserQueryProcessor PASSED Self Test
@@ -394,33 +392,23 @@ Running Exception Handling Test Cases TaskQueryProcessor
 
 Exception Test for TaskQueryProcessor::testExceptionGetActiveTasksForAssignedUser()
 In Self Test Query is: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND Completed IS NULL AND (Status IS NOT NULL AND Status <> 0) AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 1
+	SELECT * FROM Tasks  WHERE AsignedTo = 1 AND Completed IS NULL AND (Status IS NOT NULL AND Status <> 0) AND (Hidden IS NULL OR Hidden <> 1)
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND ScheduledStart < '2026-05-15' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 1
+	SELECT * FROM Tasks  WHERE AsignedTo = 1 AND ScheduledStart < '2026-05-22' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 
 Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
 In Self Test Query is: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND Completed >= '2024-05-14'
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 1
+	SELECT * FROM Tasks  WHERE AsignedTo = 1 AND Completed >= '2024-05-14'
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND ParentTask = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 1
+	SELECT * FROM Tasks  WHERE AsignedTo = 1 AND ParentTask = 1 AND (Hidden IS NULL OR Hidden <> 1)
 
 Exception Test for TaskQueryProcessor::testExceptionGetDefaultDashboardTaskList()
 In Self Test Query is: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND RequiredDelivery < '2026-03-22' AND Completed IS NULL AND (Hidden IS NULL OR Hidden <> 1) ORDER BY SchedulePriorityGroup ASC, PriorityInGroup ASC
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 1
+	SELECT * FROM Tasks  WHERE AsignedTo = 1 AND RequiredDelivery < '2026-03-22' AND Completed IS NULL AND (Hidden IS NULL OR Hidden <> 1) ORDER BY SchedulePriorityGroup ASC, PriorityInGroup ASC
 
 
 TaskQueryProcessor PASSED Self Test
@@ -435,24 +423,49 @@ Running Exception Handling Test Cases UserGoalModelQueryProcessor
 
 Exception Test for GoalQueryProcessor::testExceptionsGetAllGoalsForUser()
 In Self Test Query is: 
-	SELECT idUserGoals FROM UserGoals  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
 
 Exception Test for GoalQueryProcessor::testExceptionsGetAllChildrenFromParent()
 In Self Test Query is: 
-	SELECT idUserGoals FROM UserGoals  WHERE UserID = 0 AND ParentGoal = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals  WHERE UserID = 0 AND ParentGoal = 1 AND (Hidden IS NULL OR Hidden <> 1)
 
 Exception Test for GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription()
 In Self Test Query is: 
-	SELECT idUserGoals FROM UserGoals  WHERE UserID = 1 AND Description LIKE '%Maintain%' AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals  WHERE UserID = 1 AND Description LIKE '%Maintain%' AND (Hidden IS NULL OR Hidden <> 1)
 
 
 UserGoalModelQueryProcessor PASSED Self Test
+---------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------
+
+Running NoteModelQueryProcessor Self Test
+
+
+Running Exception Handling Test Cases NoteModelQueryProcessor
+
+Exception Test for NoteQueryProcessor::testExceptionsGetAllNotes()
+In Self Test Query is: 
+	CALL GetAllUndeletedNotesForUser(1)
+
+Exception Test for NoteQueryProcessor::testExceptionsGetNotesForUserLikeContent()
+In Self Test Query is: 
+	CALL GetNotesForUserSimlarToContent(1, 'Test Content')
+
+Exception Test for NoteQueryProcessor::testExceptionsGetNotesForUserCreatedDateRange()
+In Self Test Query is: 
+	CALL GetAllNotesForUserCreatedInDatgeRange(1, '2024-05-07', '2024-05-14')
+
+Exception Test for NoteQueryProcessor::testExceptionsGetNotesForUserEditedDateRange()
+In Self Test Query is: 
+	CALL GetAllNotesForUserEditedInDatgeRange(1, '2024-05-07', '2024-05-14')
+
+Exception Test for NoteQueryProcessor::testExceptionsGetDashboardNoteTable()
+In Self Test Query is: 
+	CALL GetDashboardNoteTable(1, '2024-05-14 07:00:00.000000', '2024-05-15 06:59:00.000000')
+
+
+NoteModelQueryProcessor PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
@@ -464,15 +477,11 @@ Running Exception Handling Test Cases ScheduleItemQueryProcessor
 
 Exception Test for ScheduleItemQueryProcessor::testExceptionGgetUserDaySchedule()
 In Self Test Query is: 
-	SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2024-05-14 07:00:00.000000' AND StartDateTime <= '2024-05-15 06:59:59.000000' ORDER BY StartDateTime ASC
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 1 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2024-05-14 07:00:00.000000' AND StartDateTime <= '2024-05-15 06:59:59.000000' ORDER BY StartDateTime ASC
 
 Exception Test for ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByContentAndDateRange()
 In Self Test Query is: 
-	SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 1 AND Title LIKE '%Title search%' AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2024-05-07' AND StartDateTime <= '2024-05-21'
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 1 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserScheduleItem  WHERE UserID = 1 AND Title LIKE '%Title search%' AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2024-05-07' AND StartDateTime <= '2024-05-21'
 
 Exception Test for ScheduleItemQueryProcessor::testExceptionFindEventSToRepeat()
 In Self Test Query is: 
@@ -494,13 +503,7 @@ ScheduleItemQueryProcessor PASSED Self Test
 
 Running user Integration Tests
 Running: 
-	SELECT UserID FROM UserProfile 
-Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 1
-Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 2
-Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 3
+	SELECT * FROM UserProfile 
 Running: 
 	CALL AddUser(NULL, 'One', 'User', 'P', 'UserOne@gmail.com', 'OneUserP', 'OneUserP', '8:30 AM;5:00 PM;1;1;1;0;')
 Running: 
@@ -582,23 +585,7 @@ Running:
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 8
 Running: 
-	SELECT UserID FROM UserProfile 
-Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 1
-Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 2
-Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 3
-Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 4
-Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 5
-Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 6
-Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 7
-Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 8
+	SELECT * FROM UserProfile 
 All positive path tests for database insertions and retrievals of user PASSED!
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 1
@@ -684,7 +671,7 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Design UML Diagram for Personal Planner' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	CALL AddTask(4, 4, 'Grocery Shopping', 0, 0, '2025-04-12', '2025-04-11', NULL, '2026-05-08', NULL, 2, 2e+00, 67, 1, 0, 0, NULL)
+	CALL AddTask(4, 4, 'Grocery Shopping', 0, 0, '2025-04-12', '2025-04-11', NULL, '2026-05-15', NULL, 2, 2e+00, 67, 1, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 58
 Running: 
@@ -696,31 +683,13 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Daily 30 minute walk' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	CALL AddTask(4, 4, 'Clean apartment', 0, 0, '2025-04-12', '2025-04-12', NULL, '2026-05-08', NULL, 2, 0e+00, 67, 3, 0, 0, NULL)
+	CALL AddTask(4, 4, 'Clean apartment', 0, 0, '2025-04-12', '2025-04-12', NULL, '2026-05-15', NULL, 2, 0e+00, 67, 3, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 60
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Clean apartment' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-15' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 50
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 51
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 52
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 53
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 54
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 55
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 58
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 59
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 60
+	SELECT * FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-22' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Find unstarted tasks for user(4) PASSED!
 User 4 has 9 unstarted tasks
 TaskModel:
@@ -853,7 +822,7 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-05-08
+	Estimated Completion Date: 2026-05-15
 	Deleted : FALSE
 
 TaskModel:
@@ -891,49 +860,13 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-05-08
+	Estimated Completion Date: 2026-05-15
 	Deleted : FALSE
 
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LastName = 'Black' AND FirstName = 'Paul' AND MiddleInitial = 'A'
 Running: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND RequiredDelivery < '2026-03-22' AND Completed IS NULL AND (Hidden IS NULL OR Hidden <> 1) ORDER BY SchedulePriorityGroup ASC, PriorityInGroup ASC
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 1
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 39
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 5
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 19
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 31
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 12
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 10
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 37
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 20
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 30
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 18
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 13
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 17
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 21
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 22
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 26
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 29
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 32
+	SELECT * FROM Tasks  WHERE AsignedTo = 1 AND RequiredDelivery < '2026-03-22' AND Completed IS NULL AND (Hidden IS NULL OR Hidden <> 1) ORDER BY SchedulePriorityGroup ASC, PriorityInGroup ASC
 Find default task list for user(1) PASSED!
 User 1 dashboard has 18 tasks
 TaskModel:
@@ -1280,7 +1213,7 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 47
 Running: 
-	CALL UpdateTaskAllFields(47, 4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 4, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', '2026-05-08', 12, 6e+00, 65, 1, 0, 0, NULL)
+	CALL UpdateTaskAllFields(47, 4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 4, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', '2026-05-15', 12, 6e+00, 65, 1, 0, 0, NULL)
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 47
 Running: 
@@ -1306,21 +1239,11 @@ Running:
 Running: 
 	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Archive BHHS74Reunion website to external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ParentTask = 47 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE AsignedTo = 4 AND ParentTask = 47 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND Completed >= '2025-05-11'
+	SELECT * FROM Tasks  WHERE AsignedTo = 4 AND Completed >= '2025-05-11'
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 47
-Running: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND Completed IS NULL AND (Status IS NOT NULL AND Status <> 0) AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 48
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 49
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 56
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 57
+	SELECT * FROM Tasks  WHERE AsignedTo = 4 AND Completed IS NULL AND (Status IS NOT NULL AND Status <> 0) AND (Hidden IS NULL OR Hidden <> 1)
 Find active tasks for user(4) PASSED!
 User 4 has 4 unstarted tasks
 TaskModel:
@@ -1404,45 +1327,11 @@ Optional Fields
 	Deleted : FALSE
 
 Running: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-15' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 50
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 51
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 52
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 53
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 54
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 55
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 58
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 59
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 60
+	SELECT * FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-22' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL HideTask(4, 59)
 Running: 
-	SELECT TaskID FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-15' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 50
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 51
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 52
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 53
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 54
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 55
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 58
-Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 60
+	SELECT * FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-22' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Task (59) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of task PASSED!
 Running: 
@@ -1577,23 +1466,7 @@ Running:
 Running: 
 	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT idUserGoals FROM UserGoals  WHERE UserID = 4 AND ParentGoal = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 2 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 3 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 4 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 6 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 7 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 8 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 9 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 10 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals  WHERE UserID = 4 AND ParentGoal = 1 AND (Hidden IS NULL OR Hidden <> 1)
 Model Name UserGoalModel
 	Goal ID: 1
 	User ID: 4
@@ -1660,41 +1533,7 @@ Model Name UserGoalModel
 	Parent ID: 1
 
 Running: 
-	SELECT idUserGoals FROM UserGoals  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 2 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 3 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 4 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 5 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 6 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 7 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 8 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 9 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 10 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 11 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 12 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 13 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 14 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 15 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 16 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 17 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Find all goals for user (4) PASSED!
 User 4 has 17 goals
 Model Name UserGoalModel
@@ -1817,19 +1656,7 @@ Model Name UserGoalModel
 	Parent ID: 0
 
 Running: 
-	SELECT idUserGoals FROM UserGoals  WHERE UserID = 4 AND Description LIKE '%Maintain%' AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 2 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 3 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 4 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 5 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 6 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 11 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals  WHERE UserID = 4 AND Description LIKE '%Maintain%' AND (Hidden IS NULL OR Hidden <> 1)
 Find all goals for user (4) containing Maintain PASSED!
 User 4 has 6 goals
 Model Name UserGoalModel
@@ -1875,77 +1702,11 @@ Model Name UserGoalModel
 	Parent ID: 0
 
 Running: 
-	SELECT idUserGoals FROM UserGoals  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 2 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 3 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 4 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 5 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 6 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 7 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 8 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 9 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 10 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 11 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 12 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 13 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 14 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 15 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 16 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 17 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL HideGoal(4, 16)
 Running: 
-	SELECT idUserGoals FROM UserGoals  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 2 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 3 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 4 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 5 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 6 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 7 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 8 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 9 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 10 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 11 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 12 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 13 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 14 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 15 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 17 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Original goal list size: 17 Altered goal list size: 16
 goal (16) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of Goal PASSED!
@@ -2120,7 +1881,7 @@ User 4 has 6 notes
 	Content: Maintain my health
 
 Running: 
-	CALL GetAllNotesForUserCreatedInDatgeRange(4, '2026-05-01', '2026-05-15')
+	CALL GetAllNotesForUserCreatedInDatgeRange(4, '2026-05-08', '2026-05-22')
 Find all notes for user (4) created in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2192,7 +1953,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	CALL GetAllNotesForUserEditedInDatgeRange(4, '2026-05-01', '2026-05-15')
+	CALL GetAllNotesForUserEditedInDatgeRange(4, '2026-05-08', '2026-05-22')
 Find all notes for user (4) edited in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2264,7 +2025,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	CALL GetDashboardNoteTable(4, '2026-05-08 07:00:00.000000', '2026-05-09 06:59:00.000000')
+	CALL GetDashboardNoteTable(4, '2026-05-15 07:00:00.000000', '2026-05-16 06:59:00.000000')
 Find all notes for user (4) for a date PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2388,13 +2149,7 @@ Running:
 Running: 
 	CALL AddScheduleEvent(4, '2025-12-18 11:00:00.000000', '2025-12-18 11:15:00.000000', 'Dina birthday call', 1, '')
 Running: 
-	SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 4 AND Title LIKE '%birthday%' AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2024-12-01' AND StartDateTime <= '2024-12-31'
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 301 AND UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 302 AND UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 304 AND UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserScheduleItem  WHERE UserID = 4 AND Title LIKE '%birthday%' AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2024-12-01' AND StartDateTime <= '2024-12-31'
 Find all schedule items for user (4) similar to birthday PASSED!
 User 4 has 3 schedule items
 ScheduleItemModel:
@@ -2428,11 +2183,7 @@ ScheduleItemModel:
 Optional Fields
 
 Running: 
-	SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2024-12-13 08:00:00.000000' AND StartDateTime <= '2024-12-14 07:59:59.000000' ORDER BY StartDateTime ASC
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 302 AND UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 303 AND UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserScheduleItem  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2024-12-13 08:00:00.000000' AND StartDateTime <= '2024-12-14 07:59:59.000000' ORDER BY StartDateTime ASC
 Find all schedule items for user (4) edited in date range PASSED!
 User 4 has 2 schedule items
 ScheduleItemModel:
@@ -2484,45 +2235,11 @@ User 4 has 3 schedule locations
 Running: 
 	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LastName = 'Black' AND FirstName = 'Paul' AND MiddleInitial = 'A'
 Running: 
-	SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2026-03-08 08:00:00.000000' AND StartDateTime <= '2026-03-09 07:59:59.000000' ORDER BY StartDateTime ASC
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 182 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 183 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 184 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 185 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 186 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 187 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 188 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 189 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 190 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2026-03-08 08:00:00.000000' AND StartDateTime <= '2026-03-09 07:59:59.000000' ORDER BY StartDateTime ASC
 Running: 
 	CALL HideScheduleItem(1, 189)
 Running: 
-	SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2026-03-08 08:00:00.000000' AND StartDateTime <= '2026-03-09 07:59:59.000000' ORDER BY StartDateTime ASC
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 182 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 183 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 184 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 185 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 186 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 187 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 188 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
-Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 190 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2026-03-08 08:00:00.000000' AND StartDateTime <= '2026-03-09 07:59:59.000000' ORDER BY StartDateTime ASC
 Original schedule size: 9 Altered schedule size: 8
 Schedule Item (189) for user (1) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of ScheduleItem PASSED!
@@ -2568,14 +2285,14 @@ All negative path tests for database insertions and retrievals of ScheduleItem P
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Fri May  8 07:11:59 2026
-elapsed time in seconds: 28.6727
+Fri May 15 05:52:42 2026
+elapsed time in seconds: 22.1274
 
 
 
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
-  total heap usage: 89,715 allocs, 89,715 frees, 12,555,295 bytes allocated
+  total heap usage: 60,902 allocs, 60,902 frees, 8,596,017 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 
