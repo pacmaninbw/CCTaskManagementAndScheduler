@@ -116,11 +116,6 @@ protected:
      */
     void assignValueToIndex(std::string columnName, std::size_t &columnIndex)
     {
-        if (columnToIndexMap.empty())
-        {
-            appendErrorMessage(std::format("In {} columnToIndexMap not initialized", listTypeName));
-            return;
-        }
         auto iterToIndex = std::find_if(columnToIndexMap.begin(), columnToIndexMap.end(),
             [columnName](const ColumnNameToIndexmapping& ctim){ return ctim.columnName == columnName; });
         if (iterToIndex != columnToIndexMap.end())
@@ -148,12 +143,6 @@ protected:
     */
     void mapColumnNameToIndex(boost::mysql::resultset_view &noteQueryresultSet)
     {
-        if (columnToIndexMap.empty())
-        {
-            appendErrorMessage(std::format("In {} columnToIndexMap not initialized", listTypeName));
-            throw std::out_of_range("Results missing required fields");
-        }
-
         std::vector<std::string> columnNames;
         bool hasAllRequiredColumns = true;
 
