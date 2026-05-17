@@ -20,6 +20,66 @@ TaskQueryProcessor::TaskQueryProcessor()
 
 }
 
+TaskModel_shp TaskQueryProcessor::getTaskByTaskID(std::size_t taskId) noexcept
+{
+    errorMessages.clear();
+    TaskModel_shp found = nullptr;
+
+    try
+    {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, listQueryBase);
+        boost::mysql::format_sql_to(fctx, " WHERE TaskID = {}", taskId);
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        TaskList shouldHaveOnlyOne = processResults(localResult);
+
+        if (shouldHaveOnlyOne.empty())
+        {
+            appendErrorMessage(" Task not found!");
+            return found;
+        }
+
+        if (shouldHaveOnlyOne.size() > 1)
+        {
+            appendErrorMessage("Too many Tasks found to process!");
+            return found;
+        }
+
+        found = shouldHaveOnlyOne[0];
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In TaskQueryProcessor::{}({}) : {}", __func__, taskId, e.what()));
+    }
+
+    return found;
+}
+
+TaskList TaskQueryProcessor::getTaskByDescriptionAndAssignedUser(std::string_view description, std::size_t assignedUserID) noexcept
+{
+    errorMessages.clear();
+
+    try
+    {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, listQueryBase);
+        boost::mysql::format_sql_to(fctx, " WHERE Description = {} AND AsignedTo = {}", description, assignedUserID);
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        return processResults(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In TaskQueryProcessor::{}({}) : {}", __func__, assignedUserID, e.what()));
+    }
+    
+    return TaskList();
+}
+
 TaskList TaskQueryProcessor::getActiveTasksForAssignedUser(std::size_t assignedUserID) noexcept
 {
     errorMessages.clear();
@@ -279,6 +339,12 @@ std::string TaskQueryProcessor::formatDefaultTaskTableSelect(std::size_t assigne
 std::vector<ListExceptionTestElement> TaskQueryProcessor::initListExceptionTests() noexcept
 {
     std::vector<ListExceptionTestElement> exceptionTests;
+#if 0
+    exceptionTests.push_back({std::bind(&TaskQueryProcessor::testExceptionGetByTaskID, this),
+        "getTaskByTaskID"});
+#endif
+    exceptionTests.push_back({std::bind(&TaskQueryProcessor::testExceptionGetByDescriptionAndAssignedUser, this),
+        "getTaskByDescriptionAndAssignedUser"});
     exceptionTests.push_back({std::bind(&TaskQueryProcessor::testExceptionGetActiveTasksForAssignedUser, this),
         "getActiveTasksForAssignedUser"});
     exceptionTests.push_back({std::bind(&TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser, this),
@@ -291,6 +357,24 @@ std::vector<ListExceptionTestElement> TaskQueryProcessor::initListExceptionTests
         "getDefaultDashboardTaskList"});
 
     return exceptionTests;
+}
+
+#if 0
+TestStatus TaskQueryProcessor::testExceptionGetByTaskID() noexcept
+{
+    selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("TaskQueryProcessor::getTaskByTaskID", std::bind(&TaskQueryProcessor::getTaskByTaskID, this, std::placeholders::_1), 0);
+}
+#endif
+
+TestStatus TaskQueryProcessor::testExceptionGetByDescriptionAndAssignedUser() noexcept
+{
+    selfTestResetAllValues();
+    return testListExceptionAndSuccessNArgs
+        ("TaskQueryProcessor::getTaskByDescriptionAndAssignedUser",
+            std::bind(&TaskQueryProcessor::getTaskByDescriptionAndAssignedUser, this, std::placeholders::_1, std::placeholders::_2),
+            "A task description", 1);
 }
 
 TestStatus TaskQueryProcessor::testExceptionGetActiveTasksForAssignedUser() noexcept

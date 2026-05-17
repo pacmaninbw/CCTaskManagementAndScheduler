@@ -110,19 +110,6 @@ public:
     void setTaskID(std::size_t newID);
     std::string taskStatusString(TaskModel::TaskStatus inVal) const;
     TaskModel::TaskStatus stringToStatus(std::string statusName) const;
-/*
- * Select with arguments
- */
-    bool selectByDescriptionAndAssignedUser(std::string_view description, std::size_t assignedUserID) noexcept;
-    bool selectByTaskID(std::size_t taskID) noexcept;
-    // Return multiple Tasks.
-    std::string formatSelectActiveTasksForAssignedUser(std::size_t assignedUserID) noexcept;
-    std::string formatSelectUnstartedDueForStartForAssignedUser(std::size_t assignedUserID) noexcept;
-    std::string formatSelectTasksCompletedByAssignedAfterDate(std::size_t assignedUserID,
-        std::chrono::year_month_day searchStartDate) noexcept;
-    std::string formatSelectTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID) noexcept;
-    std::string formatDefaultTaskTableSelect(std::size_t assignedUserID,
-        std::chrono::year_month_day searchStartDate) noexcept;
 
 /*
  * Required fields.

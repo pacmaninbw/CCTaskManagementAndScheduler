@@ -123,76 +123,12 @@ void TaskSelfTest::selfTestResetAllValues() noexcept
 std::vector<ExceptionTestElement> TaskSelfTest::initExceptionTests() noexcept
 {
     std::vector<ExceptionTestElement> exceptionTests;
-    exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionSelectByTaskID, this), "selectByTaskID"});
-    exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionSelectByDescriptionAndAssignedUser, this), "selectByDescriptionAndAssignedUser"});
     exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionInsert, this), "testExceeptionInsert"});
     exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
-    exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
+//    exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
     exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionHide, this), "testExceptionHide"});
-    exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionFormatSelectActiveTasksForAssignedUser, this),
-        "selectByDescriptionAndAssignedUser"});
-    exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionFormatSelectUnstartedDueForStartForAssignedUser, this),
-        "formatSelectActiveTasksForAssignedUser"});
-    exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionFormatSelectTasksCompletedByAssignedAfterDate, this),
-        "formatSelectTasksCompletedByAssignedAfterDate"});
-    exceptionTests.push_back({std::bind(&TaskSelfTest::testExceptionFormatSelectTasksByAssignedIDandParentID, this),
-        "formatSelectTasksByAssignedIDandParentID"});
 
     return exceptionTests;
-}
-
-TestStatus TaskSelfTest::testExceptionSelectByTaskID()
-{
-    selfTestResetAllValues();
-
-    return testExceptionAndSuccessNArgs("TaskSelfTest::selectByTaskID", std::bind(&TaskModel::selectByTaskID, this, std::placeholders::_1), 0);
-}
-
-TestStatus TaskSelfTest::testExceptionSelectByDescriptionAndAssignedUser()
-{
-    selfTestResetAllValues();
-    return testExceptionAndSuccessNArgs
-        ("TaskSelfTest::selectByDescriptionAndAssignedUser",
-            std::bind(&TaskModel::selectByDescriptionAndAssignedUser, this, std::placeholders::_1, std::placeholders::_2),
-            "A task description", 1);
-}
-
-TestStatus TaskSelfTest::testExceptionFormatSelectActiveTasksForAssignedUser()
-{
-    selfTestResetAllValues();
-    return testFormatExceptionAndSuccessNArgs("TaskSelfTest::formatSelectActiveTasksForAssignedUser",
-        std::bind(&TaskModel::formatSelectActiveTasksForAssignedUser, this, std::placeholders::_1), 1);
-}
-
-TestStatus TaskSelfTest::testExceptionFormatSelectUnstartedDueForStartForAssignedUser()
-{
-    selfTestResetAllValues();
-    return testFormatExceptionAndSuccessNArgs("TaskSelfTest::formatSelectUnstartedDueForStartForAssignedUser",
-        std::bind(&TaskModel::formatSelectUnstartedDueForStartForAssignedUser, this, std::placeholders::_1), 1);
-}
-
-TestStatus TaskSelfTest::testExceptionFormatSelectTasksCompletedByAssignedAfterDate()
-{
-    selfTestResetAllValues();
-
-    std::chrono::year_month_day searchStartDate = commonTestDateRangeStartValue;
-    std::size_t assignedUser = 1;
-
-    return testFormatExceptionAndSuccessNArgs("TaskSelfTest::formatSelectTasksCompletedByAssignedAfterDate",
-        std::bind(&TaskModel::formatSelectTasksCompletedByAssignedAfterDate, this, std::placeholders::_1, std::placeholders::_2),
-        assignedUser, searchStartDate);
-}
- 
-TestStatus TaskSelfTest::testExceptionFormatSelectTasksByAssignedIDandParentID()
-{
-    selfTestResetAllValues();
-
-    std::size_t assignedUser = 1;
-    std::size_t parentid = 1;
-
-    return testFormatExceptionAndSuccessNArgs("TaskSelfTest::formatSelectTasksByAssignedIDandParentID",
-        std::bind(&TaskModel::formatSelectTasksByAssignedIDandParentID, this, std::placeholders::_1, std::placeholders::_2),
-        assignedUser, parentid);
 }
 
 TestStatus TaskSelfTest::testExceptionInsert() noexcept

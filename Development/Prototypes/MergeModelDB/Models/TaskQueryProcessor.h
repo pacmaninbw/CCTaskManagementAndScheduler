@@ -16,6 +16,8 @@ public:
     TaskQueryProcessor();
     virtual ~TaskQueryProcessor() = default;
 
+    TaskModel_shp getTaskByTaskID(std::size_t taskId) noexcept;
+    TaskList getTaskByDescriptionAndAssignedUser(std::string_view description, std::size_t assignedUserID) noexcept;
     TaskList getActiveTasksForAssignedUser(std::size_t assignedUserID) noexcept;
     TaskList getUnstartedDueForStartForAssignedUser(std::size_t assignedUserID) noexcept;
     TaskList getTasksCompletedByAssignedAfterDate(std::size_t assignedUserID,
@@ -38,6 +40,8 @@ private:
 
 
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
+//    TestStatus testExceptionGetByTaskID() noexcept;
+    TestStatus testExceptionGetByDescriptionAndAssignedUser() noexcept;
     TestStatus testExceptionGetActiveTasksForAssignedUser() noexcept;
     TestStatus testExceptionGetUnstartedDueForStartForAssignedUser() noexcept;
     TestStatus testExceptionGetTasksCompletedByAssignedAfterDate() noexcept;

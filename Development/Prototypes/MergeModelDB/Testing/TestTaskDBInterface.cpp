@@ -60,9 +60,11 @@ TestStatus TestTaskDBInterface::runAllTests()
 
 bool TestTaskDBInterface::testGetTaskByDescription(TaskModel_shp insertedTask)
 {
-    TaskModel_shp retrievedTask = std::make_shared<TaskModel>();
-    if (retrievedTask->selectByDescriptionAndAssignedUser(insertedTask->getDescription(), TaskIntegrationTestUserOne->getUserID()))
+    TaskQueryProcessor taskQueryProcessor;
+    TaskList retrievedTasks = taskQueryProcessor.getTaskByDescriptionAndAssignedUser(insertedTask->getDescription(), TaskIntegrationTestUserOne->getUserID());
+    if (retrievedTasks.size() > 0)
     {
+        TaskModel_shp retrievedTask = retrievedTasks[0];
         if (*retrievedTask == *insertedTask)
         {
             return true;
@@ -80,16 +82,16 @@ bool TestTaskDBInterface::testGetTaskByDescription(TaskModel_shp insertedTask)
     else
     {
         std::cerr << "getTaskByDescription(task.getDescription())) FAILED!\n" 
-            << retrievedTask->getAllErrorMessages() << "\n";
+            << taskQueryProcessor.getAllErrorMessages() << "\n";
         return false;
     }
 }
 
 bool TestTaskDBInterface::testGetTaskByID(TaskModel_shp insertedTask)
 {
-    TaskModel_shp retrievedTask = std::make_shared<TaskModel>();
-    retrievedTask->setTaskID(insertedTask->getTaskID());
-    if (retrievedTask->retrieve())
+    TaskQueryProcessor taskQueryProcessor;
+    TaskModel_shp retrievedTask = taskQueryProcessor.getTaskByTaskID(insertedTask->getTaskID());
+    if (retrievedTask->isInDataBase())
     {
         if (*retrievedTask == *insertedTask)
         {
@@ -107,8 +109,7 @@ bool TestTaskDBInterface::testGetTaskByID(TaskModel_shp insertedTask)
     }
     else
     {
-        std::cerr << "task.getTaskByTaskID()) FAILED!\n" 
-            << retrievedTask->getAllErrorMessages() << "\n";
+        std::cerr << "taskQueryProcessor.getTaskByTaskID()) FAILED!\n" << taskQueryProcessor.getAllErrorMessages() << "\n";
         return false;
     }
 }
@@ -273,8 +274,16 @@ TestStatus TestTaskDBInterface::testGetActiveTasks()
 
 TestStatus TestTaskDBInterface::testTaskUpdates()
 {
-    TaskModel_shp firstTaskToChange = std::make_shared<TaskModel>();
-    firstTaskToChange->selectByDescriptionAndAssignedUser("Archive BHHS74Reunion website to external SSD", TaskIntegrationTestUserOne->getUserID());
+    TaskQueryProcessor taskQueryProcessor;
+    TaskList tasksToChange = taskQueryProcessor.getTaskByDescriptionAndAssignedUser("Archive BHHS74Reunion website to external SSD", TaskIntegrationTestUserOne->getUserID());
+
+    if (tasksToChange.empty())
+    {
+        std::cerr << std::format("taskQueryProcessor.getTaskByDescriptionAndAssignedUser FAILED: {}", taskQueryProcessor.getAllErrorMessages());
+        return TESTFAILED;
+    }
+
+    TaskModel_shp firstTaskToChange = tasksToChange[0];
     firstTaskToChange->addEffortHours(5.0);
     firstTaskToChange->markComplete();
     if (!testTaskUpdate(firstTaskToChange))
@@ -348,11 +357,10 @@ TestStatus TestTaskDBInterface::testHideUnstartedTask()
 
 bool TestTaskDBInterface::testTaskUpdate(TaskModel_shp changedTask)
 {
+    TaskQueryProcessor taskQueryProcessor;
     bool testPassed = true;
     std::size_t taskID = changedTask->getTaskID();
-    TaskModel_shp original = std::make_shared<TaskModel>();
-    original->setTaskID(taskID);
-    original->retrieve();
+    TaskModel_shp original = taskQueryProcessor.getTaskByTaskID(taskID);
 
     if (!changedTask->update())
     {
@@ -361,9 +369,7 @@ bool TestTaskDBInterface::testTaskUpdate(TaskModel_shp changedTask)
         return false;
     }
 
-    TaskModel_shp shouldBeDifferent = std::make_shared<TaskModel>();
-    shouldBeDifferent->setTaskID(taskID);
-    shouldBeDifferent->retrieve();
+    TaskModel_shp shouldBeDifferent = taskQueryProcessor.getTaskByTaskID(taskID);
     if (*original == *shouldBeDifferent)
     {
         std::cerr << std::format("Task update test FAILED for task: {}\n", taskID);
@@ -384,12 +390,15 @@ bool TestTaskDBInterface::testAddDepenedcies()
         {"Run Archive Plugin"}
     };
 
+    TaskQueryProcessor taskQueryProcessor;
     // Tests the use of both UserModel & and UserModel_shp 
     std::size_t user1ID = TaskIntegrationTestUserOne->getUserID();
-    TaskModel_shp depenedentTask = std::make_shared<TaskModel>();
-    TaskModel_shp depenedsOn = std::make_shared<TaskModel>();
-    depenedsOn->selectByDescriptionAndAssignedUser(taskDescriptions[0], user1ID);
-    depenedentTask->selectByDescriptionAndAssignedUser(taskDescriptions[1], user1ID);
+    TaskList dependsOnList = taskQueryProcessor.getTaskByDescriptionAndAssignedUser(taskDescriptions[0], user1ID);
+    TaskModel_shp depenedsOn = dependsOnList[0];
+    
+    TaskList depenedentTasks = taskQueryProcessor.getTaskByDescriptionAndAssignedUser(taskDescriptions[1], user1ID);
+    TaskModel_shp depenedentTask = depenedentTasks[0];
+
     depenedentTask->addDependency(depenedsOn);
     if (!depenedentTask->update())
     {
@@ -398,12 +407,12 @@ bool TestTaskDBInterface::testAddDepenedcies()
     }
 
     std::vector<std::size_t> comparison;
-    TaskModel_shp mostDepenedentTask = std::make_shared<TaskModel>();
-    mostDepenedentTask->selectByDescriptionAndAssignedUser(mostDependentTaskDesc, user1ID);
+    TaskList mostDepenedentTasks = taskQueryProcessor.getTaskByDescriptionAndAssignedUser(mostDependentTaskDesc, user1ID);
+    TaskModel_shp mostDepenedentTask = mostDepenedentTasks[0];
     for (auto task: taskDescriptions)
     {
-        TaskModel_shp dependency = std::make_shared<TaskModel>();
-        dependency->selectByDescriptionAndAssignedUser(task, user1ID);
+        TaskList dependencies = taskQueryProcessor.getTaskByDescriptionAndAssignedUser(task, user1ID);
+        TaskModel_shp dependency = dependencies[0];
         comparison.push_back(dependency->getTaskID());
         mostDepenedentTask->addDependency(dependency);
     }
@@ -413,9 +422,7 @@ bool TestTaskDBInterface::testAddDepenedcies()
         return false;
     }
 
-    TaskModel_shp testDepenedenciesInDB = std::make_shared<TaskModel>();
-    testDepenedenciesInDB->setTaskID(mostDepenedentTask->getTaskID());
-    testDepenedenciesInDB->retrieve();
+    TaskModel_shp testDepenedenciesInDB = taskQueryProcessor.getTaskByTaskID(mostDepenedentTask->getTaskID());
     std::vector<std::size_t> dbValue = testDepenedenciesInDB->getDependencies();
     if (comparison != dbValue)
     {
@@ -429,9 +436,10 @@ bool TestTaskDBInterface::testAddDepenedcies()
 bool TestTaskDBInterface::testGetCompletedList()
 {
     std::size_t user1ID = TaskIntegrationTestUserOne->getUserID();
+    TaskQueryProcessor taskQueryProcesssor;
+    TaskList parentTaskList = taskQueryProcesssor.getTaskByDescriptionAndAssignedUser("Archive BHHS74Reunion website to external SSD", user1ID);
 
-    TaskModel_shp parentTask = std::make_shared<TaskModel>();
-    parentTask->selectByDescriptionAndAssignedUser("Archive BHHS74Reunion website to external SSD", user1ID);
+    TaskModel_shp parentTask = parentTaskList[0];
     TaskModel::TaskStatus newStatus = TaskModel::TaskStatus::Complete;
 
     std::chrono::year_month_day completedDate = parentTask->getCompletionDate();
@@ -505,9 +513,9 @@ std::chrono::year_month_day TestTaskDBInterface::stringToDate(std::string dateSt
 
 TestStatus TestTaskDBInterface::testnegativePathNotModified()
 {
-    TaskModel_shp taskNotModified = std::make_shared<TaskModel>();
-    taskNotModified->setTaskID(1);
-    if (!taskNotModified->retrieve())
+    TaskQueryProcessor taskQueryProcessor;
+    TaskModel_shp taskNotModified = taskQueryProcessor.getTaskByTaskID(1);
+    if (!taskNotModified->isInDataBase())
     {
         std::cout << "Task 1 not found in database!!\n";
         return TESTFAILED;
@@ -521,9 +529,9 @@ TestStatus TestTaskDBInterface::testnegativePathNotModified()
 
 TestStatus TestTaskDBInterface::testNegativePathAlreadyInDataBase()
 {
-    TaskModel_shp taskAlreadyInDB = std::make_shared<TaskModel>();
-    taskAlreadyInDB->setTaskID(1);
-    if (!taskAlreadyInDB->retrieve())
+    TaskQueryProcessor taskQueryProcessor;
+    TaskModel_shp taskAlreadyInDB = taskQueryProcessor.getTaskByTaskID(1);
+    if (!taskAlreadyInDB->isInDataBase())
     {
         std::cout << "Task 1 not found in database!!\n";
         return TESTFAILED;
