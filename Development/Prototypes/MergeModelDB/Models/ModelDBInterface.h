@@ -27,7 +27,7 @@ public:
     bool save() noexcept;
     bool insert() noexcept;
     bool update() noexcept;
-    bool retrieve() noexcept;    // Only select object by object ID.
+//    bool retrieve() noexcept;    // Only select object by object ID.
     virtual bool hide(std::size_t userRequestingDelete) noexcept;
     bool isInDataBase() const noexcept { return (primaryKey > 0); };
     bool isModified() const noexcept { return modified; };
@@ -50,8 +50,8 @@ protected:
     virtual std::string formatInsertStatement() = 0;
     virtual std::string formatUpdateStatement() = 0;
     virtual std::string formatDeleteStatement() = 0;
-    virtual std::string formatSelectStatement() = 0;
-    virtual bool processResult(boost::mysql::results& results);
+//    virtual std::string formatSelectStatement() = 0;
+//    virtual bool processResult(boost::mysql::results& results);
 /*
  * RESULT PROCESSING
  */
@@ -59,7 +59,7 @@ protected:
  * Each model must provide the process by which the database information will
  * be translated into the specific model.
  */
-    virtual void processResultRow(boost::mysql::row_view rv) = 0;
+//    virtual void processResultRow(boost::mysql::row_view rv) = 0;
 
 
 /*

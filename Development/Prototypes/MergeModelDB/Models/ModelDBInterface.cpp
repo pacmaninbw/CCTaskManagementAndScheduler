@@ -116,6 +116,7 @@ bool ModelDBInterface::update() noexcept
     }
 }
 
+#if 0
 bool ModelDBInterface::retrieve() noexcept
 {
     errorMessages.clear();
@@ -133,6 +134,7 @@ bool ModelDBInterface::retrieve() noexcept
         return false;
     }
 }
+#endif
 
 bool ModelDBInterface::hide([[maybe_unused]]std::size_t userRequestingDelete) noexcept
 {
@@ -191,6 +193,7 @@ void ModelDBInterface::reportMissingFields() noexcept
     }
 }
 
+#if 0
 bool ModelDBInterface::processResult(boost::mysql::results& results)
 {
     if (inSelfTest)
@@ -215,6 +218,7 @@ bool ModelDBInterface::processResult(boost::mysql::results& results)
 
     return true;
 }
+#endif
 
 std::vector<std::string> ModelDBInterface::explodeTextField(std::string const& textField) noexcept
 {
