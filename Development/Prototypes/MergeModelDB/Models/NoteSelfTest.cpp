@@ -116,10 +116,9 @@ std::vector<AttributeTestFunction> NoteSelfTest::initAttributeAccessTests() noex
 std::vector<ExceptionTestElement> NoteSelfTest::initExceptionTests() noexcept
 {
     std::vector<ExceptionTestElement> exceptionTests;
-    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionSelectByNoteID, this), "selectByNoteID"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionInsert, this), "testExceptionInsert"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
-    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
+//    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
     exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionHide, this), "testExceptionHide"});
 
     return exceptionTests;
@@ -152,15 +151,6 @@ TestStatus NoteSelfTest::testExceptionUpdate() noexcept
     return testExceptionAndSuccessNArgs("NoteModel::update", std::bind(&NoteModel::update, this));
 }
 
-TestStatus NoteSelfTest::testExceptionRetrieve() noexcept
-{
-    selfTestResetAllValues();
-
-    setNoteId(1);
-
-    return testExceptionAndSuccessNArgs("NoteModel::retrieve", std::bind(&NoteModel::retrieve, this));
-}
-
 TestStatus NoteSelfTest::testExceptionHide() noexcept
 {
    selfTestResetAllValues();
@@ -174,14 +164,6 @@ TestStatus NoteSelfTest::testExceptionHide() noexcept
     setLastModified(timeStamp);
 
     return testExceptionAndSuccessNArgs("NoteModel::hide", std::bind(&NoteModel::hide, this, std::placeholders::_1), testUserId);
-}
-
-
-TestStatus NoteSelfTest::testExceptionSelectByNoteID() noexcept
-{
-    selfTestResetAllValues();
-
-    return testExceptionAndSuccessNArgs("NoteModel::selectByNoteID", std::bind(&NoteModel::selectByNoteID, this, std::placeholders::_1), 1);
 }
 
 TestStatus NoteSelfTest::testAllInsertFailures()

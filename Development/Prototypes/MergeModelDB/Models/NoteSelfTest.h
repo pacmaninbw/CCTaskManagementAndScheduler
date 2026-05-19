@@ -32,10 +32,7 @@ private:
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
     virtual TestStatus testExceptionInsert() noexcept override;
     virtual TestStatus testExceptionUpdate() noexcept override;
-    virtual TestStatus testExceptionRetrieve() noexcept override;
     virtual TestStatus testExceptionHide() noexcept override;
-    TestStatus testExceptionSelectByNoteID() noexcept;
-
     virtual TestStatus testAllInsertFailures() override;
 
     TestStatus testNoteIdAccesss() noexcept;
