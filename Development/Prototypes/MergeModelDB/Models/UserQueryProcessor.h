@@ -17,6 +17,14 @@ public:
     UserQueryProcessor();
     virtual ~UserQueryProcessor() = default;
     UserModelList getAllUsers() noexcept;
+    UserModel_shp getUserByID(std::size_t userId) noexcept;
+    UserModel_shp getUserByLoginName(const std::string_view& loginName) noexcept;
+    UserModel_shp getUserByEmail(const std::string_view& emailAddress) noexcept;
+    UserModel_shp getUserByLoginAndPassword(const std::string_view& loginName, const std::string_view& password) noexcept;
+    UserModel_shp getUserByFullName(const std::string_view& lastName, const std::string_view& firstName,
+        const std::string_view& middleI) noexcept;
+    std::string formatGetAllUsersQuery() noexcept;
+
 
 private:
     virtual UserModel_shp processResultRow(boost::mysql::row_view& queryRow) override;

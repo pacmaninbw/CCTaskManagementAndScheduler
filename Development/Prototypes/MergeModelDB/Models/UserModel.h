@@ -77,17 +77,6 @@ public:
     void setLastLogin(std::chrono::system_clock::time_point dateAndTime) noexcept;
 
 /*
- * Select with arguments
- */
-    bool selectByLoginName(const std::string_view& loginName) noexcept;
-    bool selectByEmail(const std::string_view& emailAddress) noexcept;
-    bool selectByLoginAndPassword(const std::string_view& loginName, const std::string_view& password) noexcept;
-    bool selectByFullName(const std::string_view& lastName, const std::string_view& firstName,
-        const std::string_view& middleI) noexcept;
-    std::string formatGetAllUsersQuery() noexcept;
-    bool selectByUserID(std::size_t UserID)  noexcept;
-
-/*
  * Required fields.
  */
     bool isMissingLastName() const noexcept;
@@ -139,11 +128,9 @@ protected:
     std::string formatInsertStatement() override;
     std::string formatUpdateStatement() override;
     std::string formatDeleteStatement() override;
-    std::string formatSelectStatement() override;
 
     std::string buildPreferenceText() noexcept;
     void parsePrefenceText(std::string preferences) noexcept;
-    void processResultRow(boost::mysql::row_view rv) override;
     
     std::string lastName;
     std::string firstName;
@@ -161,26 +148,6 @@ protected:
     static const std::size_t minEmailLength = 10;
 
 private:
-/*
- * The indexes below are based on the following select statement, maintain this order.
- * baseQuery could be SELECT * FROM UserProfile, but this way the order of the columns
- * returned are known.
- */
-    boost::mysql::constant_string_view baseQuery = 
-        "SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, "
-            "HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile ";
-
-    static const std::size_t UserIdIdx = 0;
-    static const std::size_t LastNameIdx = 1;
-    static const std::size_t FirstNameIdx = 2;
-    static const std::size_t MiddleInitialIdx = 3;
-    static const std::size_t EmailAddressIdx = 4;
-    static const std::size_t LoginNameIdx = 5;
-    static const std::size_t PasswordIdx = 6;
-    static const std::size_t UserAddedIdx = 7;
-    static const std::size_t LastLoginIdx = 8;
-    static const std::size_t PreferencesIdx = 9;
-    static const std::size_t HiddenIdx = 10;
 // Preference subfield indexes
     static const std::size_t PrefDayStartIdx = 0;
     static const std::size_t PrefDayEndIdx = 1;
@@ -188,6 +155,7 @@ private:
     static const std::size_t PrefMinorPriorityIdx = 3;
     static const std::size_t PrefUsingLetterIdx = 4;
     static const std::size_t PrefUsingDotIdx = 5;
+
 };
 
 using UserModel_shp = std::shared_ptr<UserModel>;

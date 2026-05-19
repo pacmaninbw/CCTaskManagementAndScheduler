@@ -245,17 +245,6 @@ std::string UserModel::formatDeleteStatement()
     return boost::mysql::format_sql(format_opts.value(), "CALL HideUser({})", primaryKey);
 }
 
-std::string UserModel::formatSelectStatement()
-{
-    initFormatOptions();
-
-    boost::mysql::format_context fctx(format_opts.value());
-    boost::mysql::format_sql_to(fctx, baseQuery);
-    boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", primaryKey);
-
-    return std::move(fctx).get().value();
-}
-
 std::string UserModel::buildPreferenceText() noexcept
 {
     std::vector<std::string> preferences;
@@ -268,28 +257,6 @@ std::string UserModel::buildPreferenceText() noexcept
     preferences.push_back(std::to_string(static_cast<int>(isSeparatingPriorityWithDot())));
 
     return implodeTextField(preferences);
-}
-
-void UserModel::processResultRow(boost::mysql::row_view rv)
-{
-    primaryKey = rv.at(UserIdIdx).as_uint64();
-    lastName = rv.at(LastNameIdx).as_string();
-    firstName = rv.at(FirstNameIdx).as_string();
-    middleInitial = rv.at(MiddleInitialIdx).as_string();
-    email = rv.at(EmailAddressIdx).as_string();
-    loginName = rv.at(LoginNameIdx).as_string();
-    password = rv.at(PasswordIdx).as_string();
-    created = (boostMysqlDateTimeToChronoTimePoint(rv.at(UserAddedIdx).as_datetime()));
-    if (!rv.at(LastLoginIdx).is_null())
-    {
-        lastLogin = boostMysqlDateTimeToChronoTimePoint(rv.at(LastLoginIdx).as_datetime());
-    }
-    if (!rv.at(HiddenIdx).is_null())
-    {
-        deleted = rv.at(HiddenIdx).as_int64() == 1? true : false;
-    }
-    std::string preferences = rv.at(PreferencesIdx).as_string();
-    parsePrefenceText(preferences);
 }
 
 void UserModel::parsePrefenceText(std::string preferences) noexcept
@@ -317,138 +284,4 @@ void UserModel::parsePrefenceText(std::string preferences) noexcept
     clearModified();
 }
 
-bool UserModel::selectByLoginName(const std::string_view &loginName) noexcept
-{
-    errorMessages.clear();
-
-    try
-    {
-        initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, baseQuery);
-        boost::mysql::format_sql_to(fctx, " WHERE LoginName = {}", loginName);
-
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
-
-        return processResult(localResult);
-    }
-
-    catch(const std::exception& e)
-    {
-        appendErrorMessage(std::format("In UserModel::selectByLoginName : {}", e.what()));
-        return false;
-    }
-}
-
-bool UserModel::selectByEmail(const std::string_view &emailAddress) noexcept
-{
-    errorMessages.clear();
-
-    try
-    {
-        initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, baseQuery);
-        boost::mysql::format_sql_to(fctx, " WHERE EmailAddress = {}", emailAddress);
-
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
-
-        return processResult(localResult);
-    }
-
-    catch(const std::exception& e)
-    {
-        appendErrorMessage(std::format("In UserModel::selectByEmail : {}", e.what()));
-        return false;
-    }
-}
-
-bool UserModel::selectByLoginAndPassword(const std::string_view &loginName, const std::string_view &password) noexcept
-{
-    errorMessages.clear();
-
-    try
-    {
-        initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, baseQuery);
-        boost::mysql::format_sql_to(fctx, " WHERE LoginName = {} AND HashedPassWord = {}", loginName, password);
-
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
-
-        return processResult(localResult);
-    }
-
-    catch(const std::exception& e)
-    {
-        appendErrorMessage(std::format("In UserModel::selectByLoginAndPassword : {}", e.what()));
-        return false;
-    }
-}
-
-bool UserModel::selectByFullName(const std::string_view &lastName, const std::string_view &firstName, const std::string_view &middleI) noexcept
-{
-    errorMessages.clear();
-
-    try
-    {
-        initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, baseQuery);
-        boost::mysql::format_sql_to(fctx, " WHERE LastName = {} AND FirstName = {} AND MiddleInitial = {}", lastName, firstName, middleI);
-
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
-
-        return processResult(localResult);
-    }
-
-    catch(const std::exception& e)
-    {
-        appendErrorMessage(std::format("In UserModel::selectByFullName : {}", e.what()));
-        return false;
-    }
-}
-
-std::string UserModel::formatGetAllUsersQuery() noexcept
-{
-    errorMessages.clear();
-
-    try
-    {
-        initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, "SELECT UserID FROM UserProfile ");
-
-        return std::move(fctx).get().value();
-    }
-
-    catch(const std::exception& e)
-    {
-        appendErrorMessage(std::format("In UserModel::formatGetAllUsersQuery : {}", e.what()));
-        return std::string();
-    }
-}
-
-bool UserModel::selectByUserID(std::size_t UserID) noexcept
-{
-    errorMessages.clear();
-
-    try
-    {
-        initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, baseQuery);
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", UserID);
-
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
-
-        return processResult(localResult);
-    }
-
-    catch(const std::exception& e)
-    {
-        appendErrorMessage(std::format("In UserModel::selectByUserID : {}", e.what()));
-        return false;
-    }
-}
 

@@ -17,8 +17,6 @@ UserModelList UserQueryProcessor::getAllUsers() noexcept
 {
     errorMessages.clear();
 
-    appendErrorMessage("In NoteQueryProcessor::getAllNotesForUser : ");
-    
     UserModelList allUsers;
 
     try
@@ -36,6 +34,117 @@ UserModelList UserQueryProcessor::getAllUsers() noexcept
     }
     
     return allUsers;
+}
+
+UserModel_shp UserQueryProcessor::getUserByID(std::size_t userId) noexcept
+{
+    errorMessages.clear();
+    UserModel_shp found = nullptr;
+
+    try
+    {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserProfile WHERE UserID = {}", userId);
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        found = getOneResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserQueryProcessor::{}({}) : {}", __func__, userId, e.what()));
+    }
+
+    return found;
+}
+
+UserModel_shp UserQueryProcessor::getUserByLoginName(const std::string_view &loginName) noexcept
+{
+    errorMessages.clear();
+    UserModel_shp found = nullptr;
+
+    try
+    {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserProfile WHERE LoginName = {}", loginName);
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        found = getOneResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserQueryProcessor::{}({}) : {}", __func__, loginName, e.what()));
+    }
+
+    return found;
+}
+
+UserModel_shp UserQueryProcessor::getUserByEmail(const std::string_view &emailAddress) noexcept
+{
+    errorMessages.clear();
+    UserModel_shp found = nullptr;
+
+    try
+    {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserProfile WHERE EmailAddress = {}", emailAddress);
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        found = getOneResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserQueryProcessor::{}({}) : {}", __func__, emailAddress, e.what()));
+    }
+
+    return found;
+}
+
+UserModel_shp UserQueryProcessor::getUserByLoginAndPassword(const std::string_view &loginName, const std::string_view &password) noexcept
+{
+    errorMessages.clear();
+    UserModel_shp found = nullptr;
+
+    try
+    {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserProfile WHERE LoginName = {} AND HashedPassWord = {}", loginName, password);
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        found = getOneResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserQueryProcessor::{}({}, {}) : {}", __func__, loginName, password, e.what()));
+    }
+
+    return found;
+}
+
+UserModel_shp UserQueryProcessor::getUserByFullName(const std::string_view &lastName, const std::string_view &firstName, const std::string_view &middleI) noexcept
+{
+    errorMessages.clear();
+    UserModel_shp found = nullptr;
+
+    try
+    {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserProfile WHERE LastName = {} AND FirstName = {} AND MiddleInitial = {}",
+            lastName, firstName, middleI);
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        found = getOneResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserQueryProcessor::{}({}, {}, {}) : {}", __func__, lastName, firstName, middleI, e.what()));
+    }
+
+    return found;
 }
 
 UserModel_shp UserQueryProcessor::processResultRow(boost::mysql::row_view &queryRow)
