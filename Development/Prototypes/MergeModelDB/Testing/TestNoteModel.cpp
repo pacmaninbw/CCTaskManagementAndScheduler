@@ -1,9 +1,10 @@
 // Project Header Files
 #include "TestNoteModel.h"
 #include "TestDBInterfaceCore.h"
-#include "NoteQueryProcessor.h"
 #include "NoteModel.h"
+#include "NoteQueryProcessor.h"
 #include "UserModel.h"
+#include "UserQueryProcessor.h"
 
 // Standard C++ Header Files
 #include <chrono>
@@ -53,9 +54,12 @@ TestNoteModel::TestNoteModel()
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testnegativePathNotModified, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testNegativePathAlreadyInDataBase, this));
 
-    userOne = std::make_shared<UserModel>();
-    userOne->selectByFullName("One", "User", "P");;
-
+    UserQueryProcessor userQueryProcessor;
+    userOne = userQueryProcessor.getUserByFullName("One", "User", "P");
+    if (userOne == nullptr || !userOne->isInDataBase())
+    {
+        std::cerr << std::format("Failed to find userOne in DB! : {}\n", userQueryProcessor.getAllErrorMessages());
+    }
 }
 
 TestStatus TestNoteModel::testInsertNote(TestNoteInput testNote)
@@ -319,9 +323,9 @@ TestStatus TestNoteModel::testPositivePathDeleteNote()
 
 TestStatus TestNoteModel::testNegativePathAlreadyInDataBase()
 {
-    NoteModel_shp noteAlreadyInDB = std::make_shared<NoteModel>();
-    noteAlreadyInDB->setNoteId(1);
-    if (!noteAlreadyInDB->retrieve())
+    NoteQueryProcessor noteQueryProcessorr;
+    NoteModel_shp noteAlreadyInDB = noteQueryProcessorr.getNoteById(1);
+    if (!noteAlreadyInDB->isInDataBase())
     {
         std::cout << "Note 1 not found in database!!\n";
         return TESTFAILED;
@@ -333,9 +337,9 @@ TestStatus TestNoteModel::testNegativePathAlreadyInDataBase()
 
 TestStatus TestNoteModel::testnegativePathNotModified()
 {
-    NoteModel_shp noteNotModified = std::make_shared<NoteModel>();
-    noteNotModified->setNoteId(1);
-    if (!noteNotModified->retrieve())
+    NoteQueryProcessor noteQueryProcessorr;
+    NoteModel_shp noteNotModified = noteQueryProcessorr.getNoteById(1);
+    if (!noteNotModified->isInDataBase())
     {
         std::cout << "Note 1 not found in database!!\n";
         return TESTFAILED;

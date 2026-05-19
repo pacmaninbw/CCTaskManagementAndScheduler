@@ -94,8 +94,9 @@ TestStatus TestUserDBInterface::runPositivePathTests()
 
 bool TestUserDBInterface::testGetUserByLoginName(UserModel_shp insertedUser)
 {
-    UserModel_shp retrievedUser = std::make_shared<UserModel>();
-    if (retrievedUser->selectByLoginName(insertedUser->getLoginName()))
+    UserQueryProcessor userQueryProcessor;
+    UserModel_shp retrievedUser = userQueryProcessor.getUserByLoginName(insertedUser->getLoginName());
+    if (retrievedUser && retrievedUser->isInDataBase())
     {
         if (*retrievedUser == *insertedUser)
         {
@@ -111,18 +112,19 @@ bool TestUserDBInterface::testGetUserByLoginName(UserModel_shp insertedUser)
     else
     {
         std::cerr << "testGetUserByLoginNamen(user->getLoginName()) FAILED!\n" <<
-            retrievedUser->getAllErrorMessages() << "\n";
+            userQueryProcessor.getAllErrorMessages() << "\n";
         return false;
     }
 }
 
 bool TestUserDBInterface::testGetUserByLoginAndPassword(UserModel_shp insertedUser)
 {
-    std::string_view testName = insertedUser->getLoginName();
-    std::string_view testPassword = insertedUser->getPassword();
+    std::string testName = insertedUser->getLoginName();
+    std::string testPassword = insertedUser->getPassword();
 
-    UserModel_shp retrievedUser = std::make_shared<UserModel>();
-    if (retrievedUser->selectByLoginAndPassword(testName, testPassword))
+    UserQueryProcessor userQueryProcessor;
+    UserModel_shp retrievedUser = userQueryProcessor.getUserByLoginAndPassword(testName, testPassword);
+    if (retrievedUser && retrievedUser->isInDataBase())
     {
         if (*retrievedUser != *insertedUser)
         {
@@ -134,14 +136,14 @@ bool TestUserDBInterface::testGetUserByLoginAndPassword(UserModel_shp insertedUs
     else
     {
         std::cerr << "testGetUserByLoginAndPassword(user->getLoginName()) FAILED!\n" <<
-            retrievedUser->getAllErrorMessages() << "\n";
+            userQueryProcessor.getAllErrorMessages() << "\n";
         std::cerr << "Expected user name " << testName << "\n";
         std::cerr << "Expected user password " << testPassword << "\n";
         return false;
     }
 
-
-    if (retrievedUser->selectByLoginAndPassword(testName, "NotThePassword"))
+    retrievedUser = userQueryProcessor.getUserByLoginAndPassword(testName, "NotThePassword");
+    if (retrievedUser)
     {
         std::cout << "retrievedUser->selectByLoginAndPassword(user->getLoginName()) Found user with fake password!\n";
         return false;
@@ -152,9 +154,10 @@ bool TestUserDBInterface::testGetUserByLoginAndPassword(UserModel_shp insertedUs
 
 bool TestUserDBInterface::testGetUserByFullName(UserModel_shp insertedUser)
 {
-    UserModel_shp retrievedUser = std::make_shared<UserModel>();
-    if (retrievedUser->selectByFullName(insertedUser->getLastName(), insertedUser->getFirstName(),
-        insertedUser->getMiddleInitial()))
+    UserQueryProcessor userQueryProcessor;
+    UserModel_shp retrievedUser = userQueryProcessor.getUserByFullName(insertedUser->getLastName(), insertedUser->getFirstName(),
+        insertedUser->getMiddleInitial());
+    if (retrievedUser && retrievedUser->isInDataBase())
     {
         if (*retrievedUser == *insertedUser)
         {
@@ -170,15 +173,16 @@ bool TestUserDBInterface::testGetUserByFullName(UserModel_shp insertedUser)
     else
     {
         std::cerr << "retrievedUser->selectByFullName FAILED!\n" <<
-            retrievedUser->getAllErrorMessages() << "\n";
+            userQueryProcessor.getAllErrorMessages() << "\n";
         return false;
     }
 }
 
 bool TestUserDBInterface::testGetUserByEmail(UserModel_shp insertedUser)
 {
-    UserModel_shp retrievedUser = std::make_shared<UserModel>();
-    if (retrievedUser->selectByEmail(insertedUser->getEmail()))
+    UserQueryProcessor userQueryProcessor;
+    UserModel_shp retrievedUser = userQueryProcessor.getUserByEmail(insertedUser->getEmail());
+    if (retrievedUser && retrievedUser->isInDataBase())
     {
         if (*retrievedUser == *insertedUser)
         {
@@ -193,8 +197,8 @@ bool TestUserDBInterface::testGetUserByEmail(UserModel_shp insertedUser)
     }
     else
     {
-        std::cerr << "retrievedUser->selectByFullName FAILED!\n" <<
-            retrievedUser->getAllErrorMessages() << "\n";
+        std::cerr << "retrievedUser->getUserByEmail FAILED!\n" <<
+            userQueryProcessor.getAllErrorMessages() << "\n";
         return false;
     }
 }
@@ -213,9 +217,15 @@ bool TestUserDBInterface::testUpdateUserPassword(UserModel_shp insertedUser)
         return false;
     }
 
-    UserModel_shp newUserValues = std::make_shared<UserModel>();
-    newUserValues->setUserID(insertedUser->getUserID());
-    newUserValues->retrieve();
+    UserQueryProcessor userQueryProcessor;
+    UserModel_shp newUserValues = userQueryProcessor.getUserByID(insertedUser->getUserID());
+    if (!newUserValues)
+    {
+        std::cerr << "UserQueryProcessor.getUserByID() FAILED!\n";
+        std::cerr << userQueryProcessor.getAllErrorMessages() << std::endl;
+        return false;
+    }
+
     if (oldUserValues == *newUserValues)
     {
         std::cerr << std::format("Password update for user {} FAILED!\n", oldUserValues.getUserID());
@@ -297,9 +307,9 @@ bool TestUserDBInterface::testGetAllUsers(UserModelList userProfileTestData)
 
 TestStatus TestUserDBInterface::testnegativePathNotModified()
 {
-    UserModel_shp userNotModified = std::make_shared<UserModel>();
-    userNotModified->setUserID(1);
-    if (!userNotModified->retrieve())
+    UserQueryProcessor userQueryProcessor;
+    UserModel_shp userNotModified = userQueryProcessor.getUserByID(1);
+    if (userNotModified == nullptr || !userNotModified->isInDataBase())
     {
         std::cout << "User 1 not found in database!!\n" << userNotModified->getAllErrorMessages() << "\n";
         return TESTFAILED;
@@ -313,9 +323,9 @@ TestStatus TestUserDBInterface::testnegativePathNotModified()
 
 TestStatus TestUserDBInterface::testNegativePathAlreadyInDataBase()
 {
-    UserModel_shp userAlreadyInDB = std::make_shared<UserModel>();
-    userAlreadyInDB->setUserID(1);
-    if (!userAlreadyInDB->retrieve())
+    UserQueryProcessor userQueryProcessor;
+    UserModel_shp userAlreadyInDB = userQueryProcessor.getUserByID(1);
+    if (userAlreadyInDB == nullptr || !userAlreadyInDB->isInDataBase())
     {
         std::cout << "User 1 not found in database!!\n" << userAlreadyInDB->getAllErrorMessages() << "\n";
         return TESTFAILED;

@@ -6,6 +6,7 @@
 #include "TestDBInterfaceCore.h"
 #include "TestTaskDBInterface.h"
 #include "UserModel.h"
+#include "UserQueryProcessor.h"
 
 // Standard C++ Header Files
 #include <exception>
@@ -39,9 +40,9 @@ TestStatus TestTaskDBInterface::runAllTests()
 {
     std::cout << std::format("\nRunning {} Integration Tests\n", modelUnderTest);
 
-    TaskIntegrationTestUserOne = std::make_shared<UserModel>();
-    TaskIntegrationTestUserOne->selectByFullName("One", "User", "P");
-    if (!TaskIntegrationTestUserOne->isInDataBase())
+    UserQueryProcessor userQueryprocessor;
+    TaskIntegrationTestUserOne = userQueryprocessor.getUserByFullName("One", "User", "P");
+    if (TaskIntegrationTestUserOne == nullptr || !TaskIntegrationTestUserOne->isInDataBase())
     {
         std::cout << "Failed to retrieve TaskIntegrationTestUserOne from DataBase!\n";
         return TESTFAILED;
@@ -221,8 +222,14 @@ TestStatus TestTaskDBInterface::testGetUnstartedTasks()
 TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskList()
 {
     TaskQueryProcessor taskDBInteface;
-    UserModel_shp realUser = std::make_shared<UserModel>();
-    realUser->selectByFullName("Black", "Paul", "A");
+    UserQueryProcessor userQueryProcessor;
+    UserModel_shp realUser = userQueryProcessor.getUserByFullName("Black", "Paul", "A");
+
+    if (!realUser || !realUser->isInDataBase())
+    {
+        std::cerr << std::format("Failed to find realUser: {}", userQueryProcessor.getAllErrorMessages());
+        return TESTFAILED;
+    }
 
     TaskList defaultTaskQueryProcessor = taskDBInteface.getDefaultDashboardTaskList(realUser->getUserID(),
         commonProductionTestDataAddedDate);
@@ -515,7 +522,7 @@ TestStatus TestTaskDBInterface::testnegativePathNotModified()
 {
     TaskQueryProcessor taskQueryProcessor;
     TaskModel_shp taskNotModified = taskQueryProcessor.getTaskByTaskID(1);
-    if (!taskNotModified->isInDataBase())
+    if (taskNotModified == nullptr || !taskNotModified->isInDataBase())
     {
         std::cout << "Task 1 not found in database!!\n";
         return TESTFAILED;
@@ -531,7 +538,7 @@ TestStatus TestTaskDBInterface::testNegativePathAlreadyInDataBase()
 {
     TaskQueryProcessor taskQueryProcessor;
     TaskModel_shp taskAlreadyInDB = taskQueryProcessor.getTaskByTaskID(1);
-    if (!taskAlreadyInDB->isInDataBase())
+    if (taskAlreadyInDB == nullptr || !taskAlreadyInDB->isInDataBase())
     {
         std::cout << "Task 1 not found in database!!\n";
         return TESTFAILED;

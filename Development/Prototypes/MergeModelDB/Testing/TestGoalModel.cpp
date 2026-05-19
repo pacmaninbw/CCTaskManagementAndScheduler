@@ -4,6 +4,7 @@
 #include "GoalQueryProcessor.h"
 #include "UserGoalModel.h"
 #include "UserModel.h"
+#include "UserQueryProcessor.h"
 
 // Standard C++ Header Files
 #include <chrono>
@@ -50,8 +51,12 @@ TestGoalModel::TestGoalModel()
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testnegativePathNotModified, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testNegativePathAlreadyInDataBase, this));
 
-    userOne = std::make_shared<UserModel>();
-    userOne->selectByFullName("One", "User", "P");
+    UserQueryProcessor userQueryProcessor;
+    userOne = userQueryProcessor.getUserByFullName("One", "User", "P");
+    if (!userOne)
+    {
+        std::cerr << std::format("Failed to find userOne!:{}", userQueryProcessor.getAllErrorMessages());
+    }
 }
 
 TestStatus TestGoalModel::testInsertAndGetParent(TestGoalInput testGoal)
@@ -63,14 +68,15 @@ TestStatus TestGoalModel::testInsertAndGetParent(TestGoalInput testGoal)
     newGoal.setCreationTimeStamp(commonTestTimeStampValue);
     if (!testGoal.parentDescription.empty())
     {
-        UserGoalModel parentGoal;
-        if (!parentGoal.selectByUserIDAndDescription(userOne->getUserID(), testGoal.parentDescription))
+        GoalQueryProcessor goalQueryProcessor;
+        UserGoalModel_shp parentGoal = goalQueryProcessor.findGoalByUserIdAndExactDescription(userOne->getUserID(), testGoal.parentDescription);
+        if (parentGoal == nullptr)
         {
             std::cerr << "Failed to find Parent Goal! Test FAILED\n";
-            std::cerr << parentGoal.getAllErrorMessages() << "\n";
+            std::cerr << goalQueryProcessor.getAllErrorMessages() << "\n";
             return TESTFAILED;
         }
-        newGoal.setParentID(parentGoal.getGoalId());
+        newGoal.setParentID(parentGoal->getGoalId());
     }
 
     if (!newGoal.insert())
@@ -106,16 +112,17 @@ TestStatus TestGoalModel::testPositivePathGoalInsertions()
 
 TestStatus TestGoalModel::testPositivePathGetListofChildrenFromParent()
 {
-    UserGoalModel parentGoal;
-    if (!parentGoal.selectByUserIDAndDescription(userOne->getUserID(), "Get a Job in Software Engineering"))
+    GoalQueryProcessor goalQueryProcessor;
+    UserGoalModel_shp parentGoal = goalQueryProcessor.findGoalByUserIdAndExactDescription(userOne->getUserID(), "Get a Job in Software Engineering");
+    if (parentGoal == nullptr)
     {
         std::cerr << "Failed to find Parent Goal! Test FAILED\n";
-        std::cerr << parentGoal.getAllErrorMessages() << "\n";
+        std::cerr << goalQueryProcessor.getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 
     GoalQueryProcessor goalListTestInterface;
-    UserGoalList jobRelatedgoals = goalListTestInterface.getAllChildrenFromParent(parentGoal);
+    UserGoalList jobRelatedgoals = goalListTestInterface.getAllChildrenFromParent(*parentGoal);
 
     if (jobRelatedgoals.empty())
     {
@@ -126,9 +133,9 @@ TestStatus TestGoalModel::testPositivePathGetListofChildrenFromParent()
 
     if (programOptions.verboseOutput)
     {
-        std::cout << parentGoal << "\n";
-        std::cout << std::format("Find all child goals for({}) PASSED!\n", parentGoal.getGoalId());
-        std::cout << std::format("Goal {} has {} child goals\n", parentGoal.getGoalId(), jobRelatedgoals.size());
+        std::cout << *parentGoal << "\n";
+        std::cout << std::format("Find all child goals for({}) PASSED!\n", parentGoal->getGoalId());
+        std::cout << std::format("Goal {} has {} child goals\n", parentGoal->getGoalId(), jobRelatedgoals.size());
         for (auto goal: jobRelatedgoals)
         {
             std::cout << *goal << "\n";
@@ -247,9 +254,9 @@ TestStatus TestGoalModel::testPositivePathDeleteGoal()
 
 TestStatus TestGoalModel::testNegativePathAlreadyInDataBase()
 {
-    UserGoalModel_shp goalAlreadyInDB = std::make_shared<UserGoalModel>();
-    goalAlreadyInDB->setGoalId(1);
-    if (!goalAlreadyInDB->retrieve())
+    GoalQueryProcessor goalQueryProcessor;
+    UserGoalModel_shp goalAlreadyInDB = goalQueryProcessor.getGoalById(1);
+    if (goalAlreadyInDB == nullptr || !goalAlreadyInDB->isInDataBase())
     {
         std::cout << "Goal 1 not found in database!!\n";
         return TESTFAILED;
@@ -261,9 +268,9 @@ TestStatus TestGoalModel::testNegativePathAlreadyInDataBase()
 
 TestStatus TestGoalModel::testnegativePathNotModified()
 {
-    UserGoalModel_shp goalNotModified = std::make_shared<UserGoalModel>();
-    goalNotModified->setGoalId(1);
-    if (!goalNotModified->retrieve())
+    GoalQueryProcessor goalQueryProcessor;
+    UserGoalModel_shp goalNotModified = goalQueryProcessor.getGoalById(1);
+    if (goalNotModified == nullptr || !goalNotModified->isInDataBase())
     {
         std::cout << "Goal 1 not found in database!!\n";
         return TESTFAILED;

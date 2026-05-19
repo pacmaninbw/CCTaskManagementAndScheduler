@@ -4,6 +4,7 @@
 #include "TestDBInterfaceCore.h"
 #include "TestScheduleItemModel.h"
 #include "UserModel.h"
+#include "UserQueryProcessor.h"
 
 // Standard C++ Header Files
 #include <chrono>
@@ -44,8 +45,12 @@ TestScheduleItemModel::TestScheduleItemModel()
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testnegativePathNotModified, this));
     negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testNegativePathAlreadyInDataBase, this));
 
-    userOne = std::make_shared<UserModel>();
-    userOne->selectByFullName("One", "User", "P");
+    UserQueryProcessor userQueryProcessor;
+    userOne = userQueryProcessor.getUserByFullName("One", "User", "P");
+    if (userOne == nullptr || !userOne->isInDataBase())
+    {
+        std::cerr << std::format("TestScheduleItemModel.{}: {} {} FAILED\n", __func__, "userOne not found in database", userQueryProcessor.getAllErrorMessages());
+    }
 }
 
 TestStatus TestScheduleItemModel::testInsertScheduleItem(TestScheduleItemInput testScheduleItem)
@@ -100,10 +105,9 @@ TestStatus TestScheduleItemModel::testPositivePathUpdateScheduleItem()
 {
     TestStatus testStatus = TESTPASSED;
 
-    ScheduleItemModel_shp scheduleitemToUpdate = std::make_shared<ScheduleItemModel>();
-    scheduleitemToUpdate->setScheduleItemID(userOneFirstScheduleItem);
-    scheduleitemToUpdate->setUserID(userOne->getUserID());
-    if (!scheduleitemToUpdate->retrieve())
+    ScheduleItemQueryProcessor scheduleItemQueryProcessor(userOne->getUserID());
+    ScheduleItemModel_shp scheduleitemToUpdate = scheduleItemQueryProcessor.getScheduleItemById(userOneFirstScheduleItem);
+    if (!scheduleitemToUpdate->isInDataBase())
     {
         std::cout << "ScheduleItem 1 not found in database!!\n";
         return TESTFAILED;
@@ -260,12 +264,12 @@ TestStatus TestScheduleItemModel::testPositivePathFindLocationsToRepeatCompletio
 TestStatus TestScheduleItemModel::testPositivePathDeleteScheduleItem()
 {
     std::string funcUnderTest("Delete Schedule Item");
-    UserModel_shp realUserOne = std::make_shared<UserModel>();
-    realUserOne->selectByFullName("Black", "Paul", "A");
+    UserQueryProcessor userQueryProcessor;
+    UserModel_shp realUserOne = userQueryProcessor.getUserByFullName("Black", "Paul", "A");
 
-    if (!realUserOne->isInDataBase())
+    if (realUserOne == nullptr || !realUserOne->isInDataBase())
     {
-        std::cerr << std::format("{}: {} {} FAILED\n", funcUnderTest, "realUserOne not found in database", realUserOne->getAllErrorMessages());
+        std::cerr << std::format("{}: {} {} FAILED\n", funcUnderTest, "realUserOne not found in database", userQueryProcessor.getAllErrorMessages());
         return TESTFAILED;
     }
 
@@ -323,10 +327,9 @@ TestStatus TestScheduleItemModel::testPositivePathDeleteScheduleItem()
 
 TestStatus TestScheduleItemModel::testNegativePathAlreadyInDataBase()
 {
-    ScheduleItemModel_shp scheduleitemsAlreadyInDB = std::make_shared<ScheduleItemModel>();
-    scheduleitemsAlreadyInDB->setScheduleItemID(userOneFirstScheduleItem);
-    scheduleitemsAlreadyInDB->setUserID(userOne->getUserID());
-    if (!scheduleitemsAlreadyInDB->retrieve())
+    ScheduleItemQueryProcessor scheduleItemQueryProcessor(userOne->getUserID());
+    ScheduleItemModel_shp scheduleitemsAlreadyInDB = scheduleItemQueryProcessor.getScheduleItemById(userOneFirstScheduleItem);
+    if (!scheduleitemsAlreadyInDB->isInDataBase())
     {
         std::cout << "ScheduleItem 1 not found in database!!\n";
         return TESTFAILED;
@@ -338,10 +341,9 @@ TestStatus TestScheduleItemModel::testNegativePathAlreadyInDataBase()
 
 TestStatus TestScheduleItemModel::testnegativePathNotModified()
 {
-    ScheduleItemModel_shp scheduleitemsNotModified = std::make_shared<ScheduleItemModel>();
-    scheduleitemsNotModified->setScheduleItemID(userOneFirstScheduleItem);
-    scheduleitemsNotModified->setUserID(userOne->getUserID());
-    if (!scheduleitemsNotModified->retrieve())
+    ScheduleItemQueryProcessor scheduleItemQueryProcessor(userOne->getUserID());
+    ScheduleItemModel_shp scheduleitemsNotModified = scheduleItemQueryProcessor.getScheduleItemById(userOneFirstScheduleItem);
+    if (!scheduleitemsNotModified->isInDataBase())
     {
         std::cout << "ScheduleItem 1 not found in database!!\n";
         return TESTFAILED;
