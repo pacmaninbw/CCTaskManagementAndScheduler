@@ -325,10 +325,8 @@ std::string TaskQueryProcessor::formatDefaultTaskTableSelect(std::size_t assigne
 std::vector<ListExceptionTestElement> TaskQueryProcessor::initListExceptionTests() noexcept
 {
     std::vector<ListExceptionTestElement> exceptionTests;
-#if 0
     exceptionTests.push_back({std::bind(&TaskQueryProcessor::testExceptionGetByTaskID, this),
         "getTaskByTaskID"});
-#endif
     exceptionTests.push_back({std::bind(&TaskQueryProcessor::testExceptionGetByDescriptionAndAssignedUser, this),
         "getTaskByDescriptionAndAssignedUser"});
     exceptionTests.push_back({std::bind(&TaskQueryProcessor::testExceptionGetActiveTasksForAssignedUser, this),
@@ -345,14 +343,12 @@ std::vector<ListExceptionTestElement> TaskQueryProcessor::initListExceptionTests
     return exceptionTests;
 }
 
-#if 0
 TestStatus TaskQueryProcessor::testExceptionGetByTaskID() noexcept
 {
     selfTestResetAllValues();
 
-    return testListExceptionAndSuccessNArgs("TaskQueryProcessor::getTaskByTaskID", std::bind(&TaskQueryProcessor::getTaskByTaskID, this, std::placeholders::_1), 0);
+    return testExceptionAndSuccessNArgs("TaskQueryProcessor::getTaskByTaskID", std::bind(&TaskQueryProcessor::getTaskByTaskID, this, std::placeholders::_1), 0);
 }
-#endif
 
 TestStatus TaskQueryProcessor::testExceptionGetByDescriptionAndAssignedUser() noexcept
 {

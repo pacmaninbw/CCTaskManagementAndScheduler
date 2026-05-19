@@ -40,7 +40,7 @@ private:
 
 
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
-//    TestStatus testExceptionGetByTaskID() noexcept;
+    TestStatus testExceptionGetByTaskID() noexcept;
     TestStatus testExceptionGetByDescriptionAndAssignedUser() noexcept;
     TestStatus testExceptionGetActiveTasksForAssignedUser() noexcept;
     TestStatus testExceptionGetUnstartedDueForStartForAssignedUser() noexcept;
