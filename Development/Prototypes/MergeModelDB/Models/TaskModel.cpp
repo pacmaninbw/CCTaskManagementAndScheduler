@@ -410,18 +410,6 @@ std::string TaskModel::formatDeleteStatement()
     return boost::mysql::format_sql(format_opts.value(), "CALL HideTask({}, {})", creatorID, primaryKey);
 }
 
-std::string TaskModel::formatSelectStatement()
-{
-    errorMessages.clear();
-
-    initFormatOptions();
-    boost::mysql::format_context fctx(format_opts.value());
-    boost::mysql::format_sql_to(fctx, baseQuery);
-    boost::mysql::format_sql_to(fctx, " WHERE TaskID = {}", primaryKey);
-
-    return std::move(fctx).get().value();
-}
-
 void TaskModel::initRequiredFields()
 {
     missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingDescription, this), "description"});
@@ -471,61 +459,4 @@ std::string TaskModel::buildDependenciesText(std::vector<std::size_t>& dependenc
     return implodeTextField(dependencyStrings);
 }
 
-void TaskModel::processResultRow(boost::mysql::row_view rv)
-{
-    // Required fields.
-    primaryKey = rv.at(taskIdIdx).as_uint64();
-    creatorID = rv.at(createdByIdx).as_uint64();
-    assignToID = rv.at(assignedToIdx).as_uint64();
-    description = rv.at(descriptionIdx).as_string();
-    percentageComplete = rv.at(percentageCompleteIdx).as_double();
-    creationTimeStamp = boostMysqlDateTimeToChronoTimePoint(rv.at(createdOnIdx).as_datetime());
-    dueDate = boostMysqlDateToChronoDate(rv.at(requiredDeliveryIdx).as_date());
-    scheduledStart = boostMysqlDateToChronoDate(rv.at(scheduledStartIdx).as_date());
-    estimatedEffort = rv.at(estimatedEffortHoursIdx).as_uint64();
-    actualEffortToDate = rv.at(actualEffortHoursIdx).as_double();
-    priorityGroup = rv.at(schedulePriorityGroupIdx).as_uint64();
-    priority = rv.at(priorityInGroupIdx).as_uint64();
-    personal = rv.at(personalIdx).as_int64();
-    lastUpdate = boostMysqlDateTimeToChronoTimePoint(rv.at(lastUpdate_Idx).as_datetime());
-
-
-    // Optional fields.
-    if (!rv.at(parentTaskIdx).is_null())
-    {
-        parentTaskID = rv.at(parentTaskIdx).as_uint64();
-    }
-
-    if (!rv.at(statusIdx).is_null())
-    {
-        setStatus(static_cast<TaskModel::TaskStatus>(rv.at(statusIdx).as_uint64()));
-    }
-
-    if (!rv.at(actualStartIdx).is_null())
-    {
-        actualStartDate = boostMysqlDateToChronoDate(rv.at(actualStartIdx).as_date());
-    }
-
-    if (!rv.at(estimatedCompletionIdx).is_null())
-    {
-        estimatedCompletion = boostMysqlDateToChronoDate(rv.at(estimatedCompletionIdx).as_date());
-    }
-
-    if (!rv.at(completedIdx).is_null())
-    {
-        completionDate = boostMysqlDateToChronoDate(rv.at(completedIdx).as_date());
-    }
-
-    if (!rv.at(hidden_Idx).is_null())
-    {
-        deleted = rv.at(hidden_Idx).as_int64() == 1? true : false;
-    }
-
-    std::size_t dependencyCount = rv.at(dependencyCountIdx).as_uint64();
-    if (dependencyCount > 0)
-    {
-        std::string dependenciesText = rv.at(depenedenciesTextIdx).as_string();
-        addDependencies(dependenciesText);
-    }
-}
 
