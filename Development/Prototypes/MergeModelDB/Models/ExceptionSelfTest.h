@@ -58,7 +58,6 @@ protected:
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept = 0;
     virtual TestStatus testExceptionInsert() = 0;     // Should be added to the vector returned by initExceptionTests()
     virtual TestStatus testExceptionUpdate() = 0;     // Should be added to the vector returned by initExceptionTests()
-    virtual TestStatus testExceptionRetrieve() = 0;   // Should be added to the vector returned by initExceptionTests()
     virtual TestStatus testExceptionHide() = 0;   // Should be added to the vector returned by initExceptionTests()
 
 public:
