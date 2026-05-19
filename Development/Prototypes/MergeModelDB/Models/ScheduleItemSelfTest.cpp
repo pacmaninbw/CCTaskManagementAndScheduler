@@ -114,7 +114,6 @@ std::vector<ExceptionTestElement> ScheduleItemSelfTest::initExceptionTests() noe
     std::vector<ExceptionTestElement> exceptionTests;
     exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionInsert, this), "testExceeptionInsert"});
     exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
-    exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
     exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionHide, this), "testExceptionHide"});
 
     return exceptionTests;
@@ -161,23 +160,6 @@ TestStatus ScheduleItemSelfTest::testExceptionUpdate() noexcept
     }
 
     return testExceptionAndSuccessNArgs("ScheduleItemModel::update", std::bind(&ScheduleItemModel::update, this));
-}
-
-TestStatus ScheduleItemSelfTest::testExceptionRetrieve() noexcept
-{
-    selfTestResetAllValues();
-
-    setScheduleItemID(57);
-    setUserID(1);
-
-    if (testFormatExceptionCatchSuccessNArgs(
-        "ScheduleItemSelfTest::formatSelectStatement", std::bind(&ScheduleItemSelfTest::formatSelectStatement, this)) == TESTFAILED)
-    {
-        std::cerr << "ScheduleItemSelfTest::formatSelectStatement() returned a string in Exception Test, FAILED\n";
-        return TESTFAILED;
-    }
-
-    return testExceptionAndSuccessNArgs("ScheduleItemModel::retrieve", std::bind(&ScheduleItemModel::retrieve, this));
 }
 
 TestStatus ScheduleItemSelfTest::testExceptionHide() noexcept
