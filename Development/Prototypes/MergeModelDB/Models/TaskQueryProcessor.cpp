@@ -32,21 +32,7 @@ TaskModel_shp TaskQueryProcessor::getTaskByTaskID(std::size_t taskId) noexcept
         boost::mysql::format_sql_to(fctx, listQueryBase);
         boost::mysql::format_sql_to(fctx, " WHERE TaskID = {}", taskId);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
-        TaskList shouldHaveOnlyOne = processResults(localResult);
-
-        if (shouldHaveOnlyOne.empty())
-        {
-            appendErrorMessage(" Task not found!");
-            return found;
-        }
-
-        if (shouldHaveOnlyOne.size() > 1)
-        {
-            appendErrorMessage("Too many Tasks found to process!");
-            return found;
-        }
-
-        found = shouldHaveOnlyOne[0];
+        found = getOneResult(localResult);
     }
 
     catch(const std::exception& e)

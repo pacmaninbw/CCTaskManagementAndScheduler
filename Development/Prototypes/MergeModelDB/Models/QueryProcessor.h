@@ -63,13 +63,14 @@ protected:
     virtual std::shared_ptr<ListType> processResultRow(boost::mysql::row_view &queryRow) = 0;
 
 public:
-    QueryProcessor(std::string modelName, std::initializer_list<std::string> requiredColumns)
+    QueryProcessor(std::string modelname, std::initializer_list<std::string> requiredColumns)
     : CoreDBInterface()
     {
         /*
          * The listTypeName variable is used during testing and debugging.
          */
-        std::string tempListType = modelName;
+        modelName = modelname;
+        std::string tempListType(modelname);
         tempListType.append("QueryProcessor");
         listTypeName = tempListType;
 
@@ -247,6 +248,33 @@ protected:
         return queryResultValues;
     }
 
+    virtual std::shared_ptr<ListType> getOneResult(boost::mysql::results& localResult)
+    {
+        std::vector<std::shared_ptr<ListType>> shouldHaveOnlyOne = processResults(localResult);
+        std::shared_ptr<ListType> found = nullptr;
+
+        if (shouldHaveOnlyOne.empty())
+        {
+            std::string emsg(modelName);
+            emsg.append(" not found!");
+            appendErrorMessage(emsg);
+            return found;
+        }
+
+        if (shouldHaveOnlyOne.size() > 1)
+        {
+            std::string emsg("Too many ");
+            emsg.append(modelName);
+            emsg.append("s found to process!");
+            appendErrorMessage(emsg);
+            return found;
+        }
+
+        found = shouldHaveOnlyOne[0];
+
+        return found;
+    }
+
     virtual bool processStringOnlyResults(boost::mysql::results& results)
     {
         if (inSelfTest)
@@ -378,6 +406,7 @@ protected:
     static const std::size_t IndexNotSet = 0xffff;
 
     std::string listTypeName;
+    std::string modelName;
     std::vector<std::string> stringOnlyResults;
     std::vector<ColumnNameToIndexmapping> columnToIndexMap;
 };
