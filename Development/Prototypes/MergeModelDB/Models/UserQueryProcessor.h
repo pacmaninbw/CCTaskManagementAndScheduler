@@ -23,7 +23,6 @@ public:
     UserModel_shp getUserByLoginAndPassword(const std::string_view& loginName, const std::string_view& password) noexcept;
     UserModel_shp getUserByFullName(const std::string_view& lastName, const std::string_view& firstName,
         const std::string_view& middleI) noexcept;
-    std::string formatGetAllUsersQuery() noexcept;
 
 
 private:
@@ -32,6 +31,11 @@ private:
 
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
     TestStatus testExceptionsGetAllUsers() noexcept;
+    TestStatus testExceptionGetUserById() noexcept;
+    TestStatus testExceptionGetUserByLoginName() noexcept;
+    TestStatus testExceptionGetUserByEmail() noexcept;
+    TestStatus testExceptionGetUserByLoginAndPassword() noexcept;
+    TestStatus testExceptionGetUserByFullName() noexcept;
 
     std::size_t UserIdIdx = IndexNotSet;
     std::size_t OrganizationIdx = IndexNotSet;

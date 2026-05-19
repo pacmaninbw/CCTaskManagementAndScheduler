@@ -191,7 +191,12 @@ void UserQueryProcessor::fillRequiredIndexes()
 std::vector<ListExceptionTestElement> UserQueryProcessor::initListExceptionTests() noexcept 
 {
     std::vector<ListExceptionTestElement> exceptionTests;
-    exceptionTests.push_back({std::bind(&UserQueryProcessor::testExceptionsGetAllUsers, this), "selectByUserID"});
+    exceptionTests.push_back({std::bind(&UserQueryProcessor::testExceptionsGetAllUsers, this), "getAllUsers"});
+    exceptionTests.push_back({std::bind(&UserQueryProcessor::testExceptionGetUserById, this), "getUserByID"});
+    exceptionTests.push_back({std::bind(&UserQueryProcessor::testExceptionGetUserByLoginName, this), "getUserByLoginName"});
+    exceptionTests.push_back({std::bind(&UserQueryProcessor::testExceptionGetUserByEmail, this), "getUserByEmail"});
+    exceptionTests.push_back({std::bind(&UserQueryProcessor::testExceptionGetUserByLoginAndPassword, this), "getUserByLoginAndPassword"});
+    exceptionTests.push_back({std::bind(&UserQueryProcessor::testExceptionGetUserByFullName, this), "getUserByFullName"});
 
     return exceptionTests;
 }
@@ -203,3 +208,56 @@ TestStatus UserQueryProcessor::testExceptionsGetAllUsers() noexcept
     return testListExceptionAndSuccessNArgs("UserQueryProcessorSelfTest::testExceptionsGetAllUsers()", std::bind(&UserQueryProcessor::getAllUsers, this));
 }
 
+TestStatus UserQueryProcessor::testExceptionGetUserById() noexcept
+{
+    selfTestResetAllValues();
+
+    std::size_t testUser1 = 1;
+
+    return testExceptionAndSuccessNArgs("UserQueryProcessor::testExceptionGetUserById()",
+        std::bind(&UserQueryProcessor::getUserByID, this, std::placeholders::_1), testUser1);
+}
+
+TestStatus UserQueryProcessor::testExceptionGetUserByLoginName() noexcept
+{
+    selfTestResetAllValues();
+
+    std::string testUser1("UserOne");
+
+    return testExceptionAndSuccessNArgs("UserQueryProcessor::testExceptionGetUserByLoginName()",
+        std::bind(&UserQueryProcessor::getUserByLoginName, this, std::placeholders::_1), testUser1);
+}
+
+TestStatus UserQueryProcessor::testExceptionGetUserByEmail() noexcept
+{
+    selfTestResetAllValues();
+
+    std::string testUser1("UserOne@readyUserOne.com");
+
+    return testExceptionAndSuccessNArgs("UserQueryProcessor::testExceptionGetUserByEmail()",
+        std::bind(&UserQueryProcessor::getUserByEmail, this, std::placeholders::_1), testUser1);
+}
+
+TestStatus UserQueryProcessor::testExceptionGetUserByLoginAndPassword() noexcept
+{
+    selfTestResetAllValues();
+
+    std::string testUser1("UserOne");
+    std::string testPassword("testPassword");
+
+    return testExceptionAndSuccessNArgs("UserQueryProcessor::testExceptionGetUserByLoginAndPassword()",
+        std::bind(&UserQueryProcessor::getUserByLoginAndPassword, this, std::placeholders::_1, std::placeholders::_2), testUser1, testPassword);
+}
+
+TestStatus UserQueryProcessor::testExceptionGetUserByFullName() noexcept
+{
+    selfTestResetAllValues();
+
+    std::string testFirstName("First");
+    std::string testLastName("Last");
+    std::string testMiddleI("middle");
+
+    return testExceptionAndSuccessNArgs("UserQueryProcessor::testExceptionGetUserByFullName()",
+        std::bind(&UserQueryProcessor::getUserByFullName, this, std::placeholders::_1,
+            std::placeholders::_2, std::placeholders::_3), testFirstName, testLastName, testMiddleI);
+}
