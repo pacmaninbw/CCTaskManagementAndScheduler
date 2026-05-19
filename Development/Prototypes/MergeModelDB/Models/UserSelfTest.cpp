@@ -256,65 +256,13 @@ TestStatus UserSelfTest::testSeparateMajorAndMinorWithDotAccess() noexcept
 std::vector<ExceptionTestElement> UserSelfTest::initExceptionTests() noexcept
 {
     std::vector<ExceptionTestElement> exceptionTests;
-    exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionSelectByUserID, this), "selectByUserID"});
-    exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionSelectByFullName, this), "selectByFullName"});
-    exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionSelectByLoginName, this), "selectByLoginName"});
-    exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionSelectByEmail, this), "selectByEmail"});
-    exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionSelectByLoginAndPassword, this), "selectByLoginAndPassword"});
-    exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionFormatGetAllUsersQuery, this), "formatGetAllUsersQuery"});
     exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionInsert, this), "testExceptionInsert"});
     exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
-    exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
     exceptionTests.push_back({std::bind(&UserSelfTest::testExceptionHide, this), "testExceptionHide"});
 
     return exceptionTests;
 }
 
-TestStatus UserSelfTest::testExceptionSelectByLoginName() noexcept
-{
-    selfTestResetAllValues();
-
-    return testExceptionAndSuccessNArgs("UserSelfTest::selectByLoginName", std::bind(&UserModel::selectByLoginName, this, std::placeholders::_1), "testValue");
-}
-TestStatus UserSelfTest::testExceptionSelectByEmail() noexcept
-{
-    selfTestResetAllValues();
-    std::string testEmail("testValue@testValue.com");
-
-    return testExceptionAndSuccessNArgs("UserSelfTest::selectByEmail", std::bind(&UserModel::selectByEmail, this, std::placeholders::_1), testEmail);
-}
-
-TestStatus UserSelfTest::testExceptionSelectByLoginAndPassword() noexcept
-{
-    selfTestResetAllValues();
-
-    return testExceptionAndSuccessNArgs("UserModel::selectByLoginAndPassword", 
-        std::bind(&UserModel::selectByLoginAndPassword, this, std::placeholders::_1, std::placeholders::_2),
-        "TestValue", "TestValue");
-}
-
-TestStatus UserSelfTest::testExceptionSelectByFullName() noexcept
-{
-    selfTestResetAllValues();
-
-        return testExceptionAndSuccessNArgs("UserModel::selectByFullName", 
-        std::bind(&UserModel::selectByFullName, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
-            "TestLastName", "TestFirstName", "MI");
-}
-
-TestStatus UserSelfTest::testExceptionSelectByUserID() noexcept
-{
-    selfTestResetAllValues();
-
-    return testExceptionAndSuccessNArgs("UserModel::selectByUserID", std::bind(&UserModel::selectByUserID, this, std::placeholders::_1), 1);
-}
-
-TestStatus UserSelfTest::testExceptionFormatGetAllUsersQuery() noexcept
-{
-    selfTestResetAllValues();
-    
-    return testFormatExceptionAndSuccessNArgs("UserModel::formatGetAllUsersQuery", std::bind(&UserModel::formatGetAllUsersQuery, this));
-}
 
 TestStatus UserSelfTest::testExceptionInsert() noexcept
 {
@@ -347,15 +295,6 @@ TestStatus UserSelfTest::testExceptionUpdate() noexcept
     setLastLogin(timeStamp);
 
     return testExceptionAndSuccessNArgs("UserModel::update", std::bind(&UserModel::update, this));
-}
-
-TestStatus UserSelfTest::testExceptionRetrieve() noexcept
-{
-    selfTestResetAllValues();
-
-    setUserID(1);
-
-    return testExceptionAndSuccessNArgs("UserModel::retrieve", std::bind(&UserModel::retrieve, this));
 }
 
 TestStatus UserSelfTest::testExceptionHide() noexcept

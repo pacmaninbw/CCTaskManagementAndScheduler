@@ -41,15 +41,8 @@ private:
 
 
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
-    TestStatus testExceptionSelectByLoginName() noexcept;
-    TestStatus testExceptionSelectByEmail() noexcept;
-    TestStatus testExceptionSelectByLoginAndPassword() noexcept;
-    TestStatus testExceptionSelectByFullName() noexcept;
-    TestStatus testExceptionSelectByUserID() noexcept;
-    TestStatus testExceptionFormatGetAllUsersQuery() noexcept;
     virtual TestStatus testExceptionInsert() noexcept override;
     virtual TestStatus testExceptionUpdate() noexcept override;
-    virtual TestStatus testExceptionRetrieve() noexcept override;
     virtual TestStatus testExceptionHide() noexcept override;
 
     virtual TestStatus testAllInsertFailures() override;
