@@ -155,40 +155,11 @@ std::string ScheduleItemModel::formatDeleteStatement()
     return boost::mysql::format_sql(format_opts.value(), "CALL HideScheduleItem({}, {})", userID, primaryKey);
 }
 
-std::string ScheduleItemModel::formatSelectStatement()
-{
-    errorMessages.clear();
-
-    initFormatOptions();
-    boost::mysql::format_context fctx(format_opts.value());
-    boost::mysql::format_sql_to(fctx, baseQuery);
-    boost::mysql::format_sql_to(fctx, " WHERE idUserScheduleItem = {} AND UserID = {}", primaryKey, userID);
-    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
-
-    return std::move(fctx).get().value();
-}
-
 void ScheduleItemModel::initRequiredFields()
 {
     missingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingUserID, this), "User ID"});
     missingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingTitle, this), "Title"});
     missingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingStartTime, this), "Start Time"});
     missingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingEndTime, this), "End Time"});
-}
-
-void ScheduleItemModel::processResultRow(boost::mysql::row_view rv)
-{
-    primaryKey = rv.at(scheduleItemIdIdx).as_uint64();
-    userID = rv.at(userIdIdx).as_uint64();
-    startTime = boostMysqlDateTimeToChronoTimePoint(rv.at(startTimeIdx).as_datetime());
-    endTime = boostMysqlDateTimeToChronoTimePoint(rv.at(endTimeIdx).as_datetime());
-    title = rv.at(titleIdx).as_string();
-    if (!rv.at(locationIdx).is_null())
-    {
-        location = rv.at(locationIdx).as_string();
-    }
-    creationTimeStamp = boostMysqlDateTimeToChronoTimePoint(rv.at(createdOnIdx).as_datetime());
-    lastUpdate = boostMysqlDateTimeToChronoTimePoint(rv.at(lastUpdate_Idx).as_datetime());
-    personal = rv.at(personalIdx).as_int64();
 }
 

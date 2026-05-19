@@ -18,6 +18,7 @@ public:
     ScheduleItemQueryProcessor(std::size_t userId);
     virtual ~ScheduleItemQueryProcessor() = default;
 
+    ScheduleItemModel_shp getScheduleItemById(std::size_t eventId) noexcept;
     ScheduleItemList getUserDaySchedule(std::chrono::year_month_day scheduleDate) noexcept;
     ScheduleItemList findUserScheduleItemsByContentAndDateRange(std::string searchTitle,
         std::chrono::year_month_day searchStart, std::chrono::year_month_day searchEnd) noexcept;

@@ -14,6 +14,28 @@ ScheduleItemQueryProcessor::ScheduleItemQueryProcessor(std::size_t userId)
     userID = userId;
 }
 
+ScheduleItemModel_shp ScheduleItemQueryProcessor::getScheduleItemById(std::size_t eventId) noexcept
+{
+    errorMessages.clear();
+    ScheduleItemModel_shp found = nullptr;
+
+    try
+    {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserScheduleItem  WHERE idUserScheduleItem = {} AND (Hidden IS NULL OR Hidden <> 1)", eventId);
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        found = getOneResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In ScheduleItemQueryProcessor::{}({}) : {}", __func__, eventId, e.what()));
+    }
+
+    return found;
+}
+
 ScheduleItemList ScheduleItemQueryProcessor::getUserDaySchedule(std::chrono::year_month_day scheduleDate) noexcept
 {
     errorMessages.clear();

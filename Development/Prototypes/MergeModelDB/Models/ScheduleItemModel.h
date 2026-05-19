@@ -106,9 +106,7 @@ protected:
     virtual std::string formatInsertStatement() override;
     virtual std::string formatUpdateStatement() override;
     virtual std::string formatDeleteStatement() override;
-    virtual std::string formatSelectStatement() override;
     void initRequiredFields() override;
-    void processResultRow(boost::mysql::row_view rv) override;
 
  /*
   * Member Variables
@@ -127,27 +125,6 @@ protected:
     bool personal;
     static const std::size_t MinimumTitleLength = 3;
     std::optional<std::string> location;
-
-/*
- * The indexes below are based on the following select statement, maintain this order
- * baseQuery could be SELECT * FROM UserScheduleItem, but this way the order of the columns
- * returned are known.
- */
-    boost::mysql::constant_string_view baseQuery = "SELECT idUserScheduleItem, UserID, StartDateTime,"
-        " EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem ";
-
-    static const std::size_t scheduleItemIdIdx = 0;
-    static const std::size_t userIdIdx = 1;
-    static const std::size_t startTimeIdx = 2;
-    static const std::size_t endTimeIdx = 3;
-    static const std::size_t titleIdx = 4;
-    static const std::size_t personalIdx = 5;
-    static const std::size_t locationIdx = 6;
-    static const std::size_t createdOnIdx = 7;
-    static const std::size_t lastUpdate_Idx = 8;
-    static const std::size_t hidden_Idx = 9;
-
-    boost::mysql::constant_string_view listQueryBase = "SELECT idUserScheduleItem FROM UserScheduleItem ";
 };
 
 using ScheduleItemModel_shp = std::shared_ptr<ScheduleItemModel>;
