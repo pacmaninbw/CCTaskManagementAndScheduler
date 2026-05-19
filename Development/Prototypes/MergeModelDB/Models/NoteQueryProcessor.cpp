@@ -19,6 +19,28 @@ NoteQueryProcessor::NoteQueryProcessor()
 {
 }
 
+NoteModel_shp NoteQueryProcessor::getNoteById(std::size_t noteId) noexcept
+{
+    errorMessages.clear();
+    NoteModel_shp found = nullptr;
+
+    try
+    {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "CALL GetNoteByID({})", noteId);
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        found = getOneResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In NoteQueryProcessor::{}({}) : {}", __func__, noteId, e.what()));
+    }
+
+    return found;
+}
+
 NoteList NoteQueryProcessor::getAllNotesForUser(std::size_t userId) noexcept
 {
     errorMessages.clear();

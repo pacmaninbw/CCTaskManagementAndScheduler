@@ -42,11 +42,6 @@ public:
     void setDateAdded(std::chrono::system_clock::time_point created);
     void setLastModified(std::chrono::system_clock::time_point lastModification);
 /*
- * Select with arguments
- */
-    bool selectByNoteID(std::size_t noteID);
-
-/*
  * Required fields.
  */
     bool isMissingUserID()  { return userID == 0; };;
@@ -88,26 +83,11 @@ protected:
     std::string formatInsertStatement() override;
     std::string formatUpdateStatement() override;
     virtual std::string formatDeleteStatement() override;
-    std::string formatSelectStatement() override;
-
-    void processResultRow(boost::mysql::row_view rv) override;
     
     std::size_t userID;
     std::string content;
     std::optional<std::chrono::system_clock::time_point> creationDate;
     std::optional<std::chrono::system_clock::time_point> lastUpdate;
-
-
-protected:
-/*
- * The indexes below are based on the following select statement, maintain this order.
- * baseQuery could be SELECT * FROM UserProfile, but this way the order of the columns
- * returned are known.
- */
-    boost::mysql::constant_string_view baseQuery = 
-        "SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes ";
-
-    boost::mysql::constant_string_view listQueryBase = "SELECT idUserNotes FROM UserNotes ";
 };
 
 using NoteModel_shp = std::shared_ptr<NoteModel>;

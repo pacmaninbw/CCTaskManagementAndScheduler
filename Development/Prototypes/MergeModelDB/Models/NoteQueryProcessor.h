@@ -22,6 +22,7 @@ class NoteQueryProcessor : public QueryProcessor<NoteModel>
 public:
     NoteQueryProcessor();
     virtual ~NoteQueryProcessor() = default;
+    NoteModel_shp getNoteById(std::size_t noteId) noexcept;
     NoteList getAllNotesForUser(std::size_t userId) noexcept;
     NoteList getNotesForUserSimlarToContent(std::size_t userId, std::string likeContent) noexcept;
     NoteList getAllNotesForUserCreatedInDatgeRange(std::size_t userId,

@@ -103,43 +103,4 @@ std::string NoteModel::formatDeleteStatement()
     return boost::mysql::format_sql(format_opts.value(), "CALL HideNote({}, {})", userID, primaryKey);
 }
 
-std::string NoteModel::formatSelectStatement()
-{
-    initFormatOptions();
-
-    boost::mysql::format_context fctx(format_opts.value());
-    boost::mysql::format_sql_to(fctx, baseQuery);
-    boost::mysql::format_sql_to(fctx, " WHERE idUserNotes = {}", primaryKey);
-    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
-
-    return std::move(fctx).get().value();
-}
-
-void NoteModel::processResultRow([[maybe_unused]]boost::mysql::row_view rv)
-{
-}
-
-bool NoteModel::selectByNoteID(std::size_t noteID)
-{
-    errorMessages.clear();
-
-    try
-    {
-        initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, baseQuery);
-        boost::mysql::format_sql_to(fctx, " WHERE idUserNotes = {}", noteID);
-        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
-
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
-
-        return processResult(localResult);
-    }
-
-    catch(const std::exception& e)
-    {
-        appendErrorMessage(std::format("In NoteModel::selectByNoteID : {}", e.what()));
-        return false;
-    }
-}
 
