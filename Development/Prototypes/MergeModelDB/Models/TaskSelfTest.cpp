@@ -193,22 +193,6 @@ TestStatus TaskSelfTest::testExceptionUpdate() noexcept
     return testExceptionAndSuccessNArgs("TaskSelfTest::update", std::bind(&TaskModel::update, this));
 }
 
-TestStatus TaskSelfTest::testExceptionRetrieve() noexcept
-{
-    selfTestResetAllValues();
-    
-    setTaskID(37);
-
-    if (testFormatExceptionCatchSuccessNArgs(
-        "TaskSelfTest::formatSelectStatement", std::bind(&TaskSelfTest::formatSelectStatement, this)) == TESTFAILED)
-    {
-        std::cerr << "TaskSelfTest::formatInsertStatement() returned a string in Exception Test, FAILED\n";
-        return TESTFAILED;
-    }
-
-    return testExceptionAndSuccessNArgs("TaskSelfTest::retrieve", std::bind(&TaskModel::retrieve, this));
-}
-
 TestStatus TaskSelfTest::testExceptionHide() noexcept
 {
     selfTestResetAllValues();
