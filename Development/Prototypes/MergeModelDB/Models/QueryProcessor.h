@@ -403,6 +403,27 @@ protected:
         return TESTPASSED;
     }
 
+    template <typename F, typename... Ts>
+    requires std::is_invocable_v<F, Ts...>
+    TestStatus testExceptionAndSuccessNArgs(const char* funcName, F funcUnderTest, Ts... args) noexcept
+    {
+        CoreDBInterface::forceException = true;
+        if (funcUnderTest(args...))
+        {
+            return testListExceptionReportFailure(false, true, funcName);
+        }
+
+        CoreDBInterface::forceException = false;
+        if (!funcUnderTest(args...))
+        {
+            return testListExceptionReportFailure(true, true, funcName);
+        }
+
+        return TESTPASSED;
+    }
+
+
+
     static const std::size_t IndexNotSet = 0xffff;
 
     std::string listTypeName;
