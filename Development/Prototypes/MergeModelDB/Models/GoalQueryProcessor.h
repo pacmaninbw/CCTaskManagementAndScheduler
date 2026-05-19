@@ -17,6 +17,8 @@ public:
     GoalQueryProcessor();
     virtual ~GoalQueryProcessor() = default;
 
+    UserGoalModel_shp getGoalById(std::size_t goalId) noexcept;
+    UserGoalModel_shp findGoalByUserIdAndExactDescription(std::size_t userID, std::string searchString) noexcept;
     UserGoalList getAllGoalsForUser(std::size_t userID) noexcept;
     UserGoalList getAllChildrenFromParent(UserGoalModel parentGoal) noexcept;
     UserGoalList findGoalsByUserIdAndSimilarDescription(std::size_t userID, std::string searchString) noexcept;

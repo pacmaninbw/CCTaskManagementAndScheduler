@@ -41,16 +41,6 @@ public:
     void setPriority(unsigned int newPriority);
     void setParentID(std::size_t newParentID);
     void setCreationTimeStamp(std::chrono::system_clock::time_point newCreationTS);
-/*
- * Select with arguments
- */
-    bool selectByGoalID(std::size_t goalID);
-    bool selectByUserIDAndDescription(std::size_t userID, std::string targetDesciption);
-    std::string formatSelectAllByUserId(std::size_t userId);
-    std::string formatSelectAllChildGoalsWithParentFromUser(std::size_t parentId, std::size_t userId);
-    std::string formatSelectAllChildGoalsWithParent(UserGoalModel& parentGoal);
-    std::string formatSelectByExactDescription(std::string fullDescription, std::size_t userId);
-    std::string formatSelectBySimilarDescription(std::string partialDescription, std::size_t userId);
 
 /*
  * Required fields.
@@ -58,6 +48,7 @@ public:
     bool isMissingUserID()  { return userID == 0; };
     bool isMissingDescription() { return (description.empty() || description.size() < 10); };
     void initRequiredFields() override;
+
 
     bool operator==(UserGoalModel& other)
     {
@@ -67,6 +58,7 @@ public:
     {
         return diffGoal(*other);
     }
+
 
     friend std::ostream& operator<<(std::ostream& os, const UserGoalModel& goal)
     {
@@ -92,11 +84,11 @@ public:
 
 protected:
     bool diffGoal(UserGoalModel& other);
-    void processResultRow(boost::mysql::row_view rv) override;
+//    void processResultRow(boost::mysql::row_view rv) override;
     std::string formatInsertStatement() override;
     std::string formatUpdateStatement() override;
     std::string formatDeleteStatement() override;
-    std::string formatSelectStatement() override;
+//    std::string formatSelectStatement() override;
     
     std::size_t userID;
     std::string description;
@@ -109,24 +101,6 @@ protected:
  */
     std::optional<std::chrono::system_clock::time_point> creationDate;
     std::chrono::system_clock::time_point lastUpdate;
-
-private:
-/*
- * The indexes below are based on the following select statement, maintain this order.
- */
-    boost::mysql::constant_string_view baseQuery = 
-        "SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals ";
-
-    static const std::size_t GoalIdIdx = 0;
-    static const std::size_t UserIdIdx = 1;
-    static const std::size_t DescriptionIdx = 2;
-    static const std::size_t CreationTSIdx = 3;
-    static const std::size_t LastUpdateIdx = 4;
-    static const std::size_t PriorityIdx = 5;
-    static const std::size_t ParentGoalIDIdx = 6;
-    static const std::size_t HiddenIdx = 6;
-
-    boost::mysql::constant_string_view listQueryBase = "SELECT idUserGoals FROM UserGoals ";
 };
 
 using UserGoalModel_shp = std::shared_ptr<UserGoalModel>;

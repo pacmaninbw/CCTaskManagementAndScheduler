@@ -12,6 +12,52 @@ GoalQueryProcessor::GoalQueryProcessor()
 {
 }
 
+UserGoalModel_shp GoalQueryProcessor::getGoalById(std::size_t goalId) noexcept
+{
+    errorMessages.clear();
+    UserGoalModel_shp found = nullptr;
+
+    try
+    {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserGoals  WHERE idUserGoals = {}", goalId);
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        found = getOneResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserQueryProcessor::{}({}) : {}", __func__, goalId, e.what()));
+    }
+
+    return found;
+}
+
+UserGoalModel_shp GoalQueryProcessor::findGoalByUserIdAndExactDescription(std::size_t userId, std::string fullDescription) noexcept
+{
+    errorMessages.clear();
+    UserGoalModel_shp found = nullptr;
+
+    try
+    {
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserGoals");
+        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Description = {}", userId, fullDescription);
+        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        found = getOneResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserQueryProcessor::{}({}, {}) : {}", __func__, userId, fullDescription, e.what()));
+    }
+
+    return found;
+}
+
 UserGoalList GoalQueryProcessor::getAllGoalsForUser(std::size_t userID) noexcept
 {
     errorMessages.clear();
