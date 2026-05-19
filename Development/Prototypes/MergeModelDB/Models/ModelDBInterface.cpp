@@ -116,26 +116,6 @@ bool ModelDBInterface::update() noexcept
     }
 }
 
-#if 0
-bool ModelDBInterface::retrieve() noexcept
-{
-    errorMessages.clear();
-
-    try
-    {
-        boost::mysql::results localResult = runQueryAsync(formatSelectStatement());
-
-        return processResult(localResult);
-    }
-
-    catch(const std::exception& e)
-    {
-        appendErrorMessage(std::format("In {}.retrieve() : {}", modelName, e.what()));
-        return false;
-    }
-}
-#endif
-
 bool ModelDBInterface::hide([[maybe_unused]]std::size_t userRequestingDelete) noexcept
 {
     errorMessages.clear();
@@ -192,33 +172,6 @@ void ModelDBInterface::reportMissingFields() noexcept
         }
     }
 }
-
-#if 0
-bool ModelDBInterface::processResult(boost::mysql::results& results)
-{
-    if (inSelfTest)
-    {
-        return true;
-    }
-
-    if (results.rows().empty())
-    {
-        appendErrorMessage(std::format("{} not found!", modelName));
-        return false;
-    }
-
-    if (results.rows().size() > 1)
-    {
-        appendErrorMessage(std::format("Too many {}s found to process!", modelName));
-        return false;
-    }
-
-    boost::mysql::row_view rv = results.rows().at(0);
-    processResultRow(rv);
-
-    return true;
-}
-#endif
 
 std::vector<std::string> ModelDBInterface::explodeTextField(std::string const& textField) noexcept
 {

@@ -50,24 +50,12 @@ protected:
     virtual std::string formatInsertStatement() = 0;
     virtual std::string formatUpdateStatement() = 0;
     virtual std::string formatDeleteStatement() = 0;
-//    virtual std::string formatSelectStatement() = 0;
-//    virtual bool processResult(boost::mysql::results& results);
-/*
- * RESULT PROCESSING
- */
-/*
- * Each model must provide the process by which the database information will
- * be translated into the specific model.
- */
-//    virtual void processResultRow(boost::mysql::row_view rv) = 0;
-
 
 /*
  * To process TEXT fields that contain model fields.
  */
     std::vector<std::string> explodeTextField(std::string const& textField) noexcept;
     std::string implodeTextField(std::vector<std::string>& fields) noexcept;
-
 
 /*
  * Get the primary key value after a record is inserted in the database.
