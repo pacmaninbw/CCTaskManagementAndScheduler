@@ -209,19 +209,6 @@ std::string ScheduleItemQueryProcessor::formatSelectSiByContentDateRangeUser(
     return std::move(fctx).get().value();
 }
 
-std::string ScheduleItemQueryProcessor::formatSelectSiByContentAndUserSortByContent(std::string content, std::size_t userId)
-{
-    initFormatOptions();
-    boost::mysql::format_context fctx(format_opts.value());
-    boost::mysql::format_sql_to(fctx, "SELECT * FROM UserScheduleItem ");
-    boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
-    boost::mysql::format_sql_to(fctx, " AND Title LIKE {}", wrapSearchContentSQLPatternMatch(content));
-    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
-    boost::mysql::format_sql_to(fctx, " ORDER BY Title");
-
-    return std::move(fctx).get().value();
-}
-
 std::string ScheduleItemQueryProcessor::formatGetUniqueContentsByUserSortByContent(std::string content, std::size_t userId)
 {
     initFormatOptions();
@@ -287,6 +274,7 @@ std::vector<ListExceptionTestElement> ScheduleItemQueryProcessor::initListExcept
 {
     std::vector<ListExceptionTestElement> exceptionTests;
     exceptionTests.push_back({std::bind(&ScheduleItemQueryProcessor::testExceptionGetUserDaySchedule, this), "getUserDaySchedule"});
+    exceptionTests.push_back({std::bind(&ScheduleItemQueryProcessor::testExceptionGetScheduleItemByID, this), "getScheduleItemById"});
     exceptionTests.push_back({std::bind(&ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByContentAndDateRange, this),
         "findUserScheduleItemsByContentAndDateRange"});
     exceptionTests.push_back({std::bind(&ScheduleItemQueryProcessor::testExceptionFindEventSToRepeat, this), "findEventSToRepeat"});
@@ -344,3 +332,13 @@ TestStatus ScheduleItemQueryProcessor::testExceptionFindLocationsForRepeatComple
          std::bind(&ScheduleItemQueryProcessor::findLocationsForRepeatCompletion, this));
 }
 
+TestStatus ScheduleItemQueryProcessor::testExceptionGetScheduleItemByID() noexcept
+{
+    selfTestResetAllValues();
+
+    std::size_t eventId = 1;
+
+    return testExceptionAndSuccessNArgs("ScheduleItemQueryProcessor::testExceptionGetScheduleItemByID()",
+         std::bind(&ScheduleItemQueryProcessor::getScheduleItemById, this, std::placeholders::_1), 
+        eventId);
+}
