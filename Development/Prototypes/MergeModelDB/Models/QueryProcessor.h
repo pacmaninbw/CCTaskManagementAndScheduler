@@ -359,6 +359,9 @@ protected:
         return testAllExceptionHandling;
     }
 
+    /*
+     * Report any failures in an exception test.
+     */
     TestStatus testListExceptionReportFailure(bool expectSuccess, bool isBool, const char* testExceptionFuncName) noexcept
     {
         std::string reportFailure = std::format("In {}::{}: ", listTypeName, testExceptionFuncName);
@@ -380,6 +383,11 @@ protected:
         return TESTFAILED;
     }
 
+    /*
+     * Preform an exception test on any function that returns a vector of shared
+     * pointers of a model. Used to exercise as many paths through a function as
+     * possible for unit testing (self testing).
+     */
     template <typename F, typename... Ts>
     requires std::is_invocable_v<F, Ts...>
     TestStatus testListExceptionAndSuccessNArgs(const char* funcName, F funcUnderTest, Ts... args) noexcept
@@ -403,6 +411,11 @@ protected:
         return TESTPASSED;
     }
 
+    /*
+     * Preform an exception test on any function that returns a single shared
+     * pointer of a model. Used to exercise as many paths through a function as
+     * possible for unit testing (self testing).
+     */
     template <typename F, typename... Ts>
     requires std::is_invocable_v<F, Ts...>
     TestStatus testExceptionAndSuccessNArgs(const char* funcName, F funcUnderTest, Ts... args) noexcept
