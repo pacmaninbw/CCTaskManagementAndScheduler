@@ -181,17 +181,6 @@ std::string GoalQueryProcessor::formatSelectAllChildGoalsWithParent(UserGoalMode
     return formatSelectAllChildGoalsWithParentFromUser(parentGoal.getGoalId(), parentGoal.getUserId());
 }
 
-std::string GoalQueryProcessor::formatSelectByExactDescription(std::string fullDescription, std::size_t userId)
-{
-    initFormatOptions();
-    boost::mysql::format_context fctx(format_opts.value());
-    boost::mysql::format_sql_to(fctx, "SELECT * FROM UserGoals ");
-    boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Description = {}", userId, fullDescription);
-    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
-
-    return std::move(fctx).get().value();
-}
-
 std::string GoalQueryProcessor::formatSelectBySimilarDescription(std::string partialDescription, std::size_t userId)
 {
     initFormatOptions();
@@ -207,9 +196,11 @@ std::string GoalQueryProcessor::formatSelectBySimilarDescription(std::string par
 std::vector<ListExceptionTestElement> GoalQueryProcessor::initListExceptionTests() noexcept
 {
     std::vector<ListExceptionTestElement> exceptionTests;
+    exceptionTests.push_back({std::bind(&GoalQueryProcessor::testExceptionGetGoalByGoalID, this), "getGoalById"});
     exceptionTests.push_back({std::bind(&GoalQueryProcessor::testExceptionsGetAllGoalsForUser, this), "getAllGoalsForUser"});
     exceptionTests.push_back({std::bind(&GoalQueryProcessor::testExceptionsGetAllChildrenFromParent, this), "selectAllChildGoalsWithParentFromUser"});
     exceptionTests.push_back({std::bind(&GoalQueryProcessor::testExceptionsFindGoalsWithSimilarDescription, this), "findGoalsByUserIdAndSimilarDescription"});
+    exceptionTests.push_back({std::bind(&GoalQueryProcessor::testExceptionFindGoalByUserIDAndDescription, this), "findGoalByUserIdAndExactDescription"});
 
     return exceptionTests;
 }
@@ -245,4 +236,24 @@ TestStatus GoalQueryProcessor::testExceptionsFindGoalsWithSimilarDescription() n
          std::bind(&GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription, this, std::placeholders::_1, std::placeholders::_2),
          userId, searchString);
 }
+
+TestStatus GoalQueryProcessor::testExceptionGetGoalByGoalID() noexcept
+{
+    selfTestResetAllValues();
+
+    return testExceptionAndSuccessNArgs("GoalQueryProcessor::getGoalById", std::bind(&GoalQueryProcessor::getGoalById, this, std::placeholders::_1), 1);
+}
+
+TestStatus GoalQueryProcessor::testExceptionFindGoalByUserIDAndDescription() noexcept
+{
+    selfTestResetAllValues();
+
+    std::size_t testUserId = 1;
+    std::string testDescription("Test SelectByUserIDAndDescription Exception Handling");
+
+    return testExceptionAndSuccessNArgs("GoalQueryProcessor::findGoalByUserIdAndExactDescription",
+        std::bind(&GoalQueryProcessor::findGoalByUserIdAndExactDescription,
+        this, std::placeholders::_1, std::placeholders::_2), testUserId, testDescription);
+}
+
 

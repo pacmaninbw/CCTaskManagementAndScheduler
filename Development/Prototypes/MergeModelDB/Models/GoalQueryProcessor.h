@@ -29,13 +29,14 @@ private:
     std::string formatSelectAllByUserId(std::size_t userId);
     std::string formatSelectAllChildGoalsWithParentFromUser(std::size_t parentId, std::size_t userId);
     std::string formatSelectAllChildGoalsWithParent(UserGoalModel& parentGoal);
-    std::string formatSelectByExactDescription(std::string fullDescription, std::size_t userId);
     std::string formatSelectBySimilarDescription(std::string partialDescription, std::size_t userId);
 
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
     TestStatus testExceptionsGetAllGoalsForUser() noexcept;
     TestStatus testExceptionsGetAllChildrenFromParent() noexcept;
     TestStatus testExceptionsFindGoalsWithSimilarDescription() noexcept;
+    TestStatus testExceptionGetGoalByGoalID() noexcept;
+    TestStatus testExceptionFindGoalByUserIDAndDescription() noexcept;
 
     std::size_t GoalIdIdx = IndexNotSet;
     std::size_t UserIdIdx = IndexNotSet;
