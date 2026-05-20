@@ -208,6 +208,7 @@ NoteModel_shp NoteQueryProcessor::processResultRow(boost::mysql::row_view &noteQ
 std::vector<ListExceptionTestElement> NoteQueryProcessor::initListExceptionTests() noexcept 
 {
     std::vector<ListExceptionTestElement> exceptionTests;
+    exceptionTests.push_back({std::bind(&NoteQueryProcessor::testExceptionGetNoteByID, this), "getNoteById"});
     exceptionTests.push_back({std::bind(&NoteQueryProcessor::testExceptionsGetAllNotes, this), "getAllNotesForUser"});
     exceptionTests.push_back({std::bind(&NoteQueryProcessor::testExceptionsGetNotesForUserLikeContent, this), "getNotesForUserSimlarToContent"});
     exceptionTests.push_back({std::bind(&NoteQueryProcessor::testExceptionsGetNotesForUserCreatedDateRange, this), "getAllNotesForUserCreatedInDatgeRange"});
@@ -215,6 +216,14 @@ std::vector<ListExceptionTestElement> NoteQueryProcessor::initListExceptionTests
     exceptionTests.push_back({std::bind(&NoteQueryProcessor::testExceptionsGetDashboardNoteTable, this), "testExceptionsGetDashboardNoteTable"});
 
     return exceptionTests;
+}
+
+TestStatus NoteQueryProcessor::testExceptionGetNoteByID() noexcept
+{
+    selfTestResetAllValues();
+
+    return testExceptionAndSuccessNArgs("NoteQueryProcessor::getNoteById",
+         std::bind(&NoteQueryProcessor::getNoteById, this, std::placeholders::_1), 1);
 }
 
 TestStatus NoteQueryProcessor::testExceptionsGetAllNotes() noexcept

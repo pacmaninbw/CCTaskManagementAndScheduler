@@ -37,6 +37,7 @@ private:
     virtual NoteModel_shp processResultRow(boost::mysql::row_view& noteQueryRow) override;
 
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
+    TestStatus testExceptionGetNoteByID() noexcept;
     TestStatus testExceptionsGetAllNotes() noexcept;
     TestStatus testExceptionsGetNotesForUserLikeContent() noexcept;
     TestStatus testExceptionsGetNotesForUserCreatedDateRange() noexcept;
