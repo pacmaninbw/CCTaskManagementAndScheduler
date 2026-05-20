@@ -8,7 +8,14 @@
 #include <iostream>
 
 UserQueryProcessor::UserQueryProcessor()
-: QueryProcessor<UserModel>("User", {"UserID", "Organization_ID", "LastName", "FirstName", "MiddleInitial",  "EmailAddress", "LoginName", "HashedPassWord", "UserAdded", "LastLogin", "Preferences", "Hidden"})
+: QueryProcessor<UserModel>(
+    "User",
+    {
+        "UserID", "Organization_ID", "LastName", "FirstName", "MiddleInitial", 
+        "EmailAddress", "LoginName", "HashedPassWord", "UserAdded", "LastLogin",
+        "Preferences", "Hidden"
+    }
+)
 {
 
 }
@@ -188,6 +195,9 @@ void UserQueryProcessor::fillRequiredIndexes()
     assignValueToIndex("Hidden", HiddenIdx);
 }
 
+/*
+ * Unit Test / Self Test
+ */
 std::vector<ListExceptionTestElement> UserQueryProcessor::initListExceptionTests() noexcept 
 {
     std::vector<ListExceptionTestElement> exceptionTests;
