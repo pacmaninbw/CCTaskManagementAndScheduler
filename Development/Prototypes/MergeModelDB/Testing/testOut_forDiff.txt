@@ -1,3 +1,4 @@
+Connected to testPTSDB
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
@@ -61,7 +62,6 @@ Running Task Self Test
 Running Exception Handling Test Cases
 Caught expected exception from TaskModel::formatInsertStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 Caught expected exception from TaskSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
-Caught expected exception from TaskSelfTest::formatSelectStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 
 
 Running self test on set and get functions for Task::Primary Key
@@ -126,7 +126,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-05-15
+	Completed Date: 2026-05-20
 	Deleted : FALSE
 
 Common Insertion Failure Test PASSED!
@@ -201,7 +201,6 @@ Running ScheduleItem Self Test
 Running Exception Handling Test Cases
 Caught expected exception from ScheduleItemSelfTest::formatInsertStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 Caught expected exception from ScheduleItemSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
-Caught expected exception from ScheduleItemSelfTest::formatSelectStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 
 
 Running self test on set and get functions for ScheduleItem::Primary Key
@@ -255,6 +254,8 @@ Running TaskQueryProcessor Self Test
 
 
 Running Exception Handling Test Cases TaskQueryProcessor
+
+Exception Test for TaskQueryProcessor::getTaskByDescriptionAndAssignedUser
 
 Exception Test for TaskQueryProcessor::testExceptionGetActiveTasksForAssignedUser()
 
@@ -364,8 +365,3 @@ All positive path tests for database insertions and retrievals of ScheduleItem P
 All negative path tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
-finished Unit and Integration testing of all models MySQL database
-Fri May 15 05:53:56 2026
-elapsed time in seconds: 1.07838
-
-

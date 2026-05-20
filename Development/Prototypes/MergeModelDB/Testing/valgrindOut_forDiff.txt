@@ -13,21 +13,9 @@ Running User Self Test
 
 Running Exception Handling Test Cases
 In Self Test Query is: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 1
-In Self Test Query is: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LastName = 'TestLastName' AND FirstName = 'TestFirstName' AND MiddleInitial = 'MI'
-In Self Test Query is: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'testValue'
-In Self Test Query is: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE EmailAddress = 'testValue@testValue.com'
-In Self Test Query is: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'TestValue' AND HashedPassWord = 'TestValue'
-In Self Test Query is: 
 	CALL AddUser(NULL, 'LastName', 'FirstName', 'M', 'FirstName.LastName@LastName.com', 'LastNameFirstNameM', 'LastNameFirstNameM', '8:30 AM;5:00 PM;1;1;1;0;')
 In Self Test Query is: 
 	CALL UpdateUserAllFields(1, NULL, 'LastName', 'FirstName', 'M', 'FirstName.LastName@LastName.com', 'LastNameFirstNameM', 'LastNameFirstNameM', '8:30 AM;5:00 PM;1;1;1;0;', '2024-05-14 08:31:53.000000')
-In Self Test Query is: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 1
 In Self Test Query is: 
 	CALL HideUser(1)
 
@@ -95,19 +83,12 @@ Running Task Self Test
 
 
 Running Exception Handling Test Cases
-In Self Test Query is: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 0
-In Self Test Query is: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'A task description' AND AsignedTo = 1 AND (Hidden IS NULL OR Hidden <> 1)
 Caught expected exception from TaskModel::formatInsertStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
 	CALL AddTask(1, 2, 'Testing Exception handling', 1, 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 6, 0e+00, 65, 1, 0, 3, '3;5;7;')
 Caught expected exception from TaskSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
 	CALL UpdateTaskAllFields(1, 1, 2, 'Testing Exception handling', NULL, 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 6, 0e+00, 65, 1, 0, 3, '2;4;6;')
-Caught expected exception from TaskSelfTest::formatSelectStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
-In Self Test Query is: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 37
 In Self Test Query is: 
 	CALL HideTask(1, 53)
 
@@ -174,7 +155,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-05-15
+	Completed Date: 2026-05-20
 	Deleted : FALSE
 
 Task::testAllInsertFailures before successful insert this = 
@@ -209,15 +190,9 @@ Running UserGoalModel Self Test
 
 Running Exception Handling Test Cases
 In Self Test Query is: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
-In Self Test Query is: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 1 and Description = 'Test SelectByUserIDAndDescription Exception Handling' AND (Hidden IS NULL OR Hidden <> 1)
-In Self Test Query is: 
 	CALL AddUserGoal(27, 'Testing insertion exception', NULL, NULL)
 In Self Test Query is: 
 	CALL UpdateUserGoalAllFields(23, 37, 'Testing insertion exception', NULL, NULL)
-In Self Test Query is: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
 In Self Test Query is: 
 	CALL HideGoal(1, 1)
 
@@ -264,13 +239,9 @@ Running Note Self Test
 
 Running Exception Handling Test Cases
 In Self Test Query is: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
-In Self Test Query is: 
 	CALL AddUserNote(27, 'Testing insertion exception')
 In Self Test Query is: 
 	CALL UpdateNoteAllFields(27, 1, 'Testing insertion exception')
-In Self Test Query is: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
 In Self Test Query is: 
 	CALL HideNote(27, 1)
 
@@ -314,9 +285,6 @@ In Self Test Query is:
 Caught expected exception from ScheduleItemSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
 	CALL UpdateScheduleItemAllFields(1, 57, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Testing Exception handling for Schedule Item Update', 0, NULL)
-Caught expected exception from ScheduleItemSelfTest::formatSelectStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
-In Self Test Query is: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 57 AND UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
 In Self Test Query is: 
 	CALL HideScheduleItem(1, 57)
 
@@ -378,6 +346,16 @@ Running Exception Handling Test Cases UserQueryProcessor
 Exception Test for UserQueryProcessorSelfTest::testExceptionsGetAllUsers()
 In Self Test Query is: 
 	SELECT * FROM UserProfile 
+In Self Test Query is: 
+	SELECT * FROM UserProfile WHERE UserID = 1
+In Self Test Query is: 
+	SELECT * FROM UserProfile WHERE LoginName = 'UserOne'
+In Self Test Query is: 
+	SELECT * FROM UserProfile WHERE EmailAddress = 'UserOne@readyUserOne.com'
+In Self Test Query is: 
+	SELECT * FROM UserProfile WHERE LoginName = 'UserOne' AND HashedPassWord = 'testPassword'
+In Self Test Query is: 
+	SELECT * FROM UserProfile WHERE LastName = 'First' AND FirstName = 'Last' AND MiddleInitial = 'middle'
 
 
 UserQueryProcessor PASSED Self Test
@@ -389,6 +367,12 @@ Running TaskQueryProcessor Self Test
 
 
 Running Exception Handling Test Cases TaskQueryProcessor
+In Self Test Query is: 
+	SELECT * FROM Tasks  WHERE TaskID = 0
+
+Exception Test for TaskQueryProcessor::getTaskByDescriptionAndAssignedUser
+In Self Test Query is: 
+	SELECT * FROM Tasks  WHERE Description = 'A task description' AND AsignedTo = 1 AND (Hidden IS NULL OR Hidden <> 1)
 
 Exception Test for TaskQueryProcessor::testExceptionGetActiveTasksForAssignedUser()
 In Self Test Query is: 
@@ -396,7 +380,7 @@ In Self Test Query is:
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	SELECT * FROM Tasks  WHERE AsignedTo = 1 AND ScheduledStart < '2026-05-22' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE AsignedTo = 1 AND ScheduledStart < '2026-05-27' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 
 Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
 In Self Test Query is: 
@@ -420,6 +404,8 @@ Running UserGoalModelQueryProcessor Self Test
 
 
 Running Exception Handling Test Cases UserGoalModelQueryProcessor
+In Self Test Query is: 
+	SELECT * FROM UserGoals  WHERE idUserGoals = 1
 
 Exception Test for GoalQueryProcessor::testExceptionsGetAllGoalsForUser()
 In Self Test Query is: 
@@ -432,6 +418,8 @@ In Self Test Query is:
 Exception Test for GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription()
 In Self Test Query is: 
 	SELECT * FROM UserGoals  WHERE UserID = 1 AND Description LIKE '%Maintain%' AND (Hidden IS NULL OR Hidden <> 1)
+In Self Test Query is: 
+	SELECT * FROM UserGoals WHERE UserID = 1 AND Description = 'Test SelectByUserIDAndDescription Exception Handling' AND (Hidden IS NULL OR Hidden <> 1)
 
 
 UserGoalModelQueryProcessor PASSED Self Test
@@ -443,6 +431,8 @@ Running NoteModelQueryProcessor Self Test
 
 
 Running Exception Handling Test Cases NoteModelQueryProcessor
+In Self Test Query is: 
+	CALL GetNoteByID(1)
 
 Exception Test for NoteQueryProcessor::testExceptionsGetAllNotes()
 In Self Test Query is: 
@@ -478,6 +468,8 @@ Running Exception Handling Test Cases ScheduleItemQueryProcessor
 Exception Test for ScheduleItemQueryProcessor::testExceptionGgetUserDaySchedule()
 In Self Test Query is: 
 	SELECT * FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2024-05-14 07:00:00.000000' AND StartDateTime <= '2024-05-15 06:59:59.000000' ORDER BY StartDateTime ASC
+In Self Test Query is: 
+	SELECT * FROM UserScheduleItem  WHERE idUserScheduleItem = 1 AND (Hidden IS NULL OR Hidden <> 1)
 
 Exception Test for ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByContentAndDateRange()
 In Self Test Query is: 
@@ -507,92 +499,92 @@ Running:
 Running: 
 	CALL AddUser(NULL, 'One', 'User', 'P', 'UserOne@gmail.com', 'OneUserP', 'OneUserP', '8:30 AM;5:00 PM;1;1;1;0;')
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'OneUserP'
+	SELECT * FROM UserProfile WHERE LoginName = 'OneUserP'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'OneUserP' AND HashedPassWord = 'OneUserP'
+	SELECT * FROM UserProfile WHERE LoginName = 'OneUserP' AND HashedPassWord = 'OneUserP'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'OneUserP' AND HashedPassWord = 'NotThePassword'
+	SELECT * FROM UserProfile WHERE LoginName = 'OneUserP' AND HashedPassWord = 'NotThePassword'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LastName = 'One' AND FirstName = 'User' AND MiddleInitial = 'P'
+	SELECT * FROM UserProfile WHERE LastName = 'One' AND FirstName = 'User' AND MiddleInitial = 'P'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE EmailAddress = 'UserOne@gmail.com'
+	SELECT * FROM UserProfile WHERE EmailAddress = 'UserOne@gmail.com'
 Running: 
 	CALL UpdateUserAllFields(4, NULL, 'One', 'User', 'P', 'UserOne@gmail.com', 'OneUserP', 'MyNew**&pAs5Word4', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 4
+	SELECT * FROM UserProfile WHERE UserID = 4
 Running: 
 	CALL AddUser(NULL, 'Doe', 'John', 'Q', 'johndoe@gmail.com', 'DoeJohnQ', 'DoeJohnQ', '8:30 AM;5:00 PM;1;1;1;0;')
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'DoeJohnQ'
+	SELECT * FROM UserProfile WHERE LoginName = 'DoeJohnQ'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'DoeJohnQ' AND HashedPassWord = 'DoeJohnQ'
+	SELECT * FROM UserProfile WHERE LoginName = 'DoeJohnQ' AND HashedPassWord = 'DoeJohnQ'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'DoeJohnQ' AND HashedPassWord = 'NotThePassword'
+	SELECT * FROM UserProfile WHERE LoginName = 'DoeJohnQ' AND HashedPassWord = 'NotThePassword'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LastName = 'Doe' AND FirstName = 'John' AND MiddleInitial = 'Q'
+	SELECT * FROM UserProfile WHERE LastName = 'Doe' AND FirstName = 'John' AND MiddleInitial = 'Q'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE EmailAddress = 'johndoe@gmail.com'
+	SELECT * FROM UserProfile WHERE EmailAddress = 'johndoe@gmail.com'
 Running: 
 	CALL UpdateUserAllFields(5, NULL, 'Doe', 'John', 'Q', 'johndoe@gmail.com', 'DoeJohnQ', 'MyNew**&pAs5Word5', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 5
+	SELECT * FROM UserProfile WHERE UserID = 5
 Running: 
 	CALL AddUser(NULL, 'Public', 'John', 'Q', 'anyone@gmail.com', 'PublicJohnQ', 'PublicJohnQ', '8:30 AM;5:00 PM;1;1;1;0;')
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'PublicJohnQ'
+	SELECT * FROM UserProfile WHERE LoginName = 'PublicJohnQ'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'PublicJohnQ' AND HashedPassWord = 'PublicJohnQ'
+	SELECT * FROM UserProfile WHERE LoginName = 'PublicJohnQ' AND HashedPassWord = 'PublicJohnQ'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'PublicJohnQ' AND HashedPassWord = 'NotThePassword'
+	SELECT * FROM UserProfile WHERE LoginName = 'PublicJohnQ' AND HashedPassWord = 'NotThePassword'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LastName = 'Public' AND FirstName = 'John' AND MiddleInitial = 'Q'
+	SELECT * FROM UserProfile WHERE LastName = 'Public' AND FirstName = 'John' AND MiddleInitial = 'Q'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE EmailAddress = 'anyone@gmail.com'
+	SELECT * FROM UserProfile WHERE EmailAddress = 'anyone@gmail.com'
 Running: 
 	CALL UpdateUserAllFields(6, NULL, 'Public', 'John', 'Q', 'anyone@gmail.com', 'PublicJohnQ', 'MyNew**&pAs5Word6', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 6
+	SELECT * FROM UserProfile WHERE UserID = 6
 Running: 
 	CALL AddUser(NULL, 'Doe', 'Jane', 'R', 'jdr@gmail.com', 'DoeJaneR', 'DoeJaneR', '8:30 AM;5:00 PM;1;1;1;0;')
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'DoeJaneR'
+	SELECT * FROM UserProfile WHERE LoginName = 'DoeJaneR'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'DoeJaneR' AND HashedPassWord = 'DoeJaneR'
+	SELECT * FROM UserProfile WHERE LoginName = 'DoeJaneR' AND HashedPassWord = 'DoeJaneR'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'DoeJaneR' AND HashedPassWord = 'NotThePassword'
+	SELECT * FROM UserProfile WHERE LoginName = 'DoeJaneR' AND HashedPassWord = 'NotThePassword'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LastName = 'Doe' AND FirstName = 'Jane' AND MiddleInitial = 'R'
+	SELECT * FROM UserProfile WHERE LastName = 'Doe' AND FirstName = 'Jane' AND MiddleInitial = 'R'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE EmailAddress = 'jdr@gmail.com'
+	SELECT * FROM UserProfile WHERE EmailAddress = 'jdr@gmail.com'
 Running: 
 	CALL UpdateUserAllFields(7, NULL, 'Doe', 'Jane', 'R', 'jdr@gmail.com', 'DoeJaneR', 'MyNew**&pAs5Word7', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 7
+	SELECT * FROM UserProfile WHERE UserID = 7
 Running: 
 	CALL AddUser(NULL, 'Case', 'Space', 'O', 'spacecase@gmail.com', 'CaseSpaceO', 'CaseSpaceO', '8:30 AM;5:00 PM;1;1;1;0;')
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'CaseSpaceO'
+	SELECT * FROM UserProfile WHERE LoginName = 'CaseSpaceO'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'CaseSpaceO' AND HashedPassWord = 'CaseSpaceO'
+	SELECT * FROM UserProfile WHERE LoginName = 'CaseSpaceO' AND HashedPassWord = 'CaseSpaceO'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LoginName = 'CaseSpaceO' AND HashedPassWord = 'NotThePassword'
+	SELECT * FROM UserProfile WHERE LoginName = 'CaseSpaceO' AND HashedPassWord = 'NotThePassword'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LastName = 'Case' AND FirstName = 'Space' AND MiddleInitial = 'O'
+	SELECT * FROM UserProfile WHERE LastName = 'Case' AND FirstName = 'Space' AND MiddleInitial = 'O'
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE EmailAddress = 'spacecase@gmail.com'
+	SELECT * FROM UserProfile WHERE EmailAddress = 'spacecase@gmail.com'
 Running: 
 	CALL UpdateUserAllFields(8, NULL, 'Case', 'Space', 'O', 'spacecase@gmail.com', 'CaseSpaceO', 'MyNew**&pAs5Word8', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 8
+	SELECT * FROM UserProfile WHERE UserID = 8
 Running: 
 	SELECT * FROM UserProfile 
 All positive path tests for database insertions and retrievals of user PASSED!
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 1
+	SELECT * FROM UserProfile WHERE UserID = 1
 Expected error was; User not modified!
 
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE UserID = 1
+	SELECT * FROM UserProfile WHERE UserID = 1
 Expected error was; User already in Database, use Update!
 
 All negative path tests for database insertions and retrievals of user PASSED!
@@ -603,93 +595,93 @@ All tests for database insertions and retrievals of user PASSED!
 
 Running task Integration Tests
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LastName = 'One' AND FirstName = 'User' AND MiddleInitial = 'P'
+	SELECT * FROM UserProfile WHERE LastName = 'One' AND FirstName = 'User' AND MiddleInitial = 'P'
 Running: 
 	CALL AddTask(4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 3, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', NULL, 12, 1e+00, 65, 1, 0, 0, NULL)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 47
+	SELECT * FROM Tasks  WHERE TaskID = 47
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Archive BHHS74Reunion website to external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Archive BHHS74Reunion website to external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddTask(4, 4, 'Develop Personal Planning Tool', 0, 3, '2025-05-05', '2025-03-20', '2025-03-20', '2025-05-15', NULL, 300, 4e+01, 65, 2, 0, 0, NULL)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 48
+	SELECT * FROM Tasks  WHERE TaskID = 48
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Develop Personal Planning Tool' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Develop Personal Planning Tool' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddTask(4, 4, 'Check with GoDaddy about providing service to archive website to external SSD', 1, 3, '2025-04-15', '2025-04-15', '2025-04-15', '2025-04-15', NULL, 2, 1e+00, 65, 1, 0, 0, NULL)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 49
+	SELECT * FROM Tasks  WHERE TaskID = 49
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Check with GoDaddy about providing service to archive website to external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Check with GoDaddy about providing service to archive website to external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddTask(4, 4, 'Install a WordPress Archive Plugin', 1, 0, '2025-05-01', '2025-05-01', NULL, '2025-05-01', NULL, 1, 0e+00, 66, 2, 0, 0, NULL)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 50
+	SELECT * FROM Tasks  WHERE TaskID = 50
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Install a WordPress Archive Plugin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Install a WordPress Archive Plugin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddTask(4, 4, 'Have GoDaddy install PHPMyAdmin', 1, 0, '2025-05-02', '2025-05-02', NULL, '2025-05-03', NULL, 1, 0e+00, 66, 3, 0, 0, NULL)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 51
+	SELECT * FROM Tasks  WHERE TaskID = 51
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Have GoDaddy install PHPMyAdmin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Have GoDaddy install PHPMyAdmin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddTask(4, 4, 'Run Archive Plugin', 1, 0, '2025-05-03', '2025-05-03', NULL, '2025-05-03', NULL, 2, 0e+00, 66, 4, 0, 0, NULL)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 52
+	SELECT * FROM Tasks  WHERE TaskID = 52
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Run Archive Plugin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Run Archive Plugin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddTask(4, 4, 'Log into PHPMyAdmin and save Database to disk', 1, 0, '2025-05-04', '2025-05-04', NULL, '2025-05-04', NULL, 1, 0e+00, 66, 5, 0, 0, NULL)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 53
+	SELECT * FROM Tasks  WHERE TaskID = 53
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Log into PHPMyAdmin and save Database to disk' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Log into PHPMyAdmin and save Database to disk' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddTask(4, 4, 'FTP all website files to computer', 1, 0, '2025-05-05', '2025-05-05', NULL, '2025-05-05', NULL, 3, 0e+00, 66, 6, 0, 0, NULL)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 54
+	SELECT * FROM Tasks  WHERE TaskID = 54
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'FTP all website files to computer' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'FTP all website files to computer' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddTask(4, 4, 'Store all website files on external SSD', 1, 0, '2025-05-05', '2025-05-05', NULL, '2025-05-05', NULL, 2, 0e+00, 66, 7, 0, 0, NULL)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 55
+	SELECT * FROM Tasks  WHERE TaskID = 55
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Store all website files on external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Store all website files on external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddTask(4, 4, 'Design Database for Personal Planner', 2, 3, '2025-04-08', '2025-03-20', '2025-03-20', '2025-05-01', NULL, 24, 1.6e+01, 65, 0, 0, 0, NULL)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 56
+	SELECT * FROM Tasks  WHERE TaskID = 56
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Design Database for Personal Planner' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Design Database for Personal Planner' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddTask(4, 4, 'Design UML Diagram for Personal Planner', 2, 3, '2025-04-12', '2025-04-08', '2025-04-08', '2025-04-15', NULL, 16, 5.25e+00, 65, 0, 0, 0, NULL)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 57
+	SELECT * FROM Tasks  WHERE TaskID = 57
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Design UML Diagram for Personal Planner' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Design UML Diagram for Personal Planner' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	CALL AddTask(4, 4, 'Grocery Shopping', 0, 0, '2025-04-12', '2025-04-11', NULL, '2026-05-15', NULL, 2, 2e+00, 67, 1, 0, 0, NULL)
+	CALL AddTask(4, 4, 'Grocery Shopping', 0, 0, '2025-04-12', '2025-04-11', NULL, '2026-05-20', NULL, 2, 2e+00, 67, 1, 0, 0, NULL)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 58
+	SELECT * FROM Tasks  WHERE TaskID = 58
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Grocery Shopping' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Grocery Shopping' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddTask(4, 4, 'Daily 30 minute walk', 0, 0, '2025-04-11', '2025-04-11', NULL, '2056-07-07', NULL, 1, 0e+00, 67, 2, 0, 0, NULL)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 59
+	SELECT * FROM Tasks  WHERE TaskID = 59
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Daily 30 minute walk' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Daily 30 minute walk' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	CALL AddTask(4, 4, 'Clean apartment', 0, 0, '2025-04-12', '2025-04-12', NULL, '2026-05-15', NULL, 2, 0e+00, 67, 3, 0, 0, NULL)
+	CALL AddTask(4, 4, 'Clean apartment', 0, 0, '2025-04-12', '2025-04-12', NULL, '2026-05-20', NULL, 2, 0e+00, 67, 3, 0, 0, NULL)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 60
+	SELECT * FROM Tasks  WHERE TaskID = 60
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Clean apartment' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Clean apartment' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT * FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-22' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-27' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Find unstarted tasks for user(4) PASSED!
 User 4 has 9 unstarted tasks
 TaskModel:
@@ -822,7 +814,7 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-05-15
+	Estimated Completion Date: 2026-05-20
 	Deleted : FALSE
 
 TaskModel:
@@ -860,11 +852,11 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-05-15
+	Estimated Completion Date: 2026-05-20
 	Deleted : FALSE
 
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LastName = 'Black' AND FirstName = 'Paul' AND MiddleInitial = 'A'
+	SELECT * FROM UserProfile WHERE LastName = 'Black' AND FirstName = 'Paul' AND MiddleInitial = 'A'
 Running: 
 	SELECT * FROM Tasks  WHERE AsignedTo = 1 AND RequiredDelivery < '2026-03-22' AND Completed IS NULL AND (Hidden IS NULL OR Hidden <> 1) ORDER BY SchedulePriorityGroup ASC, PriorityInGroup ASC
 Find default task list for user(1) PASSED!
@@ -1209,35 +1201,35 @@ Optional Fields
 	Deleted : FALSE
 
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Archive BHHS74Reunion website to external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Archive BHHS74Reunion website to external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 47
+	SELECT * FROM Tasks  WHERE TaskID = 47
 Running: 
-	CALL UpdateTaskAllFields(47, 4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 4, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', '2026-05-15', 12, 6e+00, 65, 1, 0, 0, NULL)
+	CALL UpdateTaskAllFields(47, 4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 4, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', '2026-05-20', 12, 6e+00, 65, 1, 0, 0, NULL)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 47
+	SELECT * FROM Tasks  WHERE TaskID = 47
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Check with GoDaddy about providing service to archive website to external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Check with GoDaddy about providing service to archive website to external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Install a WordPress Archive Plugin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Install a WordPress Archive Plugin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL UpdateTaskAllFields(50, 4, 4, 'Install a WordPress Archive Plugin', 1, 0, '2025-05-01', '2025-05-01', NULL, '2025-05-01', NULL, 1, 0e+00, 66, 2, 0, 1, '49;')
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Log into PHPMyAdmin and save Database to disk' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Log into PHPMyAdmin and save Database to disk' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Check with GoDaddy about providing service to archive website to external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Check with GoDaddy about providing service to archive website to external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Install a WordPress Archive Plugin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Install a WordPress Archive Plugin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Have GoDaddy install PHPMyAdmin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Have GoDaddy install PHPMyAdmin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Run Archive Plugin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Run Archive Plugin' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL UpdateTaskAllFields(53, 4, 4, 'Log into PHPMyAdmin and save Database to disk', 1, 0, '2025-05-04', '2025-05-04', NULL, '2025-05-04', NULL, 1, 0e+00, 66, 5, 0, 4, '49;50;51;52;')
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 53
+	SELECT * FROM Tasks  WHERE TaskID = 53
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE Description = 'Archive BHHS74Reunion website to external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE Description = 'Archive BHHS74Reunion website to external SSD' AND AsignedTo = 4 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT * FROM Tasks  WHERE AsignedTo = 4 AND ParentTask = 47 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
@@ -1327,19 +1319,19 @@ Optional Fields
 	Deleted : FALSE
 
 Running: 
-	SELECT * FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-22' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-27' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL HideTask(4, 59)
 Running: 
-	SELECT * FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-22' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM Tasks  WHERE AsignedTo = 4 AND ScheduledStart < '2026-05-27' AND (Status IS NULL OR Status = 0) AND (Hidden IS NULL OR Hidden <> 1)
 Task (59) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of task PASSED!
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 1
+	SELECT * FROM Tasks  WHERE TaskID = 1
 Expected error was; Task already in Database, use Update!
 
 Running: 
-	SELECT TaskID, CreatedBy, AsignedTo, Description, ParentTask, Status, PercentageComplete, CreatedOn,RequiredDelivery, ScheduledStart, ActualStart, EstimatedCompletion, Completed, EstimatedEffortHours, ActualEffortHours, SchedulePriorityGroup, PriorityInGroup, Personal, DependencyCount, Dependencies, LastUpdateTS, Hidden FROM Tasks  WHERE TaskID = 1
+	SELECT * FROM Tasks  WHERE TaskID = 1
 Expected error was; Task not modified!
 
 Expected error was; Task is missing required values!
@@ -1402,61 +1394,61 @@ All tests for database insertions and retrievals of task PASSED!
 
 ---------------------------------------------------------------------------------
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LastName = 'One' AND FirstName = 'User' AND MiddleInitial = 'P'
+	SELECT * FROM UserProfile WHERE LastName = 'One' AND FirstName = 'User' AND MiddleInitial = 'P'
 
 Running Goal Integration Tests
 Running: 
 	CALL AddUserGoal(4, 'Get a Job in Software Engineering', 1, NULL)
 Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddUserGoal(4, 'Maintain and improve my software engineering skills', 1, 1)
 Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddUserGoal(4, 'Maintain and improve my C++ programming skills', 1, 1)
 Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddUserGoal(4, 'Maintain and improve my  C programming skills', 2, 1)
 Running: 
 	CALL AddUserGoal(4, 'Maintain or archive the BHHS 74 Reunion website', 2, NULL)
 Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddUserGoal(4, 'Maintain and improve my SQL skills', 3, 1)
 Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddUserGoal(4, 'Learn QT graphic system', 4, 1)
 Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddUserGoal(4, 'Improve my Linux Programming skills', 5, 1)
 Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddUserGoal(4, 'Get an embedded programming certificate', 4, 1)
 Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddUserGoal(4, 'Learn open source Linux Core Programming', 4, 1)
 Running: 
 	CALL AddUserGoal(4, 'Maintain my health', 2, NULL)
 Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Maintain my health' AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Maintain my health' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddUserGoal(4, 'Eat as healthy as possible', 3, 11)
 Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Maintain my health' AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Maintain my health' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddUserGoal(4, 'Walk 30 minutes a day', 4, 11)
 Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Maintain my health' AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Maintain my health' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddUserGoal(4, 'Track my vital signs', 3, 11)
 Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Maintain my health' AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Maintain my health' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL AddUserGoal(4, 'Get my weight down to 190 pounds', 4, 11)
 Running: 
@@ -1464,7 +1456,7 @@ Running:
 Running: 
 	CALL AddUserGoal(4, 'Effectively moderate the code review site on stack exchange', 1, NULL)
 Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE UserID = 4 and Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	SELECT * FROM UserGoals  WHERE UserID = 4 AND ParentGoal = 1 AND (Hidden IS NULL OR Hidden <> 1)
 Model Name UserGoalModel
@@ -1721,11 +1713,11 @@ Missing UserGoalModel required Description!
 Running: 
 	CALL AddUserGoal(1, 'Test missing field Description', NULL, NULL)
 Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals  WHERE idUserGoals = 1
 Expected error was; UserGoalModel not modified!
 
 Running: 
-	SELECT idUserGoals, UserID, Description, CreationTS, LastUpdateTS, Priority, ParentGoal FROM UserGoals  WHERE idUserGoals = 1 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserGoals  WHERE idUserGoals = 1
 Expected error was; UserGoalModel already in Database, use Update!
 
 All negative path tests for database insertions and retrievals of Goal PASSED!
@@ -1734,7 +1726,7 @@ All tests for database insertions and retrievals of Goal PASSED!
 
 ---------------------------------------------------------------------------------
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LastName = 'One' AND FirstName = 'User' AND MiddleInitial = 'P'
+	SELECT * FROM UserProfile WHERE LastName = 'One' AND FirstName = 'User' AND MiddleInitial = 'P'
 
 Running Note Integration Tests
 Running: 
@@ -1881,7 +1873,7 @@ User 4 has 6 notes
 	Content: Maintain my health
 
 Running: 
-	CALL GetAllNotesForUserCreatedInDatgeRange(4, '2026-05-08', '2026-05-22')
+	CALL GetAllNotesForUserCreatedInDatgeRange(4, '2026-05-13', '2026-05-27')
 Find all notes for user (4) created in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -1953,7 +1945,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	CALL GetAllNotesForUserEditedInDatgeRange(4, '2026-05-08', '2026-05-22')
+	CALL GetAllNotesForUserEditedInDatgeRange(4, '2026-05-13', '2026-05-27')
 Find all notes for user (4) edited in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2025,7 +2017,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	CALL GetDashboardNoteTable(4, '2026-05-15 07:00:00.000000', '2026-05-16 06:59:00.000000')
+	CALL GetDashboardNoteTable(4, '2026-05-20 07:00:00.000000', '2026-05-21 06:59:00.000000')
 Find all notes for user (4) for a date PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2116,11 +2108,11 @@ Missing Note required Content!
 Running: 
 	CALL AddUserNote(4, 'Test missing field Content')
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetNoteByID(1)
 Expected error was; Note not modified!
 
 Running: 
-	SELECT idUserNotes, UserID, NotationDateTime, Content, LastUpdate, Hidden FROM UserNotes  WHERE idUserNotes = 1 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetNoteByID(1)
 Expected error was; Note already in Database, use Update!
 
 All negative path tests for database insertions and retrievals of Note PASSED!
@@ -2129,7 +2121,7 @@ All tests for database insertions and retrievals of Note PASSED!
 
 ---------------------------------------------------------------------------------
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LastName = 'One' AND FirstName = 'User' AND MiddleInitial = 'P'
+	SELECT * FROM UserProfile WHERE LastName = 'One' AND FirstName = 'User' AND MiddleInitial = 'P'
 
 Running ScheduleItem Integration Tests
 Running: 
@@ -2207,7 +2199,7 @@ ScheduleItemModel:
 Optional Fields
 
 Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 300 AND UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserScheduleItem  WHERE idUserScheduleItem = 300 AND (Hidden IS NULL OR Hidden <> 1)
 Running: 
 	CALL UpdateScheduleItemAllFields(4, 300, '2024-12-02 09:30:00.000000', '2024-12-02 10:30:00.000000', 'Dr. David Aftergood', 0, '99. N. La Cienega')
 Running: 
@@ -2233,7 +2225,7 @@ User 4 has 3 schedule locations
 99 N. La Cienega Blvd.
 99. N. La Cienega
 Running: 
-	SELECT UserID, LastName, FirstName, MiddleInitial, EmailAddress, LoginName, HashedPassWord, UserAdded, LastLogin, Preferences, Hidden FROM UserProfile  WHERE LastName = 'Black' AND FirstName = 'Paul' AND MiddleInitial = 'A'
+	SELECT * FROM UserProfile WHERE LastName = 'Black' AND FirstName = 'Paul' AND MiddleInitial = 'A'
 Running: 
 	SELECT * FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2026-03-08 08:00:00.000000' AND StartDateTime <= '2026-03-09 07:59:59.000000' ORDER BY StartDateTime ASC
 Running: 
@@ -2274,25 +2266,25 @@ Missing ScheduleItem required End Time!
 Running: 
 	CALL AddScheduleEvent(4, '2024-12-31 08:30:00.000000', '2024-12-31 10:00:00.000000', 'Test missing field Title', 0, NULL)
 Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 300 AND UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserScheduleItem  WHERE idUserScheduleItem = 300 AND (Hidden IS NULL OR Hidden <> 1)
 Expected error was; ScheduleItem not modified!
 
 Running: 
-	SELECT idUserScheduleItem, UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden FROM UserScheduleItem  WHERE idUserScheduleItem = 300 AND UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	SELECT * FROM UserScheduleItem  WHERE idUserScheduleItem = 300 AND (Hidden IS NULL OR Hidden <> 1)
 Expected error was; ScheduleItem already in Database, use Update!
 
 All negative path tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Fri May 15 05:52:42 2026
-elapsed time in seconds: 22.1274
+Wed May 20 06:42:51 2026
+elapsed time in seconds: 23.2428
 
 
 
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
-  total heap usage: 60,902 allocs, 60,902 frees, 8,596,017 bytes allocated
+  total heap usage: 63,519 allocs, 63,519 frees, 8,645,790 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 
