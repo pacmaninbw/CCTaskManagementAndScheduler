@@ -188,11 +188,6 @@ bool UserModel::isMissingPassword() const noexcept
     return (password.empty() || password.length() < minPasswordLenght);;
 }
 
-bool UserModel::isMissingDateAdded() const noexcept
-{
-    return !created.has_value();
-}
-
 bool UserModel::isMissingEmail() const noexcept
 {
     return (email.empty() || email.length() < minEmailLength);

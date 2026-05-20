@@ -83,7 +83,6 @@ public:
     bool isMissingFirstName() const noexcept;
     bool isMissingLoginName() const noexcept;
     bool isMissingPassword() const noexcept;
-    bool isMissingDateAdded() const noexcept;
     bool isMissingEmail() const noexcept;
     void initRequiredFields() noexcept override;
 
