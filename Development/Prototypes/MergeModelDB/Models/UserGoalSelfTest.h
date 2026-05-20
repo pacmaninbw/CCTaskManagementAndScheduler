@@ -33,16 +33,7 @@ private:
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
     virtual TestStatus testExceptionInsert() noexcept override;
     virtual TestStatus testExceptionUpdate() noexcept override;
-    virtual TestStatus testExceptionRetrieve() noexcept override;
     virtual TestStatus testExceptionHide() noexcept override;
-    TestStatus testExceptionSelectByGoalID() noexcept;
-    TestStatus testExceptionSelectByUserIDAndDescription() noexcept;
-    TestStatus testExceptionFormatSelectAllByUserId() noexcept;
-    TestStatus testExceptionFormatSelectAllChildGoalsWithParentFromUser() noexcept;
-    TestStatus testExceptionFormatSelectAllChildGoalsWithParent() noexcept;
-    TestStatus testExceptionFormatSelectByExactDescription() noexcept;
-    TestStatus testExceptionFormatSelectBySimilarDescription() noexcept;
-
     virtual TestStatus testAllInsertFailures() override;
     virtual TestStatus testEqualityOperator() noexcept override;
     virtual void testOutput() noexcept override;

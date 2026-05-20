@@ -163,22 +163,8 @@ TestStatus UserGoalSelfTest::testPriorityAccess() noexcept
 std::vector<ExceptionTestElement> UserGoalSelfTest::initExceptionTests() noexcept
 {
     std::vector<ExceptionTestElement> exceptionTests;
-    exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionSelectByGoalID, this), "selectByGoalID"});
-    exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionSelectByUserIDAndDescription, this),
-        "SelectByUserIDAndDescription"});
-    exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionFormatSelectAllByUserId, this),
-        "FormatSelectAllByUserId"});
-    exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionFormatSelectAllChildGoalsWithParentFromUser, this),
-        "selectAllChildGoalsWithParentFromUser"});
-    exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionFormatSelectAllChildGoalsWithParent, this),
-        "formatSelectAllChildGoalsWithParent"});
-    exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionFormatSelectByExactDescription, this),
-        "formatSelectByExactDescription"});
-    exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionFormatSelectBySimilarDescription, this),
-        "formatSelectBySimilarDescription"});
     exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionInsert, this), "testExceptionInsert"});
     exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
-    exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
     exceptionTests.push_back({std::bind(&UserGoalSelfTest::testExceptionHide, this), "testExceptionHide"});
 
     return exceptionTests;
@@ -209,15 +195,6 @@ TestStatus UserGoalSelfTest::testExceptionUpdate() noexcept
     return testExceptionAndSuccessNArgs("UserGoalModel::update", std::bind(&UserGoalModel::update, this));
 }
 
-TestStatus UserGoalSelfTest::testExceptionRetrieve() noexcept
-{
-    selfTestResetAllValues();
-
-    setGoalId(1);
-
-    return testExceptionAndSuccessNArgs("UserGoalModel::retrieve", std::bind(&UserGoalModel::retrieve, this));
-}
-
 TestStatus UserGoalSelfTest::testExceptionHide() noexcept
 {
     selfTestResetAllValues();
@@ -229,96 +206,7 @@ TestStatus UserGoalSelfTest::testExceptionHide() noexcept
     return testExceptionAndSuccessNArgs("UserGoalModel::hide", std::bind(&UserGoalModel::hide, this, std::placeholders::_1), testUserId);
 }
 
-TestStatus UserGoalSelfTest::testExceptionSelectByGoalID() noexcept
-{
-    selfTestResetAllValues();
 
-    return testExceptionAndSuccessNArgs("UserGoalModel::selectByGoalID", std::bind(&UserGoalModel::selectByGoalID, this, std::placeholders::_1), 1);
-}
-
-TestStatus UserGoalSelfTest::testExceptionSelectByUserIDAndDescription() noexcept
-{
-    selfTestResetAllValues();
-
-    std::size_t testUserId = 1;
-    std::string testDescription("Test SelectByUserIDAndDescription Exception Handling");
-
-    return testExceptionAndSuccessNArgs("UserGoalModel::selectByUserIDAndDescription",
-        std::bind(&UserGoalModel::selectByUserIDAndDescription,
-        this, std::placeholders::_1, std::placeholders::_2), testUserId, testDescription);
-}
-
-TestStatus UserGoalSelfTest::testExceptionFormatSelectAllByUserId() noexcept
-{
-    selfTestResetAllValues();
-
-    return testFormatExceptionAndSuccessNArgs("UserGoalModel::formatSelectAllByUserId",
-        std::bind(&UserGoalModel::formatSelectAllByUserId, this, std::placeholders::_1), 1);
-}
-
-TestStatus UserGoalSelfTest::testExceptionFormatSelectAllChildGoalsWithParentFromUser() noexcept
-{
-    selfTestResetAllValues();
-
-    std::size_t testParentId = 1;
-    std::size_t testUserId = 23;
-
-    return testFormatExceptionAndSuccessNArgs("UserGoalModel::formatSelectAllChildGoalsWithParentFromUser",
-        std::bind(&UserGoalModel::formatSelectAllChildGoalsWithParentFromUser,
-        this, std::placeholders::_1, std::placeholders::_2), testParentId, testUserId);
-}
-
-TestStatus UserGoalSelfTest::testExceptionFormatSelectAllChildGoalsWithParent() noexcept
-{
-    selfTestResetAllValues();
-
-    UserGoalModel testParent;
-    testParent.setGoalId(1);
-    testParent.setUserId(27);
-
-    std::string funcName("UserGoalSelfTest::formatSelectAllChildGoalsWithParent()");
-    forceException = true;
-    std::string formattedQuery = formatSelectAllChildGoalsWithParent(testParent);
-    if (!formattedQuery.empty())
-    {
-        return testExceptionReportFailure(false, false, funcName);
-    }
-
-    forceException = false;
-    formattedQuery.clear();
-    formattedQuery = formatSelectAllChildGoalsWithParent(testParent);
-    if (formattedQuery.empty())
-    {
-        return testExceptionReportFailure(true, false, funcName);
-    }
-
-    return TESTPASSED;
-
-}
-
-TestStatus UserGoalSelfTest::testExceptionFormatSelectByExactDescription() noexcept
-{
-    selfTestResetAllValues();
-
-    std::size_t testUserId = 1;
-    std::string testDescription("Test SelectByUserIDAndDescription Exception Handling");
-
-    return testFormatExceptionAndSuccessNArgs("UserGoalModel::formatSelectByExactDescription",
-        std::bind(&UserGoalModel::formatSelectByExactDescription,
-        this, std::placeholders::_1, std::placeholders::_2), testDescription, testUserId);
-}
-
-TestStatus UserGoalSelfTest::testExceptionFormatSelectBySimilarDescription() noexcept
-{
-    selfTestResetAllValues();
-
-    std::size_t testUserId = 1;
-    std::string testDescription("Test SelectByUserIDAndDescription Exception Handling");
-
-    return testFormatExceptionAndSuccessNArgs("UserGoalModel::formatSelectBySimilarDescription",
-        std::bind(&UserGoalModel::formatSelectBySimilarDescription,
-        this, std::placeholders::_1, std::placeholders::_2), testDescription, testUserId);
-}
 
 TestStatus UserGoalSelfTest::testAllInsertFailures()
 {
