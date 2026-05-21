@@ -31,7 +31,7 @@ UserModelList UserQueryProcessor::getAllUsers() noexcept
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
         boost::mysql::results localResult = runQueryAsync(boost::mysql::format_sql(
-            format_opts.value(), "SELECT * FROM UserProfile "));
+            format_opts.value(), "CALL GetAllUsers()"));
         allUsers = processResults(localResult);
     }
         
@@ -52,7 +52,7 @@ UserModel_shp UserQueryProcessor::getUserByID(std::size_t userId) noexcept
     {
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserProfile WHERE UserID = {}", userId);
+        boost::mysql::format_sql_to(fctx, "CALL GetUserByID({})", userId);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
     }
@@ -74,7 +74,7 @@ UserModel_shp UserQueryProcessor::getUserByLoginName(const std::string_view &log
     {
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserProfile WHERE LoginName = {}", loginName);
+        boost::mysql::format_sql_to(fctx, "CALL GetUserByLoginName({})", loginName);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
     }
@@ -96,7 +96,7 @@ UserModel_shp UserQueryProcessor::getUserByEmail(const std::string_view &emailAd
     {
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserProfile WHERE EmailAddress = {}", emailAddress);
+        boost::mysql::format_sql_to(fctx, "CALL GetUserByEmail({})", emailAddress);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
     }
@@ -118,7 +118,7 @@ UserModel_shp UserQueryProcessor::getUserByLoginAndPassword(const std::string_vi
     {
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserProfile WHERE LoginName = {} AND HashedPassWord = {}", loginName, password);
+        boost::mysql::format_sql_to(fctx, "CALL GetUserByLoginAndPassword({}, {})", loginName, password);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
     }
@@ -140,8 +140,7 @@ UserModel_shp UserQueryProcessor::getUserByFullName(const std::string_view &last
     {
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserProfile WHERE LastName = {} AND FirstName = {} AND MiddleInitial = {}",
-            lastName, firstName, middleI);
+        boost::mysql::format_sql_to(fctx, "CALL GetUserByFullName({}, {}, {})", lastName, firstName, middleI);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
     }
