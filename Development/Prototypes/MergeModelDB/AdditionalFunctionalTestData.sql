@@ -487,6 +487,31 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`TestTaskStoredProcedures`;
+
+CREATE PROCEDURE `testPTSDB`.`TestTaskStoredProcedures`()
+
+BEGIN
+
+   CALL GetTaskByTaskID(1);
+
+   CALL GetTaskByDescriptionAndAssignedUser(1, 'A task description');
+
+   CALL GetActiveTasksForAssignedUser(1);
+
+   CALL GetUnstartedDueForStartForAssignedUser(1, '2026-05-28');
+
+   CALL GetTasksCompletedByAssignedAfterDate(1,'2024-05-14');
+
+   CALL GetTasksByAssignedIDandParentID(1, 1);
+
+   CALL GetDefaultDashboardTaskList(1, '2026-03-22');
+
+END$$
+
+DELIMITER ;
+DELIMITER $$
 
 
 USE `testPTSDB`;
@@ -526,6 +551,8 @@ CREATE PROCEDURE `testPTSDB`.`TestStoredProceduresAndFunctions`()
 BEGIN
 
    CALL TestUserStoredProcedures();
+
+   CALL TestTaskStoredProcedures();
 
    CALL UpdateUserAllFields(3, 1, 'AlteredLast', 'AlteredFirst', 'D', 'AlteredEmail', 'AlteredUname', 'AlteredPW', 'AlteredPreffs', '2026-04-17 22:00:00');
 
