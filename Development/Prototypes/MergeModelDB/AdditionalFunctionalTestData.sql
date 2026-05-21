@@ -462,6 +462,31 @@ DELIMITER ;
 
 DELIMITER $$
 
+DELIMITER $$
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`TestUserStoredProcedures`;
+
+CREATE PROCEDURE `testPTSDB`.`TestUserStoredProcedures`()
+
+BEGIN
+
+   CALL GetAllUsers();
+
+   CALL GetUserByID(1);
+
+   CALL GetUserByLoginName('UserOne');
+
+   CALL GetUserByEmail('UserOne@readyUserOne.com');
+
+   CALL GetUserByLoginAndPassword('UserOne', 'testPassword');
+
+   CALL GetUserByFullName('Shinny', 'Eric', 'Y');
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
 
 
 USE `testPTSDB`;
@@ -499,6 +524,8 @@ DROP PROCEDURE IF EXISTS `testPTSDB`.`TestStoredProceduresAndFunctions`;
 CREATE PROCEDURE `testPTSDB`.`TestStoredProceduresAndFunctions`()
 
 BEGIN
+
+   CALL TestUserStoredProcedures();
 
    CALL UpdateUserAllFields(3, 1, 'AlteredLast', 'AlteredFirst', 'D', 'AlteredEmail', 'AlteredUname', 'AlteredPW', 'AlteredPreffs', '2026-04-17 22:00:00');
 
