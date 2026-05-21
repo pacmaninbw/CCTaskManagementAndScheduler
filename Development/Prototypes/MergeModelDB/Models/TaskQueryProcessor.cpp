@@ -29,8 +29,7 @@ TaskModel_shp TaskQueryProcessor::getTaskByTaskID(std::size_t taskId) noexcept
     {
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, listQueryBase);
-        boost::mysql::format_sql_to(fctx, " WHERE TaskID = {}", taskId);
+        boost::mysql::format_sql_to(fctx, "CALL GetTaskByTaskID({})", taskId);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
     }
@@ -51,9 +50,7 @@ TaskList TaskQueryProcessor::getTaskByDescriptionAndAssignedUser(std::string_vie
     {
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, listQueryBase);
-        boost::mysql::format_sql_to(fctx, " WHERE Description = {} AND AsignedTo = {}", description, assignedUserID);
-        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
+        boost::mysql::format_sql_to(fctx, "CALL GetTaskByDescriptionAndAssignedUser({}, {})", assignedUserID, description);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         return processResults(localResult);
     }
@@ -72,7 +69,10 @@ TaskList TaskQueryProcessor::getActiveTasksForAssignedUser(std::size_t assignedU
 
     try
     {
-        boost::mysql::results localResult = runQueryAsync(formatSelectActiveTasksForAssignedUser(assignedUserID));
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "CALL GetActiveTasksForAssignedUser({})", assignedUserID);
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         return processResults(localResult);
     }
 
@@ -90,7 +90,11 @@ TaskList TaskQueryProcessor::getUnstartedDueForStartForAssignedUser(std::size_t 
 
     try
     {
-        boost::mysql::results localResult = runQueryAsync(formatSelectUnstartedDueForStartForAssignedUser(assignedUserID));
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "CALL GetUnstartedDueForStartForAssignedUser({}, {})",
+            assignedUserID, stdchronoDateToBoostMySQLDate(getTodaysDatePlus(OneWeek)));
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         return processResults(localResult);
     }
 
@@ -109,8 +113,11 @@ TaskList TaskQueryProcessor::getTasksCompletedByAssignedAfterDate(std::size_t as
 
     try
     {
-        boost::mysql::results localResult = runQueryAsync(formatSelectTasksCompletedByAssignedAfterDate(
-            assignedUserID, searchStartDate));
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "CALL GetTasksCompletedByAssignedAfterDate({},{})",
+        assignedUserID, stdchronoDateToBoostMySQLDate(searchStartDate));
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         return processResults(localResult);
     }
 
@@ -128,8 +135,10 @@ TaskList TaskQueryProcessor::getTasksByAssignedIDandParentID(std::size_t assigne
 
     try
     {
-        boost::mysql::results localResult = runQueryAsync(formatSelectTasksByAssignedIDandParentID(
-            assignedUserID, parentID));
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "CALL GetTasksByAssignedIDandParentID({}, {})", assignedUserID, parentID);
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         return processResults(localResult);
     }
 
@@ -147,7 +156,10 @@ TaskList TaskQueryProcessor::getDefaultDashboardTaskList(std::size_t assignedUse
 
     try
     {
-        boost::mysql::results localResult = runQueryAsync(formatDefaultTaskTableSelect(assignedUserID, searchStartDate));
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "CALL GetDefaultDashboardTaskList({}, {})", assignedUserID, stdchronoDateToBoostMySQLDate(searchStartDate));
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         return processResults(localResult);
     }
 
@@ -258,70 +270,6 @@ void TaskQueryProcessor::fillRequiredIndexes()
     assignValueToIndex("Hidden", hidden_Idx);
 }
 
-std::string TaskQueryProcessor::formatSelectActiveTasksForAssignedUser(std::size_t assignedUserID)
-{
-    constexpr unsigned int notStarted = static_cast<unsigned int>(TaskModel::TaskStatus::Not_Started);
-
-    initFormatOptions();
-    boost::mysql::format_context fctx(format_opts.value());
-    boost::mysql::format_sql_to(fctx, listQueryBase);
-    boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND Completed IS NULL AND (Status IS NOT NULL AND Status <> {})",
-        assignedUserID, notStarted);
-    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
-
-    return std::move(fctx).get().value();
-}
-
-std::string TaskQueryProcessor::formatSelectUnstartedDueForStartForAssignedUser(std::size_t assignedUserID)
-{
-    constexpr unsigned int notStarted = static_cast<unsigned int>(TaskModel::TaskStatus::Not_Started);
-
-    initFormatOptions();
-    boost::mysql::format_context fctx(format_opts.value());
-    boost::mysql::format_sql_to(fctx, listQueryBase);
-    boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND ScheduledStart < {} AND (Status IS NULL OR Status = {})",
-        assignedUserID, stdchronoDateToBoostMySQLDate(getTodaysDatePlus(OneWeek)), notStarted);
-    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
-
-    return std::move(fctx).get().value();
-}
-
-std::string TaskQueryProcessor::formatSelectTasksCompletedByAssignedAfterDate(std::size_t assignedUserID, std::chrono::year_month_day searchStartDate)
-{
-    initFormatOptions();
-    boost::mysql::format_context fctx(format_opts.value());
-    boost::mysql::format_sql_to(fctx, listQueryBase);
-    boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND Completed >= {}",
-        assignedUserID, stdchronoDateToBoostMySQLDate(searchStartDate));
-
-    return std::move(fctx).get().value();
-}
-
-std::string TaskQueryProcessor::formatSelectTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID)
-{
-    initFormatOptions();
-    boost::mysql::format_context fctx(format_opts.value());
-    boost::mysql::format_sql_to(fctx, listQueryBase);
-    boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {} AND ParentTask = {}", assignedUserID, parentID);
-    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
-
-    return std::move(fctx).get().value();
-}
-
-std::string TaskQueryProcessor::formatDefaultTaskTableSelect(std::size_t assignedUserID, std::chrono::year_month_day searchStartDate)
-{
-    initFormatOptions();
-    boost::mysql::format_context fctx(format_opts.value());
-    boost::mysql::format_sql_to(fctx, listQueryBase);
-    boost::mysql::format_sql_to(fctx, " WHERE AsignedTo = {}", assignedUserID);
-    boost::mysql::format_sql_to(fctx, " AND RequiredDelivery < {} AND Completed IS NULL",
-        stdchronoDateToBoostMySQLDate(searchStartDate));
-    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
-    boost::mysql::format_sql_to(fctx, " ORDER BY SchedulePriorityGroup ASC, PriorityInGroup ASC");
-
-    return std::move(fctx).get().value();
-}
-
 std::vector<ListExceptionTestElement> TaskQueryProcessor::initListExceptionTests() noexcept
 {
     std::vector<ListExceptionTestElement> exceptionTests;
@@ -394,7 +342,7 @@ TestStatus TaskQueryProcessor::testExceptionGetTasksByAssignedIDandParentID() no
     std::size_t assignedUser = 1;
     std::size_t parentid = 1;
 
-    return testListExceptionAndSuccessNArgs("TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()",
+    return testListExceptionAndSuccessNArgs("TaskQueryProcessor::getTasksByAssignedIDandParentID",
          std::bind(&TaskQueryProcessor::getTasksByAssignedIDandParentID, this, std::placeholders::_1, std::placeholders::_2),
         assignedUser, parentid);
 

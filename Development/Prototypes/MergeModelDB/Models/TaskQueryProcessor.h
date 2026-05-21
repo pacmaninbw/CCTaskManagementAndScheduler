@@ -30,15 +30,6 @@ private:
     virtual TaskModel_shp processResultRow(boost::mysql::row_view& queryRow) override;
     virtual void fillRequiredIndexes() override;
 
-    std::string formatSelectActiveTasksForAssignedUser(std::size_t assignedUserID);
-    std::string formatSelectUnstartedDueForStartForAssignedUser(std::size_t assignedUserID);
-    std::string formatSelectTasksCompletedByAssignedAfterDate(std::size_t assignedUserID,
-        std::chrono::year_month_day searchStartDate);
-    std::string formatSelectTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID);
-    std::string formatDefaultTaskTableSelect(std::size_t assignedUserID,
-        std::chrono::year_month_day searchStartDate);
-
-
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
     TestStatus testExceptionGetByTaskID() noexcept;
     TestStatus testExceptionGetByDescriptionAndAssignedUser() noexcept;
@@ -69,8 +60,6 @@ private:
     std::size_t depenedenciesTextIdx = IndexNotSet;
     std::size_t lastUpdate_Idx = IndexNotSet;
     std::size_t hidden_Idx = IndexNotSet;
-
-    boost::mysql::constant_string_view listQueryBase = "SELECT * FROM Tasks ";
 };
 
 #endif // TASKQUERYPROCESSOR_H_
