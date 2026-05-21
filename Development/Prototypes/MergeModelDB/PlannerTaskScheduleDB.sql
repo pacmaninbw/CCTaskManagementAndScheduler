@@ -885,7 +885,128 @@ BEGIN
     
 END$$
 
+DROP PROCEDURE IF EXISTS `testPTSDB`.`GetTaskByTaskID`;
+
+CREATE PROCEDURE `testPTSDB`.`GetTaskByTaskID`
+(
+    IN IDTask INT
+)
+
+BEGIN
+
+    SELECT * FROM Tasks WHERE Tasks.TaskID = IDTask;
+
+END$$
+
+DROP PROCEDURE IF EXISTS `testPTSDB`.`GetTaskByDescriptionAndAssignedUser`;
+
+CREATE PROCEDURE `testPTSDB`.`GetTaskByDescriptionAndAssignedUser`
+(
+    IN `assignedID` INT UNSIGNED,
+    IN `description` VARCHAR(256)
+)
+
+BEGIN
+
+    SELECT * FROM Tasks
+    WHERE Tasks.Description = description
+        AND Tasks.AsignedTo = assignedID
+        AND (Tasks.Hidden IS NULL OR Tasks.Hidden <> 1);
+
+END$$
+
+DROP PROCEDURE IF EXISTS `testPTSDB`.`GetActiveTasksForAssignedUser`;
+
+CREATE PROCEDURE `testPTSDB`.`GetActiveTasksForAssignedUser`
+(
+    IN `assignedID` INT UNSIGNED
+)
+
+BEGIN
+
+    SELECT * FROM Tasks
+    WHERE Tasks.AsignedTo = assignedID
+        AND Tasks.Completed IS NULL
+        AND (Tasks.Status IS NOT NULL AND Tasks.Status <> 0)
+        AND (Tasks.Hidden IS NULL OR Tasks.Hidden <> 1);
+
+END$$
+
+DROP PROCEDURE IF EXISTS `testPTSDB`.`GetUnstartedDueForStartForAssignedUser`;
+
+CREATE PROCEDURE `testPTSDB`.`GetUnstartedDueForStartForAssignedUser`
+(
+    IN `assignedID` INT UNSIGNED,
+    IN `planStart` DATE
+)
+
+BEGIN
+
+    SELECT * FROM Tasks
+    WHERE Tasks.AsignedTo = assignedID
+        AND Tasks.ScheduledStart < planStart
+        AND (Tasks.Status IS NULL OR Tasks.Status = 0)
+        AND (Tasks.Hidden IS NULL OR Tasks.Hidden <> 1);
+
+END$$
+
+DROP PROCEDURE IF EXISTS `testPTSDB`.`GetTasksCompletedByAssignedAfterDate`;
+
+CREATE PROCEDURE `testPTSDB`.`GetTasksCompletedByAssignedAfterDate`
+(
+    IN `assignedID` INT UNSIGNED,
+    IN `searchStartDate` DATE
+)
+
+BEGIN
+
+    SELECT * FROM Tasks
+    WHERE Tasks.AsignedTo = assignedID
+        AND Tasks.Completed >= searchStartDate;
+
+END$$
+
+DROP PROCEDURE IF EXISTS `testPTSDB`.`GetTasksByAssignedIDandParentID`;
+
+CREATE PROCEDURE `testPTSDB`.`GetTasksByAssignedIDandParentID`
+(
+    IN `assignedID` INT UNSIGNED,
+    IN `parentID` INT UNSIGNED
+)
+
+BEGIN
+
+    SELECT * FROM Tasks
+    WHERE Tasks.AsignedTo = assignedID
+        AND Tasks.ParentTask = parentID
+        AND (Tasks.Hidden IS NULL OR Tasks.Hidden <> 1);
+
+END$$
+
+DROP PROCEDURE IF EXISTS `testPTSDB`.`GetDefaultDashboardTaskList`;
+
+CREATE PROCEDURE `testPTSDB`.`GetDefaultDashboardTaskList`
+(
+    IN `assignedID` INT UNSIGNED,
+    IN `dueDate` DATE
+)
+
+BEGIN
+
+    SELECT * FROM Tasks
+    WHERE Tasks.AsignedTo = assignedID
+        AND Tasks.RequiredDelivery < dueDate
+        AND Tasks.Completed IS NULL
+        AND (Tasks.Hidden IS NULL OR Tasks.Hidden <> 1)
+    ORDER BY Tasks.SchedulePriorityGroup ASC, Tasks.PriorityInGroup ASC;
+
+END$$
+
 DELIMITER ;
+-- --------------------------------------------------------
+-- End of Task related stored procedures
+-- --------------------------------------------------------
+
 -- --------------------------------------------------------
 
 DROP TABLE IF EXISTS `testPTSDB`.`UserTaskGoals`;
