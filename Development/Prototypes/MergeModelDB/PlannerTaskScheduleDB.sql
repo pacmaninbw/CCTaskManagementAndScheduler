@@ -218,6 +218,84 @@ BEGIN
 
 END$$
 
+DROP PROCEDURE IF EXISTS `GetAllUsers`$$
+
+CREATE PROCEDURE `GetAllUsers`
+()
+
+BEGIN
+
+    SELECT * FROM UserProfile;
+
+END$$
+
+DROP PROCEDURE IF EXISTS `GetUserByID`$$
+
+CREATE PROCEDURE `GetUserByID`
+(
+    IN `userId` INT UNSIGNED
+)
+
+BEGIN
+
+    SELECT * FROM UserProfile WHERE UserProfile.UserID = userId;
+
+END$$
+
+DROP PROCEDURE IF EXISTS `GetUserByLoginName`$$
+
+CREATE PROCEDURE `GetUserByLoginName`
+(
+    IN `username` VARCHAR(45)
+)
+
+BEGIN
+
+    SELECT * FROM UserProfile WHERE UserProfile.LoginName = username;
+
+END$$
+
+DROP PROCEDURE IF EXISTS `GetUserByEmail`$$
+
+CREATE PROCEDURE `GetUserByEmail`
+(
+    IN `email` VARCHAR(256)
+)
+
+BEGIN
+
+    SELECT * FROM UserProfile WHERE UserProfile.EmailAddress = email;
+
+END$$
+
+DROP PROCEDURE IF EXISTS `GetUserByLoginAndPassword`$$
+
+CREATE PROCEDURE `GetUserByLoginAndPassword`
+(
+    IN `username` VARCHAR(45),
+    IN `password` VARCHAR(45)
+)
+
+BEGIN
+
+    SELECT * FROM UserProfile WHERE UserProfile.LoginName = username  AND UserProfile.HashedPassWord = password;
+
+END$$
+
+DROP PROCEDURE IF EXISTS `GetUserByFullName`$$
+
+CREATE PROCEDURE `GetUserByFullName`
+(
+    IN `lastName` VARCHAR(45),
+    IN `firstName` VARCHAR(45),
+    IN `middleInitial` VARCHAR(45)
+)
+
+BEGIN
+
+    SELECT * FROM UserProfile WHERE UserProfile.LastName = lastName AND UserProfile.FirstName = firstName AND UserProfile.MiddleInitial = middleInitial;
+
+END$$
 
 -- -----------------------------------------------------
 -- Stored Functions
