@@ -482,6 +482,8 @@ BEGIN
 
    CALL GetUserByFullName('Shinny', 'Eric', 'Y');
 
+   CALL UpdateUserAllFields(3, 1, 'AlteredLast', 'AlteredFirst', 'D', 'AlteredEmail', 'AlteredUname', 'AlteredPW', 'AlteredPreffs', '2026-04-17 22:00:00');
+
 END$$
 
 DELIMITER ;
@@ -508,11 +510,18 @@ BEGIN
 
    CALL GetDefaultDashboardTaskList(1, '2026-03-22');
 
+   CALL HideTask(4, 59);
+
+   CALL UpdateTaskAllFields(50, 4, 5, 'Install a WordPress Archive Plugin', 2, 4, '2025-05-01', '2025-05-01', '2025-05-11', '2025-05-12', '2025-05-11', 2, 1.5, 4, 3, 0, 1, '49;');
+   
+   SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND RequiredDelivery < '2026-03-22' AND Completed IS NULL AND (Hidden IS NULL OR Hidden <> 1) ORDER BY SchedulePriorityGroup 
+ASC, PriorityInGroup ASC;
+
 END$$
 
 DELIMITER ;
-DELIMITER $$
 
+DELIMITER $$
 
 USE `testPTSDB`;
 DROP PROCEDURE IF EXISTS `testPTSDB`.`TestNoteStoredProcedures`;
@@ -520,6 +529,12 @@ DROP PROCEDURE IF EXISTS `testPTSDB`.`TestNoteStoredProcedures`;
 CREATE PROCEDURE `testPTSDB`.`TestNoteStoredProcedures`()
 
 BEGIN
+
+   CALL UpdateNoteAllFields(1, 25, 'An index for Location in schedule item is now added.');
+
+   CALL HideNote(1, 12);
+
+   CALL AddUserNote(1, 'Test AddUserNote SQL implementation.');
 
    CALL GetNoteByID(12);
 
@@ -533,9 +548,62 @@ BEGIN
 
    CALL GetAllNotesForUserEditedInDatgeRange(1, '2026-03-12', '2026-05-14');
 
-
    CALL GetDashboardNoteTable(1, '2026-05-08 07:00:00.000000', '2026-05-09 06:59:00.000000');
 
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`TestScheduleItemsStoredProcedures`;
+
+CREATE PROCEDURE `testPTSDB`.`TestScheduleItemsStoredProcedures`()
+
+BEGIN
+
+   CALL AddScheduleEvent(1, '2026-04-17 22:00:00', '2026-04-17 23:00:00', 'Test AddScheduleEvent', 0, 'Starbucks');
+
+   CALL HideScheduleItem(1, 53);
+
+   SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2026-03-08 08:00:00.000000' AND StartDateTime <= '20
+26-03-09 07:59:59.000000' ORDER BY StartDateTime ASC;
+
+   CALL UpdateScheduleItemAllFields(1, 238, '2026-03-15 01:00:00', '2026-03-15 02:29:59', 'Sorry, no pea soup today.', 1, 'Norm\'s');
+
+   CALL GetUserDaySchedule(1, '2024-05-14 07:00:00.000000', '2024-05-15 06:59:59.000000');
+
+   CALL FindUserScheduleItemsByContentAndDateRange(1, 'Title search', '2024-05-07', '2024-05-21');
+
+   CALL GetScheduleItemById(1);
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+USE `testPTSDB`;
+DROP PROCEDURE IF EXISTS `testPTSDB`.`TestUserGoalStoredProcedures`;
+
+CREATE PROCEDURE `testPTSDB`.`TestUserGoalStoredProcedures`()
+
+BEGIN
+
+   CALL AddUserGoal(1, 'Test AddUserGoal SQL implementation.', 0, 0);
+
+   CALL UpdateUserGoalAllFields(1, 1, 'Test AddUserGoal SQL implementation.', 2, 1);
+
+   CALL GetGoalById(1);
+
+   CALL GetAllGoalsForUser(1);
+
+   CALL FindGoalByUserIdAndExactDescription(1, 'Test AddUserGoal SQL implementation.');
+
+   CALL GetAllChildGoalsFromParent(1, 1);
+
+   CALL FindGoalsByUserIdAndSimilarDescription(1, 'SQL implementation.');
 
 END$$
 
@@ -554,35 +622,11 @@ BEGIN
 
    CALL TestTaskStoredProcedures();
 
-   CALL UpdateUserAllFields(3, 1, 'AlteredLast', 'AlteredFirst', 'D', 'AlteredEmail', 'AlteredUname', 'AlteredPW', 'AlteredPreffs', '2026-04-17 22:00:00');
-
-   CALL AddUserNote(1, 'Test AddUserNote SQL implementation.');
-
-   CALL AddUserGoal(1, 'Test AddUserGoal SQL implementation.', 0, 0);
-
-   CALL UpdateUserGoalAllFields(1, 1, 'Test AddUserGoal SQL implementation.', 2, 1);
-
-   CALL AddScheduleEvent(1, '2026-04-17 22:00:00', '2026-04-17 23:00:00', 'Test AddScheduleEvent', 0, 'Starbucks');
-
-   CALL HideTask(4, 59);
-
-   CALL HideScheduleItem(1, 53);
-
-   CALL HideNote(1, 12);
-
-   CALL UpdateTaskAllFields(50, 4, 5, 'Install a WordPress Archive Plugin', 2, 4, '2025-05-01', '2025-05-01', '2025-05-11', '2025-05-12', '2025-05-11', 2, 1.5, 4, 3, 0, 1, '49;');
-   
-   SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND RequiredDelivery < '2026-03-22' AND Completed IS NULL AND (Hidden IS NULL OR Hidden <> 1) ORDER BY SchedulePriorityGroup 
-ASC, PriorityInGroup ASC;
-
-   SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2026-03-08 08:00:00.000000' AND StartDateTime <= '20
-26-03-09 07:59:59.000000' ORDER BY StartDateTime ASC;
-
-   CALL UpdateScheduleItemAllFields(1, 238, '2026-03-15 01:00:00', '2026-03-15 02:29:59', 'Sorry, no pea soup today.', 1, 'Norm\'s');
-
-   CALL UpdateNoteAllFields(1, 25, 'An index for Location in schedule item is now added.');
+   CALL TestScheduleItemsStoredProcedures();
 
    CALL TestNoteStoredProcedures();
+
+   CALL TestUserGoalStoredProcedures();
 
 END$$
 

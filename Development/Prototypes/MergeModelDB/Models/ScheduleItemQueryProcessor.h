@@ -27,12 +27,6 @@ public:
     std::vector<std::string> findLocationsForRepeatCompletion() noexcept; 
 
 private:
-    std::string formatGetUserDaySchedule(std::chrono::year_month_day scheduleDate, std::size_t userId);
-    std::string formatSelectSiByContentDateRangeUser(std::string content, std::chrono::year_month_day searchStart, 
-        std::chrono::year_month_day searchEnd, std::size_t userId);
-    std::string formatGetUniqueContentsByUserSortByContent(std::string content, std::size_t userId);
-    std::string formatGetAllUniqueContentsByUserSortByContent(std::size_t userId);
-    std::string formatGetAllUniqueLocationsByUserSortByContent(std::size_t userId);
     virtual ScheduleItemModel_shp processResultRow(boost::mysql::row_view& queryRow);
     virtual void fillRequiredIndexes() override;
 

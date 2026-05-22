@@ -21,7 +21,7 @@ UserGoalModel_shp GoalQueryProcessor::getGoalById(std::size_t goalId) noexcept
     {
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserGoals  WHERE idUserGoals = {}", goalId);
+        boost::mysql::format_sql_to(fctx, "CALL GetGoalById({})", goalId);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
     }
@@ -43,9 +43,7 @@ UserGoalModel_shp GoalQueryProcessor::findGoalByUserIdAndExactDescription(std::s
     {
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserGoals");
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Description = {}", userId, fullDescription);
-        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
+        boost::mysql::format_sql_to(fctx, "CALL FindGoalByUserIdAndExactDescription({}, {})", userId, fullDescription);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
     }
@@ -64,7 +62,10 @@ UserGoalList GoalQueryProcessor::getAllGoalsForUser(std::size_t userID) noexcept
 
     try
     {
-        boost::mysql::results localResult = runQueryAsync(formatSelectAllByUserId(userID));
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "CALL GetAllGoalsForUser({})", userID);
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         return processResults(localResult);
     }
 
@@ -100,7 +101,11 @@ UserGoalList GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription(std::siz
 
     try
     {
-        boost::mysql::results localResult = runQueryAsync(formatSelectBySimilarDescription(searchString, userID));
+        initFormatOptions();
+        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_sql_to(fctx, "CALL FindGoalsByUserIdAndSimilarDescription({}, {})", userID, searchString);
+
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         return processResults(localResult);
     }
 
@@ -154,24 +159,11 @@ void GoalQueryProcessor::fillRequiredIndexes()
     assignValueToIndex("Hidden",HiddenIdx);
 }
 
-std::string GoalQueryProcessor::formatSelectAllByUserId(std::size_t userId)
-{
-        initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserGoals ");
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {}", userId);
-        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
-
-        return std::move(fctx).get().value();
-}
-
 std::string GoalQueryProcessor::formatSelectAllChildGoalsWithParentFromUser(std::size_t parentId, std::size_t userId)
 {
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, "SELECT * FROM UserGoals ");
-        boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND ParentGoal = {}", userId, parentId);
-        boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
+        boost::mysql::format_sql_to(fctx, "CALL GetAllChildGoalsFromParent({}, {})", userId, parentId);
 
         return std::move(fctx).get().value();
 }
@@ -179,18 +171,6 @@ std::string GoalQueryProcessor::formatSelectAllChildGoalsWithParentFromUser(std:
 std::string GoalQueryProcessor::formatSelectAllChildGoalsWithParent(UserGoalModel &parentGoal)
 {
     return formatSelectAllChildGoalsWithParentFromUser(parentGoal.getGoalId(), parentGoal.getUserId());
-}
-
-std::string GoalQueryProcessor::formatSelectBySimilarDescription(std::string partialDescription, std::size_t userId)
-{
-    initFormatOptions();
-    boost::mysql::format_context fctx(format_opts.value());
-    boost::mysql::format_sql_to(fctx, "SELECT * FROM UserGoals ");
-    boost::mysql::format_sql_to(fctx, " WHERE UserID = {} AND Description LIKE {}", userId,
-        wrapSearchContentSQLPatternMatch(partialDescription));
-    boost::mysql::format_sql_to(fctx, " AND (Hidden IS NULL OR Hidden <> 1)");
-
-    return std::move(fctx).get().value();
 }
 
 std::vector<ListExceptionTestElement> GoalQueryProcessor::initListExceptionTests() noexcept

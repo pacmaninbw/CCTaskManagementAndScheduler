@@ -496,6 +496,84 @@ BEGIN
 
 END$$
 
+DROP PROCEDURE IF EXISTS `testPTSDB`.`GetGoalById`;
+
+CREATE PROCEDURE `testPTSDB`.`GetGoalById`
+(
+    IN `goalId` INT UNSIGNED
+)
+
+BEGIN
+
+    SELECT * FROM UserGoals WHERE UserGoals.idUserGoals = goalId;
+
+END$$
+
+DROP PROCEDURE IF EXISTS `testPTSDB`.`FindGoalByUserIdAndExactDescription`;
+
+CREATE PROCEDURE `testPTSDB`.`FindGoalByUserIdAndExactDescription`
+(
+    IN `userId` INT UNSIGNED,
+    IN `fullDescription` VARCHAR(1024)
+)
+
+BEGIN
+
+    SELECT * FROM UserGoals
+    WHERE UserGoals.UserID = userId
+    AND UserGoals.Description = fullDescription
+        AND (UserGoals.Hidden IS NULL OR UserGoals.Hidden <> 1);
+
+END$$
+
+DROP PROCEDURE IF EXISTS `testPTSDB`.`GetAllGoalsForUser`;
+
+CREATE PROCEDURE `testPTSDB`.`GetAllGoalsForUser`
+(
+    IN `userId` INT UNSIGNED
+)
+
+BEGIN
+
+    SELECT * FROM UserGoals
+    WHERE UserGoals.UserID = userId
+        AND (UserGoals.Hidden IS NULL OR UserGoals.Hidden <> 1);
+
+END$$
+
+DROP PROCEDURE IF EXISTS `testPTSDB`.`GetAllChildGoalsFromParent`;
+
+CREATE PROCEDURE `testPTSDB`.`GetAllChildGoalsFromParent`
+(
+    IN `userId` INT UNSIGNED,
+    IN `parentGoalId` INT UNSIGNED
+)
+
+BEGIN
+
+    SELECT * FROM UserGoals
+    WHERE UserGoals.UserID = userId
+        AND UserGoals.ParentGoal = parentGoalId
+        AND (UserGoals.Hidden IS NULL OR UserGoals.Hidden <> 1);
+
+END$$
+
+DROP PROCEDURE IF EXISTS `testPTSDB`.`FindGoalsByUserIdAndSimilarDescription`;
+
+CREATE PROCEDURE `testPTSDB`.`FindGoalsByUserIdAndSimilarDescription`
+(
+    IN `userId` INT UNSIGNED,
+    IN `partialDescription` VARCHAR(1024)
+)
+
+BEGIN
+
+    SELECT * FROM UserGoals
+    WHERE UserGoals.UserID = userId AND UserGoals.Description LIKE CONCAT('%', partialDescription, '%')
+        AND (UserGoals.Hidden IS NULL OR UserGoals.Hidden <> 1);
+
+END$$
+
 DELIMITER ;
 
 -- --------------------------------------------------------
@@ -1138,6 +1216,61 @@ BEGIN
     UPDATE UserScheduleItem
         SET Hidden = 1, LastUpdateTS = UTC_TIMESTAMP()
         WHERE UserID = IDUser AND idUserScheduleItem = ScheduleItemID;
+
+END$$
+
+DROP PROCEDURE IF EXISTS `testPTSDB`.`GetScheduleItemById`;
+
+CREATE PROCEDURE `testPTSDB`.`GetScheduleItemById`
+(
+    IN scheduleItemID INT UNSIGNED 
+)
+
+BEGIN
+
+    SELECT * FROM UserScheduleItem
+    WHERE UserScheduleItem.idUserScheduleItem = scheduleItemID
+        AND (UserScheduleItem.Hidden IS NULL OR UserScheduleItem.Hidden <> 1);
+
+END$$
+
+DROP PROCEDURE IF EXISTS `testPTSDB`.`GetUserDaySchedule`;
+
+CREATE PROCEDURE `testPTSDB`.`GetUserDaySchedule`
+(
+    IN `userId` INT UNSIGNED,
+    IN `eventStart` DATETIME,
+    IN `eventEnd` DATETIME
+)
+
+BEGIN
+
+    SELECT * FROM UserScheduleItem
+    WHERE UserScheduleItem.UserID = userId
+        AND (UserScheduleItem.Hidden IS NULL OR UserScheduleItem.Hidden <> 1)
+        AND UserScheduleItem.StartDateTime >= eventStart
+        AND UserScheduleItem.StartDateTime <= eventEnd
+    ORDER BY UserScheduleItem.StartDateTime ASC;
+
+END$$
+
+DROP PROCEDURE IF EXISTS `testPTSDB`.`FindUserScheduleItemsByContentAndDateRange`;
+
+CREATE PROCEDURE `testPTSDB`.`FindUserScheduleItemsByContentAndDateRange`
+(
+    IN `userId` INT UNSIGNED,
+    IN `matchContent`VARCHAR(128),
+    IN `searchStart` DATE,
+    IN `searchEnd` DATE
+)
+
+BEGIN
+
+    SELECT * FROM UserScheduleItem  WHERE UserID = userId
+    AND Title LIKE CONCAT('%', matchContent, '%')
+    AND (Hidden IS NULL OR Hidden <> 1)
+    AND StartDateTime >= searchStart
+    AND StartDateTime <= searchEnd;
 
 END$$
 

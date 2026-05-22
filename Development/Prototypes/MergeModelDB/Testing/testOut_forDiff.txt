@@ -7,6 +7,12 @@ Running User Self Test
 
 
 Running Exception Handling Test Cases
+In Self Test Query is: 
+	CALL AddUser(NULL, 'LastName', 'FirstName', 'M', 'FirstName.LastName@LastName.com', 'LastNameFirstNameM', 'LastNameFirstNameM', '8:30 AM;5:00 PM;1;1;1;0;')
+In Self Test Query is: 
+	CALL UpdateUserAllFields(1, NULL, 'LastName', 'FirstName', 'M', 'FirstName.LastName@LastName.com', 'LastNameFirstNameM', 'LastNameFirstNameM', '8:30 AM;5:00 PM;1;1;1;0;', '2024-05-14 08:31:53.000000')
+In Self Test Query is: 
+	CALL HideUser(1)
 
 
 Running self test on set and get functions for User::Primary Key
@@ -49,9 +55,21 @@ Test Output: 	User ID: 31
 	User Added: 2024-05-14 08:31:53.000000000
 	Last Login: 2024-05-14 08:31:53.000000000
 
+User::testAllInsertFailures before successful insert this = 
+	User ID: 0
+	Last Name: teststringvalue
+	First Name: teststringvalue
+	Middle Initial: 
+	Email: teststringvalue
+	Login Name: teststringvalue
+	PassWord: teststringvalue
+
+In Self Test Query is: 
+	CALL AddUser(NULL, 'teststringvalue', 'teststringvalue', '', 'teststringvalue', 'teststringvalue', 'teststringvalue', '4:30 AM;4:15 PM;1;1;1;1;')
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
 User Self Test PASSED
+User PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
@@ -61,7 +79,13 @@ Running Task Self Test
 
 Running Exception Handling Test Cases
 Caught expected exception from TaskModel::formatInsertStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
+In Self Test Query is: 
+	CALL AddTask(1, 2, 'Testing Exception handling', 1, 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 6, 0e+00, 65, 1, 0, 3, '3;5;7;')
 Caught expected exception from TaskSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
+In Self Test Query is: 
+	CALL UpdateTaskAllFields(1, 1, 2, 'Testing Exception handling', NULL, 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 6, 0e+00, 65, 1, 0, 3, '2;4;6;')
+In Self Test Query is: 
+	CALL HideTask(1, 53)
 
 
 Running self test on set and get functions for Task::Primary Key
@@ -126,12 +150,32 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-05-20
+	Completed Date: 2026-05-22
 	Deleted : FALSE
 
+Task::testAllInsertFailures before successful insert this = 
+TaskModel:
+	Task ID: 0
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Test missing required fields: Set Description
+	Status: 0
+	Scheduled Start Date: 2024-05-07
+	Due Date: 2024-05-21
+	Estimated Effort Hours: 5
+	Actual Effort Hours: 0
+	Priority Group: 1
+	Priority: 0
+	Dependency Count: 0
+Optional Fields
+	Deleted : FALSE
+
+In Self Test Query is: 
+	CALL AddTask(1, 1, 'Test missing required fields: Set Description', NULL, 0, '2024-05-21', '2024-05-07', NULL, NULL, NULL, 5, 0e+00, 1, 0, 0, 0, NULL)
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
 Task Self Test PASSED
+Task PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
@@ -140,6 +184,12 @@ Running UserGoalModel Self Test
 
 
 Running Exception Handling Test Cases
+In Self Test Query is: 
+	CALL AddUserGoal(27, 'Testing insertion exception', NULL, NULL)
+In Self Test Query is: 
+	CALL UpdateUserGoalAllFields(23, 37, 'Testing insertion exception', NULL, NULL)
+In Self Test Query is: 
+	CALL HideGoal(1, 1)
 
 
 Running self test on set and get functions for UserGoalModel::Primary Key
@@ -161,9 +211,20 @@ Test Output: Model Name UserGoalModel
 	Priority: 1
 	Parent ID: 1
 
+UserGoalModel::testAllInsertFailures before successful insert this = 
+Model Name UserGoalModel
+	Goal ID: 0
+	User ID: 51
+	Description: Testing negative note insertion path
+	Priority: 0
+	Parent ID: 0
+
+In Self Test Query is: 
+	CALL AddUserGoal(51, 'Testing negative note insertion path', NULL, NULL)
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
 UserGoalModel Self Test PASSED
+UserGoalModel PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
@@ -172,6 +233,12 @@ Running Note Self Test
 
 
 Running Exception Handling Test Cases
+In Self Test Query is: 
+	CALL AddUserNote(27, 'Testing insertion exception')
+In Self Test Query is: 
+	CALL UpdateNoteAllFields(27, 1, 'Testing insertion exception')
+In Self Test Query is: 
+	CALL HideNote(27, 1)
 
 
 Running self test on set and get functions for Note::Primary Key
@@ -188,9 +255,17 @@ Test Output: 	Note ID: 27
 	User ID: 31
 	Content: Test note content access
 
+Note::testAllInsertFailures before successful insert this = 
+	Note ID: 0
+	User ID: 27
+	Content: Testing negative note insertion path
+
+In Self Test Query is: 
+	CALL AddUserNote(27, 'Testing negative note insertion path')
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
 Note Self Test PASSED
+Note PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
@@ -200,7 +275,13 @@ Running ScheduleItem Self Test
 
 Running Exception Handling Test Cases
 Caught expected exception from ScheduleItemSelfTest::formatInsertStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
+In Self Test Query is: 
+	CALL AddScheduleEvent(1, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Testing Exception handling for Schedule Item Insert', 0, NULL)
 Caught expected exception from ScheduleItemSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
+In Self Test Query is: 
+	CALL UpdateScheduleItemAllFields(1, 57, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Testing Exception handling for Schedule Item Update', 0, NULL)
+In Self Test Query is: 
+	CALL HideScheduleItem(1, 57)
 
 
 Running self test on set and get functions for ScheduleItem::Primary Key
@@ -231,9 +312,23 @@ Test Output: ScheduleItemModel:
 	location: Home Office
 Optional Fields
 
+ScheduleItem::testAllInsertFailures before successful insert this = 
+ScheduleItemModel:
+	ScheduleItem ID: 0
+	User ID: 1
+	Title: Test missing required fields: Set title
+	Start Date and Time: 2024-05-14 08:31:53.000000000
+	End Date and Time: 2024-05-14 08:31:53.000000000
+	Personal: FALSE
+	location: 
+Optional Fields
+
+In Self Test Query is: 
+	CALL AddScheduleEvent(1, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Test missing required fields: Set title', 0, NULL)
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
 ScheduleItem Self Test PASSED
+ScheduleItem PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
@@ -244,8 +339,21 @@ Running UserQueryProcessor Self Test
 Running Exception Handling Test Cases UserQueryProcessor
 
 Exception Test for UserQueryProcessorSelfTest::testExceptionsGetAllUsers()
+In Self Test Query is: 
+	CALL GetAllUsers()
+In Self Test Query is: 
+	CALL GetUserByID(1)
+In Self Test Query is: 
+	CALL GetUserByLoginName('UserOne')
+In Self Test Query is: 
+	CALL GetUserByEmail('UserOne@readyUserOne.com')
+In Self Test Query is: 
+	CALL GetUserByLoginAndPassword('UserOne', 'testPassword')
+In Self Test Query is: 
+	CALL GetUserByFullName('First', 'Last', 'middle')
 
 
+UserQueryProcessor PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
@@ -254,20 +362,35 @@ Running TaskQueryProcessor Self Test
 
 
 Running Exception Handling Test Cases TaskQueryProcessor
+In Self Test Query is: 
+	CALL GetTaskByTaskID(0)
 
 Exception Test for TaskQueryProcessor::getTaskByDescriptionAndAssignedUser
+In Self Test Query is: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'A task description')
 
 Exception Test for TaskQueryProcessor::testExceptionGetActiveTasksForAssignedUser()
+In Self Test Query is: 
+	CALL GetActiveTasksForAssignedUser(1)
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
+In Self Test Query is: 
+	CALL GetUnstartedDueForStartForAssignedUser(1, '2026-05-29')
 
 Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
+In Self Test Query is: 
+	CALL GetTasksCompletedByAssignedAfterDate(1,'2024-05-14')
 
-Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
+Exception Test for TaskQueryProcessor::getTasksByAssignedIDandParentID
+In Self Test Query is: 
+	CALL GetTasksByAssignedIDandParentID(1, 1)
 
 Exception Test for TaskQueryProcessor::testExceptionGetDefaultDashboardTaskList()
+In Self Test Query is: 
+	CALL GetDefaultDashboardTaskList(1, '2026-03-22')
 
 
+TaskQueryProcessor PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
@@ -276,14 +399,25 @@ Running UserGoalModelQueryProcessor Self Test
 
 
 Running Exception Handling Test Cases UserGoalModelQueryProcessor
+In Self Test Query is: 
+	CALL GetGoalById(1)
 
 Exception Test for GoalQueryProcessor::testExceptionsGetAllGoalsForUser()
+In Self Test Query is: 
+	CALL GetAllGoalsForUser(1)
 
 Exception Test for GoalQueryProcessor::testExceptionsGetAllChildrenFromParent()
+In Self Test Query is: 
+	CALL GetAllChildGoalsFromParent(0, 1)
 
 Exception Test for GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription()
+In Self Test Query is: 
+	CALL FindGoalsByUserIdAndSimilarDescription(1, 'Maintain')
+In Self Test Query is: 
+	CALL FindGoalByUserIdAndExactDescription(1, 'Test SelectByUserIDAndDescription Exception Handling')
 
 
+UserGoalModelQueryProcessor PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
@@ -292,18 +426,31 @@ Running NoteModelQueryProcessor Self Test
 
 
 Running Exception Handling Test Cases NoteModelQueryProcessor
+In Self Test Query is: 
+	CALL GetNoteByID(1)
 
 Exception Test for NoteQueryProcessor::testExceptionsGetAllNotes()
+In Self Test Query is: 
+	CALL GetAllUndeletedNotesForUser(1)
 
 Exception Test for NoteQueryProcessor::testExceptionsGetNotesForUserLikeContent()
+In Self Test Query is: 
+	CALL GetNotesForUserSimlarToContent(1, 'Test Content')
 
 Exception Test for NoteQueryProcessor::testExceptionsGetNotesForUserCreatedDateRange()
+In Self Test Query is: 
+	CALL GetAllNotesForUserCreatedInDatgeRange(1, '2024-05-07', '2024-05-14')
 
 Exception Test for NoteQueryProcessor::testExceptionsGetNotesForUserEditedDateRange()
+In Self Test Query is: 
+	CALL GetAllNotesForUserEditedInDatgeRange(1, '2024-05-07', '2024-05-14')
 
 Exception Test for NoteQueryProcessor::testExceptionsGetDashboardNoteTable()
+In Self Test Query is: 
+	CALL GetDashboardNoteTable(1, '2024-05-14 07:00:00.000000', '2024-05-15 06:59:00.000000')
 
 
+NoteModelQueryProcessor PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
@@ -314,22 +461,127 @@ Running ScheduleItemQueryProcessor Self Test
 Running Exception Handling Test Cases ScheduleItemQueryProcessor
 
 Exception Test for ScheduleItemQueryProcessor::testExceptionGgetUserDaySchedule()
+In Self Test Query is: 
+	CALL GetUserDaySchedule(1, '2024-05-14 07:00:00.000000', '2024-05-15 06:59:59.000000')
+In Self Test Query is: 
+	CALL GetScheduleItemById(1)
 
 Exception Test for ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByContentAndDateRange()
+In Self Test Query is: 
+	CALL FindUserScheduleItemsByContentAndDateRange(1, 'Title search', '2024-05-07', '2024-05-21')
 
 Exception Test for ScheduleItemQueryProcessor::testExceptionFindEventSToRepeat()
+In Self Test Query is: 
+	CALL ScheduleItemContentSelectionList('Title search', 1)
 
 Exception Test for ScheduleItemQueryProcessor::testExceptionFindEventsForRepeatCompletion()
+In Self Test Query is: 
+	CALL EventTitlesForCompleter(1)
 
 Exception Test for ScheduleItemQueryProcessor::testExceptionFindLocationsForRepeatCompletion()
+In Self Test Query is: 
+	CALL EventLocationsForCompleter(1)
 
 
+ScheduleItemQueryProcessor PASSED Self Test
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
 
 Running user Integration Tests
+Running: 
+	CALL GetAllUsers()
+Running: 
+	CALL AddUser(NULL, 'One', 'User', 'P', 'UserOne@gmail.com', 'OneUserP', 'OneUserP', '8:30 AM;5:00 PM;1;1;1;0;')
+Running: 
+	CALL GetUserByLoginName('OneUserP')
+Running: 
+	CALL GetUserByLoginAndPassword('OneUserP', 'OneUserP')
+Running: 
+	CALL GetUserByLoginAndPassword('OneUserP', 'NotThePassword')
+Running: 
+	CALL GetUserByFullName('One', 'User', 'P')
+Running: 
+	CALL GetUserByEmail('UserOne@gmail.com')
+Running: 
+	CALL UpdateUserAllFields(1, NULL, 'One', 'User', 'P', 'UserOne@gmail.com', 'OneUserP', 'MyNew**&pAs5Word1', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
+Running: 
+	CALL GetUserByID(1)
+Running: 
+	CALL AddUser(NULL, 'Doe', 'John', 'Q', 'johndoe@gmail.com', 'DoeJohnQ', 'DoeJohnQ', '8:30 AM;5:00 PM;1;1;1;0;')
+Running: 
+	CALL GetUserByLoginName('DoeJohnQ')
+Running: 
+	CALL GetUserByLoginAndPassword('DoeJohnQ', 'DoeJohnQ')
+Running: 
+	CALL GetUserByLoginAndPassword('DoeJohnQ', 'NotThePassword')
+Running: 
+	CALL GetUserByFullName('Doe', 'John', 'Q')
+Running: 
+	CALL GetUserByEmail('johndoe@gmail.com')
+Running: 
+	CALL UpdateUserAllFields(2, NULL, 'Doe', 'John', 'Q', 'johndoe@gmail.com', 'DoeJohnQ', 'MyNew**&pAs5Word2', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
+Running: 
+	CALL GetUserByID(2)
+Running: 
+	CALL AddUser(NULL, 'Public', 'John', 'Q', 'anyone@gmail.com', 'PublicJohnQ', 'PublicJohnQ', '8:30 AM;5:00 PM;1;1;1;0;')
+Running: 
+	CALL GetUserByLoginName('PublicJohnQ')
+Running: 
+	CALL GetUserByLoginAndPassword('PublicJohnQ', 'PublicJohnQ')
+Running: 
+	CALL GetUserByLoginAndPassword('PublicJohnQ', 'NotThePassword')
+Running: 
+	CALL GetUserByFullName('Public', 'John', 'Q')
+Running: 
+	CALL GetUserByEmail('anyone@gmail.com')
+Running: 
+	CALL UpdateUserAllFields(3, NULL, 'Public', 'John', 'Q', 'anyone@gmail.com', 'PublicJohnQ', 'MyNew**&pAs5Word3', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
+Running: 
+	CALL GetUserByID(3)
+Running: 
+	CALL AddUser(NULL, 'Doe', 'Jane', 'R', 'jdr@gmail.com', 'DoeJaneR', 'DoeJaneR', '8:30 AM;5:00 PM;1;1;1;0;')
+Running: 
+	CALL GetUserByLoginName('DoeJaneR')
+Running: 
+	CALL GetUserByLoginAndPassword('DoeJaneR', 'DoeJaneR')
+Running: 
+	CALL GetUserByLoginAndPassword('DoeJaneR', 'NotThePassword')
+Running: 
+	CALL GetUserByFullName('Doe', 'Jane', 'R')
+Running: 
+	CALL GetUserByEmail('jdr@gmail.com')
+Running: 
+	CALL UpdateUserAllFields(4, NULL, 'Doe', 'Jane', 'R', 'jdr@gmail.com', 'DoeJaneR', 'MyNew**&pAs5Word4', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
+Running: 
+	CALL GetUserByID(4)
+Running: 
+	CALL AddUser(NULL, 'Case', 'Space', 'O', 'spacecase@gmail.com', 'CaseSpaceO', 'CaseSpaceO', '8:30 AM;5:00 PM;1;1;1;0;')
+Running: 
+	CALL GetUserByLoginName('CaseSpaceO')
+Running: 
+	CALL GetUserByLoginAndPassword('CaseSpaceO', 'CaseSpaceO')
+Running: 
+	CALL GetUserByLoginAndPassword('CaseSpaceO', 'NotThePassword')
+Running: 
+	CALL GetUserByFullName('Case', 'Space', 'O')
+Running: 
+	CALL GetUserByEmail('spacecase@gmail.com')
+Running: 
+	CALL UpdateUserAllFields(5, NULL, 'Case', 'Space', 'O', 'spacecase@gmail.com', 'CaseSpaceO', 'MyNew**&pAs5Word5', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
+Running: 
+	CALL GetUserByID(5)
+Running: 
+	CALL GetAllUsers()
 All positive path tests for database insertions and retrievals of user PASSED!
+Running: 
+	CALL GetUserByID(1)
+Expected error was; User not modified!
+
+Running: 
+	CALL GetUserByID(1)
+Expected error was; User already in Database, use Update!
+
 All negative path tests for database insertions and retrievals of user PASSED!
 All tests for database insertions and retrievals of user PASSED!
 ---------------------------------------------------------------------------------
@@ -337,31 +589,1196 @@ All tests for database insertions and retrievals of user PASSED!
 ---------------------------------------------------------------------------------
 
 Running task Integration Tests
-All positive path tests for database insertions and retrievals of task PASSED!
+Running: 
+	CALL GetUserByFullName('One', 'User', 'P')
+Running: 
+	CALL AddTask(1, 1, 'Archive BHHS74Reunion website to external SSD', 0, 3, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', NULL, 12, 1e+00, 65, 1, 0, 0, NULL)
+Running: 
+	CALL GetTaskByTaskID(1)
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Archive BHHS74Reunion website to external SSD')
+Running: 
+	CALL AddTask(1, 1, 'Develop Personal Planning Tool', 0, 3, '2025-05-05', '2025-03-20', '2025-03-20', '2025-05-15', NULL, 300, 4e+01, 65, 2, 0, 0, NULL)
+Running: 
+	CALL GetTaskByTaskID(2)
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Develop Personal Planning Tool')
+Running: 
+	CALL AddTask(1, 1, 'Check with GoDaddy about providing service to archive website to external SSD', 1, 3, '2025-04-15', '2025-04-15', '2025-04-15', '2025-04-15', NULL, 2, 1e+00, 65, 1, 0, 0, NULL)
+Running: 
+	CALL GetTaskByTaskID(3)
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Check with GoDaddy about providing service to archive website to external SSD')
+Running: 
+	CALL AddTask(1, 1, 'Install a WordPress Archive Plugin', 1, 0, '2025-05-01', '2025-05-01', NULL, '2025-05-01', NULL, 1, 0e+00, 66, 2, 0, 0, NULL)
+Running: 
+	CALL GetTaskByTaskID(4)
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Install a WordPress Archive Plugin')
+Running: 
+	CALL AddTask(1, 1, 'Have GoDaddy install PHPMyAdmin', 1, 0, '2025-05-02', '2025-05-02', NULL, '2025-05-03', NULL, 1, 0e+00, 66, 3, 0, 0, NULL)
+Running: 
+	CALL GetTaskByTaskID(5)
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Have GoDaddy install PHPMyAdmin')
+Running: 
+	CALL AddTask(1, 1, 'Run Archive Plugin', 1, 0, '2025-05-03', '2025-05-03', NULL, '2025-05-03', NULL, 2, 0e+00, 66, 4, 0, 0, NULL)
+Running: 
+	CALL GetTaskByTaskID(6)
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Run Archive Plugin')
+Running: 
+	CALL AddTask(1, 1, 'Log into PHPMyAdmin and save Database to disk', 1, 0, '2025-05-04', '2025-05-04', NULL, '2025-05-04', NULL, 1, 0e+00, 66, 5, 0, 0, NULL)
+Running: 
+	CALL GetTaskByTaskID(7)
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Log into PHPMyAdmin and save Database to disk')
+Running: 
+	CALL AddTask(1, 1, 'FTP all website files to computer', 1, 0, '2025-05-05', '2025-05-05', NULL, '2025-05-05', NULL, 3, 0e+00, 66, 6, 0, 0, NULL)
+Running: 
+	CALL GetTaskByTaskID(8)
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'FTP all website files to computer')
+Running: 
+	CALL AddTask(1, 1, 'Store all website files on external SSD', 1, 0, '2025-05-05', '2025-05-05', NULL, '2025-05-05', NULL, 2, 0e+00, 66, 7, 0, 0, NULL)
+Running: 
+	CALL GetTaskByTaskID(9)
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Store all website files on external SSD')
+Running: 
+	CALL AddTask(1, 1, 'Design Database for Personal Planner', 2, 3, '2025-04-08', '2025-03-20', '2025-03-20', '2025-05-01', NULL, 24, 1.6e+01, 65, 0, 0, 0, NULL)
+Running: 
+	CALL GetTaskByTaskID(10)
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Design Database for Personal Planner')
+Running: 
+	CALL AddTask(1, 1, 'Design UML Diagram for Personal Planner', 2, 3, '2025-04-12', '2025-04-08', '2025-04-08', '2025-04-15', NULL, 16, 5.25e+00, 65, 0, 0, 0, NULL)
+Running: 
+	CALL GetTaskByTaskID(11)
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Design UML Diagram for Personal Planner')
+Running: 
+	CALL AddTask(1, 1, 'Grocery Shopping', 0, 0, '2025-04-12', '2025-04-11', NULL, '2026-05-22', NULL, 2, 2e+00, 67, 1, 0, 0, NULL)
+Running: 
+	CALL GetTaskByTaskID(12)
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Grocery Shopping')
+Running: 
+	CALL AddTask(1, 1, 'Daily 30 minute walk', 0, 0, '2025-04-11', '2025-04-11', NULL, '2056-07-07', NULL, 1, 0e+00, 67, 2, 0, 0, NULL)
+Running: 
+	CALL GetTaskByTaskID(13)
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Daily 30 minute walk')
+Running: 
+	CALL AddTask(1, 1, 'Clean apartment', 0, 0, '2025-04-12', '2025-04-12', NULL, '2026-05-22', NULL, 2, 0e+00, 67, 3, 0, 0, NULL)
+Running: 
+	CALL GetTaskByTaskID(14)
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Clean apartment')
+Running: 
+	CALL GetUnstartedDueForStartForAssignedUser(1, '2026-05-29')
+Find unstarted tasks for user(1) PASSED!
+User 1 has 9 unstarted tasks
+TaskModel:
+	Task ID: 4
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Install a WordPress Archive Plugin
+	Status: 0
+	Scheduled Start Date: 2025-05-01
+	Due Date: 2025-05-01
+	Estimated Effort Hours: 1
+	Actual Effort Hours: 0
+	Priority Group: 66
+	Priority: 2
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 1
+	Estimated Completion Date: 2025-05-01
+	Deleted : FALSE
+
+TaskModel:
+	Task ID: 5
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Have GoDaddy install PHPMyAdmin
+	Status: 0
+	Scheduled Start Date: 2025-05-02
+	Due Date: 2025-05-02
+	Estimated Effort Hours: 1
+	Actual Effort Hours: 0
+	Priority Group: 66
+	Priority: 3
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 1
+	Estimated Completion Date: 2025-05-03
+	Deleted : FALSE
+
+TaskModel:
+	Task ID: 6
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Run Archive Plugin
+	Status: 0
+	Scheduled Start Date: 2025-05-03
+	Due Date: 2025-05-03
+	Estimated Effort Hours: 2
+	Actual Effort Hours: 0
+	Priority Group: 66
+	Priority: 4
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 1
+	Estimated Completion Date: 2025-05-03
+	Deleted : FALSE
+
+TaskModel:
+	Task ID: 7
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Log into PHPMyAdmin and save Database to disk
+	Status: 0
+	Scheduled Start Date: 2025-05-04
+	Due Date: 2025-05-04
+	Estimated Effort Hours: 1
+	Actual Effort Hours: 0
+	Priority Group: 66
+	Priority: 5
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 1
+	Estimated Completion Date: 2025-05-04
+	Deleted : FALSE
+
+TaskModel:
+	Task ID: 8
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: FTP all website files to computer
+	Status: 0
+	Scheduled Start Date: 2025-05-05
+	Due Date: 2025-05-05
+	Estimated Effort Hours: 3
+	Actual Effort Hours: 0
+	Priority Group: 66
+	Priority: 6
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 1
+	Estimated Completion Date: 2025-05-05
+	Deleted : FALSE
+
+TaskModel:
+	Task ID: 9
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Store all website files on external SSD
+	Status: 0
+	Scheduled Start Date: 2025-05-05
+	Due Date: 2025-05-05
+	Estimated Effort Hours: 2
+	Actual Effort Hours: 0
+	Priority Group: 66
+	Priority: 7
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 1
+	Estimated Completion Date: 2025-05-05
+	Deleted : FALSE
+
+TaskModel:
+	Task ID: 12
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Grocery Shopping
+	Status: 0
+	Scheduled Start Date: 2025-04-11
+	Due Date: 2025-04-12
+	Estimated Effort Hours: 2
+	Actual Effort Hours: 2
+	Priority Group: 67
+	Priority: 1
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 0
+	Estimated Completion Date: 2026-05-22
+	Deleted : FALSE
+
+TaskModel:
+	Task ID: 13
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Daily 30 minute walk
+	Status: 0
+	Scheduled Start Date: 2025-04-11
+	Due Date: 2025-04-11
+	Estimated Effort Hours: 1
+	Actual Effort Hours: 0
+	Priority Group: 67
+	Priority: 2
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 0
+	Estimated Completion Date: 2056-07-07
+	Deleted : FALSE
+
+TaskModel:
+	Task ID: 14
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Clean apartment
+	Status: 0
+	Scheduled Start Date: 2025-04-12
+	Due Date: 2025-04-12
+	Estimated Effort Hours: 2
+	Actual Effort Hours: 0
+	Priority Group: 67
+	Priority: 3
+	Dependency Count: 0
+Optional Fields
+	Status: Not Started
+	Parent ID: 0
+	Estimated Completion Date: 2026-05-22
+	Deleted : FALSE
+
+Running: 
+	CALL GetUserByFullName('Black', 'Paul', 'A')
+Failed to find realUser: User not found!
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Archive BHHS74Reunion website to external SSD')
+Running: 
+	CALL GetTaskByTaskID(1)
+Running: 
+	CALL UpdateTaskAllFields(1, 1, 1, 'Archive BHHS74Reunion website to external SSD', 0, 4, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', '2026-05-22', 12, 6e+00, 65, 1, 0, 0, NULL)
+Running: 
+	CALL GetTaskByTaskID(1)
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Check with GoDaddy about providing service to archive website to external SSD')
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Install a WordPress Archive Plugin')
+Running: 
+	CALL UpdateTaskAllFields(4, 1, 1, 'Install a WordPress Archive Plugin', 1, 0, '2025-05-01', '2025-05-01', NULL, '2025-05-01', NULL, 1, 0e+00, 66, 2, 0, 1, '3;')
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Log into PHPMyAdmin and save Database to disk')
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Check with GoDaddy about providing service to archive website to external SSD')
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Install a WordPress Archive Plugin')
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Have GoDaddy install PHPMyAdmin')
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Run Archive Plugin')
+Running: 
+	CALL UpdateTaskAllFields(7, 1, 1, 'Log into PHPMyAdmin and save Database to disk', 1, 0, '2025-05-04', '2025-05-04', NULL, '2025-05-04', NULL, 1, 0e+00, 66, 5, 0, 4, '3;4;5;6;')
+Running: 
+	CALL GetTaskByTaskID(7)
+Running: 
+	CALL GetTaskByDescriptionAndAssignedUser(1, 'Archive BHHS74Reunion website to external SSD')
+Running: 
+	CALL GetTasksByAssignedIDandParentID(1, 1)
+Running: 
+	CALL UpdateTaskAllFields(3, 1, 1, 'Check with GoDaddy about providing service to archive website to external SSD', 1, 4, '2025-04-15', '2025-04-15', '2025-04-15', '2025-04-15', '2026-05-22', 2, 1e+00, 65, 1, 0, 0, NULL)
+Running: 
+	CALL UpdateTaskAllFields(4, 1, 1, 'Install a WordPress Archive Plugin', 1, 4, '2025-05-01', '2025-05-01', NULL, '2025-05-01', '2026-05-22', 1, 0e+00, 66, 2, 0, 1, '3;')
+Running: 
+	CALL UpdateTaskAllFields(5, 1, 1, 'Have GoDaddy install PHPMyAdmin', 1, 4, '2025-05-02', '2025-05-02', NULL, '2025-05-03', '2026-05-22', 1, 0e+00, 66, 3, 0, 0, NULL)
+Running: 
+	CALL UpdateTaskAllFields(6, 1, 1, 'Run Archive Plugin', 1, 4, '2025-05-03', '2025-05-03', NULL, '2025-05-03', '2026-05-22', 2, 0e+00, 66, 4, 0, 0, NULL)
+Running: 
+	CALL UpdateTaskAllFields(7, 1, 1, 'Log into PHPMyAdmin and save Database to disk', 1, 4, '2025-05-04', '2025-05-04', NULL, '2025-05-04', '2026-05-22', 1, 0e+00, 66, 5, 0, 4, '3;4;5;6;')
+Running: 
+	CALL UpdateTaskAllFields(8, 1, 1, 'FTP all website files to computer', 1, 4, '2025-05-05', '2025-05-05', NULL, '2025-05-05', '2026-05-22', 3, 0e+00, 66, 6, 0, 0, NULL)
+Running: 
+	CALL UpdateTaskAllFields(9, 1, 1, 'Store all website files on external SSD', 1, 4, '2025-05-05', '2025-05-05', NULL, '2025-05-05', '2026-05-22', 2, 0e+00, 66, 7, 0, 0, NULL)
+Running: 
+	CALL GetTasksCompletedByAssignedAfterDate(1,'2025-05-11')
+Running: 
+	CALL GetActiveTasksForAssignedUser(1)
+Find active tasks for user(1) PASSED!
+User 1 has 3 unstarted tasks
+TaskModel:
+	Task ID: 2
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Develop Personal Planning Tool
+	Status: 3
+	Scheduled Start Date: 2025-03-20
+	Due Date: 2025-05-05
+	Estimated Effort Hours: 300
+	Actual Effort Hours: 40
+	Priority Group: 65
+	Priority: 2
+	Dependency Count: 0
+Optional Fields
+	Status: Work in Progress
+	Parent ID: 0
+	Actual Start Date: 2025-03-20
+	Estimated Completion Date: 2025-05-15
+	Deleted : FALSE
+
+TaskModel:
+	Task ID: 10
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Design Database for Personal Planner
+	Status: 3
+	Scheduled Start Date: 2025-03-20
+	Due Date: 2025-04-08
+	Estimated Effort Hours: 24
+	Actual Effort Hours: 16
+	Priority Group: 65
+	Priority: 0
+	Dependency Count: 0
+Optional Fields
+	Status: Work in Progress
+	Parent ID: 2
+	Actual Start Date: 2025-03-20
+	Estimated Completion Date: 2025-05-01
+	Deleted : FALSE
+
+TaskModel:
+	Task ID: 11
+	Creator ID: 1
+	Assigned To ID: 1
+	Description: Design UML Diagram for Personal Planner
+	Status: 3
+	Scheduled Start Date: 2025-04-08
+	Due Date: 2025-04-12
+	Estimated Effort Hours: 16
+	Actual Effort Hours: 5.25
+	Priority Group: 65
+	Priority: 0
+	Dependency Count: 0
+Optional Fields
+	Status: Work in Progress
+	Parent ID: 2
+	Actual Start Date: 2025-04-08
+	Estimated Completion Date: 2025-04-15
+	Deleted : FALSE
+
+Running: 
+	CALL GetUnstartedDueForStartForAssignedUser(1, '2026-05-29')
+Running: 
+	CALL HideTask(1, 14)
+Running: 
+	CALL GetUnstartedDueForStartForAssignedUser(1, '2026-05-29')
+Task (14) for user (1) marked Deleted. TEST PASSED
+All positive path tests for database insertions and retrievals of task FAILED!
+Running: 
+	CALL GetTaskByTaskID(1)
+Expected error was; Task already in Database, use Update!
+
+Running: 
+	CALL GetTaskByTaskID(1)
+Expected error was; Task not modified!
+
+Expected error was; Task is missing required values!
+Missing Task required description!
+Missing Task required estimated effort in hours!
+Missing Task required priority!
+Missing Task required scheduled start date!
+Missing Task required due date (deadline)!
+
+Expected error was; Task is missing required values!
+Missing Task required estimated effort in hours!
+Missing Task required priority!
+Missing Task required scheduled start date!
+Missing Task required due date (deadline)!
+
+Expected error was; Task is missing required values!
+Missing Task required priority!
+Missing Task required scheduled start date!
+Missing Task required due date (deadline)!
+
+Expected error was; Task is missing required values!
+Missing Task required priority!
+Missing Task required due date (deadline)!
+
+Expected error was; Task is missing required values!
+Missing Task required priority!
+
+Running: 
+	CALL AddTask(1, 1, 'Test missing required fields: Set Description', NULL, 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 3, 0e+00, 65, 1, 0, 0, NULL)
+Expected error was; Task is missing required values!
+Missing Task required description!
+Missing Task required estimated effort in hours!
+Missing Task required priority!
+Missing Task required scheduled start date!
+Missing Task required due date (deadline)!
+
+Expected error was; Task is missing required values!
+Missing Task required estimated effort in hours!
+Missing Task required priority!
+Missing Task required scheduled start date!
+Missing Task required due date (deadline)!
+
+Expected error was; Task is missing required values!
+Missing Task required priority!
+Missing Task required scheduled start date!
+Missing Task required due date (deadline)!
+
+Expected error was; Task is missing required values!
+Missing Task required priority!
+Missing Task required due date (deadline)!
+
+Expected error was; Task is missing required values!
+Missing Task required priority!
+
+Running: 
+	CALL AddTask(1, 1, 'Test shared pointer interaction in missing required fields', NULL, 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 3, 0e+00, 65, 1, 0, 0, NULL)
 All negative path tests for database insertions and retrievals of task PASSED!
-All tests for database insertions and retrievals of task PASSED!
+All tests for database insertions and retrievals of task FAILED!
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
+Running: 
+	CALL GetUserByFullName('One', 'User', 'P')
 
 Running Goal Integration Tests
+Running: 
+	CALL AddUserGoal(1, 'Get a Job in Software Engineering', 1, NULL)
+Running: 
+	CALL FindGoalByUserIdAndExactDescription(1, 'Get a Job in Software Engineering')
+Running: 
+	CALL AddUserGoal(1, 'Maintain and improve my software engineering skills', 1, 1)
+Running: 
+	CALL FindGoalByUserIdAndExactDescription(1, 'Get a Job in Software Engineering')
+Running: 
+	CALL AddUserGoal(1, 'Maintain and improve my C++ programming skills', 1, 1)
+Running: 
+	CALL FindGoalByUserIdAndExactDescription(1, 'Get a Job in Software Engineering')
+Running: 
+	CALL AddUserGoal(1, 'Maintain and improve my  C programming skills', 2, 1)
+Running: 
+	CALL AddUserGoal(1, 'Maintain or archive the BHHS 74 Reunion website', 2, NULL)
+Running: 
+	CALL FindGoalByUserIdAndExactDescription(1, 'Get a Job in Software Engineering')
+Running: 
+	CALL AddUserGoal(1, 'Maintain and improve my SQL skills', 3, 1)
+Running: 
+	CALL FindGoalByUserIdAndExactDescription(1, 'Get a Job in Software Engineering')
+Running: 
+	CALL AddUserGoal(1, 'Learn QT graphic system', 4, 1)
+Running: 
+	CALL FindGoalByUserIdAndExactDescription(1, 'Get a Job in Software Engineering')
+Running: 
+	CALL AddUserGoal(1, 'Improve my Linux Programming skills', 5, 1)
+Running: 
+	CALL FindGoalByUserIdAndExactDescription(1, 'Get a Job in Software Engineering')
+Running: 
+	CALL AddUserGoal(1, 'Get an embedded programming certificate', 4, 1)
+Running: 
+	CALL FindGoalByUserIdAndExactDescription(1, 'Get a Job in Software Engineering')
+Running: 
+	CALL AddUserGoal(1, 'Learn open source Linux Core Programming', 4, 1)
+Running: 
+	CALL AddUserGoal(1, 'Maintain my health', 2, NULL)
+Running: 
+	CALL FindGoalByUserIdAndExactDescription(1, 'Maintain my health')
+Running: 
+	CALL AddUserGoal(1, 'Eat as healthy as possible', 3, 11)
+Running: 
+	CALL FindGoalByUserIdAndExactDescription(1, 'Maintain my health')
+Running: 
+	CALL AddUserGoal(1, 'Walk 30 minutes a day', 4, 11)
+Running: 
+	CALL FindGoalByUserIdAndExactDescription(1, 'Maintain my health')
+Running: 
+	CALL AddUserGoal(1, 'Track my vital signs', 3, 11)
+Running: 
+	CALL FindGoalByUserIdAndExactDescription(1, 'Maintain my health')
+Running: 
+	CALL AddUserGoal(1, 'Get my weight down to 190 pounds', 4, 11)
+Running: 
+	CALL AddUserGoal(1, 'Be more organized', 1, NULL)
+Running: 
+	CALL AddUserGoal(1, 'Effectively moderate the code review site on stack exchange', 1, NULL)
+Running: 
+	CALL FindGoalByUserIdAndExactDescription(1, 'Get a Job in Software Engineering')
+Running: 
+	CALL GetAllChildGoalsFromParent(1, 1)
+Model Name UserGoalModel
+	Goal ID: 1
+	User ID: 1
+	Description: Get a Job in Software Engineering
+	Priority: 1
+	Parent ID: 0
+
+Find all child goals for(1) PASSED!
+Goal 1 has 8 child goals
+Model Name UserGoalModel
+	Goal ID: 2
+	User ID: 1
+	Description: Maintain and improve my software engineering skills
+	Priority: 1
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 3
+	User ID: 1
+	Description: Maintain and improve my C++ programming skills
+	Priority: 1
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 4
+	User ID: 1
+	Description: Maintain and improve my  C programming skills
+	Priority: 2
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 6
+	User ID: 1
+	Description: Maintain and improve my SQL skills
+	Priority: 3
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 7
+	User ID: 1
+	Description: Learn QT graphic system
+	Priority: 4
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 8
+	User ID: 1
+	Description: Improve my Linux Programming skills
+	Priority: 5
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 9
+	User ID: 1
+	Description: Get an embedded programming certificate
+	Priority: 4
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 10
+	User ID: 1
+	Description: Learn open source Linux Core Programming
+	Priority: 4
+	Parent ID: 1
+
+Running: 
+	CALL GetAllGoalsForUser(1)
+Find all goals for user (1) PASSED!
+User 1 has 17 goals
+Model Name UserGoalModel
+	Goal ID: 1
+	User ID: 1
+	Description: Get a Job in Software Engineering
+	Priority: 1
+	Parent ID: 0
+
+Model Name UserGoalModel
+	Goal ID: 2
+	User ID: 1
+	Description: Maintain and improve my software engineering skills
+	Priority: 1
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 3
+	User ID: 1
+	Description: Maintain and improve my C++ programming skills
+	Priority: 1
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 4
+	User ID: 1
+	Description: Maintain and improve my  C programming skills
+	Priority: 2
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 5
+	User ID: 1
+	Description: Maintain or archive the BHHS 74 Reunion website
+	Priority: 2
+	Parent ID: 0
+
+Model Name UserGoalModel
+	Goal ID: 6
+	User ID: 1
+	Description: Maintain and improve my SQL skills
+	Priority: 3
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 7
+	User ID: 1
+	Description: Learn QT graphic system
+	Priority: 4
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 8
+	User ID: 1
+	Description: Improve my Linux Programming skills
+	Priority: 5
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 9
+	User ID: 1
+	Description: Get an embedded programming certificate
+	Priority: 4
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 10
+	User ID: 1
+	Description: Learn open source Linux Core Programming
+	Priority: 4
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 11
+	User ID: 1
+	Description: Maintain my health
+	Priority: 2
+	Parent ID: 0
+
+Model Name UserGoalModel
+	Goal ID: 12
+	User ID: 1
+	Description: Eat as healthy as possible
+	Priority: 3
+	Parent ID: 11
+
+Model Name UserGoalModel
+	Goal ID: 13
+	User ID: 1
+	Description: Walk 30 minutes a day
+	Priority: 4
+	Parent ID: 11
+
+Model Name UserGoalModel
+	Goal ID: 14
+	User ID: 1
+	Description: Track my vital signs
+	Priority: 3
+	Parent ID: 11
+
+Model Name UserGoalModel
+	Goal ID: 15
+	User ID: 1
+	Description: Get my weight down to 190 pounds
+	Priority: 4
+	Parent ID: 11
+
+Model Name UserGoalModel
+	Goal ID: 16
+	User ID: 1
+	Description: Be more organized
+	Priority: 1
+	Parent ID: 0
+
+Model Name UserGoalModel
+	Goal ID: 17
+	User ID: 1
+	Description: Effectively moderate the code review site on stack exchange
+	Priority: 1
+	Parent ID: 0
+
+Running: 
+	CALL FindGoalsByUserIdAndSimilarDescription(1, 'Maintain')
+Find all goals for user (1) containing Maintain PASSED!
+User 1 has 6 goals
+Model Name UserGoalModel
+	Goal ID: 2
+	User ID: 1
+	Description: Maintain and improve my software engineering skills
+	Priority: 1
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 3
+	User ID: 1
+	Description: Maintain and improve my C++ programming skills
+	Priority: 1
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 4
+	User ID: 1
+	Description: Maintain and improve my  C programming skills
+	Priority: 2
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 5
+	User ID: 1
+	Description: Maintain or archive the BHHS 74 Reunion website
+	Priority: 2
+	Parent ID: 0
+
+Model Name UserGoalModel
+	Goal ID: 6
+	User ID: 1
+	Description: Maintain and improve my SQL skills
+	Priority: 3
+	Parent ID: 1
+
+Model Name UserGoalModel
+	Goal ID: 11
+	User ID: 1
+	Description: Maintain my health
+	Priority: 2
+	Parent ID: 0
+
+Running: 
+	CALL GetAllGoalsForUser(1)
+Running: 
+	CALL HideGoal(1, 16)
+Running: 
+	CALL GetAllGoalsForUser(1)
+Original goal list size: 17 Altered goal list size: 16
+goal (16) for user (1) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of Goal PASSED!
+Expected error was; UserGoalModel is missing required values!
+Missing UserGoalModel required User ID!
+Missing UserGoalModel required Description!
+
+Expected error was; UserGoalModel is missing required values!
+Missing UserGoalModel required Description!
+Missing UserGoalModel required Description!
+
+Running: 
+	CALL AddUserGoal(1, 'Test missing field Description', NULL, NULL)
+Running: 
+	CALL GetGoalById(1)
+Expected error was; UserGoalModel not modified!
+
+Running: 
+	CALL GetGoalById(1)
+Expected error was; UserGoalModel already in Database, use Update!
+
 All negative path tests for database insertions and retrievals of Goal PASSED!
 All tests for database insertions and retrievals of Goal PASSED!
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
+Running: 
+	CALL GetUserByFullName('One', 'User', 'P')
 
 Running Note Integration Tests
-All positive path tests for database insertions and retrievals of Note PASSED!
+Running: 
+	CALL AddUserNote(1, 'Get a Job in Software Engineering')
+Running: 
+	CALL AddUserNote(1, 'Maintain and improve my software engineering skills')
+Running: 
+	CALL AddUserNote(1, 'Maintain and improve my C++ programming skills')
+Running: 
+	CALL AddUserNote(1, 'Maintain and improve my  C programming skills')
+Running: 
+	CALL AddUserNote(1, 'Maintain or archive the BHHS 74 Reunion website')
+Running: 
+	CALL AddUserNote(1, 'Maintain and improve my SQL skills')
+Running: 
+	CALL AddUserNote(1, 'Learn QT graphic system')
+Running: 
+	CALL AddUserNote(1, 'Improve my Linux Programming skills')
+Running: 
+	CALL AddUserNote(1, 'Get an embedded programming certificate')
+Running: 
+	CALL AddUserNote(1, 'Learn open source Linux Core Programming')
+Running: 
+	CALL AddUserNote(1, 'Maintain my health')
+Running: 
+	CALL AddUserNote(1, 'Eat as healthy as possible')
+Running: 
+	CALL AddUserNote(1, 'Walk 30 minutes a day')
+Running: 
+	CALL AddUserNote(1, 'Track my vital signs')
+Running: 
+	CALL AddUserNote(1, 'Get my weight down to 190 pounds')
+Running: 
+	CALL AddUserNote(1, 'Be more organized')
+Running: 
+	CALL AddUserNote(1, 'Effectively moderate the code review site on stack exchange')
+Running: 
+	CALL GetNotesForUserSimlarToContent(1, 'Be more organized')
+Running: 
+	CALL UpdateNoteAllFields(1, 16, 'Use a planner / organizer')
+Update UserNote Passed integration test
+	Note ID: 16
+	User ID: 1
+	Content: Use a planner / organizer
+
+Running: 
+	CALL GetAllUndeletedNotesForUser(1)
+Find all notes for user (1) PASSED!
+User 1 has 17 notes
+	Note ID: 1
+	User ID: 1
+	Content: Get a Job in Software Engineering
+
+	Note ID: 2
+	User ID: 1
+	Content: Maintain and improve my software engineering skills
+
+	Note ID: 3
+	User ID: 1
+	Content: Maintain and improve my C++ programming skills
+
+	Note ID: 4
+	User ID: 1
+	Content: Maintain and improve my  C programming skills
+
+	Note ID: 5
+	User ID: 1
+	Content: Maintain or archive the BHHS 74 Reunion website
+
+	Note ID: 6
+	User ID: 1
+	Content: Maintain and improve my SQL skills
+
+	Note ID: 7
+	User ID: 1
+	Content: Learn QT graphic system
+
+	Note ID: 8
+	User ID: 1
+	Content: Improve my Linux Programming skills
+
+	Note ID: 9
+	User ID: 1
+	Content: Get an embedded programming certificate
+
+	Note ID: 10
+	User ID: 1
+	Content: Learn open source Linux Core Programming
+
+	Note ID: 11
+	User ID: 1
+	Content: Maintain my health
+
+	Note ID: 12
+	User ID: 1
+	Content: Eat as healthy as possible
+
+	Note ID: 13
+	User ID: 1
+	Content: Walk 30 minutes a day
+
+	Note ID: 14
+	User ID: 1
+	Content: Track my vital signs
+
+	Note ID: 15
+	User ID: 1
+	Content: Get my weight down to 190 pounds
+
+	Note ID: 16
+	User ID: 1
+	Content: Use a planner / organizer
+
+	Note ID: 17
+	User ID: 1
+	Content: Effectively moderate the code review site on stack exchange
+
+Running: 
+	CALL GetNotesForUserSimlarToContent(1, 'Maintain')
+Find all notes for user (1) similar to Maintain PASSED!
+User 1 has 6 notes
+	Note ID: 2
+	User ID: 1
+	Content: Maintain and improve my software engineering skills
+
+	Note ID: 3
+	User ID: 1
+	Content: Maintain and improve my C++ programming skills
+
+	Note ID: 4
+	User ID: 1
+	Content: Maintain and improve my  C programming skills
+
+	Note ID: 5
+	User ID: 1
+	Content: Maintain or archive the BHHS 74 Reunion website
+
+	Note ID: 6
+	User ID: 1
+	Content: Maintain and improve my SQL skills
+
+	Note ID: 11
+	User ID: 1
+	Content: Maintain my health
+
+Running: 
+	CALL GetAllNotesForUserCreatedInDatgeRange(1, '2026-05-15', '2026-05-29')
+test of NoteQueryProcessorTestInterface.getAllNotesForUserCreatedInDatgeRange() FAILED
+In NoteQueryProcessor::getAllNotesForUserCreatedInDatgeRange : 
+
+Running: 
+	CALL GetAllNotesForUserEditedInDatgeRange(1, '2026-05-15', '2026-05-29')
+test of NoteQueryProcessorTestInterface.getAllNotesForUserEditedInDatgeRange() FAILED
+In NoteQueryProcessor::getAllNotesForUserEditedInDatgeRange : 
+
+Running: 
+	CALL GetDashboardNoteTable(1, '2026-05-22 07:00:00.000000', '2026-05-23 06:59:00.000000')
+Find all notes for user (1) for a date PASSED!
+User 1 has 17 notes
+	Note ID: 1
+	User ID: 1
+	Content: Get a Job in Software Engineering
+
+	Note ID: 2
+	User ID: 1
+	Content: Maintain and improve my software engineering skills
+
+	Note ID: 3
+	User ID: 1
+	Content: Maintain and improve my C++ programming skills
+
+	Note ID: 4
+	User ID: 1
+	Content: Maintain and improve my  C programming skills
+
+	Note ID: 5
+	User ID: 1
+	Content: Maintain or archive the BHHS 74 Reunion website
+
+	Note ID: 6
+	User ID: 1
+	Content: Maintain and improve my SQL skills
+
+	Note ID: 7
+	User ID: 1
+	Content: Learn QT graphic system
+
+	Note ID: 8
+	User ID: 1
+	Content: Improve my Linux Programming skills
+
+	Note ID: 9
+	User ID: 1
+	Content: Get an embedded programming certificate
+
+	Note ID: 10
+	User ID: 1
+	Content: Learn open source Linux Core Programming
+
+	Note ID: 11
+	User ID: 1
+	Content: Maintain my health
+
+	Note ID: 12
+	User ID: 1
+	Content: Eat as healthy as possible
+
+	Note ID: 13
+	User ID: 1
+	Content: Walk 30 minutes a day
+
+	Note ID: 14
+	User ID: 1
+	Content: Track my vital signs
+
+	Note ID: 15
+	User ID: 1
+	Content: Get my weight down to 190 pounds
+
+	Note ID: 16
+	User ID: 1
+	Content: Use a planner / organizer
+
+	Note ID: 17
+	User ID: 1
+	Content: Effectively moderate the code review site on stack exchange
+
+Running: 
+	CALL GetAllUndeletedNotesForUser(1)
+Running: 
+	CALL HideNote(1, 16)
+Running: 
+	CALL GetAllUndeletedNotesForUser(1)
+Original note list size: 17 Altered schedule size: 16
+note (16) for user (1) marked Deleted. TEST PASSED
+All positive path tests for database insertions and retrievals of Note FAILED!
+Expected error was; Note is missing required values!
+Missing Note required User ID!
+Missing Note required Content!
+
+Expected error was; Note is missing required values!
+Missing Note required Content!
+Missing Note required Content!
+
+Running: 
+	CALL AddUserNote(1, 'Test missing field Content')
+Running: 
+	CALL GetNoteByID(1)
+Expected error was; Note not modified!
+
+Running: 
+	CALL GetNoteByID(1)
+Expected error was; Note already in Database, use Update!
+
 All negative path tests for database insertions and retrievals of Note PASSED!
-All tests for database insertions and retrievals of Note PASSED!
+All tests for database insertions and retrievals of Note FAILED!
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
+Running: 
+	CALL GetUserByFullName('One', 'User', 'P')
 
 Running ScheduleItem Integration Tests
-All positive path tests for database insertions and retrievals of ScheduleItem PASSED!
+Running: 
+	CALL AddScheduleEvent(1, '2024-12-02 09:30:00.000000', '2024-12-02 10:30:00.000000', 'Dr. Cinman', 1, '8635 W. Third Street')
+Running: 
+	CALL AddScheduleEvent(1, '2024-12-11 09:00:00.000000', '2024-12-11 10:30:00.000000', 'Bill McCandless birthday call', 1, '')
+Running: 
+	CALL AddScheduleEvent(1, '2024-12-13 09:00:00.000000', '2024-12-13 10:30:00.000000', 'Jean Hom birthday call', 1, '')
+Running: 
+	CALL AddScheduleEvent(1, '2024-12-13 10:00:00.000000', '2024-12-13 11:00:00.000000', 'Dr. David Aftergood', 1, '99 N. La Cienega Blvd.')
+Running: 
+	CALL AddScheduleEvent(1, '2024-12-18 09:00:00.000000', '2024-12-18 10:30:00.000000', 'Dina birthday call', 1, '')
+Running: 
+	CALL AddScheduleEvent(1, '2025-12-11 09:00:00.000000', '2025-12-11 10:30:00.000000', 'Bill McCandless birthday call', 1, '')
+Running: 
+	CALL AddScheduleEvent(1, '2025-12-13 09:00:00.000000', '2025-12-11 10:30:00.000000', 'Jean Hom birthday call', 1, '')
+Running: 
+	CALL AddScheduleEvent(1, '2025-12-18 11:00:00.000000', '2025-12-18 11:15:00.000000', 'Dina birthday call', 1, '')
+Running: 
+	CALL FindUserScheduleItemsByContentAndDateRange(1, 'birthday', '2024-12-01', '2024-12-31')
+Find all schedule items for user (1) similar to birthday PASSED!
+User 1 has 3 schedule items
+ScheduleItemModel:
+	ScheduleItem ID: 2
+	User ID: 1
+	Title: Bill McCandless birthday call
+	Start Date and Time: 2024-12-11 09:00:00.000000000
+	End Date and Time: 2024-12-11 10:30:00.000000000
+	Personal: TRUE
+	location: 
+Optional Fields
+
+ScheduleItemModel:
+	ScheduleItem ID: 3
+	User ID: 1
+	Title: Jean Hom birthday call
+	Start Date and Time: 2024-12-13 09:00:00.000000000
+	End Date and Time: 2024-12-13 10:30:00.000000000
+	Personal: TRUE
+	location: 
+Optional Fields
+
+ScheduleItemModel:
+	ScheduleItem ID: 5
+	User ID: 1
+	Title: Dina birthday call
+	Start Date and Time: 2024-12-18 09:00:00.000000000
+	End Date and Time: 2024-12-18 10:30:00.000000000
+	Personal: TRUE
+	location: 
+Optional Fields
+
+Running: 
+	CALL GetUserDaySchedule(1, '2024-12-13 08:00:00.000000', '2024-12-14 07:59:59.000000')
+Find all schedule items for user (1) edited in date range PASSED!
+User 1 has 2 schedule items
+ScheduleItemModel:
+	ScheduleItem ID: 3
+	User ID: 1
+	Title: Jean Hom birthday call
+	Start Date and Time: 2024-12-13 09:00:00.000000000
+	End Date and Time: 2024-12-13 10:30:00.000000000
+	Personal: TRUE
+	location: 
+Optional Fields
+
+ScheduleItemModel:
+	ScheduleItem ID: 4
+	User ID: 1
+	Title: Dr. David Aftergood
+	Start Date and Time: 2024-12-13 10:00:00.000000000
+	End Date and Time: 2024-12-13 11:00:00.000000000
+	Personal: TRUE
+	location: 99 N. La Cienega Blvd.
+Optional Fields
+
+Running: 
+	CALL GetScheduleItemById(1)
+Running: 
+	CALL UpdateScheduleItemAllFields(1, 1, '2024-12-02 09:30:00.000000', '2024-12-02 10:30:00.000000', 'Dr. David Aftergood', 0, '99. N. La Cienega')
+Running: 
+	CALL ScheduleItemContentSelectionList('birthday', 1)
+Find all schedule items for user (1) similar to birthday PASSED!
+User 1 has 3 schedule items
+Bill McCandless birthday call
+Dina birthday call
+Jean Hom birthday call
+Running: 
+	CALL EventTitlesForCompleter(1)
+Find all schedule items for user (1) PASSED!
+User 1 has 4 schedule items
+Bill McCandless birthday call
+Dina birthday call
+Dr. David Aftergood
+Jean Hom birthday call
+Running: 
+	CALL EventLocationsForCompleter(1)
+Find all schedule locations for user (1) PASSED!
+User 1 has 3 schedule locations
+
+99 N. La Cienega Blvd.
+99. N. La Cienega
+Running: 
+	CALL GetUserByFullName('Black', 'Paul', 'A')
+Delete Schedule Item: realUserOne not found in database User not found!
+ FAILED
+All positive path tests for database insertions and retrievals of ScheduleItem FAILED!
+Expected error was; ScheduleItem is missing required values!
+Missing ScheduleItem required User ID!
+Missing ScheduleItem required Title!
+Missing ScheduleItem required Start Time!
+Missing ScheduleItem required End Time!
+
+Expected error was; ScheduleItem is missing required values!
+Missing ScheduleItem required Title!
+Missing ScheduleItem required Start Time!
+Missing ScheduleItem required End Time!
+Missing ScheduleItem required Title!
+Missing ScheduleItem required Start Time!
+Missing ScheduleItem required End Time!
+
+Expected error was; ScheduleItem is missing required values!
+Missing ScheduleItem required Start Time!
+Missing ScheduleItem required End Time!
+Missing ScheduleItem required Start Time!
+Missing ScheduleItem required End Time!
+Missing ScheduleItem required Start Time!
+Missing ScheduleItem required End Time!
+
+Expected error was; ScheduleItem is missing required values!
+Missing ScheduleItem required End Time!
+Missing ScheduleItem required End Time!
+Missing ScheduleItem required End Time!
+Missing ScheduleItem required End Time!
+
+Running: 
+	CALL AddScheduleEvent(1, '2024-12-31 08:30:00.000000', '2024-12-31 10:00:00.000000', 'Test missing field Title', 0, NULL)
+Running: 
+	CALL GetScheduleItemById(1)
+Expected error was; ScheduleItem not modified!
+
+Running: 
+	CALL GetScheduleItemById(1)
+Expected error was; ScheduleItem already in Database, use Update!
+
 All negative path tests for database insertions and retrievals of ScheduleItem PASSED!
-All tests for database insertions and retrievals of ScheduleItem PASSED!
-All tests Passed
+All tests for database insertions and retrievals of ScheduleItem FAILED!

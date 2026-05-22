@@ -155,7 +155,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-05-21
+	Completed Date: 2026-05-22
 	Deleted : FALSE
 
 Task::testAllInsertFailures before successful insert this = 
@@ -380,7 +380,7 @@ In Self Test Query is:
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	CALL GetUnstartedDueForStartForAssignedUser(1, '2026-05-28')
+	CALL GetUnstartedDueForStartForAssignedUser(1, '2026-05-29')
 
 Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
 In Self Test Query is: 
@@ -405,21 +405,21 @@ Running UserGoalModelQueryProcessor Self Test
 
 Running Exception Handling Test Cases UserGoalModelQueryProcessor
 In Self Test Query is: 
-	SELECT * FROM UserGoals  WHERE idUserGoals = 1
+	CALL GetGoalById(1)
 
 Exception Test for GoalQueryProcessor::testExceptionsGetAllGoalsForUser()
 In Self Test Query is: 
-	SELECT * FROM UserGoals  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetAllGoalsForUser(1)
 
 Exception Test for GoalQueryProcessor::testExceptionsGetAllChildrenFromParent()
 In Self Test Query is: 
-	SELECT * FROM UserGoals  WHERE UserID = 0 AND ParentGoal = 1 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetAllChildGoalsFromParent(0, 1)
 
 Exception Test for GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription()
 In Self Test Query is: 
-	SELECT * FROM UserGoals  WHERE UserID = 1 AND Description LIKE '%Maintain%' AND (Hidden IS NULL OR Hidden <> 1)
+	CALL FindGoalsByUserIdAndSimilarDescription(1, 'Maintain')
 In Self Test Query is: 
-	SELECT * FROM UserGoals WHERE UserID = 1 AND Description = 'Test SelectByUserIDAndDescription Exception Handling' AND (Hidden IS NULL OR Hidden <> 1)
+	CALL FindGoalByUserIdAndExactDescription(1, 'Test SelectByUserIDAndDescription Exception Handling')
 
 
 UserGoalModelQueryProcessor PASSED Self Test
@@ -467,13 +467,13 @@ Running Exception Handling Test Cases ScheduleItemQueryProcessor
 
 Exception Test for ScheduleItemQueryProcessor::testExceptionGgetUserDaySchedule()
 In Self Test Query is: 
-	SELECT * FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2024-05-14 07:00:00.000000' AND StartDateTime <= '2024-05-15 06:59:59.000000' ORDER BY StartDateTime ASC
+	CALL GetUserDaySchedule(1, '2024-05-14 07:00:00.000000', '2024-05-15 06:59:59.000000')
 In Self Test Query is: 
-	SELECT * FROM UserScheduleItem  WHERE idUserScheduleItem = 1 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetScheduleItemById(1)
 
 Exception Test for ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByContentAndDateRange()
 In Self Test Query is: 
-	SELECT * FROM UserScheduleItem  WHERE UserID = 1 AND Title LIKE '%Title search%' AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2024-05-07' AND StartDateTime <= '2024-05-21'
+	CALL FindUserScheduleItemsByContentAndDateRange(1, 'Title search', '2024-05-07', '2024-05-21')
 
 Exception Test for ScheduleItemQueryProcessor::testExceptionFindEventSToRepeat()
 In Self Test Query is: 
@@ -663,7 +663,7 @@ Running:
 Running: 
 	CALL GetTaskByDescriptionAndAssignedUser(4, 'Design UML Diagram for Personal Planner')
 Running: 
-	CALL AddTask(4, 4, 'Grocery Shopping', 0, 0, '2025-04-12', '2025-04-11', NULL, '2026-05-21', NULL, 2, 2e+00, 67, 1, 0, 0, NULL)
+	CALL AddTask(4, 4, 'Grocery Shopping', 0, 0, '2025-04-12', '2025-04-11', NULL, '2026-05-22', NULL, 2, 2e+00, 67, 1, 0, 0, NULL)
 Running: 
 	CALL GetTaskByTaskID(58)
 Running: 
@@ -675,13 +675,13 @@ Running:
 Running: 
 	CALL GetTaskByDescriptionAndAssignedUser(4, 'Daily 30 minute walk')
 Running: 
-	CALL AddTask(4, 4, 'Clean apartment', 0, 0, '2025-04-12', '2025-04-12', NULL, '2026-05-21', NULL, 2, 0e+00, 67, 3, 0, 0, NULL)
+	CALL AddTask(4, 4, 'Clean apartment', 0, 0, '2025-04-12', '2025-04-12', NULL, '2026-05-22', NULL, 2, 0e+00, 67, 3, 0, 0, NULL)
 Running: 
 	CALL GetTaskByTaskID(60)
 Running: 
 	CALL GetTaskByDescriptionAndAssignedUser(4, 'Clean apartment')
 Running: 
-	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-05-28')
+	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-05-29')
 Find unstarted tasks for user(4) PASSED!
 User 4 has 9 unstarted tasks
 TaskModel:
@@ -814,7 +814,7 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-05-21
+	Estimated Completion Date: 2026-05-22
 	Deleted : FALSE
 
 TaskModel:
@@ -852,7 +852,7 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-05-21
+	Estimated Completion Date: 2026-05-22
 	Deleted : FALSE
 
 Running: 
@@ -1205,7 +1205,7 @@ Running:
 Running: 
 	CALL GetTaskByTaskID(47)
 Running: 
-	CALL UpdateTaskAllFields(47, 4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 4, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', '2026-05-21', 12, 6e+00, 65, 1, 0, 0, NULL)
+	CALL UpdateTaskAllFields(47, 4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 4, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', '2026-05-22', 12, 6e+00, 65, 1, 0, 0, NULL)
 Running: 
 	CALL GetTaskByTaskID(47)
 Running: 
@@ -1319,11 +1319,11 @@ Optional Fields
 	Deleted : FALSE
 
 Running: 
-	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-05-28')
+	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-05-29')
 Running: 
 	CALL HideTask(4, 59)
 Running: 
-	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-05-28')
+	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-05-29')
 Task (59) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of task PASSED!
 Running: 
@@ -1400,55 +1400,55 @@ Running Goal Integration Tests
 Running: 
 	CALL AddUserGoal(4, 'Get a Job in Software Engineering', 1, NULL)
 Running: 
-	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
 Running: 
 	CALL AddUserGoal(4, 'Maintain and improve my software engineering skills', 1, 1)
 Running: 
-	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
 Running: 
 	CALL AddUserGoal(4, 'Maintain and improve my C++ programming skills', 1, 1)
 Running: 
-	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
 Running: 
 	CALL AddUserGoal(4, 'Maintain and improve my  C programming skills', 2, 1)
 Running: 
 	CALL AddUserGoal(4, 'Maintain or archive the BHHS 74 Reunion website', 2, NULL)
 Running: 
-	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
 Running: 
 	CALL AddUserGoal(4, 'Maintain and improve my SQL skills', 3, 1)
 Running: 
-	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
 Running: 
 	CALL AddUserGoal(4, 'Learn QT graphic system', 4, 1)
 Running: 
-	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
 Running: 
 	CALL AddUserGoal(4, 'Improve my Linux Programming skills', 5, 1)
 Running: 
-	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
 Running: 
 	CALL AddUserGoal(4, 'Get an embedded programming certificate', 4, 1)
 Running: 
-	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
 Running: 
 	CALL AddUserGoal(4, 'Learn open source Linux Core Programming', 4, 1)
 Running: 
 	CALL AddUserGoal(4, 'Maintain my health', 2, NULL)
 Running: 
-	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Maintain my health' AND (Hidden IS NULL OR Hidden <> 1)
+	CALL FindGoalByUserIdAndExactDescription(4, 'Maintain my health')
 Running: 
 	CALL AddUserGoal(4, 'Eat as healthy as possible', 3, 11)
 Running: 
-	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Maintain my health' AND (Hidden IS NULL OR Hidden <> 1)
+	CALL FindGoalByUserIdAndExactDescription(4, 'Maintain my health')
 Running: 
 	CALL AddUserGoal(4, 'Walk 30 minutes a day', 4, 11)
 Running: 
-	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Maintain my health' AND (Hidden IS NULL OR Hidden <> 1)
+	CALL FindGoalByUserIdAndExactDescription(4, 'Maintain my health')
 Running: 
 	CALL AddUserGoal(4, 'Track my vital signs', 3, 11)
 Running: 
-	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Maintain my health' AND (Hidden IS NULL OR Hidden <> 1)
+	CALL FindGoalByUserIdAndExactDescription(4, 'Maintain my health')
 Running: 
 	CALL AddUserGoal(4, 'Get my weight down to 190 pounds', 4, 11)
 Running: 
@@ -1456,9 +1456,9 @@ Running:
 Running: 
 	CALL AddUserGoal(4, 'Effectively moderate the code review site on stack exchange', 1, NULL)
 Running: 
-	SELECT * FROM UserGoals WHERE UserID = 4 AND Description = 'Get a Job in Software Engineering' AND (Hidden IS NULL OR Hidden <> 1)
+	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
 Running: 
-	SELECT * FROM UserGoals  WHERE UserID = 4 AND ParentGoal = 1 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetAllChildGoalsFromParent(4, 1)
 Model Name UserGoalModel
 	Goal ID: 1
 	User ID: 4
@@ -1525,7 +1525,7 @@ Model Name UserGoalModel
 	Parent ID: 1
 
 Running: 
-	SELECT * FROM UserGoals  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetAllGoalsForUser(4)
 Find all goals for user (4) PASSED!
 User 4 has 17 goals
 Model Name UserGoalModel
@@ -1648,7 +1648,7 @@ Model Name UserGoalModel
 	Parent ID: 0
 
 Running: 
-	SELECT * FROM UserGoals  WHERE UserID = 4 AND Description LIKE '%Maintain%' AND (Hidden IS NULL OR Hidden <> 1)
+	CALL FindGoalsByUserIdAndSimilarDescription(4, 'Maintain')
 Find all goals for user (4) containing Maintain PASSED!
 User 4 has 6 goals
 Model Name UserGoalModel
@@ -1694,11 +1694,11 @@ Model Name UserGoalModel
 	Parent ID: 0
 
 Running: 
-	SELECT * FROM UserGoals  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetAllGoalsForUser(4)
 Running: 
 	CALL HideGoal(4, 16)
 Running: 
-	SELECT * FROM UserGoals  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetAllGoalsForUser(4)
 Original goal list size: 17 Altered goal list size: 16
 goal (16) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of Goal PASSED!
@@ -1713,11 +1713,11 @@ Missing UserGoalModel required Description!
 Running: 
 	CALL AddUserGoal(1, 'Test missing field Description', NULL, NULL)
 Running: 
-	SELECT * FROM UserGoals  WHERE idUserGoals = 1
+	CALL GetGoalById(1)
 Expected error was; UserGoalModel not modified!
 
 Running: 
-	SELECT * FROM UserGoals  WHERE idUserGoals = 1
+	CALL GetGoalById(1)
 Expected error was; UserGoalModel already in Database, use Update!
 
 All negative path tests for database insertions and retrievals of Goal PASSED!
@@ -1873,7 +1873,7 @@ User 4 has 6 notes
 	Content: Maintain my health
 
 Running: 
-	CALL GetAllNotesForUserCreatedInDatgeRange(4, '2026-05-14', '2026-05-28')
+	CALL GetAllNotesForUserCreatedInDatgeRange(4, '2026-05-15', '2026-05-29')
 Find all notes for user (4) created in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -1945,7 +1945,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	CALL GetAllNotesForUserEditedInDatgeRange(4, '2026-05-14', '2026-05-28')
+	CALL GetAllNotesForUserEditedInDatgeRange(4, '2026-05-15', '2026-05-29')
 Find all notes for user (4) edited in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2017,7 +2017,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	CALL GetDashboardNoteTable(4, '2026-05-21 07:00:00.000000', '2026-05-22 06:59:00.000000')
+	CALL GetDashboardNoteTable(4, '2026-05-22 07:00:00.000000', '2026-05-23 06:59:00.000000')
 Find all notes for user (4) for a date PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2141,15 +2141,15 @@ Running:
 Running: 
 	CALL AddScheduleEvent(4, '2025-12-18 11:00:00.000000', '2025-12-18 11:15:00.000000', 'Dina birthday call', 1, '')
 Running: 
-	SELECT * FROM UserScheduleItem  WHERE UserID = 4 AND Title LIKE '%birthday%' AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2024-12-01' AND StartDateTime <= '2024-12-31'
+	CALL FindUserScheduleItemsByContentAndDateRange(4, 'birthday', '2024-12-01', '2024-12-31')
 Find all schedule items for user (4) similar to birthday PASSED!
 User 4 has 3 schedule items
 ScheduleItemModel:
-	ScheduleItem ID: 301
+	ScheduleItem ID: 304
 	User ID: 4
-	Title: Bill McCandless birthday call
-	Start Date and Time: 2024-12-11 09:00:00.000000000
-	End Date and Time: 2024-12-11 10:30:00.000000000
+	Title: Dina birthday call
+	Start Date and Time: 2024-12-18 09:00:00.000000000
+	End Date and Time: 2024-12-18 10:30:00.000000000
 	Personal: TRUE
 	location: 
 Optional Fields
@@ -2165,17 +2165,17 @@ ScheduleItemModel:
 Optional Fields
 
 ScheduleItemModel:
-	ScheduleItem ID: 304
+	ScheduleItem ID: 301
 	User ID: 4
-	Title: Dina birthday call
-	Start Date and Time: 2024-12-18 09:00:00.000000000
-	End Date and Time: 2024-12-18 10:30:00.000000000
+	Title: Bill McCandless birthday call
+	Start Date and Time: 2024-12-11 09:00:00.000000000
+	End Date and Time: 2024-12-11 10:30:00.000000000
 	Personal: TRUE
 	location: 
 Optional Fields
 
 Running: 
-	SELECT * FROM UserScheduleItem  WHERE UserID = 4 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2024-12-13 08:00:00.000000' AND StartDateTime <= '2024-12-14 07:59:59.000000' ORDER BY StartDateTime ASC
+	CALL GetUserDaySchedule(4, '2024-12-13 08:00:00.000000', '2024-12-14 07:59:59.000000')
 Find all schedule items for user (4) edited in date range PASSED!
 User 4 has 2 schedule items
 ScheduleItemModel:
@@ -2199,7 +2199,7 @@ ScheduleItemModel:
 Optional Fields
 
 Running: 
-	SELECT * FROM UserScheduleItem  WHERE idUserScheduleItem = 300 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetScheduleItemById(300)
 Running: 
 	CALL UpdateScheduleItemAllFields(4, 300, '2024-12-02 09:30:00.000000', '2024-12-02 10:30:00.000000', 'Dr. David Aftergood', 0, '99. N. La Cienega')
 Running: 
@@ -2227,11 +2227,11 @@ User 4 has 3 schedule locations
 Running: 
 	CALL GetUserByFullName('Black', 'Paul', 'A')
 Running: 
-	SELECT * FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2026-03-08 08:00:00.000000' AND StartDateTime <= '2026-03-09 07:59:59.000000' ORDER BY StartDateTime ASC
+	CALL GetUserDaySchedule(1, '2026-03-08 08:00:00.000000', '2026-03-09 07:59:59.000000')
 Running: 
 	CALL HideScheduleItem(1, 189)
 Running: 
-	SELECT * FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2026-03-08 08:00:00.000000' AND StartDateTime <= '2026-03-09 07:59:59.000000' ORDER BY StartDateTime ASC
+	CALL GetUserDaySchedule(1, '2026-03-08 08:00:00.000000', '2026-03-09 07:59:59.000000')
 Original schedule size: 9 Altered schedule size: 8
 Schedule Item (189) for user (1) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of ScheduleItem PASSED!
@@ -2266,25 +2266,25 @@ Missing ScheduleItem required End Time!
 Running: 
 	CALL AddScheduleEvent(4, '2024-12-31 08:30:00.000000', '2024-12-31 10:00:00.000000', 'Test missing field Title', 0, NULL)
 Running: 
-	SELECT * FROM UserScheduleItem  WHERE idUserScheduleItem = 300 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetScheduleItemById(300)
 Expected error was; ScheduleItem not modified!
 
 Running: 
-	SELECT * FROM UserScheduleItem  WHERE idUserScheduleItem = 300 AND (Hidden IS NULL OR Hidden <> 1)
+	CALL GetScheduleItemById(300)
 Expected error was; ScheduleItem already in Database, use Update!
 
 All negative path tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Thu May 21 08:49:02 2026
-elapsed time in seconds: 17.7672
+Fri May 22 13:45:59 2026
+elapsed time in seconds: 17.74
 
 
 
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
-  total heap usage: 63,482 allocs, 63,482 frees, 8,631,491 bytes allocated
+  total heap usage: 63,454 allocs, 63,454 frees, 8,623,354 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 

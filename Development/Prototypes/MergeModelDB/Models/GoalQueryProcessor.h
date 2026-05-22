@@ -26,10 +26,8 @@ public:
 private:
     virtual UserGoalModel_shp processResultRow(boost::mysql::row_view& queryRow) override;
     virtual void fillRequiredIndexes() override;
-    std::string formatSelectAllByUserId(std::size_t userId);
     std::string formatSelectAllChildGoalsWithParentFromUser(std::size_t parentId, std::size_t userId);
     std::string formatSelectAllChildGoalsWithParent(UserGoalModel& parentGoal);
-    std::string formatSelectBySimilarDescription(std::string partialDescription, std::size_t userId);
 
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
     TestStatus testExceptionsGetAllGoalsForUser() noexcept;
