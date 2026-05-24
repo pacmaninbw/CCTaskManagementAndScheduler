@@ -1,6 +1,6 @@
 // Project Header Files
 #include "GuiTaskTableBase.h"
-#include "TaskList.h"
+#include "TaskQueryProcessor.h"
 #include "TaskModel.h"
 
 // QT Header Files
@@ -39,8 +39,8 @@ void GuiTaskTableBase::fillTable()
     }
 
     std::chrono::year_month_day searchDate = getTodaysDatePlus(TwoWeeks);
-    TaskList currentUserTaskList;
-    TaskListValues userTasks = currentUserTaskList.getDefaultDashboardTaskList(m_UserID, searchDate);
+    TaskQueryProcessor currentUserTaskList;
+    TaskList userTasks = currentUserTaskList.getDefaultDashboardTaskList(m_UserID, searchDate);
 
     if (userTasks.empty())
     {
