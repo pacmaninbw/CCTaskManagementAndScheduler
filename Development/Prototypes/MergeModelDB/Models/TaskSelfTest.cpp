@@ -104,7 +104,6 @@ void TaskSelfTest::selfTestResetAllValues() noexcept
     description.clear();
     status.reset();
     parentTaskID.reset();
-    percentageComplete = 0.0;
     creationTimeStamp.reset();
     dueDate.reset();
     scheduledStart.reset();
@@ -329,7 +328,6 @@ std::vector<AttributeTestFunction> TaskSelfTest::initAttributeAccessTests() noex
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testDescriptionAccess, this)});
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testStatusAccess, this)});
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testParentTaskIDAccess, this)});
-    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testPercentageCompleteAccess, this)});
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testCreationDateAccess, this)});
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testLastUpdateAccess, this)});
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testDueDateAccess, this)});
@@ -517,15 +515,6 @@ TestStatus TaskSelfTest::testParentTaskIDVerifyValueAndGetParentTaskID(std::size
     }
 
     return TESTPASSED;
-}
-
-
-TestStatus TaskSelfTest::testPercentageCompleteAccess()
-{
-    double testValue = 86.5;
-    return testAccessorFunctions<double>(testValue, &percentageComplete, "Percentage Complete",
-        std::bind(&TaskModel::setPercentageComplete, this, std::placeholders::_1),
-        std::bind(&TaskModel::getPercentageComplete, this));
 }
 
 TestStatus TaskSelfTest::testCreationDateAccess()
