@@ -2,6 +2,7 @@
 #include "commonQTWidgetsForApp.h"
 #include "GoalEditorDialog.h"
 #include "UserGoalModel.h"
+#include "GoalQueryProcessor.h"
 
 // QT Header Files
 #include <QVariant>
@@ -28,11 +29,10 @@ GoalEditorDialog::GoalEditorDialog(std::size_t userId, std::size_t goalId, QWidg
     maxGroupBoxHeight{0},
     maxButtonBoxHeight{0}
 {
-    m_GoalData = std::make_shared<UserGoalModel>();
-    m_GoalData->setGoalId(goalId);
+    GoalQueryProcessor goalQueryProcessor;
     if (goalId)
     {
-        m_GoalData->retrieve();
+        m_GoalData = goalQueryProcessor.getGoalById(goalId);
     }
     
     setUpGoalEditorDialogUI();
