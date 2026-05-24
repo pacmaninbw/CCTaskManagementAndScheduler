@@ -4,7 +4,9 @@
 #include "stdChronoToQTConversions.h"
 #include "TaskEditorDialog.h"
 #include "TaskModel.h"
+#include "TaskQueryProcessor.h"
 #include "UserModel.h"
+#include "UserQueryProcessor.h"
 
 // QT Header Files
 #include <QAbstractButton>
@@ -54,9 +56,9 @@ bool TaskEditorDialog::setTaskDataAndInitDisplayFields(std::size_t taskToEditId)
         return false;
     }
 
-    m_TaskData = std::make_shared<TaskModel>();
-    m_TaskData->setTaskID(taskToEditId);
-    if (!m_TaskData->retrieve())
+    TaskQueryProcessor taskQueryProcessor;
+    m_TaskData = taskQueryProcessor.getTaskByTaskID(taskToEditId);
+    if (!m_TaskData)
     {
         QString errorReport = "To Do Item Edit failed.\n";
         errorReport += " To Do Item not found in database";
@@ -156,9 +158,10 @@ void TaskEditorDialog::on_editTaskSelectParentPB_Clicked()
     if (selectParentTask.exec() == QDialog::Accepted)
     {
         std::size_t parentTaskid = selectParentTask.getParentTask();
-        m_ParentTaskData = std::make_shared<TaskModel>();
-        m_ParentTaskData->setTaskID(parentTaskid);
-        if (m_ParentTaskData->retrieve())
+        TaskQueryProcessor taskQueryProcessor;
+
+        m_ParentTaskData = taskQueryProcessor.getTaskByTaskID(parentTaskid);
+        if (m_ParentTaskData)
         {
             m_TaskData->setParentTaskID(parentTaskid);
             m_parentTaskUpdated = true;
@@ -517,9 +520,8 @@ QDate TaskEditorDialog::initValidDateField(QDate fieldData)
 
 std::shared_ptr<UserModel> TaskEditorDialog::getUserDataFromTaskData(std::size_t dbUserId)
 {
-    UserModel_shp newUser = std::make_shared<UserModel>();
-    newUser->setUserID(dbUserId);
-    newUser->retrieve();
+    UserQueryProcessor userQueryProcessor;
+    UserModel_shp newUser = userQueryProcessor.getUserByID(dbUserId);
 
     return newUser;
 }
@@ -540,9 +542,9 @@ void TaskEditorDialog::initDisplayFields()
     std::size_t dbParentTaskId = m_TaskData->getParentTaskID();
     if (dbParentTaskId)
     {
-        TaskModel_shp dbParentTask = std::make_shared<TaskModel>();
-        dbParentTask->setTaskID(dbParentTaskId);
-        if (dbParentTask->retrieve())
+        TaskQueryProcessor taskQueryProcessor;
+        TaskModel_shp dbParentTask = taskQueryProcessor.getTaskByTaskID(dbParentTaskId);
+        if (dbParentTask)
         {
             m_ParentTaskData = dbParentTask;
 //            std::cerr << *m_ParentTaskData << std::endl;
