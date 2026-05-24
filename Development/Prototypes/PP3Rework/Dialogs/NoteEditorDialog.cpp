@@ -1,6 +1,7 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
 #include "NoteModel.h"
+#include "NoteQueryProcessor.h"
 #include "NoteEditorDialog.h"
 
 // QT Header Files
@@ -20,9 +21,9 @@ NoteEditorDialog::NoteEditorDialog(QWidget *parent, std::size_t userId, std::siz
 
     if (noteToEdit != 0)
     {
-        m_NoteData = std::make_shared<NoteModel>();
-        m_NoteData->setNoteId(noteToEdit);
-        if (m_NoteData->retrieve())
+        NoteQueryProcessor noteQueryProcess;
+        m_NoteData = noteQueryProcess.getNoteById(noteToEdit);
+        if (m_NoteData)
         {
             editNoteContentTE->setPlainText(QString::fromStdString(m_NoteData->getContent()));
         }
