@@ -16,7 +16,6 @@ class UserModel;
 // Standard C++ Header Files
 #include <memory>
 
-
 class LoginDialog : public QDialog
 {
     Q_OBJECT
@@ -31,7 +30,6 @@ private Q_SLOTS:
 
 private:
     void setUpLoginDialogUI();
-    bool attemptLogin();
 
     std::shared_ptr<UserModel> m_UserDataPtr;
 

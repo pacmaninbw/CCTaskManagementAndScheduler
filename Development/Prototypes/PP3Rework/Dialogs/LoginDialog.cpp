@@ -1,6 +1,7 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
 #include "UserModel.h"
+#include "UserQueryProcessor.h"
 #include "LoginDialog.h"
 
 // QT Header Files
@@ -54,29 +55,6 @@ void LoginDialog::setUpLoginDialogUI()
     setWindowTitle("User Login");
 }
 
-bool LoginDialog::attemptLogin()
-{
-    bool loginSuccessful = false;
-    std::string loginName = m_UserDataPtr->getLoginName();
-    std::string password = m_UserDataPtr->getPassword();
-
-    if (loginName.empty() || password.empty())
-    {
-        return loginSuccessful;
-    }
-
-    if (m_UserDataPtr->selectByLoginAndPassword(loginName, password))
-    {
-        m_UserDataPtr->setLastLogin(std::chrono::system_clock::now());
-        if (m_UserDataPtr->update())
-        {
-            loginSuccessful = true;
-        }
-    }
- 
-    return loginSuccessful;
-}
-
 void LoginDialog::onactionLoginAsUserPBClicked()
 {
     QString loginName = userLoginUserNameLE->text();
@@ -91,19 +69,16 @@ void LoginDialog::onactionLoginAsUserPBClicked()
         QMessageBox::critical(nullptr, "Critical Error", "Missing Password", QMessageBox::Ok);
     }
 
-    m_UserDataPtr = std::make_shared<UserModel>();
-
-    m_UserDataPtr->setLoginName(loginName.toStdString());
-    m_UserDataPtr->setPassword(userLoginPasswordLE->text().toStdString());
-
-    if (attemptLogin())
+    UserQueryProcessor userQueryProcessor;
+    m_UserDataPtr = userQueryProcessor.getUserByLoginAndPassword(loginName.toStdString(), password.toStdString());
+    if (m_UserDataPtr)
     {
         accept();
     }
     else
     {
         QString errorReport = "User login failed.\n";
-        errorReport += QString::fromStdString(m_UserDataPtr->getAllErrorMessages());
+        errorReport += QString::fromStdString(userQueryProcessor.getAllErrorMessages());
         QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
     }
 }
