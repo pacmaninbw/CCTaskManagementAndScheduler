@@ -67,34 +67,34 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         AppWidgets/DashboardNotesViewer.cpp
         BusinessLogic/TestDBConnection.cpp
         BusinessLogic/TestDBConnection.h
-        ../MergeModelDB/CommandLineParser.h
-        ../MergeModelDB/Models/CoreDBInterface.cpp
-        ../MergeModelDB/Models/CoreDBInterface.h
-        ../MergeModelDB/Models/ListDBInterface.h
-        ../MergeModelDB/Models/ModelDBInterface.cpp
-        ../MergeModelDB/Models/ModelDBInterface.h
-        ../MergeModelDB/Models/NoteList.cpp
-        ../MergeModelDB/Models/NoteList.h
-        ../MergeModelDB/Models/NoteModel.cpp
-        ../MergeModelDB/Models/NoteModel.h
-        ../MergeModelDB/Models/ScheduleItemList.cpp
-        ../MergeModelDB/Models/ScheduleItemList.h
-        ../MergeModelDB/Models/ScheduleItemModel.cpp
-        ../MergeModelDB/Models/ScheduleItemModel.h
-        ../MergeModelDB/Models/TaskList.cpp
-        ../MergeModelDB/Models/TaskList.h
-        ../MergeModelDB/Models/TaskModel.cpp
-        ../MergeModelDB/Models/TaskModel.h
-        ../MergeModelDB/Models/UserGoalList.cpp
-        ../MergeModelDB/Models/UserGoalList.h
-        ../MergeModelDB/Models/UserGoalModel.cpp
-        ../MergeModelDB/Models/UserGoalModel.h
-        ../MergeModelDB/Models/UserList.cpp
-        ../MergeModelDB/Models/UserList.h
-        ../MergeModelDB/Models/UserModel.cpp
-        ../MergeModelDB/Models/UserModel.h
-        ../MergeModelDB/common/commonTestValues.cpp
-        ../MergeModelDB/common/commonUtilities.cpp
+        CommandLineParser.h
+        DBModels/CoreDBInterface.cpp
+        DBModels/CoreDBInterface.h
+        DBModels/QueryProcessor.h
+        DBModels/ModelDBInterface.cpp
+        DBModels/ModelDBInterface.h
+        DBModels/NoteQueryProcessor.cpp
+        DBModels/NoteQueryProcessor.h
+        DBModels/NoteModel.cpp
+        DBModels/NoteModel.h
+        DBModels/ScheduleItemQueryProcessor.cpp
+        DBModels/ScheduleItemQueryProcessor.h
+        DBModels/ScheduleItemModel.cpp
+        DBModels/ScheduleItemModel.h
+        DBModels/TaskQueryProcessor.cpp
+        DBModels/TaskQueryProcessor.h
+        DBModels/TaskModel.cpp
+        DBModels/TaskModel.h
+        DBModels/GoalQueryProcessor.cpp
+        DBModels/GoalQueryProcessor.h
+        DBModels/UserGoalModel.cpp
+        DBModels/UserGoalModel.h
+        DBModels/UserQueryProcessor.cpp
+        DBModels/UserQueryProcessor.h
+        DBModels/UserModel.cpp
+        DBModels/UserModel.h
+        common/commonTestValues.cpp
+        common/commonUtilities.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET PP3Rework APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

@@ -1,0 +1,270 @@
+// Project Header Files
+#include "NoteSelfTest.h"
+
+// Standard C++ Header Files
+#include <chrono>
+#include <format>
+#include <functional>
+#include <iostream>
+#include <optional>
+#include <string>
+#include <vector>
+
+NoteSelfTest::NoteSelfTest()
+{
+}
+
+TestStatus NoteSelfTest::runSelfTest() noexcept
+{
+    CoreDBInterface::inSelfTest = true;
+    TestStatus selfTestStatus = TESTPASSED;
+    std::string_view modelName(ModelDBInterface::modelName);
+
+    std::cout << "\nRunning " << modelName << " Self Test\n";
+
+    if (ExceptionSelfTest::testExceptionHandling()!= TESTPASSED)
+    {
+        std::cerr  << modelName << "::runSelfTest: Exception handling FAILED!\n";
+        selfTestStatus = TESTFAILED;
+    }
+    
+    if (testSave() == TESTFAILED)
+    {
+        selfTestStatus = TESTFAILED;
+    }
+
+    if (AttributeSelfTest::testAttributeAccessFunctions() == TESTFAILED)
+    {
+        std::cerr << modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
+        selfTestStatus = TESTFAILED;
+    }
+
+    if (testEqualityOperator() == TESTFAILED)
+    {
+        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", modelName);
+        selfTestStatus = TESTFAILED;
+    }
+
+    testOutput();
+
+    if (testAllInsertFailures() != TESTPASSED)
+    {
+        std::cerr << "Test of all insertion failures FAILED!\n";
+        selfTestStatus = TESTFAILED;
+    }
+
+    if (testCommonInsertFailurePath() != TESTPASSED)
+    {
+        selfTestStatus = TESTFAILED;
+    }
+    else
+    {
+        std::cout << "Common Insertion Failure Test PASSED!\n";
+    }
+
+    if (testCommonUpdateFailurePath() != TESTPASSED)
+    {
+        selfTestStatus = TESTFAILED;
+    }
+    else
+    {
+        std::cout << "Common Update Failure Test PASSED!\n";
+    }
+
+    if (testTextFieldManipulation() == TESTFAILED)
+    {
+        selfTestStatus = TESTFAILED;
+    }
+
+    CoreDBInterface::inSelfTest = false;
+    
+    if (selfTestStatus == TESTPASSED)
+    {
+        std::cout <<  std::format("{} Self Test {}\n", modelName, "PASSED");
+    }
+    else
+    {
+        std::cerr <<  std::format("{} Self Test {}\n", modelName, "FAILED");
+    }
+
+    return selfTestStatus;
+}
+
+void NoteSelfTest::selfTestResetAllValues() noexcept
+{
+    ModelSelfTest::selfTestResetAllValues();
+    userID = 0;
+    content.clear();
+    creationDate = {};
+    lastUpdate = {};
+}
+
+std::vector<AttributeTestFunction> NoteSelfTest::initAttributeAccessTests() noexcept
+{
+    selfTestResetAllValues();
+
+    std::vector<AttributeTestFunction> attributeAccessTests;
+    attributeAccessTests.push_back({std::bind(&NoteSelfTest::testNoteIdAccesss, this)});
+    attributeAccessTests.push_back({std::bind(&NoteSelfTest::testUserIdAccesss, this)});
+    attributeAccessTests.push_back({std::bind(&NoteSelfTest::testContentAccess, this)});
+    attributeAccessTests.push_back({std::bind(&NoteSelfTest::testDateAddedAccess, this)});
+    attributeAccessTests.push_back({std::bind(&NoteSelfTest::testLastUpdateAccess, this)});
+
+    return attributeAccessTests;
+}
+
+std::vector<ExceptionTestElement> NoteSelfTest::initExceptionTests() noexcept
+{
+    std::vector<ExceptionTestElement> exceptionTests;
+    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionInsert, this), "testExceptionInsert"});
+    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
+//    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionRetrieve, this), "testExceptionRetrieve"});
+    exceptionTests.push_back({std::bind(&NoteSelfTest::testExceptionHide, this), "testExceptionHide"});
+
+    return exceptionTests;
+}
+
+TestStatus NoteSelfTest::testExceptionInsert() noexcept
+{
+   selfTestResetAllValues();
+
+    std::chrono::system_clock::time_point timeStamp = commonTestTimeStampValue;
+    setContent("Testing insertion exception");
+    setUserId(27);
+    setDateAdded(timeStamp);
+    setLastModified(timeStamp);
+
+    return testExceptionAndSuccessNArgs("NoteModel::insert", std::bind(&NoteModel::insert, this));
+}
+
+TestStatus NoteSelfTest::testExceptionUpdate() noexcept
+{
+   selfTestResetAllValues();
+
+    std::chrono::system_clock::time_point timeStamp = commonTestTimeStampValue;
+    setNoteId(1);
+    setContent("Testing insertion exception");
+    setUserId(27);
+    setDateAdded(timeStamp);
+    setLastModified(timeStamp);
+
+    return testExceptionAndSuccessNArgs("NoteModel::update", std::bind(&NoteModel::update, this));
+}
+
+TestStatus NoteSelfTest::testExceptionHide() noexcept
+{
+   selfTestResetAllValues();
+   std::size_t testUserId = 27;
+
+    std::chrono::system_clock::time_point timeStamp = commonTestTimeStampValue;
+    setNoteId(1);
+    setContent("Testing insertion exception");
+    setUserId(testUserId);
+    setDateAdded(timeStamp);
+    setLastModified(timeStamp);
+
+    return testExceptionAndSuccessNArgs("NoteModel::hide", std::bind(&NoteModel::hide, this, std::placeholders::_1), testUserId);
+}
+
+TestStatus NoteSelfTest::testAllInsertFailures()
+{
+    selfTestResetAllValues();
+
+    if (testCommonInsertFailurePath() != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    std::vector<std::string> expectedErrors =
+    {
+        "User ID", "Content", " missing required values"
+    };
+
+    setNoteId(0);
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+    setUserId(27);
+
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+    setContent("Testing negative note insertion path");
+
+    expectedErrors.clear();
+    errorMessages.clear();
+
+    if (verboseOutput)
+    {
+        std::cout << std::format("{}::{} before successful insert this = \n", modelName, __func__) << *this << "\n";
+    }
+
+    if (!insert())
+    {
+        std::cout << "In  NoteSelfTest::testAllInsertFailures() Expected successful insert failed\n" << errorMessages << "\n";
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
+}
+
+TestStatus NoteSelfTest::testNoteIdAccesss() noexcept
+{
+    return testAccessorFunctions<std::size_t>(27, &primaryKey, "Primary Key",
+        std::bind(&NoteModel::setNoteId, this, std::placeholders::_1),
+        std::bind(&NoteModel::getNoteId, this));
+}
+
+TestStatus NoteSelfTest::testUserIdAccesss() noexcept
+{
+    return testAccessorFunctions<std::size_t>(31, &userID, "User ID",
+        std::bind(&NoteModel::setUserId, this, std::placeholders::_1),
+        std::bind(&NoteModel::getUserId, this));
+}
+
+TestStatus NoteSelfTest::testContentAccess() noexcept
+{
+    return testAccessorFunctions<std::string>("Test note content access", &content, "Content",
+        std::bind(&NoteModel::setContent, this, std::placeholders::_1),
+        std::bind(&NoteModel::getContent, this));
+}
+
+TestStatus NoteSelfTest::testDateAddedAccess() noexcept
+{
+    return testTimeStampAccessorFunctions(commonTestTimeStampValue, &creationDate, "Date Added",
+        std::bind(&NoteModel::setDateAdded, this, std::placeholders::_1),
+        std::bind(&NoteModel::getDateAdded, this));
+}
+
+TestStatus NoteSelfTest::testLastUpdateAccess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
+    return testTimeStampAccessorFunctions(testValue, &lastUpdate, "Date Added",
+        std::bind(&NoteModel::setLastModified, this, std::placeholders::_1),
+        std::bind(&NoteModel::getLastModified, this));
+}
+
+TestStatus NoteSelfTest::testEqualityOperator() noexcept
+{
+    NoteModel other;
+
+    other.setNoteId(primaryKey);
+    if (*this == other)
+    {
+        return TESTFAILED;
+    }
+
+    other = *this;
+
+    return (*this == other)? TESTPASSED : TESTFAILED;
+}
+
+void NoteSelfTest::testOutput() noexcept
+{
+    std::cout << "Test Output: " << *this << "\n";
+}
+

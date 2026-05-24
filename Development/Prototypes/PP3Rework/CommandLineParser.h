@@ -1,1 +1,45 @@
-../MergeModelDB/CommandLineParser.h
+#ifndef COMMAND_LINE_PARSER_H_
+#define COMMAND_LINE_PARSER_H_
+
+// Standard C++ Header Files
+#ifdef TESTCOMMANDLINEENABLED
+#include <expected>
+#endif // TESTCOMMANDLINEENABLED
+#include <string>
+
+struct ProgramOptions
+{
+    std::string progName;
+    std::string mySqlUser;
+    std::string mySqlPassword;
+    std::string mySqlUrl;
+    unsigned int mySqlPort;
+    std::string mySqlDBName;
+    std::string userTestDataFile;
+    std::string taskTestDataFile;
+	bool enableExecutionTime = false;
+    bool verboseOutput = false;
+    bool runSelfTest = false;
+    bool forceErrors = false;
+    bool forceExceptions = false;
+    bool quitFirstFail = false;
+    bool canConnectToDatabase = false;
+    bool showTimeStamps = false;
+    std::string userName;
+    std::string userPassword;
+};
+
+#ifdef TESTCOMMANDLINEENABLED
+enum class CommandLineStatus
+{
+    NoErrors,
+    HelpRequested,
+    HasErrors
+};
+
+auto parseCommandLine(int argc, char* argv[]) -> std::expected<ProgramOptions, CommandLineStatus>;
+#endif // TESTCOMMANDLINEENABLED
+
+extern ProgramOptions programOptions;
+
+#endif // COMMAND_LINE_PARSER_H_
