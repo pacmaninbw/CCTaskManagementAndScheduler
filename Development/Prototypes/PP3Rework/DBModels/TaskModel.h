@@ -8,7 +8,6 @@
 // Standard C++ Header Files
 #include <chrono>
 #include <format>
-#include <functional>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -66,7 +65,6 @@ public:
     std::string getStatusStringVal() const;
     std::size_t getParentTaskID() const { return parentTaskID.value_or(0); };
     std::optional<std::size_t> rawParentTaskID() const { return parentTaskID; };
-    double getPercentageComplete() const { return percentageComplete; };
     std::chrono::system_clock::time_point getCreationDate() const { return creationTimeStamp.value(); };
     std::chrono::system_clock::time_point getLastUpdate() const { return lastUpdate.value(); };
     std::chrono::year_month_day getDueDate() const { return dueDate.value(); };
@@ -90,7 +88,6 @@ public:
     void setStatus(std::string statusStr) { setStatus(stringToStatus(statusStr)); };
     void setParentTaskID(std::size_t parentTaskID);
     void setParentTaskID(std::shared_ptr<TaskModel> parentTask) { setParentTaskID(parentTask->getTaskID()); };
-    void setPercentageComplete(double percentComplete);
     void setCreationDate(std::chrono::system_clock::time_point creationDate);
     void setDueDate(std::chrono::year_month_day dueDate);
     void setScheduledStart(std::chrono::year_month_day startDate);
@@ -205,7 +202,6 @@ protected:
     std::string description;
     std::optional<TaskStatus> status;
     std::optional<std::size_t> parentTaskID;
-    double percentageComplete;
     std::optional<std::chrono::system_clock::time_point> creationTimeStamp;
 /*
  * dueDate and scheduledStart are not optional in the database, We are using

@@ -9,11 +9,8 @@
 #include <exception>
 #include <format>
 #include <functional>
-#include <iostream>
-#include <memory>
 #include <stdexcept>
 #include <string>
-#include <utility>
 #include <vector>
 
 static const TaskModel::TaskStatus UnknowStatus = static_cast<TaskModel::TaskStatus>(-1);
@@ -34,7 +31,6 @@ TaskModel::TaskModel()
   creatorID = 0;
   assignToID = 0;
   description = "";
-  percentageComplete = 0.0;
   estimatedEffort = 0;
   actualEffortToDate = 0.0;
   priorityGroup = 0;
@@ -216,12 +212,6 @@ void TaskModel::setParentTaskID(std::size_t inParentTaskID)
     parentTaskID = inParentTaskID;
 }
 
-void TaskModel::setPercentageComplete(double inPercentComplete)
-{
-    modified = true;
-    percentageComplete = inPercentComplete;
-}
-
 void TaskModel::setCreationDate(std::chrono::system_clock::time_point inCreationDate)
 {
     modified = true;
@@ -331,7 +321,6 @@ bool TaskModel::diffTask(TaskModel& other)
         description == other.description &&
         other.creatorID == creatorID &&
         assignToID == other.assignToID &&
-        percentageComplete == other.percentageComplete &&
         dueDate == other.dueDate &&
         scheduledStart == other.scheduledStart &&
         scheduledStart == other.scheduledStart &&
