@@ -1,7 +1,7 @@
 // Project Header Files
 #include "commonUtilities.h"
-#include "ScheduleItemList.h"
 #include "ScheduleItemModel.h"
+#include "ScheduleItemQueryProcessor.h"
 
 // QT Header Files
 #include "GuiDashboardScheduleTable.h"
@@ -203,7 +203,7 @@ void GuiDashboardScheduleTable::fillSchedule()
 
     if (m_UserID)
     {
-        ScheduleItemList dbScheduleList(m_UserID);
+        ScheduleItemQueryProcessor dbScheduleList(m_UserID);
         m_ScheduledItems = dbScheduleList.getUserDaySchedule(dateOfSchedule);
     }
 
