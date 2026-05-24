@@ -1,7 +1,7 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
 #include "ScheduleItemEditorDialog.h"
-#include "ScheduleItemList.h"
+#include "ScheduleItemQueryProcessor.h"
 #include "ScheduleItemModel.h"
 #include "stdChronoToQTConversions.h"
 
@@ -84,12 +84,12 @@ void ScheduleItemEditorDialog::initEditFields()
 {
     m_DBModelData = std::make_shared<ScheduleItemModel>();
     m_DBModelData->setUserID(m_UserID);
-    m_DBModelData->setScheduleItemID(m_DBModelID);
 
     // If we are editing a previously existing schedule item
     if (m_DBModelID)
     {
-        m_DBModelData->retrieve();
+        ScheduleItemQueryProcessor scheduleItemQueryProcessor(m_UserID);
+        *m_DBModelData = *scheduleItemQueryProcessor.getScheduleItemById(m_DBModelID);
 
         eventTitleTE->setPlainText(QString::fromStdString(m_DBModelData->getTitle()));
         locationTE->setPlainText(QString::fromStdString(m_DBModelData->getLocation()));
@@ -275,7 +275,7 @@ void ScheduleItemEditorDialog::initCompletersFromDB()
         return;
     }
 
-    ScheduleItemList previousEventFinder(m_UserID);
+    ScheduleItemQueryProcessor previousEventFinder(m_UserID);
     std::vector<std::string> previousEventTitles = previousEventFinder.findEventsForRepeatCompletion();
     QStringList previousEventList;
 
