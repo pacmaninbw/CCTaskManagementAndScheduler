@@ -157,7 +157,6 @@ void TestTaskDBInterface::commonTaskInit(TaskModel_shp newTask, CSVRow taskData)
     newTask->setStatus(taskData[CSV_StatusColIdx]);
     newTask->setPriorityGroup(taskData[CSV_MajorPriorityColIdx][0]);
     newTask->setPriority(std::stoi(taskData[CSV_MinorPriorityColIdx]));
-    newTask->setPercentageComplete(0.0);
     newTask->setCreationDate(commonTestTimeStampValue);
 
     // Optional fields
