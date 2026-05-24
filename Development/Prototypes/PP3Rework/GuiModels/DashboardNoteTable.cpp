@@ -1,7 +1,7 @@
 // Project Header Files
 #include "DashboardNoteTable.h"
-#include "NoteList.h"
 #include "NoteModel.h"
+#include "NoteQueryProcessor.h"
 #include "stdChronoToQTConversions.h"
 //#include "UserModel.h"
 
@@ -13,7 +13,6 @@
 
 // Standard C++ Header Files
 #include <chrono>
-#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -43,8 +42,8 @@ void DashboardNoteTable::fillTable()
     }
 
     std::chrono::year_month_day searchDate = qDateToChrono(m_SearchDate);
-    NoteList currentUserNoteList;
-    NoteListValues userNotes = currentUserNoteList.getDashboardNoteTable(m_UserID, searchDate);
+    NoteQueryProcessor currentUserNoteList;
+    NoteList userNotes = currentUserNoteList.getDashboardNoteTable(m_UserID, searchDate);
 
     if (userNotes.empty())
     {
