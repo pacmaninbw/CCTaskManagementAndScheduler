@@ -3,6 +3,7 @@
 #include "PlannerInitializer.h"
 #include "TestDBConnection.h"
 #include "UserModel.h"
+#include "UserQueryProcessor.h"
 
 // QT Header Files
 #include <QtGlobal>
@@ -97,8 +98,9 @@ bool PlannerInitializer::attemptUserLogin(std::string loginName, std::string pas
         return loginSuccessful;
     }
 
-    UserModel_shp retrievedUser = std::make_shared<UserModel>();
-    if (retrievedUser->selectByLoginAndPassword(loginName, password))
+    UserQueryProcessor userQueryProcessor;
+    UserModel_shp retrievedUser = userQueryProcessor.getUserByLoginAndPassword(loginName, password);
+    if (retrievedUser)
     {
         retrievedUser->setLastLogin(std::chrono::system_clock::now());
         if (retrievedUser->update())
@@ -115,7 +117,7 @@ bool PlannerInitializer::attemptUserLogin(std::string loginName, std::string pas
     else
     {
         std::cerr << "Select User by login and password failed: "
-                  << retrievedUser->getAllErrorMessages() << std::endl;
+            << userQueryProcessor.getAllErrorMessages() << std::endl;
     }
 
     return loginSuccessful;
