@@ -6,6 +6,7 @@
 // Standard C++ Header Files
 #include <format>
 #include <iostream>
+#include <memory>
 
 UserQueryProcessor::UserQueryProcessor()
 : QueryProcessor<UserModel>(

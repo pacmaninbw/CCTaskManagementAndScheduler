@@ -6,8 +6,6 @@
 #include "UserModel.h"
 
 // Standard C++ Header Files
-#include <format>
-#include <iostream>
 
 using UserModelList = std::vector<UserModel_shp>;
 
