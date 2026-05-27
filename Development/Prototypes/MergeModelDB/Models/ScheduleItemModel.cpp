@@ -1,17 +1,10 @@
 // Project Header Files
-#include "commonUtilities.h"
 #include "ScheduleItemModel.h"
 
 // Standard C++ Header Files
 #include <chrono>
-#include <exception>
-#include <format>
 #include <functional>
-#include <iostream>
-#include <memory>
-#include <stdexcept>
 #include <string>
-#include <utility>
 #include <vector>
 
 ScheduleItemModel::ScheduleItemModel()

@@ -5,10 +5,9 @@
 
 // Standard C++ Header Files
 #include <format>
-#include <iostream>
 
 GoalQueryProcessor::GoalQueryProcessor()
-: QueryProcessor<UserGoalModel>("UserGoalModel",{"idUserGoals", "UserID", "Description", "CreationTS", "LastUpdateTS", "Priority", "ParentGoal", "Hidden"} )
+: QueryProcessor<UserGoalModel>("UserGoalModel", {"idUserGoals", "UserID", "Description", "CreationTS", "LastUpdateTS", "Priority", "ParentGoal", "Hidden"} )
 {
 }
 

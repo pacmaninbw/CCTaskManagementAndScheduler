@@ -2,6 +2,7 @@
 #define USERGOALMODEL_H_
 
 // Project Header Files
+#include "CommandLineParser.h"
 #include "ModelDBInterface.h"
 
 // Standard C++ Header Files

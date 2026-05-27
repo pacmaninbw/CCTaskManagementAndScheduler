@@ -1,4 +1,5 @@
 // Project Header Files
+#include "commonUtilities.h"
 #include "ScheduleItemQueryProcessor.h"
 #include "ScheduleItemModel.h"
 #include "TestDBInterfaceCore.h"

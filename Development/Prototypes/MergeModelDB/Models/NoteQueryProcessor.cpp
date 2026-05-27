@@ -1,16 +1,14 @@
 // Project Header Files
+#include "commonUtilities.h"
 #include "NoteQueryProcessor.h"
 #include "NoteModel.h"
 
 // Standard C++ Header Files
-#include <algorithm>
 #include <chrono>
 #include <exception>
 #include <format>
 #include <iostream>
-#include <iterator>
 #include <optional>
-#include <stdexcept>
 #include <string>
 #include <vector>
 

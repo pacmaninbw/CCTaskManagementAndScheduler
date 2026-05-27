@@ -4,7 +4,6 @@
 // Standard C++ Header Files
 #include <chrono>
 #include <functional>
-#include <iostream>
 #include <optional>
 #include <string>
 #include <vector>

@@ -1,4 +1,5 @@
 // Project Header Files
+#include "commonUtilities.h"
 #include "TestGoalModel.h"
 #include "TestDBInterfaceCore.h"
 #include "GoalQueryProcessor.h"

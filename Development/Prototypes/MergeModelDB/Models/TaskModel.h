@@ -1,5 +1,6 @@
 #ifndef TASKMODEL_H_
 #define TASKMODEL_H_
+#include "CommandLineParser.h"
 
 // Project Header Files
 #include "commonUtilities.h"

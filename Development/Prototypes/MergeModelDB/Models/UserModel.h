@@ -2,18 +2,15 @@
 #define USERMODEL_H_
 
 // Project Header Files
-#include "commonUtilities.h"
 #include "ModelDBInterface.h"
 
 // Standard C++ Header Files
 #include <chrono>
 #include <format>
-#include <functional>
 #include <iostream>
 #include <memory>
 #include <optional>
 #include <string>
-#include <vector>
 
 class UserModel : public ModelDBInterface
 {

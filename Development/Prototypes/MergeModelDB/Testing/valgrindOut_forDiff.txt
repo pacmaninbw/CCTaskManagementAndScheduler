@@ -153,7 +153,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-05-26
+	Completed Date: 2026-05-27
 	Deleted : FALSE
 
 Task::testAllInsertFailures before successful insert this = 
@@ -378,7 +378,7 @@ In Self Test Query is:
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	CALL GetUnstartedDueForStartForAssignedUser(1, '2026-06-02')
+	CALL GetUnstartedDueForStartForAssignedUser(1, '2026-06-03')
 
 Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
 In Self Test Query is: 
@@ -661,7 +661,7 @@ Running:
 Running: 
 	CALL GetTaskByDescriptionAndAssignedUser(4, 'Design UML Diagram for Personal Planner')
 Running: 
-	CALL AddTask(4, 4, 'Grocery Shopping', 0, 0, '2025-04-12', '2025-04-11', NULL, '2026-05-26', NULL, 2, 2e+00, 67, 1, 0, 0, NULL)
+	CALL AddTask(4, 4, 'Grocery Shopping', 0, 0, '2025-04-12', '2025-04-11', NULL, '2026-05-27', NULL, 2, 2e+00, 67, 1, 0, 0, NULL)
 Running: 
 	CALL GetTaskByTaskID(58)
 Running: 
@@ -673,13 +673,13 @@ Running:
 Running: 
 	CALL GetTaskByDescriptionAndAssignedUser(4, 'Daily 30 minute walk')
 Running: 
-	CALL AddTask(4, 4, 'Clean apartment', 0, 0, '2025-04-12', '2025-04-12', NULL, '2026-05-26', NULL, 2, 0e+00, 67, 3, 0, 0, NULL)
+	CALL AddTask(4, 4, 'Clean apartment', 0, 0, '2025-04-12', '2025-04-12', NULL, '2026-05-27', NULL, 2, 0e+00, 67, 3, 0, 0, NULL)
 Running: 
 	CALL GetTaskByTaskID(60)
 Running: 
 	CALL GetTaskByDescriptionAndAssignedUser(4, 'Clean apartment')
 Running: 
-	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-06-02')
+	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-06-03')
 Find unstarted tasks for user(4) PASSED!
 User 4 has 9 unstarted tasks
 TaskModel:
@@ -812,7 +812,7 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-05-26
+	Estimated Completion Date: 2026-05-27
 	Deleted : FALSE
 
 TaskModel:
@@ -850,7 +850,7 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-05-26
+	Estimated Completion Date: 2026-05-27
 	Deleted : FALSE
 
 Running: 
@@ -1203,7 +1203,7 @@ Running:
 Running: 
 	CALL GetTaskByTaskID(47)
 Running: 
-	CALL UpdateTaskAllFields(47, 4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 4, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', '2026-05-26', 12, 6e+00, 65, 1, 0, 0, NULL)
+	CALL UpdateTaskAllFields(47, 4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 4, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', '2026-05-27', 12, 6e+00, 65, 1, 0, 0, NULL)
 Running: 
 	CALL GetTaskByTaskID(47)
 Running: 
@@ -1317,11 +1317,11 @@ Optional Fields
 	Deleted : FALSE
 
 Running: 
-	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-06-02')
+	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-06-03')
 Running: 
 	CALL HideTask(4, 59)
 Running: 
-	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-06-02')
+	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-06-03')
 Task (59) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of task PASSED!
 Running: 
@@ -1871,7 +1871,7 @@ User 4 has 6 notes
 	Content: Maintain my health
 
 Running: 
-	CALL GetAllNotesForUserCreatedInDatgeRange(4, '2026-05-19', '2026-06-02')
+	CALL GetAllNotesForUserCreatedInDatgeRange(4, '2026-05-20', '2026-06-03')
 Find all notes for user (4) created in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -1943,7 +1943,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	CALL GetAllNotesForUserEditedInDatgeRange(4, '2026-05-19', '2026-06-02')
+	CALL GetAllNotesForUserEditedInDatgeRange(4, '2026-05-20', '2026-06-03')
 Find all notes for user (4) edited in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2015,7 +2015,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	CALL GetDashboardNoteTable(4, '2026-05-26 07:00:00.000000', '2026-05-27 06:59:00.000000')
+	CALL GetDashboardNoteTable(4, '2026-05-27 07:00:00.000000', '2026-05-28 06:59:00.000000')
 Find all notes for user (4) for a date PASSED!
 User 4 has 17 notes
 	Note ID: 27

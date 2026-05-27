@@ -1,4 +1,5 @@
 // Project Header Files
+#include "commonUtilities.h"
 #include "TestNoteModel.h"
 #include "TestDBInterfaceCore.h"
 #include "NoteModel.h"

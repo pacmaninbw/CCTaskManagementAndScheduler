@@ -2,7 +2,6 @@
 #define COREDBINTERFACECORE_H_
 
 // Project Header Files
-#include "CommandLineParser.h"
 
 // External Libraries
 #include <boost/asio.hpp>

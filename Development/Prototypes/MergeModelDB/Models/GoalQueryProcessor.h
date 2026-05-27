@@ -6,7 +6,6 @@
 #include "UserGoalModel.h"
 
 // Standard C++ Header Files
-#include <iostream>
 #include <string>
 
 using UserGoalList = std::vector<UserGoalModel_shp>;
