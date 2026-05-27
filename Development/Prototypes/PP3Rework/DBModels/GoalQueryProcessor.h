@@ -1,1 +1,1 @@
-../../MergeModelDB/Models/GoalQueryProcessor.h
+../../DBModelDevAndTest/Models/GoalQueryProcessor.h

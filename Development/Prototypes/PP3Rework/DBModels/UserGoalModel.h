@@ -1,1 +1,1 @@
-../../MergeModelDB/Models/UserGoalModel.h
+../../DBModelDevAndTest/Models/UserGoalModel.h
