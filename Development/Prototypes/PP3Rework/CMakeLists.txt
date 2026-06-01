@@ -95,6 +95,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         DBModels/UserModel.h
         common/commonTestValues.cpp
         common/commonUtilities.cpp
+        SubWindows/GoalWindow.h SubWindows/GoalWindow.cpp
+        SubWindows/ModelSubWindow.h SubWindows/ModelSubWindow.cpp
+        SubWindows/TodoWindow.h SubWindows/TodoWindow.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET PP3Rework APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -119,6 +122,7 @@ target_compile_definitions(PP3Rework PRIVATE QT_NO_KEYWORDS)
 target_include_directories(PP3Rework PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/SubWindows>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/DBModels>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/GuiModels>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Dialogs>
