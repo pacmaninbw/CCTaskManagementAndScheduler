@@ -10,6 +10,7 @@
 #include "ScheduleItemEditorDialog.h"
 #include "ScheduleTablerViewer.h"
 #include "TaskEditorDialog.h"
+#include "TodoWindow.h"
 #include "UserDashboard.h"
 #include "UserEditorDialog.h"
 #include "UserModel.h"
@@ -30,7 +31,6 @@ UserDashboard::UserDashboard(QWidget *parent)
     : QMainWindow(parent),
     m_UserDataPtr{nullptr},
     m_DashboardDate{QDate::currentDate()},
-    udTaskTableView{nullptr},
     udScheduleTableView{nullptr},
     udNotesTableView{nullptr}
 {
@@ -49,24 +49,7 @@ UserDashboard::UserDashboard(std::shared_ptr<UserModel> loggedInUser, QWidget *p
         m_UserDataPtr = loggedInUser;
 
         fillUserIdBoxData();
-
-        if (udTaskTableView)
-        {
-            udTaskTableView->setUserId(m_UserDataPtr->getUserID());
-            updateTaskList();
-        }
-
-        if (udScheduleTableView)
-        {
-            udScheduleTableView->setUserId(m_UserDataPtr->getUserID());
-            updateSchedule();
-        }
-
-        if (udNotesTableView)
-        {
-            udNotesTableView->setUserIdAndDate(m_UserDataPtr->getUserID(), m_DashboardDate);
-            updateNotes();
-        }
+        updatePerDayView();
     }
 }
 
@@ -113,6 +96,7 @@ void UserDashboard::setUpDashboardMenuBar()
     setUpUserMenu();
     setUpGoalMenu();
     setUpDbConnectionMenu();
+    setUpTodoMenu();
 }
 
 void UserDashboard::setUpUserMenu()
@@ -155,6 +139,17 @@ void UserDashboard::setUpGoalMenu()
     udGoalMenu->addAction(udActionAddGoal);
     udGoalMenu->addAction(udActionEditGoal);
     udGoalMenu->addSeparator();
+}
+
+void UserDashboard::setUpTodoMenu()
+{
+    udActionTodoWindow = new QAction("Todo List", this);
+    udActionTodoWindow->setStatusTip(tr("Create a new Goal"));
+    connect(udActionTodoWindow, &QAction::triggered, this, &UserDashboard::handleToDoMenuClicked);
+
+    udTodo = menuBar()->addMenu("&Todo List");
+    udTodo->addAction(udActionTodoWindow);
+    udTodo->addSeparator();
 }
 
 void UserDashboard::setUpDbConnectionMenu()
@@ -224,7 +219,8 @@ QHBoxLayout *UserDashboard::setUpPerDayLayout()
     QHBoxLayout* perDayLayout = new QHBoxLayout;
     perDayLayout->setObjectName("perDayLayout");
 
-    perDayLayout->addWidget(setUpPerDayTaskGB());
+    todoWindowInWindow = setUpTodoList();
+    perDayLayout->addWidget(todoWindowInWindow);
 
     perDayLayout->addWidget(setUpPerDayScheduleGB());
 
@@ -233,22 +229,18 @@ QHBoxLayout *UserDashboard::setUpPerDayLayout()
     return perDayLayout;
 }
 
-QGroupBox *UserDashboard::setUpPerDayTaskGB()
+TodoWindow *UserDashboard::setUpTodoList()
 {
-    udTaskListGB = new QGroupBox("Prioritized To Do List:");
-    QVBoxLayout* taskLisGBLayout = new QVBoxLayout;
+    TodoWindow* todoListWindow = new TodoWindow(true, this);
+    if (m_UserDataPtr)
+    {
+        todoListWindow->setUser(m_UserDataPtr);
+    }
+    todoListWindow->setDate(m_DashboardDate);
+    todoListWindow->setUpWindowUi();
+    todoListWindow->show();
 
-    udAddTaskPB = cqtfa_QTWidgetWithText<QPushButton>("Add a To Do Item", "udAddTaskPB", this);
-    connect(udAddTaskPB, &QPushButton::clicked, this, &UserDashboard::handleAddTaskAction);
-    taskLisGBLayout->addWidget(udAddTaskPB);
-
-    taskLisGBLayout->addWidget(updateTaskList());
-
-    udTaskListGB->setLayout(taskLisGBLayout);
-
-    udTaskListGB->setAlignment(Qt::AlignCenter);
-
-    return udTaskListGB;
+    return todoListWindow;
 }
 
 QGroupBox *UserDashboard::setUpPerDayScheduleGB()
@@ -267,6 +259,29 @@ QGroupBox *UserDashboard::setUpPerDayScheduleGB()
     udScheduleGB->setAlignment(Qt::AlignCenter);
 
     return udScheduleGB;
+}
+
+void UserDashboard::updatePerDayView()
+{
+    if (todoWindowInWindow)
+    {
+        todoWindowInWindow->setUser(m_UserDataPtr);
+        todoWindowInWindow->setDate(m_DashboardDate);
+        todoWindowInWindow->refresh();
+    }
+
+    if (udScheduleTableView)
+    {
+        udScheduleTableView->setUserId(m_UserDataPtr->getUserID());
+        udScheduleTableView->setDate(m_DashboardDate);
+        updateSchedule();
+    }
+
+    if (udNotesTableView)
+    {
+        udNotesTableView->setUserIdAndDate(m_UserDataPtr->getUserID(), m_DashboardDate);
+        updateNotes();
+    }
 }
 
 QGroupBox *UserDashboard::setUpPerDayNotesGB()
@@ -293,27 +308,6 @@ void UserDashboard::fillUserIdBoxData()
     udUserMiddleInitialDisplay->setText(QString::fromStdString(m_UserDataPtr->getMiddleInitial()));
     udUserLastNameDisplay->setText(QString::fromStdString(m_UserDataPtr->getLastName()));
     udUserNameDisplay->setText(QString::fromStdString(m_UserDataPtr->getLoginName()));
-}
-
-DashboardTaskViewer* UserDashboard::updateTaskList()
-{
-    if (!udTaskTableView)
-    {
-        udTaskTableView = new DashboardTaskViewer(this);
-        udTaskTableView->setObjectName("udTaskTableView");
-        connect(udTaskTableView, &QTableView::clicked, this, &UserDashboard::handleTaskTableClicked);
-        connect(udTaskTableView, &QTableView::doubleClicked, this, &UserDashboard::handleTaskTableClicked);
-    }
-    else
-    {
-        udTaskTableView->clearSelection();
-        udTaskTableView->update();
-    }
-
-    udTaskTableView->clearFocus();
-    udTaskListGB->clearFocus();
-
-    return udTaskTableView;
 }
 
 ScheduleTablerViewer* UserDashboard::updateSchedule()
@@ -359,41 +353,6 @@ QString UserDashboard::groupBoxTitleWithDate(QString gbTitleBase)
     return titleWithDate;
 }
 
-void UserDashboard::handleAddTaskAction()
-{
-    if (!userIsLoggedIn())
-    {
-        return;
-    }
-
-    TaskEditorDialog addTaskDialog(this, m_UserDataPtr);
-
-    addTaskDialog.exec();
-
-    updateTaskList();
-}
-
-void UserDashboard::handleTaskTableClicked(const QModelIndex &index)
-{
-    if (!userIsLoggedIn())
-    {
-        return;
-    }
-
-    if (!index.isValid())
-    {
-        return;
-    }
-
-    std::size_t taskToEditId = index.internalId();
-    TaskEditorDialog editTaskDialog(this);
-    if (editTaskDialog.setTaskDataAndInitDisplayFields(taskToEditId))
-    {
-        editTaskDialog.exec();
-        updateTaskList();
-    }
-}
-
 void UserDashboard::handleAddUserAction()
 {
     if (!userIsLoggedIn())
@@ -416,10 +375,10 @@ void UserDashboard::handleEditUserAction()
     UserEditorDialog editUserDialog(m_UserDataPtr, this);
 
     editUserDialog.exec();
+    
     fillUserIdBoxData();
-    updateTaskList();
-    updateSchedule();
-    updateNotes();
+
+    updatePerDayView();
 }
 
 void UserDashboard::handleAddNoteAction()
@@ -471,23 +430,7 @@ void UserDashboard::handleUserLoginAction()
 
     fillUserIdBoxData();
 
-    if (udTaskTableView)
-    {
-        udTaskTableView->setUserId(m_UserDataPtr->getUserID());
-        updateTaskList();
-    }
-
-    if (udScheduleTableView)
-    {
-        udScheduleTableView->setUserId(m_UserDataPtr->getUserID());
-        updateSchedule();
-    }
-
-    if (udNotesTableView)
-    {
-        udNotesTableView->setUserId(m_UserDataPtr->getUserID());
-        updateNotes();
-    }
+    updatePerDayView();
 }
 
 void UserDashboard::handleAddGoalAction()
@@ -497,7 +440,7 @@ void UserDashboard::handleAddGoalAction()
         return;
     }
 
-    GoalEditorDialog addGoalDialog(m_UserDataPtr->getUserID(), 0, this);
+    GoalEditorDialog addGoalDialog(m_UserDataPtr->getUserID(),this);
 
     addGoalDialog.exec();
 }
@@ -511,9 +454,18 @@ void UserDashboard::handleEditGoalAction()
 
     std::size_t goalToEdit = 0;
 
-    GoalEditorDialog editGoalDialog(m_UserDataPtr->getUserID(), goalToEdit, this);
+    GoalEditorDialog editGoalDialog(m_UserDataPtr->getUserID(), this);
+    if (goalToEdit)
+    {
+        if (editGoalDialog.getGoalFromDbInitFields(goalToEdit))
+        {
+            editGoalDialog.exec();
+        }
+    }
+    else {
+        editGoalDialog.exec();
+    }
 
-    editGoalDialog.exec();
 }
 
 void UserDashboard::handleAddScheduleItemAction()
@@ -579,24 +531,17 @@ void UserDashboard::handleDateChanged(const QDate &newDate)
     udScheduleGB->setTitle(groupBoxTitleWithDate("Schedule"));
     udNotesGB->setTitle(groupBoxTitleWithDate("Notes"));
 
-    if (udTaskTableView)
-    {
-        udTaskTableView->setDate(newDate);
-        updateTaskList();
-    }
-
-    if (udScheduleTableView)
-    {
-        udScheduleTableView->setDate(newDate);
-        updateSchedule();
-    }
-
-    if (udNotesTableView)
-    {
-        udNotesTableView->setDate(newDate);
-        updateNotes();
-    }
+    updatePerDayView();
 
     fillUserIdBoxData();
+}
+
+void UserDashboard::handleToDoMenuClicked()
+{
+    TodoWindow* todoExternal = new TodoWindow(m_UserDataPtr, m_DashboardDate, false, this);
+
+    todoExternal->setUpWindowUi();
+
+    todoExternal->show();
 }
 

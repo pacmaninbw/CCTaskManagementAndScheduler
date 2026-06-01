@@ -6,6 +6,7 @@ class ScheduleItemModel;
 class DashboardTaskViewer;
 class ScheduleTablerViewer;
 class DashboardNotesViewer;
+class TodoWindow;
 
 // Project Header Files
 
@@ -40,8 +41,6 @@ public:
 Q_SIGNALS:
 
 private Q_SLOTS:
-    void handleAddTaskAction();
-    void handleTaskTableClicked(const QModelIndex &index);
     void handleAddUserAction();
     void handleEditUserAction();
     void handleAddNoteAction();
@@ -53,22 +52,24 @@ private Q_SLOTS:
     void handleScheduleClicked(const QModelIndex &index);
     void handleDatabaseConnectionAction();
     void handleDateChanged(const QDate &newDate);
+    void handleToDoMenuClicked();
 
 private:
     void setUpUserDashboardUi();
     void setUpDashboardMenuBar();
     void setUpUserMenu();
     void setUpGoalMenu();
+    void setUpTodoMenu();
     void setUpDbConnectionMenu();
     bool userIsLoggedIn();
     bool dbIsConnected();
     QGroupBox* setUpUserIdBox();
     QHBoxLayout* setUpPerDayLayout();
-    QGroupBox* setUpPerDayTaskGB();
+    TodoWindow* setUpTodoList();
     QGroupBox* setUpPerDayScheduleGB();
+    void updatePerDayView();
     QGroupBox* setUpPerDayNotesGB();
     void fillUserIdBoxData();
-    DashboardTaskViewer* updateTaskList();
     ScheduleTablerViewer* updateSchedule();
     DashboardNotesViewer* updateNotes();
     QString groupBoxTitleWithDate(QString gbTitleBase);
@@ -80,6 +81,7 @@ private:
     QMenu* udUserMenu = nullptr;
     QMenu* udGoalMenu = nullptr;
     QMenu* udDBConnectionMenu = nullptr;
+    QMenu* udTodo = nullptr;
     QAction* udActionAddUserProfile = nullptr;
     QAction* udActionEditUserProfile = nullptr;
     QAction* udActionUserLogin = nullptr;
@@ -87,9 +89,8 @@ private:
     QAction* udActionAddGoal = nullptr;
     QAction* udActionEditGoal = nullptr;
     QAction* udActionConnectDB = nullptr;
+    QAction* udActionTodoWindow = nullptr;
     QWidget* centralwidget = nullptr;
-    QGroupBox* udTaskListGB = nullptr;
-    QPushButton* udAddTaskPB = nullptr;
     QGroupBox* udScheduleGB = nullptr;
     QPushButton* udAddEventPB = nullptr;
     QGroupBox* udNotesGB = nullptr;
@@ -100,7 +101,7 @@ private:
     QLineEdit* udUserLastNameDisplay = nullptr;
     QLineEdit* udUserNameDisplay = nullptr;
     QDateEdit* udDateSelectorDE = nullptr;
-    DashboardTaskViewer* udTaskTableView = nullptr;
+    TodoWindow* todoWindowInWindow = nullptr;
     ScheduleTablerViewer* udScheduleTableView = nullptr;
     DashboardNotesViewer* udNotesTableView = nullptr;
 
