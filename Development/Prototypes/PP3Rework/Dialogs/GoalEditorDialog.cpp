@@ -8,11 +8,13 @@
 #include <QVariant>
 #include <QAbstractButton>
 #include <QApplication>
+#include <QDebug>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QPlainTextEdit>
 #include <QVBoxLayout>
@@ -22,25 +24,71 @@
 //#include <iostream>
 #include <memory>
 
-GoalEditorDialog::GoalEditorDialog(std::size_t userId, std::size_t goalId, QWidget *parent)
+GoalEditorDialog::GoalEditorDialog(std::size_t userId, QWidget *parent)
     : QDialog(parent),
     m_UserID{userId},
     m_GoalData{nullptr},
+    m_ParentGoalData{nullptr},
     maxGroupBoxHeight{0},
     maxButtonBoxHeight{0}
-{
-    GoalQueryProcessor goalQueryProcessor;
-    if (goalId)
-    {
-        m_GoalData = goalQueryProcessor.getGoalById(goalId);
-    }
-    
+{    
     setUpGoalEditorDialogUI();
+}
+
+bool GoalEditorDialog::getGoalFromDbInitFields(std::size_t goalToEdit)
+{
+    if (!goalToEdit)
+    {
+        QString errorReport = "To Do Item Edit failed.\n";
+        errorReport += " No Task to Edit";
+        QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
+        return false;
+    }
+
+    GoalQueryProcessor goalQueryProcessor;
+    m_GoalData = goalQueryProcessor.getGoalById(goalToEdit);
+    std::size_t parentGoalId = m_GoalData->getParentId();
+    if (parentGoalId)
+    {
+        m_ParentGoalData = goalQueryProcessor.getGoalById(parentGoalId);
+    }
+
+    initEditorFieldsFromModel();
+
+    return true;
 }
 
 GoalEditorDialog::~GoalEditorDialog()
 {
 
+}
+
+void GoalEditorDialog::accept()
+{
+    bool updateSuccessful = true;
+    if (!m_GoalData)
+    {
+        m_GoalData = std::make_shared<UserGoalModel>();
+        m_GoalData->setUserId(m_UserID);
+        transferEditedDataToModel();
+        updateSuccessful = m_GoalData->insert();
+    }
+    else
+    {
+        transferEditedDataToModel();
+        updateSuccessful = m_GoalData->update();
+    }
+
+    if (updateSuccessful)
+    {
+        QDialog::accept();
+    }
+    else
+    {
+        QString errorReport = "Goal edit failed.\n";
+        errorReport += QString::fromStdString(m_GoalData->getAllErrorMessages());
+        QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
+    }
 }
 
 void GoalEditorDialog::setUpGoalEditorDialogUI()
@@ -114,4 +162,25 @@ void GoalEditorDialog::limitDialogRowth()
 
     setMaximumWidth(maxDialogWidth);
     setMaximumHeight(maxGroupBoxHeight + maxButtonBoxHeight + marginAndSpacing);
+}
+
+void GoalEditorDialog::transferEditedDataToModel()
+{
+    m_GoalData->setDescription(editGoalDescriptionTE->toPlainText().toStdString());
+    m_GoalData->setPriority(editGoalPriorityLE->text().toUInt());
+    if (m_ParentGoalData)
+    {
+        m_GoalData->setParentID(m_ParentGoalData->getGoalId());
+    }
+}
+
+void GoalEditorDialog::initEditorFieldsFromModel()
+{
+    if (!m_GoalData)
+    {
+        return;
+    }
+
+    editGoalDescriptionTE->setPlainText(QString::fromStdString(m_GoalData->getDescription()));
+    editGoalPriorityLE->setText(QString::number(m_GoalData->getPriority()));
 }

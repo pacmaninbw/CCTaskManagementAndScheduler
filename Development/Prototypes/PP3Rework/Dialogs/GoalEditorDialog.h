@@ -25,17 +25,24 @@ class GoalEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit GoalEditorDialog(std::size_t userId, std::size_t goalId, QWidget* parent = nullptr);
+    explicit GoalEditorDialog(std::size_t userId, QWidget* parent = nullptr);
+    bool getGoalFromDbInitFields(std::size_t goalId);
     ~GoalEditorDialog();
+
+public Q_SLOTS:
+    void accept() override;
 
 private:
     void setUpGoalEditorDialogUI();
     QFormLayout* setUpGoalEditorDialogGroupBoxContents();
     QDialogButtonBox* setUpGoalEditorDialogButtonBox();
     void limitDialogRowth();
+    void transferEditedDataToModel();
+    void initEditorFieldsFromModel();
 
     std::size_t m_UserID;
     std::shared_ptr<UserGoalModel> m_GoalData;
+    std::shared_ptr<UserGoalModel> m_ParentGoalData;
     QDialogButtonBox* buttonBox = nullptr;
     QGroupBox* editGoalGB = nullptr;
     QFormLayout* goalEditorDialogFormLayout = nullptr;
