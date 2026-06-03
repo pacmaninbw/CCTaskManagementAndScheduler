@@ -45,18 +45,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Dialogs/ScheduleItemEditorDialog.cpp
         Dialogs/TaskEditorDialog.cpp
         Dialogs/UserEditorDialog.cpp
-        GuiModels/GuiDashboardTaskTable.cpp
-        GuiModels/GuiDashboardTaskTable.h
-        GuiModels/stdChronoToQTConversions.cpp
-        GuiModels/stdChronoToQTConversions.h
-        GuiModels/GuiDashboardScheduleTable.h
-        GuiModels/GuiDashboardScheduleTable.cpp
-        GuiModels/GuiTaskTableBase.h
-        GuiModels/GuiTaskTableBase.cpp
-        GuiModels/SelectParentTaskTable.h
-        GuiModels/SelectParentTaskTable.cpp
-        GuiModels/DashboardNoteTable.h
-        GuiModels/DashboardNoteTable.cpp
         AppWidgets/commonQTWidgetsForApp.cpp
         AppWidgets/commonQTWidgetsForApp.h
         AppWidgets/ScheduleTablerViewer.h
@@ -100,6 +88,18 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         SubWindows/TodoWindow.h SubWindows/TodoWindow.cpp
         SubWindows/ScheduleWindow.h SubWindows/ScheduleWindow.cpp
         SubWindows/NotesWindow.h SubWindows/NotesWindow.cpp
+        SubWindows/GuiDashboardTaskTable.cpp
+        SubWindows/GuiDashboardTaskTable.h
+        SubWindows/stdChronoToQTConversions.cpp
+        SubWindows/stdChronoToQTConversions.h
+        SubWindows/GuiDashboardScheduleTable.h
+        SubWindows/GuiDashboardScheduleTable.cpp
+        SubWindows/GuiTaskTableBase.h
+        SubWindows/GuiTaskTableBase.cpp
+        SubWindows/SelectParentTaskTable.h
+        SubWindows/SelectParentTaskTable.cpp
+        SubWindows/DashboardNoteTable.h
+        SubWindows/DashboardNoteTable.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET PP3Rework APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -126,7 +126,6 @@ target_include_directories(PP3Rework PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/SubWindows>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/DBModels>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/GuiModels>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Dialogs>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/AppWidgets>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/BusinessLogic>
