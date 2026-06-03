@@ -85,10 +85,6 @@ DashboardTaskViewer *TodoWindow::updateTodoList()
         {
             todoTableView->setUserId(m_UserData->getUserID());
         }
-        else
-        {
-            std::cerr << "User not set!!!\n";
-        }
         connect(todoTableView, &QTableView::clicked, this, &TodoWindow::handleTodoTableClicked);
         connect(todoTableView, &QTableView::doubleClicked, this, &TodoWindow::handleTodoTableClicked);
     }
