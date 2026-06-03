@@ -56,7 +56,7 @@ void ModelSubWindow::setUpWindowUi()
 
     if (m_IsSubWindow)
     {
-        alternateTitle = cqtfa_QTWidgetWithText<QLabel>(m_WindowTitleText.toUtf8().constData(), "", this);
+        alternateTitle = cqtfa_QTWidgetWithText<QLabel>(m_WindowTitleText.toUtf8().constData(), "alternateTitle", this);
         modelWindowLayout->addWidget(alternateTitle, 0, Qt::AlignHCenter);
     }
     else {
