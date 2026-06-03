@@ -98,6 +98,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         SubWindows/GoalWindow.h SubWindows/GoalWindow.cpp
         SubWindows/ModelSubWindow.h SubWindows/ModelSubWindow.cpp
         SubWindows/TodoWindow.h SubWindows/TodoWindow.cpp
+        SubWindows/ScheduleWindow.h SubWindows/ScheduleWindow.cpp
+        SubWindows/NotesWindow.h SubWindows/NotesWindow.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET PP3Rework APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

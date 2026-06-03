@@ -3,10 +3,10 @@
 
 class UserModel;
 class ScheduleItemModel;
-class DashboardTaskViewer;
-class ScheduleTablerViewer;
 class DashboardNotesViewer;
 class TodoWindow;
+class ScheduleWindow;
+class NotesWindow;
 
 // Project Header Files
 
@@ -43,13 +43,9 @@ Q_SIGNALS:
 private Q_SLOTS:
     void handleAddUserAction();
     void handleEditUserAction();
-    void handleAddNoteAction();
-    void handleNoteTableClicked(const QModelIndex &index);
     void handleUserLoginAction();
     void handleAddGoalAction();
     void handleEditGoalAction();
-    void handleAddScheduleItemAction();
-    void handleScheduleClicked(const QModelIndex &index);
     void handleDatabaseConnectionAction();
     void handleDateChanged(const QDate &newDate);
     void handleToDoMenuClicked();
@@ -66,12 +62,11 @@ private:
     QGroupBox* setUpUserIdBox();
     QHBoxLayout* setUpPerDayLayout();
     TodoWindow* setUpTodoList();
-    QGroupBox* setUpPerDayScheduleGB();
+    ScheduleWindow* setUpSchedule();
+    NotesWindow* setUpNotesWindow();
     void updatePerDayView();
     QGroupBox* setUpPerDayNotesGB();
     void fillUserIdBoxData();
-    ScheduleTablerViewer* updateSchedule();
-    DashboardNotesViewer* updateNotes();
     QString groupBoxTitleWithDate(QString gbTitleBase);
 
     QString m_ProgNameStr;
@@ -91,9 +86,7 @@ private:
     QAction* udActionConnectDB = nullptr;
     QAction* udActionTodoWindow = nullptr;
     QWidget* centralwidget = nullptr;
-    QGroupBox* udScheduleGB = nullptr;
     QPushButton* udAddEventPB = nullptr;
-    QGroupBox* udNotesGB = nullptr;
     QPushButton* udAddNotePB = nullptr;
     QGroupBox* userDashBoardIDGB = nullptr;
     QLineEdit* udUserFirstNameDisplay = nullptr;
@@ -102,8 +95,8 @@ private:
     QLineEdit* udUserNameDisplay = nullptr;
     QDateEdit* udDateSelectorDE = nullptr;
     TodoWindow* todoWindowInWindow = nullptr;
-    ScheduleTablerViewer* udScheduleTableView = nullptr;
-    DashboardNotesViewer* udNotesTableView = nullptr;
+    ScheduleWindow* scheduleWindowInWindow = nullptr;
+    NotesWindow* noteWindowInWindow = nullptr;
 
 /*
  * Size and positioning constants.

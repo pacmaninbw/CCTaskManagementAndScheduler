@@ -1,15 +1,11 @@
 // Project Header
 #include "CommandLineParser.h"
 #include "commonQTWidgetsForApp.h"  // cqtfa_ functions
-#include "DashboardNotesViewer.h"
-#include "DashboardTaskViewer.h"
 #include "DataBaseConnectionDialog.h"
 #include "GoalEditorDialog.h"
 #include "LoginDialog.h"
-#include "NoteEditorDialog.h"
-#include "ScheduleItemEditorDialog.h"
-#include "ScheduleTablerViewer.h"
-#include "TaskEditorDialog.h"
+#include "NotesWindow.h"
+#include "ScheduleWindow.h"
 #include "TodoWindow.h"
 #include "UserDashboard.h"
 #include "UserEditorDialog.h"
@@ -30,9 +26,7 @@
 UserDashboard::UserDashboard(QWidget *parent)
     : QMainWindow(parent),
     m_UserDataPtr{nullptr},
-    m_DashboardDate{QDate::currentDate()},
-    udScheduleTableView{nullptr},
-    udNotesTableView{nullptr}
+    m_DashboardDate{QDate::currentDate()}
 {
     m_ProgNameStr = QString::fromStdString(programOptions.progName);
 
@@ -222,9 +216,11 @@ QHBoxLayout *UserDashboard::setUpPerDayLayout()
     todoWindowInWindow = setUpTodoList();
     perDayLayout->addWidget(todoWindowInWindow);
 
-    perDayLayout->addWidget(setUpPerDayScheduleGB());
+    scheduleWindowInWindow = setUpSchedule();
+    perDayLayout->addWidget(scheduleWindowInWindow);
 
-    perDayLayout->addWidget(setUpPerDayNotesGB());
+    noteWindowInWindow = setUpNotesWindow();
+    perDayLayout->addWidget(noteWindowInWindow);
 
     return perDayLayout;
 }
@@ -243,22 +239,39 @@ TodoWindow *UserDashboard::setUpTodoList()
     return todoListWindow;
 }
 
-QGroupBox *UserDashboard::setUpPerDayScheduleGB()
+ScheduleWindow *UserDashboard::setUpSchedule()
 {
-    udScheduleGB = new QGroupBox(groupBoxTitleWithDate("Schedule"));
-    QVBoxLayout* scheduleGBLayout = new QVBoxLayout;
+    ScheduleWindow* scheduleWindow = new ScheduleWindow(true, this);
+    if (m_UserDataPtr)
+    {
+        scheduleWindow->setUser(m_UserDataPtr);
+    }
+    scheduleWindow->setDate(m_DashboardDate);
+    scheduleWindow->setUpWindowUi();
+    scheduleWindow->show();
+    scheduleWindow->refresh();
 
-    udAddEventPB = cqtfa_QTWidgetWithText<QPushButton>("Add Event to Schedule", "udAddEventPB", this);
-    connect(udAddEventPB, &QPushButton::clicked, this, &UserDashboard::handleAddScheduleItemAction);
-    scheduleGBLayout->addWidget(udAddEventPB);
+    return scheduleWindow;
+}
 
-    scheduleGBLayout->addWidget(updateSchedule());
+NotesWindow *UserDashboard::setUpNotesWindow()
+{
+    NotesWindow* noteWindow;
+    if (m_UserDataPtr != nullptr)
+    {
+        noteWindow = new NotesWindow(m_UserDataPtr, m_DashboardDate, true, this);
+    }
+    else
+    {
+        noteWindow = new NotesWindow(true, this);
+        noteWindow->setDate(m_DashboardDate);
+    }
 
-    udScheduleGB->setLayout(scheduleGBLayout);
+    noteWindow->setUpWindowUi();
+    noteWindow->show();
+    noteWindow->refresh();
 
-    udScheduleGB->setAlignment(Qt::AlignCenter);
-
-    return udScheduleGB;
+    return noteWindow;
 }
 
 void UserDashboard::updatePerDayView()
@@ -270,36 +283,19 @@ void UserDashboard::updatePerDayView()
         todoWindowInWindow->refresh();
     }
 
-    if (udScheduleTableView)
+    if (scheduleWindowInWindow)
     {
-        udScheduleTableView->setUserId(m_UserDataPtr->getUserID());
-        udScheduleTableView->setDate(m_DashboardDate);
-        updateSchedule();
+        scheduleWindowInWindow->setUser(m_UserDataPtr);
+        scheduleWindowInWindow->setDate(m_DashboardDate);
+        scheduleWindowInWindow->refresh();
     }
 
-    if (udNotesTableView)
+    if (noteWindowInWindow)
     {
-        udNotesTableView->setUserIdAndDate(m_UserDataPtr->getUserID(), m_DashboardDate);
-        updateNotes();
+        noteWindowInWindow->setUser(m_UserDataPtr);
+        noteWindowInWindow->setDate(m_DashboardDate);
+        noteWindowInWindow->refresh();
     }
-}
-
-QGroupBox *UserDashboard::setUpPerDayNotesGB()
-{
-    udNotesGB = new QGroupBox(groupBoxTitleWithDate("Notes"));
-    QVBoxLayout* notesGBLayOut = new QVBoxLayout;
-
-    udAddNotePB = cqtfa_QTWidgetWithText<QPushButton>("Add a Note", "udAddNotePB", this);
-    connect(udAddNotePB, &QPushButton::clicked, this, &UserDashboard::handleAddNoteAction);
-    notesGBLayOut->addWidget(udAddNotePB);
-
-    notesGBLayOut->addWidget(updateNotes());
-
-    udNotesGB->setLayout(notesGBLayOut);
-
-    udNotesGB->setAlignment(Qt::AlignCenter);
-
-    return udNotesGB;
 }
 
 void UserDashboard::fillUserIdBoxData()
@@ -308,42 +304,6 @@ void UserDashboard::fillUserIdBoxData()
     udUserMiddleInitialDisplay->setText(QString::fromStdString(m_UserDataPtr->getMiddleInitial()));
     udUserLastNameDisplay->setText(QString::fromStdString(m_UserDataPtr->getLastName()));
     udUserNameDisplay->setText(QString::fromStdString(m_UserDataPtr->getLoginName()));
-}
-
-ScheduleTablerViewer* UserDashboard::updateSchedule()
-{
-    if (!udScheduleTableView)
-    {
-        udScheduleTableView = new ScheduleTablerViewer(this);
-        udScheduleTableView->setObjectName("udScheduleTableView");
-        connect(udScheduleTableView, &QTableView::clicked, this, &UserDashboard::handleScheduleClicked);
-        connect(udScheduleTableView, &QTableView::doubleClicked, this, &UserDashboard::handleScheduleClicked);
-    }
-
-    udScheduleTableView->clearSelection();
-    udScheduleTableView->setUserIdAndDate(m_UserDataPtr->getUserID(), m_DashboardDate);
-    udScheduleTableView->updateSchedule();
-    udScheduleTableView->clearFocus();
-
-    return udScheduleTableView;
-}
-
-DashboardNotesViewer *UserDashboard::updateNotes()
-{
-    if (!udNotesTableView)
-    {
-        udNotesTableView = new DashboardNotesViewer(m_UserDataPtr->getUserID(), m_DashboardDate, this);
-        udNotesTableView->setObjectName("udNotesTableView");
-        connect(udNotesTableView, &QTableView::clicked, this, &UserDashboard::handleNoteTableClicked);
-        connect(udNotesTableView, &QTableView::doubleClicked, this, &UserDashboard::handleNoteTableClicked);
-    }
-
-    udNotesTableView->clearSelection();
-    udNotesTableView->setUserIdAndDate(m_UserDataPtr->getUserID(), m_DashboardDate);
-    udNotesTableView->update();
-    udNotesTableView->clearFocus();
-
-    return udNotesTableView;
 }
 
 QString UserDashboard::groupBoxTitleWithDate(QString gbTitleBase)
@@ -379,40 +339,6 @@ void UserDashboard::handleEditUserAction()
     fillUserIdBoxData();
 
     updatePerDayView();
-}
-
-void UserDashboard::handleAddNoteAction()
-{
-    if (!userIsLoggedIn())
-    {
-        return;
-    }
-
-    NoteEditorDialog addNoteDialog(this, m_UserDataPtr->getUserID());
-
-    addNoteDialog.exec();
-
-    updateNotes();
-}
-
-void UserDashboard::handleNoteTableClicked(const QModelIndex &index)
-{
-    if (!userIsLoggedIn())
-    {
-        return;
-    }
-
-    if (!index.isValid())
-    {
-        return;
-    }
-
-    std::size_t noteToEdit = index.internalId();
-    NoteEditorDialog editNoteDialog(this, m_UserDataPtr->getUserID(), noteToEdit);
-
-    editNoteDialog.exec();
-
-    updateNotes();
 }
 
 void UserDashboard::handleUserLoginAction()
@@ -468,55 +394,6 @@ void UserDashboard::handleEditGoalAction()
 
 }
 
-void UserDashboard::handleAddScheduleItemAction()
-{
-    if (!userIsLoggedIn())
-    {
-        return;
-    }
-
-    ScheduleItemEditorDialog addScheduleItemDialog(m_UserDataPtr->getUserID(), this);
-
-    addScheduleItemDialog.initEditFields();
-
-    addScheduleItemDialog.exec();
-    
-    updateSchedule();
-}
-
-void UserDashboard::handleScheduleClicked(const QModelIndex &index)
-{
-    if (!userIsLoggedIn())
-    {
-        return;
-    }
-
-    if (!index.isValid())
-    {
-        return;
-    }
-
-    std::size_t sheduleItemToEdit = static_cast<std::size_t>(index.internalId());
-
-    ScheduleItemEditorDialog* editScheduleItemDialog;
-    if (sheduleItemToEdit)
-    {
-        editScheduleItemDialog = new ScheduleItemEditorDialog(m_UserDataPtr->getUserID(), sheduleItemToEdit, this);
-    }
-    else
-    {
-        std::chrono::system_clock::time_point startTime = udScheduleTableView->getScheduleItemStartTime(index);
-        std::chrono::system_clock::time_point endTime = udScheduleTableView->getScheduleItemEndTime(index);
-        editScheduleItemDialog = new ScheduleItemEditorDialog(m_UserDataPtr->getUserID(), startTime,  endTime, this);
-    }
-
-    editScheduleItemDialog->initEditFields();
-
-    editScheduleItemDialog->exec();
-    
-    updateSchedule();
-}
-
 void UserDashboard::handleDatabaseConnectionAction()
 {
     DataBaseConnectionDialog dbConnectionDialog(this);
@@ -527,9 +404,6 @@ void UserDashboard::handleDatabaseConnectionAction()
 void UserDashboard::handleDateChanged(const QDate &newDate)
 {
     m_DashboardDate = newDate;
-
-    udScheduleGB->setTitle(groupBoxTitleWithDate("Schedule"));
-    udNotesGB->setTitle(groupBoxTitleWithDate("Notes"));
 
     updatePerDayView();
 
