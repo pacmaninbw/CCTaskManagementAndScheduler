@@ -11,7 +11,6 @@ class UserModel;
 #include <QDate>
 #include <QPushButton>
 #include <QString>
-#include <QVBoxLayout>
 #include <QWidget>
 
 // Standard C++ Header Files
