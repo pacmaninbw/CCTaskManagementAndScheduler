@@ -45,14 +45,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Dialogs/ScheduleItemEditorDialog.cpp
         Dialogs/TaskEditorDialog.cpp
         Dialogs/UserEditorDialog.cpp
-        AppWidgets/commonQTWidgetsForApp.cpp
-        AppWidgets/commonQTWidgetsForApp.h
-        AppWidgets/ScheduleTablerViewer.h
-        AppWidgets/ScheduleTablerViewer.cpp
-        AppWidgets/DashboardTaskViewer.h
-        AppWidgets/DashboardTaskViewer.cpp
-        AppWidgets/DashboardNotesViewer.h
-        AppWidgets/DashboardNotesViewer.cpp
         BusinessLogic/TestDBConnection.cpp
         BusinessLogic/TestDBConnection.h
         CommandLineParser.h
@@ -82,16 +74,25 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         DBModels/UserModel.cpp
         DBModels/UserModel.h
         common/commonTestValues.cpp
+        common/commonTestValues.h
         common/commonUtilities.cpp
-        SubWindows/GoalWindow.h SubWindows/GoalWindow.cpp
-        SubWindows/ModelSubWindow.h SubWindows/ModelSubWindow.cpp
-        SubWindows/TodoWindow.h SubWindows/TodoWindow.cpp
-        SubWindows/ScheduleWindow.h SubWindows/ScheduleWindow.cpp
-        SubWindows/NotesWindow.h SubWindows/NotesWindow.cpp
+        common/commonUtilities.h
+        common/commonQTWidgetsForApp.cpp
+        common/commonQTWidgetsForApp.h
+        common/stdChronoToQTConversions.cpp
+        common/stdChronoToQTConversions.h
+        SubWindows/GoalWindow.h
+        SubWindows/GoalWindow.cpp
+        SubWindows/ModelSubWindow.h
+        SubWindows/ModelSubWindow.cpp
+        SubWindows/TodoWindow.h
+        SubWindows/TodoWindow.cpp
+        SubWindows/ScheduleWindow.h
+        SubWindows/ScheduleWindow.cpp
+        SubWindows/NotesWindow.h
+        SubWindows/NotesWindow.cpp
         SubWindows/GuiDashboardTaskTable.cpp
         SubWindows/GuiDashboardTaskTable.h
-        SubWindows/stdChronoToQTConversions.cpp
-        SubWindows/stdChronoToQTConversions.h
         SubWindows/GuiDashboardScheduleTable.h
         SubWindows/GuiDashboardScheduleTable.cpp
         SubWindows/GuiTaskTableBase.h
@@ -100,6 +101,13 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         SubWindows/SelectParentTaskTable.cpp
         SubWindows/DashboardNoteTable.h
         SubWindows/DashboardNoteTable.cpp
+        SubWindows/ScheduleTablerViewer.h
+        SubWindows/ScheduleTablerViewer.cpp
+        SubWindows/DashboardTaskViewer.h
+        SubWindows/DashboardTaskViewer.cpp
+        SubWindows/DashboardNotesViewer.h
+        SubWindows/DashboardNotesViewer.cpp
+        SubWindows/DefaultGoalDisplayTable.h SubWindows/DefaultGoalDisplayTable.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET PP3Rework APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -127,7 +135,6 @@ target_include_directories(PP3Rework PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/SubWindows>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/DBModels>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Dialogs>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/AppWidgets>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/BusinessLogic>
 )
 
