@@ -70,7 +70,7 @@ void GoalWindow::setUpWindowContentAndActions()
     m_GoalDisplayViewer = setUpGoalTableView();
     modelWindowLayout->addWidget(m_GoalDisplayViewer);
     connect(m_GoalDisplayViewer,  &QTableView::clicked, this, &GoalWindow::handleEditGoalAction);
-    connect(m_GoalDisplayViewer,  &QTableView::clicked, this, &GoalWindow::handleEditGoalAction);
+    connect(m_GoalDisplayViewer,  &QTableView::doubleClicked, this, &GoalWindow::handleEditGoalAction);
 
 }
 
