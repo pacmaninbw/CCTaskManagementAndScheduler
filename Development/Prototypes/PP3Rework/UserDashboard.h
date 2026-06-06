@@ -2,11 +2,10 @@
 #define USERDASHBOARD_H
 
 class UserModel;
-class ScheduleItemModel;
-class DashboardNotesViewer;
-class TodoWindow;
-class ScheduleWindow;
 class NotesWindow;
+class ScheduleWindow;
+class TodoWindow;
+class GoalWindow;
 
 // Project Header Files
 
@@ -22,7 +21,6 @@ class NotesWindow;
 #include <QMainWindow>
 #include <QMenu>
 #include <QPushButton>
-#include <QTableView>
 #include <QVBoxLayout>
 #include <QWidget>
 
@@ -44,11 +42,10 @@ private Q_SLOTS:
     void handleAddUserAction();
     void handleEditUserAction();
     void handleUserLoginAction();
-    void handleAddGoalAction();
-    void handleEditGoalAction();
     void handleDatabaseConnectionAction();
     void handleDateChanged(const QDate &newDate);
     void handleToDoMenuClicked();
+    void handleOpenGoalWindowClicked();
 
 private:
     void setUpUserDashboardUi();
@@ -65,7 +62,6 @@ private:
     ScheduleWindow* setUpSchedule();
     NotesWindow* setUpNotesWindow();
     void updatePerDayView();
-    QGroupBox* setUpPerDayNotesGB();
     void fillUserIdBoxData();
     QString groupBoxTitleWithDate(QString gbTitleBase);
 
@@ -81,13 +77,10 @@ private:
     QAction* udActionEditUserProfile = nullptr;
     QAction* udActionUserLogin = nullptr;
     QAction* udActionUserLogout = nullptr;
-    QAction* udActionAddGoal = nullptr;
-    QAction* udActionEditGoal = nullptr;
     QAction* udActionConnectDB = nullptr;
-    QAction* udActionTodoWindow = nullptr;
+    QAction* udActionOpenTodoWindow = nullptr;
+    QAction* udActionOpenGoalWindow = nullptr;
     QWidget* centralwidget = nullptr;
-    QPushButton* udAddEventPB = nullptr;
-    QPushButton* udAddNotePB = nullptr;
     QGroupBox* userDashBoardIDGB = nullptr;
     QLineEdit* udUserFirstNameDisplay = nullptr;
     QLineEdit* udUserMiddleInitialDisplay = nullptr;
@@ -97,6 +90,7 @@ private:
     TodoWindow* todoWindowInWindow = nullptr;
     ScheduleWindow* scheduleWindowInWindow = nullptr;
     NotesWindow* noteWindowInWindow = nullptr;
+    GoalWindow* goalWindowInWindow = nullptr;
 
 /*
  * Size and positioning constants.
@@ -108,7 +102,6 @@ private:
     const int perDayGroupBoxWidth = 300;
     const int perDayGroupBoxHeight = 400;
     const int perDayLineEditWidth = 280;
-
 };
 #endif // USERDASHBOARD_H
 

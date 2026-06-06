@@ -2,7 +2,7 @@
 #include "CommandLineParser.h"
 #include "commonQTWidgetsForApp.h"  // cqtfa_ functions
 #include "DataBaseConnectionDialog.h"
-#include "GoalEditorDialog.h"
+#include "GoalWindow.h"
 #include "LoginDialog.h"
 #include "NotesWindow.h"
 #include "ScheduleWindow.h"
@@ -14,7 +14,6 @@
 // QT Header Files
 #include <QFormLayout>
 #include <QHBoxLayout>
-#include <QHeaderView>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QVBoxLayout>
@@ -121,28 +120,23 @@ void UserDashboard::setUpUserMenu()
 
 void UserDashboard::setUpGoalMenu()
 {
-    udActionAddGoal = new QAction("Add Goal", this);
-    udActionAddGoal->setStatusTip(tr("Create a new Goal"));
-    connect(udActionAddGoal, &QAction::triggered, this, &UserDashboard::handleAddGoalAction);
-
-    udActionEditGoal = new QAction("Edit Goal", this);
-    udActionEditGoal->setStatusTip(tr("Edit a Goal"));
-    connect(udActionEditGoal, &QAction::triggered, this, &UserDashboard::handleEditGoalAction);
+    udActionOpenGoalWindow = new QAction("Open Goal Window", this);
+    udActionOpenGoalWindow->setStatusTip("Open Goal Window");
+    connect(udActionOpenGoalWindow, &QAction::triggered, this, &UserDashboard::handleOpenGoalWindowClicked);
 
     udGoalMenu = menuBar()->addMenu("&Goal");
-    udGoalMenu->addAction(udActionAddGoal);
-    udGoalMenu->addAction(udActionEditGoal);
+    udGoalMenu->addAction(udActionOpenGoalWindow);
     udGoalMenu->addSeparator();
 }
 
 void UserDashboard::setUpTodoMenu()
 {
-    udActionTodoWindow = new QAction("Todo List", this);
-    udActionTodoWindow->setStatusTip(tr("Create a new Goal"));
-    connect(udActionTodoWindow, &QAction::triggered, this, &UserDashboard::handleToDoMenuClicked);
+    udActionOpenTodoWindow = new QAction("Todo List", this);
+    udActionOpenTodoWindow->setStatusTip(tr("Create a new Goal"));
+    connect(udActionOpenTodoWindow, &QAction::triggered, this, &UserDashboard::handleToDoMenuClicked);
 
     udTodo = menuBar()->addMenu("&Todo List");
-    udTodo->addAction(udActionTodoWindow);
+    udTodo->addAction(udActionOpenTodoWindow);
     udTodo->addSeparator();
 }
 
@@ -359,41 +353,6 @@ void UserDashboard::handleUserLoginAction()
     updatePerDayView();
 }
 
-void UserDashboard::handleAddGoalAction()
-{
-    if (!userIsLoggedIn())
-    {
-        return;
-    }
-
-    GoalEditorDialog addGoalDialog(m_UserDataPtr->getUserID(),this);
-
-    addGoalDialog.exec();
-}
-
-void UserDashboard::handleEditGoalAction()
-{
-    if (!userIsLoggedIn())
-    {
-        return;
-    }
-
-    std::size_t goalToEdit = 0;
-
-    GoalEditorDialog editGoalDialog(m_UserDataPtr->getUserID(), this);
-    if (goalToEdit)
-    {
-        if (editGoalDialog.getGoalFromDbInitFields(goalToEdit))
-        {
-            editGoalDialog.exec();
-        }
-    }
-    else {
-        editGoalDialog.exec();
-    }
-
-}
-
 void UserDashboard::handleDatabaseConnectionAction()
 {
     DataBaseConnectionDialog dbConnectionDialog(this);
@@ -419,3 +378,11 @@ void UserDashboard::handleToDoMenuClicked()
     todoExternal->show();
 }
 
+void UserDashboard::handleOpenGoalWindowClicked()
+{
+    GoalWindow* goalExternalWindow = new GoalWindow(m_UserDataPtr, m_DashboardDate, false, this);
+
+    goalExternalWindow->setUpWindowUi();
+
+    goalExternalWindow->show();
+}
