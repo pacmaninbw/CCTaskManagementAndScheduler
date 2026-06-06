@@ -69,28 +69,28 @@ private:
     std::shared_ptr<UserModel> m_UserDataPtr;
     QDate m_DashboardDate;
 
-    QMenu* udUserMenu = nullptr;
-    QMenu* udGoalMenu = nullptr;
-    QMenu* udDBConnectionMenu = nullptr;
-    QMenu* udTodo = nullptr;
-    QAction* udActionAddUserProfile = nullptr;
-    QAction* udActionEditUserProfile = nullptr;
-    QAction* udActionUserLogin = nullptr;
-    QAction* udActionUserLogout = nullptr;
-    QAction* udActionConnectDB = nullptr;
-    QAction* udActionOpenTodoWindow = nullptr;
-    QAction* udActionOpenGoalWindow = nullptr;
-    QWidget* centralwidget = nullptr;
-    QGroupBox* userDashBoardIDGB = nullptr;
-    QLineEdit* udUserFirstNameDisplay = nullptr;
-    QLineEdit* udUserMiddleInitialDisplay = nullptr;
-    QLineEdit* udUserLastNameDisplay = nullptr;
-    QLineEdit* udUserNameDisplay = nullptr;
-    QDateEdit* udDateSelectorDE = nullptr;
-    TodoWindow* todoWindowInWindow = nullptr;
-    ScheduleWindow* scheduleWindowInWindow = nullptr;
-    NotesWindow* noteWindowInWindow = nullptr;
-    GoalWindow* goalWindowInWindow = nullptr;
+    QMenu* m_UserMenu = nullptr;
+    QMenu* m_GoalMenu = nullptr;
+    QMenu* m_DBConnectionMenu = nullptr;
+    QMenu* m_TodoMenu = nullptr;
+    QAction* m_AddUserProfileUserMenu = nullptr;
+    QAction* m_EditUserProfileUserMenu = nullptr;
+    QAction* m_LoginUserMenu = nullptr;
+    QAction* m_LogoutUserMenu = nullptr;
+    QAction* m_ConnectDBMenuItem = nullptr;
+    QAction* m_OpenTodoMenu = nullptr;
+    QAction* m_OpenGoalMenu = nullptr;
+    QWidget* m_centralwidget = nullptr;
+    QGroupBox* m_userIDGroupBox = nullptr;
+    QLineEdit* m_UserFirstNameDisplay = nullptr;
+    QLineEdit* m_UserMiddleInitialDisplay = nullptr;
+    QLineEdit* m_UserLastNameDisplay = nullptr;
+    QLineEdit* m_dUserLoginDisplay = nullptr;
+    QDateEdit* m_DateSelector = nullptr;
+    TodoWindow* m_todoWindow = nullptr;
+    ScheduleWindow* m_scheduleWindow = nullptr;
+    NotesWindow* m_noteWindow = nullptr;
+    GoalWindow* m_goalWindow = nullptr;
 
 /*
  * Size and positioning constants.
