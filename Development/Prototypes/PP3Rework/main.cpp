@@ -3,6 +3,7 @@
 #include "LoginDialog.h"
 #include "PlannerInitializer.h"
 #include "UserDashboard.h"
+#include "UserModel.h"
 
 // QT Header Files
 #include <QApplication>
@@ -22,7 +23,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    std::shared_ptr<UserModel> logedInUser;
+    UserModel_shp logedInUser = nullptr;
 
     PlannerInitializer plannerOptions(argc, argv);
     
@@ -37,9 +38,23 @@ int main(int argc, char *argv[])
         DataBaseConnectionDialog dbConnectionDialog;
 
         dbConnectionDialog.exec();
+
+        LoginDialog loginDialog;
+
+        loginDialog.exec();
+
+        logedInUser = loginDialog.GetUserData();
     }
 
-    UserDashboard userDashboard(logedInUser);
-    userDashboard.show();
+    if (logedInUser != nullptr && logedInUser->getUserID() != 0)
+    {
+        UserDashboard* userDashboard = new UserDashboard(logedInUser);
+        userDashboard->show();
+    }
+    else
+    {
+        return EXIT_FAILURE;
+    }
+
     return a.exec();
 }

@@ -20,7 +20,8 @@ DashboardNoteTable::DashboardNoteTable(std::size_t userID, QDate searchDate, QOb
     : QAbstractTableModel(parent),
     m_UserID{userID},
     m_SearchDate{searchDate}
-{}
+{
+}
 
 void DashboardNoteTable::setUserRefillTable(std::size_t userID)
 {
@@ -175,7 +176,6 @@ bool DashboardNoteTable::insertRows(int position, int count, const QModelIndex &
     endInsertRows();
 
     return true;
-
 }
 
 bool DashboardNoteTable::removeRows(int position, int count, const QModelIndex &parent)

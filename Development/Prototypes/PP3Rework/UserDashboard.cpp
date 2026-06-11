@@ -1,7 +1,6 @@
 // Project Header
 #include "CommandLineParser.h"
 #include "commonQTWidgetsForApp.h"  // cqtfa_ functions
-#include "DataBaseConnectionDialog.h"
 #include "GoalWindow.h"
 #include "LoginDialog.h"
 #include "NotesWindow.h"
@@ -20,30 +19,19 @@
 #include <QString>
 
 // Standard C++ Header Files
-#include <string>
 
-UserDashboard::UserDashboard(QWidget *parent)
+UserDashboard::UserDashboard(std::shared_ptr<UserModel> loggedInUser, QWidget *parent)
     : QMainWindow(parent),
-    m_UserDataPtr{nullptr},
     m_DashboardDate{QDate::currentDate()}
 {
     m_ProgNameStr = QString::fromStdString(programOptions.progName);
 
-    m_UserDataPtr = std::make_shared<UserModel>();
+    m_UserDataPtr = loggedInUser;
 
     setUpUserDashboardUi();
-}
 
-UserDashboard::UserDashboard(std::shared_ptr<UserModel> loggedInUser, QWidget *parent)
-    : UserDashboard(parent)
-{
-    if (loggedInUser)
-    {
-        m_UserDataPtr = loggedInUser;
-
-        fillUserIdBoxData();
-        updatePerDayView();
-    }
+    fillUserIdBoxData();
+    updatePerDayView();
 }
 
 UserDashboard::~UserDashboard()
@@ -88,16 +76,11 @@ void UserDashboard::setUpDashboardMenuBar()
 {
     setUpUserMenu();
     setUpGoalMenu();
-    setUpDbConnectionMenu();
     setUpTodoMenu();
 }
 
 void UserDashboard::setUpUserMenu()
 {
-    m_LoginUserMenu = new QAction("Login", this);
-    m_LoginUserMenu->setStatusTip(tr("Login as a user"));
-    connect(m_LoginUserMenu, &QAction::triggered, this, &UserDashboard::handleUserLoginAction);
-
     m_AddUserProfileUserMenu = new QAction("Add User", this);
     m_AddUserProfileUserMenu->setStatusTip(tr("Create a new User"));
     connect(m_AddUserProfileUserMenu, &QAction::triggered, this, &UserDashboard::handleAddUserAction);
@@ -111,7 +94,6 @@ void UserDashboard::setUpUserMenu()
     connect(m_LogoutUserMenu, &QAction::triggered, this, &QApplication::quit);
 
     m_UserMenu = menuBar()->addMenu("&User");
-    m_UserMenu->addAction(m_LoginUserMenu);
     m_UserMenu->addAction(m_AddUserProfileUserMenu);
     m_UserMenu->addAction(m_EditUserProfileUserMenu);
     m_UserMenu->addAction(m_LogoutUserMenu);
@@ -138,43 +120,6 @@ void UserDashboard::setUpTodoMenu()
     m_TodoMenu = menuBar()->addMenu("&Todo List");
     m_TodoMenu->addAction(m_OpenTodoMenu);
     m_TodoMenu->addSeparator();
-}
-
-void UserDashboard::setUpDbConnectionMenu()
-{
-    m_ConnectDBMenuItem = new QAction("Connect Database", this);
-    m_ConnectDBMenuItem->setStatusTip("Add Database User and Password");
-    connect(m_ConnectDBMenuItem, &QAction::triggered, this, &UserDashboard::handleDatabaseConnectionAction);
-
-    m_DBConnectionMenu = menuBar()->addMenu("&DB Connection");
-    m_DBConnectionMenu->addAction(m_ConnectDBMenuItem);
-    m_DBConnectionMenu->addSeparator();
-}
-
-bool UserDashboard::userIsLoggedIn()
-{
-    if (!dbIsConnected())
-    {
-        return false;
-    }
-
-    if (m_UserDataPtr == nullptr)
-    {
-        Q_EMIT handleUserLoginAction();
-        return false;
-    }
-
-    return true;
-}
-
-bool UserDashboard::dbIsConnected()
-{
-    if (programOptions.mySqlDBName.empty() || programOptions.mySqlPassword.empty())
-    {
-        Q_EMIT handleDatabaseConnectionAction();
-        return false;
-    }
-    return true;
 }
 
 QGroupBox *UserDashboard::setUpUserIdBox()
@@ -221,12 +166,7 @@ QHBoxLayout *UserDashboard::setUpPerDayLayout()
 
 TodoWindow *UserDashboard::setUpTodoList()
 {
-    TodoWindow* todoListWindow = new TodoWindow(true, this);
-    if (m_UserDataPtr)
-    {
-        todoListWindow->setUser(m_UserDataPtr);
-    }
-    todoListWindow->setDate(m_DashboardDate);
+    TodoWindow* todoListWindow = new TodoWindow(m_UserDataPtr, m_DashboardDate, true, this);
     todoListWindow->setUpWindowUi();
     todoListWindow->show();
 
@@ -235,35 +175,18 @@ TodoWindow *UserDashboard::setUpTodoList()
 
 ScheduleWindow *UserDashboard::setUpSchedule()
 {
-    ScheduleWindow* scheduleWindow = new ScheduleWindow(true, this);
-    if (m_UserDataPtr)
-    {
-        scheduleWindow->setUser(m_UserDataPtr);
-    }
-    scheduleWindow->setDate(m_DashboardDate);
+    ScheduleWindow* scheduleWindow = new ScheduleWindow(m_UserDataPtr, m_DashboardDate, true, this);
     scheduleWindow->setUpWindowUi();
     scheduleWindow->show();
-    scheduleWindow->refresh();
 
     return scheduleWindow;
 }
 
 NotesWindow *UserDashboard::setUpNotesWindow()
 {
-    NotesWindow* noteWindow;
-    if (m_UserDataPtr != nullptr)
-    {
-        noteWindow = new NotesWindow(m_UserDataPtr, m_DashboardDate, true, this);
-    }
-    else
-    {
-        noteWindow = new NotesWindow(true, this);
-        noteWindow->setDate(m_DashboardDate);
-    }
-
+    NotesWindow* noteWindow = new NotesWindow(m_UserDataPtr, m_DashboardDate, true, this);
     noteWindow->setUpWindowUi();
     noteWindow->show();
-    noteWindow->refresh();
 
     return noteWindow;
 }
@@ -272,23 +195,17 @@ void UserDashboard::updatePerDayView()
 {
     if (m_todoWindow)
     {
-        m_todoWindow->setUser(m_UserDataPtr);
-        m_todoWindow->setDate(m_DashboardDate);
-        m_todoWindow->refresh();
+        m_todoWindow->changeDataRefreshTable(m_UserDataPtr, m_DashboardDate);
     }
 
     if (m_scheduleWindow)
     {
-        m_scheduleWindow->setUser(m_UserDataPtr);
-        m_scheduleWindow->setDate(m_DashboardDate);
-        m_scheduleWindow->refresh();
+        m_scheduleWindow->changeDataRefreshTable(m_UserDataPtr, m_DashboardDate);
     }
 
     if (m_noteWindow)
     {
-        m_noteWindow->setUser(m_UserDataPtr);
-        m_noteWindow->setDate(m_DashboardDate);
-        m_noteWindow->refresh();
+        m_noteWindow->changeDataRefreshTable(m_UserDataPtr, m_DashboardDate);
     }
 }
 
@@ -300,20 +217,8 @@ void UserDashboard::fillUserIdBoxData()
     m_dUserLoginDisplay->setText(QString::fromStdString(m_UserDataPtr->getLoginName()));
 }
 
-QString UserDashboard::groupBoxTitleWithDate(QString gbTitleBase)
-{
-    QString titleWithDate = gbTitleBase + " for " + m_DashboardDate.toString(Qt::TextDate) + " :";
-
-    return titleWithDate;
-}
-
 void UserDashboard::handleAddUserAction()
 {
-    if (!userIsLoggedIn())
-    {
-        return;
-    }
-
     UserEditorDialog addUserDialog(this);
 
     addUserDialog.exec();
@@ -321,11 +226,6 @@ void UserDashboard::handleAddUserAction()
 
 void UserDashboard::handleEditUserAction()
 {
-    if (!userIsLoggedIn())
-    {
-        return;
-    }
-
     UserEditorDialog editUserDialog(m_UserDataPtr, this);
 
     editUserDialog.exec();
@@ -333,31 +233,6 @@ void UserDashboard::handleEditUserAction()
     fillUserIdBoxData();
 
     updatePerDayView();
-}
-
-void UserDashboard::handleUserLoginAction()
-{
-    if (!dbIsConnected())
-    {
-        Q_EMIT handleDatabaseConnectionAction();
-    }
-
-    LoginDialog userLogin(this);
-
-    userLogin.exec();
-
-    m_UserDataPtr = userLogin.GetUserData();
-
-    fillUserIdBoxData();
-
-    updatePerDayView();
-}
-
-void UserDashboard::handleDatabaseConnectionAction()
-{
-    DataBaseConnectionDialog dbConnectionDialog(this);
-
-    dbConnectionDialog.exec();
 }
 
 void UserDashboard::handleDateChanged(const QDate &newDate)

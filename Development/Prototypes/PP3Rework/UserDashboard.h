@@ -32,7 +32,6 @@ class UserDashboard : public QMainWindow
     Q_OBJECT
 
 public:
-    UserDashboard(QWidget *parent = nullptr);
     UserDashboard(std::shared_ptr<UserModel> loggedInUser, QWidget *parent = nullptr);
     ~UserDashboard();
 
@@ -41,8 +40,6 @@ Q_SIGNALS:
 private Q_SLOTS:
     void handleAddUserAction();
     void handleEditUserAction();
-    void handleUserLoginAction();
-    void handleDatabaseConnectionAction();
     void handleDateChanged(const QDate &newDate);
     void handleToDoMenuClicked();
     void handleOpenGoalWindowClicked();
@@ -53,9 +50,6 @@ private:
     void setUpUserMenu();
     void setUpGoalMenu();
     void setUpTodoMenu();
-    void setUpDbConnectionMenu();
-    bool userIsLoggedIn();
-    bool dbIsConnected();
     QGroupBox* setUpUserIdBox();
     QHBoxLayout* setUpPerDayLayout();
     TodoWindow* setUpTodoList();
@@ -63,21 +57,17 @@ private:
     NotesWindow* setUpNotesWindow();
     void updatePerDayView();
     void fillUserIdBoxData();
-    QString groupBoxTitleWithDate(QString gbTitleBase);
 
     QString m_ProgNameStr;
-    std::shared_ptr<UserModel> m_UserDataPtr;
+    std::shared_ptr<UserModel> m_UserDataPtr = nullptr;
     QDate m_DashboardDate;
 
     QMenu* m_UserMenu = nullptr;
     QMenu* m_GoalMenu = nullptr;
-    QMenu* m_DBConnectionMenu = nullptr;
     QMenu* m_TodoMenu = nullptr;
     QAction* m_AddUserProfileUserMenu = nullptr;
     QAction* m_EditUserProfileUserMenu = nullptr;
-    QAction* m_LoginUserMenu = nullptr;
     QAction* m_LogoutUserMenu = nullptr;
-    QAction* m_ConnectDBMenuItem = nullptr;
     QAction* m_OpenTodoMenu = nullptr;
     QAction* m_OpenGoalMenu = nullptr;
     QWidget* m_centralwidget = nullptr;
