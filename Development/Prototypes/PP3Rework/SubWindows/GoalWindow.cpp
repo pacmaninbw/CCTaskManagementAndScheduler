@@ -23,12 +23,14 @@
 GoalWindow::GoalWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow, bool makeSubWindow, QWidget *parent)
     : ModelSubWindow("Goals:", makeSubWindow, parent)
 {
+    qDebug() << "In GoalWindow::" << __func__;
     setUser(currentUser);
     setDate(dateToShow);
 }
 
 void GoalWindow::refresh()
 {
+    qDebug() << "In GoalWindow::" << __func__;
     m_GoalDisplayTable->setUserRefillGoalTable(m_UserData->getUserID());
 
     m_GoalDisplayViewer->setModel(m_GoalDisplayTable);
@@ -38,6 +40,7 @@ void GoalWindow::refresh()
 
 void GoalWindow::handleAddGoalAction()
 {
+    qDebug() << "In GoalWindow::" << __func__;
     GoalEditorDialog addGoalDialog(m_UserData->getUserID(), this);
 
     addGoalDialog.exec();
@@ -46,6 +49,7 @@ void GoalWindow::handleAddGoalAction()
 
 void GoalWindow::handleEditGoalAction(const QModelIndex &index)
 {
+    qDebug() << "In GoalWindow::" << __func__;
     if (!index.isValid())
     {
         return;
@@ -62,13 +66,14 @@ void GoalWindow::handleEditGoalAction(const QModelIndex &index)
 
 void GoalWindow::setUpWindowContentAndActions()
 {
-    addModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add a Goal", "addModelObject", this);
-    connect(addModelObject, &QPushButton::clicked, this, &GoalWindow::handleAddGoalAction);
+    qDebug() << "In GoalWindow::" << __func__;
+    m_qt_AddModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add a Goal", "m_qt_AddModelObject", this);
+    connect(m_qt_AddModelObject, &QPushButton::clicked, this, &GoalWindow::handleAddGoalAction);
 
-    modelWindowLayout->addWidget(addModelObject);
+    m_qt_ModelWindowLayout->addWidget(m_qt_AddModelObject);
 
     m_GoalDisplayViewer = setUpGoalTableView();
-    modelWindowLayout->addWidget(m_GoalDisplayViewer);
+    m_qt_ModelWindowLayout->addWidget(m_GoalDisplayViewer);
     connect(m_GoalDisplayViewer,  &QTableView::clicked, this, &GoalWindow::handleEditGoalAction);
     connect(m_GoalDisplayViewer,  &QTableView::doubleClicked, this, &GoalWindow::handleEditGoalAction);
 
@@ -76,6 +81,7 @@ void GoalWindow::setUpWindowContentAndActions()
 
 QTableView *GoalWindow::setUpGoalTableView()
 {
+    qDebug() << "In GoalWindow::" << __func__;
     QTableView* goalTableView = new QTableView(this);
 
     m_GoalDisplayTable = new DefaultGoalDisplayTable(m_UserData->getUserID(), this);
