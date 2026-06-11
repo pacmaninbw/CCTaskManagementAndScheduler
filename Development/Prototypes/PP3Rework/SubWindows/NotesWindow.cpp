@@ -1,26 +1,22 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"  // cqtfa_ functions
-#include "DashboardNotesViewer.h"
+#include "DashboardNoteTable.h"
 #include "NoteEditorDialog.h"
 #include "NotesWindow.h"
 #include "UserModel.h"
 
 // QT Header Files
 #include <QDate>
+#include <QHeaderView>
 #include <QPushButton>
 #include <QString>
 #include <QWidget>
 
 // Standard C++ Header Files
-#include <chrono>
 #include <memory>
 
-NotesWindow::NotesWindow(bool makeSubWindow, QWidget *parent)
-    : ModelSubWindow("Notes:", makeSubWindow, parent)
-{}
-
 NotesWindow::NotesWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow, bool makeSubWindow, QWidget *parent)
-    : NotesWindow(makeSubWindow, parent)
+    : ModelSubWindow("Notes:", makeSubWindow, parent)
 {
     setUser(currentUser);
     setDate(dateToShow);
@@ -28,7 +24,7 @@ NotesWindow::NotesWindow(std::shared_ptr<UserModel> currentUser, QDate dateToSho
 
 void NotesWindow::refresh()
 {
-    updateNotes();
+    tableViewReset(m_qt_ModelTableView);
 }
 
 void NotesWindow::handleAddNoteAction()
@@ -37,7 +33,7 @@ void NotesWindow::handleAddNoteAction()
 
     addNoteDialog.exec();
 
-    updateNotes();
+    tableViewReset(m_qt_ModelTableView);
 }
 
 void NotesWindow::handleNoteTableClicked(const QModelIndex &index)
@@ -52,44 +48,49 @@ void NotesWindow::handleNoteTableClicked(const QModelIndex &index)
 
     editNoteDialog.exec();
 
-    updateNotes();
+    tableViewReset(m_qt_ModelTableView);
 }
 
 void NotesWindow::setUpWindowContentAndActions()
 {
-    addModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add a Note", "udAddNotePB", this);
-    connect(addModelObject, &QPushButton::clicked, this, &NotesWindow::handleAddNoteAction);
+    m_qt_AddModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add a Note", "udAddNotePB", this);
+    connect(m_qt_AddModelObject, &QPushButton::clicked, this, &NotesWindow::handleAddNoteAction);
 
-    modelWindowLayout->addWidget(addModelObject);
+    m_qt_ModelWindowLayout->addWidget(m_qt_AddModelObject);
 
-    m_NotesTableView = updateNotes();
-    if (m_NotesTableView)
-    {
-        modelWindowLayout->addWidget(m_NotesTableView);
-    }
+    m_qt_ModelTableView = new QTableView(this);
+    m_qt_ModelTableView->setObjectName("m_qt_ModelTableView");
+    tableViewReset(m_qt_ModelTableView);
+
+    m_qt_ModelWindowLayout->addWidget(m_qt_ModelTableView);
+
+    connect(m_qt_ModelTableView, &QTableView::clicked, this, &NotesWindow::handleNoteTableClicked);
+    connect(m_qt_ModelTableView, &QTableView::doubleClicked, this, &NotesWindow::handleNoteTableClicked);
 }
 
-DashboardNotesViewer *NotesWindow::updateNotes()
+void NotesWindow::tableViewReset(QTableView* tableView)
 {
-    if (!m_NotesTableView)
+    if (m_NoteTable)
     {
-        if (m_UserData == nullptr)
-        {
-            return nullptr;
-        }
-
-        m_NotesTableView = new DashboardNotesViewer(m_UserData->getUserID(), m_DateOfViewToDisplay, this);
-        m_NotesTableView->setObjectName("m_NotesTableView");
-        connect(m_NotesTableView, &QTableView::clicked, this, &NotesWindow::handleNoteTableClicked);
-        connect(m_NotesTableView, &QTableView::doubleClicked, this, &NotesWindow::handleNoteTableClicked);
+        delete m_NoteTable;
     }
 
-    m_NotesTableView->clearSelection();
-    m_NotesTableView->setUserIdAndDate(m_UserData->getUserID(), m_DateOfViewToDisplay);
+    m_NoteTable = createTable();
 
-    m_NotesTableView->update();
-    m_NotesTableView->clearFocus();
-
-    return m_NotesTableView;
+    tableView->setModel(m_NoteTable);
+    tableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    tableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    tableView->update();
+    tableView->clearFocus();
 }
+
+DashboardNoteTable* NotesWindow::createTable()
+{
+    DashboardNoteTable* noteTable = new DashboardNoteTable(m_UserData->getUserID(), m_DateOfViewToDisplay, parent());
+    noteTable->setObjectName("m_NoteTable");
+    noteTable->fillTable();
+
+    return noteTable;
+}
+
 

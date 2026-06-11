@@ -101,13 +101,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         SubWindows/SelectParentTaskTable.cpp
         SubWindows/DashboardNoteTable.h
         SubWindows/DashboardNoteTable.cpp
-        SubWindows/ScheduleTablerViewer.h
-        SubWindows/ScheduleTablerViewer.cpp
-        SubWindows/DashboardTaskViewer.h
-        SubWindows/DashboardTaskViewer.cpp
-        SubWindows/DashboardNotesViewer.h
-        SubWindows/DashboardNotesViewer.cpp
-        SubWindows/DefaultGoalDisplayTable.h SubWindows/DefaultGoalDisplayTable.cpp
+        SubWindows/DefaultGoalDisplayTable.h
+        SubWindows/DefaultGoalDisplayTable.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET PP3Rework APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

@@ -1,7 +1,7 @@
 #ifndef NOTESWINDOW_H_
 #define NOTESWINDOW_H_
 
-class DashboardNotesViewer;
+class DashboardNoteTable;
 class UserModel;
 
 // Project Header Files
@@ -21,7 +21,6 @@ class NotesWindow : public ModelSubWindow
 {
     Q_OBJECT
 public:
-    NotesWindow(bool makeSubWindow = false, QWidget *parent = nullptr);
     NotesWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow, bool makeSubWindow = false, QWidget *parent = nullptr);
     void refresh() override;
 
@@ -33,9 +32,10 @@ private Q_SLOTS:
 
 protected:
     virtual void setUpWindowContentAndActions() override;
-    DashboardNotesViewer* updateNotes();
+    void tableViewReset(QTableView* tableView);
+    DashboardNoteTable* createTable();
 
-    DashboardNotesViewer* m_NotesTableView = nullptr;
+    DashboardNoteTable* m_NoteTable = nullptr;
 };
 
 #endif // NOTESWINDOW_H_

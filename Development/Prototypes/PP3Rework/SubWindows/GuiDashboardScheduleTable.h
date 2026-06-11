@@ -24,13 +24,10 @@ class GuiDashboardScheduleTable : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    explicit GuiDashboardScheduleTable(QObject *parent = nullptr);
     explicit GuiDashboardScheduleTable(std::size_t userID, QDate dateOfSchedule, QObject *parent = nullptr);
-    void setUser(std::size_t userID);
-    void setDate(QDate dateOfSchedule);
-    void setUserAndDateRefillSchedule(std::size_t userID, QDate dateOfSchedule);
     void append(std::shared_ptr<ScheduleItemModel> scheduledItem);
     void clearData();
+    void fillSchedule();
     std::chrono::system_clock::time_point getScheduleItemStartTime(const QModelIndex &index);
     std::chrono::system_clock::time_point getScheduleItemEndTime(const QModelIndex &index);
 
@@ -44,7 +41,6 @@ public:
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
 
 private:
-    void fillSchedule();
     void setUserDay(std::chrono::year_month_day scheduleDate);
     bool hasNoTimeConflicts(std::chrono::system_clock::time_point proposedStartTime);
     void addBlankHoursForDisplay();

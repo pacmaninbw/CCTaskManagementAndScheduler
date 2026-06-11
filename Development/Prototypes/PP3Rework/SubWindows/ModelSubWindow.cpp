@@ -14,9 +14,6 @@
 ModelSubWindow::ModelSubWindow(std::string titleText, bool makeSubWindow, QWidget *parent)
  :  QMainWindow{parent},
     m_IsSubWindow{makeSubWindow},
-    modelWindowLayout{nullptr},
-    addModelObject{nullptr},
-    closeModelWindow{nullptr},
     m_UserData{nullptr},
     m_WindowTitleText{QString::fromStdString(titleText)}
 {
@@ -44,20 +41,27 @@ void ModelSubWindow::setUser(std::shared_ptr<UserModel> user)
     m_UserData = user;
 }
 
+void ModelSubWindow::changeDataRefreshTable(std::shared_ptr<UserModel> user, QDate dateToShow)
+{
+    m_DateOfViewToDisplay = dateToShow;
+    m_UserData = user;
+    refresh();
+}
+
 void ModelSubWindow::setUpWindowUi()
 {
-    centralwidget = new QWidget(this);
-    centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
+    m_qt_centralwidget = new QWidget(this);
+    m_qt_centralwidget->setObjectName(QString::fromUtf8("m_qt_centralwidget"));
 
-    modelWindowLayout = new QVBoxLayout(centralwidget);
-    modelWindowLayout->setObjectName("modelWindowLayout");
+    m_qt_ModelWindowLayout = new QVBoxLayout(m_qt_centralwidget);
+    m_qt_ModelWindowLayout->setObjectName("modelWindowLayout");
 
     resize(m_Width, m_Height);
 
     if (m_IsSubWindow)
     {
-        alternateTitle = cqtfa_QTWidgetWithText<QLabel>(m_WindowTitleText.toUtf8().constData(), "alternateTitle", this);
-        modelWindowLayout->addWidget(alternateTitle, 0, Qt::AlignHCenter);
+        m_qt_AlternateTitle = cqtfa_QTWidgetWithText<QLabel>(m_WindowTitleText.toUtf8().constData(), "m_qt_AlternateTitle", this);
+        m_qt_ModelWindowLayout->addWidget(m_qt_AlternateTitle, 0, Qt::AlignHCenter);
     }
     else {
         setWindowTitle(m_WindowTitleText);
@@ -67,14 +71,14 @@ void ModelSubWindow::setUpWindowUi()
 
     if (!m_IsSubWindow)
     {
-        if (!closeModelWindow)
+        if (!m_qt_CloseModelWindow)
         {
-            closeModelWindow = cqtfa_QTWidgetWithText<QPushButton>("Close Window", "closeModelWindow", this);
-            modelWindowLayout->addWidget(closeModelWindow);
+            m_qt_CloseModelWindow = cqtfa_QTWidgetWithText<QPushButton>("Close Window", "m_qt_CloseModelWindow", this);
+            m_qt_ModelWindowLayout->addWidget(m_qt_CloseModelWindow);
         }
     }
 
-    setCentralWidget(centralwidget);
+    setCentralWidget(m_qt_centralwidget);
 }
 
 void ModelSubWindow::changeWindowSize(int newWidth, int newHeight)

@@ -1,29 +1,25 @@
 
 // Project Header Files
 #include "commonQTWidgetsForApp.h"  // cqtfa_ functions
+#include "GuiDashboardScheduleTable.h"
 #include "ScheduleItemEditorDialog.h"
-#include "ScheduleTablerViewer.h"
 #include "ScheduleWindow.h"
 #include "UserModel.h"
 
 // QT Header Files
 #include <QDate>
+#include <QHeaderView>
 #include <QPushButton>
 #include <QString>
+#include <QTableView>
 #include <QWidget>
 
 // Standard C++ Header Files
 #include <chrono>
 #include <memory>
 
-ScheduleWindow::ScheduleWindow(bool makeSubWindow, QWidget *parent)
+ScheduleWindow::ScheduleWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow, bool makeSubWindow, QWidget *parent)
     : ModelSubWindow("Schedule:", makeSubWindow, parent)
-{
-
-}
-
-ScheduleWindow::ScheduleWindow(UserModel_shp currentUser, QDate dateToShow, bool makeSubWindow, QWidget *parent)
-    : ScheduleWindow(makeSubWindow, parent)
 {
     setUser(currentUser);
     setDate(dateToShow);
@@ -31,7 +27,7 @@ ScheduleWindow::ScheduleWindow(UserModel_shp currentUser, QDate dateToShow, bool
 
 void ScheduleWindow::refresh()
 {
-    updateSchedule();
+    tableViewReset(m_qt_ModelTableView);
 }
 
 void ScheduleWindow::handleAddEvent()
@@ -42,8 +38,7 @@ void ScheduleWindow::handleAddEvent()
 
     addScheduleItemDialog.exec();
 
-    updateSchedule();
-
+    tableViewReset(m_qt_ModelTableView);
 }
 
 void ScheduleWindow::handleScheduleItemClicked(const QModelIndex &index)
@@ -62,8 +57,8 @@ void ScheduleWindow::handleScheduleItemClicked(const QModelIndex &index)
     }
     else
     {
-        std::chrono::system_clock::time_point startTime = m_ScheduleTableView->getScheduleItemStartTime(index);
-        std::chrono::system_clock::time_point endTime = m_ScheduleTableView->getScheduleItemEndTime(index);
+        std::chrono::system_clock::time_point startTime = m_ScheduleTable->getScheduleItemStartTime(index);
+        std::chrono::system_clock::time_point endTime = m_ScheduleTable->getScheduleItemEndTime(index);
         editScheduleItemDialog = new ScheduleItemEditorDialog(m_UserData->getUserID(), startTime,  endTime, this);
     }
 
@@ -71,32 +66,41 @@ void ScheduleWindow::handleScheduleItemClicked(const QModelIndex &index)
 
     editScheduleItemDialog->exec();
 
-    updateSchedule();
+    tableViewReset(m_qt_ModelTableView);
 }
 
 void ScheduleWindow::setUpWindowContentAndActions()
 {
-    addModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add Event to Schedule", "udAddEventPB", this);
-    connect(addModelObject, &QPushButton::clicked, this, &ScheduleWindow::handleAddEvent);
-    modelWindowLayout->addWidget(addModelObject);
+    m_qt_AddModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add Event to Schedule", "udAddEventPB", this);
+    connect(m_qt_AddModelObject, &QPushButton::clicked, this, &ScheduleWindow::handleAddEvent);
+    m_qt_ModelWindowLayout->addWidget(m_qt_AddModelObject);
 
-    modelWindowLayout->addWidget(updateSchedule());
+    m_qt_ModelTableView = new QTableView(this);
+    m_qt_ModelTableView->setObjectName("m_qt_ModelTableView");
+    tableViewReset(m_qt_ModelTableView);
+
+    connect(m_qt_ModelTableView, &QTableView::clicked, this, &ScheduleWindow::handleScheduleItemClicked);
+    connect(m_qt_ModelTableView, &QTableView::doubleClicked, this, &ScheduleWindow::handleScheduleItemClicked);
+
+    m_qt_ModelWindowLayout->addWidget(m_qt_ModelTableView);
 }
 
-ScheduleTablerViewer *ScheduleWindow::updateSchedule()
+void ScheduleWindow::tableViewReset(QTableView *tableView)
 {
-    if (!m_ScheduleTableView)
+    if (m_ScheduleTable)
     {
-        m_ScheduleTableView = new ScheduleTablerViewer(this);
-        m_ScheduleTableView->setObjectName("udScheduleTableView");
-        connect(m_ScheduleTableView, &QTableView::clicked, this, &ScheduleWindow::handleScheduleItemClicked);
-        connect(m_ScheduleTableView, &QTableView::doubleClicked, this, &ScheduleWindow::handleScheduleItemClicked);
+        delete m_ScheduleTable;
     }
 
-    m_ScheduleTableView->clearSelection();
-    m_ScheduleTableView->setUserIdAndDate(m_UserData->getUserID(), m_DateOfViewToDisplay);
-    m_ScheduleTableView->updateSchedule();
-    m_ScheduleTableView->clearFocus();
+    m_ScheduleTable = new GuiDashboardScheduleTable(m_UserData->getUserID(), m_DateOfViewToDisplay, this);
+    m_ScheduleTable->setObjectName("m_ScheduleTable");
+    m_ScheduleTable->fillSchedule();
 
-    return m_ScheduleTableView;
+    tableView->setModel(m_ScheduleTable);
+    tableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    tableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    tableView->clearSelection();
+    tableView->clearFocus();
 }
+
+

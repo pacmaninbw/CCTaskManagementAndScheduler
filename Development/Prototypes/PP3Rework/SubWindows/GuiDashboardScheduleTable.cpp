@@ -5,7 +5,6 @@
 
 // QT Header Files
 #include "GuiDashboardScheduleTable.h"
-#include "UserModel.h"
 #include <QAbstractTableModel>
 #include <QDate>
 #include <QDateTime>
@@ -22,40 +21,12 @@
 #include <vector>
 
 
-GuiDashboardScheduleTable::GuiDashboardScheduleTable(QObject *parent)
-    : QAbstractTableModel(parent),
-    m_UserID{0},
-    m_DateOfSchedule{QDate::currentDate()}
-{
-    m_ChronDateOfSchedule = qDateToChrono(m_DateOfSchedule);
-    fillSchedule();
-}
-
 GuiDashboardScheduleTable::GuiDashboardScheduleTable(std::size_t userID, QDate dateOfSchedule, QObject *parent)
     : QAbstractTableModel(parent),
     m_UserID{userID},
     m_DateOfSchedule{dateOfSchedule}
 {
     m_ChronDateOfSchedule = qDateToChrono(dateOfSchedule);
-}
-
-void GuiDashboardScheduleTable::setUser(std::size_t userID)
-{
-    m_UserID = userID;
-}
-
-void GuiDashboardScheduleTable::setDate(QDate dateOfSchedule)
-{
-    m_DateOfSchedule = dateOfSchedule;
-}
-
-void GuiDashboardScheduleTable::setUserAndDateRefillSchedule(std::size_t userID, QDate dateOfSchedule)
-{
-    m_UserID = userID;
-    m_DateOfSchedule = dateOfSchedule;
-    m_ChronDateOfSchedule = qDateToChrono(dateOfSchedule);
-
-    fillSchedule();
 }
 
 void GuiDashboardScheduleTable::append(std::shared_ptr<ScheduleItemModel> scheduledItem)

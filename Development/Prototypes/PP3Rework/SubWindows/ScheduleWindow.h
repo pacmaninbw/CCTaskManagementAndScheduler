@@ -2,6 +2,7 @@
 #define SCHEDULEWINDOW_H
 
 class ScheduleTablerViewer;
+class GuiDashboardScheduleTable;
 
 // Project Header Files
 #include "ModelSubWindow.h"
@@ -10,6 +11,7 @@ class ScheduleTablerViewer;
 #include <QDate>
 #include <QPushButton>
 #include <QString>
+#include <QTableView>
 #include <QWidget>
 
 // Standard C++ Header Files
@@ -20,7 +22,6 @@ class ScheduleWindow  : public ModelSubWindow
     Q_OBJECT
 
 public:
-    ScheduleWindow(bool makeSubWindow = false, QWidget *parent = nullptr);
     ScheduleWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow, bool makeSubWindow = false, QWidget *parent = nullptr);
     void refresh() override;
 
@@ -33,9 +34,9 @@ private Q_SLOTS:
 
 protected:
     virtual void setUpWindowContentAndActions() override;
-    ScheduleTablerViewer* updateSchedule();
+    void tableViewReset(QTableView* tableView);
 
-    ScheduleTablerViewer* m_ScheduleTableView = nullptr;
+    GuiDashboardScheduleTable* m_ScheduleTable = nullptr;
 };
 
 #endif // SCHEDULEWINDOW_H

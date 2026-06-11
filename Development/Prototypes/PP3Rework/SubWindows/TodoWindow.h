@@ -1,7 +1,7 @@
 #ifndef TODOWINDOW_H_
 #define TODOWINDOW_H_
 
-class DashboardTaskViewer;
+class GuiDashboardTaskTable;
 class UserModel;
 
 // Project Header Files
@@ -11,6 +11,7 @@ class UserModel;
 #include <QDate>
 #include <QPushButton>
 #include <QString>
+#include <QTableView>
 #include <QWidget>
 
 // Standard C++ Header Files
@@ -21,7 +22,6 @@ class TodoWindow : public ModelSubWindow
     Q_OBJECT
 
 public:
-    TodoWindow(bool makeSubWindow = false, QWidget *parent = nullptr);
     TodoWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow, bool makeSubWindow = false, QWidget *parent = nullptr);
     void refresh() override;
 
@@ -33,9 +33,9 @@ private Q_SLOTS:
 
 protected:
     virtual void setUpWindowContentAndActions() override;
-    DashboardTaskViewer* updateTodoList();
+    void tableViewReset(QTableView* tableView);
 
-    DashboardTaskViewer* todoTableView = nullptr;
+    GuiDashboardTaskTable* m_TodoTable = nullptr;
 };
 
 #endif // TODOWINDOW_H_

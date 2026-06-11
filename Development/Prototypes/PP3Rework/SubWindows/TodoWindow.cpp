@@ -1,27 +1,24 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
-#include "DashboardTaskViewer.h"
+#include "GuiDashboardTaskTable.h"
 #include "TodoWindow.h"
 #include "TaskEditorDialog.h"
 #include "UserModel.h"
 
 // QT Header Files
 #include <QDate>
+#include <QHeaderView>
 #include <QPushButton>
 #include <QString>
+#include <QTableView>
 #include <QVBoxLayout>
 #include <QWidget>
 
 // Standard C++ Header Files
 
 
-TodoWindow::TodoWindow(bool makeSubWindow, QWidget *parent)
-    : ModelSubWindow("Prioritized To Do List:", makeSubWindow, parent)
-{
-}
-
 TodoWindow::TodoWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow, bool makeSubWindow, QWidget *parent)
-    : TodoWindow(makeSubWindow, parent)
+    : ModelSubWindow("Prioritized To Do List:", makeSubWindow, parent)
 {
     setUser(currentUser);
     setDate(dateToShow);
@@ -29,7 +26,7 @@ TodoWindow::TodoWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow,
 
 void TodoWindow::refresh()
 {
-    updateTodoList();
+    tableViewReset(m_qt_ModelTableView);
 }
 
 void TodoWindow::handleAddTodoItem()
@@ -38,8 +35,7 @@ void TodoWindow::handleAddTodoItem()
 
     addTaskDialog.exec();
 
-    updateTodoList();
-
+    tableViewReset(m_qt_ModelTableView);
 }
 
 void TodoWindow::handleTodoTableClicked(const QModelIndex &index)
@@ -54,51 +50,51 @@ void TodoWindow::handleTodoTableClicked(const QModelIndex &index)
     if (editTaskDialog.setTaskDataAndInitDisplayFields(taskToEditId))
     {
         editTaskDialog.exec();
-        updateTodoList();
+        tableViewReset(m_qt_ModelTableView);
     }
 
 }
 
 void TodoWindow::setUpWindowContentAndActions()
 {
-    addModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add a ToDo Item", "addModelObject", this);
-    connect(addModelObject, &QPushButton::clicked, this, &TodoWindow::handleAddTodoItem);
+    m_qt_AddModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add a ToDo Item", "m_qt_AddModelObject", this);
+    connect(m_qt_AddModelObject, &QPushButton::clicked, this, &TodoWindow::handleAddTodoItem);
 
-    modelWindowLayout->addWidget(addModelObject);
+    m_qt_ModelWindowLayout->addWidget(m_qt_AddModelObject);
 
-    modelWindowLayout->addWidget(updateTodoList());
+    m_qt_ModelTableView = new QTableView(this);
+    m_qt_ModelTableView->setObjectName("m_qt_ModelTableView");
+    tableViewReset(m_qt_ModelTableView);
+
+    m_qt_ModelWindowLayout->addWidget(m_qt_ModelTableView);
+
+    connect(m_qt_ModelTableView, &QTableView::clicked, this, &TodoWindow::handleTodoTableClicked);
+    connect(m_qt_ModelTableView, &QTableView::doubleClicked, this, &TodoWindow::handleTodoTableClicked);
 
     if (!m_IsSubWindow)
     {
-        closeModelWindow = cqtfa_QTWidgetWithText<QPushButton>("Close Todo Window", "closeModelWindow", this);
-        modelWindowLayout->addWidget(closeModelWindow);
+        m_qt_CloseModelWindow = cqtfa_QTWidgetWithText<QPushButton>("Close Todo Window", "m_qt_CloseModelWindow", this);
+        m_qt_ModelWindowLayout->addWidget(m_qt_CloseModelWindow);
     }
 }
 
-DashboardTaskViewer *TodoWindow::updateTodoList()
+
+void TodoWindow::tableViewReset(QTableView *tableView)
 {
-    if (!todoTableView)
+    if (m_TodoTable)
     {
-        todoTableView = new DashboardTaskViewer(centralwidget);
-        todoTableView->setObjectName("udTaskTableView");
-        if (m_UserData)
-        {
-            todoTableView->setUserId(m_UserData->getUserID());
-        }
-        connect(todoTableView, &QTableView::clicked, this, &TodoWindow::handleTodoTableClicked);
-        connect(todoTableView, &QTableView::doubleClicked, this, &TodoWindow::handleTodoTableClicked);
+        delete m_TodoTable;
     }
-    else
-    {
-        if (m_UserData)
-        {
-            todoTableView->setUserId(m_UserData->getUserID());
-        }
-        todoTableView->clearSelection();
-        todoTableView->update();
-    }
+ 
+    m_TodoTable = new GuiDashboardTaskTable(m_UserData->getUserID(), parent());
+    m_TodoTable->setObjectName("m_TodoTable");
+    m_TodoTable->fillTable();
 
-    todoTableView->clearFocus();
-
-    return todoTableView;
+    tableView->setModel(m_TodoTable);
+    tableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    tableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    tableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    tableView->clearSelection();
+    tableView->clearFocus();
+    tableView->update();
 }

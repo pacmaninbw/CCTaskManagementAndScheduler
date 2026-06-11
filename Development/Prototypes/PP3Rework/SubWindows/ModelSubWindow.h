@@ -11,6 +11,7 @@ class UserModel;
 #include <QMainWindow>
 #include <QPushButton>
 #include <QString>
+#include <QTableView>
 #include <QVBoxLayout>
 #include <QWidget>
 
@@ -26,6 +27,7 @@ public:
     explicit ModelSubWindow(std::string titleText, bool makeSubWindow = false, QWidget *parent = nullptr);
     void setDate(QDate dateToShow);
     void setUser(std::shared_ptr<UserModel> user);
+    void changeDataRefreshTable(std::shared_ptr<UserModel> user, QDate dateToShow);
     void setUpWindowUi();
     virtual void refresh() = 0;
     void changeWindowSize(int newWidth, int newHeight);
@@ -38,11 +40,22 @@ protected:
     virtual void setUpWindowContentAndActions();
 
     bool m_IsSubWindow;
-    QVBoxLayout* modelWindowLayout;
-    QPushButton* addModelObject;
-    QPushButton* closeModelWindow;
-    QWidget* centralwidget = nullptr;
-    QLabel* alternateTitle;
+    QVBoxLayout* m_qt_ModelWindowLayout = nullptr;
+    QPushButton* m_qt_AddModelObject = nullptr;
+    /*
+     * To date all sub windows contain a table to be displayed, this may always
+     * be true, but if not the m_qt_ModelTableView variable will remain null.
+     */
+    QTableView* m_qt_ModelTableView = nullptr;
+    QPushButton* m_qt_CloseModelWindow = nullptr;
+    QWidget* m_qt_centralwidget = nullptr;
+    /*
+     * There are 2 modes that this window may appear in, one is a stand alone
+     * window and one as a window embedded in the user dashboard. The stand
+     * alone window will have a title, as a window embedded in the user
+     * dashboard the title will have to be added as a label.
+     */
+    QLabel* m_qt_AlternateTitle = nullptr;
 
     std::shared_ptr<UserModel> m_UserData;
     QDate m_DateOfViewToDisplay;
