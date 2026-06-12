@@ -32,10 +32,9 @@ private Q_SLOTS:
 
 protected:
     virtual void setUpWindowContentAndActions() override;
-    QTableView* setUpGoalTableView();
+    void tableViewReset(QTableView* tableView);
 
-    DefaultGoalDisplayTable* m_GoalDisplayTable = nullptr;
-    QTableView* m_GoalDisplayViewer = nullptr;
+    DefaultGoalDisplayTable* m_GoalTable = nullptr;
 };
 
 #endif // GOALWINDOW_H

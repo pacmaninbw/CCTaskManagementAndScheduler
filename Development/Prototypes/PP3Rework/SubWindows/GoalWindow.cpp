@@ -31,11 +31,7 @@ GoalWindow::GoalWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow,
 void GoalWindow::refresh()
 {
     qDebug() << "In GoalWindow::" << __func__;
-    m_GoalDisplayTable->setUserRefillGoalTable(m_UserData->getUserID());
-
-    m_GoalDisplayViewer->setModel(m_GoalDisplayTable);
-    m_GoalDisplayViewer->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
-    m_GoalDisplayViewer->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    tableViewReset(m_qt_ModelTableView);
 }
 
 void GoalWindow::handleAddGoalAction()
@@ -44,7 +40,7 @@ void GoalWindow::handleAddGoalAction()
     GoalEditorDialog addGoalDialog(m_UserData->getUserID(), this);
 
     addGoalDialog.exec();
-    refresh();
+    tableViewReset(m_qt_ModelTableView);
 }
 
 void GoalWindow::handleEditGoalAction(const QModelIndex &index)
@@ -62,6 +58,8 @@ void GoalWindow::handleEditGoalAction(const QModelIndex &index)
     goalEditDialog.getGoalFromDbInitFields(goalToEdit);
 
     goalEditDialog.exec();
+
+    tableViewReset(m_qt_ModelTableView);
 }
 
 void GoalWindow::setUpWindowContentAndActions()
@@ -72,26 +70,31 @@ void GoalWindow::setUpWindowContentAndActions()
 
     m_qt_ModelWindowLayout->addWidget(m_qt_AddModelObject);
 
-    m_GoalDisplayViewer = setUpGoalTableView();
-    m_qt_ModelWindowLayout->addWidget(m_GoalDisplayViewer);
-    connect(m_GoalDisplayViewer,  &QTableView::clicked, this, &GoalWindow::handleEditGoalAction);
-    connect(m_GoalDisplayViewer,  &QTableView::doubleClicked, this, &GoalWindow::handleEditGoalAction);
+    m_qt_ModelTableView = new QTableView(this);
+    m_qt_ModelTableView->setObjectName("m_qt_ModelTableView");
 
+    tableViewReset(m_qt_ModelTableView);
+
+    connect(m_qt_ModelTableView,  &QTableView::clicked, this, &GoalWindow::handleEditGoalAction);
+    connect(m_qt_ModelTableView,  &QTableView::doubleClicked, this, &GoalWindow::handleEditGoalAction);
+
+    m_qt_ModelWindowLayout->addWidget(m_qt_ModelTableView);
 }
 
-QTableView *GoalWindow::setUpGoalTableView()
+void GoalWindow::tableViewReset(QTableView *tableView)
 {
     qDebug() << "In GoalWindow::" << __func__;
-    QTableView* goalTableView = new QTableView(this);
+    if (m_GoalTable)
+    {
+        delete m_GoalTable;
+    }
 
-    m_GoalDisplayTable = new DefaultGoalDisplayTable(m_UserData->getUserID(), this);
-    m_GoalDisplayTable->setObjectName("m_GoalDisplayTable");
-    m_GoalDisplayTable->refillTable();
+    m_GoalTable = new DefaultGoalDisplayTable(m_UserData->getUserID(), this);
+    m_GoalTable->setObjectName("m_GoalTable");
+    m_GoalTable->refillTable();
 
-    goalTableView->setModel(m_GoalDisplayTable);
-    goalTableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
-    goalTableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
-    goalTableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
-
-    return goalTableView;
+    tableView->setModel(m_GoalTable);
+    tableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    tableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    tableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
 }
