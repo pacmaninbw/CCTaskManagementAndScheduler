@@ -5,6 +5,7 @@
 #include "LoginDialog.h"
 #include "NotesWindow.h"
 #include "ScheduleWindow.h"
+#include "ModelSubWindow.h"
 #include "TodoWindow.h"
 #include "UserDashboard.h"
 #include "UserEditorDialog.h"
@@ -152,60 +153,29 @@ QHBoxLayout *UserDashboard::setUpPerDayLayout()
     QHBoxLayout* perDayLayout = new QHBoxLayout;
     perDayLayout->setObjectName("perDayLayout");
 
-    m_todoWindow = setUpTodoList();
-    perDayLayout->addWidget(m_todoWindow);
+    initPerDayViewWindows();
 
-    m_scheduleWindow = setUpSchedule();
-    perDayLayout->addWidget(m_scheduleWindow);
-
-    m_noteWindow = setUpNotesWindow();
-    perDayLayout->addWidget(m_noteWindow);
-
+    for (auto perDayWindow: m_PerDayViewWindows)
+    {
+        perDayWindow->setUpWindowUi();
+        perDayWindow->show();
+        perDayLayout->addWidget(perDayWindow);
+    }
     return perDayLayout;
 }
 
-TodoWindow *UserDashboard::setUpTodoList()
+void UserDashboard::initPerDayViewWindows()
 {
-    TodoWindow* todoListWindow = new TodoWindow(m_UserDataPtr, m_DashboardDate, true, this);
-    todoListWindow->setUpWindowUi();
-    todoListWindow->show();
-
-    return todoListWindow;
-}
-
-ScheduleWindow *UserDashboard::setUpSchedule()
-{
-    ScheduleWindow* scheduleWindow = new ScheduleWindow(m_UserDataPtr, m_DashboardDate, true, this);
-    scheduleWindow->setUpWindowUi();
-    scheduleWindow->show();
-
-    return scheduleWindow;
-}
-
-NotesWindow *UserDashboard::setUpNotesWindow()
-{
-    NotesWindow* noteWindow = new NotesWindow(m_UserDataPtr, m_DashboardDate, true, this);
-    noteWindow->setUpWindowUi();
-    noteWindow->show();
-
-    return noteWindow;
+    m_PerDayViewWindows.push_back(new TodoWindow(m_UserDataPtr, m_DashboardDate, true, this));
+    m_PerDayViewWindows.push_back(new ScheduleWindow(m_UserDataPtr, m_DashboardDate, true, this));
+    m_PerDayViewWindows.push_back(new NotesWindow(m_UserDataPtr, m_DashboardDate, true, this));
 }
 
 void UserDashboard::updatePerDayView()
 {
-    if (m_todoWindow)
+    for (auto perDayWindow: m_PerDayViewWindows)
     {
-        m_todoWindow->changeDataRefreshTable(m_UserDataPtr, m_DashboardDate);
-    }
-
-    if (m_scheduleWindow)
-    {
-        m_scheduleWindow->changeDataRefreshTable(m_UserDataPtr, m_DashboardDate);
-    }
-
-    if (m_noteWindow)
-    {
-        m_noteWindow->changeDataRefreshTable(m_UserDataPtr, m_DashboardDate);
+        perDayWindow->changeDataRefreshTable(m_UserDataPtr, m_DashboardDate);
     }
 }
 

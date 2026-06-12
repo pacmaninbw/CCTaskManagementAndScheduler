@@ -2,9 +2,7 @@
 #define USERDASHBOARD_H
 
 class UserModel;
-class NotesWindow;
-class ScheduleWindow;
-class TodoWindow;
+class ModelSubWindow;
 class GoalWindow;
 
 // Project Header Files
@@ -26,6 +24,7 @@ class GoalWindow;
 
 // Standard C++ Header Files
 #include <memory>
+#include <vector>
 
 class UserDashboard : public QMainWindow
 {
@@ -52,9 +51,7 @@ private:
     void setUpTodoMenu();
     QGroupBox* setUpUserIdBox();
     QHBoxLayout* setUpPerDayLayout();
-    TodoWindow* setUpTodoList();
-    ScheduleWindow* setUpSchedule();
-    NotesWindow* setUpNotesWindow();
+    void initPerDayViewWindows();
     void updatePerDayView();
     void fillUserIdBoxData();
 
@@ -77,10 +74,9 @@ private:
     QLineEdit* m_UserLastNameDisplay = nullptr;
     QLineEdit* m_dUserLoginDisplay = nullptr;
     QDateEdit* m_DateSelector = nullptr;
-    TodoWindow* m_todoWindow = nullptr;
-    ScheduleWindow* m_scheduleWindow = nullptr;
-    NotesWindow* m_noteWindow = nullptr;
     GoalWindow* m_goalWindow = nullptr;
+
+    std::vector<ModelSubWindow*> m_PerDayViewWindows;
 
 /*
  * Size and positioning constants.
