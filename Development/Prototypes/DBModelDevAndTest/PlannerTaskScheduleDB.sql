@@ -9,7 +9,7 @@ CREATE DATABASE `testPTSDB`;
 
 DROP TABLE IF EXISTS `testPTSDB`.`OrganizationProfile`;
 CREATE TABLE IF NOT EXISTS  `testPTSDB`.`OrganizationProfile` (
-	`OrganizationID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `OrganizationID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `Organization_Name` VARCHAR(256) NOT NULL,
     `EmailAddress` VARCHAR(256) NOT NULL,
     `PhoneNumber` VARCHAR(32) NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS  `testPTSDB`.`OrganizationProfile` (
     `Nation` VARCHAR(64),
     `CreatedTS` DATETIME NOT NULL,
     `LastUpdateTS` DATETIME NOT NULL,
-    `Hidden` TINYINT,    # Records are never deleted but they can be hidden.
+    `Hidden` TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (`OrganizationID`),
     UNIQUE INDEX `OrgName_idx` (`Organization_Name` ASC),
     INDEX `fk_OrganizationProfile_PrimaryContact_idx` (`PrimaryContactUser` ASC)
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS  `testPTSDB`.`UserProfile` (
     `Preferences` MEDIUMTEXT NOT NULL,
     `UserAdded` DATETIME NOT NULL,
     `LastLogin` DATETIME,
-    `Hidden` TINYINT,    # Records are never deleted but they can be hidden.
+    `Hidden` TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (`UserID`, `LastName`, `LoginName`),
     UNIQUE INDEX `UP_UserID_UNIQUE` (`UserID` ASC),
     UNIQUE INDEX `UP_FullName_UNIQUE` (`LastName`, `FirstName`, `MiddleInitial`),
@@ -156,8 +156,8 @@ CREATE PROCEDURE `AddUser`
 )
 BEGIN
 
-	INSERT INTO UserProfile
-    	(
+    INSERT INTO UserProfile
+        (
             Organization_ID,
             LastName,
             FirstName,
@@ -403,7 +403,7 @@ CREATE TABLE IF NOT EXISTS  `testPTSDB`.`UserGoals` (
     `ParentGoal` INT UNSIGNED DEFAULT NULL,
     `CreationTS` DATETIME NOT NULL,
     `LastUpdateTS` DATETIME NOT NULL,
-    `Hidden` TINYINT,    # Records are never deleted but they can be hidden.
+    `Hidden` TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (`idUserGoals`, `UserID`),
     UNIQUE INDEX `idUserGoals_UNIQUE` (`idUserGoals` ASC),
     INDEX `UG_Description_idx` (`Description` ASC),
@@ -522,7 +522,7 @@ BEGIN
     SELECT * FROM UserGoals
     WHERE UserGoals.UserID = userId
     AND UserGoals.Description = fullDescription
-        AND (UserGoals.Hidden IS NULL OR UserGoals.Hidden <> 1);
+        AND UserGoals.Hidden <> 1;
 
 END$$
 
@@ -537,7 +537,7 @@ BEGIN
 
     SELECT * FROM UserGoals
     WHERE UserGoals.UserID = userId
-        AND (UserGoals.Hidden IS NULL OR UserGoals.Hidden <> 1);
+        AND UserGoals.Hidden <> 1;
 
 END$$
 
@@ -554,7 +554,7 @@ BEGIN
     SELECT * FROM UserGoals
     WHERE UserGoals.UserID = userId
         AND UserGoals.ParentGoal = parentGoalId
-        AND (UserGoals.Hidden IS NULL OR UserGoals.Hidden <> 1);
+        AND UserGoals.Hidden <> 1;
 
 END$$
 
@@ -570,7 +570,7 @@ BEGIN
 
     SELECT * FROM UserGoals
     WHERE UserGoals.UserID = userId AND UserGoals.Description LIKE CONCAT('%', partialDescription, '%')
-        AND (UserGoals.Hidden IS NULL OR UserGoals.Hidden <> 1);
+        AND UserGoals.Hidden <> 1;
 
 END$$
 
@@ -585,7 +585,7 @@ CREATE TABLE IF NOT EXISTS `testPTSDB`.`UserNotes` (
     `NotationDateTime` DATETIME NOT NULL,
     `Content` VARCHAR(1024) NOT NULL,
     `LastUpdate` DATETIME NOT NULL,
-    `Hidden` TINYINT,    # Records are never deleted but they can be hidden.
+    `Hidden` TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (`idUserNotes`, `UserID`),
     INDEX `NotationDateTime` (`NotationDateTime` DESC),
     INDEX `UserNotesLastUpdate` (`LastUpdate` DESC),
@@ -632,7 +632,7 @@ CREATE PROCEDURE `AddUserNote`
 
 BEGIN
 
-	INSERT INTO UserNotes(UserID, NotationDateTime, Content, LastUpdate, Hidden)
+    INSERT INTO UserNotes(UserID, NotationDateTime, Content, LastUpdate, Hidden)
         VALUES (userId, UTC_TIMESTAMP(), content, UTC_TIMESTAMP(), 0)
         RETURNING idUserNotes;
 
@@ -649,10 +649,10 @@ CREATE PROCEDURE `UpdateNoteAllFields`
 
 BEGIN
 
-	UPDATE UserNotes SET
-		UserNotes.Content = content,
-		UserNotes.LastUpdate = UTC_TIMESTAMP()
-	WHERE UserNotes.idUserNotes = noteId AND UserNotes.UserID = userId;
+    UPDATE UserNotes SET
+        UserNotes.Content = content,
+        UserNotes.LastUpdate = UTC_TIMESTAMP()
+    WHERE UserNotes.idUserNotes = noteId AND UserNotes.UserID = userId;
     
 END$$
 
@@ -688,7 +688,7 @@ BEGIN
 
     SELECT * FROM UserNotes
     WHERE UserNotes.UserID = userId
-        AND (UserNotes.Hidden IS NULL OR UserNotes.Hidden <> 1);
+        AND UserNotes.Hidden <> 1;
  
 END$$
 
@@ -703,8 +703,8 @@ BEGIN
  
     SELECT * FROM UserNotes 
     WHERE UserNotes.UserID = userId
-    	AND UserNotes.Content LIKE CONCAT('%', likeContent, '%')
-    	AND (UserNotes.Hidden IS NULL OR UserNotes.Hidden <> 1);
+        AND UserNotes.Content LIKE CONCAT('%', likeContent, '%')
+        AND UserNotes.Hidden <> 1;
     
 END$$    
  
@@ -720,9 +720,9 @@ BEGIN
 
     SELECT * FROM UserNotes
     WHERE UserNotes.UserID = 4
-    	AND UserNotes.NotationDateTime >= timePeriodStart
-    	AND UserNotes.NotationDateTime <= timePeriodEnd
-    	AND (UserNotes.Hidden IS NULL OR UserNotes.Hidden <> 1);
+        AND UserNotes.NotationDateTime >= timePeriodStart
+        AND UserNotes.NotationDateTime <= timePeriodEnd
+        AND UserNotes.Hidden <> 1;
  
 END$$
  
@@ -738,9 +738,9 @@ BEGIN
 
     SELECT * FROM UserNotes
     WHERE UserNotes.UserID = 4
-    	AND UserNotes.LastUpdate >= timePeriodStart
-    	AND UserNotes.LastUpdate <= timePeriodEnd
-    	AND (UserNotes.Hidden IS NULL OR UserNotes.Hidden <> 1);
+        AND UserNotes.LastUpdate >= timePeriodStart
+        AND UserNotes.LastUpdate <= timePeriodEnd
+        AND UserNotes.Hidden <> 1;
  
 END$$
  
@@ -758,7 +758,7 @@ BEGIN
     WHERE UserNotes.UserID = userId
         AND UserNotes.NotationDateTime >= startDay
         AND UserNotes.NotationDateTime <= endDay
-        AND (UserNotes.Hidden IS NULL OR UserNotes.Hidden <> 1)
+        AND UserNotes.Hidden <> 1
     ORDER BY UserNotes.NotationDateTime ASC;
 
 END$$
@@ -789,7 +789,7 @@ CREATE TABLE IF NOT EXISTS  `testPTSDB`.`Tasks` (
     `DependencyCount` INT UNSIGNED,
     `Dependencies` MEDIUMTEXT,
     `LastUpdateTS` DATETIME NOT NULL,
-    `Hidden` TINYINT,    # Records are never deleted but they can be hidden.
+    `Hidden` TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (`TaskID`, `CreatedBy`),
     UNIQUE INDEX `TaskID_UNIQUE` (`TaskID` ASC),
     INDEX `fk_Tasks_CreatedBy_idx` (`CreatedBy` ASC),
@@ -860,7 +860,7 @@ CREATE PROCEDURE `AddTask`
 )
 BEGIN
 
-	INSERT INTO Tasks
+    INSERT INTO Tasks
     (
         CreatedBy,
         AsignedTo,
@@ -936,27 +936,27 @@ CREATE PROCEDURE `UpdateTaskAllFields`
 
 BEGIN
 
-	UPDATE Tasks SET
-		CreatedBy = creatorID,
-		AsignedTo = assignedID,
-		Description = description,
-		ParentTask = parentTaskID,
-		Status = taskStatus,
-		RequiredDelivery = dueDate,
-		ScheduledStart = planStart,
-		ActualStart = startDate,
-		EstimatedCompletion = expectedDate,
-		Completed = completedDate,
-		EstimatedEffortHours = estimatedEffort,
-		ActualEffortHours = effortToDate,
-		SchedulePriorityGroup = priorityCategory,
-		PriorityInGroup = priority,
-		Personal = isPersonal,
-		DependencyCount = dependencyCount,
-		Dependencies = dependencies,
-		LastUpdateTS = UTC_TIMESTAMP(),
-		Hidden = 0
-	WHERE TaskID = primaryKeyValue;
+    UPDATE Tasks SET
+        CreatedBy = creatorID,
+        AsignedTo = assignedID,
+        Description = description,
+        ParentTask = parentTaskID,
+        Status = taskStatus,
+        RequiredDelivery = dueDate,
+        ScheduledStart = planStart,
+        ActualStart = startDate,
+        EstimatedCompletion = expectedDate,
+        Completed = completedDate,
+        EstimatedEffortHours = estimatedEffort,
+        ActualEffortHours = effortToDate,
+        SchedulePriorityGroup = priorityCategory,
+        PriorityInGroup = priority,
+        Personal = isPersonal,
+        DependencyCount = dependencyCount,
+        Dependencies = dependencies,
+        LastUpdateTS = UTC_TIMESTAMP(),
+        Hidden = 0
+    WHERE TaskID = primaryKeyValue;
     
 END$$
 
@@ -986,7 +986,7 @@ BEGIN
     SELECT * FROM Tasks
     WHERE Tasks.Description = description
         AND Tasks.AsignedTo = assignedID
-        AND (Tasks.Hidden IS NULL OR Tasks.Hidden <> 1);
+        AND Tasks.Hidden <> 1;
 
 END$$
 
@@ -1003,7 +1003,7 @@ BEGIN
     WHERE Tasks.AsignedTo = assignedID
         AND Tasks.Completed IS NULL
         AND (Tasks.Status IS NOT NULL AND Tasks.Status <> 0)
-        AND (Tasks.Hidden IS NULL OR Tasks.Hidden <> 1);
+        AND Tasks.Hidden <> 1;
 
 END$$
 
@@ -1021,7 +1021,7 @@ BEGIN
     WHERE Tasks.AsignedTo = assignedID
         AND Tasks.ScheduledStart < planStart
         AND (Tasks.Status IS NULL OR Tasks.Status = 0)
-        AND (Tasks.Hidden IS NULL OR Tasks.Hidden <> 1);
+        AND Tasks.Hidden <> 1;
 
 END$$
 
@@ -1054,7 +1054,7 @@ BEGIN
     SELECT * FROM Tasks
     WHERE Tasks.AsignedTo = assignedID
         AND Tasks.ParentTask = parentID
-        AND (Tasks.Hidden IS NULL OR Tasks.Hidden <> 1);
+        AND Tasks.Hidden <> 1;
 
 END$$
 
@@ -1070,9 +1070,9 @@ BEGIN
 
     SELECT * FROM Tasks
     WHERE Tasks.AsignedTo = assignedID
-        AND Tasks.RequiredDelivery < dueDate
         AND Tasks.Completed IS NULL
-        AND (Tasks.Hidden IS NULL OR Tasks.Hidden <> 1)
+        AND Tasks.Hidden <> 1
+        AND (Tasks.Status = 3 OR Tasks.RequiredDelivery < dueDate)
     ORDER BY Tasks.SchedulePriorityGroup ASC, Tasks.PriorityInGroup ASC;
 
 END$$
@@ -1091,7 +1091,7 @@ CREATE TABLE IF NOT EXISTS  `testPTSDB`.`UserTaskGoals` (
     `TaskGoalList` VARCHAR(45) NOT NULL,
     `CreationTS` DATETIME NOT NULL,
     `LastUpdateTS` DATETIME NOT NULL,
-    `Hidden` TINYINT,    # Records are never deleted but they can be hidden.
+    `Hidden` TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (`UserID`,`TaskID`),
     INDEX `UTG_Task_idx` (`TaskID` ASC),
     INDEX `UTG_CreationTS_idx` (`CreationTS` DESC),
@@ -1127,7 +1127,7 @@ CREATE TABLE IF NOT EXISTS `testPTSDB`.`UserScheduleItem` (
     `Location` VARCHAR(128) DEFAULT NULL,
     `CreatedTS` DATETIME NOT NULL,
     `LastUpdateTS` DATETIME NOT NULL,
-    `Hidden` TINYINT,    # Records are never deleted but they can be hidden.
+    `Hidden` TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (`idUserScheduleItem`, `UserID`),
     UNIQUE INDEX `idUserScheduleItem_UNIQUE` (`idUserScheduleItem` ASC),
     INDEX `ScheduleItem_Title_idx` (`Title` ASC),
@@ -1137,10 +1137,10 @@ CREATE TABLE IF NOT EXISTS `testPTSDB`.`UserScheduleItem` (
     INDEX `fk_UserScheduleItem_UserID_idx` (`UserID` ASC),
     INDEX `ScheduleItem_Location_idx` (`Location` ASC),
     CONSTRAINT `fk_UserScheduleItem_UserID`
-      FOREIGN KEY (`UserID`)
-      REFERENCES `testPTSDB`.`UserProfile` (`UserID`)
-      ON DELETE RESTRICT
-      ON UPDATE RESTRICT
+        FOREIGN KEY (`UserID`)
+        REFERENCES `testPTSDB`.`UserProfile` (`UserID`)
+        ON DELETE RESTRICT
+        ON UPDATE RESTRICT
 );
 
 -- --------------------------------------------------------
@@ -1227,7 +1227,7 @@ BEGIN
 
     SELECT * FROM UserScheduleItem
     WHERE UserScheduleItem.idUserScheduleItem = scheduleItemID
-        AND (UserScheduleItem.Hidden IS NULL OR UserScheduleItem.Hidden <> 1);
+        AND UserScheduleItem.Hidden <> 1;
 
 END$$
 
@@ -1244,7 +1244,7 @@ BEGIN
 
     SELECT * FROM UserScheduleItem
     WHERE UserScheduleItem.UserID = userId
-        AND (UserScheduleItem.Hidden IS NULL OR UserScheduleItem.Hidden <> 1)
+        AND UserScheduleItem.Hidden <> 1
         AND UserScheduleItem.StartDateTime >= eventStart
         AND UserScheduleItem.StartDateTime <= eventEnd
     ORDER BY UserScheduleItem.StartDateTime ASC;
@@ -1265,7 +1265,7 @@ BEGIN
 
     SELECT * FROM UserScheduleItem  WHERE UserID = userId
     AND Title LIKE CONCAT('%', matchContent, '%')
-    AND (Hidden IS NULL OR Hidden <> 1)
+    AND Hidden <> 1
     AND StartDateTime >= searchStart
     AND StartDateTime <= searchEnd;
 
@@ -1286,7 +1286,7 @@ CREATE PROCEDURE `AddScheduleEvent`
 BEGIN
 
 INSERT INTO UserScheduleItem
-	(
+    (
         UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden
     )
     VALUES
@@ -1317,15 +1317,15 @@ CREATE PROCEDURE `UpdateScheduleItemAllFields`
 )
 BEGIN
 
-	UPDATE UserScheduleItem SET
-		UserScheduleItem.StartDateTime = startTime,
-		UserScheduleItem.EndDateTime = endTime,
-		UserScheduleItem.Title = title,
-		UserScheduleItem.Personal = personal,
-		UserScheduleItem.Location = location,
-		UserScheduleItem.LastUpdateTS = UTC_TIMESTAMP()
-	WHERE UserScheduleItem.idUserScheduleItem = eventId AND UserScheduleItem.UserID = userId;
-	
+    UPDATE UserScheduleItem SET
+        UserScheduleItem.StartDateTime = startTime,
+        UserScheduleItem.EndDateTime = endTime,
+        UserScheduleItem.Title = title,
+        UserScheduleItem.Personal = personal,
+        UserScheduleItem.Location = location,
+        UserScheduleItem.LastUpdateTS = UTC_TIMESTAMP()
+    WHERE UserScheduleItem.idUserScheduleItem = eventId AND UserScheduleItem.UserID = userId;
+    
 END$$
 DELIMITER ;
 

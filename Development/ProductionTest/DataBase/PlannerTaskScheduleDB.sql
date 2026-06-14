@@ -522,7 +522,7 @@ BEGIN
     SELECT * FROM UserGoals
     WHERE UserGoals.UserID = userId
     AND UserGoals.Description = fullDescription
-        AND (UserGoals.Hidden IS NULL OR UserGoals.Hidden <> 1);
+        AND UserGoals.Hidden <> 1;
 
 END$$
 
@@ -537,7 +537,7 @@ BEGIN
 
     SELECT * FROM UserGoals
     WHERE UserGoals.UserID = userId
-        AND (UserGoals.Hidden IS NULL OR UserGoals.Hidden <> 1);
+        AND UserGoals.Hidden <> 1;
 
 END$$
 
@@ -554,7 +554,7 @@ BEGIN
     SELECT * FROM UserGoals
     WHERE UserGoals.UserID = userId
         AND UserGoals.ParentGoal = parentGoalId
-        AND (UserGoals.Hidden IS NULL OR UserGoals.Hidden <> 1);
+        AND UserGoals.Hidden <> 1;
 
 END$$
 
@@ -570,7 +570,7 @@ BEGIN
 
     SELECT * FROM UserGoals
     WHERE UserGoals.UserID = userId AND UserGoals.Description LIKE CONCAT('%', partialDescription, '%')
-        AND (UserGoals.Hidden IS NULL OR UserGoals.Hidden <> 1);
+        AND UserGoals.Hidden <> 1;
 
 END$$
 
@@ -688,7 +688,7 @@ BEGIN
 
     SELECT * FROM UserNotes
     WHERE UserNotes.UserID = userId
-        AND (UserNotes.Hidden IS NULL OR UserNotes.Hidden <> 1);
+        AND UserNotes.Hidden <> 1;
  
 END$$
 
@@ -704,7 +704,7 @@ BEGIN
     SELECT * FROM UserNotes 
     WHERE UserNotes.UserID = userId
         AND UserNotes.Content LIKE CONCAT('%', likeContent, '%')
-        AND (UserNotes.Hidden IS NULL OR UserNotes.Hidden <> 1);
+        AND UserNotes.Hidden <> 1;
     
 END$$    
  
@@ -722,7 +722,7 @@ BEGIN
     WHERE UserNotes.UserID = 4
         AND UserNotes.NotationDateTime >= timePeriodStart
         AND UserNotes.NotationDateTime <= timePeriodEnd
-        AND (UserNotes.Hidden IS NULL OR UserNotes.Hidden <> 1);
+        AND UserNotes.Hidden <> 1;
  
 END$$
  
@@ -740,7 +740,7 @@ BEGIN
     WHERE UserNotes.UserID = 4
         AND UserNotes.LastUpdate >= timePeriodStart
         AND UserNotes.LastUpdate <= timePeriodEnd
-        AND (UserNotes.Hidden IS NULL OR UserNotes.Hidden <> 1);
+        AND UserNotes.Hidden <> 1;
  
 END$$
  
@@ -758,7 +758,7 @@ BEGIN
     WHERE UserNotes.UserID = userId
         AND UserNotes.NotationDateTime >= startDay
         AND UserNotes.NotationDateTime <= endDay
-        AND (UserNotes.Hidden IS NULL OR UserNotes.Hidden <> 1)
+        AND UserNotes.Hidden <> 1
     ORDER BY UserNotes.NotationDateTime ASC;
 
 END$$
@@ -986,7 +986,7 @@ BEGIN
     SELECT * FROM Tasks
     WHERE Tasks.Description = description
         AND Tasks.AsignedTo = assignedID
-        AND (Tasks.Hidden IS NULL OR Tasks.Hidden <> 1);
+        AND Tasks.Hidden <> 1;
 
 END$$
 
@@ -1003,7 +1003,7 @@ BEGIN
     WHERE Tasks.AsignedTo = assignedID
         AND Tasks.Completed IS NULL
         AND (Tasks.Status IS NOT NULL AND Tasks.Status <> 0)
-        AND (Tasks.Hidden IS NULL OR Tasks.Hidden <> 1);
+        AND Tasks.Hidden <> 1;
 
 END$$
 
@@ -1021,7 +1021,7 @@ BEGIN
     WHERE Tasks.AsignedTo = assignedID
         AND Tasks.ScheduledStart < planStart
         AND (Tasks.Status IS NULL OR Tasks.Status = 0)
-        AND (Tasks.Hidden IS NULL OR Tasks.Hidden <> 1);
+        AND Tasks.Hidden <> 1;
 
 END$$
 
@@ -1054,7 +1054,7 @@ BEGIN
     SELECT * FROM Tasks
     WHERE Tasks.AsignedTo = assignedID
         AND Tasks.ParentTask = parentID
-        AND (Tasks.Hidden IS NULL OR Tasks.Hidden <> 1);
+        AND Tasks.Hidden <> 1;
 
 END$$
 
@@ -1070,9 +1070,9 @@ BEGIN
 
     SELECT * FROM Tasks
     WHERE Tasks.AsignedTo = assignedID
-        AND Tasks.RequiredDelivery < dueDate
         AND Tasks.Completed IS NULL
-        AND (Tasks.Hidden IS NULL OR Tasks.Hidden <> 1)
+        AND Tasks.Hidden <> 1
+        AND (Tasks.Status = 3 OR Tasks.RequiredDelivery < dueDate)
     ORDER BY Tasks.SchedulePriorityGroup ASC, Tasks.PriorityInGroup ASC;
 
 END$$
@@ -1227,7 +1227,7 @@ BEGIN
 
     SELECT * FROM UserScheduleItem
     WHERE UserScheduleItem.idUserScheduleItem = scheduleItemID
-        AND (UserScheduleItem.Hidden IS NULL OR UserScheduleItem.Hidden <> 1);
+        AND UserScheduleItem.Hidden <> 1;
 
 END$$
 
@@ -1244,7 +1244,7 @@ BEGIN
 
     SELECT * FROM UserScheduleItem
     WHERE UserScheduleItem.UserID = userId
-        AND (UserScheduleItem.Hidden IS NULL OR UserScheduleItem.Hidden <> 1)
+        AND UserScheduleItem.Hidden <> 1
         AND UserScheduleItem.StartDateTime >= eventStart
         AND UserScheduleItem.StartDateTime <= eventEnd
     ORDER BY UserScheduleItem.StartDateTime ASC;
@@ -1265,7 +1265,7 @@ BEGIN
 
     SELECT * FROM UserScheduleItem  WHERE UserID = userId
     AND Title LIKE CONCAT('%', matchContent, '%')
-    AND (Hidden IS NULL OR Hidden <> 1)
+    AND Hidden <> 1
     AND StartDateTime >= searchStart
     AND StartDateTime <= searchEnd;
 
@@ -1328,7 +1328,6 @@ BEGIN
     
 END$$
 DELIMITER ;
-
 
 COMMIT;
 
