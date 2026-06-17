@@ -4,6 +4,7 @@
 class ScheduleItemModel;
 
 // Project Header Files
+#include "DeleteItemButton.h"
 
 // QT Header Files
 #include <QVariant>
@@ -43,6 +44,7 @@ public Q_SLOTS:
 
 private Q_SLOTS:
     void handleEventDate_DateChanged();
+    void handleDeleteButton_Clicked();
 
 private:
     void setUpDialogUI();
@@ -78,6 +80,7 @@ private:
     QPlainTextEdit* locationTE = nullptr;
     QCompleter* locationCompleterQC = nullptr;
     QCheckBox* isPersonalCB = nullptr;
+    DeleteItemButton* deleteButton = nullptr;
 
     const int sied_TextEditMinWidth = 300;
     const int sied_TextEditMaxWidth = 700;

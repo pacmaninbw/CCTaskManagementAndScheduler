@@ -1,5 +1,6 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
+#include "DeleteItemButton.h"
 #include "ScheduleItemEditorDialog.h"
 #include "ScheduleItemQueryProcessor.h"
 #include "ScheduleItemModel.h"
@@ -192,6 +193,12 @@ QGroupBox *ScheduleItemEditorDialog::setUpGroupBoxForm()
         "isPersonalCB", formGroupBox);
     formGroupBoxLayout->addRow(isPersonalCB);
 
+    if (m_DBModelID)
+    {
+        deleteButton = new DeleteItemButton("Event");
+        formGroupBoxLayout->addRow(deleteButton);
+    }
+
     return formGroupBox;
 }
 
@@ -235,6 +242,11 @@ void ScheduleItemEditorDialog::handleEventDate_DateChanged()
 
     startTimeDTE->setMaximumDate(newDate.addYears(1));
     endTimeDTE->setMaximumDate(startTimeDTE->maximumDate());
+}
+
+void ScheduleItemEditorDialog::handleDeleteButton_Clicked()
+{
+    m_DBModelData->hide(m_UserID);
 }
 
 bool ScheduleItemEditorDialog::addToDatabase()
@@ -315,6 +327,11 @@ void ScheduleItemEditorDialog::connectAllSignalsAndSlots()
 
     connect(dialogButtonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(dialogButtonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+
+    if (deleteButton)
+    {
+        connect(deleteButton, &QPushButton::clicked, this, &ScheduleItemEditorDialog::handleDeleteButton_Clicked);
+    }
 }
 
 void ScheduleItemEditorDialog::disconnectAllSignalsAndSlots()
@@ -324,4 +341,9 @@ void ScheduleItemEditorDialog::disconnectAllSignalsAndSlots()
 
     disconnect(dialogButtonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     disconnect(dialogButtonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+
+    if (deleteButton)
+    {
+        disconnect(deleteButton, &QPushButton::clicked, this, &ScheduleItemEditorDialog::handleDeleteButton_Clicked);
+    }
 }
