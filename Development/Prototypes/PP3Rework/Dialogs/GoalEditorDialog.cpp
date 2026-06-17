@@ -24,9 +24,10 @@
 //#include <iostream>
 #include <memory>
 
-GoalEditorDialog::GoalEditorDialog(std::size_t userId, QWidget *parent)
+GoalEditorDialog::GoalEditorDialog(std::size_t userId, std::size_t goalId, QWidget *parent)
     : QDialog(parent),
     m_UserID{userId},
+    m_DBModelID{goalId},
     m_GoalData{nullptr},
     m_ParentGoalData{nullptr},
     maxGroupBoxHeight{0},
@@ -35,18 +36,18 @@ GoalEditorDialog::GoalEditorDialog(std::size_t userId, QWidget *parent)
     setUpGoalEditorDialogUI();
 }
 
-bool GoalEditorDialog::getGoalFromDbInitFields(std::size_t goalToEdit)
+bool GoalEditorDialog::getGoalFromDbInitFields()
 {
-    if (!goalToEdit)
+    if (!m_DBModelID)
     {
-        QString errorReport = "To Do Item Edit failed.\n";
-        errorReport += " No Task to Edit";
+        QString errorReport = "Goal Edit failed.\n";
+        errorReport += " No Goal to Edit";
         QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
         return false;
     }
 
     GoalQueryProcessor goalQueryProcessor;
-    m_GoalData = goalQueryProcessor.getGoalById(goalToEdit);
+    m_GoalData = goalQueryProcessor.getGoalById(m_DBModelID);
     std::size_t parentGoalId = m_GoalData->getParentId();
     if (parentGoalId)
     {
@@ -91,12 +92,17 @@ void GoalEditorDialog::accept()
     }
 }
 
+void GoalEditorDialog::handleDeleteButton()
+{
+    m_GoalData->hide(m_UserID);
+}
+
 void GoalEditorDialog::setUpGoalEditorDialogUI()
 {
     QVBoxLayout* goalEditorDialogLayout = new QVBoxLayout(this);
     goalEditorDialogLayout->setObjectName("goalEditorDialogLayout");
 
-    QString groupBoxTitle = m_GoalData? "Edit Goal" : "Add Goal";
+    QString groupBoxTitle = m_DBModelID? "Edit Goal" : "Add Goal";
 
     editGoalGB = new QGroupBox(groupBoxTitle, this);
     editGoalGB->setLayout(setUpGoalEditorDialogGroupBoxContents());
@@ -131,6 +137,13 @@ QFormLayout *GoalEditorDialog::setUpGoalEditorDialogGroupBoxContents()
     editGoalSelectParentGoalPB = cqtfa_QTWidgetWithText<QPushButton>(
         "Select Parent Goal", "editGoalSelectParentGoalPB", editGoalGB);
     goalEditorDialogFormLayout->addWidget(editGoalSelectParentGoalPB);
+
+    if (m_DBModelID)
+    {
+        deleteButton = new DeleteItemButton("Goal");
+        goalEditorDialogFormLayout->addWidget(deleteButton);
+        connect(deleteButton, &QPushButton::clicked, this, &GoalEditorDialog::handleDeleteButton);
+    }
 
     maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(goalEditorDialogFormLayout);
 

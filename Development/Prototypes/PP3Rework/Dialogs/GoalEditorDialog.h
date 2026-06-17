@@ -4,6 +4,7 @@
 class UserGoalModel;
 
 // Project Header Files
+#include "DeleteItemButton.h"
 
 // QT Header Files
 #include <QVariant>
@@ -25,12 +26,13 @@ class GoalEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit GoalEditorDialog(std::size_t userId, QWidget* parent = nullptr);
-    bool getGoalFromDbInitFields(std::size_t goalId);
+    explicit GoalEditorDialog(std::size_t userId, std::size_t goalId, QWidget* parent = nullptr);
+    bool getGoalFromDbInitFields();
     ~GoalEditorDialog();
 
 public Q_SLOTS:
     void accept() override;
+    void handleDeleteButton();
 
 private:
     void setUpGoalEditorDialogUI();
@@ -41,6 +43,7 @@ private:
     void initEditorFieldsFromModel();
 
     std::size_t m_UserID;
+    std::size_t m_DBModelID;
     std::shared_ptr<UserGoalModel> m_GoalData;
     std::shared_ptr<UserGoalModel> m_ParentGoalData;
     QDialogButtonBox* buttonBox = nullptr;
@@ -49,6 +52,7 @@ private:
     QPlainTextEdit* editGoalDescriptionTE = nullptr;
     QLineEdit* editGoalPriorityLE = nullptr;
     QPushButton* editGoalSelectParentGoalPB = nullptr;
+    DeleteItemButton* deleteButton = nullptr;
     int maxGroupBoxHeight;
     int maxButtonBoxHeight;
 
