@@ -31,6 +31,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         Dialogs/DataBaseConnectionDialog.cpp
         Dialogs/DataBaseConnectionDialog.h
+        Dialogs/DeleteItemButton.h
+        Dialogs/DeleteItemButton.cpp
         Dialogs/GoalEditorDialog.h
         Dialogs/LoginDialog.h
         Dialogs/NoteEditorDialog.h
