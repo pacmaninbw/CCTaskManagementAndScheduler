@@ -4,6 +4,7 @@
 class NoteModel;
 
 // Project Header Files
+#include "DeleteItemButton.h"
 
 // QT Header Files
 #include <QVariant>
@@ -25,9 +26,11 @@ class NoteEditorDialog : public QDialog
 public:
     explicit NoteEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, std::size_t noteID=0);
     ~NoteEditorDialog();
+    void initEditFieldsFromDB();
 
 public Q_SLOTS:
     void accept() override;
+    void handleDelteNote_Clicked();
 
 private:
     void setUpNoteEditorUI();
@@ -36,12 +39,14 @@ private:
     void limitDialogRowth();
 
     std::size_t m_userID;
+    std::size_t m_DBModelID;
     std::shared_ptr<NoteModel> m_NoteData;
     QDialogButtonBox* buttonBox = nullptr;
     QGroupBox* editNoteEnterContentGB = nullptr;
     QFormLayout* noteForm = nullptr;
     QVBoxLayout* editNoteLayOut = nullptr;
     QPlainTextEdit* editNoteContentTE = nullptr;
+    DeleteItemButton* deleteButton = nullptr;
     int maxGroupBoxHeight = 0;
     int maxButtonBoxHeight = 0;
 

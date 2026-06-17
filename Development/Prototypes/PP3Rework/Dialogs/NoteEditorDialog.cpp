@@ -15,23 +15,27 @@
 NoteEditorDialog::NoteEditorDialog(QWidget *parent, std::size_t userId, std::size_t noteToEdit)
     : QDialog(parent),
     m_userID{userId},
+    m_DBModelID{noteToEdit},
     m_NoteData{nullptr}
 {
     setUpNoteEditorUI();
+}
 
-    if (noteToEdit != 0)
+NoteEditorDialog::~NoteEditorDialog()
+{
+}
+
+void NoteEditorDialog::initEditFieldsFromDB()
+{
+    if (m_DBModelID != 0)
     {
         NoteQueryProcessor noteQueryProcess;
-        m_NoteData = noteQueryProcess.getNoteById(noteToEdit);
+        m_NoteData = noteQueryProcess.getNoteById(m_DBModelID);
         if (m_NoteData)
         {
             editNoteContentTE->setPlainText(QString::fromStdString(m_NoteData->getContent()));
         }
     }
-}
-
-NoteEditorDialog::~NoteEditorDialog()
-{
 }
 
 void NoteEditorDialog::accept()
@@ -63,9 +67,14 @@ void NoteEditorDialog::accept()
 
 }
 
+void NoteEditorDialog::handleDelteNote_Clicked()
+{
+    m_NoteData->hide(m_userID);
+}
+
 void NoteEditorDialog::setUpNoteEditorUI()
 {
-    QString titleString = m_NoteData? "Edit Note" : "Add Note";
+    QString titleString = m_DBModelID? "Edit Note" : "Add Note";
 
     editNoteLayOut = new QVBoxLayout(this);
     editNoteLayOut->setObjectName("editNoteLayOut");
@@ -96,7 +105,15 @@ QFormLayout* NoteEditorDialog::setUpNoteEditorGBForm()
         editNoteEnterContentGB, minNoteContentWidth, maxNoteContentWidth, noteLineCount);
     noteForm->addRow("Content:", editNoteContentTE);
 
+    if (m_DBModelID)
+    {
+        deleteButton = new DeleteItemButton("Note");
+        noteForm->addWidget(deleteButton);
+        connect(deleteButton, &QPushButton::clicked, this, &NoteEditorDialog::handleDelteNote_Clicked);
+    }
+
     editNoteEnterContentGB->setLayout(noteForm);
+
 
     maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(noteForm);
 
