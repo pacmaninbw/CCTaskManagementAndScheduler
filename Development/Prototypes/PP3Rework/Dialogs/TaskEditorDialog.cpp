@@ -26,9 +26,10 @@
 
 // Standard C++ Header Files
 
-TaskEditorDialog::TaskEditorDialog(QWidget *parent, std::shared_ptr<UserModel> creator)
+TaskEditorDialog::TaskEditorDialog(QWidget *parent, std::shared_ptr<UserModel> creator, std::size_t taskToEdit)
     : QDialog(parent),
     m_Creator{creator},
+    m_DBModelID{taskToEdit},
     m_TaskData{nullptr},
     m_ParentTaskData{nullptr},
     m_parentTaskUpdated{false}
@@ -46,9 +47,9 @@ TaskEditorDialog::~TaskEditorDialog()
 
 }
 
-bool TaskEditorDialog::setTaskDataAndInitDisplayFields(std::size_t taskToEditId)
+bool TaskEditorDialog::initAllFieldsFromDB()
 {
-    if (!taskToEditId)
+    if (!m_DBModelID)
     {
         QString errorReport = "To Do Item Edit failed.\n";
         errorReport += " No Task to Edit";
@@ -57,7 +58,7 @@ bool TaskEditorDialog::setTaskDataAndInitDisplayFields(std::size_t taskToEditId)
     }
 
     TaskQueryProcessor taskQueryProcessor;
-    m_TaskData = taskQueryProcessor.getTaskByTaskID(taskToEditId);
+    m_TaskData = taskQueryProcessor.getTaskByTaskID(m_DBModelID);
     if (!m_TaskData)
     {
         QString errorReport = "To Do Item Edit failed.\n";
@@ -207,6 +208,11 @@ void TaskEditorDialog::on_editTaskStatusSelectorCBChanged(int index)
     m_TaskData->setStatus(static_cast<TaskModel::TaskStatus>(index));
 }
 
+void TaskEditorDialog::on_editTaskDeleteButton_Clicked()
+{
+    m_TaskData->hide(m_Creator->getUserID());
+}
+
 void TaskEditorDialog::setUpTaskEditorUI()
 {
     editTaskMainLayout = new QVBoxLayout(this);
@@ -220,6 +226,12 @@ void TaskEditorDialog::setUpTaskEditorUI()
 
     editTaskMainLayout->addLayout(setUpEfforAndPrioritySectionLayout());
 
+    if (m_DBModelID)
+    {
+        deleteButton = new DeleteItemButton("Todo Item", this);
+        editTaskMainLayout->addWidget(deleteButton);
+    }
+
     editTaskMainLayout->addWidget(setUpEditTaskButtonBox(), 0, Qt::AlignHCenter);
 
     editTaskMainLayout->setContentsMargins(20, 20, 20, 20);
@@ -231,7 +243,7 @@ void TaskEditorDialog::setUpTaskEditorUI()
     
     adjustSize();
 
-    QString titleStr = (m_TaskData && m_TaskData->getTaskID() > 0)? "Edit Task Dialog" : "Add Task Dialog";
+    QString titleStr = m_DBModelID? "Edit Task Dialog" : "Add Task Dialog";
     setWindowTitle(titleStr);
 }
 
@@ -610,6 +622,11 @@ void TaskEditorDialog::connectEditFieldsToActions()
     connect(editTaskbuttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept, Qt::UniqueConnection);
 
     connect(editTaskbuttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject, Qt::UniqueConnection);
+
+    if (deleteButton)
+    {
+        connect(deleteButton, &QPushButton::clicked, this, &TaskEditorDialog::on_editTaskDeleteButton_Clicked);
+    }
 }
 
 void TaskEditorDialog::transferEffortToModel()

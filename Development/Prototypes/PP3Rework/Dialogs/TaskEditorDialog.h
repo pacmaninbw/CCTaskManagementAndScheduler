@@ -4,6 +4,7 @@
 class TaskModel;
 class UserModel;
 // Project Header Files
+#include "DeleteItemButton.h"
 
 // QT Header Files
 #include <QVariant>
@@ -30,9 +31,9 @@ class TaskEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit TaskEditorDialog(QWidget* parent = nullptr, std::shared_ptr<UserModel> creator = nullptr);
+    explicit TaskEditorDialog(QWidget* parent = nullptr, std::shared_ptr<UserModel> creator = nullptr, std::size_t taskToEditId = 0);
     ~TaskEditorDialog();
-    bool setTaskDataAndInitDisplayFields(std::size_t taskToEditId);
+    bool initAllFieldsFromDB();
 
 public Q_SLOTS:
     void accept() override;
@@ -43,6 +44,7 @@ private Q_SLOTS:
     void on_editTaskAddDependenciesPB_Clicked();
     void on_editTaskChangeAssignedUserPB_Clicked();
     void on_editTaskStatusSelectorCBChanged(int index);
+    void on_editTaskDeleteButton_Clicked();
 
 private:
     void setUpTaskEditorUI();
@@ -71,6 +73,7 @@ private:
     void transferPriorityToModel();
 
     std::shared_ptr<UserModel> m_Creator;
+    std::size_t m_DBModelID;
     std::shared_ptr<TaskModel> m_TaskData;
     std::shared_ptr<UserModel> m_Assignee;
     std::shared_ptr<TaskModel> m_ParentTaskData;
@@ -113,6 +116,7 @@ private:
     QHBoxLayout* userSectionLayout = nullptr;
     QHBoxLayout* DateAndRelatedTasksSection = nullptr;
     QHBoxLayout* efforAndPrioritySectionLayout = nullptr;
+    DeleteItemButton* deleteButton = nullptr;
 
     const int taskDescriptionTEWidth = 700;
     const int taskDescriptionTEHeight = 60;
