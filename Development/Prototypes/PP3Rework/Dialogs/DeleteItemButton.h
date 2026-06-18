@@ -7,7 +7,7 @@
 class DeleteItemButton : public QPushButton
 {
 public:
-    DeleteItemButton(QString itemType);
+    DeleteItemButton(QString itemType, QWidget* parent = nullptr);
 };
 
 #endif // DELETEITEMBUTTON_H_

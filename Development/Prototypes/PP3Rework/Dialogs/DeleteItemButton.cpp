@@ -8,7 +8,8 @@
 
 // Standard C++ Header Files
 
-DeleteItemButton::DeleteItemButton(QString itemType)
+DeleteItemButton::DeleteItemButton(QString itemType, QWidget* parent)
+    : QPushButton(parent)
 {
     QString buttonText = "Delete " + itemType;
     setText(buttonText);
