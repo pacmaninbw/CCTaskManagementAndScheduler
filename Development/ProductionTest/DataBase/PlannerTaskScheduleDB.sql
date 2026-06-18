@@ -831,8 +831,8 @@ CREATE PROCEDURE `PlannerTaskScheduleDB`.`HideTask`
 BEGIN
 
     UPDATE Tasks
-        SET Hidden = 1, LastUpdateTS = UTC_TIMESTAMP()
-        WHERE CreatedBy = IDUser AND TaskID = IDTask;
+        SET Tasks.Hidden = 1, Tasks.LastUpdateTS = UTC_TIMESTAMP()
+        WHERE Tasks.CreatedBy = IDUser AND Tasks.TaskID = IDTask;
 
 END$$
 
@@ -931,31 +931,32 @@ CREATE PROCEDURE `UpdateTaskAllFields`
     IN `priority` INT UNSIGNED,
     IN `isPersonal` TINYINT,
     IN `dependencyCount` INT UNSIGNED,
-    IN `dependencies` MEDIUMTEXT
+    IN `dependencies` MEDIUMTEXT,
+    IN `deleted` TINYINT
 )
 
 BEGIN
 
     UPDATE Tasks SET
-        CreatedBy = creatorID,
-        AsignedTo = assignedID,
-        Description = description,
-        ParentTask = parentTaskID,
-        Status = taskStatus,
-        RequiredDelivery = dueDate,
-        ScheduledStart = planStart,
-        ActualStart = startDate,
-        EstimatedCompletion = expectedDate,
-        Completed = completedDate,
-        EstimatedEffortHours = estimatedEffort,
-        ActualEffortHours = effortToDate,
-        SchedulePriorityGroup = priorityCategory,
-        PriorityInGroup = priority,
-        Personal = isPersonal,
-        DependencyCount = dependencyCount,
-        Dependencies = dependencies,
-        LastUpdateTS = UTC_TIMESTAMP(),
-        Hidden = 0
+        Tasks.CreatedBy = creatorID,
+        Tasks.AsignedTo = assignedID,
+        Tasks.Description = description,
+        Tasks.ParentTask = parentTaskID,
+        Tasks.Status = taskStatus,
+        Tasks.RequiredDelivery = dueDate,
+        Tasks.ScheduledStart = planStart,
+        Tasks.ActualStart = startDate,
+        Tasks.EstimatedCompletion = expectedDate,
+        Tasks.Completed = completedDate,
+        Tasks.EstimatedEffortHours = estimatedEffort,
+        Tasks.ActualEffortHours = effortToDate,
+        Tasks.SchedulePriorityGroup = priorityCategory,
+        Tasks.PriorityInGroup = priority,
+        Tasks.Personal = isPersonal,
+        Tasks.DependencyCount = dependencyCount,
+        Tasks.Dependencies = dependencies,
+        Tasks.LastUpdateTS = UTC_TIMESTAMP(),
+        Tasks.Hidden = deleted
     WHERE TaskID = primaryKeyValue;
     
 END$$
