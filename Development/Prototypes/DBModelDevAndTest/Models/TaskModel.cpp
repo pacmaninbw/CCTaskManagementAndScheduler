@@ -380,7 +380,7 @@ std::string TaskModel::formatUpdateStatement()
     initFormatOptions();
 
     return boost::mysql::format_sql(format_opts.value(),
-        "CALL UpdateTaskAllFields({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17})",
+        "CALL UpdateTaskAllFields({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, {18})",
         primaryKey, creatorID, assignToID, description, parentTaskID, getStatusIntVal(),
             stdchronoDateToBoostMySQLDate(dueDate.value()),
             stdchronoDateToBoostMySQLDate(scheduledStart.value()),
@@ -388,7 +388,7 @@ std::string TaskModel::formatUpdateStatement()
             optionalDateConversion(estimatedCompletion),
             optionalDateConversion(completionDate),
             estimatedEffort, actualEffortToDate, priorityGroup,priority, personal,
-            dependencyCount, depenenciesText
+            dependencyCount, depenenciesText, deleted
     );
 }
 

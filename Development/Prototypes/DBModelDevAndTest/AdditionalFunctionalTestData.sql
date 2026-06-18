@@ -1026,7 +1026,7 @@ BEGIN
 
    CALL HideTask(4, 59);
 
-   CALL UpdateTaskAllFields(50, 4, 5, 'Install a WordPress Archive Plugin', 2, 4, '2025-05-01', '2025-05-01', '2025-05-11', '2025-05-12', '2025-05-11', 2, 1.5, 4, 3, 0, 1, '49;');
+   CALL UpdateTaskAllFields(50, 4, 5, 'Install a WordPress Archive Plugin', 2, 4, '2025-05-01', '2025-05-01', '2025-05-11', '2025-05-12', '2025-05-11', 2, 1.5, 4, 3, 0, 1, '49;', 0);
    
    SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND RequiredDelivery < '2026-03-22' AND Completed IS NULL AND (Hidden IS NULL OR Hidden <> 1) ORDER BY SchedulePriorityGroup 
 ASC, PriorityInGroup ASC;
