@@ -107,7 +107,7 @@ QFormLayout* NoteEditorDialog::setUpNoteEditorGBForm()
 
     if (m_DBModelID)
     {
-        deleteButton = new DeleteItemButton("Note");
+        deleteButton = new DeleteItemButton("Note", editNoteEnterContentGB);
         noteForm->addWidget(deleteButton);
         connect(deleteButton, &QPushButton::clicked, this, &NoteEditorDialog::handleDelteNote_Clicked);
     }

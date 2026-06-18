@@ -195,7 +195,7 @@ QGroupBox *ScheduleItemEditorDialog::setUpGroupBoxForm()
 
     if (m_DBModelID)
     {
-        deleteButton = new DeleteItemButton("Event");
+        deleteButton = new DeleteItemButton("Event", formGroupBox);
         formGroupBoxLayout->addRow(deleteButton);
     }
 

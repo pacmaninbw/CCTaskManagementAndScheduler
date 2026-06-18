@@ -140,7 +140,7 @@ QFormLayout *GoalEditorDialog::setUpGoalEditorDialogGroupBoxContents()
 
     if (m_DBModelID)
     {
-        deleteButton = new DeleteItemButton("Goal");
+        deleteButton = new DeleteItemButton("Goal", editGoalGB);
         goalEditorDialogFormLayout->addWidget(deleteButton);
         connect(deleteButton, &QPushButton::clicked, this, &GoalEditorDialog::handleDeleteButton);
     }
