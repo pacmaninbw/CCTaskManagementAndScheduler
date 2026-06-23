@@ -21,3 +21,11 @@ The models and database used by the tool access are tested separately. The test 
 
 There is a list of known issues.
 
+## Development Environment  
+ - Ubuntu 24.04  
+ - g++ 14.2.0  
+ - Qt 6.10.3  
+ - cmake 4.3.3  
+ - Boost 187  
+ - mariadb  Ver 15.1 Distrib 10.11.14-MariaDB
+
