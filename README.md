@@ -1,7 +1,5 @@
 # CCTaskManagementAndScheduler
-Personal planner, organizer and scheduler task management system using C++, CMake, QT and MySQL
-
-[Current Test Coverage](https://github.com/pacmaninbw/CCTaskManagementAndScheduler/blob/master/Documentation/PublicTestCoverage/index.html)
+Personal planner, organizer and scheduler task management system using C++23, CMake, QT and MySQL
 
 Over my career as a software engineer, I have found it helpful to use personal planners to schedule my time. First there were the paper planner from Daytimer. This was helpful to plan my time around meetings and appointments as well as keep some very brief notes. The drawback with this system was that I could not record goals or prioritize tasks.
 
@@ -9,7 +7,17 @@ I moved on to the Franklin Covey planner system which provided a system for layi
 
 I still haven’t found an electronic system to merge all the features of the Franklin Covey paper planner with Microsoft Project and Outlook. My iPhone does the job of the Daytimer paper planner, but there is no way to prioritize tasks or align those tasks with goals. There are now much better project planning tools than Microsoft Project coupled with Outlook or Microsoft Exchange Server. Most or all Product Lifecycle Management tools ignore the smaller side of personal time management. As far as I know, Franklin Covey never extended their tools to include project management and their software didn’t work the same as the paper planner.
 
-I have been using this planner since January of 2026 to organize my development of the planner.
+## The current version of the tool  
+
+I have been using this planner since January of 2026 to organize my development of the planner.  
+
+![Planner User Dashboard](images/PlannerDashboardView_06232026.png)
+
+## Test Coverage  
+
+The models and database used by the tool access are tested separately. The test coverage of the models and database used by the tool is currently 95.7%.
+
+![Test coverage of models and database access](images/ModelOnlyTestCoverage_06232026.png)
 
 There is a list of known issues.
 
