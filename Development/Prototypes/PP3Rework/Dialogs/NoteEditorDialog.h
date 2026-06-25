@@ -4,14 +4,10 @@
 class NoteModel;
 
 // Project Header Files
-#include "DeleteItemButton.h"
+#include "BaseObjectEditorDialog.h"
 
 // QT Header Files
 #include <QVariant>
-#include <QAbstractButton>
-#include <QApplication>
-#include <QDialog>
-#include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QPlainTextEdit>
@@ -19,36 +15,21 @@ class NoteModel;
 
 // Standard C++ Header Files
 
-class NoteEditorDialog : public QDialog
+class NoteEditorDialog : public BaseObjectEditorDialog
 {
-    Q_OBJECT
-
 public:
     explicit NoteEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, std::size_t noteID=0);
     ~NoteEditorDialog();
-    void initEditFieldsFromDB();
-
-public Q_SLOTS:
-    void accept() override;
-    void handleDelteNote_Clicked();
+    virtual void initEditorFieldsFromDataBase() override;
 
 private:
-    void setUpNoteEditorUI();
     QFormLayout* setUpNoteEditorGBForm();
-    QDialogButtonBox* setUpEditNoteButtonBox();
-    void limitDialogRowth();
+    virtual QGroupBox* setUpEditorDialogForm() override;
+    virtual void createSharedPtrDBModelForAddObject() override;
+    virtual void transferEditorValuesToDBModel() override;
+    virtual void transferDBModelDataToEditorFields() override;
 
-    std::size_t m_userID;
-    std::size_t m_DBModelID;
-    std::shared_ptr<NoteModel> m_NoteData;
-    QDialogButtonBox* buttonBox = nullptr;
-    QGroupBox* editNoteEnterContentGB = nullptr;
-    QFormLayout* noteForm = nullptr;
-    QVBoxLayout* editNoteLayOut = nullptr;
     QPlainTextEdit* editNoteContentTE = nullptr;
-    DeleteItemButton* deleteButton = nullptr;
-    int maxGroupBoxHeight = 0;
-    int maxButtonBoxHeight = 0;
 
     const int minNoteContentWidth = 60;
     const int maxNoteContentWidth = 90;

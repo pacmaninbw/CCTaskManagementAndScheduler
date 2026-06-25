@@ -45,7 +45,7 @@ void NotesWindow::handleNoteTableClicked(const QModelIndex &index)
 
     std::size_t noteToEdit = index.internalId();
     NoteEditorDialog editNoteDialog(this, m_UserData->getUserID(), noteToEdit);
-    editNoteDialog.initEditFieldsFromDB();
+    editNoteDialog.initEditorFieldsFromDataBase();
 
     editNoteDialog.exec();
 

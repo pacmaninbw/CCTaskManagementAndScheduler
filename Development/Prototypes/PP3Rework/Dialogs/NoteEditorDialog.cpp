@@ -6,146 +6,73 @@
 
 // QT Header Files
 #include <QFormLayout>
-#include <QMessageBox>
 
 // Standard C++ Header Files
-
-#include "NoteEditorDialog.h"
+#include <memory>
 
 NoteEditorDialog::NoteEditorDialog(QWidget *parent, std::size_t userId, std::size_t noteToEdit)
-    : QDialog(parent),
-    m_userID{userId},
-    m_DBModelID{noteToEdit},
-    m_NoteData{nullptr}
+    : BaseObjectEditorDialog("Note", userId, noteToEdit, parent)
 {
-    setUpNoteEditorUI();
+    setUpEditorUI();
 }
 
 NoteEditorDialog::~NoteEditorDialog()
 {
 }
 
-void NoteEditorDialog::initEditFieldsFromDB()
+void NoteEditorDialog::initEditorFieldsFromDataBase()
 {
     if (m_DBModelID != 0)
     {
         NoteQueryProcessor noteQueryProcess;
-        m_NoteData = noteQueryProcess.getNoteById(m_DBModelID);
-        if (m_NoteData)
+        NoteModel_shp noteData = noteQueryProcess.getNoteById(m_DBModelID);
+        if (noteData)
         {
-            editNoteContentTE->setPlainText(QString::fromStdString(m_NoteData->getContent()));
+            m_DBObjectMode = std::dynamic_pointer_cast<ModelDBInterface>(noteData);
+            transferDBModelDataToEditorFields();
         }
     }
 }
 
-void NoteEditorDialog::accept()
+QGroupBox *NoteEditorDialog::setUpEditorDialogForm()
 {
-    bool updateSuccessful = true;
-    if (!m_NoteData)
-    {
-        m_NoteData = std::make_shared<NoteModel>();
-        m_NoteData->setUserId(m_userID);
-        m_NoteData->setContent(editNoteContentTE->toPlainText().toStdString());
-        updateSuccessful = m_NoteData->insert();
-    }
-    else
-    {
-        m_NoteData->setContent(editNoteContentTE->toPlainText().toStdString());
-        updateSuccessful = m_NoteData->update();
-    }
-
-    if (updateSuccessful)
-    {
-        QDialog::accept();
-    }
-    else
-    {
-        QString errorReport = "User edit failed.\n";
-        errorReport += QString::fromStdString(m_NoteData->getAllErrorMessages());
-        QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
-    }
-
-}
-
-void NoteEditorDialog::handleDelteNote_Clicked()
-{
-    m_NoteData->hide(m_userID);
-}
-
-void NoteEditorDialog::setUpNoteEditorUI()
-{
-    QString titleString = m_DBModelID? "Edit Note" : "Add Note";
-
-    editNoteLayOut = new QVBoxLayout(this);
-    editNoteLayOut->setObjectName("editNoteLayOut");
-
-    editNoteEnterContentGB = new QGroupBox(titleString, this);
-    editNoteEnterContentGB->setObjectName("editNoteEnterContentGB");
-
-    editNoteEnterContentGB->setLayout(setUpNoteEditorGBForm());
-
-    editNoteLayOut->addWidget(editNoteEnterContentGB);
-
-    editNoteLayOut->addWidget(setUpEditNoteButtonBox(), 0, Qt::AlignHCenter);
-
-    setLayout(editNoteLayOut);
-
-    setWindowTitle(titleString + " Dialog");
-
-    limitDialogRowth();
-
-    adjustSize();
-}
-
-QFormLayout* NoteEditorDialog::setUpNoteEditorGBForm()
-{
-    noteForm = cqtfa_FormLayoutWithPolicy("NoteForm", editNoteEnterContentGB);
+    QGroupBox* mainEditorGroupBox = new QGroupBox(m_EditorTitleString, this);
+    m_Qt_EditorFormLayout = new QFormLayout(mainEditorGroupBox);
+    m_Qt_EditorFormLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 
     editNoteContentTE = cqtfa_flexiblePlainTextEditEbasedOnCharCount("editNoteContentTE",
-        editNoteEnterContentGB, minNoteContentWidth, maxNoteContentWidth, noteLineCount);
-    noteForm->addRow("Content:", editNoteContentTE);
+        mainEditorGroupBox, minNoteContentWidth, maxNoteContentWidth, noteLineCount);
+    m_Qt_EditorFormLayout->addRow("Content:", editNoteContentTE);
 
-    if (m_DBModelID)
+    maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(m_Qt_EditorFormLayout);
+
+    mainEditorGroupBox->setLayout(m_Qt_EditorFormLayout);
+
+    return mainEditorGroupBox;
+}
+
+void NoteEditorDialog::createSharedPtrDBModelForAddObject()
+{
+    NoteModel_shp newNote = std::make_shared<NoteModel>();
+    newNote->setUserId(m_userID);
+    m_DBObjectMode = newNote;
+}
+
+void NoteEditorDialog::transferEditorValuesToDBModel()
+{
+    if (m_DBObjectMode)
     {
-        deleteButton = new DeleteItemButton("Note", editNoteEnterContentGB);
-        noteForm->addWidget(deleteButton);
-        connect(deleteButton, &QPushButton::clicked, this, &NoteEditorDialog::handleDelteNote_Clicked);
+        NoteModel_shp noteData = std::dynamic_pointer_cast<NoteModel>(m_DBObjectMode);
+        noteData->setContent(editNoteContentTE->toPlainText().toStdString());
     }
-
-    editNoteEnterContentGB->setLayout(noteForm);
-
-
-    maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(noteForm);
-
-    return noteForm;
 }
 
-QDialogButtonBox *NoteEditorDialog::setUpEditNoteButtonBox()
+void NoteEditorDialog::transferDBModelDataToEditorFields()
 {
-    buttonBox = new QDialogButtonBox(this);
+    if (m_DBObjectMode)
+    {
+        NoteModel_shp noteData = std::dynamic_pointer_cast<NoteModel>(m_DBObjectMode);
 
-    buttonBox->setObjectName(QString::fromUtf8("editNoteButtonBox"));
-    buttonBox->setOrientation(Qt::Horizontal);
-    buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
-
-    maxButtonBoxHeight = buttonBox->height() + marginAndSpacing;
-
-    connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
-    connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
-
-    return buttonBox;
-}
-
-void NoteEditorDialog::limitDialogRowth()
-{
-    editNoteEnterContentGB->setMaximumHeight(maxGroupBoxHeight);
-    editNoteEnterContentGB->setMaximumWidth(cqtfa_getFormLayoutMaxWidth(noteForm) + marginAndSpacing);
-
-    buttonBox->setMaximumHeight(maxButtonBoxHeight);
-
-    int maxDialogWidth = editNoteEnterContentGB->maximumWidth() + marginAndSpacing;
-
-    setMaximumWidth(maxDialogWidth);
-
-    setMaximumHeight(maxGroupBoxHeight + maxButtonBoxHeight + marginAndSpacing);
+        editNoteContentTE->setPlainText(QString::fromStdString(noteData->getContent()));
+    }
 }
