@@ -55,7 +55,7 @@ void GoalWindow::handleEditGoalAction(const QModelIndex &index)
 
     GoalEditorDialog goalEditDialog(m_UserData->getUserID(), goalToEdit, this);
 
-    goalEditDialog.getGoalFromDbInitFields();
+    goalEditDialog.initEditorFieldsFromDataBase();
 
     goalEditDialog.exec();
 
