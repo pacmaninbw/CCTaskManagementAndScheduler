@@ -4,18 +4,14 @@
 class ScheduleItemModel;
 
 // Project Header Files
-#include "DeleteItemButton.h"
+#include "BaseObjectEditorDialog.h"
 
 // QT Header Files
 #include <QVariant>
-#include <QAbstractButton>
-#include <QApplication>
 #include <QCheckBox>
 #include <QCompleter>
 #include <QDateEdit>
 #include <QDateTimeEdit>
-#include <QDialog>
-#include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QLineEdit>
@@ -27,49 +23,32 @@ class ScheduleItemModel;
 #include <memory>
 
 
-class ScheduleItemEditorDialog : public QDialog
+class ScheduleItemEditorDialog : public BaseObjectEditorDialog
 {
-    Q_OBJECT
-
 public:
-    explicit ScheduleItemEditorDialog(std::size_t userId, QWidget* parent = nullptr);
-    explicit ScheduleItemEditorDialog(std::size_t userId, std::size_t eventId, QWidget* parent = nullptr);
+    explicit ScheduleItemEditorDialog(std::size_t userId, std::size_t eventId = 0, QWidget* parent = nullptr);
     explicit ScheduleItemEditorDialog(std::size_t userId, std::chrono::system_clock::time_point startTime,
             std::chrono::system_clock::time_point endTime, QWidget* parent = nullptr);
     ~ScheduleItemEditorDialog();
-    void initEditFields();
-
-public Q_SLOTS:
-    void accept() override;
+    virtual void initEditorFieldsFromDataBase() override;
 
 private Q_SLOTS:
     void handleEventDate_DateChanged();
-    void handleDeleteButton_Clicked();
 
 private:
-    void setUpDialogUI();
-    QGroupBox* setUpGroupBoxForm();
-    QDialogButtonBox* setUpDialogButtonBox();
+    virtual void setUpEditorUI() override;
+    virtual QGroupBox* setUpEditorDialogForm() override;
     void initDateTimeEdit(QDateTimeEdit* dtEdit, std::chrono::system_clock::time_point initValue);
-    bool addToDatabase();
-    bool udpateDatabase();
-    void transferFieldsToDataModel();
     void initCompletersFromDB();
     QDateTime initValidDateTime(std::chrono::system_clock::time_point dateTime);
-    void connectAllSignalsAndSlots();
-    void disconnectAllSignalsAndSlots();
+    virtual void createSharedPtrDBModelForAddObject() override;
+    virtual void transferEditorValuesToDBModel() override;
+    virtual void transferDBModelDataToEditorFields() override;
 
-    std::size_t m_UserID;
-    std::size_t m_DBModelID;
-    std::shared_ptr<ScheduleItemModel> m_DBModelData;
     std::chrono::system_clock::time_point m_StartTime;
     std::chrono::system_clock::time_point m_EndTime;
     bool m_UserPresetTime = false;
 
-    QVBoxLayout* dialogLayout = nullptr;
-    QDialogButtonBox* dialogButtonBox = nullptr;
-    QGroupBox* formGroupBox = nullptr;
-    QFormLayout* formGroupBoxLayout = nullptr;
     QDateEdit* eventDateDE = nullptr;
     QDateTimeEdit* startTimeDTE = nullptr;
     QDateTimeEdit* endTimeDTE = nullptr;
@@ -80,7 +59,6 @@ private:
     QPlainTextEdit* locationTE = nullptr;
     QCompleter* locationCompleterQC = nullptr;
     QCheckBox* isPersonalCB = nullptr;
-    DeleteItemButton* deleteButton = nullptr;
 
     const int sied_TextEditMinWidth = 300;
     const int sied_TextEditMaxWidth = 700;
