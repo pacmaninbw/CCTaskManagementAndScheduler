@@ -6,57 +6,22 @@
 
 // QT Header Files
 #include <QVariant>
-#include <QAbstractButton>
-#include <QApplication>
-#include <QDebug>
 #include <QDialog>
-#include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QLineEdit>
-#include <QMessageBox>
 #include <QPushButton>
 #include <QPlainTextEdit>
 #include <QVBoxLayout>
 
-
 // Standard C++ Header Files
-//#include <iostream>
 #include <memory>
 
 GoalEditorDialog::GoalEditorDialog(std::size_t userId, std::size_t goalId, QWidget *parent)
-    : QDialog(parent),
-    m_UserID{userId},
-    m_DBModelID{goalId},
-    m_GoalData{nullptr},
-    m_ParentGoalData{nullptr},
-    maxGroupBoxHeight{0},
-    maxButtonBoxHeight{0}
-{    
-    setUpGoalEditorDialogUI();
-}
-
-bool GoalEditorDialog::getGoalFromDbInitFields()
+    : BaseObjectEditorDialog("Goal", userId, goalId, parent),
+    m_ParentGoalData{nullptr}
 {
-    if (!m_DBModelID)
-    {
-        QString errorReport = "Goal Edit failed.\n";
-        errorReport += " No Goal to Edit";
-        QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
-        return false;
-    }
-
-    GoalQueryProcessor goalQueryProcessor;
-    m_GoalData = goalQueryProcessor.getGoalById(m_DBModelID);
-    std::size_t parentGoalId = m_GoalData->getParentId();
-    if (parentGoalId)
-    {
-        m_ParentGoalData = goalQueryProcessor.getGoalById(parentGoalId);
-    }
-
-    initEditorFieldsFromModel();
-
-    return true;
+    setUpEditorUI();
 }
 
 GoalEditorDialog::~GoalEditorDialog()
@@ -64,136 +29,74 @@ GoalEditorDialog::~GoalEditorDialog()
 
 }
 
-void GoalEditorDialog::accept()
+void GoalEditorDialog::initEditorFieldsFromDataBase()
 {
-    bool updateSuccessful = true;
-    if (!m_GoalData)
-    {
-        m_GoalData = std::make_shared<UserGoalModel>();
-        m_GoalData->setUserId(m_UserID);
-        transferEditedDataToModel();
-        updateSuccessful = m_GoalData->insert();
-    }
-    else
-    {
-        transferEditedDataToModel();
-        updateSuccessful = m_GoalData->update();
-    }
-
-    if (updateSuccessful)
-    {
-        QDialog::accept();
-    }
-    else
-    {
-        QString errorReport = "Goal edit failed.\n";
-        errorReport += QString::fromStdString(m_GoalData->getAllErrorMessages());
-        QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
-    }
-}
-
-void GoalEditorDialog::handleDeleteButton()
-{
-    m_GoalData->hide(m_UserID);
-}
-
-void GoalEditorDialog::setUpGoalEditorDialogUI()
-{
-    QVBoxLayout* goalEditorDialogLayout = new QVBoxLayout(this);
-    goalEditorDialogLayout->setObjectName("goalEditorDialogLayout");
-
-    QString groupBoxTitle = m_DBModelID? "Edit Goal" : "Add Goal";
-
-    editGoalGB = new QGroupBox(groupBoxTitle, this);
-    editGoalGB->setLayout(setUpGoalEditorDialogGroupBoxContents());
-
-    goalEditorDialogLayout->addWidget(editGoalGB);
-
-    goalEditorDialogLayout->addWidget(setUpGoalEditorDialogButtonBox(), 0, Qt::AlignHCenter);
-
-    setLayout(goalEditorDialogLayout);
-
-    limitDialogRowth();
-
-    adjustSize();
-
-    groupBoxTitle += " Dialog";
-
-    setWindowTitle(groupBoxTitle);
-}
-
-QFormLayout *GoalEditorDialog::setUpGoalEditorDialogGroupBoxContents()
-{
-    goalEditorDialogFormLayout = cqtfa_FormLayoutWithPolicy("goalEditorDialogFormLayout", editGoalGB);
-
-    editGoalDescriptionTE = cqtfa_flexiblePlainTextEditEbasedOnCharCount("editGoalDescriptionTE", editGoalGB,
-        goalDescriptionMinCharWidth, goalDescriptionMaxCharWidth, goalDescriptionLineCount);
-    goalEditorDialogFormLayout->addRow("Goal Description:", editGoalDescriptionTE);
-
-    editGoalPriorityLE = cqtfa_LineEditFixedWidthByCharCount("editGoalPriorityLE",
-        editGoalGB, goalPriorityMaxChar);
-    goalEditorDialogFormLayout->addRow("Priority:", editGoalPriorityLE);
-
-    editGoalSelectParentGoalPB = cqtfa_QTWidgetWithText<QPushButton>(
-        "Select Parent Goal", "editGoalSelectParentGoalPB", editGoalGB);
-    goalEditorDialogFormLayout->addWidget(editGoalSelectParentGoalPB);
-
     if (m_DBModelID)
     {
-        deleteButton = new DeleteItemButton("Goal", editGoalGB);
-        goalEditorDialogFormLayout->addWidget(deleteButton);
-        connect(deleteButton, &QPushButton::clicked, this, &GoalEditorDialog::handleDeleteButton);
+        GoalQueryProcessor goalQueryProcessor;
+        UserGoalModel_shp goalData = goalQueryProcessor.getGoalById(m_DBModelID);
+
+        m_DBObjectMode = std::dynamic_pointer_cast<ModelDBInterface>(goalData);
+
+        std::size_t parentGoalId = goalData->getParentId();
+        if (parentGoalId)
+        {
+            m_ParentGoalData = goalQueryProcessor.getGoalById(parentGoalId);
+        }
+
+        transferDBModelDataToEditorFields();
     }
-
-    maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(goalEditorDialogFormLayout);
-
-    return goalEditorDialogFormLayout;
 }
 
-QDialogButtonBox *GoalEditorDialog::setUpGoalEditorDialogButtonBox()
+QGroupBox *GoalEditorDialog::setUpEditorDialogForm()
 {
-    buttonBox = new QDialogButtonBox(this);
-    buttonBox->setObjectName("buttonBox");
-    buttonBox->setOrientation(Qt::Horizontal);
-    buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
+    QGroupBox* mainEditorGroupBox = new QGroupBox(m_EditorTitleString, this);
+    m_Qt_EditorFormLayout = new QFormLayout(mainEditorGroupBox);
+    m_Qt_EditorFormLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 
-    maxButtonBoxHeight = buttonBox->height() + marginAndSpacing;
+    editGoalDescriptionTE = cqtfa_flexiblePlainTextEditEbasedOnCharCount("editGoalDescriptionTE", mainEditorGroupBox,
+        goalDescriptionMinCharWidth, goalDescriptionMaxCharWidth, goalDescriptionLineCount);
+    m_Qt_EditorFormLayout->addRow("Goal Description:", editGoalDescriptionTE);
 
-    connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
-    connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+    editGoalPriorityLE = cqtfa_LineEditFixedWidthByCharCount("editGoalPriorityLE",
+        mainEditorGroupBox, goalPriorityMaxChar);
+    m_Qt_EditorFormLayout->addRow("Priority:", editGoalPriorityLE);
 
-    return buttonBox;
+    editGoalSelectParentGoalPB = cqtfa_QTWidgetWithText<QPushButton>(
+        "Select Parent Goal", "editGoalSelectParentGoalPB", mainEditorGroupBox);
+    m_Qt_EditorFormLayout->addWidget(editGoalSelectParentGoalPB);
+
+    maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(m_Qt_EditorFormLayout);
+
+    mainEditorGroupBox->setLayout(m_Qt_EditorFormLayout);
+
+    return mainEditorGroupBox;
 }
 
-void GoalEditorDialog::limitDialogRowth()
+void GoalEditorDialog::transferEditorValuesToDBModel()
 {
-    editGoalGB->setMaximumHeight(maxGroupBoxHeight);
-
-    buttonBox->setMaximumHeight(maxButtonBoxHeight);
-
-    int maxDialogWidth = cqtfa_getFormLayoutMaxWidth(goalEditorDialogFormLayout) + marginAndSpacing;
-
-    setMaximumWidth(maxDialogWidth);
-    setMaximumHeight(maxGroupBoxHeight + maxButtonBoxHeight + marginAndSpacing);
-}
-
-void GoalEditorDialog::transferEditedDataToModel()
-{
-    m_GoalData->setDescription(editGoalDescriptionTE->toPlainText().toStdString());
-    m_GoalData->setPriority(editGoalPriorityLE->text().toUInt());
+    std::shared_ptr<UserGoalModel> goalData = std::dynamic_pointer_cast<UserGoalModel>(m_DBObjectMode);
+    goalData->setDescription(editGoalDescriptionTE->toPlainText().toStdString());
+    goalData->setPriority(editGoalPriorityLE->text().toUInt());
     if (m_ParentGoalData)
     {
-        m_GoalData->setParentID(m_ParentGoalData->getGoalId());
+        goalData->setParentID(m_ParentGoalData->getGoalId());
     }
 }
 
-void GoalEditorDialog::initEditorFieldsFromModel()
+void GoalEditorDialog::transferDBModelDataToEditorFields()
 {
-    if (!m_GoalData)
+    if (m_DBObjectMode)
     {
-        return;
-    }
+        std::shared_ptr<UserGoalModel> goalData = std::dynamic_pointer_cast<UserGoalModel>(m_DBObjectMode);
 
-    editGoalDescriptionTE->setPlainText(QString::fromStdString(m_GoalData->getDescription()));
-    editGoalPriorityLE->setText(QString::number(m_GoalData->getPriority()));
+        editGoalDescriptionTE->setPlainText(QString::fromStdString(goalData->getDescription()));
+        editGoalPriorityLE->setText(QString::number(goalData->getPriority()));
+    }
+}
+
+void GoalEditorDialog::createSharedPtrDBModelForAddObject()
+{
+    UserGoalModel_shp goalData = std::make_shared<UserGoalModel>();
+    m_DBObjectMode = std::dynamic_pointer_cast<ModelDBInterface>(goalData);
 }
