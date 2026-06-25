@@ -127,7 +127,6 @@ QGroupBox *ScheduleItemEditorDialog::setUpEditorDialogForm()
     formGroupBox->setObjectName("formGroupBox");
     formGroupBox->setAlignment(Qt::AlignHCenter);
 
-//    m_Qt_EditorFormLayout = cqtfa_FormLayoutWithPolicy("m_Qt_EditorFormLayout", formGroupBox);
     m_Qt_EditorFormLayout = new QFormLayout(formGroupBox);
     m_Qt_EditorFormLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 
@@ -161,8 +160,7 @@ QGroupBox *ScheduleItemEditorDialog::setUpEditorDialogForm()
         m_Qt_EditorFormLayout->addRow("Where:", locationLE);
     }
 
-    isPersonalCB = cqtfa_QTWidgetWithText<QCheckBox>("Personal",
-        "isPersonalCB", formGroupBox);
+    isPersonalCB = cqtfa_QTWidgetWithText<QCheckBox>("Personal", "isPersonalCB", formGroupBox);
     m_Qt_EditorFormLayout->addRow(isPersonalCB);
 
     formGroupBox->setLayout(m_Qt_EditorFormLayout);
