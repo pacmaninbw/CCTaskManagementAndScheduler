@@ -102,11 +102,6 @@ void ScheduleItemEditorDialog::setUpEditorUI()
 
     m_Qt_EditorDialogFormGB = setUpEditorDialogForm();
     m_Qt_EditorDialogFormGB->setObjectName("m_Qt_EditorDialogFormGB");
-    qDebug() << "ScheduleItemEditorDialog::" << __func__ << " After setUpEditorDialogForm";
-    if (m_Qt_EditorDialogFormGB == nullptr)
-    {
-        qDebug() << " m_Qt_EditorDialogFormGB is nullptr";
-    }
 
     m_Qt_EditorLayout->addWidget(m_Qt_EditorDialogFormGB);
 
