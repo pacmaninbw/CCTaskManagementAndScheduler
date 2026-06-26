@@ -31,8 +31,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         Dialogs/DataBaseConnectionDialog.cpp
         Dialogs/DataBaseConnectionDialog.h
-        Dialogs/DeleteItemButton.h
-        Dialogs/DeleteItemButton.cpp
         Dialogs/GoalEditorDialog.h
         Dialogs/LoginDialog.h
         Dialogs/NoteEditorDialog.h
@@ -105,6 +103,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         SubWindows/DashboardNoteTable.cpp
         SubWindows/DefaultGoalDisplayTable.h
         SubWindows/DefaultGoalDisplayTable.cpp
+        Dialogs/BaseObjectEditorDialog.h Dialogs/BaseObjectEditorDialog.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET PP3Rework APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
