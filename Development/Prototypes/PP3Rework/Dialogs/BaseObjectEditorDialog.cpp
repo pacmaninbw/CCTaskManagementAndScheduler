@@ -24,8 +24,6 @@ BaseObjectEditorDialog::BaseObjectEditorDialog(const char* objectType, std::size
     m_DBModelID{dbModelTableIndex},
     m_EditorObjectTypeString{objectType}
 {
-    qDebug() << "BaseObjectEditorDialog::" << __func__;
-
     m_EditorTitleString = dbModelTableIndex? "Edit " : "Add ";
     m_EditorTitleString += objectType;
     setWindowTitle(m_EditorTitleString + " Dialog");
@@ -33,13 +31,11 @@ BaseObjectEditorDialog::BaseObjectEditorDialog(const char* objectType, std::size
 
 void BaseObjectEditorDialog::initEditorFieldsFromDataBase()
 {
-    qDebug() << "BaseObjectEditorDialog::" << __func__;
     throw std::logic_error("initEditorFieldsFromDataBase not implemented!");
 }
 
 void BaseObjectEditorDialog::accept()
 {
-    qDebug() << "BaseObjectEditorDialog::" << __func__;
     if (!m_DBObjectMode)
     {
         createSharedPtrDBModelForAddObject();
@@ -61,7 +57,6 @@ void BaseObjectEditorDialog::accept()
 
 void BaseObjectEditorDialog::handleDeleteButton_Clicked()
 {
-    qDebug() << "BaseObjectEditorDialog::" << __func__;
     if (m_DBObjectMode)
     {
         m_DBObjectMode->hide(m_userID);
@@ -72,18 +67,11 @@ void BaseObjectEditorDialog::handleDeleteButton_Clicked()
 
 void BaseObjectEditorDialog::setUpEditorUI()
 {
-    qDebug() << "BaseObjectEditorDialog::" << __func__;
-
     m_Qt_EditorLayout = new QVBoxLayout(this);
     m_Qt_EditorLayout->setObjectName("m_Qt_EditorLayout");
 
     m_Qt_EditorDialogFormGB = setUpEditorDialogForm();
     m_Qt_EditorDialogFormGB->setObjectName("m_Qt_EditorDialogFormGB");
-    qDebug() << "BaseObjectEditorDialog::" << __func__ << " After setUpEditorDialogForm";
-    if (m_Qt_EditorDialogFormGB == nullptr)
-    {
-        qDebug() << " m_Qt_EditorDialogFormGB is nullptr";
-    }
 
     m_Qt_EditorLayout->addWidget(m_Qt_EditorDialogFormGB);
 
@@ -100,8 +88,6 @@ void BaseObjectEditorDialog::setUpEditorUI()
 
 QDialogButtonBox* BaseObjectEditorDialog::setUpEditorButtonBox()
 {
-    qDebug() << "BaseObjectEditorDialog::" << __func__;
-
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
     buttonBox->setObjectName("buttonBox");
     buttonBox->setOrientation(Qt::Horizontal);
@@ -132,8 +118,6 @@ QDialogButtonBox* BaseObjectEditorDialog::setUpEditorButtonBox()
 
 void BaseObjectEditorDialog::limitDialogGrowth()
 {
-    qDebug() << "BaseObjectEditorDialog::" << __func__;
-
     if (!m_Qt_EditorDialogFormGB || !m_Qt_ButtonBox)
     {
         return;
@@ -151,8 +135,6 @@ void BaseObjectEditorDialog::limitDialogGrowth()
 
 QPushButton* BaseObjectEditorDialog::createDeleteButton(QWidget *buttonBox)
 {
-    qDebug() << "BaseObjectEditorDialog::" << __func__;
-
     QPushButton* deleteButton = new QPushButton(buttonBox);
     QString buttonText = "Delete " + m_EditorObjectTypeString;
     deleteButton->setText(buttonText);
@@ -167,8 +149,6 @@ QPushButton* BaseObjectEditorDialog::createDeleteButton(QWidget *buttonBox)
 
 int BaseObjectEditorDialog::getFormLayoutMaxWidth(QFormLayout *formToSize)
 {
-    qDebug() << "BaseObjectEditorDialog::" << __func__;
-
     int maxWidth = 0;
 
     for (int i = 0; i < formToSize->rowCount(); ++i)
@@ -185,8 +165,6 @@ int BaseObjectEditorDialog::getFormLayoutMaxWidth(QFormLayout *formToSize)
 
 int BaseObjectEditorDialog::getRowMaximumWidth(QFormLayout *layout, int row)
 {
-    qDebug() << "BaseObjectEditorDialog::" << __func__;
-
     int maxLabelWidth = 0;
     int maxFieldWidth = 0;
 

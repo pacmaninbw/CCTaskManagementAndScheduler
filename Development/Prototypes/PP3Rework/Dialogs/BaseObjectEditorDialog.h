@@ -37,7 +37,7 @@ protected Q_SLOTS:
     void handleDeleteButton_Clicked();
 
 protected:
-    virtual QGroupBox* setUpEditorDialogForm() = 0;
+    virtual QGroupBox* setUpEditorDialogForm() { return nullptr; };
     virtual void createSharedPtrDBModelForAddObject() = 0;
     virtual void transferEditorValuesToDBModel() = 0;
     virtual void transferDBModelDataToEditorFields() = 0;
