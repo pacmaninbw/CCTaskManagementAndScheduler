@@ -36,30 +36,30 @@ void BaseObjectEditorDialog::initEditorFieldsFromDataBase()
 
 void BaseObjectEditorDialog::accept()
 {
-    if (!m_DBObjectMode)
+    if (!m_DBObjectModel)
     {
         createSharedPtrDBModelForAddObject();
     }
 
     transferEditorValuesToDBModel();
 
-    if (m_DBObjectMode->save())
+    if (m_DBObjectModel->save())
     {
         QDialog::accept();
     }
     else
     {
         QString errorReport = m_EditorObjectTypeString + " edit failed.\n";
-        errorReport += QString::fromStdString(m_DBObjectMode->getAllErrorMessages());
+        errorReport += QString::fromStdString(m_DBObjectModel->getAllErrorMessages());
         QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
     }
 }
 
 void BaseObjectEditorDialog::handleDeleteButton_Clicked()
 {
-    if (m_DBObjectMode)
+    if (m_DBObjectModel)
     {
-        m_DBObjectMode->hide(m_userID);
+        m_DBObjectModel->hide(m_userID);
     }
 
     done(QDialog::Accepted);

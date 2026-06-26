@@ -36,7 +36,7 @@ void GoalEditorDialog::initEditorFieldsFromDataBase()
         GoalQueryProcessor goalQueryProcessor;
         UserGoalModel_shp goalData = goalQueryProcessor.getGoalById(m_DBModelID);
 
-        m_DBObjectMode = std::dynamic_pointer_cast<ModelDBInterface>(goalData);
+        m_DBObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(goalData);
 
         std::size_t parentGoalId = goalData->getParentId();
         if (parentGoalId)
@@ -75,7 +75,7 @@ QGroupBox *GoalEditorDialog::setUpEditorDialogForm()
 
 void GoalEditorDialog::transferEditorValuesToDBModel()
 {
-    std::shared_ptr<UserGoalModel> goalData = std::dynamic_pointer_cast<UserGoalModel>(m_DBObjectMode);
+    std::shared_ptr<UserGoalModel> goalData = std::dynamic_pointer_cast<UserGoalModel>(m_DBObjectModel);
     goalData->setDescription(editGoalDescriptionTE->toPlainText().toStdString());
     goalData->setPriority(editGoalPriorityLE->text().toUInt());
     if (m_ParentGoalData)
@@ -86,9 +86,9 @@ void GoalEditorDialog::transferEditorValuesToDBModel()
 
 void GoalEditorDialog::transferDBModelDataToEditorFields()
 {
-    if (m_DBObjectMode)
+    if (m_DBObjectModel)
     {
-        std::shared_ptr<UserGoalModel> goalData = std::dynamic_pointer_cast<UserGoalModel>(m_DBObjectMode);
+        std::shared_ptr<UserGoalModel> goalData = std::dynamic_pointer_cast<UserGoalModel>(m_DBObjectModel);
 
         editGoalDescriptionTE->setPlainText(QString::fromStdString(goalData->getDescription()));
         editGoalPriorityLE->setText(QString::number(goalData->getPriority()));
@@ -98,5 +98,5 @@ void GoalEditorDialog::transferDBModelDataToEditorFields()
 void GoalEditorDialog::createSharedPtrDBModelForAddObject()
 {
     UserGoalModel_shp goalData = std::make_shared<UserGoalModel>();
-    m_DBObjectMode = std::dynamic_pointer_cast<ModelDBInterface>(goalData);
+    m_DBObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(goalData);
 }

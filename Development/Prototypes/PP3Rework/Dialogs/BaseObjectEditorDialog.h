@@ -51,7 +51,7 @@ protected:
 
     std::size_t m_userID;
     std::size_t m_DBModelID;
-    std::shared_ptr<ModelDBInterface> m_DBObjectMode = nullptr;
+    std::shared_ptr<ModelDBInterface> m_DBObjectModel = nullptr;
     QString m_EditorObjectTypeString;
     QString m_EditorTitleString;
     int maxGroupBoxHeight = 0;

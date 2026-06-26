@@ -28,7 +28,7 @@ void NoteEditorDialog::initEditorFieldsFromDataBase()
         NoteModel_shp noteData = noteQueryProcess.getNoteById(m_DBModelID);
         if (noteData)
         {
-            m_DBObjectMode = std::dynamic_pointer_cast<ModelDBInterface>(noteData);
+            m_DBObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(noteData);
             transferDBModelDataToEditorFields();
         }
     }
@@ -55,23 +55,23 @@ void NoteEditorDialog::createSharedPtrDBModelForAddObject()
 {
     NoteModel_shp newNote = std::make_shared<NoteModel>();
     newNote->setUserId(m_userID);
-    m_DBObjectMode = newNote;
+    m_DBObjectModel = newNote;
 }
 
 void NoteEditorDialog::transferEditorValuesToDBModel()
 {
-    if (m_DBObjectMode)
+    if (m_DBObjectModel)
     {
-        NoteModel_shp noteData = std::dynamic_pointer_cast<NoteModel>(m_DBObjectMode);
+        NoteModel_shp noteData = std::dynamic_pointer_cast<NoteModel>(m_DBObjectModel);
         noteData->setContent(editNoteContentTE->toPlainText().toStdString());
     }
 }
 
 void NoteEditorDialog::transferDBModelDataToEditorFields()
 {
-    if (m_DBObjectMode)
+    if (m_DBObjectModel)
     {
-        NoteModel_shp noteData = std::dynamic_pointer_cast<NoteModel>(m_DBObjectMode);
+        NoteModel_shp noteData = std::dynamic_pointer_cast<NoteModel>(m_DBObjectModel);
 
         editNoteContentTE->setPlainText(QString::fromStdString(noteData->getContent()));
     }

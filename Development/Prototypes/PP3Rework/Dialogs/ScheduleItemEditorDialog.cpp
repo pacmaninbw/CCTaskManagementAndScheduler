@@ -70,14 +70,14 @@ void ScheduleItemEditorDialog::initEditorFieldsFromDataBase()
     {
         ScheduleItemQueryProcessor scheduleItemQueryProcessor(m_userID);
         eventData = scheduleItemQueryProcessor.getScheduleItemById(m_DBModelID);
-        m_DBObjectMode = std::dynamic_pointer_cast<ModelDBInterface>(eventData);
+        m_DBObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(eventData);
         transferDBModelDataToEditorFields();
     }
     else
     {
         eventData = std::make_shared<ScheduleItemModel>();
         eventData->setUserID(m_userID);
-        m_DBObjectMode = std::dynamic_pointer_cast<ModelDBInterface>(eventData);
+        m_DBObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(eventData);
     }
 
     QDateTime startTime = initValidDateTime(m_StartTime);
@@ -240,14 +240,14 @@ void ScheduleItemEditorDialog::createSharedPtrDBModelForAddObject()
     ScheduleItemModel_shp newEvent = std::make_shared<ScheduleItemModel>();
     newEvent->setUserID(m_userID);
 
-    m_DBObjectMode = std::dynamic_pointer_cast<ScheduleItemModel>(newEvent);
+    m_DBObjectModel = std::dynamic_pointer_cast<ScheduleItemModel>(newEvent);
 }
 
 void ScheduleItemEditorDialog::transferEditorValuesToDBModel()
 {
-    if (m_DBObjectMode)
+    if (m_DBObjectModel)
     {
-        ScheduleItemModel_shp eventData = std::dynamic_pointer_cast<ScheduleItemModel>(m_DBObjectMode);
+        ScheduleItemModel_shp eventData = std::dynamic_pointer_cast<ScheduleItemModel>(m_DBObjectModel);
         if (eventTitleTE)
         {
             eventData->setTitle(eventTitleTE->toPlainText().toStdString());
@@ -267,9 +267,9 @@ void ScheduleItemEditorDialog::transferEditorValuesToDBModel()
 
 void ScheduleItemEditorDialog::transferDBModelDataToEditorFields()
 {
-    if (m_DBObjectMode)
+    if (m_DBObjectModel)
     {
-        ScheduleItemModel_shp eventData = std::dynamic_pointer_cast<ScheduleItemModel>(m_DBObjectMode);
+        ScheduleItemModel_shp eventData = std::dynamic_pointer_cast<ScheduleItemModel>(m_DBObjectModel);
 
         eventTitleTE->setPlainText(QString::fromStdString(eventData->getTitle()));
         locationTE->setPlainText(QString::fromStdString(eventData->getLocation()));

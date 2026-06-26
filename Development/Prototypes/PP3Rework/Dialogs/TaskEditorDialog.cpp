@@ -59,7 +59,7 @@ void TaskEditorDialog::initEditorFieldsFromDataBase()
         QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
     }
 
-    m_DBObjectMode = std::dynamic_pointer_cast<TaskModel>(taskData);
+    m_DBObjectModel = std::dynamic_pointer_cast<TaskModel>(taskData);
 
     initDisplayFields();
     initEditFieldsFromTaskData();
@@ -71,13 +71,13 @@ void TaskEditorDialog::accept()
 
     transferEditorValuesToDBModel();
 
-    bool updateSuccessful = m_DBObjectMode->save();
+    bool updateSuccessful = m_DBObjectModel->save();
 
     if (updateSuccessful)
     {
         if (m_parentTaskUpdated)
         {
-            TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
+            TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectModel);
             // Child database task id may not be correct prior to this in the case of
             // a new task being added.
             m_ParentTaskData->addDependency(taskData->getTaskID());
@@ -90,7 +90,7 @@ void TaskEditorDialog::accept()
     }
     else
     {
-        errorGenerator = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
+        errorGenerator = std::dynamic_pointer_cast<TaskModel>(m_DBObjectModel);
     }
 
     if (updateSuccessful)
@@ -137,13 +137,13 @@ void TaskEditorDialog::on_editTaskPersonalCB_stateChanged(int newState)
             isChecked = false;
             break;    
     }
-    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
+    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectModel);
     taskData->setPersonal(isChecked);
 }
 
 void TaskEditorDialog::on_editTaskSelectParentPB_Clicked()
 {
-    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
+    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectModel);
 
     if (taskData->getCreatorID() == 0)
     {
@@ -204,14 +204,14 @@ void TaskEditorDialog::on_editTaskChangeAssignedUserPB_Clicked()
 
 void TaskEditorDialog::on_editTaskStatusSelectorCBChanged(int index)
 {
-    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
+    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectModel);
     taskData->setStatus(static_cast<TaskModel::TaskStatus>(index));
 }
 
 void TaskEditorDialog::createSharedPtrDBModelForAddObject()
 {
     TaskModel_shp taskData = std::make_shared<TaskModel>();
-    m_DBObjectMode = std::dynamic_pointer_cast<ModelDBInterface>(taskData);
+    m_DBObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(taskData);
 }
 
 void TaskEditorDialog::setUpEditorUI()
@@ -449,7 +449,7 @@ QGroupBox *TaskEditorDialog::setUpTaskPriorityGroupBox()
 
 void TaskEditorDialog::transferEditorValuesToDBModel()
 {
-    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
+    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectModel);
 
     taskData->setCreatorID(m_Creator->getUserID());
     taskData->setAssignToID(m_Assignee->getUserID());
@@ -512,12 +512,12 @@ std::shared_ptr<UserModel> TaskEditorDialog::getUserDataFromTaskData(std::size_t
 
 void TaskEditorDialog::initDisplayFields()
 {
-    if (!m_DBObjectMode)
+    if (!m_DBObjectModel)
     {
         return;
     }
 
-    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
+    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectModel);
 
     m_Creator = getUserDataFromTaskData(taskData->getCreatorID());
     initUserNameFields(editTaskCreatorFirstNameDisplay, editTaskCreatorLastNameDisplay, m_Creator);
@@ -540,12 +540,12 @@ void TaskEditorDialog::initDisplayFields()
 
 void TaskEditorDialog::initEditFieldsFromTaskData()
 {
-    if (!m_DBObjectMode)
+    if (!m_DBObjectModel)
     {
         return;
     }
 
-    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
+    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectModel);
 
     editTaskDescriptionTE->setPlainText(QString::fromStdString(taskData->getDescription()));
 
@@ -598,7 +598,7 @@ void TaskEditorDialog::connectEditFieldsToActions()
 
 void TaskEditorDialog::transferEffortToModel()
 {
-    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
+    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectModel);
 
     bool numberisGood = false;
     unsigned int estimatedEffort = editTaskEstimatedEffortLE->text().toUInt(&numberisGood);
@@ -617,7 +617,7 @@ void TaskEditorDialog::transferEffortToModel()
 
 void TaskEditorDialog::transferPriorityToModel()
 {
-    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
+    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectModel);
 
     bool numberisGood = false;
     unsigned int priorityGroup = editTaskPriorityGroupLE->text().toUInt(&numberisGood);
