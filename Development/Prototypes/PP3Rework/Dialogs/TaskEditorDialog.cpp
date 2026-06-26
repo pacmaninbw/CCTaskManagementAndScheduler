@@ -9,13 +9,9 @@
 #include "UserQueryProcessor.h"
 
 // QT Header Files
-#include <QAbstractButton>
-#include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDateEdit>
-#include <QDialog>
-#include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QLineEdit>
@@ -27,14 +23,12 @@
 // Standard C++ Header Files
 
 TaskEditorDialog::TaskEditorDialog(QWidget *parent, std::shared_ptr<UserModel> creator, std::size_t taskToEdit)
-    : QDialog(parent),
+    : BaseObjectEditorDialog("Task", (creator? creator->getUserID() : 0), taskToEdit, parent),
     m_Creator{creator},
-    m_DBModelID{taskToEdit},
-    m_TaskData{nullptr},
     m_ParentTaskData{nullptr},
     m_parentTaskUpdated{false}
 {
-    setUpTaskEditorUI();
+    setUpEditorUI();
 
     if (creator)
     {
@@ -47,44 +41,46 @@ TaskEditorDialog::~TaskEditorDialog()
 
 }
 
-bool TaskEditorDialog::initAllFieldsFromDB()
+void TaskEditorDialog::initEditorFieldsFromDataBase()
 {
     if (!m_DBModelID)
     {
         QString errorReport = "To Do Item Edit failed.\n";
         errorReport += " No Task to Edit";
         QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
-        return false;
     }
 
     TaskQueryProcessor taskQueryProcessor;
-    m_TaskData = taskQueryProcessor.getTaskByTaskID(m_DBModelID);
-    if (!m_TaskData)
+    TaskModel_shp taskData = taskQueryProcessor.getTaskByTaskID(m_DBModelID);
+    if (!taskData)
     {
         QString errorReport = "To Do Item Edit failed.\n";
         errorReport += " To Do Item not found in database";
         QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
-        return false;
     }
+
+    m_DBObjectMode = std::dynamic_pointer_cast<TaskModel>(taskData);
 
     initDisplayFields();
     initEditFieldsFromTaskData();
-    return true;
 }
 
 void TaskEditorDialog::accept()
 {
     std::shared_ptr<TaskModel> errorGenerator = nullptr;
 
-    bool updateSuccessful = (m_TaskData->isInDataBase())? updateTask() : addTask();
+    transferEditorValuesToDBModel();
+
+    bool updateSuccessful = m_DBObjectMode->save();
 
     if (updateSuccessful)
     {
         if (m_parentTaskUpdated)
         {
+            TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
             // Child database task id may not be correct prior to this in the case of
             // a new task being added.
-            m_ParentTaskData->addDependency(m_TaskData->getTaskID());
+            m_ParentTaskData->addDependency(taskData->getTaskID());
             updateSuccessful = m_ParentTaskData->update();
         }
         if (!updateSuccessful)
@@ -94,7 +90,7 @@ void TaskEditorDialog::accept()
     }
     else
     {
-        errorGenerator = m_TaskData;
+        errorGenerator = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
     }
 
     if (updateSuccessful)
@@ -141,19 +137,22 @@ void TaskEditorDialog::on_editTaskPersonalCB_stateChanged(int newState)
             isChecked = false;
             break;    
     }
-    m_TaskData->setPersonal(isChecked);
+    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
+    taskData->setPersonal(isChecked);
 }
 
 void TaskEditorDialog::on_editTaskSelectParentPB_Clicked()
 {
-    if (m_TaskData->getCreatorID() == 0)
+    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
+
+    if (taskData->getCreatorID() == 0)
     {
         // If this is a new task that did not retrive the task from the database
         // then update the task before using it in the select parent editor.
-        transferAllFieldsToData();
+        transferEditorValuesToDBModel();
     }
 
-    SelectTaskParentDialog selectParentTask(m_TaskData->getCreatorID(), this);
+    SelectTaskParentDialog selectParentTask(taskData->getCreatorID(), this);
     selectParentTask.setupDialogUI();
 
     if (selectParentTask.exec() == QDialog::Accepted)
@@ -164,7 +163,7 @@ void TaskEditorDialog::on_editTaskSelectParentPB_Clicked()
         m_ParentTaskData = taskQueryProcessor.getTaskByTaskID(parentTaskid);
         if (m_ParentTaskData)
         {
-            m_TaskData->setParentTaskID(parentTaskid);
+            taskData->setParentTaskID(parentTaskid);
             m_parentTaskUpdated = true;
             editTaskParentTaskDescriptionDisplay->setText(QString::fromStdString(m_ParentTaskData->getDescription()));
         }
@@ -205,46 +204,41 @@ void TaskEditorDialog::on_editTaskChangeAssignedUserPB_Clicked()
 
 void TaskEditorDialog::on_editTaskStatusSelectorCBChanged(int index)
 {
-    m_TaskData->setStatus(static_cast<TaskModel::TaskStatus>(index));
+    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
+    taskData->setStatus(static_cast<TaskModel::TaskStatus>(index));
 }
 
-void TaskEditorDialog::on_editTaskDeleteButton_Clicked()
+void TaskEditorDialog::createSharedPtrDBModelForAddObject()
 {
-    m_TaskData->hide(m_Creator->getUserID());
+    TaskModel_shp taskData = std::make_shared<TaskModel>();
+    m_DBObjectMode = std::dynamic_pointer_cast<ModelDBInterface>(taskData);
 }
 
-void TaskEditorDialog::setUpTaskEditorUI()
+void TaskEditorDialog::setUpEditorUI()
 {
-    editTaskMainLayout = new QVBoxLayout(this);
-    editTaskMainLayout->setObjectName("editTaskMainLayout");
+    m_Qt_EditorLayout = new QVBoxLayout(this);
+    m_Qt_EditorLayout->setObjectName("m_Qt_EditorLayout");
 
-    editTaskMainLayout->addWidget(setUpTaskDescriptionAndStatusGroupBox());
+    m_Qt_EditorLayout->addWidget(setUpTaskDescriptionAndStatusGroupBox());
 
-    editTaskMainLayout->addLayout(setUpUserSection());
+    m_Qt_EditorLayout->addLayout(setUpUserSection());
 
-    editTaskMainLayout->addLayout(setUpDateAndRelatedTasksSection());
+    m_Qt_EditorLayout->addLayout(setUpDateAndRelatedTasksSection());
 
-    editTaskMainLayout->addLayout(setUpEfforAndPrioritySectionLayout());
+    m_Qt_EditorLayout->addLayout(setUpEfforAndPrioritySectionLayout());
 
-    if (m_DBModelID)
-    {
-        deleteButton = new DeleteItemButton("Todo Item", this);
-        editTaskMainLayout->addWidget(deleteButton);
-    }
+    m_Qt_ButtonBox = setUpEditorButtonBox();
+    m_Qt_ButtonBox->setObjectName("m_Qt_ButtonBox");
+    m_Qt_EditorLayout->addWidget(m_Qt_ButtonBox, 0, Qt::AlignHCenter);
 
-    editTaskMainLayout->addWidget(setUpEditTaskButtonBox(), 0, Qt::AlignHCenter);
+    m_Qt_EditorLayout->setContentsMargins(20, 20, 20, 20);
+    m_Qt_EditorLayout->setSpacing(15);
 
-    editTaskMainLayout->setContentsMargins(20, 20, 20, 20);
-    editTaskMainLayout->setSpacing(15);
-
-    setLayout(editTaskMainLayout);
+    setLayout(m_Qt_EditorLayout);
 
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     
     adjustSize();
-
-    QString titleStr = m_DBModelID? "Edit Task Dialog" : "Add Task Dialog";
-    setWindowTitle(titleStr);
 }
 
 QHBoxLayout* TaskEditorDialog::setUpUserSection()
@@ -453,52 +447,30 @@ QGroupBox *TaskEditorDialog::setUpTaskPriorityGroupBox()
     return editTaskPrioritiesGB;
 }
 
-QDialogButtonBox *TaskEditorDialog::setUpEditTaskButtonBox()
+void TaskEditorDialog::transferEditorValuesToDBModel()
 {
-    editTaskbuttonBox = new QDialogButtonBox(this);
+    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
 
-    editTaskbuttonBox->setObjectName(QString::fromUtf8("editTaskbuttonBox"));
-    editTaskbuttonBox->setOrientation(Qt::Horizontal);
-    editTaskbuttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
-
-    return editTaskbuttonBox;
-}
-
-bool TaskEditorDialog::addTask()
-{
-    transferAllFieldsToData();
-
-    return m_TaskData->insert();
-}
-
-bool TaskEditorDialog::updateTask()
-{
-    transferAllFieldsToData();
-
-    return m_TaskData->update();
-}
-
-void TaskEditorDialog::transferAllFieldsToData()
-{
-    m_TaskData->setCreatorID(m_Creator->getUserID());
-    m_TaskData->setAssignToID(m_Assignee->getUserID());
-    m_TaskData->setDescription(editTaskDescriptionTE->toPlainText().toStdString());
-    m_TaskData->setDueDate(qDateToChrono(editTaskDueDateSelectorDE->date()));
-    m_TaskData->setScheduledStart(qDateToChrono(editTaskScheduledStartDE->date()));
-    m_TaskData->setEstimatedCompletion(qDateToChrono(editTaskExpectedCompletionDE->date()));
+    taskData->setCreatorID(m_Creator->getUserID());
+    taskData->setAssignToID(m_Assignee->getUserID());
+    taskData->setDescription(editTaskDescriptionTE->toPlainText().toStdString());
+    taskData->setDueDate(qDateToChrono(editTaskDueDateSelectorDE->date()));
+    taskData->setScheduledStart(qDateToChrono(editTaskScheduledStartDE->date()));
+    taskData->setEstimatedCompletion(qDateToChrono(editTaskExpectedCompletionDE->date()));
     transferEffortToModel();
     transferPriorityToModel();
-    m_TaskData->setPersonal(editTaskPersonalCB->isChecked());
+    taskData->setPersonal(editTaskPersonalCB->isChecked());
 
     if (m_ParentTaskData)
     {
-        m_TaskData->setParentTaskID(m_ParentTaskData->getTaskID());
+        taskData->setParentTaskID(m_ParentTaskData->getTaskID());
     }
-/*
- *     QDate m_ActualStartDate;
- *     QDate m_CompletionDate;
- *     QList<std::size_t> m_Depenedencies;
- */
+}
+
+void TaskEditorDialog::transferDBModelDataToEditorFields()
+{
+    initDisplayFields();
+    initEditFieldsFromTaskData();
 }
 
 void TaskEditorDialog::initEditFields()
@@ -510,7 +482,7 @@ void TaskEditorDialog::initEditFields()
 
     m_Assignee = m_Creator;
 
-    m_TaskData = std::make_shared<TaskModel>();
+    createSharedPtrDBModelForAddObject();
 
     // To prevent any loops caused by updating display fields the connections
     // are implemented after the fields are initialized.
@@ -540,18 +512,20 @@ std::shared_ptr<UserModel> TaskEditorDialog::getUserDataFromTaskData(std::size_t
 
 void TaskEditorDialog::initDisplayFields()
 {
-    if (!m_TaskData)
+    if (!m_DBObjectMode)
     {
         return;
     }
 
-    m_Creator = getUserDataFromTaskData(m_TaskData->getCreatorID());
+    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
+
+    m_Creator = getUserDataFromTaskData(taskData->getCreatorID());
     initUserNameFields(editTaskCreatorFirstNameDisplay, editTaskCreatorLastNameDisplay, m_Creator);
 
-    m_Assignee = getUserDataFromTaskData(m_TaskData->getAssignToID());
+    m_Assignee = getUserDataFromTaskData(taskData->getAssignToID());
     initUserNameFields(editTaskAssignedToFirstNameDisplay, editTaskAssignedToLastName, m_Assignee);
 
-    std::size_t dbParentTaskId = m_TaskData->getParentTaskID();
+    std::size_t dbParentTaskId = taskData->getParentTaskID();
     if (dbParentTaskId)
     {
         TaskQueryProcessor taskQueryProcessor;
@@ -566,25 +540,27 @@ void TaskEditorDialog::initDisplayFields()
 
 void TaskEditorDialog::initEditFieldsFromTaskData()
 {
-    if (!m_TaskData)
+    if (!m_DBObjectMode)
     {
         return;
     }
 
-    editTaskDescriptionTE->setPlainText(QString::fromStdString(m_TaskData->getDescription()));
+    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
 
-    editTaskDueDateSelectorDE->setDate(initValidDateField(m_TaskData->getDueDate()));
-    editTaskScheduledStartDE->setDate(initValidDateField(m_TaskData->getScheduledStart()));
-    editTaskExpectedCompletionDE->setDate(initValidDateField(m_TaskData->getEstimatedCompletion()));
+    editTaskDescriptionTE->setPlainText(QString::fromStdString(taskData->getDescription()));
 
-    editTaskEstimatedEffortLE->setText(QString::fromStdString(std::to_string(m_TaskData->getEstimatedEffort())));
-    editTaskActualEffortLE->setText(QString::fromStdString(std::to_string(m_TaskData->getactualEffortToDate())));
+    editTaskDueDateSelectorDE->setDate(initValidDateField(taskData->getDueDate()));
+    editTaskScheduledStartDE->setDate(initValidDateField(taskData->getScheduledStart()));
+    editTaskExpectedCompletionDE->setDate(initValidDateField(taskData->getEstimatedCompletion()));
 
-    editTaskPriorityGroupLE->setText(QString::fromStdString(std::to_string(m_TaskData->getPriorityGroup())));
-    editTaskPriorityLE->setText(QString::fromStdString(std::to_string(m_TaskData->getPriority())));
+    editTaskEstimatedEffortLE->setText(QString::fromStdString(std::to_string(taskData->getEstimatedEffort())));
+    editTaskActualEffortLE->setText(QString::fromStdString(std::to_string(taskData->getactualEffortToDate())));
 
-    editTaskPersonalCB->setChecked(m_TaskData->isPersonal());
-    editTaskStatusSelectorCB->setCurrentIndex(static_cast<int>(m_TaskData->getStatus()));
+    editTaskPriorityGroupLE->setText(QString::fromStdString(std::to_string(taskData->getPriorityGroup())));
+    editTaskPriorityLE->setText(QString::fromStdString(std::to_string(taskData->getPriority())));
+
+    editTaskPersonalCB->setChecked(taskData->isPersonal());
+    editTaskStatusSelectorCB->setCurrentIndex(static_cast<int>(taskData->getStatus()));
 
     if (m_ParentTaskData)
     {
@@ -618,48 +594,43 @@ void TaskEditorDialog::connectEditFieldsToActions()
 
     connect(editTaskPersonalCB, &QCheckBox::stateChanged, this,
             &TaskEditorDialog::on_editTaskPersonalCB_stateChanged, Qt::UniqueConnection);
-
-    connect(editTaskbuttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept, Qt::UniqueConnection);
-
-    connect(editTaskbuttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject, Qt::UniqueConnection);
-
-    if (deleteButton)
-    {
-        connect(deleteButton, &QPushButton::clicked, this, &TaskEditorDialog::on_editTaskDeleteButton_Clicked);
-    }
 }
 
 void TaskEditorDialog::transferEffortToModel()
 {
+    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
+
     bool numberisGood = false;
     unsigned int estimatedEffort = editTaskEstimatedEffortLE->text().toUInt(&numberisGood);
     if (numberisGood)
     {
-        m_TaskData->setEstimatedEffort(estimatedEffort);
+        taskData->setEstimatedEffort(estimatedEffort);
     }
 
     numberisGood = false;
     double actualEffort = editTaskActualEffortLE->text().toDouble(&numberisGood);
     if (numberisGood)
     {
-        m_TaskData->setActualEffortToDate(actualEffort);
+        taskData->setActualEffortToDate(actualEffort);
     }
 }
 
 void TaskEditorDialog::transferPriorityToModel()
 {
+    TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectMode);
+
     bool numberisGood = false;
     unsigned int priorityGroup = editTaskPriorityGroupLE->text().toUInt(&numberisGood);
     if (numberisGood)
     {
-        m_TaskData->setPriorityGroup(priorityGroup);
+        taskData->setPriorityGroup(priorityGroup);
     }
     else
     {
         if (editTaskPriorityGroupLE->text().length() > 0)
         {
             QChar charPriorityGroup = editTaskPriorityGroupLE->text()[0];
-            m_TaskData->setPriorityGroupC(charPriorityGroup.toLatin1());
+            taskData->setPriorityGroupC(charPriorityGroup.toLatin1());
         }
     }
 
@@ -667,7 +638,6 @@ void TaskEditorDialog::transferPriorityToModel()
     unsigned int priority = editTaskPriorityLE->text().toUInt(&numberisGood);
     if (numberisGood)
     {
-        m_TaskData->setPriority(priority);
+        taskData->setPriority(priority);
     }
-
 }

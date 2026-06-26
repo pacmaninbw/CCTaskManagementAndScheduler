@@ -47,12 +47,9 @@ void TodoWindow::handleTodoTableClicked(const QModelIndex &index)
 
     std::size_t taskToEditId = index.internalId();
     TaskEditorDialog editTaskDialog(this, nullptr, taskToEditId);
-    if (editTaskDialog.initAllFieldsFromDB())
-    {
-        editTaskDialog.exec();
-        tableViewReset(m_qt_ModelTableView);
-    }
-
+    editTaskDialog.initEditorFieldsFromDataBase();
+    editTaskDialog.exec();
+    tableViewReset(m_qt_ModelTableView);
 }
 
 void TodoWindow::setUpWindowContentAndActions()

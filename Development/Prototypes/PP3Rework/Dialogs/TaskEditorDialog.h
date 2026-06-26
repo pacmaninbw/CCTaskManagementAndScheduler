@@ -4,7 +4,7 @@
 class TaskModel;
 class UserModel;
 // Project Header Files
-#include "DeleteItemButton.h"
+#include "BaseObjectEditorDialog.h"
 
 // QT Header Files
 #include <QVariant>
@@ -26,14 +26,12 @@ class UserModel;
 // Standard C++ Header Files
 #include <memory>
 
-class TaskEditorDialog : public QDialog
+class TaskEditorDialog : public BaseObjectEditorDialog
 {
-    Q_OBJECT
-
-public:
+    public:
     explicit TaskEditorDialog(QWidget* parent = nullptr, std::shared_ptr<UserModel> creator = nullptr, std::size_t taskToEditId = 0);
     ~TaskEditorDialog();
-    bool initAllFieldsFromDB();
+    virtual void initEditorFieldsFromDataBase() override;
 
 public Q_SLOTS:
     void accept() override;
@@ -44,10 +42,13 @@ private Q_SLOTS:
     void on_editTaskAddDependenciesPB_Clicked();
     void on_editTaskChangeAssignedUserPB_Clicked();
     void on_editTaskStatusSelectorCBChanged(int index);
-    void on_editTaskDeleteButton_Clicked();
 
 private:
-    void setUpTaskEditorUI();
+    virtual void createSharedPtrDBModelForAddObject() override;
+    virtual void transferEditorValuesToDBModel() override;
+    virtual void transferDBModelDataToEditorFields() override;
+
+    virtual void setUpEditorUI() override;
     QHBoxLayout* setUpUserSection();
     QGroupBox* setUpTaskCreatorGroupBox();
     QGroupBox* setUpTaskAssigneeGroupBox();
@@ -58,10 +59,6 @@ private:
     QHBoxLayout* setUpEfforAndPrioritySectionLayout();
     QGroupBox* setUpTaskEfforGroupBox();
     QGroupBox* setUpTaskPriorityGroupBox();
-    QDialogButtonBox* setUpEditTaskButtonBox();
-    bool addTask();
-    bool updateTask();
-    void transferAllFieldsToData();
     void initEditFields();
     QDate initValidDateField(QDate fieldData);
     std::shared_ptr<UserModel> getUserDataFromTaskData(std::size_t dbUserId);
@@ -73,14 +70,10 @@ private:
     void transferPriorityToModel();
 
     std::shared_ptr<UserModel> m_Creator;
-    std::size_t m_DBModelID;
-    std::shared_ptr<TaskModel> m_TaskData;
     std::shared_ptr<UserModel> m_Assignee;
     std::shared_ptr<TaskModel> m_ParentTaskData;
     bool m_parentTaskUpdated;
 
-    QVBoxLayout* editTaskMainLayout = nullptr;
-    QDialogButtonBox* editTaskbuttonBox = nullptr;
     QGroupBox* editTaskCreatorGB = nullptr;
     QFormLayout* editTaskCreatorForm = nullptr;
     QLineEdit* editTaskCreatorFirstNameDisplay = nullptr;
@@ -116,7 +109,6 @@ private:
     QHBoxLayout* userSectionLayout = nullptr;
     QHBoxLayout* DateAndRelatedTasksSection = nullptr;
     QHBoxLayout* efforAndPrioritySectionLayout = nullptr;
-    DeleteItemButton* deleteButton = nullptr;
 
     const int taskDescriptionTEWidth = 700;
     const int taskDescriptionTEHeight = 60;
