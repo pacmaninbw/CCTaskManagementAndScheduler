@@ -75,6 +75,7 @@ void ModelSubWindow::setUpWindowUi()
         {
             m_qt_CloseModelWindow = cqtfa_QTWidgetWithText<QPushButton>("Close Window", "m_qt_CloseModelWindow", this);
             m_qt_ModelWindowLayout->addWidget(m_qt_CloseModelWindow);
+            connect(m_qt_CloseModelWindow, &QPushButton::clicked, this, &QWidget::close);
         }
     }
 
