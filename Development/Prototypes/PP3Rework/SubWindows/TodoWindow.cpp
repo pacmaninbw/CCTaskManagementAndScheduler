@@ -67,12 +67,6 @@ void TodoWindow::setUpWindowContentAndActions()
 
     connect(m_qt_ModelTableView, &QTableView::clicked, this, &TodoWindow::handleTodoTableClicked);
     connect(m_qt_ModelTableView, &QTableView::doubleClicked, this, &TodoWindow::handleTodoTableClicked);
-
-    if (!m_IsSubWindow)
-    {
-        m_qt_CloseModelWindow = cqtfa_QTWidgetWithText<QPushButton>("Close Todo Window", "m_qt_CloseModelWindow", this);
-        m_qt_ModelWindowLayout->addWidget(m_qt_CloseModelWindow);
-    }
 }
 
 
