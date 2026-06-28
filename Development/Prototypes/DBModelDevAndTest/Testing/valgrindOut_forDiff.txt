@@ -88,7 +88,7 @@ In Self Test Query is:
 	CALL AddTask(1, 2, 'Testing Exception handling', 1, 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 6, 0e+00, 65, 1, 0, 3, '3;5;7;')
 Caught expected exception from TaskSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
-	CALL UpdateTaskAllFields(1, 1, 2, 'Testing Exception handling', NULL, 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 6, 0e+00, 65, 1, 0, 3, '2;4;6;')
+	CALL UpdateTaskAllFields(1, 1, 2, 'Testing Exception handling', NULL, 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 6, 0e+00, 65, 1, 0, 3, '2;4;6;', 0)
 In Self Test Query is: 
 	CALL HideTask(1, 53)
 
@@ -153,7 +153,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-05-27
+	Completed Date: 2026-06-28
 	Deleted : FALSE
 
 Task::testAllInsertFailures before successful insert this = 
@@ -378,7 +378,7 @@ In Self Test Query is:
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	CALL GetUnstartedDueForStartForAssignedUser(1, '2026-06-03')
+	CALL GetUnstartedDueForStartForAssignedUser(1, '2026-07-05')
 
 Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
 In Self Test Query is: 
@@ -661,7 +661,7 @@ Running:
 Running: 
 	CALL GetTaskByDescriptionAndAssignedUser(4, 'Design UML Diagram for Personal Planner')
 Running: 
-	CALL AddTask(4, 4, 'Grocery Shopping', 0, 0, '2025-04-12', '2025-04-11', NULL, '2026-05-27', NULL, 2, 2e+00, 67, 1, 0, 0, NULL)
+	CALL AddTask(4, 4, 'Grocery Shopping', 0, 0, '2025-04-12', '2025-04-11', NULL, '2026-06-28', NULL, 2, 2e+00, 67, 1, 0, 0, NULL)
 Running: 
 	CALL GetTaskByTaskID(58)
 Running: 
@@ -673,13 +673,13 @@ Running:
 Running: 
 	CALL GetTaskByDescriptionAndAssignedUser(4, 'Daily 30 minute walk')
 Running: 
-	CALL AddTask(4, 4, 'Clean apartment', 0, 0, '2025-04-12', '2025-04-12', NULL, '2026-05-27', NULL, 2, 0e+00, 67, 3, 0, 0, NULL)
+	CALL AddTask(4, 4, 'Clean apartment', 0, 0, '2025-04-12', '2025-04-12', NULL, '2026-06-28', NULL, 2, 0e+00, 67, 3, 0, 0, NULL)
 Running: 
 	CALL GetTaskByTaskID(60)
 Running: 
 	CALL GetTaskByDescriptionAndAssignedUser(4, 'Clean apartment')
 Running: 
-	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-06-03')
+	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-07-05')
 Find unstarted tasks for user(4) PASSED!
 User 4 has 9 unstarted tasks
 TaskModel:
@@ -812,7 +812,7 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-05-27
+	Estimated Completion Date: 2026-06-28
 	Deleted : FALSE
 
 TaskModel:
@@ -850,7 +850,7 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Parent ID: 0
-	Estimated Completion Date: 2026-05-27
+	Estimated Completion Date: 2026-06-28
 	Deleted : FALSE
 
 Running: 
@@ -1203,7 +1203,7 @@ Running:
 Running: 
 	CALL GetTaskByTaskID(47)
 Running: 
-	CALL UpdateTaskAllFields(47, 4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 4, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', '2026-05-27', 12, 6e+00, 65, 1, 0, 0, NULL)
+	CALL UpdateTaskAllFields(47, 4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 4, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', '2026-06-28', 12, 6e+00, 65, 1, 0, 0, NULL, 0)
 Running: 
 	CALL GetTaskByTaskID(47)
 Running: 
@@ -1211,7 +1211,7 @@ Running:
 Running: 
 	CALL GetTaskByDescriptionAndAssignedUser(4, 'Install a WordPress Archive Plugin')
 Running: 
-	CALL UpdateTaskAllFields(50, 4, 4, 'Install a WordPress Archive Plugin', 1, 0, '2025-05-01', '2025-05-01', NULL, '2025-05-01', NULL, 1, 0e+00, 66, 2, 0, 1, '49;')
+	CALL UpdateTaskAllFields(50, 4, 4, 'Install a WordPress Archive Plugin', 1, 0, '2025-05-01', '2025-05-01', NULL, '2025-05-01', NULL, 1, 0e+00, 66, 2, 0, 1, '49;', 0)
 Running: 
 	CALL GetTaskByDescriptionAndAssignedUser(4, 'Log into PHPMyAdmin and save Database to disk')
 Running: 
@@ -1223,7 +1223,7 @@ Running:
 Running: 
 	CALL GetTaskByDescriptionAndAssignedUser(4, 'Run Archive Plugin')
 Running: 
-	CALL UpdateTaskAllFields(53, 4, 4, 'Log into PHPMyAdmin and save Database to disk', 1, 0, '2025-05-04', '2025-05-04', NULL, '2025-05-04', NULL, 1, 0e+00, 66, 5, 0, 4, '49;50;51;52;')
+	CALL UpdateTaskAllFields(53, 4, 4, 'Log into PHPMyAdmin and save Database to disk', 1, 0, '2025-05-04', '2025-05-04', NULL, '2025-05-04', NULL, 1, 0e+00, 66, 5, 0, 4, '49;50;51;52;', 0)
 Running: 
 	CALL GetTaskByTaskID(53)
 Running: 
@@ -1317,11 +1317,11 @@ Optional Fields
 	Deleted : FALSE
 
 Running: 
-	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-06-03')
+	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-07-05')
 Running: 
 	CALL HideTask(4, 59)
 Running: 
-	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-06-03')
+	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-07-05')
 Task (59) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of task PASSED!
 Running: 
@@ -1871,7 +1871,7 @@ User 4 has 6 notes
 	Content: Maintain my health
 
 Running: 
-	CALL GetAllNotesForUserCreatedInDatgeRange(4, '2026-05-20', '2026-06-03')
+	CALL GetAllNotesForUserCreatedInDatgeRange(4, '2026-06-21', '2026-07-05')
 Find all notes for user (4) created in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -1943,7 +1943,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	CALL GetAllNotesForUserEditedInDatgeRange(4, '2026-05-20', '2026-06-03')
+	CALL GetAllNotesForUserEditedInDatgeRange(4, '2026-06-21', '2026-07-05')
 Find all notes for user (4) edited in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2015,7 +2015,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	CALL GetDashboardNoteTable(4, '2026-05-27 07:00:00.000000', '2026-05-28 06:59:00.000000')
+	CALL GetDashboardNoteTable(4, '2026-06-28 07:00:00.000000', '2026-06-29 06:59:00.000000')
 Find all notes for user (4) for a date PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2143,7 +2143,7 @@ Running:
 Find all schedule items for user (4) similar to birthday PASSED!
 User 4 has 3 schedule items
 ScheduleItemModel:
-	ScheduleItem ID: 304
+	ScheduleItem ID: 816
 	User ID: 4
 	Title: Dina birthday call
 	Start Date and Time: 2024-12-18 09:00:00.000000000
@@ -2153,7 +2153,7 @@ ScheduleItemModel:
 Optional Fields
 
 ScheduleItemModel:
-	ScheduleItem ID: 302
+	ScheduleItem ID: 814
 	User ID: 4
 	Title: Jean Hom birthday call
 	Start Date and Time: 2024-12-13 09:00:00.000000000
@@ -2163,7 +2163,7 @@ ScheduleItemModel:
 Optional Fields
 
 ScheduleItemModel:
-	ScheduleItem ID: 301
+	ScheduleItem ID: 813
 	User ID: 4
 	Title: Bill McCandless birthday call
 	Start Date and Time: 2024-12-11 09:00:00.000000000
@@ -2177,7 +2177,7 @@ Running:
 Find all schedule items for user (4) edited in date range PASSED!
 User 4 has 2 schedule items
 ScheduleItemModel:
-	ScheduleItem ID: 302
+	ScheduleItem ID: 814
 	User ID: 4
 	Title: Jean Hom birthday call
 	Start Date and Time: 2024-12-13 09:00:00.000000000
@@ -2187,7 +2187,7 @@ ScheduleItemModel:
 Optional Fields
 
 ScheduleItemModel:
-	ScheduleItem ID: 303
+	ScheduleItem ID: 815
 	User ID: 4
 	Title: Dr. David Aftergood
 	Start Date and Time: 2024-12-13 10:00:00.000000000
@@ -2197,9 +2197,9 @@ ScheduleItemModel:
 Optional Fields
 
 Running: 
-	CALL GetScheduleItemById(300)
+	CALL GetScheduleItemById(812)
 Running: 
-	CALL UpdateScheduleItemAllFields(4, 300, '2024-12-02 09:30:00.000000', '2024-12-02 10:30:00.000000', 'Dr. David Aftergood', 0, '99. N. La Cienega')
+	CALL UpdateScheduleItemAllFields(4, 812, '2024-12-02 09:30:00.000000', '2024-12-02 10:30:00.000000', 'Dr. David Aftergood', 0, '99. N. La Cienega')
 Running: 
 	CALL ScheduleItemContentSelectionList('birthday', 4)
 Find all schedule items for user (4) similar to birthday PASSED!
@@ -2264,25 +2264,25 @@ Missing ScheduleItem required End Time!
 Running: 
 	CALL AddScheduleEvent(4, '2024-12-31 08:30:00.000000', '2024-12-31 10:00:00.000000', 'Test missing field Title', 0, NULL)
 Running: 
-	CALL GetScheduleItemById(300)
+	CALL GetScheduleItemById(812)
 Expected error was; ScheduleItem not modified!
 
 Running: 
-	CALL GetScheduleItemById(300)
+	CALL GetScheduleItemById(812)
 Expected error was; ScheduleItem already in Database, use Update!
 
 All negative path tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Fri May 22 13:45:59 2026
-elapsed time in seconds: 17.74
+Sun Jun 28 05:25:15 2026
+elapsed time in seconds: 22.6537
 
 
 
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
-  total heap usage: 63,454 allocs, 63,454 frees, 8,623,354 bytes allocated
+  total heap usage: 63,206 allocs, 63,206 frees, 8,604,788 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 
