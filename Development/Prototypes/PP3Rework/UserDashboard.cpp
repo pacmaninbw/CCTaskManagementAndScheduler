@@ -76,8 +76,7 @@ void UserDashboard::setUpUserDashboardUi()
 void UserDashboard::setUpDashboardMenuBar()
 {
     setUpUserMenu();
-    setUpGoalMenu();
-    setUpTodoMenu();
+    setUpViewsMenu();
 }
 
 void UserDashboard::setUpUserMenu()
@@ -101,26 +100,30 @@ void UserDashboard::setUpUserMenu()
     m_UserMenu->addSeparator();
 }
 
-void UserDashboard::setUpGoalMenu()
+void UserDashboard::setUpViewsMenu()
 {
+    m_OpenTodoMenu = new QAction("Todo List", this);
+    m_OpenTodoMenu->setStatusTip(tr("Open the Todo List Window"));
+    connect(m_OpenTodoMenu, &QAction::triggered, this, &UserDashboard::handleToDoMenuClicked);
+
+    m_OpenScheduleMenu = new QAction("Open Schedule Window", this);
+    m_OpenScheduleMenu->setStatusTip("Open Schedule Window");
+    connect(m_OpenScheduleMenu, &QAction::triggered, this, &UserDashboard::handleOpenScheduleWindowClicked);
+
+    m_OpenNotesMenu = new QAction("Open Notes Window", this);
+    m_OpenNotesMenu->setStatusTip("Open Notes Window");
+    connect(m_OpenNotesMenu, &QAction::triggered, this, &UserDashboard::handleOpenNotesWindowClicked);
+
     m_OpenGoalMenu = new QAction("Open Goal Window", this);
     m_OpenGoalMenu->setStatusTip("Open Goal Window");
     connect(m_OpenGoalMenu, &QAction::triggered, this, &UserDashboard::handleOpenGoalWindowClicked);
 
-    m_GoalMenu = menuBar()->addMenu("&Goal");
-    m_GoalMenu->addAction(m_OpenGoalMenu);
-    m_GoalMenu->addSeparator();
-}
-
-void UserDashboard::setUpTodoMenu()
-{
-    m_OpenTodoMenu = new QAction("Todo List", this);
-    m_OpenTodoMenu->setStatusTip(tr("Create a new Goal"));
-    connect(m_OpenTodoMenu, &QAction::triggered, this, &UserDashboard::handleToDoMenuClicked);
-
-    m_TodoMenu = menuBar()->addMenu("&Todo List");
-    m_TodoMenu->addAction(m_OpenTodoMenu);
-    m_TodoMenu->addSeparator();
+    m_ViewsMenu = menuBar()->addMenu("&Views");
+    m_ViewsMenu->addAction(m_OpenTodoMenu);
+    m_ViewsMenu->addAction(m_OpenScheduleMenu);
+    m_ViewsMenu->addAction(m_OpenNotesMenu);
+    m_ViewsMenu->addAction(m_OpenGoalMenu);
+    m_ViewsMenu->addSeparator();
 }
 
 QGroupBox *UserDashboard::setUpUserIdBox()
@@ -230,4 +233,22 @@ void UserDashboard::handleOpenGoalWindowClicked()
     goalExternalWindow->setUpWindowUi();
 
     goalExternalWindow->show();
+}
+
+void UserDashboard::handleOpenScheduleWindowClicked()
+{
+    ScheduleWindow* scheduleExternalWindow = new ScheduleWindow(m_UserDataPtr, m_DashboardDate, false, this);
+
+    scheduleExternalWindow->setUpWindowUi();
+
+    scheduleExternalWindow->show();
+}
+
+void UserDashboard::handleOpenNotesWindowClicked()
+{
+    NotesWindow* noteExternalWindow = new NotesWindow(m_UserDataPtr, m_DashboardDate, false, this);
+
+    noteExternalWindow->setUpWindowUi();
+
+    noteExternalWindow->show();
 }

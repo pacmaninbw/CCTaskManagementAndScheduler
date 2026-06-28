@@ -42,13 +42,14 @@ private Q_SLOTS:
     void handleDateChanged(const QDate &newDate);
     void handleToDoMenuClicked();
     void handleOpenGoalWindowClicked();
+    void handleOpenScheduleWindowClicked();
+    void handleOpenNotesWindowClicked();
 
 private:
     void setUpUserDashboardUi();
     void setUpDashboardMenuBar();
     void setUpUserMenu();
-    void setUpGoalMenu();
-    void setUpTodoMenu();
+    void setUpViewsMenu();
     QGroupBox* setUpUserIdBox();
     QHBoxLayout* setUpPerDayLayout();
     void initPerDayViewWindows();
@@ -60,13 +61,14 @@ private:
     QDate m_DashboardDate;
 
     QMenu* m_UserMenu = nullptr;
-    QMenu* m_GoalMenu = nullptr;
-    QMenu* m_TodoMenu = nullptr;
+    QMenu* m_ViewsMenu = nullptr;
     QAction* m_AddUserProfileUserMenu = nullptr;
     QAction* m_EditUserProfileUserMenu = nullptr;
     QAction* m_LogoutUserMenu = nullptr;
     QAction* m_OpenTodoMenu = nullptr;
     QAction* m_OpenGoalMenu = nullptr;
+    QAction* m_OpenScheduleMenu = nullptr;
+    QAction* m_OpenNotesMenu = nullptr;
     QWidget* m_centralwidget = nullptr;
     QGroupBox* m_userIDGroupBox = nullptr;
     QLineEdit* m_UserFirstNameDisplay = nullptr;
