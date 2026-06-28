@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.31)
 
-project(PP3Rework VERSION 0.1 LANGUAGES CXX)
+project(MyDayPlanner VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -26,7 +26,7 @@ set(PROJECT_SOURCES
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(PP3Rework
+    qt_add_executable(MyDayPlanner
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         Dialogs/DataBaseConnectionDialog.cpp
@@ -106,26 +106,26 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Dialogs/BaseObjectEditorDialog.h Dialogs/BaseObjectEditorDialog.cpp
     )
 # Define target properties for Android with Qt 6 as:
-#    set_property(TARGET PP3Rework APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+#    set_property(TARGET MyDayPlanner APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
     if(ANDROID)
-        add_library(PP3Rework SHARED
+        add_library(MyDayPlanner SHARED
             ${PROJECT_SOURCES}
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
-        add_executable(PP3Rework
+        add_executable(MyDayPlanner
             ${PROJECT_SOURCES}
         )
     endif()
 endif()
 
-target_compile_definitions(PP3Rework PRIVATE QT_NO_KEYWORDS)
+target_compile_definitions(MyDayPlanner PRIVATE QT_NO_KEYWORDS)
 
-target_include_directories(PP3Rework PRIVATE
+target_include_directories(MyDayPlanner PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/SubWindows>
@@ -134,19 +134,19 @@ target_include_directories(PP3Rework PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/BusinessLogic>
 )
 
-target_compile_options(PP3Rework PRIVATE -Wall -Wextra -pedantic -Werror)
+target_compile_options(MyDayPlanner PRIVATE -Wall -Wextra -pedantic -Werror)
 
-target_compile_features(PP3Rework PRIVATE cxx_std_23)
+target_compile_features(MyDayPlanner PRIVATE cxx_std_23)
 
-target_link_libraries(PP3Rework PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${Boost_LIBRARIES} ssl crypto)
+target_link_libraries(MyDayPlanner PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${Boost_LIBRARIES} ssl crypto)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
 if(${QT_VERSION} VERSION_LESS 6.1.0)
-  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.PP3Rework)
+  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.MyDayPlanner)
 endif()
-set_target_properties(PP3Rework PROPERTIES
+set_target_properties(MyDayPlanner PROPERTIES
     ${BUNDLE_ID_OPTION}
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -155,12 +155,12 @@ set_target_properties(PP3Rework PROPERTIES
 )
 
 include(GNUInstallDirs)
-install(TARGETS PP3Rework
+install(TARGETS MyDayPlanner
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(PP3Rework)
+    qt_finalize_executable(MyDayPlanner)
 endif()
