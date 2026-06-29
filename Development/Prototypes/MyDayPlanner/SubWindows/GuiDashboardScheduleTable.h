@@ -1,8 +1,16 @@
-#ifndef GUIDASHBOARDSCHEDULETABLE_H
-#define GUIDASHBOARDSCHEDULETABLE_H
+#ifndef GUIDASHBOARDSCHEDULETABLE_H_
+#define GUIDASHBOARDSCHEDULETABLE_H_
 
-class UserModel;
-class GuiScheduleItemModel;
+/*
+ * Provide a table view of the user's schedule for the selected day. Allow the
+ * user to edit their schedule. The base schedule is 12 hours starting at 8:00AM,
+ * in the future the user should be able to start and end their day at their
+ * preferred times.
+ * 
+ * Since the schedule data is stored in a database use std::chrono instead of
+ * QDate and use GMT time rather than local time. Adjust the display of the
+ * time so that the user can think in local time rather than GMT time.
+ */
 class ScheduleItemModel;
 
 // Project Header Files
@@ -31,8 +39,7 @@ public:
     std::chrono::system_clock::time_point getScheduleItemStartTime(const QModelIndex &index);
     std::chrono::system_clock::time_point getScheduleItemEndTime(const QModelIndex &index);
 
-    QVariant headerData(int section, Qt::Orientation orientation,
-            int role = Qt::DisplayRole) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
@@ -53,4 +60,4 @@ private:
     std::vector<std::shared_ptr<ScheduleItemModel>> m_ScheduledItems;
 };
 
-#endif // GUIDASHBOARDSCHEDULETABLE_H
+#endif // GUIDASHBOARDSCHEDULETABLE_H_

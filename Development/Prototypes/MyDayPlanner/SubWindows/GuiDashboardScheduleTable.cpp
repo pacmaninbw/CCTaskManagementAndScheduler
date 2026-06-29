@@ -11,7 +11,6 @@
 #include <QObject>
 #include <QString>
 #include <QTime>
-#include <QTimeZone>
 #include "stdChronoToQTConversions.h"
 
 // Standard C++ Header Files
@@ -32,9 +31,7 @@ GuiDashboardScheduleTable::GuiDashboardScheduleTable(std::size_t userID, QDate d
 void GuiDashboardScheduleTable::append(std::shared_ptr<ScheduleItemModel> scheduledItem)
 {
     beginInsertRows(QModelIndex(), m_data.size(), m_data.size());
-
     m_data.push_back(scheduledItem);
-    
     endInsertRows();
 }
 
@@ -43,9 +40,7 @@ void GuiDashboardScheduleTable::clearData()
     m_ScheduledItems.clear();
 
     beginResetModel();
-
     m_data.clear();
-
     endResetModel();
 }
 
@@ -58,9 +53,8 @@ std::chrono::system_clock::time_point GuiDashboardScheduleTable::getScheduleItem
         return startTime;
     }
 
-    std::shared_ptr<ScheduleItemModel> todoItem = m_data[index.row()];
-
-    startTime = todoItem->getStartTime();
+    std::shared_ptr<ScheduleItemModel> scheduleItem = m_data[index.row()];
+    startTime = scheduleItem->getStartTime();
 
     return startTime;
 }
@@ -74,9 +68,8 @@ std::chrono::system_clock::time_point GuiDashboardScheduleTable::getScheduleItem
         return endTime;
     }
 
-    std::shared_ptr<ScheduleItemModel> todoItem = m_data[index.row()];
-
-    endTime = todoItem->getEndTime();
+    std::shared_ptr<ScheduleItemModel> scheduleItem = m_data[index.row()];
+    endTime = scheduleItem->getEndTime();
 
     return endTime;
 }
@@ -119,13 +112,13 @@ QVariant GuiDashboardScheduleTable::data(const QModelIndex &index, int role) con
     }
 
     if (role != Qt::DisplayRole && role != Qt::EditRole) return {};
-    const ScheduleItemModel* todoItem = m_data[index.row()].get();
+    const ScheduleItemModel* scheduleItem = m_data[index.row()].get();
     switch (index.column()) {
         case 0: {
-            QDateTime startTime(chronoTimePointToQDateTime(todoItem->getStartTime()));
+            QDateTime startTime(chronoTimePointToQDateTime(scheduleItem->getStartTime()));
             return startTime.toLocalTime().time().toString("h:mm ap");
         }
-        case 1: return QString::fromStdString(todoItem->getTitle());
+        case 1: return QString::fromStdString(scheduleItem->getTitle());
         default: return {};
     }
 }
@@ -133,7 +126,6 @@ QVariant GuiDashboardScheduleTable::data(const QModelIndex &index, int role) con
 bool GuiDashboardScheduleTable::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (data(index, role) != value) {
-        // FIXME: Implement me!
         Q_EMIT dataChanged(index, index, {role});
         return true;
     }
@@ -179,9 +171,11 @@ void GuiDashboardScheduleTable::fillSchedule()
     }
 
     setUserDay(dateOfSchedule);
-
     addBlankHoursForDisplay();
-
+    /*
+     * Schedule items in the database may be in any order and we need to display
+     * the schedule chronologically.
+     */
     std::sort(m_ScheduledItems.begin(), m_ScheduledItems.end(),
         [](ScheduleItemModel_shp left, ScheduleItemModel_shp right)
         { return left->getStartTime() < right->getStartTime();}
@@ -223,6 +217,10 @@ bool GuiDashboardScheduleTable::hasNoTimeConflicts(std::chrono::system_clock::ti
 void GuiDashboardScheduleTable::addBlankHoursForDisplay()
 {
     const int secondsInHour = 3600;
+    /*
+     * To prevent any overlaps in the schedule the end of an hour is one less
+     * second than a real hour.
+     */
     const std::chrono::seconds endOfHour(secondsInHour - 1);
     const std::chrono::hours oneHour{1};
         
@@ -242,5 +240,4 @@ void GuiDashboardScheduleTable::addBlankHoursForDisplay()
         }
         proposedStartTime += oneHour;
     }
-
 }
