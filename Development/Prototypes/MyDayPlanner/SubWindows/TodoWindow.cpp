@@ -68,7 +68,6 @@ void TodoWindow::setUpWindowContentAndActions()
     connect(m_qt_ModelTableView, &QTableView::doubleClicked, this, &TodoWindow::handleTodoTableClicked);
 }
 
-
 void TodoWindow::tableViewReset(QTableView *tableView)
 {
     if (m_TodoTable)
