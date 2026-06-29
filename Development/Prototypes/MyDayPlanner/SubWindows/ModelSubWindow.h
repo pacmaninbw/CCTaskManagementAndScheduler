@@ -1,6 +1,16 @@
 #ifndef MODELSUBWINDOW_H_
 #define MODELSUBWINDOW_H_
 
+/*
+ * The ModelSubWindow class is a SuperClass. It provides the functionality 
+ * that every model window is expected to have such as providing an editor for
+ * the model and providing a table to view all pertinent model items,
+ * displaying a close button when the window is shown outside the user
+ * dashboard and not displaying a close button when the window is shown within
+ * the user dashboard.
+ * 
+ * Actions that are common to all or most windows should be added to this class.
+ */
 class UserModel;
 
 // Project Header Files
@@ -39,6 +49,11 @@ protected Q_SLOTS:
 protected:
     virtual void setUpWindowContentAndActions();
 
+    /*
+     * The m_IsSubWindow variable indicates if the window is being shown in
+     * the user dash board or not. This controls what elements need to be
+     * displayed.
+     */
     bool m_IsSubWindow;
     QVBoxLayout* m_qt_ModelWindowLayout = nullptr;
     QPushButton* m_qt_AddModelObject = nullptr;
