@@ -1,6 +1,9 @@
 #ifndef NOTESWINDOW_H_
 #define NOTESWINDOW_H_
 
+/*
+ * Provide a window where the user can view and edit their notes.
+ */
 class DashboardNoteTable;
 class UserModel;
 
@@ -15,7 +18,6 @@ class UserModel;
 
 // Standard C++ Header Files
 #include <memory>
-
 
 class NotesWindow : public ModelSubWindow
 {
