@@ -1,5 +1,4 @@
-
-// Project Header
+// Project Header Files
 #include "commonQTWidgetsForApp.h"  // cqtfa_ functions
 #include "ModelSubWindow.h"
 
