@@ -1,5 +1,4 @@
-
-// Project Header
+// Project Header Files
 #include "commonQTWidgetsForApp.h"  // cqtfa_ functions
 #include "DefaultGoalDisplayTable.h"
 #include "GoalEditorDialog.h"
@@ -9,8 +8,6 @@
 // QT Header Files
 #include <QDate>
 #include <QHeaderView>
-#include <QMainWindow>
-#include <QMessageBox>
 #include <QPushButton>
 #include <QString>
 #include <QTableView>

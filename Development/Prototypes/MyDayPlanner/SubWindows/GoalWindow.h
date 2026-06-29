@@ -1,6 +1,8 @@
-#ifndef GOALWINDOW_H
-#define GOALWINDOW_H
-
+#ifndef GOALWINDOW_H_
+#define GOALWINDOW_H_
+/*
+ * Provide a window where the user can view and edit their goals.
+ */
 class DefaultGoalDisplayTable;
 
 // Project Header Files
@@ -37,4 +39,4 @@ protected:
     DefaultGoalDisplayTable* m_GoalTable = nullptr;
 };
 
-#endif // GOALWINDOW_H
+#endif // GOALWINDOW_H_
