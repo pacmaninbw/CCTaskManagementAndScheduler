@@ -1,7 +1,10 @@
-#ifndef SCHEDULEWINDOW_H
-#define SCHEDULEWINDOW_H
+#ifndef SCHEDULEWINDOW_H_
+#define SCHEDULEWINDOW_H_
 
-class ScheduleTablerViewer;
+/*
+ * Provide the window to display the user's schedule and allow the user to edit
+ * their schedule.
+ */
 class GuiDashboardScheduleTable;
 
 // Project Header Files
@@ -16,7 +19,6 @@ class GuiDashboardScheduleTable;
 
 // Standard C++ Header Files
 
-
 class ScheduleWindow  : public ModelSubWindow
 {
     Q_OBJECT
@@ -24,7 +26,6 @@ class ScheduleWindow  : public ModelSubWindow
 public:
     ScheduleWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow, bool makeSubWindow = false, QWidget *parent = nullptr);
     void refresh() override;
-
 
 Q_SIGNALS:
 
@@ -39,4 +40,4 @@ protected:
     GuiDashboardScheduleTable* m_ScheduleTable = nullptr;
 };
 
-#endif // SCHEDULEWINDOW_H
+#endif // SCHEDULEWINDOW_H_
