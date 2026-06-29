@@ -9,6 +9,10 @@
  * dashboard and not displaying a close button when the window is shown within
  * the user dashboard.
  * 
+ * The ModelSubWindow class is an Abstract class because some of the actions
+ * must be defined by the subclasses because they can't be known by the super
+ * class.
+ * 
  * Actions that are common to all or most windows should be added to this class.
  */
 class UserModel;
@@ -39,6 +43,10 @@ public:
     void setUser(std::shared_ptr<UserModel> user);
     void changeDataRefreshTable(std::shared_ptr<UserModel> user, QDate dateToShow);
     void setUpWindowUi();
+    /*
+     * The refresh() function is pure because there is no way to provide a
+     * common way to refresh the table of models being displayed.
+     */
     virtual void refresh() = 0;
     void changeWindowSize(int newWidth, int newHeight);
 
