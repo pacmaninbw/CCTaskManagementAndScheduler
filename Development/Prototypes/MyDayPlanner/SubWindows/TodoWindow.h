@@ -1,6 +1,9 @@
 #ifndef TODOWINDOW_H_
 #define TODOWINDOW_H_
 
+/*
+ * Provide a window where the user can view and edit their To Do items.
+ */
 class GuiDashboardTaskTable;
 class UserModel;
 

@@ -16,7 +16,6 @@
 
 // Standard C++ Header Files
 
-
 TodoWindow::TodoWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow, bool makeSubWindow, QWidget *parent)
     : ModelSubWindow("Prioritized To Do List:", makeSubWindow, parent)
 {
