@@ -4,7 +4,6 @@
 // Project Header Files
 
 // QT Header Files
-#include <QVariant>
 #include <QCheckBox>
 #include <QDialog>
 #include <QDialogButtonBox>
