@@ -5,8 +5,6 @@
 #include "GoalQueryProcessor.h"
 
 // QT Header Files
-#include <QVariant>
-#include <QDialog>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QLineEdit>
@@ -26,7 +24,6 @@ GoalEditorDialog::GoalEditorDialog(std::size_t userId, std::size_t goalId, QWidg
 
 GoalEditorDialog::~GoalEditorDialog()
 {
-
 }
 
 void GoalEditorDialog::initEditorFieldsFromDataBase()

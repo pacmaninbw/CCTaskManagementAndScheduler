@@ -7,7 +7,6 @@ class UserGoalModel;
 #include "BaseObjectEditorDialog.h"
 
 // QT Header Files
-#include <QVariant>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QLineEdit>
@@ -19,8 +18,6 @@ class UserGoalModel;
 
 class GoalEditorDialog : public BaseObjectEditorDialog
 {
-    Q_OBJECT
-
 public:
     explicit GoalEditorDialog(std::size_t userId, std::size_t goalId, QWidget* parent = nullptr);
     ~GoalEditorDialog();
