@@ -1,20 +1,18 @@
-#ifndef TASKEDITORDIALOG_H
-#define TASKEDITORDIALOG_H
+#ifndef TASKEDITORDIALOG_H_
+#define TASKEDITORDIALOG_H_
 
+/*
+ * Provides an editor for the Todo list and TaskModel items.
+ */
 class TaskModel;
 class UserModel;
 // Project Header Files
 #include "BaseObjectEditorDialog.h"
 
 // QT Header Files
-#include <QVariant>
-#include <QAbstractButton>
-#include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDateEdit>
-#include <QDialog>
-#include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -114,4 +112,4 @@ private:
     const int taskDescriptionTEHeight = 60;
 };
 
-#endif // TASKEDITORDIALOG_H
+#endif // TASKEDITORDIALOG_H_
