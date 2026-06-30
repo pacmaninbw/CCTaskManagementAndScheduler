@@ -1,5 +1,5 @@
-#ifndef DASHBOARDNOTETABLE_H
-#define DASHBOARDNOTETABLE_H
+#ifndef DASHBOARDNOTETABLE_H_
+#define DASHBOARDNOTETABLE_H_
 
 class NoteModel;
 class UserModel;
@@ -45,4 +45,4 @@ private:
     QDate m_SearchDate;
 };
 
-#endif // DASHBOARDNOTETABLE_H
+#endif // DASHBOARDNOTETABLE_H_

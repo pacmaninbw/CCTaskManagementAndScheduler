@@ -14,6 +14,9 @@
  * class.
  * 
  * Actions that are common to all or most windows should be added to this class.
+ *
+ * The setUpWindowContentAndActions() function provided by the sub class
+ * will add necessary visual components such as the table view and editors.
  */
 class UserModel;
 

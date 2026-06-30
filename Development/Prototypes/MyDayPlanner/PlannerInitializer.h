@@ -1,5 +1,5 @@
-#ifndef PLANNERINITIALIZER_H
-#define PLANNERINITIALIZER_H
+#ifndef PLANNERINITIALIZER_H_
+#define PLANNERINITIALIZER_H_
 
 class UserModel;
 
@@ -29,5 +29,5 @@ private:
     std::shared_ptr<UserModel> loggedInUser;
 };
 
-#endif // PLANNERINITIALIZER_H
+#endif // PLANNERINITIALIZER_H_
 

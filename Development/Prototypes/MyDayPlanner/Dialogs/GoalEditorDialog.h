@@ -1,5 +1,5 @@
-#ifndef GOALEDITORDIALOG_H
-#define GOALEDITORDIALOG_H
+#ifndef GOALEDITORDIALOG_H_
+#define GOALEDITORDIALOG_H_
 
 class UserGoalModel;
 
@@ -41,4 +41,4 @@ private:
     const int goalPriorityMaxChar = 5;
 };
 
-#endif // GOALEDITORDIALOG_H
+#endif // GOALEDITORDIALOG_H_

@@ -1,5 +1,5 @@
-#ifndef USEREDITORDIALOG_H
-#define USEREDITORDIALOG_H
+#ifndef USEREDITORDIALOG_H_
+#define USEREDITORDIALOG_H_
 
 class UserModel;
 
@@ -7,9 +7,6 @@ class UserModel;
 
 // QT Header Files
 #include "UserModel.h"
-#include <QVariant>
-#include <QAbstractButton>
-#include <QApplication>
 #include <QCheckBox>
 #include <QDialog>
 #include <QDialogButtonBox>
@@ -68,4 +65,4 @@ private:
     const int emailCharCount = 50;
 };
 
-#endif // USEREDITORDIALOG_H
+#endif // USEREDITORDIALOG_H_

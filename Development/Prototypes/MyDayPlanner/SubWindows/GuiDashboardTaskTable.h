@@ -1,5 +1,5 @@
-#ifndef GUIDASHBOARDTASKTABLE_H
-#define GUIDASHBOARDTASKTABLE_H
+#ifndef GUIDASHBOARDTASKTABLE_H_
+#define GUIDASHBOARDTASKTABLE_H_
 
 // Project Header Files
 #include "GuiTaskTableBase.h"
@@ -26,4 +26,4 @@ private:
 
 };
 
-#endif // GUIDASHBOARDTASKTABLE_H
+#endif // GUIDASHBOARDTASKTABLE_H_

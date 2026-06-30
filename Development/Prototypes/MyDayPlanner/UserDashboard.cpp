@@ -89,14 +89,9 @@ void UserDashboard::setUpUserMenu()
     m_EditUserProfileUserMenu->setStatusTip(tr("Edit your profile"));
     connect(m_EditUserProfileUserMenu, &QAction::triggered, this, &UserDashboard::handleEditUserAction);
 
-    m_LogoutUserMenu = new QAction("Logout", this);
-    m_LogoutUserMenu->setStatusTip(tr("Exit the planner app"));
-    connect(m_LogoutUserMenu, &QAction::triggered, this, &QApplication::quit);
-
     m_UserMenu = menuBar()->addMenu("&User");
     m_UserMenu->addAction(m_AddUserProfileUserMenu);
     m_UserMenu->addAction(m_EditUserProfileUserMenu);
-    m_UserMenu->addAction(m_LogoutUserMenu);
     m_UserMenu->addSeparator();
 }
 

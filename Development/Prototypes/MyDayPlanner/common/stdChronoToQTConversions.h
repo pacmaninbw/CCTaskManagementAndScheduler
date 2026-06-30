@@ -1,5 +1,5 @@
-#ifndef STDCHRONOTOQTCONVERSIONS_H
-#define STDCHRONOTOQTCONVERSIONS_H
+#ifndef STDCHRONOTOQTCONVERSIONS_H_
+#define STDCHRONOTOQTCONVERSIONS_H_
 
 #include <chrono>
 #include <QDate>
@@ -9,4 +9,4 @@ extern QDateTime chronoTimePointToQDateTime(std::chrono::system_clock::time_poin
 extern std::chrono::system_clock::time_point qDateTimeToChrono(const QDateTime& qtDateTime);
 extern std::chrono::year_month_day qDateToChrono(const QDate& qdate);
 
-#endif // STDCHRONOTOQTCONVERSIONS_H
+#endif // STDCHRONOTOQTCONVERSIONS_H_

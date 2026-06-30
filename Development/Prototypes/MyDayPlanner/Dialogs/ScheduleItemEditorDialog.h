@@ -1,5 +1,5 @@
-#ifndef SCHEDULEITEMEDITORDIALOG_H
-#define SCHEDULEITEMEDITORDIALOG_H
+#ifndef SCHEDULEITEMEDITORDIALOG_H_
+#define SCHEDULEITEMEDITORDIALOG_H_
 
 class ScheduleItemModel;
 
@@ -7,7 +7,6 @@ class ScheduleItemModel;
 #include "BaseObjectEditorDialog.h"
 
 // QT Header Files
-#include <QVariant>
 #include <QCheckBox>
 #include <QCompleter>
 #include <QDateEdit>
@@ -20,13 +19,13 @@ class ScheduleItemModel;
 
 // Standard C++ Header Files
 #include <chrono>
-#include <memory>
 
 
 class ScheduleItemEditorDialog : public BaseObjectEditorDialog
 {
 public:
     explicit ScheduleItemEditorDialog(std::size_t userId, std::size_t eventId = 0, QWidget* parent = nullptr);
+// Edit an empty event in the day schedule
     explicit ScheduleItemEditorDialog(std::size_t userId, std::chrono::system_clock::time_point startTime,
             std::chrono::system_clock::time_point endTime, QWidget* parent = nullptr);
     ~ScheduleItemEditorDialog();
@@ -67,4 +66,4 @@ private:
     const int LocationLineCount = 3;
 };
 
-#endif // SCHEDULEITEMEDITORDIALOG_H
+#endif // SCHEDULEITEMEDITORDIALOG_H_

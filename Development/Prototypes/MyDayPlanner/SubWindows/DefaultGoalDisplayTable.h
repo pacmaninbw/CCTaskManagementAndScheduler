@@ -1,5 +1,5 @@
-#ifndef DEFAULTGOALDISPLAYTABLE_H
-#define DEFAULTGOALDISPLAYTABLE_H
+#ifndef DEFAULTGOALDISPLAYTABLE_H_
+#define DEFAULTGOALDISPLAYTABLE_H_
 
 class UserModel;
 class UserGoalModel;
@@ -47,4 +47,4 @@ private:
     std::vector<std::shared_ptr<UserGoalModel>> m_GoalList;
 };
 
-#endif // DEFAULTGOALDISPLAYTABLE_H
+#endif // DEFAULTGOALDISPLAYTABLE_H_

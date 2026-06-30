@@ -1,17 +1,14 @@
-
 // Project Header Files
 #include "BaseObjectEditorDialog.h"
 #include "ModelDBInterface.h"
 
 // QT Header Files
-#include <QVariant>
-#include <QAbstractButton>
-#include <QApplication>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QMessageBox>
+#include <QPushButton>
 #include <QVBoxLayout>
 
 // Standard C++ Header Files
@@ -20,7 +17,7 @@
 
 BaseObjectEditorDialog::BaseObjectEditorDialog(const char* objectType, std::size_t userId, std::size_t dbModelTableIndex, QWidget* parent)
     : QDialog(parent),
-    m_userID{userId},
+    m_UserID{userId},
     m_DBModelID{dbModelTableIndex},
     m_EditorObjectTypeString{objectType}
 {
@@ -59,7 +56,7 @@ void BaseObjectEditorDialog::handleDeleteButton_Clicked()
 {
     if (m_DBObjectModel)
     {
-        m_DBObjectModel->hide(m_userID);
+        m_DBObjectModel->hide(m_UserID);
     }
 
     done(QDialog::Accepted);

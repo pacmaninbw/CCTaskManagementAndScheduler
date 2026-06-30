@@ -1,5 +1,5 @@
-#ifndef LOGINDIALOG_H
-#define LOGINDIALOG_H
+#ifndef LOGINDIALOG_H_
+#define LOGINDIALOG_H_
 
 class UserModel;
 
@@ -41,4 +41,4 @@ private:
 
 };
 
-#endif // LOGINDIALOG_H
+#endif // LOGINDIALOG_H_

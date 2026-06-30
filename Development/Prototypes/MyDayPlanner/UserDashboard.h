@@ -1,5 +1,5 @@
-#ifndef USERDASHBOARD_H
-#define USERDASHBOARD_H
+#ifndef USERDASHBOARD_H_
+#define USERDASHBOARD_H_
 
 class UserModel;
 class ModelSubWindow;
@@ -62,7 +62,6 @@ private:
     QMenu* m_ViewsMenu = nullptr;
     QAction* m_AddUserProfileUserMenu = nullptr;
     QAction* m_EditUserProfileUserMenu = nullptr;
-    QAction* m_LogoutUserMenu = nullptr;
     QAction* m_OpenTodoMenu = nullptr;
     QAction* m_OpenGoalMenu = nullptr;
     QAction* m_OpenScheduleMenu = nullptr;
@@ -89,6 +88,6 @@ private:
     const int perDayGroupBoxHeight = 400;
     const int perDayLineEditWidth = 280;
 };
-#endif // USERDASHBOARD_H
+#endif // USERDASHBOARD_H_
 
 

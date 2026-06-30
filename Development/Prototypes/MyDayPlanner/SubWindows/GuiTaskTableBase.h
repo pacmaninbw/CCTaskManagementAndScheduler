@@ -1,5 +1,5 @@
-#ifndef GUITASKTABLEBASE_H
-#define GUITASKTABLEBASE_H
+#ifndef GUITASKTABLEBASE_H_
+#define GUITASKTABLEBASE_H_
 
 class TaskModel;
 
@@ -41,4 +41,4 @@ protected:
     std::vector<std::shared_ptr<TaskModel>> m_data;
 };
 
-#endif // GUITASKTABLEBASE_H
+#endif // GUITASKTABLEBASE_H_

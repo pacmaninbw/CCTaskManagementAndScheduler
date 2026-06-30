@@ -1,21 +1,17 @@
-#ifndef SELECTTASKPARENTDIALOG_H
-#define SELECTTASKPARENTDIALOG_H
+#ifndef SELECTTASKPARENTDIALOG_H_
+#define SELECTTASKPARENTDIALOG_H_
 
 class TaskModel;
 
 // Project Header Files
 
 // QT Header Files
-#include <QVariant>
-#include <QAbstractButton>
 #include <QAbstractTableModel>
-#include <QApplication>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QHeaderView>
-#include <QObject>
 #include <QTableView>
 #include <QVBoxLayout>
 
@@ -61,4 +57,4 @@ private:
     const int maximumTableViewHeight = maximumGroupBoxHeight - marginAllowance;
 };
 
-#endif // SELECTTASKPARENTDIALOG_H
+#endif // SELECTTASKPARENTDIALOG_H_

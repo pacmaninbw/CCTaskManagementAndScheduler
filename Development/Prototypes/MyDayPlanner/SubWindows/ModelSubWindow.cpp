@@ -66,6 +66,10 @@ void ModelSubWindow::setUpWindowUi()
         setWindowTitle(m_WindowTitleText);
     }
 
+    /*
+     * The setUpWindowContentAndActions() function provided by the sub class
+     * will add necessary visual components such as the table view and editors.
+     */
     setUpWindowContentAndActions();
 
     if (!m_IsSubWindow)

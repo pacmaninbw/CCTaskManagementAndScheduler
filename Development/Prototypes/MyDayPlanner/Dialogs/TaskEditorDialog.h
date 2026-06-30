@@ -4,8 +4,10 @@
 /*
  * Provides an editor for the Todo list and TaskModel items.
  */
+
 class TaskModel;
 class UserModel;
+
 // Project Header Files
 #include "BaseObjectEditorDialog.h"
 

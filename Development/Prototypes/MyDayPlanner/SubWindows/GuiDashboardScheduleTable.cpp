@@ -172,10 +172,10 @@ void GuiDashboardScheduleTable::fillSchedule()
 
     setUserDay(dateOfSchedule);
     addBlankHoursForDisplay();
-    /*
-     * Schedule items in the database may be in any order and we need to display
-     * the schedule chronologically.
-     */
+/*
+ * Schedule items in the database may be in any order and we need to display
+ * the schedule chronologically.
+ */
     std::sort(m_ScheduledItems.begin(), m_ScheduledItems.end(),
         [](ScheduleItemModel_shp left, ScheduleItemModel_shp right)
         { return left->getStartTime() < right->getStartTime();}

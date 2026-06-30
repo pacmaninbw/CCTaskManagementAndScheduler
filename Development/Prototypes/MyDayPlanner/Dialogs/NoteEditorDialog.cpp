@@ -54,7 +54,7 @@ QGroupBox *NoteEditorDialog::setUpEditorDialogForm()
 void NoteEditorDialog::createSharedPtrDBModelForAddObject()
 {
     NoteModel_shp newNote = std::make_shared<NoteModel>();
-    newNote->setUserId(m_userID);
+    newNote->setUserId(m_UserID);
     m_DBObjectModel = newNote;
 }
 

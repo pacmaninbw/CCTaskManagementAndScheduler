@@ -1,5 +1,5 @@
-#ifndef DATABASECONNECTIONDIALOG_H
-#define DATABASECONNECTIONDIALOG_H
+#ifndef DATABASECONNECTIONDIALOG_H_
+#define DATABASECONNECTIONDIALOG_H_
 
 // Project Header Files
 
@@ -63,4 +63,4 @@ private:
     QCheckBox* forceExceptions = nullptr;
 };
 
-#endif // DATABASECONNECTIONDIALOG_H
+#endif // DATABASECONNECTIONDIALOG_H_

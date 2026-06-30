@@ -1,5 +1,5 @@
-#ifndef TESTDBCONNECTION_H
-#define TESTDBCONNECTION_H
+#ifndef TESTDBCONNECTION_H_
+#define TESTDBCONNECTION_H_
 
 // Project Header Files
 #include "CommandLineParser.h"
@@ -42,4 +42,4 @@ private:
     std::optional<boost::mysql::format_options> format_opts;
 };
 
-#endif
+#endif  // TESTDBCONNECTION_H_

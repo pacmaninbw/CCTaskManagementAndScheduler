@@ -14,7 +14,6 @@
 #include <QGroupBox>
 #include <QLineEdit>
 #include <QPlainTextEdit>
-#include <QVariant>
 #include <QVBoxLayout>
 
 // Standard C++ Header Files
@@ -68,7 +67,7 @@ void ScheduleItemEditorDialog::initEditorFieldsFromDataBase()
     // If we are editing a previously existing schedule item
     if (m_DBModelID)
     {
-        ScheduleItemQueryProcessor scheduleItemQueryProcessor(m_userID);
+        ScheduleItemQueryProcessor scheduleItemQueryProcessor(m_UserID);
         eventData = scheduleItemQueryProcessor.getScheduleItemById(m_DBModelID);
         m_DBObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(eventData);
         transferDBModelDataToEditorFields();
@@ -76,7 +75,7 @@ void ScheduleItemEditorDialog::initEditorFieldsFromDataBase()
     else
     {
         eventData = std::make_shared<ScheduleItemModel>();
-        eventData->setUserID(m_userID);
+        eventData->setUserID(m_UserID);
         m_DBObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(eventData);
     }
 
@@ -202,7 +201,7 @@ void ScheduleItemEditorDialog::initCompletersFromDB()
         return;
     }
 
-    ScheduleItemQueryProcessor previousEventFinder(m_userID);
+    ScheduleItemQueryProcessor previousEventFinder(m_UserID);
     std::vector<std::string> previousEventTitles = previousEventFinder.findEventsForRepeatCompletion();
     QStringList previousEventList;
 
@@ -238,7 +237,7 @@ QDateTime ScheduleItemEditorDialog::initValidDateTime(std::chrono::system_clock:
 void ScheduleItemEditorDialog::createSharedPtrDBModelForAddObject()
 {
     ScheduleItemModel_shp newEvent = std::make_shared<ScheduleItemModel>();
-    newEvent->setUserID(m_userID);
+    newEvent->setUserID(m_UserID);
 
     m_DBObjectModel = std::dynamic_pointer_cast<ScheduleItemModel>(newEvent);
 }

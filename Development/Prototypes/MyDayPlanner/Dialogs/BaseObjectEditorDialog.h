@@ -1,19 +1,21 @@
-#ifndef BASEOBJECTEDITORDIALOG_H
-#define BASEOBJECTEDITORDIALOG_H
+#ifndef BASEOBJECTEDITORDIALOG_H_
+#define BASEOBJECTEDITORDIALOG_H_
 
+/*
+ * Provide a common set of widgets and actions for all editors of model items.
+ *
+ * Data fields specific to a model item will be defined in the sub class
+ * editor for that model object.
+ */
 class ModelDBInterface;
 
 // Project Header Files
 
 // QT Header Files
-#include <QVariant>
-#include <QAbstractButton>
-#include <QApplication>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QGroupBox>
-#include <QPlainTextEdit>
 #include <QPushButton>
 #include <QString>
 #include <QVBoxLayout>
@@ -38,6 +40,12 @@ protected Q_SLOTS:
 
 protected:
     virtual QGroupBox* setUpEditorDialogForm() { return nullptr; };
+/*
+ * The createSharedPtrDBModelForAddObject(), transferEditorValuesToDBModel() and
+ * transferDBModelDataToEditorFields() functions all affect specific model objects
+ * and data fields, there is no way to provide definitions for them in the super
+ * class. Each editor sub class will include different model item header files.
+ */
     virtual void createSharedPtrDBModelForAddObject() = 0;
     virtual void transferEditorValuesToDBModel() = 0;
     virtual void transferDBModelDataToEditorFields() = 0;
@@ -49,7 +57,7 @@ protected:
     int getFormLayoutMaxWidth(QFormLayout* formToSize);
     int getRowMaximumWidth(QFormLayout* layout, int row);
 
-    std::size_t m_userID;
+    std::size_t m_UserID;
     std::size_t m_DBModelID;
     std::shared_ptr<ModelDBInterface> m_DBObjectModel = nullptr;
     QString m_EditorObjectTypeString;
@@ -68,4 +76,4 @@ protected:
     const int maxHeightUndefind = 16777215;
 };
 
-#endif // BASEOBJECTEDITORDIALOG_H
+#endif // BASEOBJECTEDITORDIALOG_H_

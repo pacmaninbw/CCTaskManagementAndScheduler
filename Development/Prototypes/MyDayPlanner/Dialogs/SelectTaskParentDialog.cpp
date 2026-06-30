@@ -4,17 +4,12 @@
 #include "SelectParentTaskTable.h"
 
 // QT Header Files
-#include <QVariant>
-#include <QAbstractButton>
-#include <QApplication>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QGroupBox>
 #include <QHeaderView>
 #include <QHBoxLayout>
-#include <QList>
 #include <QMessageBox>
-#include <QObject>
 #include <QString>
 #include <QTableView>
 

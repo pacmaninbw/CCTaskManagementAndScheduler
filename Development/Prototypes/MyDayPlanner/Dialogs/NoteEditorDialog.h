@@ -1,5 +1,5 @@
-#ifndef NOTEEDITORDIALOG_H
-#define NOTEEDITORDIALOG_H
+#ifndef NOTEEDITORDIALOG_H_
+#define NOTEEDITORDIALOG_H_
 
 class NoteModel;
 
@@ -7,7 +7,6 @@ class NoteModel;
 #include "BaseObjectEditorDialog.h"
 
 // QT Header Files
-#include <QVariant>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QPlainTextEdit>
@@ -37,4 +36,4 @@ private:
     const int marginAndSpacing = 30;
 };
 
-#endif // NOTEEDITORDIALOG_H
+#endif // NOTEEDITORDIALOG_H_
