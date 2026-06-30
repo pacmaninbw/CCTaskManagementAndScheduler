@@ -11,7 +11,6 @@
 #include <QVBoxLayout>
 
 // Standard C++ Header Files
-//#include <iostream>
 
 LoginDialog::LoginDialog(QWidget *parent)
     : QDialog(parent),

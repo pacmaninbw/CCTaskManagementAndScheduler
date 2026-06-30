@@ -6,8 +6,6 @@ class UserModel;
 // Project Header Files
 
 // QT Header Files
-#include <QVariant>
-#include <QApplication>
 #include <QDialog>
 #include <QGroupBox>
 #include <QLineEdit>
