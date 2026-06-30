@@ -8,9 +8,7 @@ class GoalWindow;
 // Project Header Files
 
 // QT Header Files
-#include <QVariant>
 #include <QAction>
-#include <QApplication>
 #include <QDate>
 #include <QDateEdit>
 #include <QGroupBox>
