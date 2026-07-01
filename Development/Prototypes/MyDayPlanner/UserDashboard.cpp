@@ -15,7 +15,6 @@
 #include <QFormLayout>
 #include <QHBoxLayout>
 #include <QMenuBar>
-#include <QMessageBox>
 #include <QVBoxLayout>
 #include <QString>
 
@@ -37,19 +36,18 @@ UserDashboard::UserDashboard(std::shared_ptr<UserModel> loggedInUser, QWidget *p
 
 UserDashboard::~UserDashboard()
 {
-
 }
 
 void UserDashboard::setUpUserDashboardUi()
 {
     setUpDashboardMenuBar();
 
-    m_centralwidget = new QWidget(this);
-    m_centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
+    m_qt_Centralwidget = new QWidget(this);
+    m_qt_Centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
 
     resize(dashboardWidth, dashboardHeight);
 
-    QVBoxLayout* dashboardLayout = new QVBoxLayout(m_centralwidget);
+    QVBoxLayout* dashboardLayout = new QVBoxLayout(m_qt_Centralwidget);
     dashboardLayout->setObjectName("dashboardLayout");
 
     dashboardLayout->addWidget(setUpUserIdBox(), 0, Qt::AlignHCenter);
@@ -61,14 +59,11 @@ void UserDashboard::setUpUserDashboardUi()
     connect(m_DateSelector, &QDateEdit::dateChanged, this, &UserDashboard::handleDateChanged);
 
     dashboardDateForm->addRow("Date:", m_DateSelector);
-
     dashboardDateForm->setFormAlignment(Qt::AlignHCenter);
-
     dashboardLayout->addLayout(dashboardDateForm);
-
     dashboardLayout->addLayout(setUpPerDayLayout());
 
-    setCentralWidget(m_centralwidget);
+    setCentralWidget(m_qt_Centralwidget);
 
     setWindowTitle(m_ProgNameStr);
 }
@@ -123,7 +118,7 @@ void UserDashboard::setUpViewsMenu()
 
 QGroupBox *UserDashboard::setUpUserIdBox()
 {
-    m_userIDGroupBox = new QGroupBox("User ID:", m_centralwidget);
+    m_userIDGroupBox = new QGroupBox("User ID:", m_qt_Centralwidget);
     QHBoxLayout* uiBoxLaytout = new QHBoxLayout;
     uiBoxLaytout->setObjectName("uiBoxLaytout");
 
@@ -188,62 +183,48 @@ void UserDashboard::fillUserIdBoxData()
 void UserDashboard::handleAddUserAction()
 {
     UserEditorDialog addUserDialog(this);
-
     addUserDialog.exec();
 }
 
 void UserDashboard::handleEditUserAction()
 {
     UserEditorDialog editUserDialog(m_UserDataPtr, this);
-
-    editUserDialog.exec();
-    
+    editUserDialog.exec();    
     fillUserIdBoxData();
-
     updatePerDayView();
 }
 
 void UserDashboard::handleDateChanged(const QDate &newDate)
 {
     m_DashboardDate = newDate;
-
     updatePerDayView();
-
     fillUserIdBoxData();
 }
 
 void UserDashboard::handleToDoMenuClicked()
 {
     TodoWindow* todoExternal = new TodoWindow(m_UserDataPtr, m_DashboardDate, false, this);
-
     todoExternal->setUpWindowUi();
-
     todoExternal->show();
 }
 
 void UserDashboard::handleOpenGoalWindowClicked()
 {
     GoalWindow* goalExternalWindow = new GoalWindow(m_UserDataPtr, m_DashboardDate, false, this);
-
     goalExternalWindow->setUpWindowUi();
-
     goalExternalWindow->show();
 }
 
 void UserDashboard::handleOpenScheduleWindowClicked()
 {
     ScheduleWindow* scheduleExternalWindow = new ScheduleWindow(m_UserDataPtr, m_DashboardDate, false, this);
-
     scheduleExternalWindow->setUpWindowUi();
-
     scheduleExternalWindow->show();
 }
 
 void UserDashboard::handleOpenNotesWindowClicked()
 {
     NotesWindow* noteExternalWindow = new NotesWindow(m_UserDataPtr, m_DashboardDate, false, this);
-
     noteExternalWindow->setUpWindowUi();
-
     noteExternalWindow->show();
 }
