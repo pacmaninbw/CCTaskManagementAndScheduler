@@ -11,8 +11,6 @@
 // Standard C++ Header Files
 #include <memory>
 
-
-// Standard C++ Header Files
 /*
  * All of the DBInterface classes need access to the programOptions global variable for the
  * MySQL user name and password, as well as the database name and other connection details.
