@@ -12,7 +12,6 @@ class UserModel;
 
 // QT Header Files
 #include <QDate>
-#include <QPushButton>
 #include <QString>
 #include <QWidget>
 
@@ -21,7 +20,6 @@ class UserModel;
 
 class NotesWindow : public ModelSubWindow
 {
-    Q_OBJECT
 public:
     NotesWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow, bool makeSubWindow = false, QWidget *parent = nullptr);
     void refresh() override;

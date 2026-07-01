@@ -30,9 +30,7 @@ void NotesWindow::refresh()
 void NotesWindow::handleAddNoteAction()
 {
     NoteEditorDialog addNoteDialog(this, m_UserData->getUserID());
-
     addNoteDialog.exec();
-
     tableViewReset(m_qt_ModelTableView);
 }
 
@@ -46,9 +44,7 @@ void NotesWindow::handleNoteTableClicked(const QModelIndex &index)
     std::size_t noteToEdit = index.internalId();
     NoteEditorDialog editNoteDialog(this, m_UserData->getUserID(), noteToEdit);
     editNoteDialog.initEditorFieldsFromDataBase();
-
     editNoteDialog.exec();
-
     tableViewReset(m_qt_ModelTableView);
 }
 

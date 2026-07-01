@@ -32,11 +32,8 @@ void ScheduleWindow::refresh()
 void ScheduleWindow::handleAddEvent()
 {
     ScheduleItemEditorDialog addScheduleItemDialog(m_UserData->getUserID(), 0, this);
-
     addScheduleItemDialog.initEditorFieldsFromDataBase();
-
     addScheduleItemDialog.exec();
-
     tableViewReset(m_qt_ModelTableView);
 }
 
@@ -62,7 +59,6 @@ void ScheduleWindow::handleScheduleItemClicked(const QModelIndex &index)
     }
 
     editScheduleItemDialog->initEditorFieldsFromDataBase();
-
     editScheduleItemDialog->exec();
 
     tableViewReset(m_qt_ModelTableView);

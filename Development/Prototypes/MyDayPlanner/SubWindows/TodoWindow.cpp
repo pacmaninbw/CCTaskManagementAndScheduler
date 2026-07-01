@@ -31,9 +31,7 @@ void TodoWindow::refresh()
 void TodoWindow::handleAddTodoItem()
 {
     TaskEditorDialog addTaskDialog(this, m_UserData);
-
     addTaskDialog.exec();
-
     tableViewReset(m_qt_ModelTableView);
 }
 

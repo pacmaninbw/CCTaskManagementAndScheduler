@@ -12,18 +12,14 @@ class UserModel;
 
 // QT Header Files
 #include <QDate>
-#include <QPushButton>
 #include <QString>
 #include <QTableView>
-#include <QWidget>
 
 // Standard C++ Header Files
 #include <memory>
 
 class TodoWindow : public ModelSubWindow
 {
-    Q_OBJECT
-
 public:
     TodoWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow, bool makeSubWindow = false, QWidget *parent = nullptr);
     void refresh() override;

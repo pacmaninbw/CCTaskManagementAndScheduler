@@ -15,14 +15,11 @@ class GuiDashboardScheduleTable;
 #include <QPushButton>
 #include <QString>
 #include <QTableView>
-#include <QWidget>
 
 // Standard C++ Header Files
 
 class ScheduleWindow  : public ModelSubWindow
 {
-    Q_OBJECT
-
 public:
     ScheduleWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow, bool makeSubWindow = false, QWidget *parent = nullptr);
     void refresh() override;

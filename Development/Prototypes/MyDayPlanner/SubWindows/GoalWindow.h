@@ -11,7 +11,6 @@ class DefaultGoalDisplayTable;
 // QT Header Files
 #include <QDate>
 #include <QMainWindow>
-#include <QPushButton>
 #include <QString>
 #include <QTableView>
 #include <QVBoxLayout>
