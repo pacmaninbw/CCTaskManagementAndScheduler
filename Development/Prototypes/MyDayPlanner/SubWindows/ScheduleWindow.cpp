@@ -47,6 +47,10 @@ void ScheduleWindow::handleScheduleItemClicked(const QModelIndex &index)
     std::size_t sheduleItemToEdit = static_cast<std::size_t>(index.internalId());
 
     ScheduleItemEditorDialog* editScheduleItemDialog;
+    /*
+     * If the event (schedule item) is in the database pass in the table row 
+     * otherwise the user is creating a new event by clicking the schedule time.
+     */
     if (sheduleItemToEdit)
     {
         editScheduleItemDialog = new ScheduleItemEditorDialog(m_UserData->getUserID(), sheduleItemToEdit, this);
@@ -66,7 +70,7 @@ void ScheduleWindow::handleScheduleItemClicked(const QModelIndex &index)
 
 void ScheduleWindow::setUpWindowContentAndActions()
 {
-    m_qt_AddModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add Event to Schedule", "udAddEventPB", this);
+    m_qt_AddModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add Event to Schedule", "m_qt_AddModelObject", this);
     connect(m_qt_AddModelObject, &QPushButton::clicked, this, &ScheduleWindow::handleAddEvent);
     m_qt_ModelWindowLayout->addWidget(m_qt_AddModelObject);
 
