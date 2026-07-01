@@ -2,6 +2,7 @@
 #include "commonUtilities.h"
 #include "ScheduleItemModel.h"
 #include "ScheduleItemQueryProcessor.h"
+#include "stdChronoToQTConversions.h"
 
 // QT Header Files
 #include "GuiDashboardScheduleTable.h"
@@ -11,14 +12,12 @@
 #include <QObject>
 #include <QString>
 #include <QTime>
-#include "stdChronoToQTConversions.h"
 
 // Standard C++ Header Files
 #include <algorithm>
 #include <chrono>
 #include <memory>
 #include <vector>
-
 
 GuiDashboardScheduleTable::GuiDashboardScheduleTable(std::size_t userID, QDate dateOfSchedule, QObject *parent)
     : QAbstractTableModel(parent),
@@ -191,6 +190,12 @@ void GuiDashboardScheduleTable::fillSchedule()
     }
 }
 
+/*
+ * To correct from GMT time to local time we get the local midnight value and
+ * offset from that. Currently the default start time is 08:00 or 8:00AM and
+ * the default end time is 20:00 or 8:00PM. In future versions the user will
+ * be able to set this in their preferences.
+ */
 void GuiDashboardScheduleTable::setUserDay(std::chrono::year_month_day scheduleDate)
 {
     std::chrono::hours hour(1);
@@ -214,6 +219,10 @@ bool GuiDashboardScheduleTable::hasNoTimeConflicts(std::chrono::system_clock::ti
     return true;
 }
 
+/*
+ * Hours that do not have events are not in the database. To provide a full view
+ * of the users day schedule blank hours need to be added.
+ */
 void GuiDashboardScheduleTable::addBlankHoursForDisplay()
 {
     const int secondsInHour = 3600;
