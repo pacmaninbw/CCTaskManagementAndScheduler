@@ -30,6 +30,17 @@ class BaseObjectEditorDialog : public QDialog
 
 public:
     BaseObjectEditorDialog(const char* objectType, std::size_t userId = 0, std::size_t dbModelTableIndex = 0, QWidget* parent = nullptr);
+/*
+ * The initEditorFieldsFromDataBase() method is called after the editor has been
+ * instantiated. This method retrieve the model object being edited from the
+ * database and initializes the field values in the editor. Each model editor
+ * will include the proper database model object header file. This function is
+ * pure because this base class has no way of knowing what the object is or
+ * what fields are necessary.
+ *
+ * The database retrieval is performed in this function to keep any database
+ * access out of the constructors for the editor.
+ */
     virtual void initEditorFieldsFromDataBase() = 0;
 
 public Q_SLOTS:
