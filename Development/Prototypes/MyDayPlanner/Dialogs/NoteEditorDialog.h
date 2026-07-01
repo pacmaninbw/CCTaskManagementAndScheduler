@@ -28,7 +28,7 @@ private:
     virtual void transferEditorValuesToDBModel() override;
     virtual void transferDBModelDataToEditorFields() override;
 
-    QPlainTextEdit* editNoteContentTE = nullptr;
+    QPlainTextEdit* m_qt_Content = nullptr;
 
     const int minNoteContentWidth = 60;
     const int maxNoteContentWidth = 90;

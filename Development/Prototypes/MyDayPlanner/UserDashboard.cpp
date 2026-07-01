@@ -54,11 +54,11 @@ void UserDashboard::setUpUserDashboardUi()
 
     QFormLayout* dashboardDateForm = cqtfa_FormLayoutWithPolicy("dashboardDateForm", nullptr);
 
-    m_DateSelector = cqtfa_DateEditWithCalendarPopUpCurrentDate("m_DateSelector", this);
+    m_qt_DateSelector = cqtfa_DateEditWithCalendarPopUpCurrentDate("m_qt_DateSelector", this);
     
-    connect(m_DateSelector, &QDateEdit::dateChanged, this, &UserDashboard::handleDateChanged);
+    connect(m_qt_DateSelector, &QDateEdit::dateChanged, this, &UserDashboard::handleDateChanged);
 
-    dashboardDateForm->addRow("Date:", m_DateSelector);
+    dashboardDateForm->addRow("Date:", m_qt_DateSelector);
     dashboardDateForm->setFormAlignment(Qt::AlignHCenter);
     dashboardLayout->addLayout(dashboardDateForm);
     dashboardLayout->addLayout(setUpPerDayLayout());
@@ -76,69 +76,69 @@ void UserDashboard::setUpDashboardMenuBar()
 
 void UserDashboard::setUpUserMenu()
 {
-    m_AddUserProfileUserMenu = new QAction("Add User", this);
-    m_AddUserProfileUserMenu->setStatusTip(tr("Create a new User"));
-    connect(m_AddUserProfileUserMenu, &QAction::triggered, this, &UserDashboard::handleAddUserAction);
+    m_qt_AddUserProfileUserMenu = new QAction("Add User", this);
+    m_qt_AddUserProfileUserMenu->setStatusTip(tr("Create a new User"));
+    connect(m_qt_AddUserProfileUserMenu, &QAction::triggered, this, &UserDashboard::handleAddUserAction);
 
-    m_EditUserProfileUserMenu = new QAction("Edit User", this);
-    m_EditUserProfileUserMenu->setStatusTip(tr("Edit your profile"));
-    connect(m_EditUserProfileUserMenu, &QAction::triggered, this, &UserDashboard::handleEditUserAction);
+    m_qt_EditUserProfileUserMenu = new QAction("Edit User", this);
+    m_qt_EditUserProfileUserMenu->setStatusTip(tr("Edit your profile"));
+    connect(m_qt_EditUserProfileUserMenu, &QAction::triggered, this, &UserDashboard::handleEditUserAction);
 
-    m_UserMenu = menuBar()->addMenu("&User");
-    m_UserMenu->addAction(m_AddUserProfileUserMenu);
-    m_UserMenu->addAction(m_EditUserProfileUserMenu);
-    m_UserMenu->addSeparator();
+    m_qt_UserMenu = menuBar()->addMenu("&User");
+    m_qt_UserMenu->addAction(m_qt_AddUserProfileUserMenu);
+    m_qt_UserMenu->addAction(m_qt_EditUserProfileUserMenu);
+    m_qt_UserMenu->addSeparator();
 }
 
 void UserDashboard::setUpViewsMenu()
 {
-    m_OpenTodoMenu = new QAction("Todo List", this);
-    m_OpenTodoMenu->setStatusTip(tr("Open the Todo List Window"));
-    connect(m_OpenTodoMenu, &QAction::triggered, this, &UserDashboard::handleToDoMenuClicked);
+    m_qt_OpenTodoMenu = new QAction("Todo List", this);
+    m_qt_OpenTodoMenu->setStatusTip(tr("Open the Todo List Window"));
+    connect(m_qt_OpenTodoMenu, &QAction::triggered, this, &UserDashboard::handleToDoMenuClicked);
 
-    m_OpenScheduleMenu = new QAction("Open Schedule Window", this);
-    m_OpenScheduleMenu->setStatusTip("Open Schedule Window");
-    connect(m_OpenScheduleMenu, &QAction::triggered, this, &UserDashboard::handleOpenScheduleWindowClicked);
+    m_qt_OpenScheduleMenu = new QAction("Open Schedule Window", this);
+    m_qt_OpenScheduleMenu->setStatusTip("Open Schedule Window");
+    connect(m_qt_OpenScheduleMenu, &QAction::triggered, this, &UserDashboard::handleOpenScheduleWindowClicked);
 
-    m_OpenNotesMenu = new QAction("Open Notes Window", this);
-    m_OpenNotesMenu->setStatusTip("Open Notes Window");
-    connect(m_OpenNotesMenu, &QAction::triggered, this, &UserDashboard::handleOpenNotesWindowClicked);
+    m_qt_OpenNotesMenu = new QAction("Open Notes Window", this);
+    m_qt_OpenNotesMenu->setStatusTip("Open Notes Window");
+    connect(m_qt_OpenNotesMenu, &QAction::triggered, this, &UserDashboard::handleOpenNotesWindowClicked);
 
-    m_OpenGoalMenu = new QAction("Open Goal Window", this);
-    m_OpenGoalMenu->setStatusTip("Open Goal Window");
-    connect(m_OpenGoalMenu, &QAction::triggered, this, &UserDashboard::handleOpenGoalWindowClicked);
+    m_qt_OpenGoalMenu = new QAction("Open Goal Window", this);
+    m_qt_OpenGoalMenu->setStatusTip("Open Goal Window");
+    connect(m_qt_OpenGoalMenu, &QAction::triggered, this, &UserDashboard::handleOpenGoalWindowClicked);
 
-    m_ViewsMenu = menuBar()->addMenu("&Views");
-    m_ViewsMenu->addAction(m_OpenTodoMenu);
-    m_ViewsMenu->addAction(m_OpenScheduleMenu);
-    m_ViewsMenu->addAction(m_OpenNotesMenu);
-    m_ViewsMenu->addAction(m_OpenGoalMenu);
-    m_ViewsMenu->addSeparator();
+    m_qt_ViewsMenu = menuBar()->addMenu("&Views");
+    m_qt_ViewsMenu->addAction(m_qt_OpenTodoMenu);
+    m_qt_ViewsMenu->addAction(m_qt_OpenScheduleMenu);
+    m_qt_ViewsMenu->addAction(m_qt_OpenNotesMenu);
+    m_qt_ViewsMenu->addAction(m_qt_OpenGoalMenu);
+    m_qt_ViewsMenu->addSeparator();
 }
 
 QGroupBox *UserDashboard::setUpUserIdBox()
 {
-    m_userIDGroupBox = new QGroupBox("User ID:", m_qt_Centralwidget);
+    m_qt_UserIDGroupBox = new QGroupBox("User ID:", m_qt_Centralwidget);
     QHBoxLayout* uiBoxLaytout = new QHBoxLayout;
     uiBoxLaytout->setObjectName("uiBoxLaytout");
 
-    m_UserFirstNameDisplay = cqtfa_LineEditFixedWidthByCharCount("m_UserFirstNameDisplay", m_userIDGroupBox, userNameWidth);
-    uiBoxLaytout->addWidget(m_UserFirstNameDisplay);
+    m_qt_UserFirstNameDisplay = cqtfa_LineEditFixedWidthByCharCount("m_qt_UserFirstNameDisplay", m_qt_UserIDGroupBox, userNameWidth);
+    uiBoxLaytout->addWidget(m_qt_UserFirstNameDisplay);
 
-    m_UserMiddleInitialDisplay = cqtfa_LineEditFixedWidthByCharCount("m_UserMiddleInitialDisplay", m_userIDGroupBox, userNameWidth / 4);
-    uiBoxLaytout->addWidget(m_UserMiddleInitialDisplay);
+    m_qt_UserMiddleInitialDisplay = cqtfa_LineEditFixedWidthByCharCount("m_qt_UserMiddleInitialDisplay", m_qt_UserIDGroupBox, userNameWidth / 4);
+    uiBoxLaytout->addWidget(m_qt_UserMiddleInitialDisplay);
 
-    m_UserLastNameDisplay = cqtfa_LineEditFixedWidthByCharCount("m_UserLastNameDisplay", m_userIDGroupBox, userNameWidth);
-    uiBoxLaytout->addWidget(m_UserLastNameDisplay);
+    m_qt_UserLastNameDisplay = cqtfa_LineEditFixedWidthByCharCount("m_qt_UserLastNameDisplay", m_qt_UserIDGroupBox, userNameWidth);
+    uiBoxLaytout->addWidget(m_qt_UserLastNameDisplay);
 
-    m_dUserLoginDisplay = cqtfa_LineEditFixedWidthByCharCount("m_dUserLoginDisplay", m_userIDGroupBox, userNameWidth);
-    uiBoxLaytout->addWidget(m_dUserLoginDisplay);
+    m_qt_UserLoginDisplay = cqtfa_LineEditFixedWidthByCharCount("m_qt_UserLoginDisplay", m_qt_UserIDGroupBox, userNameWidth);
+    uiBoxLaytout->addWidget(m_qt_UserLoginDisplay);
 
-    m_userIDGroupBox->setLayout(uiBoxLaytout);
-    m_userIDGroupBox->setGeometry(QRect(10, 10, maxOjectWidth, 90));
-    m_userIDGroupBox->setAlignment(Qt::AlignCenter);
+    m_qt_UserIDGroupBox->setLayout(uiBoxLaytout);
+    m_qt_UserIDGroupBox->setGeometry(QRect(10, 10, maxOjectWidth, 90));
+    m_qt_UserIDGroupBox->setAlignment(Qt::AlignCenter);
 
-    return m_userIDGroupBox;
+    return m_qt_UserIDGroupBox;
 }
 
 QHBoxLayout *UserDashboard::setUpPerDayLayout()
@@ -174,10 +174,10 @@ void UserDashboard::updatePerDayView()
 
 void UserDashboard::fillUserIdBoxData()
 {
-    m_UserFirstNameDisplay->setText(QString::fromStdString(m_UserDataPtr->getFirstName()));
-    m_UserMiddleInitialDisplay->setText(QString::fromStdString(m_UserDataPtr->getMiddleInitial()));
-    m_UserLastNameDisplay->setText(QString::fromStdString(m_UserDataPtr->getLastName()));
-    m_dUserLoginDisplay->setText(QString::fromStdString(m_UserDataPtr->getLoginName()));
+    m_qt_UserFirstNameDisplay->setText(QString::fromStdString(m_UserDataPtr->getFirstName()));
+    m_qt_UserMiddleInitialDisplay->setText(QString::fromStdString(m_UserDataPtr->getMiddleInitial()));
+    m_qt_UserLastNameDisplay->setText(QString::fromStdString(m_UserDataPtr->getLastName()));
+    m_qt_UserLoginDisplay->setText(QString::fromStdString(m_UserDataPtr->getLoginName()));
 }
 
 void UserDashboard::handleAddUserAction()

@@ -45,15 +45,14 @@ private:
     int maxGroupBoxHeight;
     int maxButtonBoxHeight;
 
-    QVBoxLayout* dbConnectionsDialogLayout = nullptr;
-    QGroupBox* dbConnectionsGB = nullptr;
-    QFormLayout* dbConnectionsFormLayout = nullptr;
-    QLineEdit* mySqlUser = nullptr;
-    QLineEdit* mySqlPassword = nullptr;
-    QLineEdit* mySqlUrl = nullptr;
-    QLineEdit* mySqlPort = nullptr;
-    QLineEdit* mySqlDBName = nullptr;
-    QCheckBox* rememberMe = nullptr;
+    QVBoxLayout* m_qt_DialogLayout = nullptr;
+    QGroupBox* m_qt_ConnectionsGB = nullptr;
+    QFormLayout* m_qt_GBFormLayout = nullptr;
+    QLineEdit* m_qt_MySqlUser = nullptr;
+    QLineEdit* m_qt_MySqlPassword = nullptr;
+    QLineEdit* m_qt_MySqlUrl = nullptr;
+    QLineEdit* m_qt_MySqlPort = nullptr;
+    QLineEdit* m_qt_MySqlDBName = nullptr;
     QDialogButtonBox* dbConnectionsButtonBox = nullptr;
     QGroupBox* optionsGB = nullptr;
     QFormLayout* optionsFormLayout = nullptr;

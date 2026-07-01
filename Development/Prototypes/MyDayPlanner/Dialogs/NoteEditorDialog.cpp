@@ -37,16 +37,16 @@ void NoteEditorDialog::initEditorFieldsFromDataBase()
 QGroupBox *NoteEditorDialog::setUpEditorDialogForm()
 {
     QGroupBox* mainEditorGroupBox = new QGroupBox(m_EditorTitleString, this);
-    m_Qt_EditorFormLayout = new QFormLayout(mainEditorGroupBox);
-    m_Qt_EditorFormLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
+    m_qt_EditorFormLayout = new QFormLayout(mainEditorGroupBox);
+    m_qt_EditorFormLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 
-    editNoteContentTE = cqtfa_flexiblePlainTextEditEbasedOnCharCount("editNoteContentTE",
+    m_qt_Content = cqtfa_flexiblePlainTextEditEbasedOnCharCount("m_qt_Content",
         mainEditorGroupBox, minNoteContentWidth, maxNoteContentWidth, noteLineCount);
-    m_Qt_EditorFormLayout->addRow("Content:", editNoteContentTE);
+    m_qt_EditorFormLayout->addRow("Content:", m_qt_Content);
 
-    maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(m_Qt_EditorFormLayout);
+    maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(m_qt_EditorFormLayout);
 
-    mainEditorGroupBox->setLayout(m_Qt_EditorFormLayout);
+    mainEditorGroupBox->setLayout(m_qt_EditorFormLayout);
 
     return mainEditorGroupBox;
 }
@@ -63,7 +63,7 @@ void NoteEditorDialog::transferEditorValuesToDBModel()
     if (m_DBObjectModel)
     {
         NoteModel_shp noteData = std::dynamic_pointer_cast<NoteModel>(m_DBObjectModel);
-        noteData->setContent(editNoteContentTE->toPlainText().toStdString());
+        noteData->setContent(m_qt_Content->toPlainText().toStdString());
     }
 }
 
@@ -73,6 +73,6 @@ void NoteEditorDialog::transferDBModelDataToEditorFields()
     {
         NoteModel_shp noteData = std::dynamic_pointer_cast<NoteModel>(m_DBObjectModel);
 
-        editNoteContentTE->setPlainText(QString::fromStdString(noteData->getContent()));
+        m_qt_Content->setPlainText(QString::fromStdString(noteData->getContent()));
     }
 }

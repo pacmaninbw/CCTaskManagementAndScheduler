@@ -48,19 +48,19 @@ private:
     std::chrono::system_clock::time_point m_EndTime;
     bool m_UserPresetTime = false;
 
-    QDateEdit* eventDateDE = nullptr;
-    QDateTimeEdit* startTimeDTE = nullptr;
-    QDateTimeEdit* endTimeDTE = nullptr;
-    QPlainTextEdit* eventTitleTE = nullptr;
-    QLineEdit* eventTitleLE = nullptr;
-    QCompleter* titleCompleterQC = nullptr;
-    QLineEdit* locationLE = nullptr;
-    QPlainTextEdit* locationTE = nullptr;
-    QCompleter* locationCompleterQC = nullptr;
-    QCheckBox* isPersonalCB = nullptr;
+    QDateEdit* m_qt_EventDate = nullptr;
+    QDateTimeEdit* m_qt_StartTime = nullptr;
+    QDateTimeEdit* m_qt_EndTime = nullptr;
+    QPlainTextEdit* m_qt_EditTitle = nullptr;
+    QLineEdit* m_qt_AddTitle = nullptr;
+    QCompleter* m_qt_TitleCompleter = nullptr;
+    QLineEdit* m_qt_AddLocation = nullptr;
+    QPlainTextEdit* m_qt_EditLocation = nullptr;
+    QCompleter* m_qt_LocationCompleter = nullptr;
+    QCheckBox* m_qt_Personal = nullptr;
 
-    const int sied_TextEditMinWidth = 300;
-    const int sied_TextEditMaxWidth = 700;
+    const int EventTextEditMinWidth = 300;
+    const int EventTextEditMaxWidth = 700;
     const int MaxCharLineEdit = 128;
     const int TitleLineCount = 2;
     const int LocationLineCount = 3;

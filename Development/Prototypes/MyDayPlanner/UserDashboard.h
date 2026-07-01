@@ -56,21 +56,21 @@ private:
     void updatePerDayView();
     void fillUserIdBoxData();
 
-    QMenu* m_UserMenu = nullptr;
-    QMenu* m_ViewsMenu = nullptr;
-    QAction* m_AddUserProfileUserMenu = nullptr;
-    QAction* m_EditUserProfileUserMenu = nullptr;
-    QAction* m_OpenTodoMenu = nullptr;
-    QAction* m_OpenGoalMenu = nullptr;
-    QAction* m_OpenScheduleMenu = nullptr;
-    QAction* m_OpenNotesMenu = nullptr;
+    QMenu* m_qt_UserMenu = nullptr;
+    QMenu* m_qt_ViewsMenu = nullptr;
+    QAction* m_qt_AddUserProfileUserMenu = nullptr;
+    QAction* m_qt_EditUserProfileUserMenu = nullptr;
+    QAction* m_qt_OpenTodoMenu = nullptr;
+    QAction* m_qt_OpenGoalMenu = nullptr;
+    QAction* m_qt_OpenScheduleMenu = nullptr;
+    QAction* m_qt_OpenNotesMenu = nullptr;
     QWidget* m_qt_Centralwidget = nullptr;
-    QGroupBox* m_userIDGroupBox = nullptr;
-    QLineEdit* m_UserFirstNameDisplay = nullptr;
-    QLineEdit* m_UserMiddleInitialDisplay = nullptr;
-    QLineEdit* m_UserLastNameDisplay = nullptr;
-    QLineEdit* m_dUserLoginDisplay = nullptr;
-    QDateEdit* m_DateSelector = nullptr;
+    QGroupBox* m_qt_UserIDGroupBox = nullptr;
+    QLineEdit* m_qt_UserFirstNameDisplay = nullptr;
+    QLineEdit* m_qt_UserMiddleInitialDisplay = nullptr;
+    QLineEdit* m_qt_UserLastNameDisplay = nullptr;
+    QLineEdit* m_qt_UserLoginDisplay = nullptr;
+    QDateEdit* m_qt_DateSelector = nullptr;
 
     QString m_ProgNameStr;
     std::shared_ptr<UserModel> m_UserDataPtr = nullptr;

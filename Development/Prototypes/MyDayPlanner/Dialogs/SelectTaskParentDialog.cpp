@@ -35,11 +35,11 @@ void SelectTaskParentDialog::setupDialogUI()
 {
     resize(defaultDialogWidth, defaultDialogHeight);
 
-    selectTaskParentDialogLayout = cqtfa_QTWidget<QVBoxLayout>("selectTaskParentDialogLayout", this);
+    m_qt_SelectParentDialogLayout = cqtfa_QTWidget<QVBoxLayout>("m_qt_SelectParentDialogLayout", this);
 
-    selectTaskParentDialogLayout->addWidget(setUpGroupBox());
+    m_qt_SelectParentDialogLayout->addWidget(setUpGroupBox());
 
-    setLayout(selectTaskParentDialogLayout);
+    setLayout(m_qt_SelectParentDialogLayout);
 }
 
 void SelectTaskParentDialog::handleParentTaskTableClicked(const QModelIndex &index)
@@ -54,43 +54,43 @@ void SelectTaskParentDialog::handleParentTaskTableClicked(const QModelIndex &ind
 
 QGroupBox *SelectTaskParentDialog::setUpGroupBox()
 {
-    selectParentgroupBox = new QGroupBox("Select Parent Task", this);
-    selectParentgroupBox->setObjectName("selectParentgroupBox");
-    selectParentgroupBox->setAlignment(Qt::AlignHCenter);
+    m_qt_SelectParentGB = new QGroupBox("Select Parent Task", this);
+    m_qt_SelectParentGB->setObjectName("m_qt_SelectParentGB");
+    m_qt_SelectParentGB->setAlignment(Qt::AlignHCenter);
 
-    selectParentGroupBoxLayout = cqtfa_FormLayoutWithPolicy("selectParentGroupBoxLayout", selectParentgroupBox);
+    m_qt_SelectParentGBLayout = cqtfa_FormLayoutWithPolicy("m_qt_SelectParentGBLayout", m_qt_SelectParentGB);
 
-    selectParentGroupBoxLayout->addWidget(setUpParentTaskView());
+    m_qt_SelectParentGBLayout->addWidget(setUpParentTaskView());
 
-    selectParentGroupBoxLayout->addWidget(setUpDialogButtons());
-    buttonBox->setCenterButtons(true);
+    m_qt_SelectParentGBLayout->addWidget(setUpDialogButtons());
+    m_qt_ButtonBox->setCenterButtons(true);
 
-    return selectParentgroupBox;
+    return m_qt_SelectParentGB;
 }
 
 QDialogButtonBox *SelectTaskParentDialog::setUpDialogButtons()
 {
-    buttonBox = cqtfa_QTWidget<QDialogButtonBox>("buttonBox", this);
-    buttonBox->setOrientation(Qt::Horizontal);
-    buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
+    m_qt_ButtonBox = cqtfa_QTWidget<QDialogButtonBox>("m_qt_ButtonBox", this);
+    m_qt_ButtonBox->setOrientation(Qt::Horizontal);
+    m_qt_ButtonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
 
-    QObject::connect(buttonBox, &QDialogButtonBox::accepted, this, qOverload<>(&QDialog::accept));
-    QObject::connect(buttonBox, &QDialogButtonBox::rejected, this, qOverload<>(&QDialog::reject));
+    QObject::connect(m_qt_ButtonBox, &QDialogButtonBox::accepted, this, qOverload<>(&QDialog::accept));
+    QObject::connect(m_qt_ButtonBox, &QDialogButtonBox::rejected, this, qOverload<>(&QDialog::reject));
 
-    return buttonBox;
+    return m_qt_ButtonBox;
 }
 
 QTableView *SelectTaskParentDialog::setUpParentTaskView()
 {
-    selectParentTableView = cqtfa_QTWidget<QTableView>("selectParentTableView", this);
-    selectParentTableView->setModel(setUpParentTaskTable());
-    selectParentTableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
-    selectParentTableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
-    selectParentTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_qt_SelectParentTableView = cqtfa_QTWidget<QTableView>("m_qt_SelectParentTableView", this);
+    m_qt_SelectParentTableView->setModel(setUpParentTaskTable());
+    m_qt_SelectParentTableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    m_qt_SelectParentTableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    m_qt_SelectParentTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-    connect(selectParentTableView,  &QTableView::clicked, this, &SelectTaskParentDialog::handleParentTaskTableClicked);
+    connect(m_qt_SelectParentTableView,  &QTableView::clicked, this, &SelectTaskParentDialog::handleParentTaskTableClicked);
 
-    return selectParentTableView;
+    return m_qt_SelectParentTableView;
 }
 
 QAbstractTableModel *SelectTaskParentDialog::setUpParentTaskTable()

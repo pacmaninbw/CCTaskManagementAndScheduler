@@ -35,11 +35,12 @@ private:
     QDialogButtonBox* setUpDialogButtons();
     QTableView* setUpParentTaskView();
     QAbstractTableModel* setUpParentTaskTable();
-    QVBoxLayout* selectTaskParentDialogLayout = nullptr;
-    QDialogButtonBox* buttonBox = nullptr;
-    QGroupBox* selectParentgroupBox = nullptr;
-    QFormLayout* selectParentGroupBoxLayout = nullptr;
-    QTableView* selectParentTableView = nullptr;
+    QVBoxLayout* m_qt_SelectParentDialogLayout = nullptr;
+    QDialogButtonBox* m_qt_ButtonBox = nullptr;
+    QGroupBox* m_qt_SelectParentGB = nullptr;
+    QFormLayout* m_qt_SelectParentGBLayout = nullptr;
+    QTableView* m_qt_SelectParentTableView = nullptr;
+
     std::size_t m_ParentTaskID;
     std::size_t m_CreatorID;
 

@@ -42,23 +42,23 @@ private:
     void transferAllFieldsToData();
 
 // Model related variables
-    std::size_t m_userID;
+    std::size_t m_UserID;
     std::shared_ptr<UserModel> m_UserData;
 
 // QT Widgets
-    QDialogButtonBox* editUserButtonBox = nullptr;
-    QVBoxLayout* editUserLayout = nullptr;
-    QGroupBox* userProfileGB = nullptr;
-    QFormLayout* userProfileForm = nullptr;
-    QLineEdit* firstNameLE = nullptr;
-    QLineEdit* lastNameLE = nullptr;
-    QLineEdit* middleNameLE = nullptr;
-    QLineEdit* emailLE = nullptr;
-    QGroupBox* loginDataGB = nullptr;
-    QFormLayout* loginDataForm = nullptr;
-    QLineEdit* userNameLE = nullptr;
-    QLineEdit* passwordLE = nullptr;
-    QCheckBox* autoGenerateLoginAndPassword = nullptr;
+    QDialogButtonBox* m_qt_ButtonBox = nullptr;
+    QVBoxLayout* m_qt_EditorLayout = nullptr;
+    QGroupBox* m_qt_UserProfileGB = nullptr;
+    QFormLayout* m_qt_UserProfileForm = nullptr;
+    QLineEdit* m_qt_FirstName = nullptr;
+    QLineEdit* m_qt_LastName = nullptr;
+    QLineEdit* m_qt_MiddleName = nullptr;
+    QLineEdit* m_qt_Email = nullptr;
+    QGroupBox* m_qt_LoginGB = nullptr;
+    QFormLayout* m_qt_LoginForm = nullptr;
+    QLineEdit* m_qt_UserName = nullptr;
+    QLineEdit* m_qt_Password = nullptr;
+    QCheckBox* m_qt_AutoGenerateLoginAndPassword = nullptr;
 
     const int groupBoxSpacing = 60;
     const int emailWidth = 300;

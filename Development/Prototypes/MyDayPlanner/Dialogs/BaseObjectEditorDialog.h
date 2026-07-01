@@ -76,11 +76,11 @@ protected:
     int maxGroupBoxHeight = 0;
     int maxButtonBoxHeight = 0;
 
-    QVBoxLayout* m_Qt_EditorLayout = nullptr;
-    QDialogButtonBox* m_Qt_ButtonBox = nullptr;
-    QPushButton* m_Qt_DeleteButton = nullptr;
-    QGroupBox* m_Qt_EditorDialogFormGB = nullptr;
-    QFormLayout* m_Qt_EditorFormLayout = nullptr;
+    QVBoxLayout* m_qt_EditorLayout = nullptr;
+    QDialogButtonBox* m_qt_ButtonBox = nullptr;
+    QPushButton* m_qt_DeleteButton = nullptr;
+    QGroupBox* m_qt_EditorDialogFormGB = nullptr;
+    QFormLayout* m_qt_EditorFormLayout = nullptr;
 
     const int marginAndSpacing = 30;
     const int maxWidthUndefined = 16777215;

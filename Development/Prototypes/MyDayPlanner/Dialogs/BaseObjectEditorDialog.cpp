@@ -64,19 +64,19 @@ void BaseObjectEditorDialog::handleDeleteButton_Clicked()
 
 void BaseObjectEditorDialog::setUpEditorUI()
 {
-    m_Qt_EditorLayout = new QVBoxLayout(this);
-    m_Qt_EditorLayout->setObjectName("m_Qt_EditorLayout");
+    m_qt_EditorLayout = new QVBoxLayout(this);
+    m_qt_EditorLayout->setObjectName("m_qt_EditorLayout");
 
-    m_Qt_EditorDialogFormGB = setUpEditorDialogForm();
-    m_Qt_EditorDialogFormGB->setObjectName("m_Qt_EditorDialogFormGB");
+    m_qt_EditorDialogFormGB = setUpEditorDialogForm();
+    m_qt_EditorDialogFormGB->setObjectName("m_qt_EditorDialogFormGB");
 
-    m_Qt_EditorLayout->addWidget(m_Qt_EditorDialogFormGB);
+    m_qt_EditorLayout->addWidget(m_qt_EditorDialogFormGB);
 
-    m_Qt_ButtonBox = setUpEditorButtonBox();
-    m_Qt_ButtonBox->setObjectName("m_Qt_ButtonBox");
-    m_Qt_EditorLayout->addWidget(m_Qt_ButtonBox);
+    m_qt_ButtonBox = setUpEditorButtonBox();
+    m_qt_ButtonBox->setObjectName("m_qt_ButtonBox");
+    m_qt_EditorLayout->addWidget(m_qt_ButtonBox);
 
-    setLayout(m_Qt_EditorLayout);
+    setLayout(m_qt_EditorLayout);
 
     limitDialogGrowth();
 
@@ -99,10 +99,10 @@ QDialogButtonBox* BaseObjectEditorDialog::setUpEditorButtonBox()
  */
     if (m_DBModelID)
     {
-        m_Qt_DeleteButton = createDeleteButton(buttonBox);
+        m_qt_DeleteButton = createDeleteButton(buttonBox);
 
-        buttonBox->addButton(m_Qt_DeleteButton, QDialogButtonBox::DestructiveRole);
-        connect(m_Qt_DeleteButton, &QPushButton::clicked, this, &BaseObjectEditorDialog::handleDeleteButton_Clicked);
+        buttonBox->addButton(m_qt_DeleteButton, QDialogButtonBox::DestructiveRole);
+        connect(m_qt_DeleteButton, &QPushButton::clicked, this, &BaseObjectEditorDialog::handleDeleteButton_Clicked);
     }
 
     maxButtonBoxHeight = buttonBox->height() + marginAndSpacing;
@@ -115,16 +115,16 @@ QDialogButtonBox* BaseObjectEditorDialog::setUpEditorButtonBox()
 
 void BaseObjectEditorDialog::limitDialogGrowth()
 {
-    if (!m_Qt_EditorDialogFormGB || !m_Qt_ButtonBox)
+    if (!m_qt_EditorDialogFormGB || !m_qt_ButtonBox)
     {
         return;
     }
 
-    m_Qt_EditorDialogFormGB->setMaximumHeight(maxGroupBoxHeight);
+    m_qt_EditorDialogFormGB->setMaximumHeight(maxGroupBoxHeight);
 
-    m_Qt_ButtonBox->setMaximumHeight(maxButtonBoxHeight);
+    m_qt_ButtonBox->setMaximumHeight(maxButtonBoxHeight);
 
-    int maxDialogWidth = getFormLayoutMaxWidth(m_Qt_EditorFormLayout) + marginAndSpacing;
+    int maxDialogWidth = getFormLayoutMaxWidth(m_qt_EditorFormLayout) + marginAndSpacing;
 
     setMaximumWidth(maxDialogWidth);
     setMaximumHeight(maxGroupBoxHeight + maxButtonBoxHeight + marginAndSpacing);

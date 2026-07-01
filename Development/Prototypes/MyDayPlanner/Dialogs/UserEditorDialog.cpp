@@ -20,7 +20,7 @@
 
 UserEditorDialog::UserEditorDialog(QWidget *parent)
     : QDialog(parent),
-      m_userID{0},
+      m_UserID{0},
       m_UserData{nullptr}
 {
     m_UserData = std::make_shared<UserModel>();
@@ -30,7 +30,7 @@ UserEditorDialog::UserEditorDialog(QWidget *parent)
 
 UserEditorDialog::UserEditorDialog(std::shared_ptr<UserModel> userData, QWidget *parent)
     : QDialog(parent),
-      m_userID{userData->getUserID()},
+      m_UserID{userData->getUserID()},
       m_UserData{userData}
 {
     setUpUserEditorDialogUi();
@@ -45,7 +45,7 @@ UserEditorDialog::~UserEditorDialog()
 
 void UserEditorDialog::accept()
 {
-    bool updateSuccessful = (m_userID > 0)? upDateUser() : addUser();
+    bool updateSuccessful = (m_UserID > 0)? upDateUser() : addUser();
     
     if (updateSuccessful)
     {
@@ -61,78 +61,78 @@ void UserEditorDialog::accept()
 
 void UserEditorDialog::setUpUserEditorDialogUi()
 {
-    editUserLayout = cqtfa_QTWidget<QVBoxLayout>("editUserLayout", this);
-    editUserLayout->addWidget(setUpUserProfileGB(), 0, Qt::AlignHCenter);
-    editUserLayout->addWidget(setUpLoginDataGB(), 0, Qt::AlignHCenter);
+    m_qt_EditorLayout = cqtfa_QTWidget<QVBoxLayout>("m_qt_EditorLayout", this);
+    m_qt_EditorLayout->addWidget(setUpUserProfileGB(), 0, Qt::AlignHCenter);
+    m_qt_EditorLayout->addWidget(setUpLoginDataGB(), 0, Qt::AlignHCenter);
 
-    editUserButtonBox = setUpEditUserButtonBox();
-    editUserLayout->addWidget(editUserButtonBox, 0, Qt::AlignHCenter);
+    m_qt_ButtonBox = setUpEditUserButtonBox();
+    m_qt_EditorLayout->addWidget(m_qt_ButtonBox, 0, Qt::AlignHCenter);
 
-    editUserLayout->setSpacing(groupBoxSpacing);
+    m_qt_EditorLayout->setSpacing(groupBoxSpacing);
 
-    setLayout(editUserLayout);
+    setLayout(m_qt_EditorLayout);
 
-    QString dialogTitle = (m_userID == 0)? "Add User" : "Edit User Profile";
+    QString dialogTitle = (m_UserID == 0)? "Add User" : "Edit User Profile";
 
     setWindowTitle(dialogTitle);
 }
 
 QGroupBox* UserEditorDialog::setUpUserProfileGB()
 {
-    userProfileGB = new QGroupBox("User Profile:");
+    m_qt_UserProfileGB = new QGroupBox("User Profile:");
 
-    userProfileForm = cqtfa_FormLayoutWithPolicy("userProfileForm", userProfileGB);
+    m_qt_UserProfileForm = cqtfa_FormLayoutWithPolicy("m_qt_UserProfileForm", m_qt_UserProfileGB);
 
-    firstNameLE = cqtfa_LineEditWithWidthAndLength("firstNameLE", this);
-    userProfileForm->addRow("FirstName:", firstNameLE);
+    m_qt_FirstName = cqtfa_LineEditWithWidthAndLength("m_qt_FirstName", this);
+    m_qt_UserProfileForm->addRow("FirstName:", m_qt_FirstName);
 
-    lastNameLE = cqtfa_LineEditWithWidthAndLength("lastNameLE", this);
-    userProfileForm->addRow("Last Name:", lastNameLE);
+    m_qt_LastName = cqtfa_LineEditWithWidthAndLength("m_qt_LastName", this);
+    m_qt_UserProfileForm->addRow("Last Name:", m_qt_LastName);
 
-    middleNameLE = cqtfa_LineEditWithWidthAndLength("middleNameLE", this);
-    userProfileForm->addRow("Middle Initial:", middleNameLE);
+    m_qt_MiddleName = cqtfa_LineEditWithWidthAndLength("m_qt_MiddleName", this);
+    m_qt_UserProfileForm->addRow("Middle Initial:", m_qt_MiddleName);
 
-    emailLE = cqtfa_LineEditWithWidthAndLength("emailLE", this, emailWidth, emailCharCount);
-    userProfileForm->addRow("eMail Address:", emailLE);
+    m_qt_Email = cqtfa_LineEditWithWidthAndLength("m_qt_Email", this, emailWidth, emailCharCount);
+    m_qt_UserProfileForm->addRow("eMail Address:", m_qt_Email);
 
-    userProfileGB->setLayout(userProfileForm);
+    m_qt_UserProfileGB->setLayout(m_qt_UserProfileForm);
 
-    return userProfileGB;
+    return m_qt_UserProfileGB;
 }
 
 QGroupBox* UserEditorDialog::setUpLoginDataGB()
 {
-    loginDataGB = new QGroupBox("User Login:");
+    m_qt_LoginGB = new QGroupBox("User Login:");
 
-    loginDataForm = cqtfa_FormLayoutWithPolicy("loginDataForm", loginDataGB);
+    m_qt_LoginForm = cqtfa_FormLayoutWithPolicy("m_qt_LoginForm", m_qt_LoginGB);
 
-    userNameLE = cqtfa_LineEditWithWidthAndLength("userNameLE", this);
-    loginDataForm->addRow("User Name:", userNameLE);
+    m_qt_UserName = cqtfa_LineEditWithWidthAndLength("m_qt_UserName", this);
+    m_qt_LoginForm->addRow("User Name:", m_qt_UserName);
 
-    passwordLE = cqtfa_LineEditWithWidthAndLength("passwordLE", this);
-    loginDataForm->addRow("Password:", passwordLE);
+    m_qt_Password = cqtfa_LineEditWithWidthAndLength("m_qt_Password", this);
+    m_qt_LoginForm->addRow("Password:", m_qt_Password);
 
-    if (m_userID == 0)
+    if (m_UserID == 0)
     {
-        autoGenerateLoginAndPassword = cqtfa_QTWidgetWithText<QCheckBox>(
-            "Auto Generate Login and Password", "autoGenerateLoginAndPassword", this);
-        loginDataForm->addRow(autoGenerateLoginAndPassword);
+        m_qt_AutoGenerateLoginAndPassword = cqtfa_QTWidgetWithText<QCheckBox>(
+            "Auto Generate Login and Password", "m_qt_AutoGenerateLoginAndPassword", this);
+        m_qt_LoginForm->addRow(m_qt_AutoGenerateLoginAndPassword);
     }
     else
     {
-        autoGenerateLoginAndPassword = nullptr;
+        m_qt_AutoGenerateLoginAndPassword = nullptr;
     }
     
-    loginDataGB->setLayout(loginDataForm);
+    m_qt_LoginGB->setLayout(m_qt_LoginForm);
 
-    return loginDataGB;
+    return m_qt_LoginGB;
 }
 
 QDialogButtonBox *UserEditorDialog::setUpEditUserButtonBox()
 {
     QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
 
-    buttonBox->setObjectName(QString::fromUtf8("editUserButtonBox"));
+    buttonBox->setObjectName(QString::fromUtf8("m_qt_ButtonBox"));
     buttonBox->setGeometry(QRect(0, 500, 341, 32));
     buttonBox->setOrientation(Qt::Horizontal);
     buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
@@ -145,12 +145,12 @@ QDialogButtonBox *UserEditorDialog::setUpEditUserButtonBox()
 
 void UserEditorDialog::initAllFieldsFromData()
 {
-    firstNameLE->setText(QString::fromStdString(m_UserData->getFirstName()));
-    lastNameLE->setText(QString::fromStdString(m_UserData->getLastName()));
-    middleNameLE->setText(QString::fromStdString(m_UserData->getMiddleInitial()));
-    emailLE->setText(QString::fromStdString(m_UserData->getEmail()));
-    userNameLE->setText(QString::fromStdString(m_UserData->getLoginName()));
-    passwordLE->setText(QString::fromStdString(m_UserData->getPassword()));
+    m_qt_FirstName->setText(QString::fromStdString(m_UserData->getFirstName()));
+    m_qt_LastName->setText(QString::fromStdString(m_UserData->getLastName()));
+    m_qt_MiddleName->setText(QString::fromStdString(m_UserData->getMiddleInitial()));
+    m_qt_Email->setText(QString::fromStdString(m_UserData->getEmail()));
+    m_qt_UserName->setText(QString::fromStdString(m_UserData->getLoginName()));
+    m_qt_Password->setText(QString::fromStdString(m_UserData->getPassword()));
 }
 
 bool UserEditorDialog::addUser()
@@ -167,18 +167,18 @@ bool UserEditorDialog::upDateUser()
 
 void UserEditorDialog::transferAllFieldsToData()
 {
-    m_UserData->setFirstName(firstNameLE->text().toStdString());
-    m_UserData->setLastName(lastNameLE->text().toStdString());
-    m_UserData->setMiddleInitial(middleNameLE->text().toStdString());
-    m_UserData->setEmail(emailLE->text().toStdString());
+    m_UserData->setFirstName(m_qt_FirstName->text().toStdString());
+    m_UserData->setLastName(m_qt_LastName->text().toStdString());
+    m_UserData->setMiddleInitial(m_qt_MiddleName->text().toStdString());
+    m_UserData->setEmail(m_qt_Email->text().toStdString());
     
-    if (m_userID == 0 && autoGenerateLoginAndPassword->isChecked())
+    if (m_UserID == 0 && m_qt_AutoGenerateLoginAndPassword->isChecked())
     {
         m_UserData->autoGenerateLoginAndPassword();
     }
     else
     {
-        m_UserData->setLoginName(userNameLE->text().toStdString());
-        m_UserData->setPassword(passwordLE->text().toStdString());
+        m_UserData->setLoginName(m_qt_UserName->text().toStdString());
+        m_UserData->setPassword(m_qt_Password->text().toStdString());
     }
 }

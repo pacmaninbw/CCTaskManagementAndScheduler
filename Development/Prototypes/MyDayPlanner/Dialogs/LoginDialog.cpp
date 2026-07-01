@@ -28,26 +28,26 @@ void LoginDialog::setUpLoginDialogUI()
 {
     resize(userLoginDialogWidth, userLoginDialogHeight);
 
-    userLoginGB = new QGroupBox("Login As User", this);
-    userLoginGB->setObjectName("userLoginGB");
+    m_qt_UserLoginGB = new QGroupBox("Login As User", this);
+    m_qt_UserLoginGB->setObjectName("m_qt_UserLoginGB");
 
-    QFormLayout* userLoginFormLayout = cqtfa_FormLayoutWithPolicy("userLogingFormLayout", userLoginGB);
+    QFormLayout* userLoginFormLayout = cqtfa_FormLayoutWithPolicy("userLogingFormLayout", m_qt_UserLoginGB);
 
-    userLoginUserNameLE = cqtfa_LineEditWithWidthAndLength("userLoginUserNameLE", userLoginGB);
-    userLoginFormLayout->addRow("User Name:", userLoginUserNameLE);
+    m_qt_UserName = cqtfa_LineEditWithWidthAndLength("m_qt_UserName", m_qt_UserLoginGB);
+    userLoginFormLayout->addRow("User Name:", m_qt_UserName);
 
-    userLoginPasswordLE = cqtfa_LineEditWithWidthAndLength("userLoginPasswordLE", userLoginGB);
-    userLoginFormLayout->addRow("Password:", userLoginPasswordLE);
+    m_qt_Password = cqtfa_LineEditWithWidthAndLength("m_qt_Password", m_qt_UserLoginGB);
+    userLoginFormLayout->addRow("Password:", m_qt_Password);
 
-    actionLoginAsUserPB = cqtfa_QTWidgetWithText<QPushButton>("Login As User", "actionLoginAsUserPB", userLoginGB);
-    connect(actionLoginAsUserPB, &QPushButton::clicked, this, &LoginDialog::onactionLoginAsUserPBClicked);
-    userLoginFormLayout->addWidget(actionLoginAsUserPB);
+    m_qt_LoginAsUser = cqtfa_QTWidgetWithText<QPushButton>("Login As User", "m_qt_LoginAsUser", m_qt_UserLoginGB);
+    connect(m_qt_LoginAsUser, &QPushButton::clicked, this, &LoginDialog::onactionLoginAsUserPBClicked);
+    userLoginFormLayout->addWidget(m_qt_LoginAsUser);
 
     QVBoxLayout* userLoginDialogLayOut = new QVBoxLayout(this);
     userLoginDialogLayOut->setObjectName("userLoginDialogLayOut");
 
     userLoginDialogLayOut->addStretch();
-    userLoginDialogLayOut->addWidget(userLoginGB, 0, Qt::AlignCenter);
+    userLoginDialogLayOut->addWidget(m_qt_UserLoginGB, 0, Qt::AlignCenter);
     userLoginDialogLayOut->addStretch();
 
     setLayout(userLoginDialogLayOut);
@@ -56,13 +56,13 @@ void LoginDialog::setUpLoginDialogUI()
 
 void LoginDialog::onactionLoginAsUserPBClicked()
 {
-    QString loginName = userLoginUserNameLE->text();
+    QString loginName = m_qt_UserName->text();
     if (loginName.length() < 1)
     {
         QMessageBox::critical(nullptr, "Critical Error", "Missing Login Name", QMessageBox::Ok);
     }
 
-    QString password(userLoginPasswordLE->text());
+    QString password(m_qt_Password->text());
     if (password.length() < 1)
     {
         QMessageBox::critical(nullptr, "Critical Error", "Missing Password", QMessageBox::Ok);

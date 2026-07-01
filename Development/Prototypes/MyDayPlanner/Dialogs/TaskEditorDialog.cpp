@@ -105,7 +105,7 @@ void TaskEditorDialog::accept()
     }
 }
 
-void TaskEditorDialog::on_editTaskPersonalCB_stateChanged(int newState)
+void TaskEditorDialog::on_m_qt_PersonalCB_stateChanged(int newState)
 {
     bool isChecked = false;
     switch (newState)
@@ -141,7 +141,7 @@ void TaskEditorDialog::on_editTaskPersonalCB_stateChanged(int newState)
     taskData->setPersonal(isChecked);
 }
 
-void TaskEditorDialog::on_editTaskSelectParentPB_Clicked()
+void TaskEditorDialog::on_m_qt_SelectParentPB_Clicked()
 {
     TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectModel);
 
@@ -165,16 +165,16 @@ void TaskEditorDialog::on_editTaskSelectParentPB_Clicked()
         {
             taskData->setParentTaskID(parentTaskid);
             m_parentTaskUpdated = true;
-            editTaskParentTaskDescriptionDisplay->setText(QString::fromStdString(m_ParentTaskData->getDescription()));
+            m_qt_ParentTaskDescriptionDisplay->setText(QString::fromStdString(m_ParentTaskData->getDescription()));
         }
     }
 }
 
-void TaskEditorDialog::on_editTaskAddDependenciesPB_Clicked()
+void TaskEditorDialog::on_m_qt_AddDependenciesPB_Clicked()
 {
     QMessageBox msgBox(this);
     msgBox.setWindowTitle("Add Dependencies to Task Button");
-    msgBox.setText("on_editTaskAddDependenciesPB_Clicked NOT IMPLEMENTED");
+    msgBox.setText("on_m_qt_AddDependenciesPB_Clicked NOT IMPLEMENTED");
     msgBox.setStandardButtons(QMessageBox::Ok); 
     msgBox.setDefaultButton(QMessageBox::Ok);
     
@@ -186,11 +186,11 @@ void TaskEditorDialog::on_editTaskAddDependenciesPB_Clicked()
     }
 }
 
-void TaskEditorDialog::on_editTaskChangeAssignedUserPB_Clicked()
+void TaskEditorDialog::on_m_qt_ChangeAssignedUserPB_Clicked()
 {
     QMessageBox msgBox(this);
     msgBox.setWindowTitle("Change Assigned User Button");
-    msgBox.setText("on_editTaskChangeAssignedUserPB_Clicked NOT IMPLEMENTED");
+    msgBox.setText("on_m_qt_ChangeAssignedUserPB_Clicked NOT IMPLEMENTED");
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.setDefaultButton(QMessageBox::Ok);
 
@@ -202,7 +202,7 @@ void TaskEditorDialog::on_editTaskChangeAssignedUserPB_Clicked()
     }
 }
 
-void TaskEditorDialog::on_editTaskStatusSelectorCBChanged(int index)
+void TaskEditorDialog::on_m_qt_StatusSelectorCBChanged(int index)
 {
     TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectModel);
     taskData->setStatus(static_cast<TaskModel::TaskStatus>(index));
@@ -216,25 +216,25 @@ void TaskEditorDialog::createSharedPtrDBModelForAddObject()
 
 void TaskEditorDialog::setUpEditorUI()
 {
-    m_Qt_EditorLayout = new QVBoxLayout(this);
-    m_Qt_EditorLayout->setObjectName("m_Qt_EditorLayout");
+    m_qt_EditorLayout = new QVBoxLayout(this);
+    m_qt_EditorLayout->setObjectName("m_qt_EditorLayout");
 
-    m_Qt_EditorLayout->addWidget(setUpTaskDescriptionAndStatusGroupBox());
+    m_qt_EditorLayout->addWidget(setUpTaskDescriptionAndStatusGroupBox());
 
-    m_Qt_EditorLayout->addLayout(setUpUserSection());
+    m_qt_EditorLayout->addLayout(setUpUserSection());
 
-    m_Qt_EditorLayout->addLayout(setUpDateAndRelatedTasksSection());
+    m_qt_EditorLayout->addLayout(setUpDateAndRelatedTasksSection());
 
-    m_Qt_EditorLayout->addLayout(setUpEfforAndPrioritySectionLayout());
+    m_qt_EditorLayout->addLayout(setUpEfforAndPrioritySectionLayout());
 
-    m_Qt_ButtonBox = setUpEditorButtonBox();
-    m_Qt_ButtonBox->setObjectName("m_Qt_ButtonBox");
-    m_Qt_EditorLayout->addWidget(m_Qt_ButtonBox, 0, Qt::AlignHCenter);
+    m_qt_ButtonBox = setUpEditorButtonBox();
+    m_qt_ButtonBox->setObjectName("m_qt_ButtonBox");
+    m_qt_EditorLayout->addWidget(m_qt_ButtonBox, 0, Qt::AlignHCenter);
 
-    m_Qt_EditorLayout->setContentsMargins(20, 20, 20, 20);
-    m_Qt_EditorLayout->setSpacing(15);
+    m_qt_EditorLayout->setContentsMargins(20, 20, 20, 20);
+    m_qt_EditorLayout->setSpacing(15);
 
-    setLayout(m_Qt_EditorLayout);
+    setLayout(m_qt_EditorLayout);
 
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     
@@ -243,208 +243,208 @@ void TaskEditorDialog::setUpEditorUI()
 
 QHBoxLayout* TaskEditorDialog::setUpUserSection()
 {
-    userSectionLayout = new QHBoxLayout;
-    userSectionLayout->setObjectName("userSectionLayout");
+    m_qt_UserSectionLayout = new QHBoxLayout;
+    m_qt_UserSectionLayout->setObjectName("m_qt_UserSectionLayout");
 
-    userSectionLayout->addWidget(setUpTaskCreatorGroupBox(), 0, Qt::AlignLeft);
+    m_qt_UserSectionLayout->addWidget(setUpTaskCreatorGroupBox(), 0, Qt::AlignLeft);
 
-    userSectionLayout->addWidget(setUpTaskAssigneeGroupBox(), 0, Qt::AlignRight);
+    m_qt_UserSectionLayout->addWidget(setUpTaskAssigneeGroupBox(), 0, Qt::AlignRight);
 
-    return userSectionLayout;
+    return m_qt_UserSectionLayout;
 }
 
 QGroupBox *TaskEditorDialog::setUpTaskCreatorGroupBox()
 {
-    editTaskCreatorGB = new QGroupBox("Task Created by:", this);
-    editTaskCreatorGB->setObjectName("editTaskCreatorGB");
-    editTaskCreatorGB->setAlignment(Qt::AlignHCenter);
+    m_qt_CreatorGB = new QGroupBox("Task Created by:", this);
+    m_qt_CreatorGB->setObjectName("m_qt_CreatorGB");
+    m_qt_CreatorGB->setAlignment(Qt::AlignHCenter);
 
-    editTaskCreatorForm = cqtfa_FormLayoutWithPolicy("editTaskCreatorForm", editTaskCreatorGB);
+    m_qt_CreatorForm = cqtfa_FormLayoutWithPolicy("m_qt_CreatorForm", m_qt_CreatorGB);
 
-    editTaskCreatorFirstNameDisplay =
-        cqtfa_LineEditWithWidthAndLength("editTaskCreatorFirstNameDisplay", editTaskCreatorGB);
-    editTaskCreatorForm->addRow("First Name:", editTaskCreatorFirstNameDisplay);
+    m_qt_CreatorFirstNameDisplay =
+        cqtfa_LineEditWithWidthAndLength("m_qt_CreatorFirstNameDisplay", m_qt_CreatorGB);
+    m_qt_CreatorForm->addRow("First Name:", m_qt_CreatorFirstNameDisplay);
 
-    editTaskCreatorLastNameDisplay =
-        cqtfa_LineEditWithWidthAndLength("editTaskCreatorLastNameDisplay", editTaskCreatorGB);
-    editTaskCreatorForm->addRow("Last Name:", editTaskCreatorLastNameDisplay);
+    m_qt_CreatorLastNameDisplay =
+        cqtfa_LineEditWithWidthAndLength("m_qt_CreatorLastNameDisplay", m_qt_CreatorGB);
+    m_qt_CreatorForm->addRow("Last Name:", m_qt_CreatorLastNameDisplay);
 
-    editTaskCreatorGB->setLayout(editTaskCreatorForm);
+    m_qt_CreatorGB->setLayout(m_qt_CreatorForm);
 
-    return editTaskCreatorGB;
+    return m_qt_CreatorGB;
 }
 
 QGroupBox *TaskEditorDialog::setUpTaskAssigneeGroupBox()
 {
-    editTaskAssignedToGB = new QGroupBox("Task Assigned to:", this);
-    editTaskAssignedToGB->setObjectName("editTaskAssignedToGB");
-    editTaskAssignedToGB->setAlignment(Qt::AlignHCenter);
+    m_qt_AssignedToGB = new QGroupBox("Task Assigned to:", this);
+    m_qt_AssignedToGB->setObjectName("m_qt_AssignedToGB");
+    m_qt_AssignedToGB->setAlignment(Qt::AlignHCenter);
 
-    editTaskAssigneeForm = cqtfa_FormLayoutWithPolicy("editTaskAssigneeForm", editTaskAssignedToGB);
+    m_qt_AssigneeForm = cqtfa_FormLayoutWithPolicy("m_qt_AssigneeForm", m_qt_AssignedToGB);
 
-    editTaskAssignedToFirstNameDisplay = cqtfa_LineEditWithWidthAndLength(
-        "editTaskAssignedToFirstNameDisplay", editTaskAssignedToGB);
-    editTaskAssigneeForm->addRow("First Name:", editTaskAssignedToFirstNameDisplay);
+    m_qt_AssignedToFirstNameDisplay = cqtfa_LineEditWithWidthAndLength(
+        "m_qt_AssignedToFirstNameDisplay", m_qt_AssignedToGB);
+    m_qt_AssigneeForm->addRow("First Name:", m_qt_AssignedToFirstNameDisplay);
 
-    editTaskAssignedToLastName = cqtfa_LineEditWithWidthAndLength(
-        "editTaskAssignedToLastName", editTaskAssignedToGB);
-    editTaskAssigneeForm->addRow("Last Name:", editTaskAssignedToLastName);
+    m_qt_AssignedToLastName = cqtfa_LineEditWithWidthAndLength(
+        "m_qt_AssignedToLastName", m_qt_AssignedToGB);
+    m_qt_AssigneeForm->addRow("Last Name:", m_qt_AssignedToLastName);
 
-    editTaskChangeAssignedUserPB = cqtfa_QTWidgetWithText<QPushButton>(
-        "Change Assigned User", "editTaskChangeAssignedUserPB", editTaskAssignedToGB);
-    editTaskAssigneeForm->addWidget(editTaskChangeAssignedUserPB);
+    m_qt_ChangeAssignedUserPB = cqtfa_QTWidgetWithText<QPushButton>(
+        "Change Assigned User", "m_qt_ChangeAssignedUserPB", m_qt_AssignedToGB);
+    m_qt_AssigneeForm->addWidget(m_qt_ChangeAssignedUserPB);
 
 
-    editTaskAssignedToGB->setLayout(editTaskAssigneeForm);
+    m_qt_AssignedToGB->setLayout(m_qt_AssigneeForm);
 
-    return editTaskAssignedToGB;
+    return m_qt_AssignedToGB;
 }
 
 QHBoxLayout* TaskEditorDialog::setUpDateAndRelatedTasksSection()
 {
-    DateAndRelatedTasksSection = new QHBoxLayout;
-    DateAndRelatedTasksSection->setObjectName("DateAndRelatedTasksSection");
+    m_qt_DateAndRelatedTasksSection = new QHBoxLayout;
+    m_qt_DateAndRelatedTasksSection->setObjectName("m_qt_DateAndRelatedTasksSection");
 
-    DateAndRelatedTasksSection->addWidget(setUpTaskDatesGroupBox(), 0, Qt::AlignLeft);
+    m_qt_DateAndRelatedTasksSection->addWidget(setUpTaskDatesGroupBox(), 0, Qt::AlignLeft);
 
-    DateAndRelatedTasksSection->addWidget(setUpRelatedTasksGroupBox(), 0, Qt::AlignRight);
+    m_qt_DateAndRelatedTasksSection->addWidget(setUpRelatedTasksGroupBox(), 0, Qt::AlignRight);
 
-    return DateAndRelatedTasksSection;
+    return m_qt_DateAndRelatedTasksSection;
 }
 
 QGroupBox *TaskEditorDialog::setUpRelatedTasksGroupBox()
 {
-    editTaskParentTaskGB = new QGroupBox("Related Tasks:", this);
-    editTaskParentTaskGB->setObjectName("editTaskParentTaskGB");
-    editTaskParentTaskGB->setAlignment(Qt::AlignHCenter);
+    m_qt_ParentTaskGB = new QGroupBox("Related Tasks:", this);
+    m_qt_ParentTaskGB->setObjectName("m_qt_ParentTaskGB");
+    m_qt_ParentTaskGB->setAlignment(Qt::AlignHCenter);
 
-    editTaskParentForm = cqtfa_FormLayoutWithPolicy("editTaskParentForm", editTaskParentTaskGB);
+    m_qt_ParentForm = cqtfa_FormLayoutWithPolicy("m_qt_ParentForm", m_qt_ParentTaskGB);
 
-    editTaskParentTaskDescriptionDisplay = cqtfa_LineEditWithWidthAndLength("", editTaskParentTaskGB);
-    editTaskParentForm->addRow("", editTaskParentTaskDescriptionDisplay);
+    m_qt_ParentTaskDescriptionDisplay = cqtfa_LineEditWithWidthAndLength("", m_qt_ParentTaskGB);
+    m_qt_ParentForm->addRow("", m_qt_ParentTaskDescriptionDisplay);
 
-    editTaskSelectParentPB = cqtfa_QTWidgetWithText<QPushButton>("Select Parent Task",
-        "editTaskSelectParentPB" , editTaskParentTaskGB);
-    editTaskParentForm->addWidget(editTaskSelectParentPB);
+    m_qt_SelectParentPB = cqtfa_QTWidgetWithText<QPushButton>("Select Parent Task",
+        "m_qt_SelectParentPB" , m_qt_ParentTaskGB);
+    m_qt_ParentForm->addWidget(m_qt_SelectParentPB);
 
-    editTaskAddDependenciesPB = cqtfa_QTWidgetWithText<QPushButton>(
-        "Add Dependencies", "editTaskAddDependenciesPB", this);
-    editTaskParentForm->addWidget(editTaskAddDependenciesPB);
+    m_qt_AddDependenciesPB = cqtfa_QTWidgetWithText<QPushButton>(
+        "Add Dependencies", "m_qt_AddDependenciesPB", this);
+    m_qt_ParentForm->addWidget(m_qt_AddDependenciesPB);
 
 
-    editTaskParentTaskGB->setLayout(editTaskParentForm);
+    m_qt_ParentTaskGB->setLayout(m_qt_ParentForm);
 
-    return editTaskParentTaskGB;
+    return m_qt_ParentTaskGB;
 }
 
 QGroupBox *TaskEditorDialog::setUpTaskDescriptionAndStatusGroupBox()
 {
-    editTaskDescriptionAndStatusGB = new QGroupBox("Description and Status:", this);
-    editTaskDescriptionAndStatusGB->setObjectName("editTaskDescriptionAndStatusGB");
-    editTaskDescriptionAndStatusGB->setAlignment(Qt::AlignHCenter);
+    m_qt_DescriptionAndStatusGB = new QGroupBox("Description and Status:", this);
+    m_qt_DescriptionAndStatusGB->setObjectName("m_qt_DescriptionAndStatusGB");
+    m_qt_DescriptionAndStatusGB->setAlignment(Qt::AlignHCenter);
 
-    editTaskDescriptionAndStatusForm = cqtfa_FormLayoutWithPolicy(
-        "editTaskDescriptionAndStatusForm", editTaskDescriptionAndStatusGB);
+    m_qt_DescriptionAndStatusForm = cqtfa_FormLayoutWithPolicy(
+        "m_qt_DescriptionAndStatusForm", m_qt_DescriptionAndStatusGB);
 
-    editTaskDescriptionTE = cqtfa_QTWidget<QPlainTextEdit>("editTaskDescriptionTE", editTaskDescriptionAndStatusGB);
-    editTaskDescriptionTE->resize(taskDescriptionTEWidth, taskDescriptionTEHeight);
-    editTaskDescriptionAndStatusForm->addRow("Task Description:", editTaskDescriptionTE);
+    m_qt_DescriptionTE = cqtfa_QTWidget<QPlainTextEdit>("m_qt_DescriptionTE", m_qt_DescriptionAndStatusGB);
+    m_qt_DescriptionTE->resize(taskDescriptionTEWidth, taskDescriptionTEHeight);
+    m_qt_DescriptionAndStatusForm->addRow("Task Description:", m_qt_DescriptionTE);
 
-    editTaskStatusSelectorCB = new QComboBox(editTaskDescriptionAndStatusGB);
-    editTaskStatusSelectorCB->setObjectName("editTaskStatusSelectorCB");
-    editTaskStatusSelectorCB->addItem( "Not Started", 0);
-    editTaskStatusSelectorCB->addItem("On Hold", 1);
-    editTaskStatusSelectorCB->addItem("Waiting for Dependency", 2);
-    editTaskStatusSelectorCB->addItem("Work in Progress", 3);
-    editTaskStatusSelectorCB->addItem("Complete", 4);
-    editTaskDescriptionAndStatusForm->addRow("Current Status:", editTaskStatusSelectorCB);
+    m_qt_StatusSelectorCB = new QComboBox(m_qt_DescriptionAndStatusGB);
+    m_qt_StatusSelectorCB->setObjectName("m_qt_StatusSelectorCB");
+    m_qt_StatusSelectorCB->addItem( "Not Started", 0);
+    m_qt_StatusSelectorCB->addItem("On Hold", 1);
+    m_qt_StatusSelectorCB->addItem("Waiting for Dependency", 2);
+    m_qt_StatusSelectorCB->addItem("Work in Progress", 3);
+    m_qt_StatusSelectorCB->addItem("Complete", 4);
+    m_qt_DescriptionAndStatusForm->addRow("Current Status:", m_qt_StatusSelectorCB);
 
-    editTaskPersonalCB = cqtfa_QTWidgetWithText<QCheckBox>("Personal", "editTaskPersonalCB", this);
-    editTaskDescriptionAndStatusForm->addWidget(editTaskPersonalCB);
+    m_qt_PersonalCB = cqtfa_QTWidgetWithText<QCheckBox>("Personal", "m_qt_PersonalCB", this);
+    m_qt_DescriptionAndStatusForm->addWidget(m_qt_PersonalCB);
 
-    editTaskDescriptionAndStatusGB->setLayout(editTaskDescriptionAndStatusForm);
+    m_qt_DescriptionAndStatusGB->setLayout(m_qt_DescriptionAndStatusForm);
 
-    return editTaskDescriptionAndStatusGB;
+    return m_qt_DescriptionAndStatusGB;
 }
 
 QGroupBox *TaskEditorDialog::setUpTaskDatesGroupBox()
 {
-    editTaskDatesGB = new QGroupBox("Task Dates:", this);
-    editTaskDatesGB->setObjectName("editTaskDatesGB");
-    editTaskDatesGB->setAlignment(Qt::AlignHCenter);
+    m_qt_DatesGB = new QGroupBox("Task Dates:", this);
+    m_qt_DatesGB->setObjectName("m_qt_DatesGB");
+    m_qt_DatesGB->setAlignment(Qt::AlignHCenter);
 
-    editTaskDatesForm = cqtfa_FormLayoutWithPolicy("editTaskDatesForm", editTaskDatesGB);
+    m_qt_DatesForm = cqtfa_FormLayoutWithPolicy("m_qt_DatesForm", m_qt_DatesGB);
 
-    editTaskDueDateSelectorDE = cqtfa_DateEditWithCalendarPopUpCurrentDate(
-        "editTaskDueDateSelectorDE", editTaskDatesGB);
-    editTaskDatesForm->addRow("Due Date:", editTaskDueDateSelectorDE);
+    m_qt_DueDateSelectorDE = cqtfa_DateEditWithCalendarPopUpCurrentDate(
+        "m_qt_DueDateSelectorDE", m_qt_DatesGB);
+    m_qt_DatesForm->addRow("Due Date:", m_qt_DueDateSelectorDE);
 
-    editTaskScheduledStartDE = cqtfa_DateEditWithCalendarPopUpCurrentDate(
-        "editTaskScheduledStartDE", editTaskDatesGB);
-    editTaskDatesForm->addRow("Scheduled Start:", editTaskScheduledStartDE);
+    m_qt_ScheduledStartDE = cqtfa_DateEditWithCalendarPopUpCurrentDate(
+        "m_qt_ScheduledStartDE", m_qt_DatesGB);
+    m_qt_DatesForm->addRow("Scheduled Start:", m_qt_ScheduledStartDE);
 
-    editTaskExpectedCompletionDE  = cqtfa_DateEditWithCalendarPopUpCurrentDate(
-        "editTaskExpectedCompletionDE", editTaskDatesGB);
-    editTaskDatesForm->addRow("Estimated Completion:", editTaskExpectedCompletionDE);
+    m_qt_ExpectedCompletionDE  = cqtfa_DateEditWithCalendarPopUpCurrentDate(
+        "m_qt_ExpectedCompletionDE", m_qt_DatesGB);
+    m_qt_DatesForm->addRow("Estimated Completion:", m_qt_ExpectedCompletionDE);
 
-    editTaskDatesGB->setLayout(editTaskDatesForm);
+    m_qt_DatesGB->setLayout(m_qt_DatesForm);
 
-    return editTaskDatesGB;
+    return m_qt_DatesGB;
 }
 
 QHBoxLayout* TaskEditorDialog::setUpEfforAndPrioritySectionLayout()
 {
-    efforAndPrioritySectionLayout = new QHBoxLayout;
-    efforAndPrioritySectionLayout->setObjectName("efforAndPrioritySectionLayout");
+    m_qt_EfforAndPrioritySectionLayout = new QHBoxLayout;
+    m_qt_EfforAndPrioritySectionLayout->setObjectName("m_qt_EfforAndPrioritySectionLayout");
 
-    efforAndPrioritySectionLayout->addWidget(setUpTaskEfforGroupBox(), 0, Qt::AlignLeft);
+    m_qt_EfforAndPrioritySectionLayout->addWidget(setUpTaskEfforGroupBox(), 0, Qt::AlignLeft);
 
-    efforAndPrioritySectionLayout->addWidget(setUpTaskPriorityGroupBox(), 0, Qt::AlignRight);
+    m_qt_EfforAndPrioritySectionLayout->addWidget(setUpTaskPriorityGroupBox(), 0, Qt::AlignRight);
 
-    return efforAndPrioritySectionLayout;
+    return m_qt_EfforAndPrioritySectionLayout;
 }
 
 QGroupBox *TaskEditorDialog::setUpTaskEfforGroupBox()
 {
-    editTaskEffortGB = new QGroupBox("Effort:", this);
-    editTaskEffortGB->setObjectName("editTaskEffortGB");
-    editTaskEffortGB->setAlignment(Qt::AlignHCenter);
+    m_qt_EffortGB = new QGroupBox("Effort:", this);
+    m_qt_EffortGB->setObjectName("m_qt_EffortGB");
+    m_qt_EffortGB->setAlignment(Qt::AlignHCenter);
 
-    editTaskEffortForm = cqtfa_FormLayoutWithPolicy("editTaskEffortForm", editTaskEffortGB);
+    m_qt_EffortForm = cqtfa_FormLayoutWithPolicy("m_qt_EffortForm", m_qt_EffortGB);
 
-    editTaskEstimatedEffortLE = cqtfa_LineEditWithWidthAndLength(
-        "editTaskEstimatedEffortLE", editTaskEffortGB, 113, 5);
-    editTaskEffortForm->addRow("Estimated:", editTaskEstimatedEffortLE);
+    m_qt_EstimatedEffortLE = cqtfa_LineEditWithWidthAndLength(
+        "m_qt_EstimatedEffortLE", m_qt_EffortGB, 113, 5);
+    m_qt_EffortForm->addRow("Estimated:", m_qt_EstimatedEffortLE);
 
-    editTaskActualEffortLE = cqtfa_LineEditWithWidthAndLength(
-        "editTaskActualEffortLE", editTaskEffortGB, 113, 5);
-    editTaskEffortForm->addRow("Actual:", editTaskActualEffortLE);
+    m_qt_ActualEffortLE = cqtfa_LineEditWithWidthAndLength(
+        "m_qt_ActualEffortLE", m_qt_EffortGB, 113, 5);
+    m_qt_EffortForm->addRow("Actual:", m_qt_ActualEffortLE);
 
-    editTaskEffortGB->setLayout(editTaskEffortForm);
+    m_qt_EffortGB->setLayout(m_qt_EffortForm);
 
-    return editTaskEffortGB;
+    return m_qt_EffortGB;
 }
 
 QGroupBox *TaskEditorDialog::setUpTaskPriorityGroupBox()
 {
-    editTaskPrioritiesGB = new QGroupBox("Priority:", this);
-    editTaskPrioritiesGB->setObjectName("editTaskPrioritiesGB");
-    editTaskPrioritiesGB->setAlignment(Qt::AlignHCenter);
+    m_qt_PrioritiesGB = new QGroupBox("Priority:", this);
+    m_qt_PrioritiesGB->setObjectName("m_qt_PrioritiesGB");
+    m_qt_PrioritiesGB->setAlignment(Qt::AlignHCenter);
 
-    editTaskPrioritiesForm = cqtfa_FormLayoutWithPolicy("editTaskPrioritiesForm",
-        editTaskPrioritiesGB);
+    m_qt_PrioritiesForm = cqtfa_FormLayoutWithPolicy("m_qt_PrioritiesForm",
+        m_qt_PrioritiesGB);
 
-    editTaskPriorityGroupLE = cqtfa_LineEditWithWidthAndLength(
-        "editTaskPriorityGroupLE", editTaskPrioritiesGB, 113, 5);
-    editTaskPrioritiesForm->addRow("Priority Group:", editTaskPriorityGroupLE);
+    m_qt_PriorityGroupLE = cqtfa_LineEditWithWidthAndLength(
+        "m_qt_PriorityGroupLE", m_qt_PrioritiesGB, 113, 5);
+    m_qt_PrioritiesForm->addRow("Priority Group:", m_qt_PriorityGroupLE);
 
-    editTaskPriorityLE = cqtfa_LineEditWithWidthAndLength(
-        "editTaskPriorityLE", editTaskPrioritiesGB, 113, 5);
-    editTaskPrioritiesForm->addRow("Priority:", editTaskPriorityLE);
+    m_qt_PriorityLE = cqtfa_LineEditWithWidthAndLength(
+        "m_qt_PriorityLE", m_qt_PrioritiesGB, 113, 5);
+    m_qt_PrioritiesForm->addRow("Priority:", m_qt_PriorityLE);
 
-    editTaskPrioritiesGB->setLayout(editTaskPrioritiesForm);
+    m_qt_PrioritiesGB->setLayout(m_qt_PrioritiesForm);
 
-    return editTaskPrioritiesGB;
+    return m_qt_PrioritiesGB;
 }
 
 void TaskEditorDialog::transferEditorValuesToDBModel()
@@ -453,13 +453,13 @@ void TaskEditorDialog::transferEditorValuesToDBModel()
 
     taskData->setCreatorID(m_Creator->getUserID());
     taskData->setAssignToID(m_Assignee->getUserID());
-    taskData->setDescription(editTaskDescriptionTE->toPlainText().toStdString());
-    taskData->setDueDate(qDateToChrono(editTaskDueDateSelectorDE->date()));
-    taskData->setScheduledStart(qDateToChrono(editTaskScheduledStartDE->date()));
-    taskData->setEstimatedCompletion(qDateToChrono(editTaskExpectedCompletionDE->date()));
+    taskData->setDescription(m_qt_DescriptionTE->toPlainText().toStdString());
+    taskData->setDueDate(qDateToChrono(m_qt_DueDateSelectorDE->date()));
+    taskData->setScheduledStart(qDateToChrono(m_qt_ScheduledStartDE->date()));
+    taskData->setEstimatedCompletion(qDateToChrono(m_qt_ExpectedCompletionDE->date()));
     transferEffortToModel();
     transferPriorityToModel();
-    taskData->setPersonal(editTaskPersonalCB->isChecked());
+    taskData->setPersonal(m_qt_PersonalCB->isChecked());
 
     if (m_ParentTaskData)
     {
@@ -475,10 +475,10 @@ void TaskEditorDialog::transferDBModelDataToEditorFields()
 
 void TaskEditorDialog::initEditFields()
 {
-    editTaskCreatorFirstNameDisplay->setText(QString::fromStdString(m_Creator->getFirstName()));
-    editTaskCreatorLastNameDisplay->setText(QString::fromStdString(m_Creator->getLastName()));
-    editTaskAssignedToFirstNameDisplay->setText(QString::fromStdString(m_Creator->getFirstName()));
-    editTaskAssignedToLastName->setText(QString::fromStdString(m_Creator->getLastName()));
+    m_qt_CreatorFirstNameDisplay->setText(QString::fromStdString(m_Creator->getFirstName()));
+    m_qt_CreatorLastNameDisplay->setText(QString::fromStdString(m_Creator->getLastName()));
+    m_qt_AssignedToFirstNameDisplay->setText(QString::fromStdString(m_Creator->getFirstName()));
+    m_qt_AssignedToLastName->setText(QString::fromStdString(m_Creator->getLastName()));
 
     m_Assignee = m_Creator;
 
@@ -520,10 +520,10 @@ void TaskEditorDialog::initDisplayFields()
     TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectModel);
 
     m_Creator = getUserDataFromTaskData(taskData->getCreatorID());
-    initUserNameFields(editTaskCreatorFirstNameDisplay, editTaskCreatorLastNameDisplay, m_Creator);
+    initUserNameFields(m_qt_CreatorFirstNameDisplay, m_qt_CreatorLastNameDisplay, m_Creator);
 
     m_Assignee = getUserDataFromTaskData(taskData->getAssignToID());
-    initUserNameFields(editTaskAssignedToFirstNameDisplay, editTaskAssignedToLastName, m_Assignee);
+    initUserNameFields(m_qt_AssignedToFirstNameDisplay, m_qt_AssignedToLastName, m_Assignee);
 
     std::size_t dbParentTaskId = taskData->getParentTaskID();
     if (dbParentTaskId)
@@ -547,24 +547,24 @@ void TaskEditorDialog::initEditFieldsFromTaskData()
 
     TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectModel);
 
-    editTaskDescriptionTE->setPlainText(QString::fromStdString(taskData->getDescription()));
+    m_qt_DescriptionTE->setPlainText(QString::fromStdString(taskData->getDescription()));
 
-    editTaskDueDateSelectorDE->setDate(initValidDateField(taskData->getDueDate()));
-    editTaskScheduledStartDE->setDate(initValidDateField(taskData->getScheduledStart()));
-    editTaskExpectedCompletionDE->setDate(initValidDateField(taskData->getEstimatedCompletion()));
+    m_qt_DueDateSelectorDE->setDate(initValidDateField(taskData->getDueDate()));
+    m_qt_ScheduledStartDE->setDate(initValidDateField(taskData->getScheduledStart()));
+    m_qt_ExpectedCompletionDE->setDate(initValidDateField(taskData->getEstimatedCompletion()));
 
-    editTaskEstimatedEffortLE->setText(QString::fromStdString(std::to_string(taskData->getEstimatedEffort())));
-    editTaskActualEffortLE->setText(QString::fromStdString(std::to_string(taskData->getactualEffortToDate())));
+    m_qt_EstimatedEffortLE->setText(QString::fromStdString(std::to_string(taskData->getEstimatedEffort())));
+    m_qt_ActualEffortLE->setText(QString::fromStdString(std::to_string(taskData->getactualEffortToDate())));
 
-    editTaskPriorityGroupLE->setText(QString::fromStdString(std::to_string(taskData->getPriorityGroup())));
-    editTaskPriorityLE->setText(QString::fromStdString(std::to_string(taskData->getPriority())));
+    m_qt_PriorityGroupLE->setText(QString::fromStdString(std::to_string(taskData->getPriorityGroup())));
+    m_qt_PriorityLE->setText(QString::fromStdString(std::to_string(taskData->getPriority())));
 
-    editTaskPersonalCB->setChecked(taskData->isPersonal());
-    editTaskStatusSelectorCB->setCurrentIndex(static_cast<int>(taskData->getStatus()));
+    m_qt_PersonalCB->setChecked(taskData->isPersonal());
+    m_qt_StatusSelectorCB->setCurrentIndex(static_cast<int>(taskData->getStatus()));
 
     if (m_ParentTaskData)
     {
-        editTaskParentTaskDescriptionDisplay->setText(QString::fromStdString(m_ParentTaskData->getDescription()));
+        m_qt_ParentTaskDescriptionDisplay->setText(QString::fromStdString(m_ParentTaskData->getDescription()));
     }
 
     // To prevent any loops caused by updating display fields the connections
@@ -580,20 +580,20 @@ void TaskEditorDialog::initUserNameFields(QLineEdit *firstNameEditor, QLineEdit 
 
 void TaskEditorDialog::connectEditFieldsToActions()
 {
-    connect(editTaskChangeAssignedUserPB, &QPushButton::clicked, this,
-            &TaskEditorDialog::on_editTaskChangeAssignedUserPB_Clicked, Qt::UniqueConnection);
+    connect(m_qt_ChangeAssignedUserPB, &QPushButton::clicked, this,
+            &TaskEditorDialog::on_m_qt_ChangeAssignedUserPB_Clicked, Qt::UniqueConnection);
 
-    connect(editTaskSelectParentPB, &QPushButton::clicked, this,
-            &TaskEditorDialog::on_editTaskSelectParentPB_Clicked, Qt::UniqueConnection);
+    connect(m_qt_SelectParentPB, &QPushButton::clicked, this,
+            &TaskEditorDialog::on_m_qt_SelectParentPB_Clicked, Qt::UniqueConnection);
 
-    connect(editTaskAddDependenciesPB, &QPushButton::clicked, this,
-            &TaskEditorDialog::on_editTaskAddDependenciesPB_Clicked, Qt::UniqueConnection);
+    connect(m_qt_AddDependenciesPB, &QPushButton::clicked, this,
+            &TaskEditorDialog::on_m_qt_AddDependenciesPB_Clicked, Qt::UniqueConnection);
 
-    connect(editTaskStatusSelectorCB, &QComboBox::currentIndexChanged, this,
-            &TaskEditorDialog::on_editTaskStatusSelectorCBChanged, Qt::UniqueConnection);
+    connect(m_qt_StatusSelectorCB, &QComboBox::currentIndexChanged, this,
+            &TaskEditorDialog::on_m_qt_StatusSelectorCBChanged, Qt::UniqueConnection);
 
-    connect(editTaskPersonalCB, &QCheckBox::stateChanged, this,
-            &TaskEditorDialog::on_editTaskPersonalCB_stateChanged, Qt::UniqueConnection);
+    connect(m_qt_PersonalCB, &QCheckBox::stateChanged, this,
+            &TaskEditorDialog::on_m_qt_PersonalCB_stateChanged, Qt::UniqueConnection);
 }
 
 void TaskEditorDialog::transferEffortToModel()
@@ -601,14 +601,14 @@ void TaskEditorDialog::transferEffortToModel()
     TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectModel);
 
     bool numberisGood = false;
-    unsigned int estimatedEffort = editTaskEstimatedEffortLE->text().toUInt(&numberisGood);
+    unsigned int estimatedEffort = m_qt_EstimatedEffortLE->text().toUInt(&numberisGood);
     if (numberisGood)
     {
         taskData->setEstimatedEffort(estimatedEffort);
     }
 
     numberisGood = false;
-    double actualEffort = editTaskActualEffortLE->text().toDouble(&numberisGood);
+    double actualEffort = m_qt_ActualEffortLE->text().toDouble(&numberisGood);
     if (numberisGood)
     {
         taskData->setActualEffortToDate(actualEffort);
@@ -620,22 +620,22 @@ void TaskEditorDialog::transferPriorityToModel()
     TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_DBObjectModel);
 
     bool numberisGood = false;
-    unsigned int priorityGroup = editTaskPriorityGroupLE->text().toUInt(&numberisGood);
+    unsigned int priorityGroup = m_qt_PriorityGroupLE->text().toUInt(&numberisGood);
     if (numberisGood)
     {
         taskData->setPriorityGroup(priorityGroup);
     }
     else
     {
-        if (editTaskPriorityGroupLE->text().length() > 0)
+        if (m_qt_PriorityGroupLE->text().length() > 0)
         {
-            QChar charPriorityGroup = editTaskPriorityGroupLE->text()[0];
+            QChar charPriorityGroup = m_qt_PriorityGroupLE->text()[0];
             taskData->setPriorityGroupC(charPriorityGroup.toLatin1());
         }
     }
 
     numberisGood = false;
-    unsigned int priority = editTaskPriorityLE->text().toUInt(&numberisGood);
+    unsigned int priority = m_qt_PriorityLE->text().toUInt(&numberisGood);
     if (numberisGood)
     {
         taskData->setPriority(priority);

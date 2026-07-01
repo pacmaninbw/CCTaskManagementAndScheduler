@@ -48,24 +48,24 @@ void GoalEditorDialog::initEditorFieldsFromDataBase()
 QGroupBox *GoalEditorDialog::setUpEditorDialogForm()
 {
     QGroupBox* mainEditorGroupBox = new QGroupBox(m_EditorTitleString, this);
-    m_Qt_EditorFormLayout = new QFormLayout(mainEditorGroupBox);
-    m_Qt_EditorFormLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
+    m_qt_EditorFormLayout = new QFormLayout(mainEditorGroupBox);
+    m_qt_EditorFormLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 
-    editGoalDescriptionTE = cqtfa_flexiblePlainTextEditEbasedOnCharCount("editGoalDescriptionTE", mainEditorGroupBox,
+    m_qt_Description = cqtfa_flexiblePlainTextEditEbasedOnCharCount("m_qt_Description", mainEditorGroupBox,
         goalDescriptionMinCharWidth, goalDescriptionMaxCharWidth, goalDescriptionLineCount);
-    m_Qt_EditorFormLayout->addRow("Goal Description:", editGoalDescriptionTE);
+    m_qt_EditorFormLayout->addRow("Goal Description:", m_qt_Description);
 
-    editGoalPriorityLE = cqtfa_LineEditFixedWidthByCharCount("editGoalPriorityLE",
+    m_qt_Priority = cqtfa_LineEditFixedWidthByCharCount("m_qt_Priority",
         mainEditorGroupBox, goalPriorityMaxChar);
-    m_Qt_EditorFormLayout->addRow("Priority:", editGoalPriorityLE);
+    m_qt_EditorFormLayout->addRow("Priority:", m_qt_Priority);
 
-    editGoalSelectParentGoalPB = cqtfa_QTWidgetWithText<QPushButton>(
-        "Select Parent Goal", "editGoalSelectParentGoalPB", mainEditorGroupBox);
-    m_Qt_EditorFormLayout->addWidget(editGoalSelectParentGoalPB);
+    m_qt_SelectParentGoal = cqtfa_QTWidgetWithText<QPushButton>(
+        "Select Parent Goal", "m_qt_SelectParentGoal", mainEditorGroupBox);
+    m_qt_EditorFormLayout->addWidget(m_qt_SelectParentGoal);
 
-    maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(m_Qt_EditorFormLayout);
+    maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(m_qt_EditorFormLayout);
 
-    mainEditorGroupBox->setLayout(m_Qt_EditorFormLayout);
+    mainEditorGroupBox->setLayout(m_qt_EditorFormLayout);
 
     return mainEditorGroupBox;
 }
@@ -73,8 +73,8 @@ QGroupBox *GoalEditorDialog::setUpEditorDialogForm()
 void GoalEditorDialog::transferEditorValuesToDBModel()
 {
     std::shared_ptr<UserGoalModel> goalData = std::dynamic_pointer_cast<UserGoalModel>(m_DBObjectModel);
-    goalData->setDescription(editGoalDescriptionTE->toPlainText().toStdString());
-    goalData->setPriority(editGoalPriorityLE->text().toUInt());
+    goalData->setDescription(m_qt_Description->toPlainText().toStdString());
+    goalData->setPriority(m_qt_Priority->text().toUInt());
     if (m_ParentGoalData)
     {
         goalData->setParentID(m_ParentGoalData->getGoalId());
@@ -87,8 +87,8 @@ void GoalEditorDialog::transferDBModelDataToEditorFields()
     {
         std::shared_ptr<UserGoalModel> goalData = std::dynamic_pointer_cast<UserGoalModel>(m_DBObjectModel);
 
-        editGoalDescriptionTE->setPlainText(QString::fromStdString(goalData->getDescription()));
-        editGoalPriorityLE->setText(QString::number(goalData->getPriority()));
+        m_qt_Description->setPlainText(QString::fromStdString(goalData->getDescription()));
+        m_qt_Priority->setText(QString::number(goalData->getPriority()));
     }
 }
 

@@ -30,10 +30,10 @@ private:
     virtual void createSharedPtrDBModelForAddObject() override;
 
     std::shared_ptr<UserGoalModel> m_ParentGoalData;
-    QDialogButtonBox* buttonBox = nullptr;
-    QPlainTextEdit* editGoalDescriptionTE = nullptr;
-    QLineEdit* editGoalPriorityLE = nullptr;
-    QPushButton* editGoalSelectParentGoalPB = nullptr;
+
+    QPlainTextEdit* m_qt_Description = nullptr;
+    QLineEdit* m_qt_Priority = nullptr;
+    QPushButton* m_qt_SelectParentGoal = nullptr;
 
     const int goalDescriptionMinCharWidth = 40;
     const int goalDescriptionMaxCharWidth = 80;

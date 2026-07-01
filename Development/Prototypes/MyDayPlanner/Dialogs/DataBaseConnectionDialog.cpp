@@ -41,21 +41,21 @@ DataBaseConnectionDialog::~DataBaseConnectionDialog()
 
 void DataBaseConnectionDialog::setUpDBConnectionDialogUI()
 {
-    dbConnectionsDialogLayout = new QVBoxLayout(this);
-    dbConnectionsDialogLayout->setObjectName("dbConnectionsDialogLayout");
+    m_qt_DialogLayout = new QVBoxLayout(this);
+    m_qt_DialogLayout->setObjectName("m_qt_DialogLayout");
 
-    dbConnectionsGB = new QGroupBox("MySQL Database Connection Data", this);
-    dbConnectionsGB->setObjectName("mysqlConnectionsGB");
+    m_qt_ConnectionsGB = new QGroupBox("MySQL Database Connection Data", this);
+    m_qt_ConnectionsGB->setObjectName("mysqlConnectionsGB");
 
-    dbConnectionsGB->setLayout(setUpDBConnectionsFormLayout());
+    m_qt_ConnectionsGB->setLayout(setUpDBConnectionsFormLayout());
 
-    dbConnectionsDialogLayout->addWidget(dbConnectionsGB);
+    m_qt_DialogLayout->addWidget(m_qt_ConnectionsGB);
 
-    dbConnectionsDialogLayout->addWidget(setUpOptionsGB());
+    m_qt_DialogLayout->addWidget(setUpOptionsGB());
     
-    dbConnectionsDialogLayout->addWidget(setUpButtonBox(), 0 , Qt::AlignHCenter);
+    m_qt_DialogLayout->addWidget(setUpButtonBox(), 0 , Qt::AlignHCenter);
 
-    setLayout(dbConnectionsDialogLayout);
+    setLayout(m_qt_DialogLayout);
 
     limitDialogRowth();
 
@@ -66,36 +66,32 @@ void DataBaseConnectionDialog::setUpDBConnectionDialogUI()
 
 QFormLayout *DataBaseConnectionDialog::setUpDBConnectionsFormLayout()
 {
-    dbConnectionsFormLayout = cqtfa_FormLayoutWithPolicy("dbConnectionsFormLayout", dbConnectionsGB);
+    m_qt_GBFormLayout = cqtfa_FormLayoutWithPolicy("m_qt_GBFormLayout", m_qt_ConnectionsGB);
 
-    mySqlUser = cqtfa_LineEditFixedWidthByCharCount("mySqlUser", dbConnectionsGB, maxQLineEditCharCount);
-    mySqlUser->setText(QString::fromStdString(programOptions.mySqlUser));
-    dbConnectionsFormLayout->addRow("MySQL User Name:", mySqlUser);
+    m_qt_MySqlUser = cqtfa_LineEditFixedWidthByCharCount("m_qt_MySqlUser", m_qt_ConnectionsGB, maxQLineEditCharCount);
+    m_qt_MySqlUser->setText(QString::fromStdString(programOptions.mySqlUser));
+    m_qt_GBFormLayout->addRow("MySQL User Name:", m_qt_MySqlUser);
 
-    mySqlPassword = cqtfa_LineEditFixedWidthByCharCount("mySqlPassword", dbConnectionsGB, maxQLineEditCharCount);
-    mySqlPassword->setText(QString::fromStdString(programOptions.mySqlPassword));
-    dbConnectionsFormLayout->addRow("MySQL User Password:", mySqlPassword);
+    m_qt_MySqlPassword = cqtfa_LineEditFixedWidthByCharCount("m_qt_MySqlPassword", m_qt_ConnectionsGB, maxQLineEditCharCount);
+    m_qt_MySqlPassword->setText(QString::fromStdString(programOptions.mySqlPassword));
+    m_qt_GBFormLayout->addRow("MySQL User Password:", m_qt_MySqlPassword);
 
-    mySqlUrl = cqtfa_LineEditFixedWidthByCharCount("mySqlUrl", dbConnectionsGB, maxQLineEditCharCount);
-    mySqlUrl->setText(QString::fromStdString(programOptions.mySqlUrl));
-    dbConnectionsFormLayout->addRow("MySQL URL:", mySqlUrl);
+    m_qt_MySqlUrl = cqtfa_LineEditFixedWidthByCharCount("m_qt_MySqlUrl", m_qt_ConnectionsGB, maxQLineEditCharCount);
+    m_qt_MySqlUrl->setText(QString::fromStdString(programOptions.mySqlUrl));
+    m_qt_GBFormLayout->addRow("MySQL URL:", m_qt_MySqlUrl);
 
-    mySqlPort = cqtfa_LineEditFixedWidthByCharCount("mySqlPort", dbConnectionsGB, maxQLineEditCharCount);
-    mySqlPort->setText(QString::number(programOptions.mySqlPort));
-    dbConnectionsFormLayout->addRow("MySQL Port:", mySqlPort);
+    m_qt_MySqlPort = cqtfa_LineEditFixedWidthByCharCount("m_qt_MySqlPort", m_qt_ConnectionsGB, maxQLineEditCharCount);
+    m_qt_MySqlPort->setText(QString::number(programOptions.mySqlPort));
+    m_qt_GBFormLayout->addRow("MySQL Port:", m_qt_MySqlPort);
 
-    mySqlDBName = cqtfa_LineEditFixedWidthByCharCount("mySqlDBName", dbConnectionsGB, maxQLineEditCharCount);
-    mySqlDBName->setText(QString::fromStdString(programOptions.mySqlDBName));
-    dbConnectionsFormLayout->addRow("MySQL Database Name:", mySqlDBName);
+    m_qt_MySqlDBName = cqtfa_LineEditFixedWidthByCharCount("m_qt_MySqlDBName", m_qt_ConnectionsGB, maxQLineEditCharCount);
+    m_qt_MySqlDBName->setText(QString::fromStdString(programOptions.mySqlDBName));
+    m_qt_GBFormLayout->addRow("MySQL Database Name:", m_qt_MySqlDBName);
 
-    rememberMe = cqtfa_QTWidgetWithText<QCheckBox>("Save database connection on this device",
-        "dbConnectionsGB", dbConnectionsGB);
-    dbConnectionsFormLayout->addWidget(rememberMe);
-
-    maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(dbConnectionsFormLayout);
+    maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(m_qt_GBFormLayout);
 
 
-    return dbConnectionsFormLayout;
+    return m_qt_GBFormLayout;
 }
 
 QDialogButtonBox *DataBaseConnectionDialog::setUpButtonBox()
@@ -116,12 +112,12 @@ QDialogButtonBox *DataBaseConnectionDialog::setUpButtonBox()
 
 void DataBaseConnectionDialog::limitDialogRowth()
 {
-    dbConnectionsGB->setMaximumHeight(maxGroupBoxHeight);
-    dbConnectionsGB->setMaximumWidth(cqtfa_getFormLayoutMaxWidth(dbConnectionsFormLayout) + marginAndSpacing);
+    m_qt_ConnectionsGB->setMaximumHeight(maxGroupBoxHeight);
+    m_qt_ConnectionsGB->setMaximumWidth(cqtfa_getFormLayoutMaxWidth(m_qt_GBFormLayout) + marginAndSpacing);
 
     dbConnectionsButtonBox->setMaximumHeight(maxButtonBoxHeight);
 
-    int maxDialogWidth = dbConnectionsGB->maximumWidth() + marginAndSpacing;
+    int maxDialogWidth = m_qt_ConnectionsGB->maximumWidth() + marginAndSpacing;
 
     setMaximumWidth(maxDialogWidth);
 
@@ -147,8 +143,8 @@ bool DataBaseConnectionDialog::validateAndUpdateProgramOption()
     bool ok = false;
     QString errorMessages;
 
-    std::string inputUserName = mySqlUser->text().toStdString();
-    std::string inputPassword = mySqlPassword->text().toStdString();
+    std::string inputUserName = m_qt_MySqlUser->text().toStdString();
+    std::string inputPassword = m_qt_MySqlPassword->text().toStdString();
 
     if (inputUserName.empty())
     {
@@ -160,7 +156,7 @@ bool DataBaseConnectionDialog::validateAndUpdateProgramOption()
         errorMessages.append("Missing Required field: MySQL User Password\n");
     }
 
-    programOptions.mySqlPort = mySqlPort->text().toUInt(&ok);
+    programOptions.mySqlPort = m_qt_MySqlPort->text().toUInt(&ok);
     if (ok == false)
     {
         errorMessages.append("Unable to convert My SQL Port value to unsigned integer.\n");
@@ -174,8 +170,8 @@ bool DataBaseConnectionDialog::validateAndUpdateProgramOption()
 
     programOptions.mySqlUser = inputUserName;
     programOptions.mySqlPassword = inputPassword;
-    programOptions.mySqlUrl = mySqlUrl->text().toStdString();
-    programOptions.mySqlDBName = mySqlDBName->text().toStdString();
+    programOptions.mySqlUrl = m_qt_MySqlUrl->text().toStdString();
+    programOptions.mySqlDBName = m_qt_MySqlDBName->text().toStdString();
     programOptions.verboseOutput = verboseOutput->isChecked();
     programOptions.runSelfTest = runSelftTest->isChecked();
     programOptions.forceErrors = forceErrors->isChecked();
@@ -187,12 +183,12 @@ bool DataBaseConnectionDialog::validateAndUpdateProgramOption()
 void DataBaseConnectionDialog::saveConnectionDataToEnvironment()
 {
     std::string dbUserEnvVariable = TestDBConnection::makeEnvironmentVariableName("DBUSERNAME");
-    qputenv(dbUserEnvVariable.c_str(), mySqlUser->text().toUtf8());
-    std::cerr << "qputenv " << dbUserEnvVariable << mySqlUser->text().toStdString() << std::endl;
+    qputenv(dbUserEnvVariable.c_str(), m_qt_MySqlUser->text().toUtf8());
+    std::cerr << "qputenv " << dbUserEnvVariable << m_qt_MySqlUser->text().toStdString() << std::endl;
 
     std::string dbPasswordEnvVariable = TestDBConnection::makeEnvironmentVariableName("DBPASSWORD");
-    qputenv(dbPasswordEnvVariable.c_str(), mySqlPassword->text().toUtf8());
-    std::cerr << "qputenv " << dbPasswordEnvVariable << mySqlPassword->text().toStdString() << std::endl;
+    qputenv(dbPasswordEnvVariable.c_str(), m_qt_MySqlPassword->text().toUtf8());
+    std::cerr << "qputenv " << dbPasswordEnvVariable << m_qt_MySqlPassword->text().toStdString() << std::endl;
 }
 
 QGroupBox *DataBaseConnectionDialog::setUpOptionsGB()
@@ -249,10 +245,6 @@ void DataBaseConnectionDialog::on_dbConnectionsButtonBox_accepted()
     {
         if (testConnection())
         {
-            if (rememberMe->isChecked())
-            {
-                saveConnectionDataToEnvironment();
-            }
             QDialog::accept();
         }
         else
