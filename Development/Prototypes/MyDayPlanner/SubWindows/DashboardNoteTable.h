@@ -41,7 +41,7 @@ public:
 
 private:
     std::size_t m_UserID;
-    std::vector<std::shared_ptr<NoteModel>> m_data;
+    std::vector<std::shared_ptr<NoteModel>> m_Data;
     QDate m_SearchDate;
 };
 

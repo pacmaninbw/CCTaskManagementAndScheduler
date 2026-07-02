@@ -58,15 +58,15 @@ void DashboardNoteTable::fillTable()
 
     for (auto dbNotePtr: userNotes)
     {
-        m_data.push_back(dbNotePtr);
+        m_Data.push_back(dbNotePtr);
     }
 }
 
 void DashboardNoteTable::append(std::shared_ptr<NoteModel> noteData)
 {
-    beginInsertRows(QModelIndex(), m_data.size(), m_data.size());
+    beginInsertRows(QModelIndex(), m_Data.size(), m_Data.size());
 
-    m_data.push_back(noteData);
+    m_Data.push_back(noteData);
 
     endInsertRows();
 
@@ -76,7 +76,7 @@ void DashboardNoteTable::clearData()
 {
     beginResetModel();
 
-    m_data.clear();
+    m_Data.clear();
 
     endResetModel();
 }
@@ -108,7 +108,7 @@ int DashboardNoteTable::rowCount(const QModelIndex &parent) const
         return 0;
     }
 
-    return m_data.size();
+    return m_Data.size();
 }
 
 int DashboardNoteTable::columnCount(const QModelIndex &parent) const
@@ -134,7 +134,7 @@ QVariant DashboardNoteTable::data(const QModelIndex &index, int role) const
         return {};
     }
 
-    std::shared_ptr<NoteModel> note = m_data[index.row()];
+    std::shared_ptr<NoteModel> note = m_Data[index.row()];
     switch (index.column()) {
         case 0: {
             QDateTime tempTime(chronoTimePointToQDateTime(note->getDateAdded()));
@@ -170,7 +170,7 @@ bool DashboardNoteTable::insertRows(int position, int count, const QModelIndex &
 
     for (int row = 0; row < count; ++row)
     {
-        m_data.insert(m_data.begin() + position, nullptr);
+        m_Data.insert(m_Data.begin() + position, nullptr);
     }
 
     endInsertRows();
@@ -185,9 +185,9 @@ bool DashboardNoteTable::removeRows(int position, int count, const QModelIndex &
 
     for (int row = 0; row < count; ++row)
     {
-        NoteModel_shp data = m_data.at(position);
+        NoteModel_shp data = m_Data.at(position);
         data.reset();
-        m_data.erase(m_data.begin() + position);
+        m_Data.erase(m_Data.begin() + position);
     }
 
     endRemoveRows();
@@ -202,7 +202,7 @@ QModelIndex DashboardNoteTable::index(int row, int column, const QModelIndex &pa
         return QModelIndex();
     }
 
-    NoteModel_shp noteModelItem = m_data[row];
+    NoteModel_shp noteModelItem = m_Data[row];
     if (noteModelItem)
     {
         return createIndex(row, column, noteModelItem->getNoteId());
