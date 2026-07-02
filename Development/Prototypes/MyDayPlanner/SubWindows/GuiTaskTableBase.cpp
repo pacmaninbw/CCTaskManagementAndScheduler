@@ -48,19 +48,19 @@ void GuiTaskTableBase::fillTable()
         return;
     }
 
-    if (!m_data.empty())
+    if (!m_Data.empty())
     {
-        m_data.clear();
+        m_Data.clear();
     }
 
-    m_data = userTasks;
+    m_Data = userTasks;
 }
 
 void GuiTaskTableBase::clearData()
 {
     beginResetModel();
 
-    m_data.clear();
+    m_Data.clear();
 
     endResetModel();
 }
@@ -102,7 +102,7 @@ int GuiTaskTableBase::rowCount(const QModelIndex &parent) const
         return 0;
     }
 
-    return m_data.size();
+    return m_Data.size();
 }
 
 int GuiTaskTableBase::columnCount(const QModelIndex &parent) const
@@ -144,7 +144,7 @@ QVariant GuiTaskTableBase::data(const QModelIndex &index, int role) const
 
 
     if (role != Qt::DisplayRole && role != Qt::EditRole) return {};
-    const TaskModel* task = m_data[index.row()].get();
+    const TaskModel* task = m_Data[index.row()].get();
     switch (index.column()) {
         case 0: return task->getPriorityGroup();
         case 1: return task->getPriorityGroup();
@@ -185,7 +185,7 @@ QModelIndex GuiTaskTableBase::index(int row, int column, const QModelIndex &pare
         return QModelIndex();
     }
 
-    TaskModel_shp taskModelItem = m_data.at(row);
+    TaskModel_shp taskModelItem = m_Data.at(row);
     if (taskModelItem)
     {
         return createIndex(row, column, taskModelItem->getTaskID());
@@ -196,7 +196,7 @@ QModelIndex GuiTaskTableBase::index(int row, int column, const QModelIndex &pare
 
 void GuiTaskTableBase::makeFakeQList()
 {
-    if (!m_data.empty())
+    if (!m_Data.empty())
     {
         return;
     }
@@ -210,7 +210,7 @@ void GuiTaskTableBase::makeFakeQList()
             taskData->setPriorityGroup(priorityGroup);
             taskData->setPriority(priority);
             taskData->setDescription(priorityGroup == 0 && priority == 1 ? "Login to app" : "");
-            m_data.push_back(taskData);
+            m_Data.push_back(taskData);
         }
     }
 }

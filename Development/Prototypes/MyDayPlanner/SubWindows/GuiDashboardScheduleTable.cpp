@@ -29,8 +29,8 @@ GuiDashboardScheduleTable::GuiDashboardScheduleTable(std::size_t userID, QDate d
 
 void GuiDashboardScheduleTable::append(std::shared_ptr<ScheduleItemModel> scheduledItem)
 {
-    beginInsertRows(QModelIndex(), m_data.size(), m_data.size());
-    m_data.push_back(scheduledItem);
+    beginInsertRows(QModelIndex(), m_Data.size(), m_Data.size());
+    m_Data.push_back(scheduledItem);
     endInsertRows();
 }
 
@@ -39,7 +39,7 @@ void GuiDashboardScheduleTable::clearData()
     m_ScheduledItems.clear();
 
     beginResetModel();
-    m_data.clear();
+    m_Data.clear();
     endResetModel();
 }
 
@@ -52,7 +52,7 @@ std::chrono::system_clock::time_point GuiDashboardScheduleTable::getScheduleItem
         return startTime;
     }
 
-    std::shared_ptr<ScheduleItemModel> scheduleItem = m_data[index.row()];
+    std::shared_ptr<ScheduleItemModel> scheduleItem = m_Data[index.row()];
     startTime = scheduleItem->getStartTime();
 
     return startTime;
@@ -67,7 +67,7 @@ std::chrono::system_clock::time_point GuiDashboardScheduleTable::getScheduleItem
         return endTime;
     }
 
-    std::shared_ptr<ScheduleItemModel> scheduleItem = m_data[index.row()];
+    std::shared_ptr<ScheduleItemModel> scheduleItem = m_Data[index.row()];
     endTime = scheduleItem->getEndTime();
 
     return endTime;
@@ -90,7 +90,7 @@ int GuiDashboardScheduleTable::rowCount(const QModelIndex &parent) const
         return 0;
     }
 
-    return m_data.size();
+    return m_Data.size();
 }
 
 int GuiDashboardScheduleTable::columnCount(const QModelIndex &parent) const
@@ -111,7 +111,7 @@ QVariant GuiDashboardScheduleTable::data(const QModelIndex &index, int role) con
     }
 
     if (role != Qt::DisplayRole && role != Qt::EditRole) return {};
-    const ScheduleItemModel* scheduleItem = m_data[index.row()].get();
+    const ScheduleItemModel* scheduleItem = m_Data[index.row()].get();
     switch (index.column()) {
         case 0: {
             QDateTime startTime(chronoTimePointToQDateTime(scheduleItem->getStartTime()));
@@ -149,7 +149,7 @@ QModelIndex GuiDashboardScheduleTable::index(int row, int column, const QModelIn
         return QModelIndex();
     }
 
-    std::shared_ptr<ScheduleItemModel> scheduleItem = m_data.at(row);
+    std::shared_ptr<ScheduleItemModel> scheduleItem = m_Data.at(row);
     if (scheduleItem)
     {
         return createIndex(row, column, scheduleItem->getScheduleItemID());

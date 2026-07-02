@@ -52,7 +52,7 @@ private:
     bool hasNoTimeConflicts(std::chrono::system_clock::time_point proposedStartTime);
     void addBlankHoursForDisplay();
     std::size_t m_UserID;
-    std::vector<std::shared_ptr<ScheduleItemModel>> m_data;
+    std::vector<std::shared_ptr<ScheduleItemModel>> m_Data;
     QDate m_DateOfSchedule;
     std::chrono::system_clock::time_point m_UserStartDay;
     std::chrono::system_clock::time_point m_UserEndDay;

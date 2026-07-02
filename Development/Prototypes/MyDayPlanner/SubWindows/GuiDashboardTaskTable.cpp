@@ -63,7 +63,7 @@ QVariant GuiDashboardTaskTable::data(const QModelIndex &index, int role) const
     }
 
     if (role != Qt::DisplayRole && role != Qt::EditRole) return {};
-    const TaskModel* task = m_data[index.row()].get();
+    const TaskModel* task = m_Data[index.row()].get();
     switch (index.column()) {
         case 0: return task->getPriorityGroup();
         case 1: return task->getPriority();

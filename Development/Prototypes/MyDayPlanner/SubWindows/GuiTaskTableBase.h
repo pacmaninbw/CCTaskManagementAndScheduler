@@ -38,7 +38,7 @@ public:
 protected:
     void makeFakeQList();
     std::size_t m_UserID;
-    std::vector<std::shared_ptr<TaskModel>> m_data;
+    std::vector<std::shared_ptr<TaskModel>> m_Data;
 };
 
 #endif // GUITASKTABLEBASE_H_
