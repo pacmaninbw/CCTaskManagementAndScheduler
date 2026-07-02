@@ -38,9 +38,9 @@ void DefaultGoalDisplayTable::refillTable()
 
 void DefaultGoalDisplayTable::append(std::shared_ptr<UserGoalModel> goalItem)
 {
-    beginInsertRows(QModelIndex(), m_data.size(), m_data.size());
+    beginInsertRows(QModelIndex(), m_Data.size(), m_Data.size());
 
-    m_data.push_back(goalItem);
+    m_Data.push_back(goalItem);
 
     endInsertRows();
 }
@@ -51,7 +51,7 @@ void DefaultGoalDisplayTable::clearData()
 
     beginResetModel();
 
-    m_data.clear();
+    m_Data.clear();
 
     endResetModel();
 }
@@ -84,7 +84,7 @@ int DefaultGoalDisplayTable::rowCount(const QModelIndex &parent) const
         return 0;
     }
 
-    return m_data.size();
+    return m_Data.size();
 }
 
 int DefaultGoalDisplayTable::columnCount(const QModelIndex &parent) const
@@ -106,7 +106,7 @@ QVariant DefaultGoalDisplayTable::data(const QModelIndex &index, int role) const
 
     if (role != Qt::DisplayRole && role != Qt::EditRole) return {};
 
-    const UserGoalModel* goal = m_data[index.row()].get();
+    const UserGoalModel* goal = m_Data[index.row()].get();
 
     switch (index.column())
     {
@@ -174,7 +174,7 @@ QModelIndex DefaultGoalDisplayTable::index(int row, int column, const QModelInde
         return QModelIndex();
     }
 
-    UserGoalModel_shp goalModelItem = m_data[row];
+    UserGoalModel_shp goalModelItem = m_Data[row];
     if (goalModelItem)
     {
         return createIndex(row, column, goalModelItem->getGoalId());

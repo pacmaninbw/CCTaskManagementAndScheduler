@@ -43,7 +43,7 @@ public:
 private:
     void fillGoalTable();
     std::size_t m_UserID;
-    std::vector<std::shared_ptr<UserGoalModel>> m_data;
+    std::vector<std::shared_ptr<UserGoalModel>> m_Data;
     std::vector<std::shared_ptr<UserGoalModel>> m_GoalList;
 };
 
