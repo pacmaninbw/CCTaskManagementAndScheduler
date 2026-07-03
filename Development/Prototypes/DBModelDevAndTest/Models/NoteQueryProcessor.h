@@ -44,12 +44,12 @@ private:
     TestStatus testExceptionsGetNotesForUserEditedDateRange() noexcept;
     TestStatus testExceptionsGetDashboardNoteTable() noexcept;
 
-    std::size_t noteIDX = IndexNotSet;
-    std::size_t userIDX = IndexNotSet;
-    std::size_t contentIDX = IndexNotSet;
-    std::size_t hiddenIDX = IndexNotSet;
-    std::size_t createdIDX = IndexNotSet;
-    std::size_t lastmodIDX = IndexNotSet;
+    std::size_t m_NoteIDX = IndexNotSet;
+    std::size_t m_UserIDX = IndexNotSet;
+    std::size_t m_ContentIDX = IndexNotSet;
+    std::size_t m_HiddenIDX = IndexNotSet;
+    std::size_t m_CreatedIDX = IndexNotSet;
+    std::size_t m_LastmodIDX = IndexNotSet;
 };
 
 #endif // NOTEQUERYPROCESSOR_H_

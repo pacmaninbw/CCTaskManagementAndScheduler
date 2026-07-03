@@ -23,13 +23,13 @@ public:
     bool insert() noexcept;
     bool update() noexcept;
     virtual bool hide(std::size_t userRequestingDelete) noexcept;
-    bool isInDataBase() const noexcept { return (primaryKey > 0); };
-    bool isModified() const noexcept { return modified; };
-    void clearModified() { modified = false; };
+    bool isInDataBase() const noexcept { return (m_PrimaryKey > 0); };
+    bool isModified() const noexcept { return m_Modified; };
+    void clearModified() { m_Modified = false; };
     bool hasRequiredValues();
     void reportMissingFields() noexcept;
-    std::string getModelName() { return modelName; };
-    bool isDeleted() const noexcept { return deleted; };
+    std::string getModelName() { return m_ModelName; };
+    bool isDeleted() const noexcept { return m_Deleted; };
 
 protected:
 /*
@@ -57,18 +57,18 @@ protected:
     std::size_t getPrimaryKeyValue(boost::mysql::results& dbResultSet);
 
 protected:
-    std::size_t primaryKey;
-    std::string modelName;
-    std::string primaryKeyName;
-    bool modified;
-    bool deleted;
-    char delimiter;
+    std::size_t m_PrimaryKey;
+    std::string m_ModelName;
+    std::string m_PrimaryKeyName;
+    bool m_Modified;
+    bool m_Deleted;
+    char m_Delimiter;
     struct RequireField
     {
         std::function<bool(void)>errorCondition;
         std::string fieldName;
     };
-    std::vector<RequireField> missingRequiredFieldsTests;
+    std::vector<RequireField> m_MissingRequiredFieldsTests;
 };
 
 using AnyModel_shp = std::shared_ptr<ModelDBInterface>;

@@ -25,7 +25,7 @@ public:
     ~UserGoalModel() = default;
 
 // get access methods
-    std::size_t getGoalId() const noexcept { return primaryKey; };
+    std::size_t getGoalId() const noexcept { return m_PrimaryKey; };
     std::size_t getUserId() const noexcept { return userID; };
     std::string getDescription() const noexcept { return description; };
     unsigned int getPriority() const noexcept { return priority.value_or(0); };
@@ -62,8 +62,8 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const UserGoalModel& goal)
     {
         constexpr const char* outFmtStr = "\t{}: {}\n";
-        os << std::format("Model Name {}\n", goal.modelName);
-        os << std::format(outFmtStr, "Goal ID", goal.primaryKey);
+        os << std::format("Model Name {}\n", goal.m_ModelName);
+        os << std::format(outFmtStr, "Goal ID", goal.m_PrimaryKey);
         os << std::format(outFmtStr, "User ID", goal.userID);
         os << std::format(outFmtStr, "Description", goal.description);
         os << std::format(outFmtStr, "Priority", goal.getPriority());

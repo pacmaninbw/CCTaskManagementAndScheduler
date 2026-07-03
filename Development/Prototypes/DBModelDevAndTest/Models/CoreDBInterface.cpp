@@ -14,24 +14,24 @@
 #include <utility>
 
 CoreDBInterface::CoreDBInterface()
-:   errorMessages{""},
-    verboseOutput{programOptions.verboseOutput},
-    forceError{programOptions.forceErrors},
-    forceException{programOptions.forceExceptions},
-    inSelfTest{false}
+:   m_ErrorMessages{""},
+    m_VerboseOutput{programOptions.verboseOutput},
+    m_ForceError{programOptions.forceErrors},
+    m_ForceException{programOptions.forceExceptions},
+    m_SelfTest{false}
 {
-    dbConnectionParameters.server_address.emplace_host_and_port(programOptions.mySqlUrl, programOptions.mySqlPort);
-    dbConnectionParameters.username = programOptions.mySqlUser;
-    dbConnectionParameters.password = programOptions.mySqlPassword;
-    dbConnectionParameters.database = programOptions.mySqlDBName;
+    m_DBConnection.server_address.emplace_host_and_port(programOptions.mySqlUrl, programOptions.mySqlPort);
+    m_DBConnection.username = programOptions.mySqlUser;
+    m_DBConnection.password = programOptions.mySqlPassword;
+    m_DBConnection.database = programOptions.mySqlDBName;
 }
 
 void CoreDBInterface::debugShowVariables(std::string functionName) const noexcept
 {
     std::cout << "In " << functionName << ":\n";
     std::cout << "\tformat_opts: " << (format_opts.has_value()? "TRUE" : "FALSE") << "\n";
-    std::cout << "\tinSelfTest: " << (inSelfTest? "TRUE" : "FALSE") << "\n";
-    std::cout << "\tforceException: " << (forceException? "TRUE" : "FALSE") << "\n";
+    std::cout << "\tinSelfTest: " << (m_SelfTest? "TRUE" : "FALSE") << "\n";
+    std::cout << "\tforceException: " << (m_ForceException? "TRUE" : "FALSE") << "\n";
     std::cout << std::endl;
 }
 
@@ -125,16 +125,16 @@ boost::mysql::results CoreDBInterface::runQueryAsync(const std::string& query)
 
 boost::asio::awaitable<boost::mysql::results> CoreDBInterface::coRoutineExecuteSqlStatement(const std::string& query)
 {
-    if (forceException)
+    if (m_ForceException)
     {
         std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineExecuteSqlStatement");
         std::domain_error forcedException(forcingException);
         throw forcedException;
     }
 
-    if (inSelfTest)
+    if (m_SelfTest)
     {
-        if (verboseOutput)
+        if (m_VerboseOutput)
         {
             std::cout << "In Self Test Query is: \n\t" << query << std::endl;
         }
@@ -145,11 +145,11 @@ boost::asio::awaitable<boost::mysql::results> CoreDBInterface::coRoutineExecuteS
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
     conn.set_meta_mode(boost::mysql::metadata_mode::full);
 
-    co_await conn.async_connect(dbConnectionParameters);
+    co_await conn.async_connect(m_DBConnection);
     
     boost::mysql::results selectResult;
 
-    if (verboseOutput)
+    if (m_VerboseOutput)
     {
         std::cout << "Running: \n\t" << query << std::endl;
     }
@@ -184,7 +184,7 @@ boost::mysql::format_options CoreDBInterface::getConnectionFormatOptsAsync()
 
 boost::asio::awaitable<boost::mysql::format_options> CoreDBInterface::coRoutineGetFormatOptions()
 {
-    if (forceException)
+    if (m_ForceException)
     {
         std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions");
         std::domain_error forcedException(forcingException);
@@ -195,7 +195,7 @@ boost::asio::awaitable<boost::mysql::format_options> CoreDBInterface::coRoutineG
     conn.set_meta_mode(boost::mysql::metadata_mode::full);
 
 
-    co_await conn.async_connect(dbConnectionParameters);
+    co_await conn.async_connect(m_DBConnection);
 
     boost::mysql::format_options options = conn.format_opts().value();
 

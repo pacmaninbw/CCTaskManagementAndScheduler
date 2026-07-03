@@ -35,18 +35,18 @@ private:
     TestStatus testExceptionGetUserByLoginAndPassword() noexcept;
     TestStatus testExceptionGetUserByFullName() noexcept;
 
-    std::size_t UserIdIdx = IndexNotSet;
-    std::size_t OrganizationIdx = IndexNotSet;
-    std::size_t LastNameIdx = IndexNotSet;
-    std::size_t FirstNameIdx = IndexNotSet;
-    std::size_t MiddleInitialIdx = IndexNotSet;
-    std::size_t EmailAddressIdx = IndexNotSet;
-    std::size_t LoginNameIdx = IndexNotSet;
-    std::size_t PasswordIdx = IndexNotSet;
-    std::size_t UserAddedIdx = IndexNotSet;
-    std::size_t LastLoginIdx = IndexNotSet;
-    std::size_t PreferencesIdx = IndexNotSet;
-    std::size_t HiddenIdx = IndexNotSet;
+    std::size_t m_UserIdIdx = IndexNotSet;
+    std::size_t m_OrganizationIdx = IndexNotSet;
+    std::size_t m_LastNameIdx = IndexNotSet;
+    std::size_t m_FirstNameIdx = IndexNotSet;
+    std::size_t m_MiddleInitialIdx = IndexNotSet;
+    std::size_t m_EmailAddressIdx = IndexNotSet;
+    std::size_t m_LoginNameIdx = IndexNotSet;
+    std::size_t m_PasswordIdx = IndexNotSet;
+    std::size_t m_UserAddedIdx = IndexNotSet;
+    std::size_t m_LastLoginIdx = IndexNotSet;
+    std::size_t m_PreferencesIdx = IndexNotSet;
+    std::size_t m_HiddenIdx = IndexNotSet;
 };
 
 #endif // USERQUERYPROCESSOR_H_

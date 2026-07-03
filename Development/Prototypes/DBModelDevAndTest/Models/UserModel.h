@@ -27,12 +27,12 @@ public:
 
     UserModel();
     UserModel(std::size_t userID,
-        std::string lastNameP,
-        std::string firstNameP,
-        std::string middleinitP,
-        std::string emailP,
-        std::string loginNameP,
-        std::string passwordP,
+        std::string lastName,
+        std::string firstName,
+        std::string middleinit,
+        std::string email,
+        std::string loginName,
+        std::string password,
         std::string preferences,
         std::chrono::system_clock::time_point dateAdded,
         std::chrono::system_clock::time_point lastLogin,
@@ -41,28 +41,28 @@ public:
     ~UserModel() = default;
 
     void autoGenerateLoginAndPassword() noexcept;
-    std::string getLastName() const noexcept { return lastName;};
-    std::string getFirstName() const noexcept { return firstName; };
-    std::string getMiddleInitial() const noexcept { return middleInitial; };
-    std::string getEmail() const noexcept { return email; };
-    std::string getLoginName() const noexcept { return loginName; };
-    std::string getPassword() const noexcept { return password; };
-    std::string getStartTime() const noexcept { return preferences.startTime; };
-    std::string getEndTime() const noexcept { return preferences.endTime; };
-    std::size_t getUserID() const noexcept { return primaryKey; };
-    std::chrono::system_clock::time_point getCreationDate() const noexcept { return created.value(); };
-    std::optional<std::chrono::system_clock::time_point> getLastLogin() const noexcept { return lastLogin; };
-    bool isPriorityInSchedule() const noexcept { return preferences.includePriorityInSchedule; };
-    bool isMinorPriorityInSchedule() const noexcept { return preferences.includeMinorPriorityInSchedule; };
-    bool isUsingLettersForMaorPriority() const noexcept { return preferences.userLetterForMajorPriority; };
-    bool isSeparatingPriorityWithDot() const noexcept { return preferences.separateMajorAndMinorWithDot; };
+    std::string getLastName() const noexcept { return m_LastName;};
+    std::string getFirstName() const noexcept { return m_FirstName; };
+    std::string getMiddleInitial() const noexcept { return m_MiddleInitial; };
+    std::string getEmail() const noexcept { return m_Email; };
+    std::string getLoginName() const noexcept { return m_LoginName; };
+    std::string getPassword() const noexcept { return m_Password; };
+    std::string getStartTime() const noexcept { return m_Preferences.startTime; };
+    std::string getEndTime() const noexcept { return m_Preferences.endTime; };
+    std::size_t getUserID() const noexcept { return m_PrimaryKey; };
+    std::chrono::system_clock::time_point getCreationDate() const noexcept { return m_Created.value(); };
+    std::optional<std::chrono::system_clock::time_point> getLastLogin() const noexcept { return m_LastLogin; };
+    bool isPriorityInSchedule() const noexcept { return m_Preferences.includePriorityInSchedule; };
+    bool isMinorPriorityInSchedule() const noexcept { return m_Preferences.includeMinorPriorityInSchedule; };
+    bool isUsingLettersForMaorPriority() const noexcept { return m_Preferences.userLetterForMajorPriority; };
+    bool isSeparatingPriorityWithDot() const noexcept { return m_Preferences.separateMajorAndMinorWithDot; };
 
-    void setLastName(const std::string& lastNameP) noexcept;
-    void setFirstName(const std::string& firstNameP) noexcept;
-    void setMiddleInitial(const std::string& middleinitP) noexcept;
-    void setEmail(const std::string& emailP) noexcept;
-    void setLoginName(const std::string& loginNameP) noexcept;
-    void setPassword(const std::string& passwordP) noexcept;
+    void setLastName(const std::string& lastName) noexcept;
+    void setFirstName(const std::string& firstName) noexcept;
+    void setMiddleInitial(const std::string& middleinit) noexcept;
+    void setEmail(const std::string& email) noexcept;
+    void setLoginName(const std::string& loginName) noexcept;
+    void setPassword(const std::string& password) noexcept;
     void setStartTime(const std::string& startTime) noexcept;
     void setEndTime(const std::string& endTime) noexcept;
     void setPriorityInSchedule(bool inSchedule) noexcept;
@@ -95,23 +95,23 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const UserModel& user)
     {
         constexpr const char* outFmtStr = "\t{}: {}\n";
-        os << std::format(outFmtStr, "User ID", user.primaryKey);
-        os << std::format(outFmtStr, "Last Name", user.lastName);
-        os << std::format(outFmtStr, "First Name", user.firstName);
-        os << std::format(outFmtStr, "Middle Initial", user.middleInitial);
-        os << std::format(outFmtStr, "Email", user.email);
-        os << std::format(outFmtStr, "Login Name", user.loginName);
-        if (user.inSelfTest)
+        os << std::format(outFmtStr, "User ID", user.m_PrimaryKey);
+        os << std::format(outFmtStr, "Last Name", user.m_LastName);
+        os << std::format(outFmtStr, "First Name", user.m_FirstName);
+        os << std::format(outFmtStr, "Middle Initial", user.m_MiddleInitial);
+        os << std::format(outFmtStr, "Email", user.m_Email);
+        os << std::format(outFmtStr, "Login Name", user.m_LoginName);
+        if (user.m_SelfTest)
         {
-            os << std::format(outFmtStr, "PassWord", user.password);
+            os << std::format(outFmtStr, "PassWord", user.m_Password);
         }
-        if (user.created.has_value())
+        if (user.m_Created.has_value())
         {
-            os << std::format(outFmtStr, "User Added", user.created.value());
+            os << std::format(outFmtStr, "User Added", user.m_Created.value());
         }
-        if (user.lastLogin.has_value())
+        if (user.m_LastLogin.has_value())
         {
-            os << std::format(outFmtStr, "Last Login", user.lastLogin.value());
+            os << std::format(outFmtStr, "Last Login", user.m_LastLogin.value());
         }
 
         return os;
@@ -128,20 +128,20 @@ protected:
     std::string buildPreferenceText() noexcept;
     void parsePrefenceText(std::string preferences) noexcept;
     
-    std::string lastName;
-    std::string firstName;
-    std::string middleInitial;
-    std::string email;
-    std::string loginName;
-    std::string password;
-    UserPreferences preferences;
-    std::optional<std::chrono::system_clock::time_point> created;
-    std::optional<std::chrono::system_clock::time_point> lastLogin;
-    std::optional<std::size_t> organizationId;
-
     static const std::size_t minNameLenght = 2;
     static const std::size_t minPasswordLenght = 8;
     static const std::size_t minEmailLength = 10;
+
+    std::string m_LastName;
+    std::string m_FirstName;
+    std::string m_MiddleInitial;
+    std::string m_Email;
+    std::string m_LoginName;
+    std::string m_Password;
+    UserPreferences m_Preferences;
+    std::optional<std::chrono::system_clock::time_point> m_Created;
+    std::optional<std::chrono::system_clock::time_point> m_LastLogin;
+    std::optional<std::size_t> m_OrganizationId;
 
 private:
 // Preference subfield indexes
@@ -151,7 +151,6 @@ private:
     static const std::size_t PrefMinorPriorityIdx = 3;
     static const std::size_t PrefUsingLetterIdx = 4;
     static const std::size_t PrefUsingDotIdx = 5;
-
 };
 
 using UserModel_shp = std::shared_ptr<UserModel>;

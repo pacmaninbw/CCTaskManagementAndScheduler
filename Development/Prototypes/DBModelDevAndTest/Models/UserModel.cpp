@@ -11,49 +11,49 @@
 UserModel::UserModel()
 : ModelDBInterface("User", "UserID")
 {
-    preferences.includePriorityInSchedule = true;
-    preferences.includeMinorPriorityInSchedule = true;
-    preferences.userLetterForMajorPriority = true;
-    preferences.separateMajorAndMinorWithDot = false;
-    preferences.startTime = "8:30 AM";
-    preferences.endTime = "5:00 PM";
+    m_Preferences.includePriorityInSchedule = true;
+    m_Preferences.includeMinorPriorityInSchedule = true;
+    m_Preferences.userLetterForMajorPriority = true;
+    m_Preferences.separateMajorAndMinorWithDot = false;
+    m_Preferences.startTime = "8:30 AM";
+    m_Preferences.endTime = "5:00 PM";
 }
 
 UserModel::UserModel(
     std::size_t userID,
-    std::string lastNameP,
-    std::string firstNameP,
-    std::string middleinitP,
-    std::string emailP,
-    std::string loginNameP,
-    std::string passwordP,
+    std::string lastName,
+    std::string firstName,
+    std::string middleinit,
+    std::string email,
+    std::string loginName,
+    std::string password,
     std::string preferences,
     std::chrono::system_clock::time_point dateAdded,
-    std::chrono::system_clock::time_point lastLoginP,
+    std::chrono::system_clock::time_point lastLogin,
     std::size_t orgId
 )
 : UserModel()
 {
-    primaryKey = userID;
-    lastName = lastNameP;
-    firstName = firstNameP;
-    middleInitial = middleinitP;
-    email = emailP;
-    loginName = loginNameP;
-    password = passwordP;
+    m_PrimaryKey = userID;
+    m_LastName = lastName;
+    m_FirstName = firstName;
+    m_MiddleInitial = middleinit;
+    m_Email = email;
+    m_LoginName = loginName;
+    m_Password = password;
     parsePrefenceText(preferences);
-    created = dateAdded;
-    lastLogin = lastLoginP;
-    organizationId = orgId;
+    m_Created = dateAdded;
+    m_LastLogin = lastLogin;
+    m_OrganizationId = orgId;
 }
 
 
 
 void UserModel::autoGenerateLoginAndPassword() noexcept
 {
-    if (loginName.empty() && password.empty())
+    if (m_LoginName.empty() && m_Password.empty())
     {
-        createLoginBasedOnUserName(lastName, firstName, middleInitial);
+        createLoginBasedOnUserName(m_LastName, m_FirstName, m_MiddleInitial);
     }
 }
 
@@ -71,135 +71,135 @@ void UserModel::createLoginBasedOnUserName(
     setPassword(tempLoginName);
 }
 
-void UserModel::setLastName(const std::string &lastNameP) noexcept
+void UserModel::setLastName(const std::string &lastName) noexcept
 {
-    modified = true;
-    lastName = lastNameP;
+    m_Modified = true;
+    m_LastName = lastName;
 }
 
-void UserModel::setFirstName(const std::string &firstNameP) noexcept
+void UserModel::setFirstName(const std::string &firstName) noexcept
 {
-    modified = true;
-    firstName = firstNameP;
+    m_Modified = true;
+    m_FirstName = firstName;
 }
 
-void UserModel::setMiddleInitial(const std::string &middleinitP) noexcept
+void UserModel::setMiddleInitial(const std::string &middleinit) noexcept
 {
-    modified = true;
-    middleInitial = middleinitP;
+    m_Modified = true;
+    m_MiddleInitial = middleinit;
 }
 
-void UserModel::setEmail(const std::string &emailP) noexcept
+void UserModel::setEmail(const std::string &email) noexcept
 {
-    modified = true;
-    email = emailP;
+    m_Modified = true;
+    m_Email = email;
 }
 
-void UserModel::setLoginName(const std::string &loginNameP) noexcept
+void UserModel::setLoginName(const std::string &loginName) noexcept
 {
-    modified = true;
-    loginName = loginNameP;
+    m_Modified = true;
+    m_LoginName = loginName;
 }
 
-void UserModel::setPassword(const std::string &passwordP) noexcept
+void UserModel::setPassword(const std::string &password) noexcept
 {
-    modified = true;
-    password = passwordP;
+    m_Modified = true;
+    m_Password = password;
 }
 
 void UserModel::setStartTime(const std::string &startTime) noexcept
 {
-    modified = true;
-    preferences.startTime = startTime;
+    m_Modified = true;
+    m_Preferences.startTime = startTime;
 }
 
 void UserModel::setEndTime(const std::string &endTime) noexcept
 {
-    modified = true;
-    preferences.endTime = endTime;
+    m_Modified = true;
+    m_Preferences.endTime = endTime;
 }
 
 void UserModel::setPriorityInSchedule(bool inSchedule) noexcept
 {
-    modified = true;
-    preferences.includePriorityInSchedule = inSchedule;
+    m_Modified = true;
+    m_Preferences.includePriorityInSchedule = inSchedule;
 }
 
 void UserModel::setMinorPriorityInSchedule(bool inSchedule) noexcept
 {
-    modified = true;
-    preferences.includeMinorPriorityInSchedule = inSchedule;
+    m_Modified = true;
+    m_Preferences.includeMinorPriorityInSchedule = inSchedule;
 }
 
 void UserModel::setUsingLettersForMaorPriority(bool usingLetters) noexcept
 {
-    modified = true;
-    preferences.userLetterForMajorPriority = usingLetters;
+    m_Modified = true;
+    m_Preferences.userLetterForMajorPriority = usingLetters;
 }
 
 void UserModel::setSeparatingPriorityWithDot(bool separate) noexcept
 {
-    modified = true;
-    preferences.separateMajorAndMinorWithDot = separate;
+    m_Modified = true;
+    m_Preferences.separateMajorAndMinorWithDot = separate;
 }
 
 void UserModel::setUserID(std::size_t UserID) noexcept
 {
-    modified = true;
-    primaryKey = UserID;
+    m_Modified = true;
+    m_PrimaryKey = UserID;
 }
 
 void UserModel::setCreationDate(std::chrono::system_clock::time_point dateAndTime) noexcept
 {
-    modified = true;
-    created = dateAndTime;
+    m_Modified = true;
+    m_Created = dateAndTime;
 }
 
 void UserModel::setLastLogin(std::chrono::system_clock::time_point dateAndTime) noexcept
 {
-    modified = true;
-    lastLogin = dateAndTime;
+    m_Modified = true;
+    m_LastLogin = dateAndTime;
 }
 
 bool UserModel::isMissingLastName() const noexcept
 {
-    return (lastName.empty() || lastName.length() < minNameLenght);
+    return (m_LastName.empty() || m_LastName.length() < minNameLenght);
 }
 
 bool UserModel::isMissingFirstName() const noexcept
 {
-    return (firstName.empty() || firstName.length() < minNameLenght);
+    return (m_FirstName.empty() || m_FirstName.length() < minNameLenght);
 }
 
 bool UserModel::isMissingLoginName()const noexcept
 {
-    return (loginName.empty() || loginName.length() < (2 * minNameLenght));
+    return (m_LoginName.empty() || m_LoginName.length() < (2 * minNameLenght));
 }
 
 bool UserModel::isMissingPassword() const noexcept
 {
-    return (password.empty() || password.length() < minPasswordLenght);;
+    return (m_Password.empty() || m_Password.length() < minPasswordLenght);;
 }
 
 bool UserModel::isMissingEmail() const noexcept
 {
-    return (email.empty() || email.length() < minEmailLength);
+    return (m_Email.empty() || m_Email.length() < minEmailLength);
 }
 
 bool UserModel::diffUser(UserModel &other) const noexcept
 {
     // Ignore user preferences
-    return (primaryKey == other.primaryKey && loginName == other.loginName && password == other.password &&
-        lastName == other.lastName && firstName == other.firstName &&middleInitial == other.middleInitial);
+    return (m_PrimaryKey == other.m_PrimaryKey && m_LoginName == other.m_LoginName && m_Password == other.m_Password &&
+        m_LastName == other.m_LastName && m_FirstName == other.m_FirstName &&m_MiddleInitial == other.m_MiddleInitial);
 }
 
 void UserModel::initRequiredFields() noexcept
 {
-    missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingLastName, this), "Last Name"});
-    missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingFirstName, this), "First Name"});
-    missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingEmail, this), "Email"});
-    missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingLoginName, this), "Login Name"});
-    missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingPassword, this), "Password"});
+    m_MissingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingLastName, this), "Last Name"});
+    m_MissingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingFirstName, this), "First Name"});
+    m_MissingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingEmail, this), "Email"});
+    m_MissingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingLoginName, this), "Login Name"});
+    m_MissingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingPassword, this), "Password"});
 }
 
 std::string UserModel::formatInsertStatement()
@@ -208,7 +208,7 @@ std::string UserModel::formatInsertStatement()
 
     std::string insertStatement = boost::mysql::format_sql(format_opts.value(),
         "CALL AddUser({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})",
-        organizationId, lastName, firstName, middleInitial, email, loginName, password, buildPreferenceText()
+        m_OrganizationId, m_LastName, m_FirstName, m_MiddleInitial, m_Email, m_LoginName, m_Password, buildPreferenceText()
     );
 
     return insertStatement;
@@ -220,8 +220,8 @@ std::string UserModel::formatUpdateStatement()
 
     std::string updateStatement = boost::mysql::format_sql(format_opts.value(),
         "CALL UpdateUserAllFields({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9})",
-            primaryKey, organizationId, lastName, firstName, middleInitial, email, loginName, password, 
-            buildPreferenceText(), optionalDateTimeConversion(lastLogin));
+            m_PrimaryKey, m_OrganizationId, m_LastName, m_FirstName, m_MiddleInitial, m_Email, m_LoginName, m_Password, 
+            buildPreferenceText(), optionalDateTimeConversion(m_LastLogin));
         
     return updateStatement;
 }
@@ -230,7 +230,7 @@ std::string UserModel::formatDeleteStatement()
 {
     initFormatOptions();
 
-    return boost::mysql::format_sql(format_opts.value(), "CALL HideUser({})", primaryKey);
+    return boost::mysql::format_sql(format_opts.value(), "CALL HideUser({})", m_PrimaryKey);
 }
 
 std::string UserModel::buildPreferenceText() noexcept

@@ -10,104 +10,104 @@
 ScheduleItemModel::ScheduleItemModel()
 : ModelDBInterface("ScheduleItem", "idUserScheduleItem")
 {
-    userID = 0;
-    title = "";
-    personal = false;
+    m_UserID = 0;
+    m_Title = "";
+    m_Personal = false;
 }
 
 ScheduleItemModel::ScheduleItemModel(
-    std::size_t newID,
+    std::size_t eventId,
     std::size_t userId,
-    std::string titleIn,
-    std::chrono::system_clock::time_point startTimeTS,
-    std::chrono::system_clock::time_point endTimeTS,
-    std::string locationStr,
-    bool personalIn,
-    std::chrono::system_clock::time_point creationDateTS,
-    std::chrono::system_clock::time_point lastUpdateTS
+    std::string title,
+    std::chrono::system_clock::time_point startTime,
+    std::chrono::system_clock::time_point endTime,
+    std::string location,
+    bool personal,
+    std::chrono::system_clock::time_point creationDate,
+    std::chrono::system_clock::time_point lastUpdate
 )
 : ScheduleItemModel()
 {
-    primaryKey = newID;
-    userID = userId;
-    title = titleIn;
-    startTime = startTimeTS;
-    endTime = endTimeTS;
-    personal = personalIn;
-    location = locationStr;
-    creationTimeStamp = creationDateTS;
-    lastUpdate = lastUpdateTS;
-    deleted = false;
+    m_PrimaryKey = eventId;
+    m_UserID = userId;
+    m_Title = title;
+    m_StartTime = startTime;
+    m_EndTime = endTime;
+    m_Personal = personal;
+    m_Location = location;
+    m_Creation = creationDate;
+    m_LastUpdate = lastUpdate;
+    m_Deleted = false;
 }
 
 
 void ScheduleItemModel::setUserID(std::size_t userId)
 {
-    modified = true;
-    userID = userId;
+    m_Modified = true;
+    m_UserID = userId;
 }
 
-void ScheduleItemModel::setTitle(std::string titleIn)
+void ScheduleItemModel::setTitle(std::string title)
 {
-    modified = true;
-    title = titleIn;
+    m_Modified = true;
+    m_Title = title;
 }
 
-void ScheduleItemModel::setStartDateAndTime(std::chrono::system_clock::time_point startTimeTS)
+void ScheduleItemModel::setStartDateAndTime(std::chrono::system_clock::time_point startTime)
 {
-    modified = true;
-    startTime = startTimeTS;
+    m_Modified = true;
+    m_StartTime = startTime;
 }
 
-void ScheduleItemModel::setEndDateAndTime(std::chrono::system_clock::time_point endTimeTS)
+void ScheduleItemModel::setEndDateAndTime(std::chrono::system_clock::time_point endTime)
 {
-    modified = true;
-    endTime = endTimeTS;
+    m_Modified = true;
+    m_EndTime = endTime;
 }
 
-void ScheduleItemModel::setCreationDate(std::chrono::system_clock::time_point creationDateTS)
+void ScheduleItemModel::setCreationDate(std::chrono::system_clock::time_point creationDate)
 {
-    modified = true;
-    creationTimeStamp = creationDateTS;
+    m_Modified = true;
+    m_Creation = creationDate;
 }
 
-void ScheduleItemModel::setLastUpdate(std::chrono::system_clock::time_point lastUpdateTS)
+void ScheduleItemModel::setLastUpdate(std::chrono::system_clock::time_point lastUpdate)
 {
-    modified = true;
-    lastUpdate = lastUpdateTS;
+    m_Modified = true;
+    m_LastUpdate = lastUpdate;
 }
 
-void ScheduleItemModel::setPersonal(bool personalIn)
+void ScheduleItemModel::setPersonal(bool personal)
 {
-    modified = true;
-    personal = personalIn;
+    m_Modified = true;
+    m_Personal = personal;
 }
 
-void ScheduleItemModel::setLocation(std::string locationStr)
+void ScheduleItemModel::setLocation(std::string location)
 {
-    modified = true;
-    location = locationStr;
+    m_Modified = true;
+    m_Location = location;
 }
 
-void ScheduleItemModel::setScheduleItemID(std::size_t newID)
+void ScheduleItemModel::setScheduleItemID(std::size_t eventId)
 {
-    modified = true;
-    primaryKey = newID;
+    m_Modified = true;
+    m_PrimaryKey = eventId;
 }
 
 bool ScheduleItemModel::diffScheduleItem(ScheduleItemModel &other)
 {
-    std::chrono::system_clock::time_point localStartTime = startTime.value_or(std::chrono::system_clock::now());
-    std::chrono::system_clock::time_point otherStartTime = other.startTime.value_or(std::chrono::system_clock::now());
-    std::chrono::system_clock::time_point localEndTime = endTime.value_or(std::chrono::system_clock::now());
-    std::chrono::system_clock::time_point otherEndTime = other.endTime.value_or(std::chrono::system_clock::now());
+    std::chrono::system_clock::time_point localStartTime = m_StartTime.value_or(std::chrono::system_clock::now());
+    std::chrono::system_clock::time_point otherStartTime = other.m_StartTime.value_or(std::chrono::system_clock::now());
+    std::chrono::system_clock::time_point localEndTime = m_EndTime.value_or(std::chrono::system_clock::now());
+    std::chrono::system_clock::time_point otherEndTime = other.m_EndTime.value_or(std::chrono::system_clock::now());
 
-    return (primaryKey == other.primaryKey &&
-        userID == other.userID &&
-        title == other.title &&
+    return (m_PrimaryKey == other.m_PrimaryKey &&
+        m_UserID == other.m_UserID &&
+        m_Title == other.m_Title &&
         localStartTime == otherStartTime &&
         localEndTime == otherEndTime &&
-        personal == other.personal
+        m_Personal == other.m_Personal
     );
 }
 
@@ -117,12 +117,12 @@ std::string ScheduleItemModel::formatInsertStatement()
 
     return boost::mysql::format_sql(format_opts.value(),
         "CALL AddScheduleEvent({0}, {1}, {2}, {3}, {4}, {5})",
-            userID,
-            optionalDateTimeConversion(startTime.value()),
-            optionalDateTimeConversion(endTime.value()),
-            title,
-            static_cast<unsigned int>(personal?1:0),
-            location
+            m_UserID,
+            optionalDateTimeConversion(m_StartTime.value()),
+            optionalDateTimeConversion(m_EndTime.value()),
+            m_Title,
+            static_cast<unsigned int>(m_Personal?1:0),
+            m_Location
     );
 }
 
@@ -132,12 +132,12 @@ std::string ScheduleItemModel::formatUpdateStatement()
 
     return boost::mysql::format_sql(format_opts.value(),
         "CALL UpdateScheduleItemAllFields({0}, {1}, {2}, {3}, {4}, {5}, {6})",
-            userID, primaryKey,
-            optionalDateTimeConversion(startTime),
-            optionalDateTimeConversion(endTime),
-            title,
-            static_cast<unsigned int>(personal?1:0),
-            location
+            m_UserID, m_PrimaryKey,
+            optionalDateTimeConversion(m_StartTime),
+            optionalDateTimeConversion(m_EndTime),
+            m_Title,
+            static_cast<unsigned int>(m_Personal?1:0),
+            m_Location
     );
 }
 
@@ -145,14 +145,14 @@ std::string ScheduleItemModel::formatDeleteStatement()
 {
     initFormatOptions();
 
-    return boost::mysql::format_sql(format_opts.value(), "CALL HideScheduleItem({}, {})", userID, primaryKey);
+    return boost::mysql::format_sql(format_opts.value(), "CALL HideScheduleItem({}, {})", m_UserID, m_PrimaryKey);
 }
 
 void ScheduleItemModel::initRequiredFields()
 {
-    missingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingUserID, this), "User ID"});
-    missingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingTitle, this), "Title"});
-    missingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingStartTime, this), "Start Time"});
-    missingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingEndTime, this), "End Time"});
+    m_MissingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingUserID, this), "User ID"});
+    m_MissingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingTitle, this), "Title"});
+    m_MissingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingStartTime, this), "Start Time"});
+    m_MissingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingEndTime, this), "End Time"});
 }
 

@@ -21,14 +21,14 @@ UserSelfTest::UserSelfTest()
 
 TestStatus UserSelfTest::runSelfTest() noexcept
 {
-    inSelfTest = true;
+    m_SelfTest = true;
     TestStatus selfTestStatus = TESTPASSED;
 
-    std::cout << "\nRunning " << modelName << " Self Test\n";
+    std::cout << "\nRunning " << m_ModelName << " Self Test\n";
 
     if (testExceptionHandling()!= TESTPASSED)
     {
-        std::cerr  << modelName << "::runSelfTest: Exception handling FAILED!\n";
+        std::cerr  << m_ModelName << "::runSelfTest: Exception handling FAILED!\n";
         selfTestStatus = TESTFAILED;
     }
     
@@ -39,13 +39,13 @@ TestStatus UserSelfTest::runSelfTest() noexcept
 
     if (testAttributeAccessFunctions() == TESTFAILED)
     {
-        std::cerr << modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
+        std::cerr << m_ModelName << "::runSelfTest: One or more get or set functions FAILED!\n";
         selfTestStatus = TESTFAILED;
     }
 
     if (testEqualityOperator() == TESTFAILED)
     {
-        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", modelName);
+        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", m_ModelName);
         selfTestStatus = TESTFAILED;
     }
 
@@ -80,15 +80,15 @@ TestStatus UserSelfTest::runSelfTest() noexcept
         selfTestStatus = TESTFAILED;
     }
 
-    inSelfTest = false;
+    m_SelfTest = false;
     
     if (selfTestStatus == TESTPASSED)
     {
-        std::cout <<  std::format("{} Self Test {}\n", modelName, "PASSED");
+        std::cout <<  std::format("{} Self Test {}\n", m_ModelName, "PASSED");
     }
     else
     {
-        std::cerr <<  std::format("{} Self Test {}\n", modelName, "FAILED");
+        std::cerr <<  std::format("{} Self Test {}\n", m_ModelName, "FAILED");
     }
 
     return selfTestStatus;
@@ -98,14 +98,14 @@ void UserSelfTest::selfTestResetAllValues() noexcept
 {
     ModelSelfTest::selfTestResetAllValues();
 
-    lastName.clear();
-    firstName.clear();
-    middleInitial.clear();
-    email.clear();
-    loginName.clear();
-    password.clear();
-    created.reset();
-    lastLogin.reset();
+    m_LastName.clear();
+    m_FirstName.clear();
+    m_MiddleInitial.clear();
+    m_Email.clear();
+    m_LoginName.clear();
+    m_Password.clear();
+    m_Created.reset();
+    m_LastLogin.reset();
 }
 
 std::vector<AttributeTestFunction> UserSelfTest::initAttributeAccessTests() noexcept
@@ -136,7 +136,7 @@ TestStatus UserSelfTest::testUserIdAccesss() noexcept
 {
     std::size_t testPrimaryKey = 31;
 
-    return testAccessorFunctions<std::size_t>(testPrimaryKey, &primaryKey, "Primary Key",
+    return testAccessorFunctions<std::size_t>(testPrimaryKey, &m_PrimaryKey, "Primary Key",
         std::bind(&UserModel::setUserID, this, std::placeholders::_1),
         std::bind(&UserModel::getUserID, this));
 }
@@ -144,7 +144,7 @@ TestStatus UserSelfTest::testUserIdAccesss() noexcept
 TestStatus UserSelfTest::testLastNameAccess() noexcept
 {
     std::string testValue("AnyLastName");
-    return testAccessorFunctions<std::string>(testValue, &lastName, "Last Name",
+    return testAccessorFunctions<std::string>(testValue, &m_LastName, "Last Name",
         std::bind(&UserModel::setLastName, this, std::placeholders::_1),
         std::bind(&UserModel::getLastName, this));
 }
@@ -152,7 +152,7 @@ TestStatus UserSelfTest::testLastNameAccess() noexcept
 TestStatus UserSelfTest::testFirstNameAccess() noexcept
 {
     std::string testValue("AnyFirstName");
-    return testAccessorFunctions<std::string>(testValue, &firstName, "First Name",
+    return testAccessorFunctions<std::string>(testValue, &m_FirstName, "First Name",
         std::bind(&UserModel::setFirstName, this, std::placeholders::_1),
         std::bind(&UserModel::getFirstName, this));
 }
@@ -160,7 +160,7 @@ TestStatus UserSelfTest::testFirstNameAccess() noexcept
 TestStatus UserSelfTest::testMiddleInitialAccess() noexcept
 {
     std::string testValue("A");
-    return testAccessorFunctions<std::string>(testValue, &middleInitial, "Middle Initial",
+    return testAccessorFunctions<std::string>(testValue, &m_MiddleInitial, "Middle Initial",
         std::bind(&UserModel::setMiddleInitial, this, std::placeholders::_1),
         std::bind(&UserModel::getMiddleInitial, this));
 }
@@ -168,7 +168,7 @@ TestStatus UserSelfTest::testMiddleInitialAccess() noexcept
 TestStatus UserSelfTest::testLoginNameAccess() noexcept
 {
     std::string testValue("AnyLoginName");
-    return testAccessorFunctions<std::string>(testValue, &loginName, "LoginName",
+    return testAccessorFunctions<std::string>(testValue, &m_LoginName, "LoginName",
         std::bind(&UserModel::setLoginName, this, std::placeholders::_1),
         std::bind(&UserModel::getLoginName, this));
 }
@@ -176,7 +176,7 @@ TestStatus UserSelfTest::testLoginNameAccess() noexcept
 TestStatus UserSelfTest::testPassWordAccess() noexcept
 {
     std::string testValue("AnyPassword");
-    return testAccessorFunctions<std::string>(testValue, &password, "Password",
+    return testAccessorFunctions<std::string>(testValue, &m_Password, "Password",
         std::bind(&UserModel::setPassword, this, std::placeholders::_1),
         std::bind(&UserModel::getPassword, this));
 }
@@ -184,7 +184,7 @@ TestStatus UserSelfTest::testPassWordAccess() noexcept
 TestStatus UserSelfTest::testCreatedDateAcfcess() noexcept
 {
     std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
-    return testTimeStampAccessorFunctions(testValue, &created, "Creation TimeStamp",
+    return testTimeStampAccessorFunctions(testValue, &m_Created, "Creation TimeStamp",
         std::bind(&UserModel::setCreationDate, this, std::placeholders::_1),
         std::bind(&UserModel::getCreationDate, this));
 }
@@ -192,7 +192,7 @@ TestStatus UserSelfTest::testCreatedDateAcfcess() noexcept
 TestStatus UserSelfTest::testLastLoginAccess() noexcept
 {
     std::optional<std::chrono::system_clock::time_point> testValue = commonTestTimeStampValue;
-    return testOptionalAccessorFunctions<std::chrono::system_clock::time_point>(testValue, &lastLogin, "Last Login TimeStamp",
+    return testOptionalAccessorFunctions<std::chrono::system_clock::time_point>(testValue, &m_LastLogin, "Last Login TimeStamp",
         std::bind(&UserModel::setLastLogin, this, std::placeholders::_1),
         std::bind(&UserModel::getLastLogin, this));
 }
@@ -200,7 +200,7 @@ TestStatus UserSelfTest::testLastLoginAccess() noexcept
 TestStatus UserSelfTest::testEmailAccess() noexcept
 {
     std::string testValue("AnyEmail");
-    return testAccessorFunctions<std::string>(testValue, &email, "Email",
+    return testAccessorFunctions<std::string>(testValue, &m_Email, "Email",
         std::bind(&UserModel::setEmail, this, std::placeholders::_1),
         std::bind(&UserModel::getEmail, this));
 }
@@ -208,7 +208,7 @@ TestStatus UserSelfTest::testEmailAccess() noexcept
 TestStatus UserSelfTest::testStartTimeAccess() noexcept
 {
     std::string testValue("4:30 AM");
-    return testAccessorFunctions<std::string>(testValue, &preferences.startTime, "Start Time Preference",
+    return testAccessorFunctions<std::string>(testValue, &m_Preferences.startTime, "Start Time Preference",
         std::bind(&UserModel::setStartTime, this, std::placeholders::_1),
         std::bind(&UserModel::getStartTime, this));
 }
@@ -216,7 +216,7 @@ TestStatus UserSelfTest::testStartTimeAccess() noexcept
 TestStatus UserSelfTest::testEndTimeAccesss() noexcept
 {
     std::string testValue("4:15 PM");
-    return testAccessorFunctions<std::string>(testValue, &preferences.endTime, "End Time Preference",
+    return testAccessorFunctions<std::string>(testValue, &m_Preferences.endTime, "End Time Preference",
         std::bind(&UserModel::setEndTime, this, std::placeholders::_1),
         std::bind(&UserModel::getEndTime, this));
 }
@@ -224,7 +224,7 @@ TestStatus UserSelfTest::testEndTimeAccesss() noexcept
 TestStatus UserSelfTest::testIncludePriorityInScheduleAccess() noexcept
 {
     bool testValue = true;
-    return testAccessorFunctions<bool>(testValue, &preferences.includePriorityInSchedule, "Include Priority In Schedule",
+    return testAccessorFunctions<bool>(testValue, &m_Preferences.includePriorityInSchedule, "Include Priority In Schedule",
         std::bind(&UserModel::setPriorityInSchedule, this, std::placeholders::_1),
         std::bind(&UserModel::isPriorityInSchedule, this));
 }
@@ -232,7 +232,7 @@ TestStatus UserSelfTest::testIncludePriorityInScheduleAccess() noexcept
 TestStatus UserSelfTest::testIncludeMinorPriorityInScheduleAccess() noexcept
 {
     bool testValue = true;
-    return testAccessorFunctions<bool>(testValue, &preferences.includeMinorPriorityInSchedule, "Include Minor Priority In Schedule",
+    return testAccessorFunctions<bool>(testValue, &m_Preferences.includeMinorPriorityInSchedule, "Include Minor Priority In Schedule",
         std::bind(&UserModel::setMinorPriorityInSchedule, this, std::placeholders::_1),
         std::bind(&UserModel::isMinorPriorityInSchedule, this));
 }
@@ -240,7 +240,7 @@ TestStatus UserSelfTest::testIncludeMinorPriorityInScheduleAccess() noexcept
 TestStatus UserSelfTest::testUseLetterForMajorPriorityAccess() noexcept
 {
     bool testValue = true;
-    return testAccessorFunctions<bool>(testValue, &preferences.userLetterForMajorPriority, "Use Letter For Major Priority Access",
+    return testAccessorFunctions<bool>(testValue, &m_Preferences.userLetterForMajorPriority, "Use Letter For Major Priority Access",
         std::bind(&UserModel::setUsingLettersForMaorPriority, this, std::placeholders::_1),
         std::bind(&UserModel::isUsingLettersForMaorPriority, this));
 }
@@ -248,7 +248,7 @@ TestStatus UserSelfTest::testUseLetterForMajorPriorityAccess() noexcept
 TestStatus UserSelfTest::testSeparateMajorAndMinorWithDotAccess() noexcept
 {
     bool testValue = true;
-    return testAccessorFunctions<bool>(testValue, &preferences.separateMajorAndMinorWithDot, "Separate Major And Minor With Dot Access",
+    return testAccessorFunctions<bool>(testValue, &m_Preferences.separateMajorAndMinorWithDot, "Separate Major And Minor With Dot Access",
         std::bind(&UserModel::setSeparatingPriorityWithDot, this, std::placeholders::_1),
         std::bind(&UserModel::isSeparatingPriorityWithDot, this));
 }
@@ -343,15 +343,15 @@ TestStatus UserSelfTest::testAllInsertFailures()
 
     expectedErrors.clear();
 
-    if (verboseOutput)
+    if (m_VerboseOutput)
     {
-        std::cout << std::format("{}::{} before successful insert this = \n", modelName, __func__) << *this << "\n";
+        std::cout << std::format("{}::{} before successful insert this = \n", m_ModelName, __func__) << *this << "\n";
     }
 
     setCreationDate(commonTestTimeStampValue);
     if (!insert())
     {
-        std::cout << "In  UserSelfTest::testAllInsertFailures() Expected successful insert failed\n" << errorMessages << "\n";
+        std::cout << "In  UserSelfTest::testAllInsertFailures() Expected successful insert failed\n" << m_ErrorMessages << "\n";
         return TESTFAILED;
     }
 
@@ -362,7 +362,7 @@ TestStatus UserSelfTest::testEqualityOperator() noexcept
 {
     UserModel other;
 
-    other.setUserID(primaryKey);
+    other.setUserID(m_PrimaryKey);
     if (*this == other)
     {
         return TESTFAILED;

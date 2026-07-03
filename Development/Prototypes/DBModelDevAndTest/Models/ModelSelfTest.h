@@ -45,13 +45,13 @@ protected:
  */
     virtual void selfTestResetAllValues() noexcept
     {
-        ModelDBInterface::primaryKey = 0;
-        ModelDBInterface::modified = false;
+        ModelDBInterface::m_PrimaryKey = 0;
+        ModelDBInterface::m_Modified = false;
 /*****
  * format_opts needs to be reset before any exception test
  */
         CoreDBInterface::format_opts.reset();
-        CoreDBInterface::errorMessages.clear();
+        CoreDBInterface::clearErrorMessages();
     }
  
 };

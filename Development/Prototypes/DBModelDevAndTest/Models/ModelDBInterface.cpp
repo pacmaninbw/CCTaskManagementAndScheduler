@@ -16,19 +16,19 @@
 ModelDBInterface::ModelDBInterface(std::string modelNameIn, std::string primaryKeyNameIn)
 : CoreDBInterface()
 {
-    primaryKey = 0;
-    modelName = modelNameIn;
-    primaryKeyName = primaryKeyNameIn;
-    modified = false;
-    delimiter = ';';  
-    deleted = false;
+    m_PrimaryKey = 0;
+    m_ModelName = modelNameIn;
+    m_PrimaryKeyName = primaryKeyNameIn;
+    m_Modified = false;
+    m_Delimiter = ';';  
+    m_Deleted = false;
 }
 
 bool ModelDBInterface::save() noexcept
 {
     if (!isModified())
     {
-        appendErrorMessage(std::format("{} not modified, no changes to save", modelName));
+        appendErrorMessage(std::format("{} not modified, no changes to save", m_ModelName));
         return false;
     }
 
@@ -44,23 +44,23 @@ bool ModelDBInterface::save() noexcept
 
 bool ModelDBInterface::insert() noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
 
     if (isInDataBase())
     {
-        appendErrorMessage(std::format("{} already in Database, use Update!", modelName));
+        appendErrorMessage(std::format("{} already in Database, use Update!", m_ModelName));
         return false;
     }
 
     if (!isModified())
     {
-        appendErrorMessage(std::format("{} not modified!", modelName));
+        appendErrorMessage(std::format("{} not modified!", m_ModelName));
         return false;
     }
 
     if (!hasRequiredValues())
     {
-        appendErrorMessage(std::format("{} is missing required values!", modelName));
+        appendErrorMessage(std::format("{} is missing required values!", m_ModelName));
         reportMissingFields();
         return false;
     }
@@ -68,13 +68,13 @@ bool ModelDBInterface::insert() noexcept
     try
     {
         boost::mysql::results localResult = runQueryAsync(formatInsertStatement());
-        primaryKey =  getPrimaryKeyValue(localResult);
-        modified = false;
+        m_PrimaryKey =  getPrimaryKeyValue(localResult);
+        m_Modified = false;
     }
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In {}.insert : {}", modelName, e.what()));
+        appendErrorMessage(std::format("In {}.insert : {}", m_ModelName, e.what()));
         return false;
     }
 
@@ -83,42 +83,42 @@ bool ModelDBInterface::insert() noexcept
 
 bool ModelDBInterface::update() noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
 
     if (!isInDataBase())
     {
-        appendErrorMessage(std::format("{} not in Database, use Insert!", modelName));
+        appendErrorMessage(std::format("{} not in Database, use Insert!", m_ModelName));
         return false;
     }
 
     if (!isModified())
     {
-        appendErrorMessage(std::format("{} not modified!", modelName));
+        appendErrorMessage(std::format("{} not modified!", m_ModelName));
         return false;
     }
 
     try
     {
         boost::mysql::results localResult = runQueryAsync(formatUpdateStatement());
-        modified = false;
+        m_Modified = false;
             
         return true;
     }
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In {}.update : {}", modelName, e.what()));
+        appendErrorMessage(std::format("In {}.update : {}", m_ModelName, e.what()));
         return false;
     }
 }
 
 bool ModelDBInterface::hide([[maybe_unused]]std::size_t userRequestingDelete) noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
 
     if (!isInDataBase())
     {
-        appendErrorMessage(std::format("{} not in Database, nothing to delete!", modelName));
+        appendErrorMessage(std::format("{} not in Database, nothing to delete!", m_ModelName));
 
         return false;
     }
@@ -127,14 +127,14 @@ bool ModelDBInterface::hide([[maybe_unused]]std::size_t userRequestingDelete) no
     {
         boost::mysql::results localResult = runQueryAsync(formatDeleteStatement());
 
-        deleted = true;
+        m_Deleted = true;
         
         return true;
     }
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In {}.hide() : {}", modelName, e.what()));
+        appendErrorMessage(std::format("In {}.hide() : {}", m_ModelName, e.what()));
         return false;
     }
 }
@@ -143,7 +143,7 @@ bool ModelDBInterface::hide([[maybe_unused]]std::size_t userRequestingDelete) no
 bool ModelDBInterface::hasRequiredValues()
 {
     initRequiredFields();
-    for (auto fieldTest: missingRequiredFieldsTests)
+    for (auto fieldTest: m_MissingRequiredFieldsTests)
     {
         if (fieldTest.errorCondition())
         {
@@ -160,11 +160,11 @@ bool ModelDBInterface::hasRequiredValues()
  */
 void ModelDBInterface::reportMissingFields() noexcept
 {
-    for (auto testAndReport: missingRequiredFieldsTests)
+    for (auto testAndReport: m_MissingRequiredFieldsTests)
     {
         if (testAndReport.errorCondition())
         {
-            appendErrorMessage(std::format("Missing {} required {}!", modelName, testAndReport.fieldName));
+            appendErrorMessage(std::format("Missing {} required {}!", m_ModelName, testAndReport.fieldName));
         }
     }
 }
@@ -174,7 +174,7 @@ std::vector<std::string> ModelDBInterface::explodeTextField(std::string const& t
     std::vector<std::string> subFields;
     std::istringstream iss(textField);
 
-    for (std::string token; std::getline(iss, token, delimiter); )
+    for (std::string token; std::getline(iss, token, m_Delimiter); )
     {
         subFields.push_back(std::move(token));
     }
@@ -188,7 +188,7 @@ std::string ModelDBInterface::implodeTextField(std::vector<std::string> &fields)
     for (auto field: fields)
     {
         textField.append(field);
-        textField += delimiter;
+        textField += m_Delimiter;
     }
 
     return textField;
@@ -198,7 +198,7 @@ std::size_t ModelDBInterface::getPrimaryKeyValue(boost::mysql::results &dbResult
 {
     // If this is self test then we don't actually connect to the database, the code that
     // tests insert statements still needs a value returned.
-    if (inSelfTest)
+    if (m_SelfTest)
     {
         return 1;
     }
@@ -219,7 +219,7 @@ std::size_t ModelDBInterface::getPrimaryKeyValue(boost::mysql::results &dbResult
                 columnNames.push_back(metaIter.column_name());
             }
 
-            if (columnNames[0] == primaryKeyName)
+            if (columnNames[0] == m_PrimaryKeyName)
             {
                 boost::mysql::field_view fv = resultview0.rows().at(0).at(0);
                 if (fv.kind() == boost::mysql::field_kind::uint64)

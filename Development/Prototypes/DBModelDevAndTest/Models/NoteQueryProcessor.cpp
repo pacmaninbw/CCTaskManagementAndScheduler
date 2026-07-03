@@ -19,7 +19,7 @@ NoteQueryProcessor::NoteQueryProcessor()
 
 NoteModel_shp NoteQueryProcessor::getNoteById(std::size_t noteId) noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
     NoteModel_shp found = nullptr;
 
     try
@@ -41,7 +41,7 @@ NoteModel_shp NoteQueryProcessor::getNoteById(std::size_t noteId) noexcept
 
 NoteList NoteQueryProcessor::getAllNotesForUser(std::size_t userId) noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
 /*
  * Prepend function name to any error messages.
  */
@@ -65,7 +65,7 @@ NoteList NoteQueryProcessor::getAllNotesForUser(std::size_t userId) noexcept
 
 NoteList NoteQueryProcessor::getNotesForUserSimlarToContent(std::size_t userId, std::string likeContent) noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
     appendErrorMessage("In NoteQueryProcessor::getNotesForUserSimlarToContent : ");
 
     try
@@ -89,7 +89,7 @@ NoteList NoteQueryProcessor::getNotesForUserSimlarToContent(std::size_t userId, 
 NoteList NoteQueryProcessor::getAllNotesForUserCreatedInDatgeRange(
     std::size_t userId, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate) noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
     appendErrorMessage("In NoteQueryProcessor::getAllNotesForUserCreatedInDatgeRange : ");
 
     try
@@ -114,7 +114,7 @@ NoteList NoteQueryProcessor::getAllNotesForUserCreatedInDatgeRange(
 NoteList NoteQueryProcessor::getAllNotesForUserEditedInDatgeRange(
     std::size_t userId, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate) noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
     appendErrorMessage("In NoteQueryProcessor::getAllNotesForUserEditedInDatgeRange : ");
 
     try
@@ -138,7 +138,7 @@ NoteList NoteQueryProcessor::getAllNotesForUserEditedInDatgeRange(
 
 NoteList NoteQueryProcessor::getDashboardNoteTable(std::size_t userId, std::chrono::year_month_day searchDate) noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
     appendErrorMessage("In NoteQueryProcessor::getDashboardNoteTable : ");
 
     try
@@ -176,27 +176,27 @@ std::string NoteQueryProcessor::formatGetNotesFromUserForDate(std::size_t userId
 
 void NoteQueryProcessor::fillRequiredIndexes()
 {
-    assignValueToIndex("idUserNotes", noteIDX);
-    assignValueToIndex("UserID", userIDX);
-    assignValueToIndex("Content", contentIDX);
-    assignValueToIndex("Hidden", hiddenIDX);
-    assignValueToIndex("NotationDateTime", createdIDX);
-    assignValueToIndex("LastUpdate", lastmodIDX);
+    assignValueToIndex("idUserNotes", m_NoteIDX);
+    assignValueToIndex("UserID", m_UserIDX);
+    assignValueToIndex("Content", m_ContentIDX);
+    assignValueToIndex("Hidden", m_HiddenIDX);
+    assignValueToIndex("NotationDateTime", m_CreatedIDX);
+    assignValueToIndex("LastUpdate", m_LastmodIDX);
 }
 
 NoteModel_shp NoteQueryProcessor::processResultRow(boost::mysql::row_view &noteQueryRow)
 {
-    std::size_t noteId = noteQueryRow.at(noteIDX).as_uint64();
-    std::size_t userID = noteQueryRow.at(userIDX).as_uint64();
-    std::string content = noteQueryRow.at(contentIDX).as_string();
+    std::size_t noteId = noteQueryRow.at(m_NoteIDX).as_uint64();
+    std::size_t userID = noteQueryRow.at(m_UserIDX).as_uint64();
+    std::string content = noteQueryRow.at(m_ContentIDX).as_string();
     bool deleted = false;
-    if (!noteQueryRow.at(hiddenIDX).is_null())
+    if (!noteQueryRow.at(m_HiddenIDX).is_null())
     {
-        deleted = noteQueryRow.at(hiddenIDX).as_int64() == 1? true : false;
+        deleted = noteQueryRow.at(m_HiddenIDX).as_int64() == 1? true : false;
     }
 
-    std::chrono::system_clock::time_point creationDate = boostMysqlDateTimeToChronoTimePoint(noteQueryRow.at(createdIDX).as_datetime());
-    std::chrono::system_clock::time_point lastUpdate = boostMysqlDateTimeToChronoTimePoint(noteQueryRow.at(lastmodIDX).as_datetime());
+    std::chrono::system_clock::time_point creationDate = boostMysqlDateTimeToChronoTimePoint(noteQueryRow.at(m_CreatedIDX).as_datetime());
+    std::chrono::system_clock::time_point lastUpdate = boostMysqlDateTimeToChronoTimePoint(noteQueryRow.at(m_LastmodIDX).as_datetime());
 
     NoteModel_shp noteListMember = std::make_shared<NoteModel>(noteId, userID, content, creationDate, lastUpdate, deleted);
 

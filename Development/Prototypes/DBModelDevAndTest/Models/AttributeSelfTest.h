@@ -72,7 +72,7 @@ protected:
             std::string fieldName = std::format("InputField{}", i);
             testInputFields.push_back(fieldName);
             expectedImplodeOutput.append(fieldName);
-            expectedImplodeOutput += ModelDBInterface::delimiter;
+            expectedImplodeOutput += ModelDBInterface::m_Delimiter;
         }
 
         std::string implodeOutput = ModelDBInterface::implodeTextField(testInputFields);
@@ -120,11 +120,11 @@ protected:
     TestStatus testAccessorFunctions(U testValue, U* member, std::string_view memberName,
          std::function<void(U)>setFunct, std::function<U(void)>getFunct) noexcept
     {
-        std::string_view modelName(ModelDBInterface::modelName);
+        std::string_view modelName(ModelDBInterface::m_ModelName);
 
         std::cout << "Running self test on set and get functions for " << modelName << "::" << memberName << "\n";
 
-        ModelDBInterface::modified = false;
+        ModelDBInterface::m_Modified = false;
 
         setFunct(testValue);
         if (!ModelDBInterface::isModified())
@@ -159,11 +159,11 @@ protected:
     TestStatus testOptionalAccessorFunctions(std::optional<U> testValue, std::optional<U>* member, std::string_view memberName,
         std::function<void(U)>setFunct, std::function<std::optional<U>(void)>getFunct) noexcept
     {
-        std::string_view modelName(ModelDBInterface::modelName);
+        std::string_view modelName(ModelDBInterface::m_ModelName);
 
         std::cout << "Running self test on set and get functions for " << modelName << "::" << memberName << "\n";
 
-        ModelDBInterface::modified = false;
+        ModelDBInterface::m_Modified = false;
 
         setFunct(testValue.value());
         if (!ModelDBInterface::isModified())
@@ -209,10 +209,10 @@ protected:
         std::function<void(std::chrono::system_clock::time_point)>setFunct,
         std::function<std::chrono::system_clock::time_point(void)>getFunct) noexcept
     {
-        std::string_view modelName(ModelDBInterface::modelName);
+        std::string_view modelName(ModelDBInterface::m_ModelName);
         std::cout << "Running self test on set and get functions for " << modelName << "::" << memberName << "\n";
 
-        ModelDBInterface::modified = false;
+        ModelDBInterface::m_Modified = false;
 
         setFunct(testValue);
         if (!ModelDBInterface::isModified())

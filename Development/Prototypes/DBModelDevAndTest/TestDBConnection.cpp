@@ -18,9 +18,9 @@
 TestDBConnection::TestDBConnection()
 :   errorMessages{""},
     verboseOutput{programOptions.verboseOutput},
-    forceError{programOptions.forceErrors},
-    forceException{programOptions.forceExceptions},
-    inSelfTest{false},
+    m_ForceError{programOptions.forceErrors},
+    m_ForceException{programOptions.forceExceptions},
+    m_SelfTest{false},
     testProductionConnection{false}
 {
 }
@@ -29,8 +29,8 @@ void TestDBConnection::debugShowVariables(std::string functionName) const noexce
 {
     std::cerr << "In " << functionName << ":\n";
     std::cerr << "\tformat_opts: " << (format_opts.has_value()? "TRUE" : "FALSE") << "\n";
-    std::cerr << "\tinSelfTest: " << (inSelfTest? "TRUE" : "FALSE") << "\n";
-    std::cerr << "\tforceException: " << (forceException? "TRUE" : "FALSE") << "\n";
+    std::cerr << "\tinSelfTest: " << (m_SelfTest? "TRUE" : "FALSE") << "\n";
+    std::cerr << "\tforceException: " << (m_ForceException? "TRUE" : "FALSE") << "\n";
     std::cerr << std::endl;
 }
 
@@ -108,7 +108,7 @@ boost::mysql::format_options TestDBConnection::getConnectionFormatOptsAsync()
 
 boost::asio::awaitable<boost::mysql::format_options> TestDBConnection::coRoutineGetFormatOptions()
 {
-    if (forceException)
+    if (m_ForceException)
     {
         std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions");
         std::domain_error forcedException(forcingException);
@@ -117,7 +117,7 @@ boost::asio::awaitable<boost::mysql::format_options> TestDBConnection::coRoutine
 
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
-    co_await conn.async_connect(dbConnectionParameters);
+    co_await conn.async_connect(m_DBConnection);
 
     boost::mysql::format_options options = conn.format_opts().value();
 
@@ -128,8 +128,8 @@ boost::asio::awaitable<boost::mysql::format_options> TestDBConnection::coRoutine
 
 void TestDBConnection::initConnectionData(ProgramOptions &po)
 {
-    dbConnectionParameters.server_address.emplace_host_and_port(po.mySqlUrl, po.mySqlPort);
-    dbConnectionParameters.username = po.mySqlUser;
-    dbConnectionParameters.password = po.mySqlPassword;
-    dbConnectionParameters.database = po.mySqlDBName;
+    m_DBConnection.server_address.emplace_host_and_port(po.mySqlUrl, po.mySqlPort);
+    m_DBConnection.username = po.mySqlUser;
+    m_DBConnection.password = po.mySqlPassword;
+    m_DBConnection.database = po.mySqlDBName;
 }

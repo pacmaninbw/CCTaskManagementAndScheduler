@@ -39,27 +39,27 @@ private:
     TestStatus testExceptionGetTasksByAssignedIDandParentID() noexcept;
     TestStatus testExceptionGetDefaultDashboardTaskList() noexcept;
 
-    std::size_t taskIdIdx = IndexNotSet;
-    std::size_t createdByIdx = IndexNotSet;
-    std::size_t assignedToIdx = IndexNotSet;
-    std::size_t descriptionIdx = IndexNotSet;
-    std::size_t parentTaskIdx = IndexNotSet;
-    std::size_t statusIdx = IndexNotSet;
-    std::size_t createdOnIdx = IndexNotSet;
-    std::size_t requiredDeliveryIdx = IndexNotSet;
-    std::size_t scheduledStartIdx = IndexNotSet;
-    std::size_t actualStartIdx = IndexNotSet;
-    std::size_t estimatedCompletionIdx = IndexNotSet;
-    std::size_t completedIdx = IndexNotSet;
-    std::size_t estimatedEffortHoursIdx = IndexNotSet;
-    std::size_t actualEffortHoursIdx = IndexNotSet;
-    std::size_t schedulePriorityGroupIdx = IndexNotSet;
-    std::size_t priorityInGroupIdx = IndexNotSet;
-    std::size_t personalIdx = IndexNotSet;
-    std::size_t dependencyCountIdx = IndexNotSet;
-    std::size_t depenedenciesTextIdx = IndexNotSet;
-    std::size_t lastUpdate_Idx = IndexNotSet;
-    std::size_t hidden_Idx = IndexNotSet;
+    std::size_t m_TaskIdIdx = IndexNotSet;
+    std::size_t m_CreatedByIdx = IndexNotSet;
+    std::size_t m_AssignedToIdx = IndexNotSet;
+    std::size_t m_DescriptionIdx = IndexNotSet;
+    std::size_t m_ParentIdx = IndexNotSet;
+    std::size_t m_StatusIdx = IndexNotSet;
+    std::size_t m_CreatedOnIdx = IndexNotSet;
+    std::size_t m_DueDateIdx = IndexNotSet;
+    std::size_t m_PlanedStartIdx = IndexNotSet;
+    std::size_t m_ActualStartIdx = IndexNotSet;
+    std::size_t m_PlanedEndIdx = IndexNotSet;
+    std::size_t m_CompletedIdx = IndexNotSet;
+    std::size_t m_EstEffortHoursIdx = IndexNotSet;
+    std::size_t m_EfforToDateIdx = IndexNotSet;
+    std::size_t m_PriorityCategoryIdx = IndexNotSet;
+    std::size_t m_PriorityIdx = IndexNotSet;
+    std::size_t m_PersonalIdx = IndexNotSet;
+    std::size_t m_DependencyCountIdx = IndexNotSet;
+    std::size_t m_DepenedencyListIdx = IndexNotSet;
+    std::size_t m_LastUpdateIdx = IndexNotSet;
+    std::size_t m_HiddenIdx = IndexNotSet;
 };
 
 #endif // TASKQUERYPROCESSOR_H_

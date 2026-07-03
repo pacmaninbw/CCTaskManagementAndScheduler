@@ -23,7 +23,7 @@ UserQueryProcessor::UserQueryProcessor()
 
 UserModelList UserQueryProcessor::getAllUsers() noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
 
     UserModelList allUsers;
 
@@ -46,7 +46,7 @@ UserModelList UserQueryProcessor::getAllUsers() noexcept
 
 UserModel_shp UserQueryProcessor::getUserByID(std::size_t userId) noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
     UserModel_shp found = nullptr;
 
     try
@@ -68,7 +68,7 @@ UserModel_shp UserQueryProcessor::getUserByID(std::size_t userId) noexcept
 
 UserModel_shp UserQueryProcessor::getUserByLoginName(const std::string_view &loginName) noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
     UserModel_shp found = nullptr;
 
     try
@@ -90,7 +90,7 @@ UserModel_shp UserQueryProcessor::getUserByLoginName(const std::string_view &log
 
 UserModel_shp UserQueryProcessor::getUserByEmail(const std::string_view &emailAddress) noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
     UserModel_shp found = nullptr;
 
     try
@@ -112,7 +112,7 @@ UserModel_shp UserQueryProcessor::getUserByEmail(const std::string_view &emailAd
 
 UserModel_shp UserQueryProcessor::getUserByLoginAndPassword(const std::string_view &loginName, const std::string_view &password) noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
     UserModel_shp found = nullptr;
 
     try
@@ -134,7 +134,7 @@ UserModel_shp UserQueryProcessor::getUserByLoginAndPassword(const std::string_vi
 
 UserModel_shp UserQueryProcessor::getUserByFullName(const std::string_view &lastName, const std::string_view &firstName, const std::string_view &middleI) noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
     UserModel_shp found = nullptr;
 
     try
@@ -156,24 +156,24 @@ UserModel_shp UserQueryProcessor::getUserByFullName(const std::string_view &last
 
 UserModel_shp UserQueryProcessor::processResultRow(boost::mysql::row_view &queryRow)
 {
-    std::size_t userId = queryRow.at(UserIdIdx).as_uint64();
-    std::string lastName = queryRow.at(LastNameIdx).as_string();
-    std::string firstName = queryRow.at(FirstNameIdx).as_string();
-    std::string middleInitial = queryRow.at(MiddleInitialIdx).as_string();
-    std::string email = queryRow.at(EmailAddressIdx).as_string();
-    std::string loginName = queryRow.at(LoginNameIdx).as_string();
-    std::string password = queryRow.at(PasswordIdx).as_string();
-    std::chrono::system_clock::time_point created = (boostMysqlDateTimeToChronoTimePoint(queryRow.at(UserAddedIdx).as_datetime()));
+    std::size_t userId = queryRow.at(m_UserIdIdx).as_uint64();
+    std::string lastName = queryRow.at(m_LastNameIdx).as_string();
+    std::string firstName = queryRow.at(m_FirstNameIdx).as_string();
+    std::string middleInitial = queryRow.at(m_MiddleInitialIdx).as_string();
+    std::string email = queryRow.at(m_EmailAddressIdx).as_string();
+    std::string loginName = queryRow.at(m_LoginNameIdx).as_string();
+    std::string password = queryRow.at(m_PasswordIdx).as_string();
+    std::chrono::system_clock::time_point created = (boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_UserAddedIdx).as_datetime()));
     std::chrono::system_clock::time_point lastLogin;
     std::size_t organizationId = 0;
-    if (!queryRow.at(LastLoginIdx).is_null())
+    if (!queryRow.at(m_LastLoginIdx).is_null())
     {
-        lastLogin = boostMysqlDateTimeToChronoTimePoint(queryRow.at(LastLoginIdx).as_datetime());
+        lastLogin = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_LastLoginIdx).as_datetime());
     }
-    std::string preferences = queryRow.at(PreferencesIdx).as_string();
-    if (!queryRow.at(OrganizationIdx).is_null())
+    std::string preferences = queryRow.at(m_PreferencesIdx).as_string();
+    if (!queryRow.at(m_OrganizationIdx).is_null())
     {
-        organizationId = queryRow.at(OrganizationIdx).as_uint64();
+        organizationId = queryRow.at(m_OrganizationIdx).as_uint64();
     }
 
     return std::make_shared<UserModel>(userId, lastName, firstName, middleInitial, email, loginName, password, preferences, created, lastLogin, organizationId);
@@ -181,18 +181,18 @@ UserModel_shp UserQueryProcessor::processResultRow(boost::mysql::row_view &query
 
 void UserQueryProcessor::fillRequiredIndexes()
 {
-    assignValueToIndex("UserID", UserIdIdx);
-    assignValueToIndex("Organization_ID", OrganizationIdx);
-    assignValueToIndex("LastName", LastNameIdx);
-    assignValueToIndex("FirstName", FirstNameIdx);
-    assignValueToIndex("MiddleInitial", MiddleInitialIdx);
-    assignValueToIndex("EmailAddress", EmailAddressIdx);
-    assignValueToIndex("LoginName", LoginNameIdx);
-    assignValueToIndex("HashedPassWord", PasswordIdx);
-    assignValueToIndex("UserAdded", UserAddedIdx);
-    assignValueToIndex("LastLogin", LastLoginIdx);
-    assignValueToIndex("Preferences", PreferencesIdx);
-    assignValueToIndex("Hidden", HiddenIdx);
+    assignValueToIndex("UserID", m_UserIdIdx);
+    assignValueToIndex("Organization_ID", m_OrganizationIdx);
+    assignValueToIndex("LastName", m_LastNameIdx);
+    assignValueToIndex("FirstName", m_FirstNameIdx);
+    assignValueToIndex("MiddleInitial", m_MiddleInitialIdx);
+    assignValueToIndex("EmailAddress", m_EmailAddressIdx);
+    assignValueToIndex("LoginName", m_LoginNameIdx);
+    assignValueToIndex("HashedPassWord", m_PasswordIdx);
+    assignValueToIndex("UserAdded", m_UserAddedIdx);
+    assignValueToIndex("LastLogin", m_LastLoginIdx);
+    assignValueToIndex("Preferences", m_PreferencesIdx);
+    assignValueToIndex("Hidden", m_HiddenIdx);
 }
 
 /*

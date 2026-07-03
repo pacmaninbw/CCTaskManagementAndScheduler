@@ -13,7 +13,7 @@ GoalQueryProcessor::GoalQueryProcessor()
 
 UserGoalModel_shp GoalQueryProcessor::getGoalById(std::size_t goalId) noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
     UserGoalModel_shp found = nullptr;
 
     try
@@ -35,7 +35,7 @@ UserGoalModel_shp GoalQueryProcessor::getGoalById(std::size_t goalId) noexcept
 
 UserGoalModel_shp GoalQueryProcessor::findGoalByUserIdAndExactDescription(std::size_t userId, std::string fullDescription) noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
     UserGoalModel_shp found = nullptr;
 
     try
@@ -57,7 +57,7 @@ UserGoalModel_shp GoalQueryProcessor::findGoalByUserIdAndExactDescription(std::s
 
 UserGoalList GoalQueryProcessor::getAllGoalsForUser(std::size_t userID) noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
 
     try
     {
@@ -78,7 +78,7 @@ UserGoalList GoalQueryProcessor::getAllGoalsForUser(std::size_t userID) noexcept
 
 UserGoalList GoalQueryProcessor::getAllChildrenFromParent(UserGoalModel parentGoal) noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
 
     try
     {
@@ -96,7 +96,7 @@ UserGoalList GoalQueryProcessor::getAllChildrenFromParent(UserGoalModel parentGo
 
 UserGoalList GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription(std::size_t userID, std::string searchString) noexcept
 {
-    errorMessages.clear();
+    clearErrorMessages();
 
     try
     {
@@ -118,29 +118,29 @@ UserGoalList GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription(std::siz
 
 UserGoalModel_shp GoalQueryProcessor::processResultRow(boost::mysql::row_view& queryRow)
 {
-    std::size_t goalId = queryRow.at(GoalIdIdx).as_uint64();
-    std::size_t userID = queryRow.at(UserIdIdx).as_uint64();
-    std::chrono::system_clock::time_point creationDate = boostMysqlDateTimeToChronoTimePoint(queryRow.at(CreationTSIdx).as_datetime());
-    std::string description = queryRow.at(DescriptionIdx).as_string();
-    std::chrono::system_clock::time_point lastUpdate = boostMysqlDateTimeToChronoTimePoint(queryRow.at(LastUpdateIdx).as_datetime());
+    std::size_t goalId = queryRow.at(m_GoalIdIdx).as_uint64();
+    std::size_t userID = queryRow.at(m_UserIdIdx).as_uint64();
+    std::chrono::system_clock::time_point creationDate = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_CreationTSIdx).as_datetime());
+    std::string description = queryRow.at(m_DescriptionIdx).as_string();
+    std::chrono::system_clock::time_point lastUpdate = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_LastUpdateIdx).as_datetime());
     unsigned int priority = 0;
     std::size_t parentID = 0;
     bool deleted = false;
 
     // Optional fields.
-    if (!queryRow.at(PriorityIdx).is_null())
+    if (!queryRow.at(m_PriorityIdx).is_null())
     {
-        priority = queryRow.at(PriorityIdx).as_int64();
+        priority = queryRow.at(m_PriorityIdx).as_int64();
     }
 
-    if (!queryRow.at(ParentGoalIDIdx).is_null())
+    if (!queryRow.at(m_ParentGoalIDIdx).is_null())
     {
-        parentID = queryRow.at(ParentGoalIDIdx).as_uint64();
+        parentID = queryRow.at(m_ParentGoalIDIdx).as_uint64();
     }
 
-    if (!queryRow.at(HiddenIdx).is_null())
+    if (!queryRow.at(m_HiddenIdx).is_null())
     {
-        deleted = queryRow.at(HiddenIdx).as_int64() == 1? true : false;
+        deleted = queryRow.at(m_HiddenIdx).as_int64() == 1? true : false;
     }
 
     return std::make_shared<UserGoalModel>(goalId, userID, description, priority, parentID, creationDate, lastUpdate, deleted);
@@ -148,14 +148,14 @@ UserGoalModel_shp GoalQueryProcessor::processResultRow(boost::mysql::row_view& q
 
 void GoalQueryProcessor::fillRequiredIndexes()
 {
-    assignValueToIndex("idUserGoals", GoalIdIdx);
-    assignValueToIndex("UserID", UserIdIdx);
-    assignValueToIndex("Description", DescriptionIdx);
-    assignValueToIndex("CreationTS", CreationTSIdx);
-    assignValueToIndex("LastUpdateTS", LastUpdateIdx);
-    assignValueToIndex("Priority",PriorityIdx);
-    assignValueToIndex("ParentGoal",ParentGoalIDIdx);
-    assignValueToIndex("Hidden",HiddenIdx);
+    assignValueToIndex("idUserGoals", m_GoalIdIdx);
+    assignValueToIndex("UserID", m_UserIdIdx);
+    assignValueToIndex("Description", m_DescriptionIdx);
+    assignValueToIndex("CreationTS", m_CreationTSIdx);
+    assignValueToIndex("LastUpdateTS", m_LastUpdateIdx);
+    assignValueToIndex("Priority",m_PriorityIdx);
+    assignValueToIndex("ParentGoal",m_ParentGoalIDIdx);
+    assignValueToIndex("Hidden",m_HiddenIdx);
 }
 
 std::string GoalQueryProcessor::formatSelectAllChildGoalsWithParentFromUser(std::size_t parentId, std::size_t userId)

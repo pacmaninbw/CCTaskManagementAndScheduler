@@ -18,16 +18,16 @@ class CoreDBInterface
 public:
     CoreDBInterface();
     virtual ~CoreDBInterface() = default;
-    std::string getAllErrorMessages() const noexcept { return errorMessages; };
-    void clearErrorMessages() { errorMessages.clear(); };   // Used in list self tests.
-    void setForceExceptions(bool forceIt) { forceException = forceIt; };
-    void setSelfTest(bool isSelfTest) { inSelfTest = isSelfTest; };
+    std::string getAllErrorMessages() const noexcept { return m_ErrorMessages; };
+    inline void clearErrorMessages() { m_ErrorMessages.clear(); };
+    void setForceExceptions(bool forceIt) { m_ForceException = forceIt; };
+    void setSelfTest(bool isSelfTest) { m_SelfTest = isSelfTest; };
     void testResetFormatOpts() { format_opts.reset(); };
     void debugShowVariables(std::string functionName) const noexcept;
 
 protected:
     void initFormatOptions();
-    void appendErrorMessage(const std::string& newError) { errorMessages.append(newError); errorMessages.append("\n");};
+    void appendErrorMessage(const std::string& newError) { m_ErrorMessages.append(newError); m_ErrorMessages.append("\n");};
 /*
  * Utility functions to perform conversions from C++ class fields to 
  * database fields and back. 
@@ -55,12 +55,12 @@ protected:
     boost::asio::awaitable<boost::mysql::results> coRoutineExecuteSqlStatement(const std::string& query);
     boost::asio::awaitable<boost::mysql::format_options> coRoutineGetFormatOptions();
 
-    std::string errorMessages;
-    boost::mysql::connect_params dbConnectionParameters;
-    bool verboseOutput;
-    bool forceError;
-    bool forceException;
-    bool inSelfTest;
+    std::string m_ErrorMessages;
+    boost::mysql::connect_params m_DBConnection;
+    bool m_VerboseOutput;
+    bool m_ForceError;
+    bool m_ForceException;
+    bool m_SelfTest;
     std::optional<boost::mysql::format_options> format_opts;
 };
 

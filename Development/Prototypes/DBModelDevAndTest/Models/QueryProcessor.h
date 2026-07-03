@@ -85,7 +85,7 @@ public:
     
     bool runStringOnlyQuery(std::string queryString)
     {
-        errorMessages.clear();
+        clearErrorMessages();
 
         try
         {
@@ -220,16 +220,16 @@ protected:
     {
         std::vector<std::shared_ptr<ListType>> queryResultValues;
         queryResultValues.clear();
-        if (inSelfTest)
+        if (m_SelfTest)
         {
             // In self test if we are not forcing an exception, the function must return
             // something. The processResultRow function will fail in self test in the 
             // boost::mysql code, where it will fail an assert().
-            if (forceException)
+            if (m_ForceException)
             {
                 throw std::out_of_range("Forced exception");
             }
-            if (forceError)
+            if (m_ForceError)
             {
                 return queryResultValues;
             }
@@ -276,7 +276,7 @@ protected:
 
     virtual bool processStringOnlyResults(boost::mysql::results& results)
     {
-        if (inSelfTest)
+        if (m_SelfTest)
         {
             stringOnlyResults.push_back("Test String");
             return true;
@@ -305,9 +305,9 @@ protected:
 
     virtual void selfTestResetAllValues() noexcept
     {
-        inSelfTest = true;
+        m_SelfTest = true;
         format_opts.reset();
-        errorMessages.clear();
+        clearErrorMessages();
     }
 
     virtual TestStatus testListExceptionHandling() noexcept
@@ -316,13 +316,13 @@ protected:
 
         selfTestResetAllValues();
 
-        bool globalForceException = CoreDBInterface::forceException;
+        bool globalForceException = CoreDBInterface::m_ForceException;
 
         std::vector<ListExceptionTestElement> exceptionTests = initListExceptionTests();
 
         TestStatus exceptionHandlingPassed = forceListExceptionsLoop(exceptionTests);
 
-        CoreDBInterface::forceException = globalForceException;
+        CoreDBInterface::m_ForceException = globalForceException;
 
         std::cout << "\n\n";
 
@@ -368,7 +368,7 @@ protected:
         if (expectSuccess)
         {
             reportFailure.append(std::format("expected success returned {} \n", isBool? "false" : "empty vector"));
-            reportFailure.append(CoreDBInterface::errorMessages);
+            reportFailure.append(CoreDBInterface::m_ErrorMessages);
             reportFailure.append("\n");
         }
         else
@@ -394,14 +394,14 @@ protected:
         std::cout << std::format("\nException Test for {}", funcName) << std::endl;
         std::string debugName(funcName);
 
-        forceException = true;
+        m_ForceException = true;
         if (!funcUnderTest(args...).empty())
         {
             return testListExceptionReportFailure(false, false, funcName);
         }
 
         selfTestResetAllValues();
-        forceException = false;
+        m_ForceException = false;
         if (funcUnderTest(args...).empty())
         {
             return testListExceptionReportFailure(true, false, funcName);
@@ -419,13 +419,13 @@ protected:
     requires std::is_invocable_v<F, Ts...>
     TestStatus testExceptionAndSuccessNArgs(const char* funcName, F funcUnderTest, Ts... args) noexcept
     {
-        CoreDBInterface::forceException = true;
+        CoreDBInterface::m_ForceException = true;
         if (funcUnderTest(args...))
         {
             return testListExceptionReportFailure(false, true, funcName);
         }
 
-        CoreDBInterface::forceException = false;
+        CoreDBInterface::m_ForceException = false;
         if (!funcUnderTest(args...))
         {
             return testListExceptionReportFailure(true, true, funcName);
