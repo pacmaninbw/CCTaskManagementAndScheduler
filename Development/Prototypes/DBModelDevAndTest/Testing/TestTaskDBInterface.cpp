@@ -19,30 +19,30 @@
 TestTaskDBInterface::TestTaskDBInterface(std::string taskFileName)
 : TestDBInterfaceCore("task")
 {
-    dataFileName = taskFileName;
-    positiveTestFuncs.push_back(std::bind(&TestTaskDBInterface::testGetTaskByID, this, std::placeholders::_1));
-    positiveTestFuncs.push_back(std::bind(&TestTaskDBInterface::testGetTaskByDescription, this, std::placeholders::_1));
+    m_DataFileName = taskFileName;
+    m_PositiveTestFuncs.push_back(std::bind(&TestTaskDBInterface::testGetTaskByID, this, std::placeholders::_1));
+    m_PositiveTestFuncs.push_back(std::bind(&TestTaskDBInterface::testGetTaskByDescription, this, std::placeholders::_1));
 
-    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testTasksFromDataFile, this));
-    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetUnstartedTasks, this));
-    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetDefaultDashboardTaskList, this));
-    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testTaskUpdates, this));
-    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetActiveTasks, this));
-    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testHideUnstartedTask, this));
+    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testTasksFromDataFile, this));
+    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetUnstartedTasks, this));
+    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetDefaultDashboardTaskList, this));
+    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testTaskUpdates, this));
+    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testGetActiveTasks, this));
+    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testHideUnstartedTask, this));
 
-    negativePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testNegativePathAlreadyInDataBase, this));
-    negativePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testnegativePathNotModified, this));
-    negativePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testNegativePathMissingRequiredFields, this));
-    negativePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testSharedPointerInteraction, this));
+    m_NegativePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testNegativePathAlreadyInDataBase, this));
+    m_NegativePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testnegativePathNotModified, this));
+    m_NegativePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testNegativePathMissingRequiredFields, this));
+    m_NegativePathTestFuncsNoArgs.push_back(std::bind(&TestTaskDBInterface::testSharedPointerInteraction, this));
 }
 
 TestStatus TestTaskDBInterface::runAllTests()
 {
-    std::cout << std::format("\nRunning {} Integration Tests\n", modelUnderTest);
+    std::cout << std::format("\nRunning {} Integration Tests\n", m_ModelUnderTest);
 
     UserQueryProcessor userQueryprocessor;
-    TaskIntegrationTestUserOne = userQueryprocessor.getUserByFullName("One", "User", "P");
-    if (TaskIntegrationTestUserOne == nullptr || !TaskIntegrationTestUserOne->isInDataBase())
+    m_TestUserOne = userQueryprocessor.getUserByFullName("One", "User", "P");
+    if (m_TestUserOne == nullptr || !m_TestUserOne->isInDataBase())
     {
         std::cout << "Failed to retrieve TaskIntegrationTestUserOne from DataBase!\n";
         return TESTFAILED;
@@ -62,7 +62,7 @@ TestStatus TestTaskDBInterface::runAllTests()
 bool TestTaskDBInterface::testGetTaskByDescription(TaskModel_shp insertedTask)
 {
     TaskQueryProcessor taskQueryProcessor;
-    TaskList retrievedTasks = taskQueryProcessor.getTaskByDescriptionAndAssignedUser(insertedTask->getDescription(), TaskIntegrationTestUserOne->getUserID());
+    TaskList retrievedTasks = taskQueryProcessor.getTaskByDescriptionAndAssignedUser(insertedTask->getDescription(), m_TestUserOne->getUserID());
     if (retrievedTasks.size() > 0)
     {
         TaskModel_shp retrievedTask = retrievedTasks[0];
@@ -73,7 +73,7 @@ bool TestTaskDBInterface::testGetTaskByDescription(TaskModel_shp insertedTask)
         else
         {
             std::cerr << "Inserted and retrieved Task are not the same! Test FAILED!\n";
-            if (verboseOutput)
+            if (m_VerboseOutput)
             {
                 std::cerr << "Inserted Task:\n" << *insertedTask << "\n" "Retreived Task:\n" << *retrievedTask << "\n";
             }
@@ -101,7 +101,7 @@ bool TestTaskDBInterface::testGetTaskByID(TaskModel_shp insertedTask)
         else
         {
             std::cerr << "Inserted and retrieved Task are not the same! Test FAILED!\n";
-            if (verboseOutput)
+            if (m_VerboseOutput)
             {
                 std::cerr << "Inserted Task:\n" << *insertedTask << "\n" "Retreived Task:\n" << *retrievedTask << "\n";
             }
@@ -120,7 +120,7 @@ TaskList TestTaskDBInterface::loadTasksFromDataFile()
     std::size_t lCount = 0;
     TaskList inputTaskData;
 
-    std::ifstream taskDataFile(dataFileName);
+    std::ifstream taskDataFile(m_DataFileName);
     
     for (auto row: CSVRange(taskDataFile))
     {
@@ -178,7 +178,7 @@ void TestTaskDBInterface::commonTaskInit(TaskModel_shp newTask, CSVRow taskData)
 
 TaskModel_shp TestTaskDBInterface::creatOddTask(CSVRow taskData)
 {
-    TaskModel_shp newTask = std::make_shared<TaskModel>(TaskIntegrationTestUserOne->getUserID(), taskData[CSV_DescriptionColIdx]);
+    TaskModel_shp newTask = std::make_shared<TaskModel>(m_TestUserOne->getUserID(), taskData[CSV_DescriptionColIdx]);
     commonTaskInit(newTask, taskData);
 
     return newTask;
@@ -186,7 +186,7 @@ TaskModel_shp TestTaskDBInterface::creatOddTask(CSVRow taskData)
 
 TaskModel_shp TestTaskDBInterface::creatEvenTask(CSVRow taskData)
 {
-    TaskModel_shp newTask = std::make_shared<TaskModel>(TaskIntegrationTestUserOne->getUserID());
+    TaskModel_shp newTask = std::make_shared<TaskModel>(m_TestUserOne->getUserID());
     newTask->setDescription(taskData[CSV_DescriptionColIdx]);
     commonTaskInit(newTask, taskData);
 
@@ -196,14 +196,14 @@ TaskModel_shp TestTaskDBInterface::creatEvenTask(CSVRow taskData)
 TestStatus TestTaskDBInterface::testGetUnstartedTasks()
 {
     TaskQueryProcessor taskDBInteface;
-    TaskList notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(TaskIntegrationTestUserOne->getUserID());
+    TaskList notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(m_TestUserOne->getUserID());
     if (!notStartedList.empty())
     {    
-        if (verboseOutput)
+        if (m_VerboseOutput)
         {
-            std::cout << std::format("Find unstarted tasks for user({}) PASSED!\n", TaskIntegrationTestUserOne->getUserID());
+            std::cout << std::format("Find unstarted tasks for user({}) PASSED!\n", m_TestUserOne->getUserID());
             std::cout << std::format("User {} has {} unstarted tasks\n",
-                TaskIntegrationTestUserOne->getUserID(), notStartedList.size());
+                m_TestUserOne->getUserID(), notStartedList.size());
             for (auto task: notStartedList)
             {
                 std::cout << *task << "\n";
@@ -212,7 +212,7 @@ TestStatus TestTaskDBInterface::testGetUnstartedTasks()
         return TESTPASSED; 
     }
 
-    std::cerr << std::format("taskDBInterface.getUnstartedDueForStartForAssignedUser({}) FAILED!\n", TaskIntegrationTestUserOne->getUserID()) <<
+    std::cerr << std::format("taskDBInterface.getUnstartedDueForStartForAssignedUser({}) FAILED!\n", m_TestUserOne->getUserID()) <<
         taskDBInteface.getAllErrorMessages() << "\n";
 
     return TESTFAILED;
@@ -234,7 +234,7 @@ TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskList()
         commonProductionTestDataAddedDate);
     if (!defaultTaskQueryProcessor.empty())
     {    
-        if (verboseOutput)
+        if (m_VerboseOutput)
         {
             std::cout << std::format("Find default task list for user({}) PASSED!\n", realUser->getUserID());
             std::cout << std::format("User {} dashboard has {} tasks\n", realUser->getUserID(), defaultTaskQueryProcessor.size());
@@ -256,14 +256,14 @@ TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskList()
 TestStatus TestTaskDBInterface::testGetActiveTasks()
 {
     TaskQueryProcessor taskDBInteface;
-    TaskList activeTasks = taskDBInteface.getActiveTasksForAssignedUser(TaskIntegrationTestUserOne->getUserID());
+    TaskList activeTasks = taskDBInteface.getActiveTasksForAssignedUser(m_TestUserOne->getUserID());
     if (!activeTasks.empty())
     {    
-        if (verboseOutput)
+        if (m_VerboseOutput)
         {
-            std::cout << std::format("Find active tasks for user({}) PASSED!\n", TaskIntegrationTestUserOne->getUserID());
+            std::cout << std::format("Find active tasks for user({}) PASSED!\n", m_TestUserOne->getUserID());
             std::cout << std::format("User {} has {} unstarted tasks\n",
-                TaskIntegrationTestUserOne->getUserID(), activeTasks.size());
+                m_TestUserOne->getUserID(), activeTasks.size());
             for (auto task: activeTasks)
             {
                 std::cout << *task << "\n";
@@ -272,7 +272,7 @@ TestStatus TestTaskDBInterface::testGetActiveTasks()
         return TESTPASSED; 
     }
 
-    std::cerr << std::format("taskDBInterface.getActiveTasksForAssignedUser({}) FAILED!\n", TaskIntegrationTestUserOne->getUserID()) <<
+    std::cerr << std::format("taskDBInterface.getActiveTasksForAssignedUser({}) FAILED!\n", m_TestUserOne->getUserID()) <<
         taskDBInteface.getAllErrorMessages() << "\n";
 
     return TESTFAILED;
@@ -281,7 +281,7 @@ TestStatus TestTaskDBInterface::testGetActiveTasks()
 TestStatus TestTaskDBInterface::testTaskUpdates()
 {
     TaskQueryProcessor taskQueryProcessor;
-    TaskList tasksToChange = taskQueryProcessor.getTaskByDescriptionAndAssignedUser("Archive BHHS74Reunion website to external SSD", TaskIntegrationTestUserOne->getUserID());
+    TaskList tasksToChange = taskQueryProcessor.getTaskByDescriptionAndAssignedUser("Archive BHHS74Reunion website to external SSD", m_TestUserOne->getUserID());
 
     if (tasksToChange.empty())
     {
@@ -313,7 +313,7 @@ TestStatus TestTaskDBInterface::testTaskUpdates()
 TestStatus TestTaskDBInterface::testHideUnstartedTask()
 {
     TaskQueryProcessor taskDBInteface;
-    std::size_t userIdForTaskDeletion = TaskIntegrationTestUserOne->getUserID();
+    std::size_t userIdForTaskDeletion = m_TestUserOne->getUserID();
     TaskList notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(userIdForTaskDeletion);
     if (!notStartedList.empty())
     {
@@ -322,7 +322,7 @@ TestStatus TestTaskDBInterface::testHideUnstartedTask()
         // userIdForTaskDeletion may not be the owner of the task.
         if (!taskToHide->hide(taskToHide->getCreatorID()))
         {
-            std::cerr << std::format("taskToHide->hide(taskToHide->getCreatorID({}) FAILED!\n", TaskIntegrationTestUserOne->getUserID()) <<
+            std::cerr << std::format("taskToHide->hide(taskToHide->getCreatorID({}) FAILED!\n", m_TestUserOne->getUserID()) <<
                 taskDBInteface.getAllErrorMessages() << "\n";
             return TESTFAILED;
         }
@@ -348,14 +348,14 @@ TestStatus TestTaskDBInterface::testHideUnstartedTask()
             }
         }
 
-        if (verboseOutput)
+        if (m_VerboseOutput)
         {
             std::cout << std::format("Task ({}) for user ({}) marked Deleted. TEST PASSED\n", taskToHide->getTaskID(), userIdForTaskDeletion);
         }
         return TESTPASSED; 
     }
 
-    std::cerr << std::format("taskDBInteface.getUnstartedDueForStartForAssignedUser({}) FAILED!\n", TaskIntegrationTestUserOne->getUserID()) <<
+    std::cerr << std::format("taskDBInteface.getUnstartedDueForStartForAssignedUser({}) FAILED!\n", m_TestUserOne->getUserID()) <<
         taskDBInteface.getAllErrorMessages() << "\n";
 
     return TESTFAILED;
@@ -398,7 +398,7 @@ bool TestTaskDBInterface::testAddDepenedcies()
 
     TaskQueryProcessor taskQueryProcessor;
     // Tests the use of both UserModel & and UserModel_shp 
-    std::size_t user1ID = TaskIntegrationTestUserOne->getUserID();
+    std::size_t user1ID = m_TestUserOne->getUserID();
     TaskList dependsOnList = taskQueryProcessor.getTaskByDescriptionAndAssignedUser(taskDescriptions[0], user1ID);
     TaskModel_shp depenedsOn = dependsOnList[0];
     
@@ -441,7 +441,7 @@ bool TestTaskDBInterface::testAddDepenedcies()
 
 bool TestTaskDBInterface::testGetCompletedList()
 {
-    std::size_t user1ID = TaskIntegrationTestUserOne->getUserID();
+    std::size_t user1ID = m_TestUserOne->getUserID();
     TaskQueryProcessor taskQueryProcesssor;
     TaskList parentTaskList = taskQueryProcesssor.getTaskByDescriptionAndAssignedUser("Archive BHHS74Reunion website to external SSD", user1ID);
 
@@ -555,7 +555,7 @@ TestStatus TestTaskDBInterface::testMissingReuqiredField(TaskModel taskMissingFi
 
 TestStatus TestTaskDBInterface::testNegativePathMissingRequiredFields()
 {
-    TaskModel newTask(TaskIntegrationTestUserOne->getUserID());
+    TaskModel newTask(m_TestUserOne->getUserID());
     if (testMissingReuqiredField(newTask) != TESTPASSED)
     {
         return TESTFAILED;
@@ -601,7 +601,7 @@ TestStatus TestTaskDBInterface::testTasksFromDataFile()
     {
         if (insertShouldPass(testTask) == TESTPASSED)
         {
-            for (auto test: positiveTestFuncs)
+            for (auto test: m_PositiveTestFuncs)
             {
                 if (!test(testTask))
                 {
@@ -618,7 +618,7 @@ TestStatus TestTaskDBInterface::testTasksFromDataFile()
 
 TestStatus TestTaskDBInterface::testSharedPointerInteraction()
 {
-    TaskModel_shp newTask = std::make_shared<TaskModel>(TaskIntegrationTestUserOne->getUserID());
+    TaskModel_shp newTask = std::make_shared<TaskModel>(m_TestUserOne->getUserID());
 
     if (testMissingReuqiredField(*newTask) != TESTPASSED)
     {
@@ -666,7 +666,7 @@ TestStatus TestTaskDBInterface::insertShouldPass(TaskModel_shp newTask)
         std::cout << newTask->getAllErrorMessages() << *newTask << "\n";
         std::cout << "Primary key for task: " << newTask->getTaskID() << ", " << newTask->getDescription() <<
         " not set!\n";
-        if (verboseOutput)
+        if (m_VerboseOutput)
         {
             std::cout << *newTask << "\n\n";
         }

@@ -29,10 +29,8 @@ private:
     TestStatus testnegativePathNotModified();
     TestStatus testNegativePathAlreadyInDataBase();
 
-    std::string dataFileName;
-    bool verboseOutput;
-    std::vector<std::function<bool(UserModel_shp)>>positiveTestFuncs;
-    std::vector<std::function<bool(void)>> negativePathTestFuncs;
+    std::string m_DataFileName;
+    std::vector<std::function<bool(UserModel_shp)>> m_PositiveTestFuncs;
 };
 
 #endif // TESTUSERDBINTERFACE_H_

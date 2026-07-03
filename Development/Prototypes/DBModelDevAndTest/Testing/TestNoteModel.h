@@ -41,11 +41,8 @@ private:
     TestStatus testMissingRequiredFieldsAddContent(
         NoteModel& testNote, std::vector<std::string>& expectedErrors);
 
-    bool verboseOutput;
-    std::vector<std::function<bool(NoteModel_shp)>>positiveTestFuncs;
-    std::vector<std::function<bool(void)>> negativePathTestFuncs;
-    std::vector<TestNoteInput> testInput;
-    std::shared_ptr<UserModel> userOne;
+    std::vector<TestNoteInput> m_TestInput;
+    std::shared_ptr<UserModel> m_UserOne;
 };
 
 #endif // TESTNOTEMODEL_H_

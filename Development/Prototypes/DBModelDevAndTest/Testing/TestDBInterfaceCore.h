@@ -34,13 +34,10 @@ protected:
         };
     void reportTestStatus(TestStatus status, std::string_view path);
 
-    bool verboseOutput;
-    bool forceErrors;
-    bool forceExceptions;
-    bool runSelfTest;
-    std::string_view modelUnderTest;
-    std::vector<std::function<TestStatus(void)>> negativePathTestFuncsNoArgs;
-    std::vector<std::function<TestStatus(void)>> positiviePathTestFuncsNoArgs;
+    bool m_VerboseOutput;
+    std::string_view m_ModelUnderTest;
+    std::vector<std::function<TestStatus(void)>> m_NegativePathTestFuncsNoArgs;
+    std::vector<std::function<TestStatus(void)>> m_PositiviePathTestFuncsNoArgs;
 };
 
 #endif  // TESTDBINTERFACECORE_H_

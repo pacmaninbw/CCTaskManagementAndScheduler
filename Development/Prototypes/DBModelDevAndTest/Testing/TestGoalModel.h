@@ -41,11 +41,8 @@ private:
     TestStatus testMissingRequiredFieldsAddDescription(
         UserGoalModel& testGoal, std::vector<std::string>& expectedErrors);
 
-    bool verboseOutput;
-    std::vector<std::function<bool(UserGoalModel_shp)>>positiveTestFuncs;
-    std::vector<std::function<bool(void)>> negativePathTestFuncs;
-    std::vector<TestGoalInput> testInput;
-    std::shared_ptr<UserModel> userOne;
+    std::vector<TestGoalInput> m_TestInput;
+    std::shared_ptr<UserModel> m_UserOne;
 };
 
 #endif // TESTGOALMODEL_H_

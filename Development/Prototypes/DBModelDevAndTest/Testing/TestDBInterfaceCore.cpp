@@ -12,17 +12,14 @@
 #include <vector>
 
 TestDBInterfaceCore::TestDBInterfaceCore(std::string_view modelName)
-: verboseOutput{programOptions.verboseOutput},
- forceErrors{programOptions.forceErrors},
- forceExceptions{programOptions.forceExceptions},
- runSelfTest{programOptions.runSelfTest},
-  modelUnderTest{modelName}
+: m_VerboseOutput{programOptions.verboseOutput},
+  m_ModelUnderTest{modelName}
 {
 }
 
 TestStatus TestDBInterfaceCore::runAllTests()
 {
-    std::cout << std::format("\nRunning {} Integration Tests\n", modelUnderTest);
+    std::cout << std::format("\nRunning {} Integration Tests\n", m_ModelUnderTest);
     
     TestStatus positivePathPassed = runPositivePathTests();
     TestStatus negativePathPassed = runNegativePathTests();
@@ -39,7 +36,7 @@ TestStatus TestDBInterfaceCore::runNegativePathTests()
 {
     TestStatus allTestPassed = TESTPASSED;
 
-    for (auto test: negativePathTestFuncsNoArgs)
+    for (auto test: m_NegativePathTestFuncsNoArgs)
     {
         TestStatus testResult = test();
         if (allTestPassed == TESTPASSED)
@@ -57,7 +54,7 @@ TestStatus TestDBInterfaceCore::runPositivePathTests()
 {
     TestStatus allTestPassed = TESTPASSED;
 
-    for (auto test: positiviePathTestFuncsNoArgs)
+    for (auto test: m_PositiviePathTestFuncsNoArgs)
     {
         TestStatus testResult = test();
         if (allTestPassed == TESTPASSED)
@@ -99,7 +96,7 @@ bool TestDBInterfaceCore::hasErrorMessage(ModelDBInterface* modelUnderTest)
         return false;
     }
 
-    if (verboseOutput)
+    if (m_VerboseOutput)
     {
         std::cout << "Expected error was; " << errorMessage << "\n";
     }
@@ -139,13 +136,13 @@ void TestDBInterfaceCore::reportTestStatus(TestStatus status, std::string_view p
     {
         std::cout << std::format(
             "All {} path tests for database insertions and retrievals of {} {}!\n",
-            path, modelUnderTest, statusStr);
+            path, m_ModelUnderTest, statusStr);
     }
     else
     {
         std::cout << std::format(
             "All tests for database insertions and retrievals of {} {}!\n",
-            modelUnderTest, statusStr);
+            m_ModelUnderTest, statusStr);
 
     }
 }

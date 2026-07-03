@@ -30,25 +30,25 @@ TestScheduleItemModel::TestScheduleItemModel()
 
     for (auto testScheduleItem: testScheduleItemInput)
     {
-        testInput.push_back(testScheduleItem);
+        m_TestInput.push_back(testScheduleItem);
     }
 
-    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathScheduleItemInsertions, this));
-    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSimilarTitleDateRange, this));
-    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate, this));
-    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathUpdateScheduleItem, this));
-    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathFindEventSToRepeat, this));
-    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathFindEventsToRepeatCompletion, this));
-    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathFindLocationsToRepeatCompletion, this));
-    positiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathDeleteScheduleItem, this));
+    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathScheduleItemInsertions, this));
+    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSimilarTitleDateRange, this));
+    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate, this));
+    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathUpdateScheduleItem, this));
+    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathFindEventSToRepeat, this));
+    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathFindEventsToRepeatCompletion, this));
+    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathFindLocationsToRepeatCompletion, this));
+    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testPositivePathDeleteScheduleItem, this));
 
-    negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::negativePathMissingRequiredFields, this));
-    negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testnegativePathNotModified, this));
-    negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testNegativePathAlreadyInDataBase, this));
+    m_NegativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::negativePathMissingRequiredFields, this));
+    m_NegativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testnegativePathNotModified, this));
+    m_NegativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testNegativePathAlreadyInDataBase, this));
 
     UserQueryProcessor userQueryProcessor;
-    userOne = userQueryProcessor.getUserByFullName("One", "User", "P");
-    if (userOne == nullptr || !userOne->isInDataBase())
+    m_UserOne = userQueryProcessor.getUserByFullName("One", "User", "P");
+    if (m_UserOne == nullptr || !m_UserOne->isInDataBase())
     {
         std::cerr << std::format("TestScheduleItemModel.{}: {} {} FAILED\n", __func__, "userOne not found in database", userQueryProcessor.getAllErrorMessages());
     }
@@ -57,7 +57,7 @@ TestScheduleItemModel::TestScheduleItemModel()
 TestStatus TestScheduleItemModel::testInsertScheduleItem(TestScheduleItemInput testScheduleItem)
 {
     ScheduleItemModel newScheduleItem;
-    newScheduleItem.setUserID(userOne->getUserID());
+    newScheduleItem.setUserID(m_UserOne->getUserID());
     newScheduleItem.setTitle(testScheduleItem.title);
     newScheduleItem.setStartDateAndTime(constantStringToChronoTimePoint(testScheduleItem.startTimeStr));
     newScheduleItem.setEndDateAndTime(constantStringToChronoTimePoint(testScheduleItem.endTimeStr));
@@ -73,9 +73,9 @@ TestStatus TestScheduleItemModel::testInsertScheduleItem(TestScheduleItemInput t
         return TESTFAILED;
     }
 
-    if (userOneFirstScheduleItem == 0)
+    if (m_FirstScheduleItem == 0)
     {
-        userOneFirstScheduleItem = newScheduleItem.getScheduleItemID();
+        m_FirstScheduleItem = newScheduleItem.getScheduleItemID();
     }
 
     return TESTPASSED;
@@ -85,7 +85,7 @@ TestStatus TestScheduleItemModel::testPositivePathScheduleItemInsertions()
 {
     TestStatus testStatus = TESTPASSED;
 
-    for (auto testScheduleItem: testInput)
+    for (auto testScheduleItem: m_TestInput)
     {
         TestStatus currentResult = testInsertScheduleItem(testScheduleItem);
         if (testStatus == TESTPASSED)
@@ -106,8 +106,8 @@ TestStatus TestScheduleItemModel::testPositivePathUpdateScheduleItem()
 {
     TestStatus testStatus = TESTPASSED;
 
-    ScheduleItemQueryProcessor scheduleItemQueryProcessor(userOne->getUserID());
-    ScheduleItemModel_shp scheduleitemToUpdate = scheduleItemQueryProcessor.getScheduleItemById(userOneFirstScheduleItem);
+    ScheduleItemQueryProcessor scheduleItemQueryProcessor(m_UserOne->getUserID());
+    ScheduleItemModel_shp scheduleitemToUpdate = scheduleItemQueryProcessor.getScheduleItemById(m_FirstScheduleItem);
     if (!scheduleitemToUpdate->isInDataBase())
     {
         std::cout << "ScheduleItem 1 not found in database!!\n";
@@ -135,7 +135,7 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSim
     std::chrono::year_month_day searchEnd(constantStringToChronoDate("2024-12-31"));
 
     std::string searchString("birthday");
-    ScheduleItemQueryProcessor ScheduleItemQueryProcessorTestInterface(userOne->getUserID());
+    ScheduleItemQueryProcessor ScheduleItemQueryProcessorTestInterface(m_UserOne->getUserID());
     ScheduleItemList allSimilarUserScheduleItems = ScheduleItemQueryProcessorTestInterface.findUserScheduleItemsByContentAndDateRange(
         searchString, searchStart, searchEnd);
 
@@ -148,8 +148,8 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSim
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all schedule items for user ({}) similar to {} PASSED!\n", userOne->getUserID(), searchString);
-        std::cout << std::format("User {} has {} schedule items\n", userOne->getUserID(), allSimilarUserScheduleItems.size());
+        std::cout << std::format("Find all schedule items for user ({}) similar to {} PASSED!\n", m_UserOne->getUserID(), searchString);
+        std::cout << std::format("User {} has {} schedule items\n", m_UserOne->getUserID(), allSimilarUserScheduleItems.size());
         for (auto scheduleitems: allSimilarUserScheduleItems)
         {
             std::cout << *scheduleitems << "\n";
@@ -163,7 +163,7 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate(
 {
     std::chrono::year_month_day startDate(constantStringToChronoDate("2024-12-13"));
 
-    ScheduleItemQueryProcessor schediList(userOne->getUserID());
+    ScheduleItemQueryProcessor schediList(m_UserOne->getUserID());
     ScheduleItemList allScheduleItemsInRange = schediList.getUserDaySchedule(startDate);
 
     if (allScheduleItemsInRange.empty())
@@ -175,8 +175,8 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate(
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all schedule items for user ({}) edited in date range PASSED!\n", userOne->getUserID());
-        std::cout << std::format("User {} has {} schedule items\n", userOne->getUserID(), allScheduleItemsInRange.size());
+        std::cout << std::format("Find all schedule items for user ({}) edited in date range PASSED!\n", m_UserOne->getUserID());
+        std::cout << std::format("User {} has {} schedule items\n", m_UserOne->getUserID(), allScheduleItemsInRange.size());
         for (auto scheduleitem: allScheduleItemsInRange)
         {
             std::cout << *scheduleitem << "\n";
@@ -189,7 +189,7 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate(
 TestStatus TestScheduleItemModel::testPositivePathFindEventSToRepeat()
 {
     std::string searchString("birthday");
-    ScheduleItemQueryProcessor ScheduleItemQueryProcessorTestInterface(userOne->getUserID());
+    ScheduleItemQueryProcessor ScheduleItemQueryProcessorTestInterface(m_UserOne->getUserID());
     std::vector<std::string> matchingEvents = ScheduleItemQueryProcessorTestInterface.findEventSToRepeat(searchString);
 
     if (matchingEvents.empty())
@@ -201,8 +201,8 @@ TestStatus TestScheduleItemModel::testPositivePathFindEventSToRepeat()
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all schedule items for user ({}) similar to {} PASSED!\n", userOne->getUserID(), searchString);
-        std::cout << std::format("User {} has {} schedule items\n", userOne->getUserID(), matchingEvents.size());
+        std::cout << std::format("Find all schedule items for user ({}) similar to {} PASSED!\n", m_UserOne->getUserID(), searchString);
+        std::cout << std::format("User {} has {} schedule items\n", m_UserOne->getUserID(), matchingEvents.size());
         for (auto scheduleitems: matchingEvents)
         {
             std::cout << scheduleitems << "\n";
@@ -214,7 +214,7 @@ TestStatus TestScheduleItemModel::testPositivePathFindEventSToRepeat()
 
 TestStatus TestScheduleItemModel::testPositivePathFindEventsToRepeatCompletion()
 {
-    ScheduleItemQueryProcessor ScheduleItemQueryProcessorTestInterface(userOne->getUserID());
+    ScheduleItemQueryProcessor ScheduleItemQueryProcessorTestInterface(m_UserOne->getUserID());
     std::vector<std::string> matchingEvents = ScheduleItemQueryProcessorTestInterface.findEventsForRepeatCompletion();
 
     if (matchingEvents.empty())
@@ -226,8 +226,8 @@ TestStatus TestScheduleItemModel::testPositivePathFindEventsToRepeatCompletion()
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all schedule items for user ({}) PASSED!\n", userOne->getUserID());
-        std::cout << std::format("User {} has {} schedule items\n", userOne->getUserID(), matchingEvents.size());
+        std::cout << std::format("Find all schedule items for user ({}) PASSED!\n", m_UserOne->getUserID());
+        std::cout << std::format("User {} has {} schedule items\n", m_UserOne->getUserID(), matchingEvents.size());
         for (auto scheduleitems: matchingEvents)
         {
             std::cout << scheduleitems << "\n";
@@ -239,7 +239,7 @@ TestStatus TestScheduleItemModel::testPositivePathFindEventsToRepeatCompletion()
 
 TestStatus TestScheduleItemModel::testPositivePathFindLocationsToRepeatCompletion()
 {
-    ScheduleItemQueryProcessor ScheduleItemQueryProcessorTestInterface(userOne->getUserID());
+    ScheduleItemQueryProcessor ScheduleItemQueryProcessorTestInterface(m_UserOne->getUserID());
     std::vector<std::string> matchingLocations = ScheduleItemQueryProcessorTestInterface.findLocationsForRepeatCompletion();
 
     if (matchingLocations.empty())
@@ -251,8 +251,8 @@ TestStatus TestScheduleItemModel::testPositivePathFindLocationsToRepeatCompletio
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all schedule locations for user ({}) PASSED!\n", userOne->getUserID());
-        std::cout << std::format("User {} has {} schedule locations\n", userOne->getUserID(), matchingLocations.size());
+        std::cout << std::format("Find all schedule locations for user ({}) PASSED!\n", m_UserOne->getUserID());
+        std::cout << std::format("User {} has {} schedule locations\n", m_UserOne->getUserID(), matchingLocations.size());
         for (auto scheduleitems: matchingLocations)
         {
             std::cout << scheduleitems << "\n";
@@ -328,8 +328,8 @@ TestStatus TestScheduleItemModel::testPositivePathDeleteScheduleItem()
 
 TestStatus TestScheduleItemModel::testNegativePathAlreadyInDataBase()
 {
-    ScheduleItemQueryProcessor scheduleItemQueryProcessor(userOne->getUserID());
-    ScheduleItemModel_shp scheduleitemsAlreadyInDB = scheduleItemQueryProcessor.getScheduleItemById(userOneFirstScheduleItem);
+    ScheduleItemQueryProcessor scheduleItemQueryProcessor(m_UserOne->getUserID());
+    ScheduleItemModel_shp scheduleitemsAlreadyInDB = scheduleItemQueryProcessor.getScheduleItemById(m_FirstScheduleItem);
     if (!scheduleitemsAlreadyInDB->isInDataBase())
     {
         std::cout << "ScheduleItem 1 not found in database!!\n";
@@ -342,8 +342,8 @@ TestStatus TestScheduleItemModel::testNegativePathAlreadyInDataBase()
 
 TestStatus TestScheduleItemModel::testnegativePathNotModified()
 {
-    ScheduleItemQueryProcessor scheduleItemQueryProcessor(userOne->getUserID());
-    ScheduleItemModel_shp scheduleitemsNotModified = scheduleItemQueryProcessor.getScheduleItemById(userOneFirstScheduleItem);
+    ScheduleItemQueryProcessor scheduleItemQueryProcessor(m_UserOne->getUserID());
+    ScheduleItemModel_shp scheduleitemsNotModified = scheduleItemQueryProcessor.getScheduleItemById(m_FirstScheduleItem);
     if (!scheduleitemsNotModified->isInDataBase())
     {
         std::cout << "ScheduleItem 1 not found in database!!\n";
@@ -392,7 +392,7 @@ TestStatus TestScheduleItemModel::negativePathMissingRequiredFields()
     {
         std::cerr << testScheduleItem.getAllErrorMessages() << testScheduleItem << "\n";
         std::cerr << "Primary key for user: testScheduleItem.getScheduleItemID() not set!\n";
-        if (verboseOutput)
+        if (m_VerboseOutput)
         {
             std::cerr << testScheduleItem << "\n\n";
         }
@@ -408,7 +408,7 @@ TestStatus TestScheduleItemModel::testMissingRequiredFieldsAddUserID(
     TestStatus testStatus = testInsertionFailureMessages(&testScheduleItem, expectedErrors);
 
     expectedErrors.erase(expectedErrors.begin());
-    testScheduleItem.setUserID(userOne->getUserID());
+    testScheduleItem.setUserID(m_UserOne->getUserID());
 
     return testStatus;
 }

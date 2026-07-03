@@ -50,12 +50,9 @@ private:
     TestStatus testMissingRequiredFieldsAddEndTime(
         ScheduleItemModel& testScheduleItem, std::vector<std::string>& expectedErrors);
 
-    bool verboseOutput;
-    std::vector<std::function<bool(ScheduleItemModel_shp)>>positiveTestFuncs;
-    std::vector<std::function<bool(void)>> negativePathTestFuncs;
-    std::vector<TestScheduleItemInput> testInput;
-    std::shared_ptr<UserModel> userOne;
-    std::size_t userOneFirstScheduleItem = 0;
+    std::vector<TestScheduleItemInput> m_TestInput;
+    std::shared_ptr<UserModel> m_UserOne;
+    std::size_t m_FirstScheduleItem = 0;
 };
 
 #endif // TESTSCHEDULEITEMMODEL_H_

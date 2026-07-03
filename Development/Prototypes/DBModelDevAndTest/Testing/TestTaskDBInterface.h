@@ -44,9 +44,9 @@ private:
     TestStatus testSharedPointerInteraction();
     TestStatus insertShouldPass(TaskModel_shp newTask);
 
-    std::string dataFileName;
-    std::vector<std::function<bool(TaskModel_shp)>> positiveTestFuncs;
-    UserModel_shp TaskIntegrationTestUserOne;
+    std::string m_DataFileName;
+    std::vector<std::function<bool(TaskModel_shp)>> m_PositiveTestFuncs;
+    UserModel_shp m_TestUserOne;
 };
 
 #endif // TESTTASKDBINTERFACE_H_
