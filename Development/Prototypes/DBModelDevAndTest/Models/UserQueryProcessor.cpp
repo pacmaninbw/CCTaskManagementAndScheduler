@@ -132,7 +132,10 @@ UserModel_shp UserQueryProcessor::getUserByLoginAndPassword(const std::string_vi
     return found;
 }
 
-UserModel_shp UserQueryProcessor::getUserByFullName(const std::string_view &lastName, const std::string_view &firstName, const std::string_view &middleI) noexcept
+UserModel_shp UserQueryProcessor::getUserByFullName(
+    const std::string_view &lastName,
+    const std::string_view &firstName,
+    const std::string_view &middleI) noexcept
 {
     clearErrorMessages();
     UserModel_shp found = nullptr;
@@ -163,7 +166,7 @@ UserModel_shp UserQueryProcessor::processResultRow(boost::mysql::row_view &query
     std::string email = queryRow.at(m_EmailAddressIdx).as_string();
     std::string loginName = queryRow.at(m_LoginNameIdx).as_string();
     std::string password = queryRow.at(m_PasswordIdx).as_string();
-    std::chrono::system_clock::time_point created = (boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_UserAddedIdx).as_datetime()));
+    std::chrono::system_clock::time_point created = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_UserAddedIdx).as_datetime());
     std::chrono::system_clock::time_point lastLogin;
     std::size_t organizationId = 0;
     if (!queryRow.at(m_LastLoginIdx).is_null())
@@ -176,7 +179,8 @@ UserModel_shp UserQueryProcessor::processResultRow(boost::mysql::row_view &query
         organizationId = queryRow.at(m_OrganizationIdx).as_uint64();
     }
 
-    return std::make_shared<UserModel>(userId, lastName, firstName, middleInitial, email, loginName, password, preferences, created, lastLogin, organizationId);
+    return std::make_shared<UserModel>(userId, lastName, firstName, middleInitial, email, loginName,
+        password, preferences, created, lastLogin, organizationId);
 }
 
 void UserQueryProcessor::fillRequiredIndexes()
@@ -215,7 +219,8 @@ TestStatus UserQueryProcessor::testExceptionsGetAllUsers() noexcept
 {
     selfTestResetAllValues();
 
-    return testListExceptionAndSuccessNArgs("UserQueryProcessorSelfTest::testExceptionsGetAllUsers()", std::bind(&UserQueryProcessor::getAllUsers, this));
+    return testListExceptionAndSuccessNArgs("UserQueryProcessorSelfTest::testExceptionsGetAllUsers()",
+        std::bind(&UserQueryProcessor::getAllUsers, this));
 }
 
 TestStatus UserQueryProcessor::testExceptionGetUserById() noexcept
@@ -256,7 +261,8 @@ TestStatus UserQueryProcessor::testExceptionGetUserByLoginAndPassword() noexcept
     std::string testPassword("testPassword");
 
     return testExceptionAndSuccessNArgs("UserQueryProcessor::testExceptionGetUserByLoginAndPassword()",
-        std::bind(&UserQueryProcessor::getUserByLoginAndPassword, this, std::placeholders::_1, std::placeholders::_2), testUser1, testPassword);
+        std::bind(&UserQueryProcessor::getUserByLoginAndPassword, this, std::placeholders::_1, std::placeholders::_2),
+        testUser1, testPassword);
 }
 
 TestStatus UserQueryProcessor::testExceptionGetUserByFullName() noexcept

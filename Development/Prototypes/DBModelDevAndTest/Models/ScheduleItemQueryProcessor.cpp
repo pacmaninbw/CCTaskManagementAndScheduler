@@ -10,7 +10,12 @@
 #include <iostream>
 
 ScheduleItemQueryProcessor::ScheduleItemQueryProcessor(std::size_t userId)
-: QueryProcessor<ScheduleItemModel>("ScheduleItem", {"idUserScheduleItem", "UserID", "StartDateTime", "EndDateTime", "Title", "Personal", "Location", "CreatedTS", "LastUpdateTS", "Hidden"})
+: QueryProcessor<ScheduleItemModel>("ScheduleItem", 
+        {
+            "idUserScheduleItem", "UserID", "StartDateTime", "EndDateTime", "Title",
+            "Personal", "Location", "CreatedTS", "LastUpdateTS", "Hidden"
+        }
+    )
 {
     m_UserID = userId;
 }
@@ -263,7 +268,8 @@ TestStatus ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByConte
     std::chrono::year_month_day testEnd(commonTestDateRangeEndValue);
 
     return testListExceptionAndSuccessNArgs("ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByContentAndDateRange()",
-         std::bind(&ScheduleItemQueryProcessor::findUserScheduleItemsByContentAndDateRange, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), 
+         std::bind(&ScheduleItemQueryProcessor::findUserScheduleItemsByContentAndDateRange, this, std::placeholders::_1,
+            std::placeholders::_2, std::placeholders::_3), 
         titleSearch, testStart, testEnd);
 }
 

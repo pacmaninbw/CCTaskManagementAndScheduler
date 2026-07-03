@@ -158,7 +158,8 @@ TaskList TaskQueryProcessor::getDefaultDashboardTaskList(std::size_t assignedUse
     {
         initFormatOptions();
         boost::mysql::format_context fctx(format_opts.value());
-        boost::mysql::format_sql_to(fctx, "CALL GetDefaultDashboardTaskList({}, {})", assignedUserID, stdchronoDateToBoostMySQLDate(searchStartDate));
+        boost::mysql::format_sql_to(fctx, "CALL GetDefaultDashboardTaskList({}, {})",
+            assignedUserID, stdchronoDateToBoostMySQLDate(searchStartDate));
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         return processResults(localResult);
     }
@@ -239,9 +240,10 @@ TaskModel_shp TaskQueryProcessor::processResultRow(boost::mysql::row_view &query
         dependenciesText = queryRow.at(m_DepenedencyListIdx).as_string();
     }
 
-    return std::make_shared<TaskModel>(taskId, creatorID, assignToID, description, statusVal, parentTaskID, dueDate, scheduledStart,
-        actualStartDate, estimatedCompletion, completionDate, estimatedEffort,actualEffortToDate, priorityGroup, priority, personal,
-        dependencyCount, dependenciesText, creationTimeStamp, lastUpdate);
+    return std::make_shared<TaskModel>(taskId, creatorID, assignToID, description, statusVal, parentTaskID,
+        dueDate, scheduledStart, actualStartDate, estimatedCompletion, completionDate, estimatedEffort,
+        actualEffortToDate, priorityGroup, priority, personal, dependencyCount, dependenciesText,
+        creationTimeStamp, lastUpdate);
 
 }
 
@@ -295,7 +297,8 @@ TestStatus TaskQueryProcessor::testExceptionGetByTaskID() noexcept
 {
     selfTestResetAllValues();
 
-    return testExceptionAndSuccessNArgs("TaskQueryProcessor::getTaskByTaskID", std::bind(&TaskQueryProcessor::getTaskByTaskID, this, std::placeholders::_1), 0);
+    return testExceptionAndSuccessNArgs("TaskQueryProcessor::getTaskByTaskID",
+        std::bind(&TaskQueryProcessor::getTaskByTaskID, this, std::placeholders::_1), 0);
 }
 
 TestStatus TaskQueryProcessor::testExceptionGetByDescriptionAndAssignedUser() noexcept
