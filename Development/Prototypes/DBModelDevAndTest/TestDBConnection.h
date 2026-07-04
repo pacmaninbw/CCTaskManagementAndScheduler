@@ -25,20 +25,20 @@ public:
     ~TestDBConnection() = default;
     void debugShowVariables(std::string functionName) const noexcept;
     TestStatus runTestConnect();
-    void testAllConnections() { testProductionConnection = true; };
+    void testAllConnections() { m_testProductionConn = true; };
     
 private:
     void initConnectionData(ProgramOptions &po);
     boost::mysql::format_options getConnectionFormatOptsAsync();
     boost::asio::awaitable<boost::mysql::format_options> coRoutineGetFormatOptions();
 
-    std::string errorMessages;
+    std::string m_errorMessages;
     boost::mysql::connect_params m_dbConnection;
-    bool verboseOutput;
+    bool m_verboseOutput;
     bool m_forceError;
     bool m_forceException;
     bool m_selfTest;
-    bool testProductionConnection;
+    bool m_testProductionConn;
     std::optional<boost::mysql::format_options> m_formatOpts;
 
 };

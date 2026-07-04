@@ -16,12 +16,12 @@
 #include <vector>
 
 TestDBConnection::TestDBConnection()
-:   errorMessages{""},
-    verboseOutput{programOptions.verboseOutput},
+:   m_errorMessages{""},
+    m_verboseOutput{programOptions.verboseOutput},
     m_forceError{programOptions.forceErrors},
     m_forceException{programOptions.forceExceptions},
     m_selfTest{false},
-    testProductionConnection{false}
+    m_testProductionConn{false}
 {
 }
 
@@ -53,7 +53,7 @@ TestStatus TestDBConnection::runTestConnect()
             std::cerr << std::format("Connected to {}", programOptions.mySqlDBName) << std::endl;
         }
 
-        if (testProductionConnection)
+        if (m_testProductionConn)
         {
             // Test connecting to the real database
             programOptions.mySqlDBName = "PlannerTaskScheduleDB";
