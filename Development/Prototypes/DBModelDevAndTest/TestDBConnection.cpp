@@ -18,9 +18,9 @@
 TestDBConnection::TestDBConnection()
 :   errorMessages{""},
     verboseOutput{programOptions.verboseOutput},
-    m_ForceError{programOptions.forceErrors},
-    m_ForceException{programOptions.forceExceptions},
-    m_SelfTest{false},
+    m_forceError{programOptions.forceErrors},
+    m_forceException{programOptions.forceExceptions},
+    m_selfTest{false},
     testProductionConnection{false}
 {
 }
@@ -28,9 +28,9 @@ TestDBConnection::TestDBConnection()
 void TestDBConnection::debugShowVariables(std::string functionName) const noexcept
 {
     std::cerr << "In " << functionName << ":\n";
-    std::cerr << "\tformat_opts: " << (format_opts.has_value()? "TRUE" : "FALSE") << "\n";
-    std::cerr << "\tinSelfTest: " << (m_SelfTest? "TRUE" : "FALSE") << "\n";
-    std::cerr << "\tforceException: " << (m_ForceException? "TRUE" : "FALSE") << "\n";
+    std::cerr << "\tformat_opts: " << (m_formatOpts.has_value()? "TRUE" : "FALSE") << "\n";
+    std::cerr << "\tinSelfTest: " << (m_selfTest? "TRUE" : "FALSE") << "\n";
+    std::cerr << "\tforceException: " << (m_forceException? "TRUE" : "FALSE") << "\n";
     std::cerr << std::endl;
 }
 
@@ -39,11 +39,11 @@ TestStatus TestDBConnection::runTestConnect()
     try
     {
         initConnectionData(programOptions);
-        format_opts.reset();
-        format_opts = getConnectionFormatOptsAsync();
+        m_formatOpts.reset();
+        m_formatOpts = getConnectionFormatOptsAsync();
 
         // Test connecting to the default Test Database.
-        if (!format_opts.has_value())
+        if (!m_formatOpts.has_value())
         {
             std::cerr << std::format("Failed to get format options from {} : TEST FAILED", programOptions.mySqlDBName) << std::endl;
             return TESTFAILED;
@@ -58,11 +58,11 @@ TestStatus TestDBConnection::runTestConnect()
             // Test connecting to the real database
             programOptions.mySqlDBName = "PlannerTaskScheduleDB";
             initConnectionData(programOptions);
-            format_opts.reset();
-            format_opts = getConnectionFormatOptsAsync();
+            m_formatOpts.reset();
+            m_formatOpts = getConnectionFormatOptsAsync();
 
             // Test connecting to the default Test Database.
-            if (!format_opts.has_value())
+            if (!m_formatOpts.has_value())
             {
                 std::cerr << std::format("Failed to get format options from {} : TEST FAILED", programOptions.mySqlDBName) << std::endl;
                 return TESTFAILED;
@@ -108,7 +108,7 @@ boost::mysql::format_options TestDBConnection::getConnectionFormatOptsAsync()
 
 boost::asio::awaitable<boost::mysql::format_options> TestDBConnection::coRoutineGetFormatOptions()
 {
-    if (m_ForceException)
+    if (m_forceException)
     {
         std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions");
         std::domain_error forcedException(forcingException);
@@ -117,7 +117,7 @@ boost::asio::awaitable<boost::mysql::format_options> TestDBConnection::coRoutine
 
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
 
-    co_await conn.async_connect(m_DBConnection);
+    co_await conn.async_connect(m_dbConnection);
 
     boost::mysql::format_options options = conn.format_opts().value();
 
@@ -128,8 +128,8 @@ boost::asio::awaitable<boost::mysql::format_options> TestDBConnection::coRoutine
 
 void TestDBConnection::initConnectionData(ProgramOptions &po)
 {
-    m_DBConnection.server_address.emplace_host_and_port(po.mySqlUrl, po.mySqlPort);
-    m_DBConnection.username = po.mySqlUser;
-    m_DBConnection.password = po.mySqlPassword;
-    m_DBConnection.database = po.mySqlDBName;
+    m_dbConnection.server_address.emplace_host_and_port(po.mySqlUrl, po.mySqlPort);
+    m_dbConnection.username = po.mySqlUser;
+    m_dbConnection.password = po.mySqlPassword;
+    m_dbConnection.database = po.mySqlDBName;
 }

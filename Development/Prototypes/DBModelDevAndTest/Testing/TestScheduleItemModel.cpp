@@ -392,7 +392,7 @@ TestStatus TestScheduleItemModel::negativePathMissingRequiredFields()
     {
         std::cerr << testScheduleItem.getAllErrorMessages() << testScheduleItem << "\n";
         std::cerr << "Primary key for user: testScheduleItem.getScheduleItemID() not set!\n";
-        if (m_VerboseOutput)
+        if (m_verboseOutput)
         {
             std::cerr << testScheduleItem << "\n\n";
         }

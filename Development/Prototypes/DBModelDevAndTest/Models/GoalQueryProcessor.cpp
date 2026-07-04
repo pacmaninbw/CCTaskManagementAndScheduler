@@ -21,7 +21,7 @@ UserGoalModel_shp GoalQueryProcessor::getGoalById(std::size_t goalId) noexcept
     try
     {
         initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_context fctx(m_formatOpts.value());
         boost::mysql::format_sql_to(fctx, "CALL GetGoalById({})", goalId);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
@@ -43,7 +43,7 @@ UserGoalModel_shp GoalQueryProcessor::findGoalByUserIdAndExactDescription(std::s
     try
     {
         initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_context fctx(m_formatOpts.value());
         boost::mysql::format_sql_to(fctx, "CALL FindGoalByUserIdAndExactDescription({}, {})", userId, fullDescription);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
@@ -64,7 +64,7 @@ UserGoalList GoalQueryProcessor::getAllGoalsForUser(std::size_t userID) noexcept
     try
     {
         initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_context fctx(m_formatOpts.value());
         boost::mysql::format_sql_to(fctx, "CALL GetAllGoalsForUser({})", userID);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         return processResults(localResult);
@@ -103,7 +103,7 @@ UserGoalList GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription(std::siz
     try
     {
         initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_context fctx(m_formatOpts.value());
         boost::mysql::format_sql_to(fctx, "CALL FindGoalsByUserIdAndSimilarDescription({}, {})", userID, searchString);
 
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
@@ -120,29 +120,29 @@ UserGoalList GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription(std::siz
 
 UserGoalModel_shp GoalQueryProcessor::processResultRow(boost::mysql::row_view& queryRow)
 {
-    std::size_t goalId = queryRow.at(m_GoalIdIdx).as_uint64();
-    std::size_t userID = queryRow.at(m_UserIdIdx).as_uint64();
-    std::chrono::system_clock::time_point creationDate = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_CreationTSIdx).as_datetime());
-    std::string description = queryRow.at(m_DescriptionIdx).as_string();
-    std::chrono::system_clock::time_point lastUpdate = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_LastUpdateIdx).as_datetime());
+    std::size_t goalId = queryRow.at(m_goalIdIdx).as_uint64();
+    std::size_t userID = queryRow.at(m_userIdIdx).as_uint64();
+    std::chrono::system_clock::time_point creationDate = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_creationTSIdx).as_datetime());
+    std::string description = queryRow.at(m_descriptionIdx).as_string();
+    std::chrono::system_clock::time_point lastUpdate = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_lastUpdateIdx).as_datetime());
     unsigned int priority = 0;
     std::size_t parentID = 0;
     bool deleted = false;
 
     // Optional fields.
-    if (!queryRow.at(m_PriorityIdx).is_null())
+    if (!queryRow.at(m_priorityIdx).is_null())
     {
-        priority = queryRow.at(m_PriorityIdx).as_int64();
+        priority = queryRow.at(m_priorityIdx).as_int64();
     }
 
-    if (!queryRow.at(m_ParentGoalIDIdx).is_null())
+    if (!queryRow.at(m_parentGoalIDIdx).is_null())
     {
-        parentID = queryRow.at(m_ParentGoalIDIdx).as_uint64();
+        parentID = queryRow.at(m_parentGoalIDIdx).as_uint64();
     }
 
-    if (!queryRow.at(m_HiddenIdx).is_null())
+    if (!queryRow.at(m_hiddenIdx).is_null())
     {
-        deleted = queryRow.at(m_HiddenIdx).as_int64() == 1? true : false;
+        deleted = queryRow.at(m_hiddenIdx).as_int64() == 1? true : false;
     }
 
     return std::make_shared<UserGoalModel>(goalId, userID, description, priority, parentID, creationDate, lastUpdate, deleted);
@@ -150,20 +150,20 @@ UserGoalModel_shp GoalQueryProcessor::processResultRow(boost::mysql::row_view& q
 
 void GoalQueryProcessor::fillRequiredIndexes()
 {
-    assignValueToIndex("idUserGoals", m_GoalIdIdx);
-    assignValueToIndex("UserID", m_UserIdIdx);
-    assignValueToIndex("Description", m_DescriptionIdx);
-    assignValueToIndex("CreationTS", m_CreationTSIdx);
-    assignValueToIndex("LastUpdateTS", m_LastUpdateIdx);
-    assignValueToIndex("Priority",m_PriorityIdx);
-    assignValueToIndex("ParentGoal",m_ParentGoalIDIdx);
-    assignValueToIndex("Hidden",m_HiddenIdx);
+    assignValueToIndex("idUserGoals", m_goalIdIdx);
+    assignValueToIndex("UserID", m_userIdIdx);
+    assignValueToIndex("Description", m_descriptionIdx);
+    assignValueToIndex("CreationTS", m_creationTSIdx);
+    assignValueToIndex("LastUpdateTS", m_lastUpdateIdx);
+    assignValueToIndex("Priority",m_priorityIdx);
+    assignValueToIndex("ParentGoal",m_parentGoalIDIdx);
+    assignValueToIndex("Hidden",m_hiddenIdx);
 }
 
 std::string GoalQueryProcessor::formatSelectAllChildGoalsWithParentFromUser(std::size_t parentId, std::size_t userId)
 {
         initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_context fctx(m_formatOpts.value());
         boost::mysql::format_sql_to(fctx, "CALL GetAllChildGoalsFromParent({}, {})", userId, parentId);
 
         return std::move(fctx).get().value();

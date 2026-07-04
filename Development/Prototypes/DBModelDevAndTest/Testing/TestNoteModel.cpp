@@ -386,7 +386,7 @@ TestStatus TestNoteModel::negativePathMissingRequiredFields()
     {
         std::cout << testNote.getAllErrorMessages() << testNote << "\n";
         std::cout << "Primary key for user: " << testNote.getNoteId() << " not set!\n";
-        if (m_VerboseOutput)
+        if (m_verboseOutput)
         {
             std::cout << testNote << "\n\n";
         }

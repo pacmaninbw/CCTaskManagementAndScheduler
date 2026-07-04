@@ -12,7 +12,7 @@
 #include <vector>
 
 TestDBInterfaceCore::TestDBInterfaceCore(std::string_view modelName)
-: m_VerboseOutput{programOptions.verboseOutput},
+: m_verboseOutput{programOptions.verboseOutput},
   m_ModelUnderTest{modelName}
 {
 }
@@ -96,7 +96,7 @@ bool TestDBInterfaceCore::hasErrorMessage(ModelDBInterface* modelUnderTest)
         return false;
     }
 
-    if (m_VerboseOutput)
+    if (m_verboseOutput)
     {
         std::cout << "Expected error was; " << errorMessage << "\n";
     }

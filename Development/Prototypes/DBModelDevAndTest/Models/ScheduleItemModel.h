@@ -30,15 +30,15 @@ public:
     );
     virtual ~ScheduleItemModel() = default;
 
-    std::size_t getScheduleItemID() const { return m_PrimaryKey; };
-    std::size_t getUserID() const { return m_UserID; };
-    std::string getTitle() const { return m_Title; };
-    std::chrono::system_clock::time_point getCreationDate() const { return m_Creation.value(); };
-    std::chrono::system_clock::time_point getLastUpdate() const { return m_LastUpdate.value(); };
-    std::chrono::system_clock::time_point getStartTime() const { return m_StartTime.value(); };
-    std::chrono::system_clock::time_point getEndTime() const { return m_EndTime.value(); };
-    std::string getLocation() const { return m_Location.value_or(""); };
-    bool isPersonal() const { return m_Personal; };
+    std::size_t getScheduleItemID() const { return m_primaryKey; };
+    std::size_t getUserID() const { return m_userID; };
+    std::string getTitle() const { return m_title; };
+    std::chrono::system_clock::time_point getCreationDate() const { return m_creation.value(); };
+    std::chrono::system_clock::time_point getLastUpdate() const { return m_lastUpdate.value(); };
+    std::chrono::system_clock::time_point getStartTime() const { return m_startTime.value(); };
+    std::chrono::system_clock::time_point getEndTime() const { return m_endTime.value(); };
+    std::string getLocation() const { return m_location.value_or(""); };
+    bool isPersonal() const { return m_personal; };
     void setUserID(std::size_t userId);
     void setTitle(std::string title);
     void setStartDateAndTime(std::chrono::system_clock::time_point startTime);
@@ -52,11 +52,11 @@ public:
 /*
  * Required fields.
  */
-    bool isMissingTitle() const noexcept { return (m_Title.empty() || m_Title.length() < MinimumTitleLength); };
-    bool isMissingUserID() const noexcept { return m_UserID == 0; };
-    bool isMissingCreationDate() const noexcept { return !m_Creation.has_value(); };
-    bool isMissingStartTime() const noexcept { return !m_StartTime.has_value(); };
-    bool isMissingEndTime() const noexcept { return !m_EndTime.has_value(); };
+    bool isMissingTitle() const noexcept { return (m_title.empty() || m_title.length() < MinimumTitleLength); };
+    bool isMissingUserID() const noexcept { return m_userID == 0; };
+    bool isMissingCreationDate() const noexcept { return !m_creation.has_value(); };
+    bool isMissingStartTime() const noexcept { return !m_startTime.has_value(); };
+    bool isMissingEndTime() const noexcept { return !m_endTime.has_value(); };
 
 /*
  * Operators
@@ -74,21 +74,21 @@ public:
     {
         constexpr const char* outFmtStr = "\t{}: {}\n";
         os << "ScheduleItemModel:\n";
-        os << std::format(outFmtStr, "ScheduleItem ID", scheduleItem.m_PrimaryKey);
-        os << std::format(outFmtStr, "User ID", scheduleItem.m_UserID);
-        os << std::format(outFmtStr, "Title", scheduleItem.m_Title);
-        os << std::format(outFmtStr, "Start Date and Time", scheduleItem.m_StartTime.value_or(std::chrono::system_clock::now()));
-        os << std::format(outFmtStr, "End Date and Time", scheduleItem.m_EndTime.value_or(std::chrono::system_clock::now()));
-        os << std::format(outFmtStr, "Personal", (scheduleItem.m_Personal? "TRUE": "FALSE"));
+        os << std::format(outFmtStr, "ScheduleItem ID", scheduleItem.m_primaryKey);
+        os << std::format(outFmtStr, "User ID", scheduleItem.m_userID);
+        os << std::format(outFmtStr, "Title", scheduleItem.m_title);
+        os << std::format(outFmtStr, "Start Date and Time", scheduleItem.m_startTime.value_or(std::chrono::system_clock::now()));
+        os << std::format(outFmtStr, "End Date and Time", scheduleItem.m_endTime.value_or(std::chrono::system_clock::now()));
+        os << std::format(outFmtStr, "Personal", (scheduleItem.m_personal? "TRUE": "FALSE"));
         os << std::format(outFmtStr, "location", scheduleItem.getLocation());
 
         os << "Optional Fields\n";
         if (programOptions.showTimeStamps)
         {
-            os << std::format(outFmtStr, "Creation Date", scheduleItem.m_Creation.value_or(std::chrono::system_clock::now()));
-            if (scheduleItem.m_LastUpdate.has_value())
+            os << std::format(outFmtStr, "Creation Date", scheduleItem.m_creation.value_or(std::chrono::system_clock::now()));
+            if (scheduleItem.m_lastUpdate.has_value())
             {
-                os << std::format(outFmtStr, "Last Update", scheduleItem.m_LastUpdate.value());
+                os << std::format(outFmtStr, "Last Update", scheduleItem.m_lastUpdate.value());
             }
         }
 
@@ -103,19 +103,19 @@ protected:
     virtual std::string formatDeleteStatement() override;
     void initRequiredFields() override;
 
-    std::size_t m_UserID;
-    std::string m_Title;
+    std::size_t m_userID;
+    std::string m_title;
 /*
  * startTime and endTime are not optional in the database, We are using
  * std::optional for those 2 fields to remove errors in valgrind and possible
  * exceptions in some compilers.
  */
-    std::optional<std::chrono::system_clock::time_point> m_StartTime;
-    std::optional<std::chrono::system_clock::time_point> m_EndTime;
-    std::optional<std::chrono::system_clock::time_point> m_Creation;
-    std::optional<std::chrono::system_clock::time_point> m_LastUpdate;
-    bool m_Personal;
-    std::optional<std::string> m_Location;
+    std::optional<std::chrono::system_clock::time_point> m_startTime;
+    std::optional<std::chrono::system_clock::time_point> m_endTime;
+    std::optional<std::chrono::system_clock::time_point> m_creation;
+    std::optional<std::chrono::system_clock::time_point> m_lastUpdate;
+    bool m_personal;
+    std::optional<std::string> m_location;
 
     static const std::size_t MinimumTitleLength = 3;
 };

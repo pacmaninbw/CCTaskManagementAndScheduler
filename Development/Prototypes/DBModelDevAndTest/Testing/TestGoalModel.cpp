@@ -316,7 +316,7 @@ TestStatus TestGoalModel::negativePathMissingRequiredFields()
     {
         std::cout << testGoal.getAllErrorMessages() << testGoal << "\n";
         std::cout << "Primary key for user: " << testGoal.getGoalId() << " not set!\n";
-        if (m_VerboseOutput)
+        if (m_verboseOutput)
         {
             std::cout << testGoal << "\n\n";
         }

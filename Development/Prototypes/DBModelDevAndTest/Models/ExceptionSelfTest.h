@@ -76,13 +76,13 @@ protected:
 
         selfTestResetAllValues();
 
-        bool globalForceException = CoreDBInterface::m_ForceException;
+        bool globalForceException = CoreDBInterface::m_forceException;
 
         std::vector<ExceptionTestElement> exceptionTests = initExceptionTests();
 
         TestStatus exceptionHandlingPassed = forceExceptionsLoop(exceptionTests);
 
-        CoreDBInterface::m_ForceException = globalForceException;
+        CoreDBInterface::m_forceException = globalForceException;
 
         std::cout << "\n\n";
 
@@ -120,12 +120,12 @@ protected:
 
     TestStatus testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName) noexcept
     {
-        std::string reportFailure = std::format("In {}::{}: ", ModelDBInterface::m_ModelName, testExceptionFuncName);
+        std::string reportFailure = std::format("In {}::{}: ", ModelDBInterface::m_modelName, testExceptionFuncName);
 
         if (expectSuccess)
         {
             reportFailure.append(std::format("expected success returned {} \n", isBool? "false" : "empty string"));
-            reportFailure.append(CoreDBInterface::m_ErrorMessages);
+            reportFailure.append(CoreDBInterface::m_errorMessages);
             reportFailure.append("\n");
         }
         else
@@ -142,13 +142,13 @@ protected:
     requires std::is_invocable_v<F, Ts...>
     TestStatus testExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
     {
-        CoreDBInterface::m_ForceException = true;
+        CoreDBInterface::m_forceException = true;
         if (funcUnderTest(args...))
         {
             return testExceptionReportFailure(false, true, funcName);
         }
 
-        CoreDBInterface::m_ForceException = false;
+        CoreDBInterface::m_forceException = false;
         if (!funcUnderTest(args...))
         {
             return testExceptionReportFailure(true, true, funcName);
@@ -164,14 +164,14 @@ protected:
     requires std::is_invocable_v<F, Ts...>
     TestStatus testFormatExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
     {
-        CoreDBInterface::m_ForceException = true;
+        CoreDBInterface::m_forceException = true;
         std::string formattedQuery = funcUnderTest(args...);
         if (!formattedQuery.empty())
         {
             return testExceptionReportFailure(false, false, funcName);
         }
 
-        CoreDBInterface::m_ForceException = false;
+        CoreDBInterface::m_forceException = false;
         formattedQuery.clear();
         formattedQuery = funcUnderTest(args...);
         if (formattedQuery.empty())
@@ -193,14 +193,14 @@ protected:
 
         try
         {
-            CoreDBInterface::m_ForceException = true;
+            CoreDBInterface::m_forceException = true;
             formattedQuery = funcUnderTest(args...);
             return testExceptionReportFailure(false, false, funcName);    
         }
         catch(const std::exception& e)
         {
             std::cout << "Caught expected exception from " << funcName << "(): " << e.what() << "\n";
-            CoreDBInterface::m_ForceException = false; 
+            CoreDBInterface::m_forceException = false; 
             formattedQuery = funcUnderTest(args...);
             if (formattedQuery.empty())
             {

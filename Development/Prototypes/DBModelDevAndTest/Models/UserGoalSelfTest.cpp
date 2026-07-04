@@ -17,14 +17,14 @@ UserGoalSelfTest::UserGoalSelfTest()
 
 TestStatus UserGoalSelfTest::runSelfTest() noexcept
 {
-    m_SelfTest = true;
+    m_selfTest = true;
     TestStatus selfTestStatus = TESTPASSED;
 
-    std::cout << "\nRunning " << m_ModelName << " Self Test\n";
+    std::cout << "\nRunning " << m_modelName << " Self Test\n";
 
     if (testExceptionHandling()!= TESTPASSED)
     {
-        std::cerr  << m_ModelName << "::runSelfTest: Exception handling FAILED!\n";
+        std::cerr  << m_modelName << "::runSelfTest: Exception handling FAILED!\n";
         selfTestStatus = TESTFAILED;
     }
     
@@ -35,13 +35,13 @@ TestStatus UserGoalSelfTest::runSelfTest() noexcept
 
     if (testAttributeAccessFunctions() == TESTFAILED)
     {
-        std::cerr << m_ModelName << "::runSelfTest: One or more get or set functions FAILED!\n";
+        std::cerr << m_modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
         selfTestStatus = TESTFAILED;
     }
 
     if (testEqualityOperator() == TESTFAILED)
     {
-        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", m_ModelName);
+        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", m_modelName);
         selfTestStatus = TESTFAILED;
     }
 
@@ -76,15 +76,15 @@ TestStatus UserGoalSelfTest::runSelfTest() noexcept
         selfTestStatus = TESTFAILED;
     }
 
-    m_SelfTest = false;
+    m_selfTest = false;
     
     if (selfTestStatus == TESTPASSED)
     {
-        std::cout <<  std::format("{} Self Test {}\n", m_ModelName, "PASSED");
+        std::cout <<  std::format("{} Self Test {}\n", m_modelName, "PASSED");
     }
     else
     {
-        std::cerr <<  std::format("{} Self Test {}\n", m_ModelName, "FAILED");
+        std::cerr <<  std::format("{} Self Test {}\n", m_modelName, "FAILED");
     }
 
     return selfTestStatus;
@@ -94,12 +94,12 @@ void UserGoalSelfTest::selfTestResetAllValues() noexcept
 {
     ModelSelfTest::selfTestResetAllValues();
 
-    userID = 0;
-    description.clear();;
-    priority.reset();
-    parentID.reset();
-    creationDate.reset();
-    lastUpdate = {};
+    m_userID = 0;
+    m_description.clear();;
+    m_priority.reset();
+    m_parentID.reset();
+    m_created.reset();
+    m_lastUpdate = {};
 }
 
 std::vector<AttributeTestFunction> UserGoalSelfTest::initAttributeAccessTests() noexcept
@@ -119,42 +119,42 @@ std::vector<AttributeTestFunction> UserGoalSelfTest::initAttributeAccessTests() 
 
 TestStatus UserGoalSelfTest::testGoalIdAccesss() noexcept
 {
-    return testAccessorFunctions<std::size_t>(57, &m_PrimaryKey, "Primary Key",
+    return testAccessorFunctions<std::size_t>(57, &m_primaryKey, "Primary Key",
         std::bind(&UserGoalModel::setGoalId, this, std::placeholders::_1),
         std::bind(&UserGoalModel::getGoalId, this));
 }
 
 TestStatus UserGoalSelfTest::testUserIdAccesss() noexcept
 {
-    return testAccessorFunctions<std::size_t>(23, &userID, "User ID",
+    return testAccessorFunctions<std::size_t>(23, &m_userID, "User ID",
         std::bind(&UserGoalModel::setUserId, this, std::placeholders::_1),
         std::bind(&UserGoalModel::getUserId, this));
 }
 
 TestStatus UserGoalSelfTest::testDescriptionAccess() noexcept
 {
-    return testAccessorFunctions<std::string>("Test note content access", &description, "Content",
+    return testAccessorFunctions<std::string>("Test note content access", &m_description, "Content",
         std::bind(&UserGoalModel::setDescription, this, std::placeholders::_1),
         std::bind(&UserGoalModel::getDescription, this));
 }
 
 TestStatus UserGoalSelfTest::testCreationDateAccess() noexcept
 {
-    return testTimeStampAccessorFunctions(commonTestTimeStampValue, &creationDate, "Date Added",
+    return testTimeStampAccessorFunctions(commonTestTimeStampValue, &m_created, "Date Added",
         std::bind(&UserGoalModel::setCreationTimeStamp, this, std::placeholders::_1),
         std::bind(&UserGoalModel::getCreationTimeStamp, this));
 }
 
 TestStatus UserGoalSelfTest::testParentIdAccess() noexcept
 {
-    return testOptionalAccessorFunctions<std::size_t>(1, &parentID, "Parent ID",
+    return testOptionalAccessorFunctions<std::size_t>(1, &m_parentID, "Parent ID",
         std::bind(&UserGoalModel::setParentID, this, std::placeholders::_1),
         std::bind(&UserGoalModel::getParentId, this));
 }
 
 TestStatus UserGoalSelfTest::testPriorityAccess() noexcept
 {
-    return testOptionalAccessorFunctions<unsigned int>(1, &priority, "Priority",
+    return testOptionalAccessorFunctions<unsigned int>(1, &m_priority, "Priority",
         std::bind(&UserGoalModel::setPriority, this, std::placeholders::_1),
         std::bind(&UserGoalModel::getPriority, this));
 }
@@ -242,14 +242,14 @@ TestStatus UserGoalSelfTest::testAllInsertFailures()
 
     setCreationTimeStamp(commonTestTimeStampValue);
 
-    if (m_VerboseOutput)
+    if (m_verboseOutput)
     {
-        std::cout << std::format("{}::{} before successful insert this = \n", m_ModelName, __func__) << *this << "\n";
+        std::cout << std::format("{}::{} before successful insert this = \n", m_modelName, __func__) << *this << "\n";
     }
 
     if (!insert())
     {
-        std::cout << "In  UserGoalSelfTest::testAllInsertFailures() Expected successful insert failed\n" << m_ErrorMessages << "\n";
+        std::cout << "In  UserGoalSelfTest::testAllInsertFailures() Expected successful insert failed\n" << m_errorMessages << "\n";
         return TESTFAILED;
     }
 
@@ -260,7 +260,7 @@ TestStatus UserGoalSelfTest::testEqualityOperator() noexcept
 {
     UserGoalModel other;
 
-    other.setGoalId(m_PrimaryKey);
+    other.setGoalId(m_primaryKey);
     if (*this == other)
     {
         return TESTFAILED;

@@ -35,14 +35,14 @@ private:
     TestStatus testExceptionGetGoalByGoalID() noexcept;
     TestStatus testExceptionFindGoalByUserIDAndDescription() noexcept;
 
-    std::size_t m_GoalIdIdx = IndexNotSet;
-    std::size_t m_UserIdIdx = IndexNotSet;
-    std::size_t m_DescriptionIdx = IndexNotSet;
-    std::size_t m_CreationTSIdx = IndexNotSet;
-    std::size_t m_LastUpdateIdx = IndexNotSet;
-    std::size_t m_PriorityIdx = IndexNotSet;
-    std::size_t m_ParentGoalIDIdx = IndexNotSet;
-    std::size_t m_HiddenIdx = IndexNotSet;
+    std::size_t m_goalIdIdx = IndexNotSet;
+    std::size_t m_userIdIdx = IndexNotSet;
+    std::size_t m_descriptionIdx = IndexNotSet;
+    std::size_t m_creationTSIdx = IndexNotSet;
+    std::size_t m_lastUpdateIdx = IndexNotSet;
+    std::size_t m_priorityIdx = IndexNotSet;
+    std::size_t m_parentGoalIDIdx = IndexNotSet;
+    std::size_t m_hiddenIdx = IndexNotSet;
 };
 
 #endif // GOALQUERYPROCESSOR_H_

@@ -57,10 +57,10 @@ protected:
         selfTestResetAllValues();
 
         TestStatus testStatus = TESTPASSED;
-        ModelDBInterface::m_Modified = false;
-        ModelDBInterface::m_PrimaryKey = 0;
-        std::string_view modelName(ModelDBInterface::m_ModelName);
-        ModelDBInterface::m_Deleted = false;
+        ModelDBInterface::m_modified = false;
+        ModelDBInterface::m_primaryKey = 0;
+        std::string_view modelName(ModelDBInterface::m_modelName);
+        ModelDBInterface::m_deleted = false;
 
         if (ModelDBInterface::save())
         {
@@ -101,13 +101,13 @@ protected:
 
     TestStatus wrongErrorMessage(std::string expectedString)
     {
-        std::size_t found = CoreDBInterface::m_ErrorMessages.find(expectedString);
+        std::size_t found = CoreDBInterface::m_errorMessages.find(expectedString);
         if (found == std::string::npos)
         {
             std::cerr << "Wrong message generated! TEST FAILED!\n";
-            std::cerr << CoreDBInterface::m_ErrorMessages << "\n";
+            std::cerr << CoreDBInterface::m_errorMessages << "\n";
             std::cerr << "Missing expected: " << expectedString << "\n";
-            std::cerr << "Error Messages:" << CoreDBInterface::m_ErrorMessages << "\n";
+            std::cerr << "Error Messages:" << CoreDBInterface::m_errorMessages << "\n";
             return TESTFAILED;
         }
 
@@ -118,7 +118,7 @@ protected:
     {
         if (ModelDBInterface::insert())
         {
-            std::cerr << std::format("Inserted {} missing required fields!  TEST FAILED\n", ModelDBInterface::m_ModelName);
+            std::cerr << std::format("Inserted {} missing required fields!  TEST FAILED\n", ModelDBInterface::m_modelName);
             return TESTFAILED;
         }
 
@@ -142,7 +142,7 @@ protected:
     {
         if (ModelDBInterface::update())
         {
-            std::cerr << std::format("Update successful with expected errors!  TEST FAILED\n", ModelDBInterface::m_ModelName);
+            std::cerr << std::format("Update successful with expected errors!  TEST FAILED\n", ModelDBInterface::m_modelName);
             return TESTFAILED;
         }
 
@@ -166,8 +166,8 @@ protected:
     {
         selfTestResetAllValues();
 
-        ModelDBInterface::m_PrimaryKey = 1;
-        ModelDBInterface::m_Modified = true;
+        ModelDBInterface::m_primaryKey = 1;
+        ModelDBInterface::m_modified = true;
 
         std::vector<std::string> alreadyInDB = {"already in Database"};
         if (testInsertionFailureMessages(alreadyInDB) != TESTPASSED)
@@ -196,7 +196,7 @@ protected:
             return TESTFAILED;
         }
 
-        ModelDBInterface::m_PrimaryKey = 1;
+        ModelDBInterface::m_primaryKey = 1;
         std::vector<std::string> notModified = {"not modified!"};
         if (testUpdateFailureMessages(notModified) != TESTPASSED)
         {

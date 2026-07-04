@@ -22,14 +22,14 @@ ScheduleItemSelfTest::ScheduleItemSelfTest()
 
 TestStatus ScheduleItemSelfTest::runSelfTest() noexcept
 {
-    m_SelfTest = true;
+    m_selfTest = true;
     TestStatus selfTestStatus = TESTPASSED;
 
-    std::cout << "\nRunning " << m_ModelName << " Self Test" << std::endl;
+    std::cout << "\nRunning " << m_modelName << " Self Test" << std::endl;
 
     if (testExceptionHandling()!= TESTPASSED)
     {
-        std::cerr  << m_ModelName << "::runSelfTest: Exception handling FAILED!\n";
+        std::cerr  << m_modelName << "::runSelfTest: Exception handling FAILED!\n";
         selfTestStatus = TESTFAILED;
     }
     
@@ -40,13 +40,13 @@ TestStatus ScheduleItemSelfTest::runSelfTest() noexcept
 
     if (testAttributeAccessFunctions() == TESTFAILED)
     {
-        std::cerr << m_ModelName << "::runSelfTest: One or more get or set functions FAILED!\n";
+        std::cerr << m_modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
         selfTestStatus = TESTFAILED;
     }
 
     if (testEqualityOperator() == TESTFAILED)
     {
-        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", m_ModelName);
+        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", m_modelName);
         selfTestStatus = TESTFAILED;
     }
 
@@ -81,15 +81,15 @@ TestStatus ScheduleItemSelfTest::runSelfTest() noexcept
         selfTestStatus = TESTFAILED;
     }
 
-    m_SelfTest = false;
+    m_selfTest = false;
     
     if (selfTestStatus == TESTPASSED)
     {
-        std::cout <<  std::format("{} Self Test {}\n", m_ModelName, "PASSED");
+        std::cout <<  std::format("{} Self Test {}\n", m_modelName, "PASSED");
     }
     else
     {
-        std::cerr <<  std::format("{} Self Test {}\n", m_ModelName, "FAILED");
+        std::cerr <<  std::format("{} Self Test {}\n", m_modelName, "FAILED");
     }
 
     return selfTestStatus;
@@ -99,14 +99,14 @@ void ScheduleItemSelfTest::selfTestResetAllValues() noexcept
 {
     ModelSelfTest::selfTestResetAllValues();
 
-    m_UserID = 0;
-    m_Title.clear();
-    m_StartTime.reset();
-    m_EndTime.reset();
-    m_Personal = false;
-    m_Location.reset();
-    m_Creation.reset();
-    m_LastUpdate.reset();
+    m_userID = 0;
+    m_title.clear();
+    m_startTime.reset();
+    m_endTime.reset();
+    m_personal = false;
+    m_location.reset();
+    m_creation.reset();
+    m_lastUpdate.reset();
 }
 
 std::vector<ExceptionTestElement> ScheduleItemSelfTest::initExceptionTests() noexcept
@@ -122,7 +122,7 @@ std::vector<ExceptionTestElement> ScheduleItemSelfTest::initExceptionTests() noe
 TestStatus ScheduleItemSelfTest::testExceptionInsert() noexcept
 {
     selfTestResetAllValues();
-    m_ForceException = true;
+    m_forceException = true;
 
     setUserID(1);
     setTitle("Testing Exception handling for Schedule Item Insert");
@@ -226,14 +226,14 @@ TestStatus ScheduleItemSelfTest::testAllInsertFailures()
 
     setCreationDate(commonTestTimeStampValue);
 
-    if (m_VerboseOutput)
+    if (m_verboseOutput)
     {
-        std::cout << std::format("{}::{} before successful insert this = \n", m_ModelName, __func__) << *this << "\n";
+        std::cout << std::format("{}::{} before successful insert this = \n", m_modelName, __func__) << *this << "\n";
     }
 
     if (!insert())
     {
-        std::cout << "In ScheduleItemSelfTest::testAllInsertFailuresExpected successful insert failed\n" << m_ErrorMessages << "\n";
+        std::cout << "In ScheduleItemSelfTest::testAllInsertFailuresExpected successful insert failed\n" << m_errorMessages << "\n";
         return TESTFAILED;
     }
 
@@ -246,7 +246,7 @@ TestStatus ScheduleItemSelfTest::testEqualityOperator() noexcept
     {
         ScheduleItemModel other;
 
-        other.setScheduleItemID(m_PrimaryKey);
+        other.setScheduleItemID(m_primaryKey);
 
         if (*this == other)
         {
@@ -291,7 +291,7 @@ TestStatus ScheduleItemSelfTest::testScheduleItemIDAccess() noexcept
 {
     std::size_t testPrimaryKey = 57;
 
-    return testAccessorFunctions<std::size_t>(testPrimaryKey, &m_PrimaryKey, "Primary Key",
+    return testAccessorFunctions<std::size_t>(testPrimaryKey, &m_primaryKey, "Primary Key",
         std::bind(&ScheduleItemModel::setScheduleItemID, this, std::placeholders::_1),
         std::bind(&ScheduleItemModel::getScheduleItemID, this));
 }
@@ -300,7 +300,7 @@ TestStatus ScheduleItemSelfTest::testUserIDAccess() noexcept
 {
     std::size_t testValue = 1;
 
-    return testAccessorFunctions<std::size_t>(testValue, &m_UserID, "User ID",
+    return testAccessorFunctions<std::size_t>(testValue, &m_userID, "User ID",
         std::bind(&ScheduleItemModel::setUserID, this, std::placeholders::_1),
         std::bind(&ScheduleItemModel::getUserID, this));
 }
@@ -309,7 +309,7 @@ TestStatus ScheduleItemSelfTest::testTitleAccess() noexcept
 {
     std::string testValue("Testing schedule item Title string access");
 
-    return testAccessorFunctions<std::string>(testValue, &m_Title, "Title",
+    return testAccessorFunctions<std::string>(testValue, &m_title, "Title",
         std::bind(&ScheduleItemModel::setTitle, this, std::placeholders::_1),
         std::bind(&ScheduleItemModel::getTitle, this));
 }
@@ -318,7 +318,7 @@ TestStatus ScheduleItemSelfTest::testStartTimeAccess() noexcept
 {
     std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
 
-    return testTimeStampAccessorFunctions(testValue, &m_StartTime, "Schedule Item Start Time",
+    return testTimeStampAccessorFunctions(testValue, &m_startTime, "Schedule Item Start Time",
         std::bind(&ScheduleItemSelfTest::setStartDateAndTime, this, std::placeholders::_1),
         std::bind(&ScheduleItemSelfTest::getStartTime, this));
 }
@@ -327,7 +327,7 @@ TestStatus ScheduleItemSelfTest::testEndTimeAccess() noexcept
 {
     std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
 
-    return testTimeStampAccessorFunctions(testValue, &m_EndTime, "Schedule Item End Time",
+    return testTimeStampAccessorFunctions(testValue, &m_endTime, "Schedule Item End Time",
         std::bind(&ScheduleItemSelfTest::setEndDateAndTime, this, std::placeholders::_1),
         std::bind(&ScheduleItemSelfTest::getEndTime, this));
 }
@@ -336,7 +336,7 @@ TestStatus ScheduleItemSelfTest::testCreationTimeStampAccess() noexcept
 {
     std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
 
-    return testTimeStampAccessorFunctions(testValue, &m_Creation, "Schedule Item Creation Timestamp",
+    return testTimeStampAccessorFunctions(testValue, &m_creation, "Schedule Item Creation Timestamp",
         std::bind(&ScheduleItemSelfTest::setCreationDate, this, std::placeholders::_1),
         std::bind(&ScheduleItemSelfTest::getCreationDate, this));
 }
@@ -345,7 +345,7 @@ TestStatus ScheduleItemSelfTest::testLastUpDateTimeStampAccess() noexcept
 {
     std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
 
-    return testTimeStampAccessorFunctions(testValue, &m_LastUpdate, "Schedule Item Last Update Timestamp",
+    return testTimeStampAccessorFunctions(testValue, &m_lastUpdate, "Schedule Item Last Update Timestamp",
         std::bind(&ScheduleItemSelfTest::setLastUpdate, this, std::placeholders::_1),
         std::bind(&ScheduleItemSelfTest::getLastUpdate, this));
 }
@@ -354,7 +354,7 @@ TestStatus ScheduleItemSelfTest::testPersonalAccess() noexcept
 {
     bool testValue = true;
 
-    return testAccessorFunctions<bool>(testValue, &m_Personal, "Personal",
+    return testAccessorFunctions<bool>(testValue, &m_personal, "Personal",
         std::bind(&ScheduleItemModel::setPersonal, this, std::placeholders::_1),
         std::bind(&ScheduleItemModel::isPersonal, this));
 }
@@ -363,7 +363,7 @@ TestStatus ScheduleItemSelfTest::testLocationAccess() noexcept
 {
     std::string testValue("Home Office");
 
-    return testOptionalAccessorFunctions<std::string>(testValue, &m_Location, "Location",
+    return testOptionalAccessorFunctions<std::string>(testValue, &m_location, "Location",
         std::bind(&ScheduleItemSelfTest::setLocation, this, std::placeholders::_1),
         std::bind(&ScheduleItemSelfTest::getLocation, this));
 }

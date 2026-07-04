@@ -57,31 +57,31 @@ public:
         setCompletionDate(getTodaysDate());
         setStatus(TaskModel::TaskStatus::Complete);
     }
-    std::size_t getTaskID() const { return m_PrimaryKey; };
-    std::size_t getCreatorID() const { return m_CreatorID; };
-    std::size_t getAssignToID() const { return m_AssignToID; };
-    std::string getDescription() const { return m_Description; };
-    TaskModel::TaskStatus getStatus() const { return m_Status.value_or(TaskModel::TaskStatus::Not_Started); };
+    std::size_t getTaskID() const { return m_primaryKey; };
+    std::size_t getCreatorID() const { return m_creatorID; };
+    std::size_t getAssignToID() const { return m_assignToID; };
+    std::string getDescription() const { return m_description; };
+    TaskModel::TaskStatus getStatus() const { return m_status.value_or(TaskModel::TaskStatus::Not_Started); };
     unsigned int getStatusIntVal() const { return static_cast<unsigned int>(getStatus()); };
     std::string getStatusStringVal() const;
-    std::size_t getParentTaskID() const { return m_ParentTaskID.value_or(0); };
-    std::optional<std::size_t> rawParentTaskID() const { return m_ParentTaskID; };
-    std::chrono::system_clock::time_point getCreationDate() const { return m_Created.value(); };
-    std::chrono::system_clock::time_point getLastUpdate() const { return m_LastUpdate.value(); };
-    std::chrono::year_month_day getDueDate() const { return m_DueDate.value(); };
-    std::chrono::year_month_day getScheduledStart() const { return m_PlanedStart.value(); };
+    std::size_t getParentTaskID() const { return m_parentTaskID.value_or(0); };
+    std::optional<std::size_t> rawParentTaskID() const { return m_parentTaskID; };
+    std::chrono::system_clock::time_point getCreationDate() const { return m_created.value(); };
+    std::chrono::system_clock::time_point getLastUpdate() const { return m_lastUpdate.value(); };
+    std::chrono::year_month_day getDueDate() const { return m_dueDate.value(); };
+    std::chrono::year_month_day getScheduledStart() const { return m_planedStart.value(); };
     std::chrono::year_month_day getactualStartDate() const;
-    std::optional<std::chrono::year_month_day> rawActualStartDate() const { return m_ActualStart; };
+    std::optional<std::chrono::year_month_day> rawActualStartDate() const { return m_actualStart; };
     std::chrono::year_month_day getEstimatedCompletion() const;
-    std::optional<std::chrono::year_month_day> rawEstimatedCompletion() const { return m_EstimatedCompletion; };
+    std::optional<std::chrono::year_month_day> rawEstimatedCompletion() const { return m_estimatedCompletion; };
     std::chrono::year_month_day getCompletionDate() const ;
-    std::optional<std::chrono::year_month_day> rawCompletionDate() const { return m_Completed; };
-    unsigned int getEstimatedEffort() const { return m_EstimatedEffort; };
-    double getactualEffortToDate() const { return m_ActualEffort; };
-    unsigned int getPriorityGroup() const { return m_PriorityCategory; };
-    unsigned int getPriority() const { return m_Priority; };
-    std::vector<std::size_t> getDependencies() { return m_Dependencies; };
-    bool isPersonal() const { return m_Personal; };
+    std::optional<std::chrono::year_month_day> rawCompletionDate() const { return m_completed; };
+    unsigned int getEstimatedEffort() const { return m_estimatedEffort; };
+    double getactualEffortToDate() const { return m_actualEffort; };
+    unsigned int getPriorityGroup() const { return m_priorityCategory; };
+    unsigned int getPriority() const { return m_priority; };
+    std::vector<std::size_t> getDependencies() { return m_dependencies; };
+    bool isPersonal() const { return m_personal; };
     void setCreatorID(std::size_t creatorID);
     void setAssignToID(std::size_t assignedID);
     void setDescription(std::string description);
@@ -112,14 +112,14 @@ public:
 /*
  * Required fields.
  */
-    bool isMissingDescription() const noexcept { return (m_Description.empty() || m_Description.length() < MinimumDescriptionLength); };
-    bool isMissingCreatorID() const noexcept { return m_CreatorID == 0; };
-    bool isMissingAssignedID() const noexcept { return m_AssignToID == 0; };
-    bool isMissingEffortEstimate() const noexcept { return m_EstimatedEffort == 0; };
-    bool isMissingPriorityGroup() const noexcept { return m_PriorityCategory == 0; };
-    bool isMissingCreationDate() const noexcept { return !m_Created.has_value(); };
-    bool isMissingScheduledStart() const noexcept { return !m_PlanedStart.has_value(); };
-    bool isMissingDueDate() const noexcept { return !m_DueDate.has_value(); };
+    bool isMissingDescription() const noexcept { return (m_description.empty() || m_description.length() < MinimumDescriptionLength); };
+    bool isMissingCreatorID() const noexcept { return m_creatorID == 0; };
+    bool isMissingAssignedID() const noexcept { return m_assignToID == 0; };
+    bool isMissingEffortEstimate() const noexcept { return m_estimatedEffort == 0; };
+    bool isMissingPriorityGroup() const noexcept { return m_priorityCategory == 0; };
+    bool isMissingCreationDate() const noexcept { return !m_created.has_value(); };
+    bool isMissingScheduledStart() const noexcept { return !m_planedStart.has_value(); };
+    bool isMissingDueDate() const noexcept { return !m_dueDate.has_value(); };
 
 /*
  * Operators
@@ -137,46 +137,46 @@ public:
     {
         constexpr const char* outFmtStr = "\t{}: {}\n";
         os << "TaskModel:\n";
-        os << std::format(outFmtStr, "Task ID", task.m_PrimaryKey);
-        os << std::format(outFmtStr, "Creator ID", task.m_CreatorID);
-        os << std::format(outFmtStr, "Assigned To ID", task.m_AssignToID);
-        os << std::format(outFmtStr, "Description", task.m_Description);
+        os << std::format(outFmtStr, "Task ID", task.m_primaryKey);
+        os << std::format(outFmtStr, "Creator ID", task.m_creatorID);
+        os << std::format(outFmtStr, "Assigned To ID", task.m_assignToID);
+        os << std::format(outFmtStr, "Description", task.m_description);
         os << std::format(outFmtStr, "Status", task.getStatusIntVal());
         if (programOptions.showTimeStamps)
         {
-            os << std::format(outFmtStr, "Creation Date", task.m_Created.value_or(std::chrono::system_clock::now()));
+            os << std::format(outFmtStr, "Creation Date", task.m_created.value_or(std::chrono::system_clock::now()));
         }
-        os << std::format(outFmtStr, "Scheduled Start Date", task.m_PlanedStart.value_or(getTodaysDate()));
-        os << std::format(outFmtStr, "Due Date", task.m_DueDate.value_or(getTodaysDate()));
-        os << std::format(outFmtStr, "Estimated Effort Hours", task.m_EstimatedEffort);
-        os << std::format(outFmtStr, "Actual Effort Hours", task.m_ActualEffort);
-        os << std::format(outFmtStr, "Priority Group", task.m_PriorityCategory);
-        os << std::format(outFmtStr, "Priority", task.m_Priority);
-        os << std::format(outFmtStr, "Dependency Count", task.m_Dependencies.size());
+        os << std::format(outFmtStr, "Scheduled Start Date", task.m_planedStart.value_or(getTodaysDate()));
+        os << std::format(outFmtStr, "Due Date", task.m_dueDate.value_or(getTodaysDate()));
+        os << std::format(outFmtStr, "Estimated Effort Hours", task.m_estimatedEffort);
+        os << std::format(outFmtStr, "Actual Effort Hours", task.m_actualEffort);
+        os << std::format(outFmtStr, "Priority Group", task.m_priorityCategory);
+        os << std::format(outFmtStr, "Priority", task.m_priority);
+        os << std::format(outFmtStr, "Dependency Count", task.m_dependencies.size());
 
         os << "Optional Fields\n";
-        if (task.m_Status.has_value())
+        if (task.m_status.has_value())
         {
             os << std::format(outFmtStr, "Status", task.getStatusStringVal());
         }
-        if (task.m_ParentTaskID.has_value())
+        if (task.m_parentTaskID.has_value())
         {
-            os << std::format(outFmtStr, "Parent ID", task.m_ParentTaskID.value());
+            os << std::format(outFmtStr, "Parent ID", task.m_parentTaskID.value());
         }
-        if (task.m_ActualStart.has_value())
+        if (task.m_actualStart.has_value())
         {
-            os << std::format(outFmtStr, "Actual Start Date", task.m_ActualStart.value());
+            os << std::format(outFmtStr, "Actual Start Date", task.m_actualStart.value());
         }
-        if (task.m_EstimatedCompletion.has_value())
+        if (task.m_estimatedCompletion.has_value())
         {
-            os << std::format(outFmtStr, "Estimated Completion Date", task.m_EstimatedCompletion.value());
+            os << std::format(outFmtStr, "Estimated Completion Date", task.m_estimatedCompletion.value());
         }
-        if (task.m_Completed.has_value())
+        if (task.m_completed.has_value())
         {
-            os << std::format(outFmtStr, "Completed Date", task.m_Completed.value());
+            os << std::format(outFmtStr, "Completed Date", task.m_completed.value());
         }
 
-        os << std::format(outFmtStr, "Deleted ", (task.m_Deleted? "TRUE" : "FALSE"));
+        os << std::format(outFmtStr, "Deleted ", (task.m_deleted? "TRUE" : "FALSE"));
 
         return os;
     };
@@ -194,29 +194,29 @@ protected:
 
     static const std::size_t MinimumDescriptionLength = 10;
 
-    std::size_t m_CreatorID;
-    std::size_t m_AssignToID;
-    std::string m_Description;
-    std::optional<TaskStatus> m_Status;
-    std::optional<std::size_t> m_ParentTaskID;
-    std::optional<std::chrono::system_clock::time_point> m_Created;
+    std::size_t m_creatorID;
+    std::size_t m_assignToID;
+    std::string m_description;
+    std::optional<TaskStatus> m_status;
+    std::optional<std::size_t> m_parentTaskID;
+    std::optional<std::chrono::system_clock::time_point> m_created;
 /*
  * dueDate and scheduledStart are not optional in the database, We are using
  * std::optional for those 2 fields to remove errors in valgrind and possible
  * exceptions in some compilers.
  */
-    std::optional<std::chrono::year_month_day> m_DueDate;
-    std::optional<std::chrono::year_month_day> m_PlanedStart;
-    std::optional<std::chrono::year_month_day> m_ActualStart;
-    std::optional<std::chrono::year_month_day> m_EstimatedCompletion;
-    std::optional<std::chrono::year_month_day> m_Completed;
-    unsigned int m_EstimatedEffort;
-    double m_ActualEffort;
-    unsigned int m_PriorityCategory;
-    unsigned int m_Priority;
-    bool m_Personal;
-    std::vector<std::size_t> m_Dependencies;
-    std::optional<std::chrono::system_clock::time_point> m_LastUpdate;
+    std::optional<std::chrono::year_month_day> m_dueDate;
+    std::optional<std::chrono::year_month_day> m_planedStart;
+    std::optional<std::chrono::year_month_day> m_actualStart;
+    std::optional<std::chrono::year_month_day> m_estimatedCompletion;
+    std::optional<std::chrono::year_month_day> m_completed;
+    unsigned int m_estimatedEffort;
+    double m_actualEffort;
+    unsigned int m_priorityCategory;
+    unsigned int m_priority;
+    bool m_personal;
+    std::vector<std::size_t> m_dependencies;
+    std::optional<std::chrono::system_clock::time_point> m_lastUpdate;
 };
 
 using TaskModel_shp = std::shared_ptr<TaskModel>;

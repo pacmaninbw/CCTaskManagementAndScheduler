@@ -28,11 +28,11 @@ public:
     );
     ~NoteModel() = default;
 
-    std::size_t getNoteId() const { return m_PrimaryKey; };
-    std::size_t getUserId() const { return m_UserID; };
-    std::string getContent() const { return m_Content; };
-    std::chrono::system_clock::time_point getDateAdded() const { return m_CreationDate.value(); };
-    std::chrono::system_clock::time_point getLastModified() const { return m_LastUpdate.value(); };
+    std::size_t getNoteId() const { return m_primaryKey; };
+    std::size_t getUserId() const { return m_userID; };
+    std::string getContent() const { return m_content; };
+    std::chrono::system_clock::time_point getDateAdded() const { return m_creationDate.value(); };
+    std::chrono::system_clock::time_point getLastModified() const { return m_lastUpdate.value(); };
 
     void setNoteId(std::size_t noteId);
     void setUserId(std::size_t userId);
@@ -42,8 +42,8 @@ public:
 /*
  * Required fields.
  */
-    bool isMissingUserID()  { return m_UserID == 0; };;
-    bool isMissingContent() { return (m_Content.empty() || m_Content.size() < 10); };
+    bool isMissingUserID()  { return m_userID == 0; };;
+    bool isMissingContent() { return (m_content.empty() || m_content.size() < 10); };
     void initRequiredFields() override;
 
     bool operator==(NoteModel& other)
@@ -58,18 +58,18 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const NoteModel& note)
     {
         constexpr const char* outFmtStr = "\t{}: {}\n";
-        os << std::format(outFmtStr, "Note ID", note.m_PrimaryKey);
-        os << std::format(outFmtStr, "User ID", note.m_UserID);
-        os << std::format(outFmtStr, "Content", note.m_Content);
+        os << std::format(outFmtStr, "Note ID", note.m_primaryKey);
+        os << std::format(outFmtStr, "User ID", note.m_userID);
+        os << std::format(outFmtStr, "Content", note.m_content);
         if (programOptions.showTimeStamps)
         {
-            if (note.m_CreationDate.has_value())
+            if (note.m_creationDate.has_value())
             {
-                os << std::format(outFmtStr, "Created", note.m_CreationDate.value());
+                os << std::format(outFmtStr, "Created", note.m_creationDate.value());
             }
-            if (note.m_LastUpdate.has_value())
+            if (note.m_lastUpdate.has_value())
             {
-                os << std::format(outFmtStr, "Last Update", note.m_LastUpdate.value());
+                os << std::format(outFmtStr, "Last Update", note.m_lastUpdate.value());
             }
         }
 
@@ -82,10 +82,10 @@ protected:
     std::string formatUpdateStatement() override;
     virtual std::string formatDeleteStatement() override;
     
-    std::size_t m_UserID;
-    std::string m_Content;
-    std::optional<std::chrono::system_clock::time_point> m_CreationDate;
-    std::optional<std::chrono::system_clock::time_point> m_LastUpdate;
+    std::size_t m_userID;
+    std::string m_content;
+    std::optional<std::chrono::system_clock::time_point> m_creationDate;
+    std::optional<std::chrono::system_clock::time_point> m_lastUpdate;
 };
 
 using NoteModel_shp = std::shared_ptr<NoteModel>;

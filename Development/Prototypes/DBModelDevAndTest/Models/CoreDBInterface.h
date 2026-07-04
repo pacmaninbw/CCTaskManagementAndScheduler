@@ -18,16 +18,16 @@ class CoreDBInterface
 public:
     CoreDBInterface();
     virtual ~CoreDBInterface() = default;
-    std::string getAllErrorMessages() const noexcept { return m_ErrorMessages; };
-    inline void clearErrorMessages() { m_ErrorMessages.clear(); };
-    void setForceExceptions(bool forceIt) { m_ForceException = forceIt; };
-    void setSelfTest(bool isSelfTest) { m_SelfTest = isSelfTest; };
-    void testResetFormatOpts() { format_opts.reset(); };
+    std::string getAllErrorMessages() const noexcept { return m_errorMessages; };
+    inline void clearErrorMessages() { m_errorMessages.clear(); };
+    void setForceExceptions(bool forceIt) { m_forceException = forceIt; };
+    void setSelfTest(bool isSelfTest) { m_selfTest = isSelfTest; };
+    void testResetFormatOpts() { m_formatOpts.reset(); };
     void debugShowVariables(std::string functionName) const noexcept;
 
 protected:
     void initFormatOptions();
-    void appendErrorMessage(const std::string& newError) { m_ErrorMessages.append(newError); m_ErrorMessages.append("\n");};
+    void appendErrorMessage(const std::string& newError) { m_errorMessages.append(newError); m_errorMessages.append("\n");};
 /*
  * Utility functions to perform conversions from C++ class fields to 
  * database fields and back. 
@@ -55,13 +55,13 @@ protected:
     boost::asio::awaitable<boost::mysql::results> coRoutineExecuteSqlStatement(const std::string& query);
     boost::asio::awaitable<boost::mysql::format_options> coRoutineGetFormatOptions();
 
-    std::string m_ErrorMessages;
-    boost::mysql::connect_params m_DBConnection;
-    bool m_VerboseOutput;
-    bool m_ForceError;
-    bool m_ForceException;
-    bool m_SelfTest;
-    std::optional<boost::mysql::format_options> format_opts;
+    std::string m_errorMessages;
+    boost::mysql::connect_params m_dbConnection;
+    bool m_verboseOutput;
+    bool m_forceError;
+    bool m_forceException;
+    bool m_selfTest;
+    std::optional<boost::mysql::format_options> m_formatOpts;
 };
 
 #endif // COREDBINTERFACECORE_H_

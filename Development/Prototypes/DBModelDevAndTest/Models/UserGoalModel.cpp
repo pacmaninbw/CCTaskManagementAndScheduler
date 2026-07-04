@@ -11,7 +11,7 @@
 UserGoalModel::UserGoalModel()
 : ModelDBInterface("UserGoalModel", "idUserGoals")
 {
-    userID = 0;
+    m_userID = 0;
 }
 
 UserGoalModel::UserGoalModel(
@@ -26,70 +26,70 @@ UserGoalModel::UserGoalModel(
 )
 : UserGoalModel()
 {
-    m_PrimaryKey = goalId;
-    userID = userId;
-    description = descriptionIn;
-    priority = priorityIn;
-    parentID = parentIdIn;
-    creationDate = creationDateIn;
-    lastUpdate = lastUpdateIn;
-    m_Deleted = hidden;
+    m_primaryKey = goalId;
+    m_userID = userId;
+    m_description = descriptionIn;
+    m_priority = priorityIn;
+    m_parentID = parentIdIn;
+    m_created = creationDateIn;
+    m_lastUpdate = lastUpdateIn;
+    m_deleted = hidden;
 }
 
 void UserGoalModel::setGoalId(std::size_t userGoalId)
 {
-    m_Modified = true;
-    m_PrimaryKey = userGoalId;
+    m_modified = true;
+    m_primaryKey = userGoalId;
 }
 
 void UserGoalModel::setUserId(std::size_t userId)
 {
-    m_Modified = true;
-    userID = userId;
+    m_modified = true;
+    m_userID = userId;
 }
 
 void UserGoalModel::setDescription(std::string newDescription)
 {
-    m_Modified = true;
-    description = newDescription;
+    m_modified = true;
+    m_description = newDescription;
 }
 
 void UserGoalModel::setPriority(unsigned int newPriority)
 {
-    m_Modified = true;
-    priority = newPriority;
+    m_modified = true;
+    m_priority = newPriority;
 }
 
 void UserGoalModel::setParentID(std::size_t newParentID)
 {
-    m_Modified = true;
-    parentID = newParentID;
+    m_modified = true;
+    m_parentID = newParentID;
 }
 
 void UserGoalModel::setCreationTimeStamp(std::chrono::system_clock::time_point newCreationTS)
 {
-    m_Modified = true;
-    creationDate = newCreationTS;
+    m_modified = true;
+    m_created = newCreationTS;
 }
 
 bool UserGoalModel::diffGoal(UserGoalModel &other)
 {
-    return (m_PrimaryKey == other.m_PrimaryKey && userID == other.userID &&
-        description == other.description);
+    return (m_primaryKey == other.m_primaryKey && m_userID == other.m_userID &&
+        m_description == other.m_description);
 }
 
 void UserGoalModel::initRequiredFields()
 {
-    m_MissingRequiredFieldsTests.push_back({std::bind(&UserGoalModel::isMissingUserID, this), "User ID"});
-    m_MissingRequiredFieldsTests.push_back({std::bind(&UserGoalModel::isMissingDescription, this), "Description"});
+    m_missingRequiredFieldsTests.push_back({std::bind(&UserGoalModel::isMissingUserID, this), "User ID"});
+    m_missingRequiredFieldsTests.push_back({std::bind(&UserGoalModel::isMissingDescription, this), "Description"});
 }
 
 std::string UserGoalModel::formatInsertStatement()
 {
     initFormatOptions();
 
-    std::string insertStatement = boost::mysql::format_sql(format_opts.value(),
-        "CALL AddUserGoal({0}, {1}, {2}, {3})", userID, description, priority, parentID);
+    std::string insertStatement = boost::mysql::format_sql(m_formatOpts.value(),
+        "CALL AddUserGoal({0}, {1}, {2}, {3})", m_userID, m_description, m_priority, m_parentID);
 
     return insertStatement;
 }
@@ -98,9 +98,9 @@ std::string UserGoalModel::formatUpdateStatement()
 {
     initFormatOptions();
 
-    std::string updateStatement = boost::mysql::format_sql(format_opts.value(),
+    std::string updateStatement = boost::mysql::format_sql(m_formatOpts.value(),
         "CALL UpdateUserGoalAllFields({0}, {1}, {2}, {3}, {4})",
-        userID, m_PrimaryKey, description, priority, parentID);
+        m_userID, m_primaryKey, m_description, m_priority, m_parentID);
         
     return updateStatement;
 }
@@ -109,7 +109,7 @@ std::string UserGoalModel::formatDeleteStatement()
 {
     initFormatOptions();
 
-    return boost::mysql::format_sql(format_opts.value(),"CALL HideGoal({}, {})", userID, m_PrimaryKey);
+    return boost::mysql::format_sql(m_formatOpts.value(),"CALL HideGoal({}, {})", m_userID, m_primaryKey);
 }
 
 

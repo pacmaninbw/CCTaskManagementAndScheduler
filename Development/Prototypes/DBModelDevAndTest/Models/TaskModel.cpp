@@ -28,14 +28,14 @@ static GenericDictionary<TaskModel::TaskStatus, std::string> taskStatusConversio
 TaskModel::TaskModel()
 : ModelDBInterface("Task", "TaskID")
 {
-  m_CreatorID = 0;
-  m_AssignToID = 0;
-  m_Description = "";
-  m_EstimatedEffort = 0;
-  m_ActualEffort = 0.0;
-  m_PriorityCategory = 0;
-  m_Priority = 0;
-  m_Personal = false;
+  m_creatorID = 0;
+  m_assignToID = 0;
+  m_description = "";
+  m_estimatedEffort = 0;
+  m_actualEffort = 0.0;
+  m_priorityCategory = 0;
+  m_priority = 0;
+  m_personal = false;
 }
 
 TaskModel::TaskModel(
@@ -63,25 +63,25 @@ TaskModel::TaskModel(
 )
 : TaskModel()
 {
-    m_PrimaryKey = taskId;
-    m_CreatorID = creator;
-    m_AssignToID = assignTo;
-    m_Description = description;
-    m_Status = status;
-    m_ParentTaskID = parentTask;
-    m_DueDate = dueDate;
-    m_PlanedStart = scheduledStart;
-    m_ActualStart = actualStartDate;
-    m_EstimatedCompletion = estimatedCompletion;
-    m_Completed = completionDate;
-    m_EstimatedEffort = estimatedEffort;
-    m_ActualEffort = actualEffort;
-    m_PriorityCategory = priorityCategory;
-    m_Priority = priority;
-    m_Personal = personal;
-    m_Created = creationed;
-    m_LastUpdate = lastModified;
-    m_Deleted = hidden;
+    m_primaryKey = taskId;
+    m_creatorID = creator;
+    m_assignToID = assignTo;
+    m_description = description;
+    m_status = status;
+    m_parentTaskID = parentTask;
+    m_dueDate = dueDate;
+    m_planedStart = scheduledStart;
+    m_actualStart = actualStartDate;
+    m_estimatedCompletion = estimatedCompletion;
+    m_completed = completionDate;
+    m_estimatedEffort = estimatedEffort;
+    m_actualEffort = actualEffort;
+    m_priorityCategory = priorityCategory;
+    m_priority = priority;
+    m_personal = personal;
+    m_created = creationed;
+    m_lastUpdate = lastModified;
+    m_deleted = hidden;
 
     if (dependencyCount)
     {
@@ -112,14 +112,14 @@ bool TaskModel::hide(std::size_t userRequestingDelete) noexcept
 
     if (!isInDataBase())
     {
-        appendErrorMessage(std::format("{} not in Database, nothing to delete!", m_ModelName));
+        appendErrorMessage(std::format("{} not in Database, nothing to delete!", m_modelName));
 
         return false;
     }
 
-    if (userRequestingDelete != m_CreatorID)
+    if (userRequestingDelete != m_creatorID)
     {
-        appendErrorMessage(std::format("Permission denied, deleting user ({}) is not the creator ({}) of the task", userRequestingDelete, m_CreatorID));
+        appendErrorMessage(std::format("Permission denied, deleting user ({}) is not the creator ({}) of the task", userRequestingDelete, m_creatorID));
 
         return false;
     }
@@ -128,14 +128,14 @@ bool TaskModel::hide(std::size_t userRequestingDelete) noexcept
     {
         boost::mysql::results localResult = runQueryAsync(formatDeleteStatement());
 
-        m_Deleted = true;
+        m_deleted = true;
         
         return true;
     }
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In {}.hide() : {}", m_ModelName, e.what()));
+        appendErrorMessage(std::format("In {}.hide() : {}", m_modelName, e.what()));
         return false;
     }
 }
@@ -156,51 +156,51 @@ std::string TaskModel::getStatusStringVal() const
 
 std::chrono::year_month_day TaskModel::getactualStartDate() const
 {
-    return m_ActualStart.value_or(std::chrono::year_month_day());
+    return m_actualStart.value_or(std::chrono::year_month_day());
 }
 
 std::chrono::year_month_day TaskModel::getEstimatedCompletion() const
 {
-    return m_EstimatedCompletion.value_or(std::chrono::year_month_day());
+    return m_estimatedCompletion.value_or(std::chrono::year_month_day());
 }
 
 std::chrono::year_month_day TaskModel::getCompletionDate() const
 {
-    return m_Completed.value_or(std::chrono::year_month_day());
+    return m_completed.value_or(std::chrono::year_month_day());
 }
 
 void TaskModel::setCreatorID(std::size_t creatorID)
 {
-    m_Modified = true;
-    m_CreatorID = creatorID;
+    m_modified = true;
+    m_creatorID = creatorID;
 }
 
 void TaskModel::setAssignToID(std::size_t assignedID)
 {
-    m_Modified = true;
-    m_AssignToID = assignedID;
+    m_modified = true;
+    m_assignToID = assignedID;
 }
 
 void TaskModel::setDescription(std::string description)
 {
-    m_Modified = true;
-    m_Description = description;
+    m_modified = true;
+    m_description = description;
 }
 
 void TaskModel::setStatus(TaskModel::TaskStatus status)
 {
-    m_Modified = true;
-    m_Status = status;
+    m_modified = true;
+    m_status = status;
 
-    if (m_Status == TaskModel::TaskStatus::Work_in_Progress)
+    if (m_status == TaskModel::TaskStatus::Work_in_Progress)
     {
-        if (!m_ActualStart.has_value())
+        if (!m_actualStart.has_value())
         {
             setactualStartDate(getTodaysDate());
         }
     }
 
-    if (m_Status == TaskModel::TaskStatus::Complete)
+    if (m_status == TaskModel::TaskStatus::Complete)
     {
         setCompletionDate(getTodaysDate());
     }
@@ -208,62 +208,62 @@ void TaskModel::setStatus(TaskModel::TaskStatus status)
 
 void TaskModel::setParentTaskID(std::size_t parentTaskID)
 {
-    m_Modified = true;
-    m_ParentTaskID = parentTaskID;
+    m_modified = true;
+    m_parentTaskID = parentTaskID;
 }
 
 void TaskModel::setCreationDate(std::chrono::system_clock::time_point created)
 {
-    m_Modified = true;
-    m_Created = created;
+    m_modified = true;
+    m_created = created;
 }
 
 void TaskModel::setDueDate(std::chrono::year_month_day dueDate)
 {
-    m_Modified = true;
-    m_DueDate = dueDate;
+    m_modified = true;
+    m_dueDate = dueDate;
 }
 
 void TaskModel::setScheduledStart(std::chrono::year_month_day startDate)
 {
-    m_Modified = true;
-    m_PlanedStart = startDate;
+    m_modified = true;
+    m_planedStart = startDate;
 }
 
 void TaskModel::setactualStartDate(std::chrono::year_month_day startDate)
 {
-    m_Modified = true;
-    m_ActualStart = startDate;
+    m_modified = true;
+    m_actualStart = startDate;
 }
 
 void TaskModel::setEstimatedCompletion(std::chrono::year_month_day completionDate)
 {
-    m_Modified = true;
-    m_EstimatedCompletion = completionDate;
+    m_modified = true;
+    m_estimatedCompletion = completionDate;
 }
 
 void TaskModel::setCompletionDate(std::chrono::year_month_day completionDate)
 {
-    m_Modified = true;
-    m_Completed = completionDate;
+    m_modified = true;
+    m_completed = completionDate;
 }
 
 void TaskModel::setEstimatedEffort(unsigned int estimatedHours)
 {
-    m_Modified = true;
-    m_EstimatedEffort = estimatedHours;
+    m_modified = true;
+    m_estimatedEffort = estimatedHours;
 }
 
 void TaskModel::setActualEffortToDate(double effortHoursYTD)
 {
-    m_Modified = true;
-    m_ActualEffort = effortHoursYTD;
+    m_modified = true;
+    m_actualEffort = effortHoursYTD;
 }
 
 void TaskModel::setPriorityGroup(unsigned int category)
 {
-    m_Modified = true;
-    m_PriorityCategory = category;
+    m_modified = true;
+    m_priorityCategory = category;
 }
 
 void TaskModel::setPriorityGroupC(const char category)
@@ -274,32 +274,32 @@ void TaskModel::setPriorityGroupC(const char category)
 
 void TaskModel::setPriority(unsigned int priority)
 {
-    m_Modified = true;
-    m_Priority = priority;
+    m_modified = true;
+    m_priority = priority;
 }
 
 void TaskModel::setPersonal(bool personal)
 {
-    m_Modified = true;
-    m_Personal = personal;
+    m_modified = true;
+    m_personal = personal;
 }
 
 void TaskModel::addDependency(std::size_t taskId)
 {
-    m_Modified = true;
-    m_Dependencies.push_back(taskId);
+    m_modified = true;
+    m_dependencies.push_back(taskId);
 }
 
 void TaskModel::setLastUpdate(std::chrono::system_clock::time_point lastModified)
 {
-    m_Modified = true;
-    m_LastUpdate = lastModified;
+    m_modified = true;
+    m_lastUpdate = lastModified;
 }
 
 void TaskModel::setTaskID(std::size_t taskID)
 {
-    m_Modified = true;
-    m_PrimaryKey = taskID;
+    m_modified = true;
+    m_primaryKey = taskID;
 }
 
 std::string TaskModel::taskStatusString(TaskModel::TaskStatus inVal) const
@@ -317,19 +317,19 @@ TaskModel::TaskStatus TaskModel::stringToStatus(std::string statusName) const
 bool TaskModel::diffTask(TaskModel& other)
 {
     // Ignoring optional fields
-    return (m_PrimaryKey == other.m_PrimaryKey &&
-        m_Description == other.m_Description &&
-        other.m_CreatorID == m_CreatorID &&
-        m_AssignToID == other.m_AssignToID &&
-        m_DueDate == other.m_DueDate &&
-        m_PlanedStart == other.m_PlanedStart &&
-        m_PlanedStart == other.m_PlanedStart &&
-        m_ActualEffort == other.m_ActualEffort &&
-        m_PriorityCategory == other.m_PriorityCategory &&
-        m_Priority == other.m_Priority &&
-        m_Personal == other.m_Personal &&
-        m_Deleted == other.m_Deleted &&
-        m_Dependencies.size() == other.m_Dependencies.size()
+    return (m_primaryKey == other.m_primaryKey &&
+        m_description == other.m_description &&
+        other.m_creatorID == m_creatorID &&
+        m_assignToID == other.m_assignToID &&
+        m_dueDate == other.m_dueDate &&
+        m_planedStart == other.m_planedStart &&
+        m_planedStart == other.m_planedStart &&
+        m_actualEffort == other.m_actualEffort &&
+        m_priorityCategory == other.m_priorityCategory &&
+        m_priority == other.m_priority &&
+        m_personal == other.m_personal &&
+        m_deleted == other.m_deleted &&
+        m_dependencies.size() == other.m_dependencies.size()
     );
 }
 
@@ -345,23 +345,23 @@ std::string TaskModel::formatInsertStatement()
 
     initFormatOptions();
 
-    return boost::mysql::format_sql(format_opts.value(),
+    return boost::mysql::format_sql(m_formatOpts.value(),
         "CALL AddTask({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16})",
-            m_CreatorID,
-            m_AssignToID,
-            m_Description,
-            m_ParentTaskID,
+            m_creatorID,
+            m_assignToID,
+            m_description,
+            m_parentTaskID,
             getStatusIntVal(),
-            stdchronoDateToBoostMySQLDate(m_DueDate.value()),
-            stdchronoDateToBoostMySQLDate(m_PlanedStart.value()),
-            optionalDateConversion(m_ActualStart),
-            optionalDateConversion(m_EstimatedCompletion),
-            optionalDateConversion(m_Completed),
-            m_EstimatedEffort,
-            m_ActualEffort,
-            m_PriorityCategory,
-            m_Priority,
-            m_Personal,
+            stdchronoDateToBoostMySQLDate(m_dueDate.value()),
+            stdchronoDateToBoostMySQLDate(m_planedStart.value()),
+            optionalDateConversion(m_actualStart),
+            optionalDateConversion(m_estimatedCompletion),
+            optionalDateConversion(m_completed),
+            m_estimatedEffort,
+            m_actualEffort,
+            m_priorityCategory,
+            m_priority,
+            m_personal,
             dependencyCount,
             depenenciesText
     );
@@ -379,16 +379,16 @@ std::string TaskModel::formatUpdateStatement()
 
     initFormatOptions();
 
-    return boost::mysql::format_sql(format_opts.value(),
+    return boost::mysql::format_sql(m_formatOpts.value(),
         "CALL UpdateTaskAllFields({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, {18})",
-        m_PrimaryKey, m_CreatorID, m_AssignToID, m_Description, m_ParentTaskID, getStatusIntVal(),
-            stdchronoDateToBoostMySQLDate(m_DueDate.value()),
-            stdchronoDateToBoostMySQLDate(m_PlanedStart.value()),
-            optionalDateConversion(m_ActualStart),
-            optionalDateConversion(m_EstimatedCompletion),
-            optionalDateConversion(m_Completed),
-            m_EstimatedEffort, m_ActualEffort, m_PriorityCategory,m_Priority, m_Personal,
-            dependencyCount, depenenciesText, m_Deleted
+        m_primaryKey, m_creatorID, m_assignToID, m_description, m_parentTaskID, getStatusIntVal(),
+            stdchronoDateToBoostMySQLDate(m_dueDate.value()),
+            stdchronoDateToBoostMySQLDate(m_planedStart.value()),
+            optionalDateConversion(m_actualStart),
+            optionalDateConversion(m_estimatedCompletion),
+            optionalDateConversion(m_completed),
+            m_estimatedEffort, m_actualEffort, m_priorityCategory,m_priority, m_personal,
+            dependencyCount, depenenciesText, m_deleted
     );
 }
 
@@ -396,18 +396,18 @@ std::string TaskModel::formatDeleteStatement()
 {
     initFormatOptions();
 
-    return boost::mysql::format_sql(format_opts.value(), "CALL HideTask({}, {})", m_CreatorID, m_PrimaryKey);
+    return boost::mysql::format_sql(m_formatOpts.value(), "CALL HideTask({}, {})", m_creatorID, m_primaryKey);
 }
 
 void TaskModel::initRequiredFields()
 {
-    m_MissingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingDescription, this), "description"});
-    m_MissingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingCreatorID, this), "user ID for creator"});
-    m_MissingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingAssignedID, this), "user ID for assigned user"});
-    m_MissingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingEffortEstimate, this), "estimated effort in hours"});
-    m_MissingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingPriorityGroup, this), "priority"});
-    m_MissingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingScheduledStart, this), "scheduled start date"});
-    m_MissingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingDueDate, this), "due date (deadline)"});
+    m_missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingDescription, this), "description"});
+    m_missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingCreatorID, this), "user ID for creator"});
+    m_missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingAssignedID, this), "user ID for assigned user"});
+    m_missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingEffortEstimate, this), "estimated effort in hours"});
+    m_missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingPriorityGroup, this), "priority"});
+    m_missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingScheduledStart, this), "scheduled start date"});
+    m_missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingDueDate, this), "due date (deadline)"});
 }
 
 void TaskModel::addDependencies(const std::string & dependenciesText)
@@ -418,7 +418,7 @@ void TaskModel::addDependencies(const std::string & dependenciesText)
     {
         for (auto dependencyStr: dependencyStrings)
         {
-            m_Dependencies.push_back(static_cast<std::size_t>(std::stol(dependencyStr)));
+            m_dependencies.push_back(static_cast<std::size_t>(std::stol(dependencyStr)));
         }
     }
     else

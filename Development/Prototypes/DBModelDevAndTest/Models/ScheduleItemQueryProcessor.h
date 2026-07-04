@@ -39,17 +39,17 @@ private:
     TestStatus testExceptionGetScheduleItemByID() noexcept;
 
 
-    std::size_t m_UserID;
-    std::size_t m_ScheduleItemIdIdx = IndexNotSet;
-    std::size_t m_UserIdIdx = IndexNotSet;
-    std::size_t m_StartTimeIdx = IndexNotSet;
-    std::size_t m_EndTimeIdx = IndexNotSet;
-    std::size_t m_TitleIdx = IndexNotSet;
-    std::size_t m_PersonalIdx = IndexNotSet;
-    std::size_t m_LocationIdx = IndexNotSet;
-    std::size_t m_CreatedOnIdx = IndexNotSet;
-    std::size_t m_LastUpdateIdx = IndexNotSet;
-    std::size_t m_HiddenIdx = IndexNotSet;
+    std::size_t m_userID;
+    std::size_t m_scheduleItemIdIdx = IndexNotSet;
+    std::size_t m_userIdIdx = IndexNotSet;
+    std::size_t m_startTimeIdx = IndexNotSet;
+    std::size_t m_endTimeIdx = IndexNotSet;
+    std::size_t m_titleIdx = IndexNotSet;
+    std::size_t m_personalIdx = IndexNotSet;
+    std::size_t m_locationIdx = IndexNotSet;
+    std::size_t m_createdOnIdx = IndexNotSet;
+    std::size_t m_lastUpdateIdx = IndexNotSet;
+    std::size_t m_hiddenIdx = IndexNotSet;
 };
 
 #endif // SCHEDULEITEMLQUERYPROCESSOR_H_

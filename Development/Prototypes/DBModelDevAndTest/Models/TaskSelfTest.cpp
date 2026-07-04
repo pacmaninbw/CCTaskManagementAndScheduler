@@ -21,14 +21,14 @@ TaskSelfTest::TaskSelfTest()
 
 TestStatus TaskSelfTest::runSelfTest() noexcept
 {
-    m_SelfTest = true;
+    m_selfTest = true;
     TestStatus selfTestStatus = TESTPASSED;
 
-    std::cout << "\nRunning " << m_ModelName << " Self Test\n";
+    std::cout << "\nRunning " << m_modelName << " Self Test\n";
 
     if (testExceptionHandling()!= TESTPASSED)
     {
-        std::cerr  << m_ModelName << "::runSelfTest: Exception handling FAILED!\n";
+        std::cerr  << m_modelName << "::runSelfTest: Exception handling FAILED!\n";
         selfTestStatus = TESTFAILED;
     }
     
@@ -39,13 +39,13 @@ TestStatus TaskSelfTest::runSelfTest() noexcept
 
     if (testAttributeAccessFunctions() == TESTFAILED)
     {
-        std::cerr << m_ModelName << "::runSelfTest: One or more get or set functions FAILED!\n";
+        std::cerr << m_modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
         selfTestStatus = TESTFAILED;
     }
 
     if (testEqualityOperator() == TESTFAILED)
     {
-        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", m_ModelName);
+        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", m_modelName);
         selfTestStatus = TESTFAILED;
     }
 
@@ -80,15 +80,15 @@ TestStatus TaskSelfTest::runSelfTest() noexcept
         selfTestStatus = TESTFAILED;
     }
 
-    m_SelfTest = false;
+    m_selfTest = false;
     
     if (selfTestStatus == TESTPASSED)
     {
-        std::cout <<  std::format("{} Self Test {}\n", m_ModelName, "PASSED");
+        std::cout <<  std::format("{} Self Test {}\n", m_modelName, "PASSED");
     }
     else
     {
-        std::cerr <<  std::format("{} Self Test {}\n", m_ModelName, "FAILED");
+        std::cerr <<  std::format("{} Self Test {}\n", m_modelName, "FAILED");
     }
 
     return selfTestStatus;
@@ -99,24 +99,24 @@ void TaskSelfTest::selfTestResetAllValues() noexcept
 {
     ModelSelfTest::selfTestResetAllValues();
 
-    m_CreatorID = 0;
-    m_AssignToID = 0;
-    m_Description.clear();
-    m_Status.reset();
-    m_ParentTaskID.reset();
-    m_Created.reset();
-    m_DueDate.reset();
-    m_PlanedStart.reset();
-    m_ActualStart.reset();
-    m_EstimatedCompletion.reset();
-    m_Completed.reset();
-    m_EstimatedEffort = 0;
-    m_ActualEffort = 0.0;
-    m_PriorityCategory = 0;
-    m_Priority = 0;
-    m_Personal = false;
-    m_Dependencies.clear();
-    m_LastUpdate.reset();
+    m_creatorID = 0;
+    m_assignToID = 0;
+    m_description.clear();
+    m_status.reset();
+    m_parentTaskID.reset();
+    m_created.reset();
+    m_dueDate.reset();
+    m_planedStart.reset();
+    m_actualStart.reset();
+    m_estimatedCompletion.reset();
+    m_completed.reset();
+    m_estimatedEffort = 0;
+    m_actualEffort = 0.0;
+    m_priorityCategory = 0;
+    m_priority = 0;
+    m_personal = false;
+    m_dependencies.clear();
+    m_lastUpdate.reset();
 }
 
 std::vector<ExceptionTestElement> TaskSelfTest::initExceptionTests() noexcept
@@ -133,7 +133,7 @@ std::vector<ExceptionTestElement> TaskSelfTest::initExceptionTests() noexcept
 TestStatus TaskSelfTest::testExceptionInsert() noexcept
 {
     selfTestResetAllValues();
-    m_ForceException = true;
+    m_forceException = true;
 
     setCreatorID(1);
     setAssignToID(2);
@@ -163,7 +163,7 @@ TestStatus TaskSelfTest::testExceptionUpdate() noexcept
 {
     selfTestResetAllValues();
 
-    m_ForceException = true;
+    m_forceException = true;
     std::chrono::system_clock::time_point timeStamp = commonTestTimeStampValue;
 
     setTaskID(1);
@@ -195,7 +195,7 @@ TestStatus TaskSelfTest::testExceptionUpdate() noexcept
 TestStatus TaskSelfTest::testExceptionHide() noexcept
 {
     selfTestResetAllValues();
-    m_ForceException = true;
+    m_forceException = true;
 
     std::size_t creatorIDTestValue = 1;
 
@@ -287,14 +287,14 @@ TestStatus TaskSelfTest::testAllInsertFailures()
 
     setCreationDate(commonTestTimeStampValue);
     
-    if (m_VerboseOutput)
+    if (m_verboseOutput)
     {
-        std::cout << std::format("{}::{} before successful insert this = \n", m_ModelName, __func__) << *this << "\n";
+        std::cout << std::format("{}::{} before successful insert this = \n", m_modelName, __func__) << *this << "\n";
     }
 
     if (!insert())
     {
-        std::cout << "In  TaskSelfTest::testAllInsertFailures() Expected successful insert failed\n" << m_ErrorMessages << "\n";
+        std::cout << "In  TaskSelfTest::testAllInsertFailures() Expected successful insert failed\n" << m_errorMessages << "\n";
         return TESTFAILED;
     }
 
@@ -305,7 +305,7 @@ TestStatus TaskSelfTest::testEqualityOperator() noexcept
 {
     TaskModel other;
 
-    other.setTaskID(m_PrimaryKey);
+    other.setTaskID(m_primaryKey);
 
     if (*this == other)
     {
@@ -351,7 +351,7 @@ TestStatus TaskSelfTest::testTaskIdAccesss()
 {
     std::size_t testPrimaryKey = 33;
 
-    return testAccessorFunctions<std::size_t>(testPrimaryKey, &m_PrimaryKey, "Primary Key",
+    return testAccessorFunctions<std::size_t>(testPrimaryKey, &m_primaryKey, "Primary Key",
         std::bind(&TaskModel::setTaskID, this, std::placeholders::_1),
         std::bind(&TaskModel::getTaskID, this));
 }
@@ -360,7 +360,7 @@ TestStatus TaskSelfTest::testCreatorIDAccess()
 {
     std::size_t testValue = 1;
 
-    return testAccessorFunctions<std::size_t>(testValue, &m_CreatorID, "Creator User ID",
+    return testAccessorFunctions<std::size_t>(testValue, &m_creatorID, "Creator User ID",
         std::bind(&TaskModel::setCreatorID, this, std::placeholders::_1),
         std::bind(&TaskModel::getCreatorID, this));
 }
@@ -369,7 +369,7 @@ TestStatus TaskSelfTest::testAssignToIDAccess()
 {
     std::size_t testValue = 2;
 
-    return testAccessorFunctions<std::size_t>(testValue, &m_AssignToID, "Assigned User ID",
+    return testAccessorFunctions<std::size_t>(testValue, &m_assignToID, "Assigned User ID",
         std::bind(&TaskModel::setAssignToID, this, std::placeholders::_1),
         std::bind(&TaskModel::getAssignToID, this));
 }
@@ -377,7 +377,7 @@ TestStatus TaskSelfTest::testAssignToIDAccess()
 TestStatus TaskSelfTest::testDescriptionAccess()
 {
     std::string testValue("Test task description access");
-    return testAccessorFunctions<std::string>(testValue, &m_Description, "Description",
+    return testAccessorFunctions<std::string>(testValue, &m_description, "Description",
         std::bind(&TaskModel::setDescription, this, std::placeholders::_1),
         std::bind(&TaskModel::getDescription, this));
 }
@@ -389,14 +389,14 @@ TestStatus TaskSelfTest::testStatusAccess()
 
     std::cout << "Running self test on set and get functions for TaskSelfTest::status\n";
 
-    m_Modified = false;
+    m_modified = false;
     setStatus(testValue);
     if (testStatusVerifyValueAndGetStatus(testValue) == TESTFAILED)
     {
         testStatus = TESTFAILED;
     }
 
-    m_Modified = false;
+    m_modified = false;
     testValue = TaskSelfTest::TaskStatus::Complete;
     std::string statusName = taskStatusString(testValue);
     setStatus(statusName);
@@ -418,16 +418,16 @@ TestStatus TaskSelfTest::testStatusVerifyValueAndGetStatus(TaskStatus testValue)
         return TESTFAILED;
     }
 
-    if (!m_Status.has_value() || m_Status.value() != testValue)
+    if (!m_status.has_value() || m_status.value() != testValue)
     {
-        if (!m_Status.has_value())
+        if (!m_status.has_value())
         {
             std::cerr  << "In self test for: TaskSelfTest::status Set function for status FAILED to set member value\n";
         }
-        if (m_Status.value() != testValue)
+        if (m_status.value() != testValue)
         {
             std::cerr  << "In self test for: TaskSelfTest::status expected value: " << static_cast<unsigned int>(testValue)
-                        << "actual value: " << static_cast<unsigned int>(m_Status.value()) << " FAILED to set member value\n";
+                        << "actual value: " << static_cast<unsigned int>(m_status.value()) << " FAILED to set member value\n";
         }
         return TESTFAILED;
     }
@@ -456,7 +456,7 @@ TestStatus TaskSelfTest::testParentTaskIDAccess()
 
     std::cout << "Running self test on set and get functions for TaskSelfTest::parentTaskID\n";
 
-    m_Modified = false;
+    m_modified = false;
     setParentTaskID(testValue);
     if (testParentTaskIDVerifyValueAndGetParentTaskID(testValue) == TESTFAILED)
     {
@@ -466,7 +466,7 @@ TestStatus TaskSelfTest::testParentTaskIDAccess()
     testValue = 42;
     TaskModel_shp parent = std::make_shared<TaskModel>(TaskModel());
     parent->setTaskID(testValue);
-    m_Modified = false;
+    m_modified = false;
     setParentTaskID(parent);
     if (testParentTaskIDVerifyValueAndGetParentTaskID(testValue) == TESTFAILED)
     {
@@ -493,16 +493,16 @@ TestStatus TaskSelfTest::testParentTaskIDVerifyValueAndGetParentTaskID(std::size
         return TESTFAILED;
     }
 
-    if (!m_ParentTaskID.has_value() || m_ParentTaskID.value() != testValue)
+    if (!m_parentTaskID.has_value() || m_parentTaskID.value() != testValue)
     {
-        if (!m_ParentTaskID.has_value())
+        if (!m_parentTaskID.has_value())
         {
             std::cerr  << "In self test for: TaskSelfTest::parentTaskID Set function for parentTaskID FAILED to set member value\n";
         }
-        if (m_ParentTaskID.value() != testValue)
+        if (m_parentTaskID.value() != testValue)
         {
             std::cerr  << "In self test for: TaskSelfTest::parentTaskID expected value: " << testValue <<
-                "actual value: " << m_ParentTaskID.value() << " FAILED to set member value\n";
+                "actual value: " << m_parentTaskID.value() << " FAILED to set member value\n";
         }
         return TESTFAILED;
     }
@@ -520,7 +520,7 @@ TestStatus TaskSelfTest::testParentTaskIDVerifyValueAndGetParentTaskID(std::size
 TestStatus TaskSelfTest::testCreationDateAccess()
 {
     std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
-    return testTimeStampAccessorFunctions(testValue, &m_Created, "Creation TimeStamp",
+    return testTimeStampAccessorFunctions(testValue, &m_created, "Creation TimeStamp",
         std::bind(&TaskModel::setCreationDate, this, std::placeholders::_1),
         std::bind(&TaskModel::getCreationDate, this));
 }
@@ -529,7 +529,7 @@ TestStatus TaskSelfTest::testCreationDateAccess()
 TestStatus TaskSelfTest::testLastUpdateAccess()
 {
     std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
-    return testTimeStampAccessorFunctions(testValue, &m_LastUpdate, "Last Update TimeStamp",
+    return testTimeStampAccessorFunctions(testValue, &m_lastUpdate, "Last Update TimeStamp",
         std::bind(&TaskModel::setLastUpdate, this, std::placeholders::_1),
         std::bind(&TaskModel::getLastUpdate, this));
 }
@@ -537,7 +537,7 @@ TestStatus TaskSelfTest::testLastUpdateAccess()
 TestStatus TaskSelfTest::testDueDateAccess()
 {
     std::chrono::year_month_day testValue = commonTestDateValue;
-    return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &m_DueDate, "Due Date",
+    return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &m_dueDate, "Due Date",
         std::bind(&TaskModel::setDueDate, this, std::placeholders::_1),
         std::bind(&TaskModel::getDueDate, this));
 }
@@ -545,7 +545,7 @@ TestStatus TaskSelfTest::testDueDateAccess()
 TestStatus TaskSelfTest::testScheduledStartAccess()
 {
     std::chrono::year_month_day testValue = commonTestDateRangeStartValue;
-    return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &m_PlanedStart, "Scheduled Start Date",
+    return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &m_planedStart, "Scheduled Start Date",
         std::bind(&TaskModel::setScheduledStart, this, std::placeholders::_1),
         std::bind(&TaskModel::getScheduledStart, this));
 }
@@ -553,7 +553,7 @@ TestStatus TaskSelfTest::testScheduledStartAccess()
 TestStatus TaskSelfTest::testActualStartDateAccess()
 {
     std::chrono::year_month_day testValue = commonTestDateValue;
-    return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &m_ActualStart, "Actual Start Date",
+    return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &m_actualStart, "Actual Start Date",
         std::bind(&TaskModel::setactualStartDate, this, std::placeholders::_1),
         std::bind(&TaskModel::getactualStartDate, this));
 }
@@ -562,7 +562,7 @@ TestStatus TaskSelfTest::testEstimatedEffortAccess()
 {
     unsigned int testValue = 1024;
 
-    return testAccessorFunctions<unsigned int>(testValue, &m_EstimatedEffort, "Estimated Effort",
+    return testAccessorFunctions<unsigned int>(testValue, &m_estimatedEffort, "Estimated Effort",
         std::bind(&TaskModel::setEstimatedEffort, this, std::placeholders::_1),
         std::bind(&TaskModel::getEstimatedEffort, this));
 }
@@ -570,7 +570,7 @@ TestStatus TaskSelfTest::testEstimatedEffortAccess()
 TestStatus TaskSelfTest::testCompletionDateAccess()
 {
     std::chrono::year_month_day testValue = commonTestDateValue;
-    return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &m_Completed, "Completion Date",
+    return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &m_completed, "Completion Date",
         std::bind(&TaskModel::setCompletionDate, this, std::placeholders::_1),
         std::bind(&TaskModel::getCompletionDate, this));
 }
@@ -578,7 +578,7 @@ TestStatus TaskSelfTest::testCompletionDateAccess()
 TestStatus TaskSelfTest::testEstimatedCompletionAccess()
 {
     std::chrono::year_month_day testValue = commonTestDateValue;
-    return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &m_EstimatedCompletion, "Completion Date",
+    return testOptionalAccessorFunctions<std::chrono::year_month_day>(testValue, &m_estimatedCompletion, "Completion Date",
         std::bind(&TaskModel::setEstimatedCompletion, this, std::placeholders::_1),
         std::bind(&TaskModel::getEstimatedCompletion, this));
 }
@@ -586,7 +586,7 @@ TestStatus TaskSelfTest::testEstimatedCompletionAccess()
 TestStatus TaskSelfTest::testActualEffortToDateAccess()
 {
     double testValue = 752.75;
-    if (testAccessorFunctions<double>(testValue, &m_ActualEffort, "Actual Effort to date",
+    if (testAccessorFunctions<double>(testValue, &m_actualEffort, "Actual Effort to date",
         std::bind(&TaskModel::setActualEffortToDate, this, std::placeholders::_1),
         std::bind(&TaskModel::getactualEffortToDate, this)) == TESTFAILED)
     {
@@ -600,7 +600,7 @@ TestStatus TaskSelfTest::testPriorityGroupAccess()
 {
     unsigned int testValue = 3;
 
-    return testAccessorFunctions<unsigned int>(testValue, &m_PriorityCategory, "Priority Group Int Value",
+    return testAccessorFunctions<unsigned int>(testValue, &m_priorityCategory, "Priority Group Int Value",
         std::bind(&TaskModel::setPriorityGroup, this, std::placeholders::_1),
         std::bind(&TaskModel::getPriorityGroup, this));
 }
@@ -611,32 +611,32 @@ TestStatus TaskSelfTest::testPriorityGroupCAccess()
     unsigned int expectedInternalValue = testValue - 'A' + 1;
     std::string_view memberName("Priority Group Character");
 
-    std::cout << "Running self test on set and get functions for " << m_ModelName << "::" << memberName << "\n";
+    std::cout << "Running self test on set and get functions for " << m_modelName << "::" << memberName << "\n";
 
-    m_Modified = false;
+    m_modified = false;
 
     setPriorityGroupC(testValue);
     if (!isModified())
     {
-        std::cerr << "In self test for: " << m_ModelName << " set function for " << memberName << " FAILED to set modified\n";
+        std::cerr << "In self test for: " << m_modelName << " set function for " << memberName << " FAILED to set modified\n";
         return TESTFAILED;
     }
 
-    if (m_PriorityCategory != expectedInternalValue)
+    if (m_priorityCategory != expectedInternalValue)
     {
-        std::cerr  << "In self test for: " << m_ModelName << "Set function for " << memberName << " FAILED to set member value\n";
-        std::cerr << "\tExpected Value: " << expectedInternalValue << "Actual Value: " << m_PriorityCategory << "\n";
+        std::cerr  << "In self test for: " << m_modelName << "Set function for " << memberName << " FAILED to set member value\n";
+        std::cerr << "\tExpected Value: " << expectedInternalValue << "Actual Value: " << m_priorityCategory << "\n";
         return TESTFAILED;
     }
 
     if (getPriorityGroup() != expectedInternalValue)
     {
-        std::cerr  << "In self test for: " << m_ModelName << " Get function for " << memberName << " FAILED\n";
+        std::cerr  << "In self test for: " << m_modelName << " Get function for " << memberName << " FAILED\n";
         std::cerr << "\tExpected Value: " << expectedInternalValue << "Actual Value: " << getPriorityGroup() << "\n";
         return TESTFAILED;
     }
 
-    std::cout << "Self test on set and get functions for " << m_ModelName << "::" << memberName << " PASSED\n";
+    std::cout << "Self test on set and get functions for " << m_modelName << "::" << memberName << " PASSED\n";
 
     return TESTPASSED;
 }
@@ -645,7 +645,7 @@ TestStatus TaskSelfTest::testPriorityAccess()
 {
     unsigned int testValue = 5;
 
-    return testAccessorFunctions<unsigned int>(testValue, &m_Priority, "Priority",
+    return testAccessorFunctions<unsigned int>(testValue, &m_priority, "Priority",
         std::bind(&TaskModel::setPriority, this, std::placeholders::_1),
         std::bind(&TaskModel::getPriority, this));
 }
@@ -654,16 +654,16 @@ TestStatus TaskSelfTest::testPersonalAccess()
 {
     bool testValue = true;
 
-    return testAccessorFunctions<bool>(testValue, &m_Personal, "Personal",
+    return testAccessorFunctions<bool>(testValue, &m_personal, "Personal",
         std::bind(&TaskModel::setPersonal, this, std::placeholders::_1),
         std::bind(&TaskSelfTest::isPersonal, this));
 }
 
 TestStatus TaskSelfTest::testDependenciesAccess()
 {
-    m_Modified = false;
+    m_modified = false;
 
-    std::cout << "Running self test on add and get functions for " << m_ModelName << "::dependencies\n";
+    std::cout << "Running self test on add and get functions for " << m_modelName << "::dependencies\n";
 
     std::vector<std::size_t> testDependencies;
     testDependencies.push_back(1);
@@ -675,24 +675,24 @@ TestStatus TaskSelfTest::testDependenciesAccess()
         addDependency(dependency);
         if (!isModified())
         {
-            std::cerr << "In self test for: " << m_ModelName << "::addDependency()" << " FAILED to set modified\n";
+            std::cerr << "In self test for: " << m_modelName << "::addDependency()" << " FAILED to set modified\n";
             return TESTFAILED;
         }
     }
 
-    if (m_Dependencies != testDependencies)
+    if (m_dependencies != testDependencies)
     {
-        std::cerr << "Self Test for " << m_ModelName << "::addDependency()" << " FAILED to set values\n";
+        std::cerr << "Self Test for " << m_modelName << "::addDependency()" << " FAILED to set values\n";
         return TESTFAILED;
     }
 
     if (getDependencies() != testDependencies)
     {
-        std::cerr << "Self Test for " << m_ModelName << "::getDependencies()" << " FAILED to get values\n";
+        std::cerr << "Self Test for " << m_modelName << "::getDependencies()" << " FAILED to get values\n";
         return TESTFAILED;
     }
 
-    std::cout << "Self test on set and get functions for " << m_ModelName << "::dependencoies PASSED\n";
+    std::cout << "Self test on set and get functions for " << m_modelName << "::dependencoies PASSED\n";
 
     return TESTPASSED;
 }
@@ -704,27 +704,27 @@ TestStatus TaskSelfTest::testMarkComplete()
 {
     std::cout << "Running self test for TaskSelfTest::markComplete\n";
 
-    m_Modified = false;
-    m_Status.reset();
-    m_Completed.reset();
+    m_modified = false;
+    m_status.reset();
+    m_completed.reset();
 
     markComplete();
 
-    if (!m_Status.has_value() || m_Status.value() != TaskStatus::Complete)
+    if (!m_status.has_value() || m_status.value() != TaskStatus::Complete)
     {
-        if (!m_Status.has_value())
+        if (!m_status.has_value())
         {
             std::cerr  << "In self test for: TaskSelfTest::markComplete FAILED to set status member value\n";
         }
-        if (m_Status.value() != TaskStatus::Complete)
+        if (m_status.value() != TaskStatus::Complete)
         {
             std::cerr  << "In self test for: TaskSelfTest::markComplete expected value: " << static_cast<unsigned int>(TaskStatus::Complete)
-                << "actual value: " << static_cast<unsigned int>(m_Status.value()) << " FAILED to set status member value\n";
+                << "actual value: " << static_cast<unsigned int>(m_status.value()) << " FAILED to set status member value\n";
         }
         return TESTFAILED;
     }
 
-    if (!m_Completed.has_value())
+    if (!m_completed.has_value())
     {
         std::cerr  << "In self test for: TaskSelfTest::markComplete FAILED to set completionDate member value\n";
         return TESTFAILED;
@@ -738,9 +738,9 @@ TestStatus TaskSelfTest::testMarkComplete()
 TestStatus TaskSelfTest::testAddEffort()
 {
     double addedHours = 7.25;
-    double expectedHours = m_ActualEffort + addedHours;
+    double expectedHours = m_actualEffort + addedHours;
 
-    m_Modified = false;
+    m_modified = false;
     addEffortHours(addedHours);
 
     if (!isModified())
@@ -749,7 +749,7 @@ TestStatus TaskSelfTest::testAddEffort()
         return TESTFAILED;
     }
 
-    if (m_ActualEffort != expectedHours)
+    if (m_actualEffort != expectedHours)
     {
         std::cerr << "TaskSelfTest::actualEffortToDate does not show additional hours! test FAILED;\n";
         return TESTFAILED;

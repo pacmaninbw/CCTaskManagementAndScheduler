@@ -16,9 +16,9 @@ NoteSelfTest::NoteSelfTest()
 
 TestStatus NoteSelfTest::runSelfTest() noexcept
 {
-    CoreDBInterface::m_SelfTest = true;
+    CoreDBInterface::m_selfTest = true;
     TestStatus selfTestStatus = TESTPASSED;
-    std::string_view modelName(ModelDBInterface::m_ModelName);
+    std::string_view modelName(ModelDBInterface::m_modelName);
 
     std::cout << "\nRunning " << modelName << " Self Test\n";
 
@@ -76,7 +76,7 @@ TestStatus NoteSelfTest::runSelfTest() noexcept
         selfTestStatus = TESTFAILED;
     }
 
-    CoreDBInterface::m_SelfTest = false;
+    CoreDBInterface::m_selfTest = false;
     
     if (selfTestStatus == TESTPASSED)
     {
@@ -93,10 +93,10 @@ TestStatus NoteSelfTest::runSelfTest() noexcept
 void NoteSelfTest::selfTestResetAllValues() noexcept
 {
     ModelSelfTest::selfTestResetAllValues();
-    m_UserID = 0;
-    m_Content.clear();
-    m_CreationDate = {};
-    m_LastUpdate = {};
+    m_userID = 0;
+    m_content.clear();
+    m_creationDate = {};
+    m_lastUpdate = {};
 }
 
 std::vector<AttributeTestFunction> NoteSelfTest::initAttributeAccessTests() noexcept
@@ -198,14 +198,14 @@ TestStatus NoteSelfTest::testAllInsertFailures()
     expectedErrors.clear();
     clearErrorMessages();
 
-    if (m_VerboseOutput)
+    if (m_verboseOutput)
     {
-        std::cout << std::format("{}::{} before successful insert this = \n", m_ModelName, __func__) << *this << "\n";
+        std::cout << std::format("{}::{} before successful insert this = \n", m_modelName, __func__) << *this << "\n";
     }
 
     if (!insert())
     {
-        std::cout << "In  NoteSelfTest::testAllInsertFailures() Expected successful insert failed\n" << m_ErrorMessages << "\n";
+        std::cout << "In  NoteSelfTest::testAllInsertFailures() Expected successful insert failed\n" << m_errorMessages << "\n";
         return TESTFAILED;
     }
 
@@ -214,28 +214,28 @@ TestStatus NoteSelfTest::testAllInsertFailures()
 
 TestStatus NoteSelfTest::testNoteIdAccesss() noexcept
 {
-    return testAccessorFunctions<std::size_t>(27, &m_PrimaryKey, "Primary Key",
+    return testAccessorFunctions<std::size_t>(27, &m_primaryKey, "Primary Key",
         std::bind(&NoteModel::setNoteId, this, std::placeholders::_1),
         std::bind(&NoteModel::getNoteId, this));
 }
 
 TestStatus NoteSelfTest::testUserIdAccesss() noexcept
 {
-    return testAccessorFunctions<std::size_t>(31, &m_UserID, "User ID",
+    return testAccessorFunctions<std::size_t>(31, &m_userID, "User ID",
         std::bind(&NoteModel::setUserId, this, std::placeholders::_1),
         std::bind(&NoteModel::getUserId, this));
 }
 
 TestStatus NoteSelfTest::testContentAccess() noexcept
 {
-    return testAccessorFunctions<std::string>("Test note content access", &m_Content, "Content",
+    return testAccessorFunctions<std::string>("Test note content access", &m_content, "Content",
         std::bind(&NoteModel::setContent, this, std::placeholders::_1),
         std::bind(&NoteModel::getContent, this));
 }
 
 TestStatus NoteSelfTest::testDateAddedAccess() noexcept
 {
-    return testTimeStampAccessorFunctions(commonTestTimeStampValue, &m_CreationDate, "Date Added",
+    return testTimeStampAccessorFunctions(commonTestTimeStampValue, &m_creationDate, "Date Added",
         std::bind(&NoteModel::setDateAdded, this, std::placeholders::_1),
         std::bind(&NoteModel::getDateAdded, this));
 }
@@ -243,7 +243,7 @@ TestStatus NoteSelfTest::testDateAddedAccess() noexcept
 TestStatus NoteSelfTest::testLastUpdateAccess() noexcept
 {
     std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
-    return testTimeStampAccessorFunctions(testValue, &m_LastUpdate, "Date Added",
+    return testTimeStampAccessorFunctions(testValue, &m_lastUpdate, "Date Added",
         std::bind(&NoteModel::setLastModified, this, std::placeholders::_1),
         std::bind(&NoteModel::getLastModified, this));
 }
@@ -252,7 +252,7 @@ TestStatus NoteSelfTest::testEqualityOperator() noexcept
 {
     NoteModel other;
 
-    other.setNoteId(m_PrimaryKey);
+    other.setNoteId(m_primaryKey);
     if (*this == other)
     {
         return TESTFAILED;

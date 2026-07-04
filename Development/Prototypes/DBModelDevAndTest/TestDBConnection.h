@@ -33,13 +33,13 @@ private:
     boost::asio::awaitable<boost::mysql::format_options> coRoutineGetFormatOptions();
 
     std::string errorMessages;
-    boost::mysql::connect_params m_DBConnection;
+    boost::mysql::connect_params m_dbConnection;
     bool verboseOutput;
-    bool m_ForceError;
-    bool m_ForceException;
-    bool m_SelfTest;
+    bool m_forceError;
+    bool m_forceException;
+    bool m_selfTest;
     bool testProductionConnection;
-    std::optional<boost::mysql::format_options> format_opts;
+    std::optional<boost::mysql::format_options> m_formatOpts;
 
 };
 

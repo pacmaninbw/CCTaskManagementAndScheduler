@@ -72,7 +72,7 @@ TestStatus TestUserDBInterface::runPositivePathTests()
             {
                 std::cerr << "Primary key for user: " << user->getLastName() << ", " << user->getFirstName() << " not set!\n";
                 std::cerr << user->getAllErrorMessages() << "\n";
-                if (m_VerboseOutput)
+                if (m_verboseOutput)
                 {
                     std::cout << *user << "\n\n";
                 }

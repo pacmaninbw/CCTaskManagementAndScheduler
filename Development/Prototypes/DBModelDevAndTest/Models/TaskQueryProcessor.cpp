@@ -28,7 +28,7 @@ TaskModel_shp TaskQueryProcessor::getTaskByTaskID(std::size_t taskId) noexcept
     try
     {
         initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_context fctx(m_formatOpts.value());
         boost::mysql::format_sql_to(fctx, "CALL GetTaskByTaskID({})", taskId);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
@@ -49,7 +49,7 @@ TaskList TaskQueryProcessor::getTaskByDescriptionAndAssignedUser(std::string_vie
     try
     {
         initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_context fctx(m_formatOpts.value());
         boost::mysql::format_sql_to(fctx, "CALL GetTaskByDescriptionAndAssignedUser({}, {})", assignedUserID, description);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         return processResults(localResult);
@@ -70,7 +70,7 @@ TaskList TaskQueryProcessor::getActiveTasksForAssignedUser(std::size_t assignedU
     try
     {
         initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_context fctx(m_formatOpts.value());
         boost::mysql::format_sql_to(fctx, "CALL GetActiveTasksForAssignedUser({})", assignedUserID);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         return processResults(localResult);
@@ -91,7 +91,7 @@ TaskList TaskQueryProcessor::getUnstartedDueForStartForAssignedUser(std::size_t 
     try
     {
         initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_context fctx(m_formatOpts.value());
         boost::mysql::format_sql_to(fctx, "CALL GetUnstartedDueForStartForAssignedUser({}, {})",
             assignedUserID, stdchronoDateToBoostMySQLDate(getTodaysDatePlus(OneWeek)));
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
@@ -114,7 +114,7 @@ TaskList TaskQueryProcessor::getTasksCompletedByAssignedAfterDate(std::size_t as
     try
     {
         initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_context fctx(m_formatOpts.value());
         boost::mysql::format_sql_to(fctx, "CALL GetTasksCompletedByAssignedAfterDate({},{})",
         assignedUserID, stdchronoDateToBoostMySQLDate(searchStartDate));
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
@@ -136,7 +136,7 @@ TaskList TaskQueryProcessor::getTasksByAssignedIDandParentID(std::size_t assigne
     try
     {
         initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_context fctx(m_formatOpts.value());
         boost::mysql::format_sql_to(fctx, "CALL GetTasksByAssignedIDandParentID({}, {})", assignedUserID, parentID);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         return processResults(localResult);
@@ -157,7 +157,7 @@ TaskList TaskQueryProcessor::getDefaultDashboardTaskList(std::size_t assignedUse
     try
     {
         initFormatOptions();
-        boost::mysql::format_context fctx(format_opts.value());
+        boost::mysql::format_context fctx(m_formatOpts.value());
         boost::mysql::format_sql_to(fctx, "CALL GetDefaultDashboardTaskList({}, {})",
             assignedUserID, stdchronoDateToBoostMySQLDate(searchStartDate));
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
@@ -193,51 +193,51 @@ TaskModel_shp TaskQueryProcessor::processResultRow(boost::mysql::row_view &query
     std::string dependenciesText;
 
     // Required fields.
-    std::size_t taskId = queryRow.at(m_TaskIdIdx).as_uint64();
-    std::size_t creatorID = queryRow.at(m_CreatedByIdx).as_uint64();
-    std::size_t assignToID = queryRow.at(m_AssignedToIdx).as_uint64();
-    std::string description = queryRow.at(m_DescriptionIdx).as_string();
-    creationTimeStamp = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_CreatedOnIdx).as_datetime());
-    dueDate = boostMysqlDateToChronoDate(queryRow.at(m_DueDateIdx).as_date());
-    scheduledStart = boostMysqlDateToChronoDate(queryRow.at(m_PlanedStartIdx).as_date());
-    estimatedEffort = queryRow.at(m_EstEffortHoursIdx).as_uint64();
-    actualEffortToDate = queryRow.at(m_EfforToDateIdx).as_double();
-    priorityGroup = queryRow.at(m_PriorityCategoryIdx).as_uint64();
-    priority = queryRow.at(m_PriorityIdx).as_uint64();
-    personal = queryRow.at(m_PersonalIdx).as_int64();
-    lastUpdate = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_LastUpdateIdx).as_datetime());
+    std::size_t taskId = queryRow.at(m_taskIdIdx).as_uint64();
+    std::size_t creatorID = queryRow.at(m_creatorIdx).as_uint64();
+    std::size_t assignToID = queryRow.at(m_assigneeIdx).as_uint64();
+    std::string description = queryRow.at(m_descriptionIdx).as_string();
+    creationTimeStamp = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_createdIdx).as_datetime());
+    dueDate = boostMysqlDateToChronoDate(queryRow.at(m_dueDateIdx).as_date());
+    scheduledStart = boostMysqlDateToChronoDate(queryRow.at(m_planedStartIdx).as_date());
+    estimatedEffort = queryRow.at(m_estimatedEffortIdx).as_uint64();
+    actualEffortToDate = queryRow.at(m_efforToDateIdx).as_double();
+    priorityGroup = queryRow.at(m_priorityCategoryIdx).as_uint64();
+    priority = queryRow.at(m_priorityIdx).as_uint64();
+    personal = queryRow.at(m_personalIdx).as_int64();
+    lastUpdate = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_lastUpdateIdx).as_datetime());
 
 
     // Optional fields.
-    if (!queryRow.at(m_ParentIdx).is_null())
+    if (!queryRow.at(m_parentIdx).is_null())
     {
-        parentTaskID = queryRow.at(m_ParentIdx).as_uint64();
+        parentTaskID = queryRow.at(m_parentIdx).as_uint64();
     }
 
-    if (!queryRow.at(m_StatusIdx).is_null())
+    if (!queryRow.at(m_statusIdx).is_null())
     {
-        statusVal = static_cast<TaskModel::TaskStatus>(queryRow.at(m_StatusIdx).as_uint64());
+        statusVal = static_cast<TaskModel::TaskStatus>(queryRow.at(m_statusIdx).as_uint64());
     }
 
-    if (!queryRow.at(m_ActualStartIdx).is_null())
+    if (!queryRow.at(m_actualStartIdx).is_null())
     {
-        actualStartDate = boostMysqlDateToChronoDate(queryRow.at(m_ActualStartIdx).as_date());
+        actualStartDate = boostMysqlDateToChronoDate(queryRow.at(m_actualStartIdx).as_date());
     }
 
-    if (!queryRow.at(m_PlanedEndIdx).is_null())
+    if (!queryRow.at(m_planedEndIdx).is_null())
     {
-        estimatedCompletion = boostMysqlDateToChronoDate(queryRow.at(m_PlanedEndIdx).as_date());
+        estimatedCompletion = boostMysqlDateToChronoDate(queryRow.at(m_planedEndIdx).as_date());
     }
 
-    if (!queryRow.at(m_CompletedIdx).is_null())
+    if (!queryRow.at(m_completedIdx).is_null())
     {
-        completionDate = boostMysqlDateToChronoDate(queryRow.at(m_CompletedIdx).as_date());
+        completionDate = boostMysqlDateToChronoDate(queryRow.at(m_completedIdx).as_date());
     }
 
-    dependencyCount = queryRow.at(m_DependencyCountIdx).as_uint64();
+    dependencyCount = queryRow.at(m_dependencyCountIdx).as_uint64();
     if (dependencyCount > 0)
     {
-        dependenciesText = queryRow.at(m_DepenedencyListIdx).as_string();
+        dependenciesText = queryRow.at(m_depenedencyListIdx).as_string();
     }
 
     return std::make_shared<TaskModel>(taskId, creatorID, assignToID, description, statusVal, parentTaskID,
@@ -249,27 +249,27 @@ TaskModel_shp TaskQueryProcessor::processResultRow(boost::mysql::row_view &query
 
 void TaskQueryProcessor::fillRequiredIndexes()
 {
-    assignValueToIndex("TaskID", m_TaskIdIdx);
-    assignValueToIndex("CreatedBy", m_CreatedByIdx);
-    assignValueToIndex("AsignedTo", m_AssignedToIdx);
-    assignValueToIndex("Description", m_DescriptionIdx);
-    assignValueToIndex("ParentTask", m_ParentIdx);
-    assignValueToIndex("Status", m_StatusIdx);
-    assignValueToIndex("CreatedOn", m_CreatedOnIdx);
-    assignValueToIndex("RequiredDelivery", m_DueDateIdx);
-    assignValueToIndex("ScheduledStart", m_PlanedStartIdx);
-    assignValueToIndex("ActualStart", m_ActualStartIdx);
-    assignValueToIndex("EstimatedCompletion", m_PlanedEndIdx);
-    assignValueToIndex("Completed", m_CompletedIdx);
-    assignValueToIndex("EstimatedEffortHours", m_EstEffortHoursIdx);
-    assignValueToIndex("ActualEffortHours", m_EfforToDateIdx);
-    assignValueToIndex("SchedulePriorityGroup", m_PriorityCategoryIdx);
-    assignValueToIndex("PriorityInGroup", m_PriorityIdx);
-    assignValueToIndex("Personal", m_PersonalIdx);
-    assignValueToIndex("DependencyCount", m_DependencyCountIdx);
-    assignValueToIndex("Dependencies", m_DepenedencyListIdx);
-    assignValueToIndex("LastUpdateTS", m_LastUpdateIdx);
-    assignValueToIndex("Hidden", m_HiddenIdx);
+    assignValueToIndex("TaskID", m_taskIdIdx);
+    assignValueToIndex("CreatedBy", m_creatorIdx);
+    assignValueToIndex("AsignedTo", m_assigneeIdx);
+    assignValueToIndex("Description", m_descriptionIdx);
+    assignValueToIndex("ParentTask", m_parentIdx);
+    assignValueToIndex("Status", m_statusIdx);
+    assignValueToIndex("CreatedOn", m_createdIdx);
+    assignValueToIndex("RequiredDelivery", m_dueDateIdx);
+    assignValueToIndex("ScheduledStart", m_planedStartIdx);
+    assignValueToIndex("ActualStart", m_actualStartIdx);
+    assignValueToIndex("EstimatedCompletion", m_planedEndIdx);
+    assignValueToIndex("Completed", m_completedIdx);
+    assignValueToIndex("EstimatedEffortHours", m_estimatedEffortIdx);
+    assignValueToIndex("ActualEffortHours", m_efforToDateIdx);
+    assignValueToIndex("SchedulePriorityGroup", m_priorityCategoryIdx);
+    assignValueToIndex("PriorityInGroup", m_priorityIdx);
+    assignValueToIndex("Personal", m_personalIdx);
+    assignValueToIndex("DependencyCount", m_dependencyCountIdx);
+    assignValueToIndex("Dependencies", m_depenedencyListIdx);
+    assignValueToIndex("LastUpdateTS", m_lastUpdateIdx);
+    assignValueToIndex("Hidden", m_hiddenIdx);
 }
 
 std::vector<ListExceptionTestElement> TaskQueryProcessor::initListExceptionTests() noexcept

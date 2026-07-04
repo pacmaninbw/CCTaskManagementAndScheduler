@@ -73,7 +73,7 @@ bool TestTaskDBInterface::testGetTaskByDescription(TaskModel_shp insertedTask)
         else
         {
             std::cerr << "Inserted and retrieved Task are not the same! Test FAILED!\n";
-            if (m_VerboseOutput)
+            if (m_verboseOutput)
             {
                 std::cerr << "Inserted Task:\n" << *insertedTask << "\n" "Retreived Task:\n" << *retrievedTask << "\n";
             }
@@ -101,7 +101,7 @@ bool TestTaskDBInterface::testGetTaskByID(TaskModel_shp insertedTask)
         else
         {
             std::cerr << "Inserted and retrieved Task are not the same! Test FAILED!\n";
-            if (m_VerboseOutput)
+            if (m_verboseOutput)
             {
                 std::cerr << "Inserted Task:\n" << *insertedTask << "\n" "Retreived Task:\n" << *retrievedTask << "\n";
             }
@@ -199,7 +199,7 @@ TestStatus TestTaskDBInterface::testGetUnstartedTasks()
     TaskList notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(m_TestUserOne->getUserID());
     if (!notStartedList.empty())
     {    
-        if (m_VerboseOutput)
+        if (m_verboseOutput)
         {
             std::cout << std::format("Find unstarted tasks for user({}) PASSED!\n", m_TestUserOne->getUserID());
             std::cout << std::format("User {} has {} unstarted tasks\n",
@@ -234,7 +234,7 @@ TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskList()
         commonProductionTestDataAddedDate);
     if (!defaultTaskQueryProcessor.empty())
     {    
-        if (m_VerboseOutput)
+        if (m_verboseOutput)
         {
             std::cout << std::format("Find default task list for user({}) PASSED!\n", realUser->getUserID());
             std::cout << std::format("User {} dashboard has {} tasks\n", realUser->getUserID(), defaultTaskQueryProcessor.size());
@@ -259,7 +259,7 @@ TestStatus TestTaskDBInterface::testGetActiveTasks()
     TaskList activeTasks = taskDBInteface.getActiveTasksForAssignedUser(m_TestUserOne->getUserID());
     if (!activeTasks.empty())
     {    
-        if (m_VerboseOutput)
+        if (m_verboseOutput)
         {
             std::cout << std::format("Find active tasks for user({}) PASSED!\n", m_TestUserOne->getUserID());
             std::cout << std::format("User {} has {} unstarted tasks\n",
@@ -348,7 +348,7 @@ TestStatus TestTaskDBInterface::testHideUnstartedTask()
             }
         }
 
-        if (m_VerboseOutput)
+        if (m_verboseOutput)
         {
             std::cout << std::format("Task ({}) for user ({}) marked Deleted. TEST PASSED\n", taskToHide->getTaskID(), userIdForTaskDeletion);
         }
@@ -666,7 +666,7 @@ TestStatus TestTaskDBInterface::insertShouldPass(TaskModel_shp newTask)
         std::cout << newTask->getAllErrorMessages() << *newTask << "\n";
         std::cout << "Primary key for task: " << newTask->getTaskID() << ", " << newTask->getDescription() <<
         " not set!\n";
-        if (m_VerboseOutput)
+        if (m_verboseOutput)
         {
             std::cout << *newTask << "\n\n";
         }
