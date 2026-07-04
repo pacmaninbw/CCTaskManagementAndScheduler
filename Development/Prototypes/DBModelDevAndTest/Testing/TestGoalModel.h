@@ -41,8 +41,8 @@ private:
     TestStatus testMissingRequiredFieldsAddDescription(
         UserGoalModel& testGoal, std::vector<std::string>& expectedErrors);
 
-    std::vector<TestGoalInput> m_TestInput;
-    std::shared_ptr<UserModel> m_UserOne;
+    std::vector<TestGoalInput> m_testInput;
+    std::shared_ptr<UserModel> m_userOne;
 };
 
 #endif // TESTGOALMODEL_H_

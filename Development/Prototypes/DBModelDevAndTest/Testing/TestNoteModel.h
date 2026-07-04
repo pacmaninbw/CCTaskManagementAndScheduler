@@ -41,8 +41,8 @@ private:
     TestStatus testMissingRequiredFieldsAddContent(
         NoteModel& testNote, std::vector<std::string>& expectedErrors);
 
-    std::vector<TestNoteInput> m_TestInput;
-    std::shared_ptr<UserModel> m_UserOne;
+    std::vector<TestNoteInput> m_testInput;
+    std::shared_ptr<UserModel> m_userOne;
 };
 
 #endif // TESTNOTEMODEL_H_

@@ -18,16 +18,16 @@
 TestUserDBInterface::TestUserDBInterface(std::string userFileName)
 : TestDBInterfaceCore("user")
 {
-    m_DataFileName = userFileName;
+    m_dataFileName = userFileName;
     
-    m_PositiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByLoginName, this, std::placeholders::_1));
-    m_PositiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByLoginAndPassword, this, std::placeholders::_1));
-    m_PositiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByFullName, this, std::placeholders::_1));
-    m_PositiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByEmail, this, std::placeholders::_1));
-    m_PositiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testUpdateUserPassword, this, std::placeholders::_1));
+    m_positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByLoginName, this, std::placeholders::_1));
+    m_positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByLoginAndPassword, this, std::placeholders::_1));
+    m_positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByFullName, this, std::placeholders::_1));
+    m_positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testGetUserByEmail, this, std::placeholders::_1));
+    m_positiveTestFuncs.push_back(std::bind(&TestUserDBInterface::testUpdateUserPassword, this, std::placeholders::_1));
 
-    m_NegativePathTestFuncsNoArgs.push_back(std::bind(&TestUserDBInterface::testnegativePathNotModified, this));
-    m_NegativePathTestFuncsNoArgs.push_back(std::bind(&TestUserDBInterface::testNegativePathAlreadyInDataBase, this));
+    m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestUserDBInterface::testnegativePathNotModified, this));
+    m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestUserDBInterface::testNegativePathAlreadyInDataBase, this));
 }
 
 TestStatus TestUserDBInterface::runPositivePathTests()
@@ -60,7 +60,7 @@ TestStatus TestUserDBInterface::runPositivePathTests()
             // if adding the user was successful, perform other tests with the data.
             if (user->isInDataBase())
             {
-                for (auto test: m_PositiveTestFuncs)
+                for (auto test: m_positiveTestFuncs)
                 {
                     if (!test(user))
                     {
@@ -237,11 +237,11 @@ bool TestUserDBInterface::testUpdateUserPassword(UserModel_shp insertedUser)
 
 bool TestUserDBInterface::loadTestUsersFromFile(UserModelList& userProfileTestData)
 {
-    std::ifstream userData(m_DataFileName);
+    std::ifstream userData(m_dataFileName);
 
     if (!userData.is_open())
     {
-        std::cout << "Can't open \"" << m_DataFileName << "\" for input!" << std::endl;
+        std::cout << "Can't open \"" << m_dataFileName << "\" for input!" << std::endl;
         return false;
     }
     
@@ -259,7 +259,7 @@ bool TestUserDBInterface::loadTestUsersFromFile(UserModelList& userProfileTestDa
 
     if (userData.bad())
     {
-        std::cout << "Fatal error with file stream: \"" << m_DataFileName << "\"" << std::endl;
+        std::cout << "Fatal error with file stream: \"" << m_dataFileName << "\"" << std::endl;
         return false;
     }
 

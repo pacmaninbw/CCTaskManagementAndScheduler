@@ -39,25 +39,25 @@ TestNoteModel::TestNoteModel()
 
     for (auto testNote: testNoteInput)
     {
-        m_TestInput.push_back(testNote);
+        m_testInput.push_back(testNote);
     }
 
-    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathNoteInsertions, this));
-    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathNoteUpdate, this));
-    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetAllNotesForUser, this));
-    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent, this));
-    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange, this));
-    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetNotesForUserEditedDateRange, this));
-    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetDashboardNoteTable, this));
-    m_PositiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathDeleteNote, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathNoteInsertions, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathNoteUpdate, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetAllNotesForUser, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetNotesForUserEditedDateRange, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathGetDashboardNoteTable, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testPositivePathDeleteNote, this));
 
-    m_NegativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::negativePathMissingRequiredFields, this));
-    m_NegativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testnegativePathNotModified, this));
-    m_NegativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testNegativePathAlreadyInDataBase, this));
+    m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::negativePathMissingRequiredFields, this));
+    m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testnegativePathNotModified, this));
+    m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testNegativePathAlreadyInDataBase, this));
 
     UserQueryProcessor userQueryProcessor;
-    m_UserOne = userQueryProcessor.getUserByFullName("One", "User", "P");
-    if (m_UserOne == nullptr || !m_UserOne->isInDataBase())
+    m_userOne = userQueryProcessor.getUserByFullName("One", "User", "P");
+    if (m_userOne == nullptr || !m_userOne->isInDataBase())
     {
         std::cerr << std::format("Failed to find userOne in DB! : {}\n", userQueryProcessor.getAllErrorMessages());
     }
@@ -66,7 +66,7 @@ TestNoteModel::TestNoteModel()
 TestStatus TestNoteModel::testInsertNote(TestNoteInput testNote)
 {
     NoteModel newNote;
-    newNote.setUserId(m_UserOne->getUserID());
+    newNote.setUserId(m_userOne->getUserID());
     newNote.setContent(testNote.content);
     newNote.setDateAdded(commonTestTimeStampValue);
     newNote.setLastModified(commonTestTimeStampValue);
@@ -85,7 +85,7 @@ TestStatus TestNoteModel::testPositivePathNoteInsertions()
 {
     TestStatus testStatus = TESTPASSED;
 
-    for (auto testNote: m_TestInput)
+    for (auto testNote: m_testInput)
     {
         TestStatus currentResult = testInsertNote(testNote);
         if (testStatus == TESTPASSED)
@@ -106,7 +106,7 @@ TestStatus TestNoteModel::testPositivePathNoteUpdate()
 {
     std::string searchString("Be more organized");
     NoteQueryProcessor NoteQueryProcessorTestInterface;
-    NoteList allSimilarUserNotes = NoteQueryProcessorTestInterface.getNotesForUserSimlarToContent(m_UserOne->getUserID(), searchString);
+    NoteList allSimilarUserNotes = NoteQueryProcessorTestInterface.getNotesForUserSimlarToContent(m_userOne->getUserID(), searchString);
 
     if (allSimilarUserNotes.empty())
     {
@@ -136,7 +136,7 @@ TestStatus TestNoteModel::testPositivePathNoteUpdate()
 TestStatus TestNoteModel::testPositivePathGetAllNotesForUser()
 {
     NoteQueryProcessor NoteQueryProcessorTestInterface;
-    NoteList allUserNotes = NoteQueryProcessorTestInterface.getAllNotesForUser(m_UserOne->getUserID());
+    NoteList allUserNotes = NoteQueryProcessorTestInterface.getAllNotesForUser(m_userOne->getUserID());
 
     if (allUserNotes.empty())
     {
@@ -147,8 +147,8 @@ TestStatus TestNoteModel::testPositivePathGetAllNotesForUser()
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all notes for user ({}) PASSED!\n", m_UserOne->getUserID());
-        std::cout << std::format("User {} has {} notes\n", m_UserOne->getUserID(), allUserNotes.size());
+        std::cout << std::format("Find all notes for user ({}) PASSED!\n", m_userOne->getUserID());
+        std::cout << std::format("User {} has {} notes\n", m_userOne->getUserID(), allUserNotes.size());
         for (auto note: allUserNotes)
         {
             std::cout << *note << "\n";
@@ -162,7 +162,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent()
 {
     std::string searchString("Maintain");
     NoteQueryProcessor NoteQueryProcessorTestInterface;
-    NoteList allSimilarUserNotes = NoteQueryProcessorTestInterface.getNotesForUserSimlarToContent(m_UserOne->getUserID(), searchString);
+    NoteList allSimilarUserNotes = NoteQueryProcessorTestInterface.getNotesForUserSimlarToContent(m_userOne->getUserID(), searchString);
 
     if (allSimilarUserNotes.empty())
     {
@@ -173,8 +173,8 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent()
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all notes for user ({}) similar to {} PASSED!\n", m_UserOne->getUserID(), searchString);
-        std::cout << std::format("User {} has {} notes\n", m_UserOne->getUserID(), allSimilarUserNotes.size());
+        std::cout << std::format("Find all notes for user ({}) similar to {} PASSED!\n", m_userOne->getUserID(), searchString);
+        std::cout << std::format("User {} has {} notes\n", m_userOne->getUserID(), allSimilarUserNotes.size());
         for (auto note: allSimilarUserNotes)
         {
             std::cout << *note << "\n";
@@ -190,7 +190,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange()
     std::chrono::year_month_day endDate = getTodaysDatePlus(OneWeek);
 
     NoteQueryProcessor NoteQueryProcessorTestInterface;
-    NoteList allNotesInRange = NoteQueryProcessorTestInterface.getAllNotesForUserCreatedInDatgeRange(m_UserOne->getUserID(), startDate, endDate);
+    NoteList allNotesInRange = NoteQueryProcessorTestInterface.getAllNotesForUserCreatedInDatgeRange(m_userOne->getUserID(), startDate, endDate);
 
     if (allNotesInRange.empty())
     {
@@ -201,8 +201,8 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange()
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all notes for user ({}) created in date range PASSED!\n", m_UserOne->getUserID());
-        std::cout << std::format("User {} has {} notes\n", m_UserOne->getUserID(), allNotesInRange.size());
+        std::cout << std::format("Find all notes for user ({}) created in date range PASSED!\n", m_userOne->getUserID());
+        std::cout << std::format("User {} has {} notes\n", m_userOne->getUserID(), allNotesInRange.size());
         for (auto note: allNotesInRange)
         {
             std::cout << *note << "\n";
@@ -218,7 +218,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserEditedDateRange()
     std::chrono::year_month_day endDate = getTodaysDatePlus(OneWeek);
 
     NoteQueryProcessor NoteQueryProcessorTestInterface;
-    NoteList allNotesInRange = NoteQueryProcessorTestInterface.getAllNotesForUserEditedInDatgeRange(m_UserOne->getUserID(), startDate, endDate);
+    NoteList allNotesInRange = NoteQueryProcessorTestInterface.getAllNotesForUserEditedInDatgeRange(m_userOne->getUserID(), startDate, endDate);
 
     if (allNotesInRange.empty())
     {
@@ -229,8 +229,8 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserEditedDateRange()
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all notes for user ({}) edited in date range PASSED!\n", m_UserOne->getUserID());
-        std::cout << std::format("User {} has {} notes\n", m_UserOne->getUserID(), allNotesInRange.size());
+        std::cout << std::format("Find all notes for user ({}) edited in date range PASSED!\n", m_userOne->getUserID());
+        std::cout << std::format("User {} has {} notes\n", m_userOne->getUserID(), allNotesInRange.size());
         for (auto note: allNotesInRange)
         {
             std::cout << *note << "\n";
@@ -245,7 +245,7 @@ TestStatus TestNoteModel::testPositivePathGetDashboardNoteTable()
     std::chrono::year_month_day searchDate = getTodaysDate();
 
     NoteQueryProcessor NoteQueryProcessorTestInterface;
-    NoteList allNotesInRange = NoteQueryProcessorTestInterface.getDashboardNoteTable(m_UserOne->getUserID(), searchDate);
+    NoteList allNotesInRange = NoteQueryProcessorTestInterface.getDashboardNoteTable(m_userOne->getUserID(), searchDate);
 
     if (allNotesInRange.empty())
     {
@@ -256,8 +256,8 @@ TestStatus TestNoteModel::testPositivePathGetDashboardNoteTable()
 
     if (programOptions.verboseOutput)
     {
-        std::cout << std::format("Find all notes for user ({}) for a date PASSED!\n", m_UserOne->getUserID());
-        std::cout << std::format("User {} has {} notes\n", m_UserOne->getUserID(), allNotesInRange.size());
+        std::cout << std::format("Find all notes for user ({}) for a date PASSED!\n", m_userOne->getUserID());
+        std::cout << std::format("User {} has {} notes\n", m_userOne->getUserID(), allNotesInRange.size());
         for (auto note: allNotesInRange)
         {
             std::cout << *note << "\n";
@@ -273,7 +273,7 @@ TestStatus TestNoteModel::testPositivePathDeleteNote()
 
     std::chrono::year_month_day testDate(constantStringToChronoDate("2026-03-08"));
     NoteQueryProcessor NoteQueryProcessorTestInterface;
-    NoteList testNoteQueryProcessor = NoteQueryProcessorTestInterface.getAllNotesForUser(m_UserOne->getUserID());
+    NoteList testNoteQueryProcessor = NoteQueryProcessorTestInterface.getAllNotesForUser(m_userOne->getUserID());
     if (testNoteQueryProcessor.empty())
     {
         std::cerr << std::format("{}: {} {} FAILED\n", funcUnderTest, "userOne schedule is empty", NoteQueryProcessorTestInterface.getAllErrorMessages());
@@ -282,9 +282,9 @@ TestStatus TestNoteModel::testPositivePathDeleteNote()
 
     std::size_t itemToHideIndex = testNoteQueryProcessor.size() > 3? testNoteQueryProcessor.size() - 2 : testNoteQueryProcessor.size() - 1;
     NoteModel_shp noteToHide = testNoteQueryProcessor[itemToHideIndex];
-    if (!noteToHide->hide(m_UserOne->getUserID()))
+    if (!noteToHide->hide(m_userOne->getUserID()))
     {
-        std::cerr << std::format("itemToHide->hide({}) FAILED!", m_UserOne->getUserID()) << noteToHide->getAllErrorMessages() << "\n";
+        std::cerr << std::format("itemToHide->hide({}) FAILED!", m_userOne->getUserID()) << noteToHide->getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 
@@ -295,7 +295,7 @@ TestStatus TestNoteModel::testPositivePathDeleteNote()
         return TESTFAILED;
     }
 
-    NoteList alteredList = NoteQueryProcessorTestInterface.getAllNotesForUser(m_UserOne->getUserID());
+    NoteList alteredList = NoteQueryProcessorTestInterface.getAllNotesForUser(m_userOne->getUserID());
     if (!(alteredList.size() < testNoteQueryProcessor.size()))
     {
         std::cerr << std::format("Deleted note ({}) did not decrease the size of the user note list. TEST FAILED\n",
@@ -316,7 +316,7 @@ TestStatus TestNoteModel::testPositivePathDeleteNote()
     {
         std::cout << "Original note list size: " << testNoteQueryProcessor.size() << " Altered schedule size: " << alteredList.size() << "\n";
         std::cout << std::format("note ({}) for user ({}) marked Deleted. TEST PASSED\n",
-            noteToHide->getNoteId(), m_UserOne->getUserID());
+            noteToHide->getNoteId(), m_userOne->getUserID());
     }
 
     return TESTPASSED;
@@ -403,7 +403,7 @@ TestStatus TestNoteModel::testMissingRequiredFieldsAddUserID(
         testInsertionFailureMessages(&testNote, expectedErrors);
 
     expectedErrors.erase(expectedErrors.begin());
-    testNote.setUserId(m_UserOne->getUserID());
+    testNote.setUserId(m_userOne->getUserID());
 
     return testStatus;
 }

@@ -13,13 +13,13 @@
 
 TestDBInterfaceCore::TestDBInterfaceCore(std::string_view modelName)
 : m_verboseOutput{programOptions.verboseOutput},
-  m_ModelUnderTest{modelName}
+  m_modelUnderTest{modelName}
 {
 }
 
 TestStatus TestDBInterfaceCore::runAllTests()
 {
-    std::cout << std::format("\nRunning {} Integration Tests\n", m_ModelUnderTest);
+    std::cout << std::format("\nRunning {} Integration Tests\n", m_modelUnderTest);
     
     TestStatus positivePathPassed = runPositivePathTests();
     TestStatus negativePathPassed = runNegativePathTests();
@@ -36,7 +36,7 @@ TestStatus TestDBInterfaceCore::runNegativePathTests()
 {
     TestStatus allTestPassed = TESTPASSED;
 
-    for (auto test: m_NegativePathTestFuncsNoArgs)
+    for (auto test: m_negativePathTestFuncsNoArgs)
     {
         TestStatus testResult = test();
         if (allTestPassed == TESTPASSED)
@@ -54,7 +54,7 @@ TestStatus TestDBInterfaceCore::runPositivePathTests()
 {
     TestStatus allTestPassed = TESTPASSED;
 
-    for (auto test: m_PositiviePathTestFuncsNoArgs)
+    for (auto test: m_positiviePathTestFuncsNoArgs)
     {
         TestStatus testResult = test();
         if (allTestPassed == TESTPASSED)
@@ -136,13 +136,13 @@ void TestDBInterfaceCore::reportTestStatus(TestStatus status, std::string_view p
     {
         std::cout << std::format(
             "All {} path tests for database insertions and retrievals of {} {}!\n",
-            path, m_ModelUnderTest, statusStr);
+            path, m_modelUnderTest, statusStr);
     }
     else
     {
         std::cout << std::format(
             "All tests for database insertions and retrievals of {} {}!\n",
-            m_ModelUnderTest, statusStr);
+            m_modelUnderTest, statusStr);
 
     }
 }

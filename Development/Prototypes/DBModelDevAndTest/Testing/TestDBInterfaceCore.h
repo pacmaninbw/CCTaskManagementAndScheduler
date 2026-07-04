@@ -35,9 +35,9 @@ protected:
     void reportTestStatus(TestStatus status, std::string_view path);
 
     bool m_verboseOutput;
-    std::string_view m_ModelUnderTest;
-    std::vector<std::function<TestStatus(void)>> m_NegativePathTestFuncsNoArgs;
-    std::vector<std::function<TestStatus(void)>> m_PositiviePathTestFuncsNoArgs;
+    std::string_view m_modelUnderTest;
+    std::vector<std::function<TestStatus(void)>> m_negativePathTestFuncsNoArgs;
+    std::vector<std::function<TestStatus(void)>> m_positiviePathTestFuncsNoArgs;
 };
 
 #endif  // TESTDBINTERFACECORE_H_
