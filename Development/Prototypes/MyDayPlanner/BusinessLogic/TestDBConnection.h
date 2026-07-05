@@ -35,7 +35,7 @@ private:
 
     std::string errorMessages;
     boost::mysql::connect_params dbConnectionParameters;
-    bool verboseOutput;
+    bool m_qt_verboseOutput;
     bool forceError;
     bool forceException;
     bool inSelfTest;

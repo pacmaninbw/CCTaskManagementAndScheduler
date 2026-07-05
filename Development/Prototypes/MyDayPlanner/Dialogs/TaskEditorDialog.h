@@ -37,13 +37,16 @@ public Q_SLOTS:
     void accept() override;
 
 private Q_SLOTS:
-    void on_m_qt_PersonalCB_stateChanged(int newState);
-    void on_m_qt_SelectParentPB_Clicked();
-    void on_m_qt_AddDependenciesPB_Clicked();
-    void on_m_qt_ChangeAssignedUserPB_Clicked();
-    void on_m_qt_StatusSelectorCBChanged(int index);
+    void handlePersonalStateChanged(int newState);
+    void handleSelectParent_Clicked();
+    void handleAddDependencies_Clicked();
+    void handleChangeAssignedUser_Clicked();
+    void handleStatusChanged(int index);
 
 private:
+    const int TaskDescriptionTEWidth = 700;
+    const int TaskDescriptionTEHeight = 60;
+
     virtual void createSharedPtrDBModelForAddObject() override;
     virtual void transferEditorValuesToDBModel() override;
     virtual void transferDBModelDataToEditorFields() override;
@@ -69,49 +72,46 @@ private:
     void transferEffortToModel();
     void transferPriorityToModel();
 
-    std::shared_ptr<UserModel> m_Creator;
-    std::shared_ptr<UserModel> m_Assignee;
-    std::shared_ptr<TaskModel> m_ParentTaskData;
+    std::shared_ptr<UserModel> m_creator;
+    std::shared_ptr<UserModel> m_assignee;
+    std::shared_ptr<TaskModel> m_parentTaskData;
     bool m_parentTaskUpdated;
 
-    QGroupBox* m_qt_CreatorGB = nullptr;
-    QFormLayout* m_qt_CreatorForm = nullptr;
-    QLineEdit* m_qt_CreatorFirstNameDisplay = nullptr;
-    QLineEdit* m_qt_CreatorLastNameDisplay = nullptr;
-    QGroupBox* m_qt_AssignedToGB = nullptr;
-    QFormLayout* m_qt_AssigneeForm = nullptr;
-    QLineEdit* m_qt_AssignedToFirstNameDisplay = nullptr;
-    QLineEdit* m_qt_AssignedToLastName = nullptr;
-    QPushButton* m_qt_ChangeAssignedUserPB = nullptr;
-    QGroupBox* m_qt_DescriptionAndStatusGB = nullptr;
-    QFormLayout* m_qt_DescriptionAndStatusForm = nullptr;
-    QPlainTextEdit* m_qt_DescriptionTE = nullptr;
-    QComboBox* m_qt_StatusSelectorCB = nullptr;
-    QGroupBox* m_qt_ParentTaskGB = nullptr;
-    QFormLayout* m_qt_ParentForm = nullptr;
-    QLineEdit* m_qt_ParentTaskDescriptionDisplay = nullptr;
-    QPushButton* m_qt_SelectParentPB = nullptr;
-    QGroupBox* m_qt_DatesGB = nullptr;
-    QFormLayout* m_qt_DatesForm = nullptr;
-    QDateEdit* m_qt_DueDateSelectorDE = nullptr;
-    QDateEdit* m_qt_ScheduledStartDE = nullptr;
-    QDateEdit* m_qt_ExpectedCompletionDE = nullptr;
-    QGroupBox* m_qt_EffortGB = nullptr;
-    QFormLayout* m_qt_EffortForm = nullptr;
-    QLineEdit* m_qt_EstimatedEffortLE = nullptr;
-    QLineEdit* m_qt_ActualEffortLE = nullptr;
-    QGroupBox* m_qt_PrioritiesGB = nullptr;
-    QFormLayout* m_qt_PrioritiesForm = nullptr;
-    QLineEdit* m_qt_PriorityGroupLE = nullptr;
-    QLineEdit* m_qt_PriorityLE = nullptr;
-    QCheckBox* m_qt_PersonalCB = nullptr;
-    QPushButton* m_qt_AddDependenciesPB = nullptr;
-    QHBoxLayout* m_qt_UserSectionLayout = nullptr;
-    QHBoxLayout* m_qt_DateAndRelatedTasksSection = nullptr;
-    QHBoxLayout* m_qt_EfforAndPrioritySectionLayout = nullptr;
-
-    const int taskDescriptionTEWidth = 700;
-    const int taskDescriptionTEHeight = 60;
+    QGroupBox* m_qt_creatorGroup = nullptr;
+    QFormLayout* m_qt_creatorForm = nullptr;
+    QLineEdit* m_qt_creatorFirstName = nullptr;
+    QLineEdit* m_qt_creatorLastName = nullptr;
+    QGroupBox* m_qt_assignedToGB = nullptr;
+    QFormLayout* m_qt_assigneeForm = nullptr;
+    QLineEdit* m_qt_assignedToFirstName = nullptr;
+    QLineEdit* m_qt_assignedToLastName = nullptr;
+    QPushButton* m_qt_changeAssignedUser = nullptr;
+    QGroupBox* m_qt_descriptionAndStatus = nullptr;
+    QFormLayout* m_qt_descriptionAndStatusForm = nullptr;
+    QPlainTextEdit* m_qt_description = nullptr;
+    QComboBox* m_qt_statusSelector = nullptr;
+    QGroupBox* m_qt_parentTaskGroup = nullptr;
+    QFormLayout* m_qt_parentForm = nullptr;
+    QLineEdit* m_qt_parentTaskDescription = nullptr;
+    QPushButton* m_qt_selectParent = nullptr;
+    QGroupBox* m_qt_dates = nullptr;
+    QFormLayout* m_qt_datesForm = nullptr;
+    QDateEdit* m_qt_dueDate = nullptr;
+    QDateEdit* m_qt_scheduledStart = nullptr;
+    QDateEdit* m_qt_expectedCompletion = nullptr;
+    QGroupBox* m_qt_effortGB = nullptr;
+    QFormLayout* m_qt_effortForm = nullptr;
+    QLineEdit* m_qt_estimatedEffort = nullptr;
+    QLineEdit* m_qt_actualEffort = nullptr;
+    QGroupBox* m_qt_priorities = nullptr;
+    QFormLayout* m_qt_prioritiesForm = nullptr;
+    QLineEdit* m_qt_priorityCategory = nullptr;
+    QLineEdit* m_qt_priority = nullptr;
+    QCheckBox* m_qt_personal = nullptr;
+    QPushButton* m_qt_addDependencies = nullptr;
+    QHBoxLayout* m_qt_userSection = nullptr;
+    QHBoxLayout* m_qt_dateAndRelatedTasks = nullptr;
+    QHBoxLayout* m_qt_efforAndPriority = nullptr;
 };
 
 #endif // TASKEDITORDIALOG_H_

@@ -51,13 +51,13 @@ private:
     void setUserDay(std::chrono::year_month_day scheduleDate);
     bool hasNoTimeConflicts(std::chrono::system_clock::time_point proposedStartTime);
     void addBlankHoursForDisplay();
-    std::size_t m_UserID;
-    std::vector<std::shared_ptr<ScheduleItemModel>> m_Data;
-    QDate m_DateOfSchedule;
-    std::chrono::system_clock::time_point m_UserStartDay;
-    std::chrono::system_clock::time_point m_UserEndDay;
-    std::chrono::year_month_day m_ChronDateOfSchedule;
-    std::vector<std::shared_ptr<ScheduleItemModel>> m_ScheduledItems;
+    std::size_t m_userID;
+    std::vector<std::shared_ptr<ScheduleItemModel>> m_data;
+    QDate m_dateOfSchedule;
+    std::chrono::system_clock::time_point m_userStartDay;
+    std::chrono::system_clock::time_point m_userEndDay;
+    std::chrono::year_month_day m_chronoDateOfSchedule;
+    std::vector<std::shared_ptr<ScheduleItemModel>> m_scheduledItems;
 };
 
 #endif // GUIDASHBOARDSCHEDULETABLE_H_

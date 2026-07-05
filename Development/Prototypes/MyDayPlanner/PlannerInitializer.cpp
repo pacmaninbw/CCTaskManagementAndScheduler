@@ -14,7 +14,7 @@
 #include <string>
 
 PlannerInitializer::PlannerInitializer(int argc, char *argv[])
-: loggedInUser{nullptr}
+: m_loggedInUser{nullptr}
 {
     if (!argc)
     {
@@ -42,7 +42,7 @@ void PlannerInitializer::getProgramOptions()
 
 std::shared_ptr<UserModel> PlannerInitializer::getUserDataWhenLoginAvailable()
 {
-    return loggedInUser;
+    return m_loggedInUser;
 }
 
 void PlannerInitializer::getEnvironmentVariables()
@@ -105,7 +105,7 @@ bool PlannerInitializer::attemptUserLogin(std::string loginName, std::string pas
         retrievedUser->setLastLogin(std::chrono::system_clock::now());
         if (retrievedUser->update())
         {
-            loggedInUser = retrievedUser;
+            m_loggedInUser = retrievedUser;
             loginSuccessful = true;
         }
         else

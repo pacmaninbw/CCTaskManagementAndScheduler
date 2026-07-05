@@ -40,26 +40,26 @@ private:
     std::string makeEnvironmentVariableName(std::string vName);
     void checkEnvironmentVariables();
     
-    const int maxQLineEditCharCount = 40;
-    const int marginAndSpacing = 30;
-    int maxGroupBoxHeight;
-    int maxButtonBoxHeight;
+    const int MaxQLineEditCharCount = 40;
+    const int MarginAndSpacing = 30;
+    int m_maxGroupBoxHeight;
+    int m_maxButtonBoxHeight;
 
-    QVBoxLayout* m_qt_DialogLayout = nullptr;
-    QGroupBox* m_qt_ConnectionsGB = nullptr;
-    QFormLayout* m_qt_GBFormLayout = nullptr;
-    QLineEdit* m_qt_MySqlUser = nullptr;
-    QLineEdit* m_qt_MySqlPassword = nullptr;
-    QLineEdit* m_qt_MySqlUrl = nullptr;
-    QLineEdit* m_qt_MySqlPort = nullptr;
-    QLineEdit* m_qt_MySqlDBName = nullptr;
-    QDialogButtonBox* dbConnectionsButtonBox = nullptr;
-    QGroupBox* optionsGB = nullptr;
-    QFormLayout* optionsFormLayout = nullptr;
-    QCheckBox* verboseOutput = nullptr;
-    QCheckBox* runSelftTest = nullptr;
-    QCheckBox* forceErrors = nullptr;
-    QCheckBox* forceExceptions = nullptr;
+    QVBoxLayout* m_qt_dialogLayout = nullptr;
+    QGroupBox* m_qt_connectionsGB = nullptr;
+    QFormLayout* m_qt_groupBoxFormLayout = nullptr;
+    QLineEdit* m_qt_mySqlUser = nullptr;
+    QLineEdit* m_qt_mySqlPassword = nullptr;
+    QLineEdit* m_qt_mySqlUrl = nullptr;
+    QLineEdit* m_qt_mySqlPort = nullptr;
+    QLineEdit* m_qt_mySqlDBName = nullptr;
+    QDialogButtonBox* m_qt_buttonBox = nullptr;
+    QGroupBox* m_qt_optionsGB = nullptr;
+    QFormLayout* m_qt_optionsFormLayout = nullptr;
+    QCheckBox* m_qt_verboseOutput = nullptr;
+    QCheckBox* m_qt_runSelftTest = nullptr;
+    QCheckBox* m_qt_forceErrors = nullptr;
+    QCheckBox* m_qt_forceExceptions = nullptr;
 };
 
 #endif // DATABASECONNECTIONDIALOG_H_

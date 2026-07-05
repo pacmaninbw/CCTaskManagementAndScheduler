@@ -31,31 +31,32 @@ private Q_SLOTS:
     void handleParentTaskTableClicked(const QModelIndex &index);
 
 private:
+    const int DefaultDialogWidth = 700;
+    const int DefaultDialogHeight = 450;
+    const int MinimumGroupBoxWidth = 320;
+    const int MinimumGroupBoxHeight = 220;
+    const int MaximumGroupBoxWidth = 920;
+    const int MaximumGroupBoxHeight = 520;
+    const int ParentTableMargin = 10;
+    const int MarginAllowance = ParentTableMargin  * 2;
+    const int MinimumTableViewWidth = MinimumGroupBoxWidth - MarginAllowance;
+    const int MinimumTableViewHeight = MinimumGroupBoxHeight - MarginAllowance;
+    const int MaximumTableViewWidth = MaximumGroupBoxWidth - MarginAllowance;
+    const int MaximumTableViewHeight = MaximumGroupBoxHeight - MarginAllowance;
+
     QGroupBox* setUpGroupBox();
     QDialogButtonBox* setUpDialogButtons();
     QTableView* setUpParentTaskView();
     QAbstractTableModel* setUpParentTaskTable();
-    QVBoxLayout* m_qt_SelectParentDialogLayout = nullptr;
-    QDialogButtonBox* m_qt_ButtonBox = nullptr;
-    QGroupBox* m_qt_SelectParentGB = nullptr;
-    QFormLayout* m_qt_SelectParentGBLayout = nullptr;
-    QTableView* m_qt_SelectParentTableView = nullptr;
 
-    std::size_t m_ParentTaskID;
-    std::size_t m_CreatorID;
+    QVBoxLayout* m_qt_selectParentDialogLayout = nullptr;
+    QDialogButtonBox* m_qt_buttonBox = nullptr;
+    QGroupBox* m_qt_selectParentGB = nullptr;
+    QFormLayout* m_qt_selectParentGBLayout = nullptr;
+    QTableView* m_qt_selectParentTableView = nullptr;
 
-    const int defaultDialogWidth = 700;
-    const int defaultDialogHeight = 450;
-    const int minimumGroupBoxWidth = 320;
-    const int minimumGroupBoxHeight = 220;
-    const int maximumGroupBoxWidth = 920;
-    const int maximumGroupBoxHeight = 520;
-    const int parentTableMargin = 10;
-    const int marginAllowance = parentTableMargin  * 2;
-    const int minimumTableViewWidth = minimumGroupBoxWidth - marginAllowance;
-    const int minimumTableViewHeight = minimumGroupBoxHeight - marginAllowance;
-    const int maximumTableViewWidth = maximumGroupBoxWidth - marginAllowance;
-    const int maximumTableViewHeight = maximumGroupBoxHeight - marginAllowance;
+    std::size_t m_parentTaskId;
+    std::size_t m_creatorId;
 };
 
 #endif // SELECTTASKPARENTDIALOG_H_

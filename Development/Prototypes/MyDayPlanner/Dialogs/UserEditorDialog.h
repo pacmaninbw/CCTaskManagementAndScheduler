@@ -32,6 +32,10 @@ public Q_SLOTS:
     void accept() override;
 
 private:
+    const int GroupBoxSpacing = 60;
+    const int EmailWidth = 300;
+    const int EmailCharCount = 50;
+
     void setUpUserEditorDialogUi();
     QGroupBox* setUpUserProfileGB();
     QGroupBox* setUpLoginDataGB();
@@ -41,28 +45,22 @@ private:
     bool upDateUser();
     void transferAllFieldsToData();
 
-// Model related variables
-    std::size_t m_UserID;
-    std::shared_ptr<UserModel> m_UserData;
+    std::size_t m_userID;
+    std::shared_ptr<UserModel> m_userData;
 
-// QT Widgets
-    QDialogButtonBox* m_qt_ButtonBox = nullptr;
-    QVBoxLayout* m_qt_EditorLayout = nullptr;
-    QGroupBox* m_qt_UserProfileGB = nullptr;
-    QFormLayout* m_qt_UserProfileForm = nullptr;
-    QLineEdit* m_qt_FirstName = nullptr;
-    QLineEdit* m_qt_LastName = nullptr;
-    QLineEdit* m_qt_MiddleName = nullptr;
-    QLineEdit* m_qt_Email = nullptr;
-    QGroupBox* m_qt_LoginGB = nullptr;
-    QFormLayout* m_qt_LoginForm = nullptr;
-    QLineEdit* m_qt_UserName = nullptr;
-    QLineEdit* m_qt_Password = nullptr;
-    QCheckBox* m_qt_AutoGenerateLoginAndPassword = nullptr;
-
-    const int groupBoxSpacing = 60;
-    const int emailWidth = 300;
-    const int emailCharCount = 50;
+    QDialogButtonBox* m_qt_buttonBox = nullptr;
+    QVBoxLayout* m_qt_editorLayout = nullptr;
+    QGroupBox* m_qt_userProfile = nullptr;
+    QFormLayout* m_qt_userProfileForm = nullptr;
+    QLineEdit* m_qt_firstName = nullptr;
+    QLineEdit* m_qt_lastName = nullptr;
+    QLineEdit* m_qt_middleName = nullptr;
+    QLineEdit* m_qt_email = nullptr;
+    QGroupBox* m_qt_login = nullptr;
+    QFormLayout* m_qt_loginForm = nullptr;
+    QLineEdit* m_qt_userName = nullptr;
+    QLineEdit* m_qt_password = nullptr;
+    QCheckBox* m_qt_autoGenerateLoginAndPassword = nullptr;
 };
 
 #endif // USEREDITORDIALOG_H_

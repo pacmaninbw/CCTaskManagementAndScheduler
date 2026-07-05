@@ -34,7 +34,7 @@ protected:
     virtual void setUpWindowContentAndActions() override;
     void tableViewReset(QTableView* tableView);
 
-    GuiDashboardTaskTable* m_TodoTable = nullptr;
+    GuiDashboardTaskTable* m_todoTable = nullptr;
 };
 
 #endif // TODOWINDOW_H_

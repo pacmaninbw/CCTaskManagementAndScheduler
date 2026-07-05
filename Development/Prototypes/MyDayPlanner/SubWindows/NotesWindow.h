@@ -35,7 +35,7 @@ protected:
     void tableViewReset(QTableView* tableView);
     DashboardNoteTable* createTable();
 
-    DashboardNoteTable* m_NoteTable = nullptr;
+    DashboardNoteTable* m_noteTable = nullptr;
 };
 
 #endif // NOTESWINDOW_H_

@@ -22,7 +22,7 @@ class DefaultGoalDisplayTable : public QAbstractTableModel
 public:
     explicit DefaultGoalDisplayTable(QObject *parent = nullptr);
     explicit DefaultGoalDisplayTable(std::size_t userID, QObject *parent = nullptr);
-    void setUser(std::size_t userID) { m_UserID = userID; };
+    void setUser(std::size_t userID) { m_userID = userID; };
     void setUserRefillGoalTable(std::size_t userID);
     void refillTable();
     void append(std::shared_ptr<UserGoalModel> goalItem);
@@ -42,9 +42,9 @@ public:
 
 private:
     void fillGoalTable();
-    std::size_t m_UserID;
-    std::vector<std::shared_ptr<UserGoalModel>> m_Data;
-    std::vector<std::shared_ptr<UserGoalModel>> m_GoalList;
+    std::size_t m_userID;
+    std::vector<std::shared_ptr<UserGoalModel>> m_data;
+    std::vector<std::shared_ptr<UserGoalModel>> m_goalList;
 };
 
 #endif // DEFAULTGOALDISPLAYTABLE_H_

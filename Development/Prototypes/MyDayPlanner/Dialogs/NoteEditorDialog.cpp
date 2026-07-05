@@ -22,13 +22,13 @@ NoteEditorDialog::~NoteEditorDialog()
 
 void NoteEditorDialog::initEditorFieldsFromDataBase()
 {
-    if (m_DBModelID != 0)
+    if (m_dbModelId != 0)
     {
         NoteQueryProcessor noteQueryProcess;
-        NoteModel_shp noteData = noteQueryProcess.getNoteById(m_DBModelID);
+        NoteModel_shp noteData = noteQueryProcess.getNoteById(m_dbModelId);
         if (noteData)
         {
-            m_DBObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(noteData);
+            m_dbObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(noteData);
             transferDBModelDataToEditorFields();
         }
     }
@@ -36,17 +36,17 @@ void NoteEditorDialog::initEditorFieldsFromDataBase()
 
 QGroupBox *NoteEditorDialog::setUpEditorDialogForm()
 {
-    QGroupBox* mainEditorGroupBox = new QGroupBox(m_EditorTitleString, this);
-    m_qt_EditorFormLayout = new QFormLayout(mainEditorGroupBox);
-    m_qt_EditorFormLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
+    QGroupBox* mainEditorGroupBox = new QGroupBox(m_editorTitleString, this);
+    m_qt_editorFormLayout = new QFormLayout(mainEditorGroupBox);
+    m_qt_editorFormLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 
-    m_qt_Content = cqtfa_flexiblePlainTextEditEbasedOnCharCount("m_qt_Content",
-        mainEditorGroupBox, minNoteContentWidth, maxNoteContentWidth, noteLineCount);
-    m_qt_EditorFormLayout->addRow("Content:", m_qt_Content);
+    m_qt_content = cqtfa_flexiblePlainTextEditEbasedOnCharCount("m_qt_content",
+        mainEditorGroupBox, MinNoteContentWidth, MaxNoteContentWidth, NoteLineCount);
+    m_qt_editorFormLayout->addRow("Content:", m_qt_content);
 
-    maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(m_qt_EditorFormLayout);
+    m_maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(m_qt_editorFormLayout);
 
-    mainEditorGroupBox->setLayout(m_qt_EditorFormLayout);
+    mainEditorGroupBox->setLayout(m_qt_editorFormLayout);
 
     return mainEditorGroupBox;
 }
@@ -54,25 +54,25 @@ QGroupBox *NoteEditorDialog::setUpEditorDialogForm()
 void NoteEditorDialog::createSharedPtrDBModelForAddObject()
 {
     NoteModel_shp newNote = std::make_shared<NoteModel>();
-    newNote->setUserId(m_UserID);
-    m_DBObjectModel = newNote;
+    newNote->setUserId(m_userID);
+    m_dbObjectModel = newNote;
 }
 
 void NoteEditorDialog::transferEditorValuesToDBModel()
 {
-    if (m_DBObjectModel)
+    if (m_dbObjectModel)
     {
-        NoteModel_shp noteData = std::dynamic_pointer_cast<NoteModel>(m_DBObjectModel);
-        noteData->setContent(m_qt_Content->toPlainText().toStdString());
+        NoteModel_shp noteData = std::dynamic_pointer_cast<NoteModel>(m_dbObjectModel);
+        noteData->setContent(m_qt_content->toPlainText().toStdString());
     }
 }
 
 void NoteEditorDialog::transferDBModelDataToEditorFields()
 {
-    if (m_DBObjectModel)
+    if (m_dbObjectModel)
     {
-        NoteModel_shp noteData = std::dynamic_pointer_cast<NoteModel>(m_DBObjectModel);
+        NoteModel_shp noteData = std::dynamic_pointer_cast<NoteModel>(m_dbObjectModel);
 
-        m_qt_Content->setPlainText(QString::fromStdString(noteData->getContent()));
+        m_qt_content->setPlainText(QString::fromStdString(noteData->getContent()));
     }
 }

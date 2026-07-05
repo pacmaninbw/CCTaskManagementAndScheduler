@@ -50,6 +50,10 @@ protected Q_SLOTS:
     void handleDeleteButton_Clicked();
 
 protected:
+    const int MarginAndSpacing = 30;
+    const int MaxWidthUndefined = 16777215;
+    const int MaxHeightUndefind = 16777215;
+
     virtual QGroupBox* setUpEditorDialogForm() { return nullptr; };
 /*
  * The createSharedPtrDBModelForAddObject(), transferEditorValuesToDBModel() and
@@ -68,23 +72,20 @@ protected:
     int getFormLayoutMaxWidth(QFormLayout* formToSize);
     int getRowMaximumWidth(QFormLayout* layout, int row);
 
-    std::size_t m_UserID;
-    std::size_t m_DBModelID;
-    std::shared_ptr<ModelDBInterface> m_DBObjectModel = nullptr;
-    QString m_EditorObjectTypeString;
-    QString m_EditorTitleString;
-    int maxGroupBoxHeight = 0;
-    int maxButtonBoxHeight = 0;
+    std::size_t m_userID;
+    std::size_t m_dbModelId;
+    std::shared_ptr<ModelDBInterface> m_dbObjectModel = nullptr;
+    QString m_editorObjectTypeString;
+    QString m_editorTitleString;
+    int m_maxGroupBoxHeight = 0;
+    int m_maxButtonBoxHeight = 0;
 
-    QVBoxLayout* m_qt_EditorLayout = nullptr;
-    QDialogButtonBox* m_qt_ButtonBox = nullptr;
-    QPushButton* m_qt_DeleteButton = nullptr;
-    QGroupBox* m_qt_EditorDialogFormGB = nullptr;
-    QFormLayout* m_qt_EditorFormLayout = nullptr;
+    QVBoxLayout* m_qt_editorLayout = nullptr;
+    QDialogButtonBox* m_qt_buttonBox = nullptr;
+    QPushButton* m_qt_deleteButton = nullptr;
+    QGroupBox* m_qt_editorDialogFormGB = nullptr;
+    QFormLayout* m_qt_editorFormLayout = nullptr;
 
-    const int marginAndSpacing = 30;
-    const int maxWidthUndefined = 16777215;
-    const int maxHeightUndefind = 16777215;
 };
 
 #endif // BASEOBJECTEDITORDIALOG_H_

@@ -17,8 +17,8 @@
 
 SelectTaskParentDialog::SelectTaskParentDialog(std::size_t taskCreatorId, QWidget *parent)
     : QDialog(parent),
-    m_ParentTaskID{0},
-    m_CreatorID{taskCreatorId}
+    m_parentTaskId{0},
+    m_creatorId{taskCreatorId}
 {
 }
 
@@ -28,18 +28,18 @@ SelectTaskParentDialog::~SelectTaskParentDialog()
 
 std::size_t SelectTaskParentDialog::getParentTask()
 {
-    return m_ParentTaskID;
+    return m_parentTaskId;
 }
 
 void SelectTaskParentDialog::setupDialogUI()
 {
-    resize(defaultDialogWidth, defaultDialogHeight);
+    resize(DefaultDialogWidth, DefaultDialogHeight);
 
-    m_qt_SelectParentDialogLayout = cqtfa_QTWidget<QVBoxLayout>("m_qt_SelectParentDialogLayout", this);
+    m_qt_selectParentDialogLayout = cqtfa_QTWidget<QVBoxLayout>("m_qt_selectParentDialogLayout", this);
 
-    m_qt_SelectParentDialogLayout->addWidget(setUpGroupBox());
+    m_qt_selectParentDialogLayout->addWidget(setUpGroupBox());
 
-    setLayout(m_qt_SelectParentDialogLayout);
+    setLayout(m_qt_selectParentDialogLayout);
 }
 
 void SelectTaskParentDialog::handleParentTaskTableClicked(const QModelIndex &index)
@@ -49,53 +49,53 @@ void SelectTaskParentDialog::handleParentTaskTableClicked(const QModelIndex &ind
         return;
     }
 
-    m_ParentTaskID = index.internalId();
+    m_parentTaskId = index.internalId();
 }
 
 QGroupBox *SelectTaskParentDialog::setUpGroupBox()
 {
-    m_qt_SelectParentGB = new QGroupBox("Select Parent Task", this);
-    m_qt_SelectParentGB->setObjectName("m_qt_SelectParentGB");
-    m_qt_SelectParentGB->setAlignment(Qt::AlignHCenter);
+    m_qt_selectParentGB = new QGroupBox("Select Parent Task", this);
+    m_qt_selectParentGB->setObjectName("m_qt_selectParentGB");
+    m_qt_selectParentGB->setAlignment(Qt::AlignHCenter);
 
-    m_qt_SelectParentGBLayout = cqtfa_FormLayoutWithPolicy("m_qt_SelectParentGBLayout", m_qt_SelectParentGB);
+    m_qt_selectParentGBLayout = cqtfa_FormLayoutWithPolicy("m_qt_selectParentGBLayout", m_qt_selectParentGB);
 
-    m_qt_SelectParentGBLayout->addWidget(setUpParentTaskView());
+    m_qt_selectParentGBLayout->addWidget(setUpParentTaskView());
 
-    m_qt_SelectParentGBLayout->addWidget(setUpDialogButtons());
-    m_qt_ButtonBox->setCenterButtons(true);
+    m_qt_selectParentGBLayout->addWidget(setUpDialogButtons());
+    m_qt_buttonBox->setCenterButtons(true);
 
-    return m_qt_SelectParentGB;
+    return m_qt_selectParentGB;
 }
 
 QDialogButtonBox *SelectTaskParentDialog::setUpDialogButtons()
 {
-    m_qt_ButtonBox = cqtfa_QTWidget<QDialogButtonBox>("m_qt_ButtonBox", this);
-    m_qt_ButtonBox->setOrientation(Qt::Horizontal);
-    m_qt_ButtonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
+    m_qt_buttonBox = cqtfa_QTWidget<QDialogButtonBox>("m_qt_buttonBox", this);
+    m_qt_buttonBox->setOrientation(Qt::Horizontal);
+    m_qt_buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
 
-    QObject::connect(m_qt_ButtonBox, &QDialogButtonBox::accepted, this, qOverload<>(&QDialog::accept));
-    QObject::connect(m_qt_ButtonBox, &QDialogButtonBox::rejected, this, qOverload<>(&QDialog::reject));
+    QObject::connect(m_qt_buttonBox, &QDialogButtonBox::accepted, this, qOverload<>(&QDialog::accept));
+    QObject::connect(m_qt_buttonBox, &QDialogButtonBox::rejected, this, qOverload<>(&QDialog::reject));
 
-    return m_qt_ButtonBox;
+    return m_qt_buttonBox;
 }
 
 QTableView *SelectTaskParentDialog::setUpParentTaskView()
 {
-    m_qt_SelectParentTableView = cqtfa_QTWidget<QTableView>("m_qt_SelectParentTableView", this);
-    m_qt_SelectParentTableView->setModel(setUpParentTaskTable());
-    m_qt_SelectParentTableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
-    m_qt_SelectParentTableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
-    m_qt_SelectParentTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_qt_selectParentTableView = cqtfa_QTWidget<QTableView>("m_qt_selectParentTableView", this);
+    m_qt_selectParentTableView->setModel(setUpParentTaskTable());
+    m_qt_selectParentTableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    m_qt_selectParentTableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    m_qt_selectParentTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-    connect(m_qt_SelectParentTableView,  &QTableView::clicked, this, &SelectTaskParentDialog::handleParentTaskTableClicked);
+    connect(m_qt_selectParentTableView,  &QTableView::clicked, this, &SelectTaskParentDialog::handleParentTaskTableClicked);
 
-    return m_qt_SelectParentTableView;
+    return m_qt_selectParentTableView;
 }
 
 QAbstractTableModel *SelectTaskParentDialog::setUpParentTaskTable()
 {
-    SelectParentTaskTable* parentTable = new SelectParentTaskTable(m_CreatorID, this);
+    SelectParentTaskTable* parentTable = new SelectParentTaskTable(m_creatorId, this);
     parentTable->fillTable();
     return parentTable;
 }

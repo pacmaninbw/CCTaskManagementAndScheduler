@@ -35,7 +35,7 @@ protected:
     virtual void setUpWindowContentAndActions() override;
     void tableViewReset(QTableView* tableView);
 
-    DefaultGoalDisplayTable* m_GoalTable = nullptr;
+    DefaultGoalDisplayTable* m_goalTable = nullptr;
 };
 
 #endif // GOALWINDOW_H_

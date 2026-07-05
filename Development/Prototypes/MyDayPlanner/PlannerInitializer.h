@@ -26,7 +26,7 @@ private:
     std::string makeEnvironmentVariableName(std::string vName);
     bool attemptUserLogin(std::string loginName, std::string password);
 
-    std::shared_ptr<UserModel> loggedInUser;
+    std::shared_ptr<UserModel> m_loggedInUser;
 };
 
 #endif // PLANNERINITIALIZER_H_

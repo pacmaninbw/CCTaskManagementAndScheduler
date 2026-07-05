@@ -25,14 +25,14 @@ TodoWindow::TodoWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow,
 
 void TodoWindow::refresh()
 {
-    tableViewReset(m_qt_ModelTableView);
+    tableViewReset(m_qt_modelTableView);
 }
 
 void TodoWindow::handleAddTodoItem()
 {
-    TaskEditorDialog addTaskDialog(this, m_UserData);
+    TaskEditorDialog addTaskDialog(this, m_userData);
     addTaskDialog.exec();
-    tableViewReset(m_qt_ModelTableView);
+    tableViewReset(m_qt_modelTableView);
 }
 
 void TodoWindow::handleTodoTableClicked(const QModelIndex &index)
@@ -46,38 +46,38 @@ void TodoWindow::handleTodoTableClicked(const QModelIndex &index)
     TaskEditorDialog editTaskDialog(this, nullptr, taskToEditId);
     editTaskDialog.initEditorFieldsFromDataBase();
     editTaskDialog.exec();
-    tableViewReset(m_qt_ModelTableView);
+    tableViewReset(m_qt_modelTableView);
 }
 
 void TodoWindow::setUpWindowContentAndActions()
 {
-    m_qt_AddModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add a ToDo Item", "m_qt_AddModelObject", this);
-    connect(m_qt_AddModelObject, &QPushButton::clicked, this, &TodoWindow::handleAddTodoItem);
+    m_qt_addModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add a ToDo Item", "m_qt_addModelObject", this);
+    connect(m_qt_addModelObject, &QPushButton::clicked, this, &TodoWindow::handleAddTodoItem);
 
-    m_qt_ModelWindowLayout->addWidget(m_qt_AddModelObject);
+    m_qt_modelWindowLayout->addWidget(m_qt_addModelObject);
 
-    m_qt_ModelTableView = new QTableView(this);
-    m_qt_ModelTableView->setObjectName("m_qt_ModelTableView");
-    tableViewReset(m_qt_ModelTableView);
+    m_qt_modelTableView = new QTableView(this);
+    m_qt_modelTableView->setObjectName("m_qt_modelTableView");
+    tableViewReset(m_qt_modelTableView);
 
-    m_qt_ModelWindowLayout->addWidget(m_qt_ModelTableView);
+    m_qt_modelWindowLayout->addWidget(m_qt_modelTableView);
 
-    connect(m_qt_ModelTableView, &QTableView::clicked, this, &TodoWindow::handleTodoTableClicked);
-    connect(m_qt_ModelTableView, &QTableView::doubleClicked, this, &TodoWindow::handleTodoTableClicked);
+    connect(m_qt_modelTableView, &QTableView::clicked, this, &TodoWindow::handleTodoTableClicked);
+    connect(m_qt_modelTableView, &QTableView::doubleClicked, this, &TodoWindow::handleTodoTableClicked);
 }
 
 void TodoWindow::tableViewReset(QTableView *tableView)
 {
-    if (m_TodoTable)
+    if (m_todoTable)
     {
-        delete m_TodoTable;
+        delete m_todoTable;
     }
  
-    m_TodoTable = new GuiDashboardTaskTable(m_UserData->getUserID(), parent());
-    m_TodoTable->setObjectName("m_TodoTable");
-    m_TodoTable->fillTable();
+    m_todoTable = new GuiDashboardTaskTable(m_userData->getUserID(), parent());
+    m_todoTable->setObjectName("m_todoTable");
+    m_todoTable->fillTable();
 
-    tableView->setModel(m_TodoTable);
+    tableView->setModel(m_todoTable);
     tableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     tableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     tableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);

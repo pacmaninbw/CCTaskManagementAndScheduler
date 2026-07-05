@@ -58,22 +58,27 @@ Q_SIGNALS:
 protected Q_SLOTS:
 
 protected:
+    const int DefaultSubWindowWidth = 300;
+    const int DefaultSubWindowHeight = 400;
+    const int DefaultFullWindowWidth = 1000;
+    const int DefaultFullWindowHeight = 720;
+
     virtual void setUpWindowContentAndActions();
 
     /*
-     * The m_IsSubWindow variable indicates if the window is being shown in
+     * The m_isSubWindow variable indicates if the window is being shown in
      * the user dash board or not. This controls what elements need to be
      * displayed.
      */
-    bool m_IsSubWindow;
-    QVBoxLayout* m_qt_ModelWindowLayout = nullptr;
-    QPushButton* m_qt_AddModelObject = nullptr;
+    bool m_isSubWindow;
+    QVBoxLayout* m_qt_modelWindowLayout = nullptr;
+    QPushButton* m_qt_addModelObject = nullptr;
     /*
      * To date all sub windows contain a table to be displayed, this may always
      * be true, but if not the m_qt_ModelTableView variable will remain null.
      */
-    QTableView* m_qt_ModelTableView = nullptr;
-    QPushButton* m_qt_CloseModelWindow = nullptr;
+    QTableView* m_qt_modelTableView = nullptr;
+    QPushButton* m_qt_closeModelWindow = nullptr;
     QWidget* m_qt_centralwidget = nullptr;
     /*
      * There are 2 modes that this window may appear in, one is a stand alone
@@ -81,20 +86,16 @@ protected:
      * alone window will have a title, as a window embedded in the user
      * dashboard the title will have to be added as a label.
      */
-    QLabel* m_qt_AlternateTitle = nullptr;
+    QLabel* m_qt_alternateTitle = nullptr;
 
-    std::shared_ptr<UserModel> m_UserData;
-    QDate m_DateOfViewToDisplay;
-    QString m_WindowTitleText;
-    int m_Width;
-    int m_Height;
-    int m_LineEditWidth;
+    std::shared_ptr<UserModel> m_userData;
+    QDate m_dateOfViewToDisplay;
+    QString m_windowTitleText;
+    int m_width;
+    int m_height;
+    int m_lineEditWidth;
     int m_vSpacing = 10;
     int m_hSpacing = 10;
-    const int DefaultSubWindowWidth = 300;
-    const int DefaultSubWindowHeight = 400;
-    const int DefaultFullWindowWidth = 1000;
-    const int DefaultFullWindowHeight = 720;
 };
 
 #endif // MODELSUBWINDOW_H_

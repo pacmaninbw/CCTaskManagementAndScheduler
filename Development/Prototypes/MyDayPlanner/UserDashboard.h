@@ -46,37 +46,6 @@ private Q_SLOTS:
     void handleOpenNotesWindowClicked();
 
 private:
-    void setUpUserDashboardUi();
-    void setUpDashboardMenuBar();
-    void setUpUserMenu();
-    void setUpViewsMenu();
-    QGroupBox* setUpUserIdBox();
-    QHBoxLayout* setUpPerDayLayout();
-    void initPerDayViewWindows();
-    void updatePerDayView();
-    void fillUserIdBoxData();
-
-    QMenu* m_qt_UserMenu = nullptr;
-    QMenu* m_qt_ViewsMenu = nullptr;
-    QAction* m_qt_AddUserProfileUserMenu = nullptr;
-    QAction* m_qt_EditUserProfileUserMenu = nullptr;
-    QAction* m_qt_OpenTodoMenu = nullptr;
-    QAction* m_qt_OpenGoalMenu = nullptr;
-    QAction* m_qt_OpenScheduleMenu = nullptr;
-    QAction* m_qt_OpenNotesMenu = nullptr;
-    QWidget* m_qt_Centralwidget = nullptr;
-    QGroupBox* m_qt_UserIDGroupBox = nullptr;
-    QLineEdit* m_qt_UserFirstNameDisplay = nullptr;
-    QLineEdit* m_qt_UserMiddleInitialDisplay = nullptr;
-    QLineEdit* m_qt_UserLastNameDisplay = nullptr;
-    QLineEdit* m_qt_UserLoginDisplay = nullptr;
-    QDateEdit* m_qt_DateSelector = nullptr;
-
-    QString m_ProgNameStr;
-    std::shared_ptr<UserModel> m_UserDataPtr = nullptr;
-    QDate m_DashboardDate;
-    std::vector<ModelSubWindow*> m_PerDayViewWindows;
-
 /*
  * Size and positioning constants.
  */
@@ -87,6 +56,37 @@ private:
     const int perDayGroupBoxWidth = 300;
     const int perDayGroupBoxHeight = 400;
     const int perDayLineEditWidth = 280;
+
+    void setUpUserDashboardUi();
+    void setUpDashboardMenuBar();
+    void setUpUserMenu();
+    void setUpViewsMenu();
+    QGroupBox* setUpUserIdBox();
+    QHBoxLayout* setUpPerDayLayout();
+    void initPerDayViewWindows();
+    void updatePerDayView();
+    void fillUserIdBoxData();
+
+    QMenu* m_qt_userMenu = nullptr;
+    QMenu* m_qt_viewsMenu = nullptr;
+    QAction* m_qt_addUserProfileUserMenu = nullptr;
+    QAction* m_qt_editUserProfileUserMenu = nullptr;
+    QAction* m_qt_openTodoMenu = nullptr;
+    QAction* m_qt_openGoalMenu = nullptr;
+    QAction* m_qt_openScheduleMenu = nullptr;
+    QAction* m_qt_openNotesMenu = nullptr;
+    QWidget* m_qt_centralwidget = nullptr;
+    QGroupBox* m_qt_userIdGroupBox = nullptr;
+    QLineEdit* m_qt_userFirstName = nullptr;
+    QLineEdit* m_qt_userMiddleInitial = nullptr;
+    QLineEdit* m_qt_userLastName = nullptr;
+    QLineEdit* m_qt_userLogin = nullptr;
+    QDateEdit* m_qt_dateSelector = nullptr;
+
+    QString m_progNameStr;
+    std::shared_ptr<UserModel> m_userDataPtr = nullptr;
+    QDate m_dashboardDate;
+    std::vector<ModelSubWindow*> m_perDayViewWindows;
 };
 #endif // USERDASHBOARD_H_
 

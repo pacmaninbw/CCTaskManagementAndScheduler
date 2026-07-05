@@ -22,18 +22,17 @@ public:
     virtual void initEditorFieldsFromDataBase() override;
 
 private:
-    QFormLayout* setUpNoteEditorGBForm();
+    const int MinNoteContentWidth = 60;
+    const int MaxNoteContentWidth = 90;
+    const int NoteLineCount = 5;
+    const int MarginAndSpacing = 30;
+
     virtual QGroupBox* setUpEditorDialogForm() override;
     virtual void createSharedPtrDBModelForAddObject() override;
     virtual void transferEditorValuesToDBModel() override;
     virtual void transferDBModelDataToEditorFields() override;
 
-    QPlainTextEdit* m_qt_Content = nullptr;
-
-    const int minNoteContentWidth = 60;
-    const int maxNoteContentWidth = 90;
-    const int noteLineCount = 5;
-    const int marginAndSpacing = 30;
+    QPlainTextEdit* m_qt_content = nullptr;
 };
 
 #endif // NOTEEDITORDIALOG_H_

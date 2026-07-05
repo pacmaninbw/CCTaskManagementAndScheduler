@@ -17,13 +17,13 @@
 
 BaseObjectEditorDialog::BaseObjectEditorDialog(const char* objectType, std::size_t userId, std::size_t dbModelTableIndex, QWidget* parent)
     : QDialog(parent),
-    m_UserID{userId},
-    m_DBModelID{dbModelTableIndex},
-    m_EditorObjectTypeString{objectType}
+    m_userID{userId},
+    m_dbModelId{dbModelTableIndex},
+    m_editorObjectTypeString{objectType}
 {
-    m_EditorTitleString = dbModelTableIndex? "Edit " : "Add ";
-    m_EditorTitleString += objectType;
-    setWindowTitle(m_EditorTitleString + " Dialog");
+    m_editorTitleString = dbModelTableIndex? "Edit " : "Add ";
+    m_editorTitleString += objectType;
+    setWindowTitle(m_editorTitleString + " Dialog");
 }
 
 void BaseObjectEditorDialog::initEditorFieldsFromDataBase()
@@ -33,30 +33,30 @@ void BaseObjectEditorDialog::initEditorFieldsFromDataBase()
 
 void BaseObjectEditorDialog::accept()
 {
-    if (!m_DBObjectModel)
+    if (!m_dbObjectModel)
     {
         createSharedPtrDBModelForAddObject();
     }
 
     transferEditorValuesToDBModel();
 
-    if (m_DBObjectModel->save())
+    if (m_dbObjectModel->save())
     {
         QDialog::accept();
     }
     else
     {
-        QString errorReport = m_EditorObjectTypeString + " edit failed.\n";
-        errorReport += QString::fromStdString(m_DBObjectModel->getAllErrorMessages());
+        QString errorReport = m_editorObjectTypeString + " edit failed.\n";
+        errorReport += QString::fromStdString(m_dbObjectModel->getAllErrorMessages());
         QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
     }
 }
 
 void BaseObjectEditorDialog::handleDeleteButton_Clicked()
 {
-    if (m_DBObjectModel)
+    if (m_dbObjectModel)
     {
-        m_DBObjectModel->hide(m_UserID);
+        m_dbObjectModel->hide(m_userID);
     }
 
     done(QDialog::Accepted);
@@ -64,19 +64,19 @@ void BaseObjectEditorDialog::handleDeleteButton_Clicked()
 
 void BaseObjectEditorDialog::setUpEditorUI()
 {
-    m_qt_EditorLayout = new QVBoxLayout(this);
-    m_qt_EditorLayout->setObjectName("m_qt_EditorLayout");
+    m_qt_editorLayout = new QVBoxLayout(this);
+    m_qt_editorLayout->setObjectName("m_qt_editorLayout");
 
-    m_qt_EditorDialogFormGB = setUpEditorDialogForm();
-    m_qt_EditorDialogFormGB->setObjectName("m_qt_EditorDialogFormGB");
+    m_qt_editorDialogFormGB = setUpEditorDialogForm();
+    m_qt_editorDialogFormGB->setObjectName("m_qt_editorDialogFormGB");
 
-    m_qt_EditorLayout->addWidget(m_qt_EditorDialogFormGB);
+    m_qt_editorLayout->addWidget(m_qt_editorDialogFormGB);
 
-    m_qt_ButtonBox = setUpEditorButtonBox();
-    m_qt_ButtonBox->setObjectName("m_qt_ButtonBox");
-    m_qt_EditorLayout->addWidget(m_qt_ButtonBox);
+    m_qt_buttonBox = setUpEditorButtonBox();
+    m_qt_buttonBox->setObjectName("m_qt_buttonBox");
+    m_qt_editorLayout->addWidget(m_qt_buttonBox);
 
-    setLayout(m_qt_EditorLayout);
+    setLayout(m_qt_editorLayout);
 
     limitDialogGrowth();
 
@@ -97,15 +97,15 @@ QDialogButtonBox* BaseObjectEditorDialog::setUpEditorButtonBox()
 /*
  * If this is an edit rather than add action then allow the user to delete the object.
  */
-    if (m_DBModelID)
+    if (m_dbModelId)
     {
-        m_qt_DeleteButton = createDeleteButton(buttonBox);
+        m_qt_deleteButton = createDeleteButton(buttonBox);
 
-        buttonBox->addButton(m_qt_DeleteButton, QDialogButtonBox::DestructiveRole);
-        connect(m_qt_DeleteButton, &QPushButton::clicked, this, &BaseObjectEditorDialog::handleDeleteButton_Clicked);
+        buttonBox->addButton(m_qt_deleteButton, QDialogButtonBox::DestructiveRole);
+        connect(m_qt_deleteButton, &QPushButton::clicked, this, &BaseObjectEditorDialog::handleDeleteButton_Clicked);
     }
 
-    maxButtonBoxHeight = buttonBox->height() + marginAndSpacing;
+    m_maxButtonBoxHeight = buttonBox->height() + MarginAndSpacing;
 
     connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
@@ -115,25 +115,25 @@ QDialogButtonBox* BaseObjectEditorDialog::setUpEditorButtonBox()
 
 void BaseObjectEditorDialog::limitDialogGrowth()
 {
-    if (!m_qt_EditorDialogFormGB || !m_qt_ButtonBox)
+    if (!m_qt_editorDialogFormGB || !m_qt_buttonBox)
     {
         return;
     }
 
-    m_qt_EditorDialogFormGB->setMaximumHeight(maxGroupBoxHeight);
+    m_qt_editorDialogFormGB->setMaximumHeight(m_maxGroupBoxHeight);
 
-    m_qt_ButtonBox->setMaximumHeight(maxButtonBoxHeight);
+    m_qt_buttonBox->setMaximumHeight(m_maxButtonBoxHeight);
 
-    int maxDialogWidth = getFormLayoutMaxWidth(m_qt_EditorFormLayout) + marginAndSpacing;
+    int maxDialogWidth = getFormLayoutMaxWidth(m_qt_editorFormLayout) + MarginAndSpacing;
 
     setMaximumWidth(maxDialogWidth);
-    setMaximumHeight(maxGroupBoxHeight + maxButtonBoxHeight + marginAndSpacing);
+    setMaximumHeight(m_maxGroupBoxHeight + m_maxButtonBoxHeight + MarginAndSpacing);
 }
 
 QPushButton* BaseObjectEditorDialog::createDeleteButton(QWidget *buttonBox)
 {
     QPushButton* deleteButton = new QPushButton(buttonBox);
-    QString buttonText = "Delete " + m_EditorObjectTypeString;
+    QString buttonText = "Delete " + m_editorObjectTypeString;
     deleteButton->setText(buttonText);
     deleteButton->setAutoFillBackground(true);
     QPalette palette = deleteButton->palette();
@@ -170,14 +170,14 @@ int BaseObjectEditorDialog::getRowMaximumWidth(QFormLayout *layout, int row)
 
     if (labelItem) {
         maxLabelWidth = labelItem->maximumSize().width();
-        if (maxLabelWidth >= maxWidthUndefined) {
+        if (maxLabelWidth >= MaxWidthUndefined) {
             maxLabelWidth = labelItem->sizeHint().width();
         }
     }
 
     if (fieldItem) {
         maxFieldWidth = fieldItem->maximumSize().width();
-        if (maxFieldWidth >= maxWidthUndefined) {
+        if (maxFieldWidth >= MaxWidthUndefined) {
             maxFieldWidth = fieldItem->sizeHint().width();
         }
     }

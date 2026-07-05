@@ -24,14 +24,14 @@ NotesWindow::NotesWindow(std::shared_ptr<UserModel> currentUser, QDate dateToSho
 
 void NotesWindow::refresh()
 {
-    tableViewReset(m_qt_ModelTableView);
+    tableViewReset(m_qt_modelTableView);
 }
 
 void NotesWindow::handleAddNoteAction()
 {
-    NoteEditorDialog addNoteDialog(this, m_UserData->getUserID());
+    NoteEditorDialog addNoteDialog(this, m_userData->getUserID());
     addNoteDialog.exec();
-    tableViewReset(m_qt_ModelTableView);
+    tableViewReset(m_qt_modelTableView);
 }
 
 void NotesWindow::handleNoteTableClicked(const QModelIndex &index)
@@ -42,39 +42,39 @@ void NotesWindow::handleNoteTableClicked(const QModelIndex &index)
     }
 
     std::size_t noteToEdit = index.internalId();
-    NoteEditorDialog editNoteDialog(this, m_UserData->getUserID(), noteToEdit);
+    NoteEditorDialog editNoteDialog(this, m_userData->getUserID(), noteToEdit);
     editNoteDialog.initEditorFieldsFromDataBase();
     editNoteDialog.exec();
-    tableViewReset(m_qt_ModelTableView);
+    tableViewReset(m_qt_modelTableView);
 }
 
 void NotesWindow::setUpWindowContentAndActions()
 {
-    m_qt_AddModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add a Note", "udAddNotePB", this);
-    connect(m_qt_AddModelObject, &QPushButton::clicked, this, &NotesWindow::handleAddNoteAction);
+    m_qt_addModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add a Note", "udAddNotePB", this);
+    connect(m_qt_addModelObject, &QPushButton::clicked, this, &NotesWindow::handleAddNoteAction);
 
-    m_qt_ModelWindowLayout->addWidget(m_qt_AddModelObject);
+    m_qt_modelWindowLayout->addWidget(m_qt_addModelObject);
 
-    m_qt_ModelTableView = new QTableView(this);
-    m_qt_ModelTableView->setObjectName("m_qt_ModelTableView");
-    tableViewReset(m_qt_ModelTableView);
+    m_qt_modelTableView = new QTableView(this);
+    m_qt_modelTableView->setObjectName("m_qt_modelTableView");
+    tableViewReset(m_qt_modelTableView);
 
-    m_qt_ModelWindowLayout->addWidget(m_qt_ModelTableView);
+    m_qt_modelWindowLayout->addWidget(m_qt_modelTableView);
 
-    connect(m_qt_ModelTableView, &QTableView::clicked, this, &NotesWindow::handleNoteTableClicked);
-    connect(m_qt_ModelTableView, &QTableView::doubleClicked, this, &NotesWindow::handleNoteTableClicked);
+    connect(m_qt_modelTableView, &QTableView::clicked, this, &NotesWindow::handleNoteTableClicked);
+    connect(m_qt_modelTableView, &QTableView::doubleClicked, this, &NotesWindow::handleNoteTableClicked);
 }
 
 void NotesWindow::tableViewReset(QTableView* tableView)
 {
-    if (m_NoteTable)
+    if (m_noteTable)
     {
-        delete m_NoteTable;
+        delete m_noteTable;
     }
 
-    m_NoteTable = createTable();
+    m_noteTable = createTable();
 
-    tableView->setModel(m_NoteTable);
+    tableView->setModel(m_noteTable);
     tableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     tableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     tableView->update();
@@ -83,8 +83,8 @@ void NotesWindow::tableViewReset(QTableView* tableView)
 
 DashboardNoteTable* NotesWindow::createTable()
 {
-    DashboardNoteTable* noteTable = new DashboardNoteTable(m_UserData->getUserID(), m_DateOfViewToDisplay, parent());
-    noteTable->setObjectName("m_NoteTable");
+    DashboardNoteTable* noteTable = new DashboardNoteTable(m_userData->getUserID(), m_dateOfViewToDisplay, parent());
+    noteTable->setObjectName("m_noteTable");
     noteTable->fillTable();
 
     return noteTable;

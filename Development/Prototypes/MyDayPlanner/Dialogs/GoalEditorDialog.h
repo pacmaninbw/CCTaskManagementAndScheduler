@@ -24,21 +24,22 @@ public:
     virtual void initEditorFieldsFromDataBase() override;
 
 private:
+    const int goalDescriptionMinCharWidth = 40;
+    const int goalDescriptionMaxCharWidth = 80;
+    const int goalDescriptionLineCount = 3;
+    const int goalPriorityMaxChar = 5;
+
     virtual QGroupBox* setUpEditorDialogForm() override;
     virtual void transferEditorValuesToDBModel() override;
     virtual void transferDBModelDataToEditorFields() override;
     virtual void createSharedPtrDBModelForAddObject() override;
 
-    std::shared_ptr<UserGoalModel> m_ParentGoalData;
+    std::shared_ptr<UserGoalModel> m_parentGoalData;
 
-    QPlainTextEdit* m_qt_Description = nullptr;
-    QLineEdit* m_qt_Priority = nullptr;
-    QPushButton* m_qt_SelectParentGoal = nullptr;
+    QPlainTextEdit* m_qt_description = nullptr;
+    QLineEdit* m_qt_priority = nullptr;
+    QPushButton* m_qt_selectParentGoal = nullptr;
 
-    const int goalDescriptionMinCharWidth = 40;
-    const int goalDescriptionMaxCharWidth = 80;
-    const int goalDescriptionLineCount = 3;
-    const int goalPriorityMaxChar = 5;
 };
 
 #endif // GOALEDITORDIALOG_H_

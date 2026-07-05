@@ -14,19 +14,19 @@
 
 DefaultGoalDisplayTable::DefaultGoalDisplayTable(QObject *parent)
     : QAbstractTableModel(parent),
-    m_UserID{0}
+    m_userID{0}
 {}
 
 DefaultGoalDisplayTable::DefaultGoalDisplayTable(std::size_t userID, QObject *parent)
     : QAbstractTableModel(parent),
-    m_UserID{userID}
+    m_userID{userID}
 {
 
 }
 
 void DefaultGoalDisplayTable::setUserRefillGoalTable(std::size_t userID)
 {
-    m_UserID = userID;
+    m_userID = userID;
 
     fillGoalTable();
 }
@@ -38,20 +38,20 @@ void DefaultGoalDisplayTable::refillTable()
 
 void DefaultGoalDisplayTable::append(std::shared_ptr<UserGoalModel> goalItem)
 {
-    beginInsertRows(QModelIndex(), m_Data.size(), m_Data.size());
+    beginInsertRows(QModelIndex(), m_data.size(), m_data.size());
 
-    m_Data.push_back(goalItem);
+    m_data.push_back(goalItem);
 
     endInsertRows();
 }
 
 void DefaultGoalDisplayTable::clearData()
 {
-    m_GoalList.clear();
+    m_goalList.clear();
 
     beginResetModel();
 
-    m_Data.clear();
+    m_data.clear();
 
     endResetModel();
 }
@@ -84,7 +84,7 @@ int DefaultGoalDisplayTable::rowCount(const QModelIndex &parent) const
         return 0;
     }
 
-    return m_Data.size();
+    return m_data.size();
 }
 
 int DefaultGoalDisplayTable::columnCount(const QModelIndex &parent) const
@@ -106,7 +106,7 @@ QVariant DefaultGoalDisplayTable::data(const QModelIndex &index, int role) const
 
     if (role != Qt::DisplayRole && role != Qt::EditRole) return {};
 
-    const UserGoalModel* goal = m_Data[index.row()].get();
+    const UserGoalModel* goal = m_data[index.row()].get();
 
     switch (index.column())
     {
@@ -174,7 +174,7 @@ QModelIndex DefaultGoalDisplayTable::index(int row, int column, const QModelInde
         return QModelIndex();
     }
 
-    UserGoalModel_shp goalModelItem = m_Data[row];
+    UserGoalModel_shp goalModelItem = m_data[row];
     if (goalModelItem)
     {
         return createIndex(row, column, goalModelItem->getGoalId());
@@ -187,15 +187,15 @@ void DefaultGoalDisplayTable::fillGoalTable()
 {
     clearData();
 
-    if (m_UserID)
+    if (m_userID)
     {
         GoalQueryProcessor goalQueryProcessor;
-        m_GoalList = goalQueryProcessor.getAllGoalsForUser(m_UserID);
+        m_goalList = goalQueryProcessor.getAllGoalsForUser(m_userID);
     }
 
-    if (!m_GoalList.empty())
+    if (!m_goalList.empty())
     {
-        for (const auto &goalItem: m_GoalList)
+        for (const auto &goalItem: m_goalList)
         {
             append(goalItem);
         }

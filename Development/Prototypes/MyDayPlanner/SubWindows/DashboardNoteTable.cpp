@@ -18,21 +18,21 @@
 
 DashboardNoteTable::DashboardNoteTable(std::size_t userID, QDate searchDate, QObject *parent)
     : QAbstractTableModel(parent),
-    m_UserID{userID},
-    m_SearchDate{searchDate}
+    m_userID{userID},
+    m_searchDate{searchDate}
 {
 }
 
 void DashboardNoteTable::setUserRefillTable(std::size_t userID)
 {
-    m_UserID = userID;
+    m_userID = userID;
 
     fillTable();
 }
 
 void DashboardNoteTable::fillTable()
 {
-    if (m_UserID == 0)
+    if (m_userID == 0)
     {
         NoteModel_shp noNote = std::make_shared<NoteModel>();
         noNote->setContent("Please log in to see today's notes");
@@ -42,9 +42,9 @@ void DashboardNoteTable::fillTable()
         return;
     }
 
-    std::chrono::year_month_day searchDate = qDateToChrono(m_SearchDate);
+    std::chrono::year_month_day searchDate = qDateToChrono(m_searchDate);
     NoteQueryProcessor currentUserNoteList;
-    NoteList userNotes = currentUserNoteList.getDashboardNoteTable(m_UserID, searchDate);
+    NoteList userNotes = currentUserNoteList.getDashboardNoteTable(m_userID, searchDate);
 
     if (userNotes.empty())
     {
@@ -58,15 +58,15 @@ void DashboardNoteTable::fillTable()
 
     for (auto dbNotePtr: userNotes)
     {
-        m_Data.push_back(dbNotePtr);
+        m_data.push_back(dbNotePtr);
     }
 }
 
 void DashboardNoteTable::append(std::shared_ptr<NoteModel> noteData)
 {
-    beginInsertRows(QModelIndex(), m_Data.size(), m_Data.size());
+    beginInsertRows(QModelIndex(), m_data.size(), m_data.size());
 
-    m_Data.push_back(noteData);
+    m_data.push_back(noteData);
 
     endInsertRows();
 
@@ -76,7 +76,7 @@ void DashboardNoteTable::clearData()
 {
     beginResetModel();
 
-    m_Data.clear();
+    m_data.clear();
 
     endResetModel();
 }
@@ -108,7 +108,7 @@ int DashboardNoteTable::rowCount(const QModelIndex &parent) const
         return 0;
     }
 
-    return m_Data.size();
+    return m_data.size();
 }
 
 int DashboardNoteTable::columnCount(const QModelIndex &parent) const
@@ -134,7 +134,7 @@ QVariant DashboardNoteTable::data(const QModelIndex &index, int role) const
         return {};
     }
 
-    std::shared_ptr<NoteModel> note = m_Data[index.row()];
+    std::shared_ptr<NoteModel> note = m_data[index.row()];
     switch (index.column()) {
         case 0: {
             QDateTime tempTime(chronoTimePointToQDateTime(note->getDateAdded()));
@@ -170,7 +170,7 @@ bool DashboardNoteTable::insertRows(int position, int count, const QModelIndex &
 
     for (int row = 0; row < count; ++row)
     {
-        m_Data.insert(m_Data.begin() + position, nullptr);
+        m_data.insert(m_data.begin() + position, nullptr);
     }
 
     endInsertRows();
@@ -185,9 +185,9 @@ bool DashboardNoteTable::removeRows(int position, int count, const QModelIndex &
 
     for (int row = 0; row < count; ++row)
     {
-        NoteModel_shp data = m_Data.at(position);
+        NoteModel_shp data = m_data.at(position);
         data.reset();
-        m_Data.erase(m_Data.begin() + position);
+        m_data.erase(m_data.begin() + position);
     }
 
     endRemoveRows();
@@ -202,7 +202,7 @@ QModelIndex DashboardNoteTable::index(int row, int column, const QModelIndex &pa
         return QModelIndex();
     }
 
-    NoteModel_shp noteModelItem = m_Data[row];
+    NoteModel_shp noteModelItem = m_data[row];
     if (noteModelItem)
     {
         return createIndex(row, column, noteModelItem->getNoteId());

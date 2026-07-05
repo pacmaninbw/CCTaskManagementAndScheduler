@@ -17,7 +17,7 @@
 
 TestDBConnection::TestDBConnection()
 :   errorMessages{""},
-    verboseOutput{programOptions.verboseOutput},
+    m_qt_verboseOutput{programOptions.verboseOutput},
     forceError{programOptions.forceErrors},
     forceException{programOptions.forceExceptions},
     inSelfTest{false}

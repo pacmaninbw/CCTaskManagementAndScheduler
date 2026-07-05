@@ -12,38 +12,38 @@
 
 ModelSubWindow::ModelSubWindow(std::string titleText, bool makeSubWindow, QWidget *parent)
  :  QMainWindow{parent},
-    m_IsSubWindow{makeSubWindow},
-    m_UserData{nullptr},
-    m_WindowTitleText{QString::fromStdString(titleText)}
+    m_isSubWindow{makeSubWindow},
+    m_userData{nullptr},
+    m_windowTitleText{QString::fromStdString(titleText)}
 {
     if (makeSubWindow)
     {
-        m_Width = DefaultSubWindowWidth;
-        m_Height = DefaultSubWindowHeight;
-        m_LineEditWidth = static_cast<int>(0.9 * m_Width);
+        m_width = DefaultSubWindowWidth;
+        m_height = DefaultSubWindowHeight;
+        m_lineEditWidth = static_cast<int>(0.9 * m_width);
     }
     else
     {
-        m_Width = DefaultFullWindowWidth;
-        m_Height = DefaultFullWindowHeight;
-        m_LineEditWidth = static_cast<int>(0.9 * m_Width);
+        m_width = DefaultFullWindowWidth;
+        m_height = DefaultFullWindowHeight;
+        m_lineEditWidth = static_cast<int>(0.9 * m_width);
     }
 }
 
 void ModelSubWindow::setDate(QDate dateToShow)
 {
-    m_DateOfViewToDisplay = dateToShow;
+    m_dateOfViewToDisplay = dateToShow;
 }
 
 void ModelSubWindow::setUser(std::shared_ptr<UserModel> user)
 {
-    m_UserData = user;
+    m_userData = user;
 }
 
 void ModelSubWindow::changeDataRefreshTable(std::shared_ptr<UserModel> user, QDate dateToShow)
 {
-    m_DateOfViewToDisplay = dateToShow;
-    m_UserData = user;
+    m_dateOfViewToDisplay = dateToShow;
+    m_userData = user;
     refresh();
 }
 
@@ -52,18 +52,18 @@ void ModelSubWindow::setUpWindowUi()
     m_qt_centralwidget = new QWidget(this);
     m_qt_centralwidget->setObjectName(QString::fromUtf8("m_qt_centralwidget"));
 
-    m_qt_ModelWindowLayout = new QVBoxLayout(m_qt_centralwidget);
-    m_qt_ModelWindowLayout->setObjectName("modelWindowLayout");
+    m_qt_modelWindowLayout = new QVBoxLayout(m_qt_centralwidget);
+    m_qt_modelWindowLayout->setObjectName("modelWindowLayout");
 
-    resize(m_Width, m_Height);
+    resize(m_width, m_height);
 
-    if (m_IsSubWindow)
+    if (m_isSubWindow)
     {
-        m_qt_AlternateTitle = cqtfa_QTWidgetWithText<QLabel>(m_WindowTitleText.toUtf8().constData(), "m_qt_AlternateTitle", this);
-        m_qt_ModelWindowLayout->addWidget(m_qt_AlternateTitle, 0, Qt::AlignHCenter);
+        m_qt_alternateTitle = cqtfa_QTWidgetWithText<QLabel>(m_windowTitleText.toUtf8().constData(), "m_qt_alternateTitle", this);
+        m_qt_modelWindowLayout->addWidget(m_qt_alternateTitle, 0, Qt::AlignHCenter);
     }
     else {
-        setWindowTitle(m_WindowTitleText);
+        setWindowTitle(m_windowTitleText);
     }
 
     /*
@@ -72,13 +72,13 @@ void ModelSubWindow::setUpWindowUi()
      */
     setUpWindowContentAndActions();
 
-    if (!m_IsSubWindow)
+    if (!m_isSubWindow)
     {
-        if (!m_qt_CloseModelWindow)
+        if (!m_qt_closeModelWindow)
         {
-            m_qt_CloseModelWindow = cqtfa_QTWidgetWithText<QPushButton>("Close Window", "m_qt_CloseModelWindow", this);
-            m_qt_ModelWindowLayout->addWidget(m_qt_CloseModelWindow);
-            connect(m_qt_CloseModelWindow, &QPushButton::clicked, this, &QWidget::close);
+            m_qt_closeModelWindow = cqtfa_QTWidgetWithText<QPushButton>("Close Window", "m_qt_closeModelWindow", this);
+            m_qt_modelWindowLayout->addWidget(m_qt_closeModelWindow);
+            connect(m_qt_closeModelWindow, &QPushButton::clicked, this, &QWidget::close);
         }
     }
 
@@ -87,9 +87,9 @@ void ModelSubWindow::setUpWindowUi()
 
 void ModelSubWindow::changeWindowSize(int newWidth, int newHeight)
 {
-    m_Width = newWidth;
-    m_Height = newHeight;
-    m_LineEditWidth = static_cast<int>(m_Width * 0.90);
+    m_width = newWidth;
+    m_height = newHeight;
+    m_lineEditWidth = static_cast<int>(m_width * 0.90);
 }
 
 void ModelSubWindow::setUpWindowContentAndActions()

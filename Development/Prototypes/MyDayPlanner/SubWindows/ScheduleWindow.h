@@ -34,7 +34,7 @@ protected:
     virtual void setUpWindowContentAndActions() override;
     void tableViewReset(QTableView* tableView);
 
-    GuiDashboardScheduleTable* m_ScheduleTable = nullptr;
+    GuiDashboardScheduleTable* m_scheduleTable = nullptr;
 };
 
 #endif // SCHEDULEWINDOW_H_

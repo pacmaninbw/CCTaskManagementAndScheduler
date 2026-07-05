@@ -40,9 +40,9 @@ public:
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
 
 private:
-    std::size_t m_UserID;
-    std::vector<std::shared_ptr<NoteModel>> m_Data;
-    QDate m_SearchDate;
+    std::size_t m_userID;
+    std::vector<std::shared_ptr<NoteModel>> m_data;
+    QDate m_searchDate;
 };
 
 #endif // DASHBOARDNOTETABLE_H_

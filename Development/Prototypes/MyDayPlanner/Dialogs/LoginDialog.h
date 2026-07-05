@@ -21,24 +21,23 @@ class LoginDialog : public QDialog
 public:
     explicit LoginDialog(QWidget* parent = nullptr);
     ~LoginDialog();
-    std::shared_ptr<UserModel> GetUserData() { return m_UserDataPtr; };
+    std::shared_ptr<UserModel> GetUserData() { return m_userDataPtr; };
 
 private Q_SLOTS:
     void onactionLoginAsUserPBClicked();
 
 private:
+    const int UserLoginDialogWidth = 400;
+    const int UserLoginDialogHeight = 200;
+
     void setUpLoginDialogUI();
 
-    std::shared_ptr<UserModel> m_UserDataPtr;
+    std::shared_ptr<UserModel> m_userDataPtr;
 
-    QGroupBox* m_qt_UserLoginGB = nullptr;
-    QLineEdit* m_qt_UserName = nullptr;
-    QLineEdit* m_qt_Password = nullptr;
-    QPushButton* m_qt_LoginAsUser = nullptr;
-
-    const int userLoginDialogWidth = 400;
-    const int userLoginDialogHeight = 200;
-
+    QGroupBox* m_qt_userLoginGB = nullptr;
+    QLineEdit* m_qt_userName = nullptr;
+    QLineEdit* m_qt_password = nullptr;
+    QPushButton* m_qt_loginAsUser = nullptr;
 };
 
 #endif // LOGINDIALOG_H_
