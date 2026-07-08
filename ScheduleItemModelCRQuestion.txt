@@ -1,0 +1,1999 @@
+The C++ code in this question is the programming interface for the `UserScheduleItem` 
+in the [database in this question](https://codereview.stackexchange.com/questions/302562/a-sql-database-to-implement-a-per-day-at-a-view-planner).  
+
+The test headers are included because the `ScheduleItemQueryProcessor` class has self test features for unit testing.  
+
+The `CoreDBInterface` and `ModelDBInterface` have appeared in previous questions, but they have been modified.  
+
+This code will be referred to in two other questions.
+
+# The Code  
+The code can be found in my
+[GitHub repository](https://github.com/pacmaninbw/CCTaskManagementAndScheduler/tree/ScheduleSliceForCodeReview_07052026/Development/Prototypes/DBModelDevAndTest). 
+The link is to a branch created specifically for these code review question and the code there will not be changing.
+ 
+## CommandLineParser.h  
+ 
+```cpp
+#ifndef COMMAND_LINE_PARSER_H_
+#define COMMAND_LINE_PARSER_H_
+
+// Standard C++ Header Files
+#ifdef TESTCOMMANDLINEENABLED
+#include <expected>
+#endif // TESTCOMMANDLINEENABLED
+#include <string>
+
+struct ProgramOptions
+{
+    std::string progName;
+    std::string mySqlUser;
+    std::string mySqlPassword;
+    std::string mySqlUrl;
+    unsigned int mySqlPort;
+    std::string mySqlDBName;
+    std::string userTestDataFile;
+    std::string taskTestDataFile;
+    bool enableExecutionTime = false;
+    bool verboseOutput = false;
+    bool runSelfTest = false;
+    bool forceErrors = false;
+    bool forceExceptions = false;
+    bool quitFirstFail = false;
+    bool canConnectToDatabase = false;
+    bool showTimeStamps = false;
+    std::string userName;
+    std::string userPassword;
+};
+
+#ifdef TESTCOMMANDLINEENABLED
+enum class CommandLineStatus
+{
+    NoErrors,
+    HelpRequested,
+    HasErrors
+};
+
+auto parseCommandLine(int argc, char* argv[]) -> std::expected<ProgramOptions, CommandLineStatus>;
+#endif // TESTCOMMANDLINEENABLED
+
+extern ProgramOptions programOptions;
+
+#endif // COMMAND_LINE_PARSER_H_
+```
+ 
+## CoreDBInterface.h  
+ 
+```cpp
+#ifndef COREDBINTERFACECORE_H_
+#define COREDBINTERFACECORE_H_
+
+// Project Header Files
+
+// External Libraries
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
+// Standard C++ Header Files
+#include <chrono>
+#include <iostream>
+#include <optional>
+#include <string>
+
+class CoreDBInterface
+{
+public:
+    CoreDBInterface();
+    virtual ~CoreDBInterface() = default;
+    std::string getAllErrorMessages() const noexcept { return m_errorMessages; };
+    inline void clearErrorMessages() { m_errorMessages.clear(); };
+    void setForceExceptions(bool forceIt) { m_forceException = forceIt; };
+    void setSelfTest(bool isSelfTest) { m_selfTest = isSelfTest; };
+    void testResetFormatOpts() { m_formatOpts.reset(); };
+    void debugShowVariables(std::string functionName) const noexcept;
+
+protected:
+    void initFormatOptions();
+    void appendErrorMessage(const std::string& newError) { m_errorMessages.append(newError); m_errorMessages.append("\n");};
+/*
+ * Utility functions to perform conversions from C++ class fields to 
+ * database fields and back. 
+ */
+/*
+ * Conversions from std::chrono to boost::mysql
+ */
+    boost::mysql::date stdchronoDateToBoostMySQLDate(const std::chrono::year_month_day& source) noexcept;
+    std::chrono::year_month_day boostMysqlDateToChronoDate(const boost::mysql::date& source) noexcept;
+    boost::mysql::datetime stdChronoTimePointToBoostDateTime(std::chrono::system_clock::time_point source) noexcept;
+    std::chrono::system_clock::time_point boostMysqlDateTimeToChronoTimePoint(boost::mysql::datetime dbDateTime);
+    std::optional<boost::mysql::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate);
+    std::optional<boost::mysql::datetime> optionalDateTimeConversion(std::optional<std::chrono::system_clock::time_point> optDateTime);
+/*
+ * for MySQL pattern match of string
+ */
+    std::string wrapSearchContentSQLPatternMatch(std::string searchString) noexcept;
+
+/*
+ * All calls to runQueryAsync and getConnectionFormatOptsAsync should be
+ * implemented within try blocks.
+ */
+    boost::mysql::results runQueryAsync(const std::string& query);
+    boost::mysql::format_options getConnectionFormatOptsAsync();
+    boost::asio::awaitable<boost::mysql::results> coRoutineExecuteSqlStatement(const std::string& query);
+    boost::asio::awaitable<boost::mysql::format_options> coRoutineGetFormatOptions();
+
+    std::string m_errorMessages;
+    boost::mysql::connect_params m_dbConnection;
+    bool m_verboseOutput;
+    bool m_forceError;
+    bool m_forceException;
+    bool m_selfTest;
+    std::optional<boost::mysql::format_options> m_formatOpts;
+};
+
+#endif // COREDBINTERFACECORE_H_
+
+```
+ 
+## CoreDBInterface.cpp  
+ 
+```cpp
+// Project Header Files
+#include "CommandLineParser.h"
+#include "CoreDBInterface.h"
+
+// External Libraries
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
+// Standard C++ Header Files
+#include <exception>
+#include <iostream>
+#include <stdexcept>
+#include <string>
+#include <utility>
+
+CoreDBInterface::CoreDBInterface()
+:   m_errorMessages{""},
+    m_verboseOutput{programOptions.verboseOutput},
+    m_forceError{programOptions.forceErrors},
+    m_forceException{programOptions.forceExceptions},
+    m_selfTest{false}
+{
+    m_dbConnection.server_address.emplace_host_and_port(programOptions.mySqlUrl, programOptions.mySqlPort);
+    m_dbConnection.username = programOptions.mySqlUser;
+    m_dbConnection.password = programOptions.mySqlPassword;
+    m_dbConnection.database = programOptions.mySqlDBName;
+}
+
+void CoreDBInterface::debugShowVariables(std::string functionName) const noexcept
+{
+    std::cout << "In " << functionName << ":\n";
+    std::cout << "\tformat_opts: " << (m_formatOpts.has_value()? "TRUE" : "FALSE") << "\n";
+    std::cout << "\tinSelfTest: " << (m_selfTest? "TRUE" : "FALSE") << "\n";
+    std::cout << "\tforceException: " << (m_forceException? "TRUE" : "FALSE") << "\n";
+    std::cout << std::endl;
+}
+
+boost::mysql::date CoreDBInterface::stdchronoDateToBoostMySQLDate(const std::chrono::year_month_day &source) noexcept
+{
+    std::chrono::sys_days tp = source;
+    return boost::mysql::date(tp);
+}
+
+std::chrono::year_month_day CoreDBInterface::boostMysqlDateToChronoDate(const boost::mysql::date &source) noexcept
+{
+    const std::chrono::year year{source.year()};
+    const std::chrono::month month{source.month()};
+    const std::chrono::day day{source.day()};
+    return std::chrono::year_month_day{year, month, day};
+}
+
+boost::mysql::datetime CoreDBInterface::stdChronoTimePointToBoostDateTime(std::chrono::system_clock::time_point source) noexcept
+{
+    return boost::mysql::datetime(std::chrono::time_point_cast<boost::mysql::datetime::time_point::duration>(source));
+}
+
+std::chrono::system_clock::time_point CoreDBInterface::boostMysqlDateTimeToChronoTimePoint(boost::mysql::datetime dbDateTime)
+{
+    return std::chrono::time_point_cast<std::chrono::system_clock::time_point::duration>(dbDateTime.as_time_point());
+}
+
+std::optional<boost::mysql::date> CoreDBInterface::optionalDateConversion(std::optional<std::chrono::year_month_day> optDate)
+{
+    std::optional<boost::mysql::date> mySqlDate;
+
+    if (optDate.has_value())
+    {
+        mySqlDate = stdchronoDateToBoostMySQLDate(optDate.value());
+    }
+
+    return mySqlDate;
+}
+std::optional<boost::mysql::datetime> CoreDBInterface::optionalDateTimeConversion(std::optional<std::chrono::system_clock::time_point> optDateTime)
+{
+    std::optional<boost::mysql::datetime> timeStamp;
+
+    if (optDateTime.has_value())
+    {
+        timeStamp = stdChronoTimePointToBoostDateTime(optDateTime.value());
+    }
+
+    return timeStamp;
+};
+
+std::string CoreDBInterface::wrapSearchContentSQLPatternMatch(std::string searchString) noexcept
+{
+    std::string patternMatchString("%");
+    patternMatchString.append(searchString);
+    patternMatchString.append("%");
+
+    return patternMatchString;
+}
+
+void CoreDBInterface::initFormatOptions()
+{
+    if (!m_formatOpts.has_value())
+    {
+        m_formatOpts = getConnectionFormatOptsAsync();
+    }
+}
+
+/*
+ * All calls to runQueryAsync should be implemented within try blocks.
+ */
+boost::mysql::results CoreDBInterface::runQueryAsync(const std::string& query)
+{
+    boost::mysql::results localResult;
+    boost::asio::io_context ctx;
+
+    boost::asio::co_spawn(ctx, coRoutineExecuteSqlStatement(query),
+        [&localResult, this](std::exception_ptr ptr, boost::mysql::results result)
+        {
+            if (ptr)
+            {
+                std::rethrow_exception(ptr);
+            }
+            localResult = std::move(result);
+        }
+    );
+
+    ctx.run();
+
+    return localResult;
+}
+
+boost::asio::awaitable<boost::mysql::results> CoreDBInterface::coRoutineExecuteSqlStatement(const std::string& query)
+{
+    if (m_forceException)
+    {
+        std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineExecuteSqlStatement");
+        std::domain_error forcedException(forcingException);
+        throw forcedException;
+    }
+
+    if (m_selfTest)
+    {
+        if (m_verboseOutput)
+        {
+            std::cout << "In Self Test Query is: \n\t" << query << std::endl;
+        }
+        boost::mysql::results selectResult;
+        co_return selectResult;
+    }
+
+    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+    conn.set_meta_mode(boost::mysql::metadata_mode::full);
+
+    co_await conn.async_connect(m_dbConnection);
+    
+    boost::mysql::results selectResult;
+
+    if (m_verboseOutput)
+    {
+        std::cout << "Running: \n\t" << query << std::endl;
+    }
+
+    co_await conn.async_execute(query, selectResult);
+
+    co_await conn.async_close();
+
+    co_return selectResult;
+}
+
+boost::mysql::format_options CoreDBInterface::getConnectionFormatOptsAsync()
+{
+    boost::mysql::format_options options;
+    boost::asio::io_context ctx;
+
+    boost::asio::co_spawn(ctx, coRoutineGetFormatOptions(),
+        [&options, this](std::exception_ptr getFormatOptsExceptionPtr, boost::mysql::format_options result)
+        {
+            if (getFormatOptsExceptionPtr)
+            {
+                std::rethrow_exception(getFormatOptsExceptionPtr);
+            }
+            options = std::move(result);
+        }
+    );
+
+    ctx.run();
+
+    return options;
+}
+
+boost::asio::awaitable<boost::mysql::format_options> CoreDBInterface::coRoutineGetFormatOptions()
+{
+    if (m_forceException)
+    {
+        std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions");
+        std::domain_error forcedException(forcingException);
+        throw forcedException;
+    }
+
+    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+    conn.set_meta_mode(boost::mysql::metadata_mode::full);
+
+
+    co_await conn.async_connect(m_dbConnection);
+
+    boost::mysql::format_options options = conn.format_opts().value();
+
+    co_await conn.async_close();
+
+    co_return options;
+}
+
+```
+ 
+## ModelDBInterface.h  
+  
+```cpp
+#ifndef MODELDBINTERFACECORE_H_
+#define MODELDBINTERFACECORE_H_
+
+// Project Header Files
+#include "CoreDBInterface.h"
+
+// External Libraries
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
+// Standard C++ Header Files
+#include <functional>
+#include <memory>
+#include <string>
+#include <vector>
+
+class ModelDBInterface : public CoreDBInterface
+{
+public:
+    ModelDBInterface(std::string modelNameIn, std::string primaryKeyNameIn);
+    virtual ~ModelDBInterface() = default;
+    bool save() noexcept;
+    bool insert() noexcept;
+    bool update() noexcept;
+    virtual bool hide(std::size_t userRequestingDelete) noexcept;
+    bool isInDataBase() const noexcept { return (m_primaryKey > 0); };
+    bool isModified() const noexcept { return m_modified; };
+    void clearModified() { m_modified = false; };
+    bool hasRequiredValues();
+    void reportMissingFields() noexcept;
+    std::string getModelName() { return m_modelName; };
+    bool isDeleted() const noexcept { return m_deleted; };
+
+protected:
+/*
+ * Each model will have 1 or more required fields, the model must specify what those
+ * fields are.
+ */
+    virtual void initRequiredFields() = 0;
+/*
+ * Each model must provide formating for Delete, Insert, Update and Select by
+ * object ID. Additional select statements will be handled by each model as necessary.
+ */
+    virtual std::string formatInsertStatement() = 0;
+    virtual std::string formatUpdateStatement() = 0;
+    virtual std::string formatDeleteStatement() = 0;
+
+/*
+ * To process TEXT fields that contain model fields.
+ */
+    std::vector<std::string> explodeTextField(std::string const& textField) noexcept;
+    std::string implodeTextField(std::vector<std::string>& fields) noexcept;
+
+/*
+ * Get the primary key value after a record is inserted in the database.
+ */
+    std::size_t getPrimaryKeyValue(boost::mysql::results& dbResultSet);
+
+protected:
+    std::size_t m_primaryKey;
+    std::string m_modelName;
+    std::string m_primaryKeyName;
+    bool m_modified;
+    bool m_deleted;
+    char m_delimiter;
+    struct RequireField
+    {
+        std::function<bool(void)> errorCondition;
+        std::string fieldName;
+    };
+    std::vector<RequireField> m_missingRequiredFieldsTests;
+};
+
+using AnyModel_shp = std::shared_ptr<ModelDBInterface>;
+
+#endif // MODELDBINTERFACECORE_H_
+
+```
+ 
+## ModelDBInterface.cpp  
+  
+```cpp
+// Project Header Files
+#include "ModelDBInterface.h"
+
+// External Libraries
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
+// Standard C++ Header Files
+#include <exception>
+//#include <iostream>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
+
+ModelDBInterface::ModelDBInterface(std::string modelNameIn, std::string primaryKeyNameIn)
+: CoreDBInterface()
+{
+    m_primaryKey = 0;
+    m_modelName = modelNameIn;
+    m_primaryKeyName = primaryKeyNameIn;
+    m_modified = false;
+    m_delimiter = ';';  
+    m_deleted = false;
+}
+
+bool ModelDBInterface::save() noexcept
+{
+    if (!isModified())
+    {
+        appendErrorMessage(std::format("{} not modified, no changes to save", m_modelName));
+        return false;
+    }
+
+    if (isInDataBase())
+    {
+        return update();
+    }
+    else
+    {
+        return insert();
+    }
+}
+
+bool ModelDBInterface::insert() noexcept
+{
+    clearErrorMessages();
+
+    if (isInDataBase())
+    {
+        appendErrorMessage(std::format("{} already in Database, use Update!", m_modelName));
+        return false;
+    }
+
+    if (!isModified())
+    {
+        appendErrorMessage(std::format("{} not modified!", m_modelName));
+        return false;
+    }
+
+    if (!hasRequiredValues())
+    {
+        appendErrorMessage(std::format("{} is missing required values!", m_modelName));
+        reportMissingFields();
+        return false;
+    }
+
+    try
+    {
+        boost::mysql::results localResult = runQueryAsync(formatInsertStatement());
+        m_primaryKey =  getPrimaryKeyValue(localResult);
+        m_modified = false;
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In {}.insert : {}", m_modelName, e.what()));
+        return false;
+    }
+
+    return true;
+}
+
+bool ModelDBInterface::update() noexcept
+{
+    clearErrorMessages();
+
+    if (!isInDataBase())
+    {
+        appendErrorMessage(std::format("{} not in Database, use Insert!", m_modelName));
+        return false;
+    }
+
+    if (!isModified())
+    {
+        appendErrorMessage(std::format("{} not modified!", m_modelName));
+        return false;
+    }
+
+    try
+    {
+        boost::mysql::results localResult = runQueryAsync(formatUpdateStatement());
+        m_modified = false;
+            
+        return true;
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In {}.update : {}", m_modelName, e.what()));
+        return false;
+    }
+}
+
+bool ModelDBInterface::hide([[maybe_unused]]std::size_t userRequestingDelete) noexcept
+{
+    clearErrorMessages();
+
+    if (!isInDataBase())
+    {
+        appendErrorMessage(std::format("{} not in Database, nothing to delete!", m_modelName));
+
+        return false;
+    }
+
+    try
+    {
+        boost::mysql::results localResult = runQueryAsync(formatDeleteStatement());
+
+        m_deleted = true;
+        
+        return true;
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In {}.hide() : {}", m_modelName, e.what()));
+        return false;
+    }
+}
+
+
+bool ModelDBInterface::hasRequiredValues()
+{
+    initRequiredFields();
+    for (auto fieldTest: m_missingRequiredFieldsTests)
+    {
+        if (fieldTest.errorCondition())
+        {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+/*
+ * Assumes that ModelDBInterface::hasRequiredValues() was called previously and that
+ * initRequiredFields() has been called.
+ */
+void ModelDBInterface::reportMissingFields() noexcept
+{
+    for (auto testAndReport: m_missingRequiredFieldsTests)
+    {
+        if (testAndReport.errorCondition())
+        {
+            appendErrorMessage(std::format("Missing {} required {}!", m_modelName, testAndReport.fieldName));
+        }
+    }
+}
+
+std::vector<std::string> ModelDBInterface::explodeTextField(std::string const& textField) noexcept
+{
+    std::vector<std::string> subFields;
+    std::istringstream iss(textField);
+
+    for (std::string token; std::getline(iss, token, m_delimiter); )
+    {
+        subFields.push_back(std::move(token));
+    }
+    return subFields;
+}
+
+std::string ModelDBInterface::implodeTextField(std::vector<std::string> &fields) noexcept
+{
+    std::string textField;
+
+    for (auto field: fields)
+    {
+        textField.append(field);
+        textField += m_delimiter;
+    }
+
+    return textField;
+}
+
+std::size_t ModelDBInterface::getPrimaryKeyValue(boost::mysql::results &dbResultSet)
+{
+    // If this is self test then we don't actually connect to the database, the code that
+    // tests insert statements still needs a value returned.
+    if (m_selfTest)
+    {
+        return 1;
+    }
+
+    // Old method: boost::mysql executes last_insert_id and returns the value, this
+    // this doesn't work with stored procedures, the stored procedure returns
+    // a value in the result set with the primary key name. 
+    std::size_t pKeyValue = dbResultSet.last_insert_id();
+
+    if (pKeyValue == 0)
+    {
+        boost::mysql::resultset_view resultview0 = dbResultSet[0];
+        if (resultview0.rows().num_columns() > 0)
+        {
+            std::vector<std::string> columnNames;
+            for (auto metaIter: resultview0.meta())
+            {
+                columnNames.push_back(metaIter.column_name());
+            }
+
+            if (columnNames[0] == m_primaryKeyName)
+            {
+                boost::mysql::field_view fv = resultview0.rows().at(0).at(0);
+                if (fv.kind() == boost::mysql::field_kind::uint64)
+                {
+                    pKeyValue = fv.as_uint64();
+                }
+            }
+        }
+    }
+
+    return pKeyValue;
+}
+
+```
+
+## commonUtilities.h  
+
+```cpp
+#ifndef COMMONUTILITIES_H_
+#define COMMONUTILITIES_H_
+#include <chrono>
+#include <string>
+
+extern unsigned int OneWeek;
+extern unsigned int TwoWeeks;
+
+extern std::chrono::year_month_day getTodaysDate();
+extern std::chrono::year_month_day getTodaysDatePlus(unsigned int offset);
+extern std::chrono::year_month_day getTodaysDateMinus(unsigned int offset);
+extern std::chrono::year_month_day constantStringToChronoDate(std::string dateStr);
+extern std::chrono::system_clock::time_point constantStringToChronoTimePoint(std::string dateTimeStr);
+extern std::chrono::system_clock::time_point getLocalMidnight(std::chrono::year_month_day scheduleDate);
+
+#endif // COMMONUTILITIES_H_
+
+```
+
+## commonUtilities.cpp  
+
+```cpp
+#include <chrono>
+#include "commonUtilities.h"
+#include <format>
+#include <iostream>
+#include <sstream>
+#include <string>
+
+unsigned int OneWeek = 7;
+unsigned int TwoWeeks = 14;
+
+std::chrono::year_month_day getTodaysDate()
+{
+    std::chrono::time_point<std::chrono::system_clock> today = std::chrono::system_clock::now();
+    return std::chrono::floor<std::chrono::days>(today);
+}
+
+std::chrono::year_month_day getTodaysDatePlus(unsigned int offset)
+{
+    std::chrono::time_point<std::chrono::system_clock> futureDate = std::chrono::system_clock::now();
+    futureDate += std::chrono::days(offset);
+    return std::chrono::floor<std::chrono::days>(futureDate);
+}
+
+std::chrono::year_month_day getTodaysDateMinus(unsigned int offset)
+{
+    std::chrono::time_point<std::chrono::system_clock> pastDate = std::chrono::system_clock::now();
+    pastDate -= std::chrono::days(offset);
+    return std::chrono::floor<std::chrono::days>(pastDate);
+}
+
+std::chrono::year_month_day constantStringToChronoDate(std::string dateStr)
+{
+    std::chrono::year_month_day dateValue;
+    std::istringstream ss(dateStr);
+
+    ss >> std::chrono::parse("%Y-%m-%d", dateValue);
+    if (ss.fail())
+    {
+        std::cerr << std::format("{} Failed to parse string {} to year_month_day.", __func__, dateStr) << std::endl;
+    }
+
+    return dateValue;
+}
+
+std::chrono::system_clock::time_point constantStringToChronoTimePoint(std::string dateTimeStr)
+{
+    std::chrono::system_clock::time_point dateTimeValue;
+
+ 
+    std::stringstream ss(dateTimeStr);
+    // Use std::chrono::from_stream with the desired format specifier
+    ss >> std::chrono::parse("%Y-%m-%d %H:%M:%S", dateTimeValue);
+
+    if (ss.fail()) {
+        std::cerr << std::format("{} Failed to parse string {} to time_point.", __func__, dateTimeStr) << std::endl;
+    }
+
+    return dateTimeValue;
+}
+
+std::chrono::system_clock::time_point getLocalMidnight(std::chrono::year_month_day scheduleDate)
+{
+    const std::chrono::time_zone* localTimeZone = std::chrono::current_zone();
+    const std::chrono::local_days local_midnight{scheduleDate};
+    const std::chrono::zoned_time zt_midnight = localTimeZone->to_sys(local_midnight);
+    return zt_midnight.get_sys_time();
+}
+
+```
+
+## ScheduleItemModel.h  
+
+```cpp
+#ifndef SCHEDULEITEMMODEL_H_
+#define SCHEDULEITEMMODEL_H_
+
+// Project Header Files
+#include "CommandLineParser.h"
+#include "ModelDBInterface.h"
+
+// Standard C++ Header Files
+#include <chrono>
+#include <format>
+#include <iostream>
+#include <memory>
+#include <optional>
+#include <string>
+
+class ScheduleItemModel : public ModelDBInterface
+{
+public:
+    ScheduleItemModel();
+    ScheduleItemModel(
+        std::size_t eventID,
+        std::size_t userId,
+        std::string title,
+        std::chrono::system_clock::time_point startTime,
+        std::chrono::system_clock::time_point endTime,
+        std::string location,
+        bool personal,
+        std::chrono::system_clock::time_point creationDate,
+        std::chrono::system_clock::time_point lastUpdate
+    );
+    virtual ~ScheduleItemModel() = default;
+
+    std::size_t getScheduleItemID() const { return m_primaryKey; };
+    std::size_t getUserID() const { return m_userID; };
+    std::string getTitle() const { return m_title; };
+    std::chrono::system_clock::time_point getCreationDate() const { return m_creation.value(); };
+    std::chrono::system_clock::time_point getLastUpdate() const { return m_lastUpdate.value(); };
+    std::chrono::system_clock::time_point getStartTime() const { return m_startTime.value(); };
+    std::chrono::system_clock::time_point getEndTime() const { return m_endTime.value(); };
+    std::string getLocation() const { return m_location.value_or(""); };
+    bool isPersonal() const { return m_personal; };
+    void setUserID(std::size_t userId);
+    void setTitle(std::string title);
+    void setStartDateAndTime(std::chrono::system_clock::time_point startTime);
+    void setEndDateAndTime(std::chrono::system_clock::time_point endTime);
+    void setCreationDate(std::chrono::system_clock::time_point creationDate);
+    void setLastUpdate(std::chrono::system_clock::time_point lastUpdate);
+    void setPersonal(bool personal);
+    void setLocation(std::string location);
+    void setScheduleItemID(std::size_t eventID);
+
+/*
+ * Required fields.
+ */
+    bool isMissingTitle() const noexcept { return (m_title.empty() || m_title.length() < MinimumTitleLength); };
+    bool isMissingUserID() const noexcept { return m_userID == 0; };
+    bool isMissingCreationDate() const noexcept { return !m_creation.has_value(); };
+    bool isMissingStartTime() const noexcept { return !m_startTime.has_value(); };
+    bool isMissingEndTime() const noexcept { return !m_endTime.has_value(); };
+
+/*
+ * Operators
+ */
+    bool operator==(ScheduleItemModel& other)
+    {
+        return diffScheduleItem(other);
+    }
+    bool operator==(std::shared_ptr<ScheduleItemModel> other)
+    {
+        return diffScheduleItem(*other);
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const ScheduleItemModel& scheduleItem)
+    {
+        constexpr const char* outFmtStr = "\t{}: {}\n";
+        os << "ScheduleItemModel:\n";
+        os << std::format(outFmtStr, "ScheduleItem ID", scheduleItem.m_primaryKey);
+        os << std::format(outFmtStr, "User ID", scheduleItem.m_userID);
+        os << std::format(outFmtStr, "Title", scheduleItem.m_title);
+        os << std::format(outFmtStr, "Start Date and Time", scheduleItem.m_startTime.value_or(std::chrono::system_clock::now()));
+        os << std::format(outFmtStr, "End Date and Time", scheduleItem.m_endTime.value_or(std::chrono::system_clock::now()));
+        os << std::format(outFmtStr, "Personal", (scheduleItem.m_personal? "TRUE": "FALSE"));
+        os << std::format(outFmtStr, "location", scheduleItem.getLocation());
+
+        os << "Optional Fields\n";
+        if (programOptions.showTimeStamps)
+        {
+            os << std::format(outFmtStr, "Creation Date", scheduleItem.m_creation.value_or(std::chrono::system_clock::now()));
+            if (scheduleItem.m_lastUpdate.has_value())
+            {
+                os << std::format(outFmtStr, "Last Update", scheduleItem.m_lastUpdate.value());
+            }
+        }
+
+        return os;
+    };
+
+
+protected:
+    bool diffScheduleItem(ScheduleItemModel& other);
+    virtual std::string formatInsertStatement() override;
+    virtual std::string formatUpdateStatement() override;
+    virtual std::string formatDeleteStatement() override;
+    void initRequiredFields() override;
+
+    std::size_t m_userID;
+    std::string m_title;
+/*
+ * startTime and endTime are not optional in the database, We are using
+ * std::optional for those 2 fields to remove errors in valgrind and possible
+ * exceptions in some compilers.
+ */
+    std::optional<std::chrono::system_clock::time_point> m_startTime;
+    std::optional<std::chrono::system_clock::time_point> m_endTime;
+    std::optional<std::chrono::system_clock::time_point> m_creation;
+    std::optional<std::chrono::system_clock::time_point> m_lastUpdate;
+    bool m_personal;
+    std::optional<std::string> m_location;
+
+    static const std::size_t MinimumTitleLength = 3;
+};
+
+using ScheduleItemModel_shp = std::shared_ptr<ScheduleItemModel>;
+
+#endif // SCHEDULEITEMMODEL_H_
+
+```
+
+## ScheduleItemModel.cpp  
+
+```cpp
+// Project Header Files
+#include "ScheduleItemModel.h"
+
+// Standard C++ Header Files
+#include <chrono>
+#include <functional>
+#include <string>
+#include <vector>
+
+ScheduleItemModel::ScheduleItemModel()
+: ModelDBInterface("ScheduleItem", "idUserScheduleItem")
+{
+    m_userID = 0;
+    m_title = "";
+    m_personal = false;
+}
+
+ScheduleItemModel::ScheduleItemModel(
+    std::size_t eventId,
+    std::size_t userId,
+    std::string title,
+    std::chrono::system_clock::time_point startTime,
+    std::chrono::system_clock::time_point endTime,
+    std::string location,
+    bool personal,
+    std::chrono::system_clock::time_point creationDate,
+    std::chrono::system_clock::time_point lastUpdate
+)
+: ScheduleItemModel()
+{
+    m_primaryKey = eventId;
+    m_userID = userId;
+    m_title = title;
+    m_startTime = startTime;
+    m_endTime = endTime;
+    m_personal = personal;
+    m_location = location;
+    m_creation = creationDate;
+    m_lastUpdate = lastUpdate;
+    m_deleted = false;
+}
+
+
+void ScheduleItemModel::setUserID(std::size_t userId)
+{
+    m_modified = true;
+    m_userID = userId;
+}
+
+void ScheduleItemModel::setTitle(std::string title)
+{
+    m_modified = true;
+    m_title = title;
+}
+
+void ScheduleItemModel::setStartDateAndTime(std::chrono::system_clock::time_point startTime)
+{
+    m_modified = true;
+    m_startTime = startTime;
+}
+
+void ScheduleItemModel::setEndDateAndTime(std::chrono::system_clock::time_point endTime)
+{
+    m_modified = true;
+    m_endTime = endTime;
+}
+
+void ScheduleItemModel::setCreationDate(std::chrono::system_clock::time_point creationDate)
+{
+    m_modified = true;
+    m_creation = creationDate;
+}
+
+void ScheduleItemModel::setLastUpdate(std::chrono::system_clock::time_point lastUpdate)
+{
+    m_modified = true;
+    m_lastUpdate = lastUpdate;
+}
+
+void ScheduleItemModel::setPersonal(bool personal)
+{
+    m_modified = true;
+    m_personal = personal;
+}
+
+void ScheduleItemModel::setLocation(std::string location)
+{
+    m_modified = true;
+    m_location = location;
+}
+
+void ScheduleItemModel::setScheduleItemID(std::size_t eventId)
+{
+    m_modified = true;
+    m_primaryKey = eventId;
+}
+
+bool ScheduleItemModel::diffScheduleItem(ScheduleItemModel &other)
+{
+    std::chrono::system_clock::time_point localStartTime = m_startTime.value_or(std::chrono::system_clock::now());
+    std::chrono::system_clock::time_point otherStartTime = other.m_startTime.value_or(std::chrono::system_clock::now());
+    std::chrono::system_clock::time_point localEndTime = m_endTime.value_or(std::chrono::system_clock::now());
+    std::chrono::system_clock::time_point otherEndTime = other.m_endTime.value_or(std::chrono::system_clock::now());
+
+    return (m_primaryKey == other.m_primaryKey &&
+        m_userID == other.m_userID &&
+        m_title == other.m_title &&
+        localStartTime == otherStartTime &&
+        localEndTime == otherEndTime &&
+        m_personal == other.m_personal
+    );
+}
+
+std::string ScheduleItemModel::formatInsertStatement()
+{
+    initFormatOptions();
+
+    return boost::mysql::format_sql(m_formatOpts.value(),
+        "CALL AddScheduleEvent({0}, {1}, {2}, {3}, {4}, {5})",
+            m_userID,
+            optionalDateTimeConversion(m_startTime.value()),
+            optionalDateTimeConversion(m_endTime.value()),
+            m_title,
+            static_cast<unsigned int>(m_personal?1:0),
+            m_location
+    );
+}
+
+std::string ScheduleItemModel::formatUpdateStatement()
+{
+    initFormatOptions();
+
+    return boost::mysql::format_sql(m_formatOpts.value(),
+        "CALL UpdateScheduleItemAllFields({0}, {1}, {2}, {3}, {4}, {5}, {6})",
+            m_userID, m_primaryKey,
+            optionalDateTimeConversion(m_startTime),
+            optionalDateTimeConversion(m_endTime),
+            m_title,
+            static_cast<unsigned int>(m_personal?1:0),
+            m_location
+    );
+}
+
+std::string ScheduleItemModel::formatDeleteStatement()
+{
+    initFormatOptions();
+
+    return boost::mysql::format_sql(m_formatOpts.value(), "CALL HideScheduleItem({}, {})", m_userID, m_primaryKey);
+}
+
+void ScheduleItemModel::initRequiredFields()
+{
+    m_missingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingUserID, this), "User ID"});
+    m_missingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingTitle, this), "Title"});
+    m_missingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingStartTime, this), "Start Time"});
+    m_missingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingEndTime, this), "End Time"});
+}
+
+```
+
+## TestStatus.h
+
+```cpp
+#ifndef TESTSTATUS_H_
+#define TESTSTATUS_H_
+
+enum class TestStatus {TestPassed, TestFailed};
+const TestStatus TESTFAILED = TestStatus::TestFailed;
+const TestStatus TESTPASSED = TestStatus::TestPassed;
+
+#endif	// TESTSTATUS_H_
+```
+
+## commonTestValues.h  
+ 
+```cpp
+#ifndef COMMONTESTVALUE_H_
+#define COMMONTESTVALUE_H_
+
+// Project Header Files
+#include "TestStatus.h"
+
+// Standard C++ Header Files
+#include <chrono>
+#include <string>
+
+extern std::chrono::system_clock::time_point commonTestTimeStampValue;
+extern std::chrono::year_month_day commonTestDateValue;
+extern std::chrono::year_month_day commonTestDateRangeStartValue;
+extern std::chrono::year_month_day commonTestDateRangeEndValue;
+extern std::chrono::year_month_day commonProductionTestDataAddedDate;
+
+extern void initCommonTestValues(std::string testTimeStampStr);
+
+#endif	// COMMONTESTVALUE_H_
+
+```
+
+## commonTestValues.cpp    
+ 
+```cpp
+#include <chrono>
+#include "commonUtilities.h"
+#include <format>
+#include <iostream>
+#include <sstream>
+#include <string>
+
+unsigned int OneWeek = 7;
+unsigned int TwoWeeks = 14;
+
+std::chrono::year_month_day getTodaysDate()
+{
+    std::chrono::time_point<std::chrono::system_clock> today = std::chrono::system_clock::now();
+    return std::chrono::floor<std::chrono::days>(today);
+}
+
+std::chrono::year_month_day getTodaysDatePlus(unsigned int offset)
+{
+    std::chrono::time_point<std::chrono::system_clock> futureDate = std::chrono::system_clock::now();
+    futureDate += std::chrono::days(offset);
+    return std::chrono::floor<std::chrono::days>(futureDate);
+}
+
+std::chrono::year_month_day getTodaysDateMinus(unsigned int offset)
+{
+    std::chrono::time_point<std::chrono::system_clock> pastDate = std::chrono::system_clock::now();
+    pastDate -= std::chrono::days(offset);
+    return std::chrono::floor<std::chrono::days>(pastDate);
+}
+
+std::chrono::year_month_day constantStringToChronoDate(std::string dateStr)
+{
+    std::chrono::year_month_day dateValue;
+    std::istringstream ss(dateStr);
+
+    ss >> std::chrono::parse("%Y-%m-%d", dateValue);
+    if (ss.fail())
+    {
+        std::cerr << std::format("{} Failed to parse string {} to year_month_day.", __func__, dateStr) << std::endl;
+    }
+
+    return dateValue;
+}
+
+std::chrono::system_clock::time_point constantStringToChronoTimePoint(std::string dateTimeStr)
+{
+    std::chrono::system_clock::time_point dateTimeValue;
+
+ 
+    std::stringstream ss(dateTimeStr);
+    // Use std::chrono::from_stream with the desired format specifier
+    ss >> std::chrono::parse("%Y-%m-%d %H:%M:%S", dateTimeValue);
+
+    if (ss.fail()) {
+        std::cerr << std::format("{} Failed to parse string {} to time_point.", __func__, dateTimeStr) << std::endl;
+    }
+
+    return dateTimeValue;
+}
+
+std::chrono::system_clock::time_point getLocalMidnight(std::chrono::year_month_day scheduleDate)
+{
+    const std::chrono::time_zone* localTimeZone = std::chrono::current_zone();
+    const std::chrono::local_days local_midnight{scheduleDate};
+    const std::chrono::zoned_time zt_midnight = localTimeZone->to_sys(local_midnight);
+    return zt_midnight.get_sys_time();
+}
+```
+
+## QueryProcessor.h  
+
+```cpp
+#ifndef QUERYPROCESSOR_H_
+#define QUERYPROCESSOR_H_
+
+// Project Header Files
+#include "CoreDBInterface.h"
+#include "ModelDBInterface.h"
+#include "commonTestValues.h"
+
+// External Libraries
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
+// Standard C++ Header Files
+#include <algorithm>
+#include <concepts>
+#include <exception>
+#include <format>
+#include <initializer_list>
+#include <iostream>
+#include <memory>
+#include <optional>
+#include <stdexcept>
+#include <string>
+#include <type_traits>
+#include <vector>
+
+/*
+ * Templated Class to handle model select queries with multiple results.
+ */
+struct ListExceptionTestElement
+{
+    /*
+     * this struct is used during self testing to exercise all paths through a function
+     * including the catch clause of a try / catch block.
+     */
+    std::function<TestStatus(void)> testExceptionFunction;
+    const char* functionUnderTest;
+};
+
+struct ColumnNameToIndexmapping
+{
+    /*
+     * this struct is used while processing query results. boost::mysql returns
+     * results that include the column names,
+     */
+    std::string columnName;
+    std::optional<std::size_t> columnIndex;
+    ColumnNameToIndexmapping(std::string name) : columnName{name}{};
+};
+
+
+template<typename ListType>
+requires std::is_base_of<ModelDBInterface, ListType>::value
+class QueryProcessor : public CoreDBInterface
+{
+protected:
+/*
+ * The details of each of the subclasses are required for the following functions,
+ * each class must define these functions.
+ */
+    virtual void fillRequiredIndexes() = 0;
+    virtual std::shared_ptr<ListType> processResultRow(boost::mysql::row_view &queryRow) = 0;
+
+public:
+    QueryProcessor(std::string modelname, std::initializer_list<std::string> requiredColumns)
+    : CoreDBInterface()
+    {
+        /*
+         * The listTypeName variable is used during testing and debugging.
+         */
+        modelName = modelname;
+        std::string tempListType(modelname);
+        tempListType.append("QueryProcessor");
+        listTypeName = tempListType;
+
+        for (auto columnName: requiredColumns)
+        {
+            columnToIndexMap.push_back(columnName);
+        }
+
+    }
+    virtual ~QueryProcessor() = default;
+
+    std::string getListTypeName() const noexcept { return listTypeName; };
+    
+    bool runStringOnlyQuery(std::string queryString)
+    {
+        clearErrorMessages();
+
+        try
+        {
+            stringOnlyResults.clear();
+            boost::mysql::results localResult = runQueryAsync(queryString);
+            return processStringOnlyResults(localResult);
+        }
+
+        catch(const std::exception& e)
+        {
+            appendErrorMessage(std::format("In {}List.runStringOnlyQuery() : {}", listTypeName, e.what()));
+            return false;
+        }
+    }
+
+    virtual TestStatus runSelfTest() noexcept
+    {
+        selfTestResetAllValues();
+
+        std::cout << "\nRunning " << listTypeName << " Self Test\n";
+
+        return testListExceptionHandling();
+    };
+
+protected:
+    /*
+     * assignValueToIndex is called multiple times in the implementations of fillRequiredIndexes().
+     */
+    void assignValueToIndex(std::string columnName, std::size_t &columnIndex)
+    {
+        auto iterToIndex = std::find_if(columnToIndexMap.begin(), columnToIndexMap.end(),
+            [columnName](const ColumnNameToIndexmapping& ctim){ return ctim.columnName == columnName; });
+        if (iterToIndex != columnToIndexMap.end())
+        {
+            if (iterToIndex->columnIndex.has_value())
+            {
+                columnIndex = iterToIndex->columnIndex.value();
+            }
+            else
+            {
+                appendErrorMessage(std::format("NULL Value to index for {}", columnName));
+            }
+        }
+        else
+        {
+            appendErrorMessage(std::format("Column Name: {} NOT FOUND in assignValueToIndex()", columnName));
+        }
+    }
+
+
+    /*
+    * Map the column names to the indexes for the columns, the order of the columns
+    * in the result set is not guarenteed. Ensure that the columns necessary to fill
+    * the model are present. Currently there is no error if there are too many fields.
+    */
+    void mapColumnNameToIndex(boost::mysql::resultset_view &noteQueryresultSet)
+    {
+        std::vector<std::string> columnNames;
+        bool hasAllRequiredColumns = true;
+
+        /*
+         * Get all the column names in the result set.
+         */
+        for (auto metaIter: noteQueryresultSet.meta())
+        {
+            columnNames.push_back(metaIter.column_name());
+        }
+
+        /*
+         * For each expected column, search the column names and set the index
+         * based on the column name location.
+         */
+        for (std::size_t i = 0; i < columnToIndexMap.size(); ++i)
+        {
+            std::string nameToFind = columnToIndexMap[i].columnName;
+            auto iterToIndex = std::find(columnNames.begin(), columnNames.end(), nameToFind);
+            if (iterToIndex != columnNames.end())
+            {
+                columnToIndexMap[i].columnIndex = std::distance(columnNames.begin(), iterToIndex);
+            }
+            else
+            {
+                appendErrorMessage(std::format("Required field {} not found in results", nameToFind));
+                hasAllRequiredColumns = false;
+                std::cerr << std::format("Required field {} not found in:\n", nameToFind);
+                for (auto columnName: columnNames)
+                {
+                    std::cerr << std::format("{}, ", columnName);
+                }
+                std::cerr << std::endl;
+            }
+        }
+
+        if (!hasAllRequiredColumns)
+        {
+            throw std::out_of_range("Results missing required fields");
+        }
+
+        fillRequiredIndexes();
+    }
+
+    /*
+    * Each boost::mysql result set contain a list of the column names in the result set.
+    * Given the current implementation these columns should be in the same order for 
+    * every result set, but we can't depend on that so we need to map the column names
+    * to the indexes for every result set. For performance reasons we want to map the
+    * indexes once per result set rather than doing a string search for each row of 
+    * data. Create an object of the proper model for each row of data in the result set.
+    */
+    virtual std::vector<std::shared_ptr<ListType>> processResultSet(boost::mysql::resultset_view &queryresultSet)
+    {
+        std::vector<std::shared_ptr<ListType>> intermediateResults;
+
+        if (queryresultSet.rows().num_columns() > 0)
+        {
+            mapColumnNameToIndex(queryresultSet);
+            for (auto rv: queryresultSet.rows())
+            {
+                intermediateResults.push_back(processResultRow(rv));
+            }
+        }
+
+        return intermediateResults;
+    }
+
+    /*
+    * The boost::mysql::results class should contain all the results from the current
+    * query, the results may span multiple result sets. The processResults method
+    * should return all the results found in a single list.
+    */
+    virtual std::vector<std::shared_ptr<ListType>> processResults(boost::mysql::results &noteQueryResults)
+    {
+        std::vector<std::shared_ptr<ListType>> queryResultValues;
+        queryResultValues.clear();
+        if (m_selfTest)
+        {
+            // In self test if we are not forcing an exception, the function must return
+            // something. The processResultRow function will fail in self test in the 
+            // boost::mysql code, where it will fail an assert().
+            if (m_forceException)
+            {
+                throw std::out_of_range("Forced exception");
+            }
+            if (m_forceError)
+            {
+                return queryResultValues;
+            }
+            queryResultValues.push_back(std::make_shared<ListType>());
+        }
+        else {
+            for (std::size_t i = 0; i < noteQueryResults.size(); ++i)
+            {
+                boost::mysql::resultset_view resultview = noteQueryResults[i];
+                std::vector<std::shared_ptr<ListType>> intermediateResults = processResultSet(resultview);
+                queryResultValues.insert(queryResultValues.end(), intermediateResults.begin(), intermediateResults.end());
+            }
+        }
+
+        return queryResultValues;
+    }
+
+    virtual std::shared_ptr<ListType> getOneResult(boost::mysql::results& localResult)
+    {
+        std::vector<std::shared_ptr<ListType>> shouldHaveOnlyOne = processResults(localResult);
+        std::shared_ptr<ListType> found = nullptr;
+
+        if (shouldHaveOnlyOne.empty())
+        {
+            std::string emsg(modelName);
+            emsg.append(" not found!");
+            appendErrorMessage(emsg);
+            return found;
+        }
+
+        if (shouldHaveOnlyOne.size() > 1)
+        {
+            std::string emsg("Too many ");
+            emsg.append(modelName);
+            emsg.append("s found to process!");
+            appendErrorMessage(emsg);
+            return found;
+        }
+
+        found = shouldHaveOnlyOne[0];
+
+        return found;
+    }
+
+    virtual bool processStringOnlyResults(boost::mysql::results& results)
+    {
+        if (m_selfTest)
+        {
+            stringOnlyResults.push_back("Test String");
+            return true;
+        }
+
+        if (results.rows().empty())
+        {
+            return true;
+        }
+
+        for (auto row: results.rows())
+        {
+            boost::mysql::field_view fieldView = row.at(0);
+            if (fieldView.kind() == boost::mysql::field_kind::string)
+            {
+                std::string returnedValue = fieldView.as_string();
+                stringOnlyResults.push_back(returnedValue);
+            }
+    
+        }
+
+        return true;
+    }
+
+    virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept = 0;
+
+    virtual void selfTestResetAllValues() noexcept
+    {
+        m_selfTest = true;
+        m_formatOpts.reset();
+        clearErrorMessages();
+    }
+
+    virtual TestStatus testListExceptionHandling() noexcept
+    {
+        std::cout << "\n\nRunning Exception Handling Test Cases " << listTypeName << "\n";
+
+        selfTestResetAllValues();
+
+        bool globalForceException = CoreDBInterface::m_forceException;
+
+        std::vector<ListExceptionTestElement> exceptionTests = initListExceptionTests();
+
+        TestStatus exceptionHandlingPassed = forceListExceptionsLoop(exceptionTests);
+
+        CoreDBInterface::m_forceException = globalForceException;
+
+        std::cout << "\n\n";
+
+        return exceptionHandlingPassed;
+    }
+
+    virtual TestStatus forceListExceptionsLoop(std::vector<ListExceptionTestElement> exceptionTests) noexcept
+    {
+        TestStatus testAllExceptionHandling = TESTPASSED;
+        const char* failFunction;
+        
+        try
+        {
+            for (auto exceptionTest: exceptionTests)
+            {
+                failFunction = exceptionTest.functionUnderTest;
+                if (exceptionTest.testExceptionFunction() == TESTFAILED)
+                {
+                    std::cerr << std::format("{}::{}: Exception Test FAILED\n",
+                        listTypeName, failFunction);
+                    testAllExceptionHandling = TESTFAILED;
+                }
+            }
+        }
+
+        catch (std::exception &uncaughtException)
+        {
+            std::cerr << std::format("{}::{}:: Caught Unhandled Exception!! Test FAILED!\n{}",
+                listTypeName, failFunction, uncaughtException.what());
+            testAllExceptionHandling = TESTFAILED;
+        }
+
+        return testAllExceptionHandling;
+    }
+
+    /*
+     * Report any failures in an exception test.
+     */
+    TestStatus testListExceptionReportFailure(bool expectSuccess, bool isBool, const char* testExceptionFuncName) noexcept
+    {
+        std::string reportFailure = std::format("In {}::{}: ", listTypeName, testExceptionFuncName);
+
+        if (expectSuccess)
+        {
+            reportFailure.append(std::format("expected success returned {} \n", isBool? "false" : "empty vector"));
+            reportFailure.append(CoreDBInterface::m_errorMessages);
+            reportFailure.append("\n");
+        }
+        else
+        {
+            reportFailure.append(std::format("expected failure returned {} ", isBool? "true" : "vector with values"));
+        }
+        reportFailure.append("\nException Test FAILED");
+
+        std::cerr << reportFailure << std::endl;
+
+        return TESTFAILED;
+    }
+
+    /*
+     * Preform an exception test on any function that returns a vector of shared
+     * pointers of a model. Used to exercise as many paths through a function as
+     * possible for unit testing (self testing).
+     */
+    template <typename F, typename... Ts>
+    requires std::is_invocable_v<F, Ts...>
+    TestStatus testListExceptionAndSuccessNArgs(const char* funcName, F funcUnderTest, Ts... args) noexcept
+    {
+        std::cout << std::format("\nException Test for {}", funcName) << std::endl;
+        std::string debugName(funcName);
+
+        m_forceException = true;
+        if (!funcUnderTest(args...).empty())
+        {
+            return testListExceptionReportFailure(false, false, funcName);
+        }
+
+        selfTestResetAllValues();
+        m_forceException = false;
+        if (funcUnderTest(args...).empty())
+        {
+            return testListExceptionReportFailure(true, false, funcName);
+        }
+
+        return TESTPASSED;
+    }
+
+    /*
+     * Preform an exception test on any function that returns a single shared
+     * pointer of a model. Used to exercise as many paths through a function as
+     * possible for unit testing (self testing).
+     */
+    template <typename F, typename... Ts>
+    requires std::is_invocable_v<F, Ts...>
+    TestStatus testExceptionAndSuccessNArgs(const char* funcName, F funcUnderTest, Ts... args) noexcept
+    {
+        CoreDBInterface::m_forceException = true;
+        if (funcUnderTest(args...))
+        {
+            return testListExceptionReportFailure(false, true, funcName);
+        }
+
+        CoreDBInterface::m_forceException = false;
+        if (!funcUnderTest(args...))
+        {
+            return testListExceptionReportFailure(true, true, funcName);
+        }
+
+        return TESTPASSED;
+    }
+
+
+
+    static const std::size_t IndexNotSet = 0xffff;
+
+    std::string listTypeName;
+    std::string modelName;
+    std::vector<std::string> stringOnlyResults;
+    std::vector<ColumnNameToIndexmapping> columnToIndexMap;
+};
+
+#endif // QUERYPROCESSOR_H_
+
+```
+
+## ScheduleItemQueryProcessor.h  
+
+```cpp
+// Project Header Files
+#include "QueryProcessor.h"
+#include "ScheduleItemModel.h"
+
+// Standard C++ Header Files
+#include <chrono>
+#include <string>
+#include <vector>
+
+using ScheduleItemList = std::vector<ScheduleItemModel_shp>;
+
+class ScheduleItemQueryProcessor : public QueryProcessor<ScheduleItemModel>
+{
+public:
+    ScheduleItemQueryProcessor(std::size_t userId);
+    virtual ~ScheduleItemQueryProcessor() = default;
+
+    ScheduleItemModel_shp getScheduleItemById(std::size_t eventId) noexcept;
+    ScheduleItemList getUserDaySchedule(std::chrono::year_month_day scheduleDate) noexcept;
+    ScheduleItemList findUserScheduleItemsByContentAndDateRange(std::string searchTitle,
+        std::chrono::year_month_day searchStart, std::chrono::year_month_day searchEnd) noexcept;
+    std::vector<std::string> findEventSToRepeat(std::string searchTitle) noexcept;
+    std::vector<std::string> findEventsForRepeatCompletion() noexcept;
+    std::vector<std::string> findLocationsForRepeatCompletion() noexcept; 
+
+private:
+    virtual ScheduleItemModel_shp processResultRow(boost::mysql::row_view& queryRow);
+    virtual void fillRequiredIndexes() override;
+
+    virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
+    TestStatus testExceptionGetUserDaySchedule() noexcept;
+    TestStatus testExceptionFindUserScheduleItemsByContentAndDateRange() noexcept;
+    TestStatus testExceptionFindEventSToRepeat() noexcept;
+    TestStatus testExceptionFindEventsForRepeatCompletion() noexcept;
+    TestStatus testExceptionFindLocationsForRepeatCompletion() noexcept;
+    TestStatus testExceptionGetScheduleItemByID() noexcept;
+
+
+    std::size_t m_userID;
+    std::size_t m_scheduleItemIdIdx = IndexNotSet;
+    std::size_t m_userIdIdx = IndexNotSet;
+    std::size_t m_startTimeIdx = IndexNotSet;
+    std::size_t m_endTimeIdx = IndexNotSet;
+    std::size_t m_titleIdx = IndexNotSet;
+    std::size_t m_personalIdx = IndexNotSet;
+    std::size_t m_locationIdx = IndexNotSet;
+    std::size_t m_createdOnIdx = IndexNotSet;
+    std::size_t m_lastUpdateIdx = IndexNotSet;
+    std::size_t m_hiddenIdx = IndexNotSet;
+};
+
+#endif // SCHEDULEITEMLQUERYPROCESSOR_H_
+
+```
+
+## ScheduleItemQueryProcessor.cpp  
+
+```cpp
+// Project Header Files
+#include "commonUtilities.h"
+#include "QueryProcessor.h"
+#include "ScheduleItemQueryProcessor.h"
+#include "ScheduleItemModel.h"
+
+// Standard C++ Header Files
+#include <chrono>
+#include <format>
+#include <iostream>
+
+ScheduleItemQueryProcessor::ScheduleItemQueryProcessor(std::size_t userId)
+: QueryProcessor<ScheduleItemModel>("ScheduleItem", 
+        {
+            "idUserScheduleItem", "UserID", "StartDateTime", "EndDateTime", "Title",
+            "Personal", "Location", "CreatedTS", "LastUpdateTS", "Hidden"
+        }
+    )
+{
+    m_userID = userId;
+}
+
+ScheduleItemModel_shp ScheduleItemQueryProcessor::getScheduleItemById(std::size_t eventId) noexcept
+{
+    clearErrorMessages();
+    ScheduleItemModel_shp found = nullptr;
+
+    try
+    {
+        initFormatOptions();
+        boost::mysql::format_context fctx(m_formatOpts.value());
+        boost::mysql::format_sql_to(fctx, "CALL GetScheduleItemById({})", eventId);
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        found = getOneResult(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In ScheduleItemQueryProcessor::{}({}) : {}", __func__, eventId, e.what()));
+    }
+
+    return found;
+}
+
+ScheduleItemList ScheduleItemQueryProcessor::getUserDaySchedule(std::chrono::year_month_day scheduleDate) noexcept
+{
+    clearErrorMessages();
+    appendErrorMessage("In ScheduleItemQueryProcessor::getUserDaySchedule : ");
+
+    try
+    {
+        const int secondsInHour = 3600;
+        const int secondsInDay = secondsInHour * 24;
+        std::chrono::seconds dateAdjustor(secondsInDay - 1);
+
+        std::chrono::system_clock::time_point startSearch = getLocalMidnight(scheduleDate);
+        std::chrono::system_clock::time_point endSearch = startSearch + dateAdjustor;
+
+        initFormatOptions();
+        boost::mysql::format_context fctx(m_formatOpts.value());
+        boost::mysql::format_sql_to(fctx, "CALL GetUserDaySchedule({}, {}, {})",
+            m_userID, stdChronoTimePointToBoostDateTime(startSearch), stdChronoTimePointToBoostDateTime(endSearch));
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        return processResults(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(e.what());
+    }
+    
+    return ScheduleItemList();
+}
+
+ScheduleItemList ScheduleItemQueryProcessor::findUserScheduleItemsByContentAndDateRange(
+    std::string searchTitle,
+    std::chrono::year_month_day searchStart,
+    std::chrono::year_month_day searchEnd
+) noexcept
+{
+    clearErrorMessages();
+    appendErrorMessage("In ScheduleItemQueryProcessor::findUserScheduleItemsByContentAndDateRange : ");
+
+    try
+    {
+        initFormatOptions();
+        boost::mysql::format_context fctx(m_formatOpts.value());
+        boost::mysql::format_sql_to(fctx, "CALL FindUserScheduleItemsByContentAndDateRange({}, {}, {}, {})",
+            m_userID, searchTitle, stdchronoDateToBoostMySQLDate(searchStart),
+            stdchronoDateToBoostMySQLDate(searchEnd));
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        return processResults(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(e.what());
+    }
+    
+    return ScheduleItemList();
+}
+
+std::vector<std::string> ScheduleItemQueryProcessor::findEventSToRepeat(std::string searchTitle) noexcept
+{
+    clearErrorMessages();
+    std::vector<std::string> matchingEvents;
+    appendErrorMessage("In ScheduleItemQueryProcessor::findEventSToRepeat : ");
+
+    try
+    {
+        initFormatOptions();
+        boost::mysql::format_context fctx(m_formatOpts.value());
+        boost::mysql::format_sql_to(fctx, "CALL ScheduleItemContentSelectionList({}, {})", searchTitle, m_userID);
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+
+        if (!m_selfTest)
+        {
+            // localresult will abort with an assert in self test
+            if (!localResult.rows().empty())
+            {
+                for (auto row: localResult.rows())
+                {
+                    matchingEvents.push_back(row.at(0).as_string());    
+                }
+            }
+        }
+        else
+        {
+            if (!m_forceException)
+            {
+                matchingEvents.push_back("Test String");
+            }
+        }
+
+        clearErrorMessages();
+        return matchingEvents;
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(e.what());
+    }
+    
+    return matchingEvents;
+}
+
+std::vector<std::string> ScheduleItemQueryProcessor::findEventsForRepeatCompletion() noexcept
+{
+    clearErrorMessages();
+    std::vector<std::string> matchingEvents;
+    appendErrorMessage("In ScheduleItemQueryProcessor::findEventsForRepeatCompletion : ");
+
+    try
+    {
+        initFormatOptions();
+        boost::mysql::format_context fctx(m_formatOpts.value());
+        boost::mysql::format_sql_to(fctx, "CALL EventTitlesForCompleter({})", m_userID);
+
+        if (runStringOnlyQuery(std::move(fctx).get().value()))
+        {
+            matchingEvents = stringOnlyResults;
+        }
+
+        clearErrorMessages();
+        return matchingEvents;
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(e.what());
+    }
+    
+    return matchingEvents;
+}
+
+std::vector<std::string> ScheduleItemQueryProcessor::findLocationsForRepeatCompletion() noexcept
+{
+    clearErrorMessages();
+    std::vector<std::string> matchingLocations;
+    appendErrorMessage("In ScheduleItemQueryProcessor::findLocationsForRepeatCompletion : ");
+
+    try
+    {
+        initFormatOptions();
+        boost::mysql::format_context fctx(m_formatOpts.value());
+        boost::mysql::format_sql_to(fctx, "CALL EventLocationsForCompleter({})", m_userID);
+
+        if (runStringOnlyQuery(std::move(fctx).get().value()))
+        {
+            matchingLocations = stringOnlyResults;
+        }
+
+        clearErrorMessages();
+        return matchingLocations;
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(e.what());
+    }
+    
+    return matchingLocations;
+}
+
+ScheduleItemModel_shp ScheduleItemQueryProcessor::processResultRow(boost::mysql::row_view &queryRow)
+{
+    std::size_t scheduleId = queryRow.at(m_scheduleItemIdIdx).as_uint64();
+    std::size_t userID = queryRow.at(m_userIdIdx).as_uint64();
+    std::chrono::system_clock::time_point startTime = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_startTimeIdx).as_datetime());
+    std::chrono::system_clock::time_point endTime = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_endTimeIdx).as_datetime());
+    std::string title = queryRow.at(m_titleIdx).as_string();
+    std::string location;
+    if (!queryRow.at(m_locationIdx).is_null())
+    {
+        location = queryRow.at(m_locationIdx).as_string();
+    }
+    std::chrono::system_clock::time_point creationTimeStamp = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_createdOnIdx).as_datetime());
+    std::chrono::system_clock::time_point lastUpdate = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_lastUpdateIdx).as_datetime());
+    bool personal = queryRow.at(m_personalIdx).as_int64();
+
+    return std::make_shared<ScheduleItemModel>(scheduleId, userID, title, startTime, endTime, location, personal, creationTimeStamp, lastUpdate);
+
+}
+
+void ScheduleItemQueryProcessor::fillRequiredIndexes()
+{
+    assignValueToIndex("idUserScheduleItem", m_scheduleItemIdIdx);
+    assignValueToIndex("UserID", m_userIdIdx);
+    assignValueToIndex("StartDateTime", m_startTimeIdx);
+    assignValueToIndex("EndDateTime", m_endTimeIdx);
+    assignValueToIndex("Title", m_titleIdx);
+    assignValueToIndex("Personal", m_personalIdx);
+    assignValueToIndex("Location", m_locationIdx);
+    assignValueToIndex("CreatedTS", m_createdOnIdx);
+    assignValueToIndex("LastUpdateTS", m_lastUpdateIdx);
+    assignValueToIndex("Hidden", m_hiddenIdx);
+}
+
+std::vector<ListExceptionTestElement> ScheduleItemQueryProcessor::initListExceptionTests() noexcept
+{
+    std::vector<ListExceptionTestElement> exceptionTests;
+    exceptionTests.push_back({std::bind(&ScheduleItemQueryProcessor::testExceptionGetUserDaySchedule, this), "getUserDaySchedule"});
+    exceptionTests.push_back({std::bind(&ScheduleItemQueryProcessor::testExceptionGetScheduleItemByID, this), "getScheduleItemById"});
+    exceptionTests.push_back({std::bind(&ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByContentAndDateRange, this),
+        "findUserScheduleItemsByContentAndDateRange"});
+    exceptionTests.push_back({std::bind(&ScheduleItemQueryProcessor::testExceptionFindEventSToRepeat, this), "findEventSToRepeat"});
+    exceptionTests.push_back({std::bind(&ScheduleItemQueryProcessor::testExceptionFindEventsForRepeatCompletion, this), "findEventsToRepeatCompletion"});
+    exceptionTests.push_back({std::bind(&ScheduleItemQueryProcessor::testExceptionFindLocationsForRepeatCompletion, this),
+        "findLocationsForRepeatCompletion"});
+
+    return exceptionTests;
+}
+
+TestStatus ScheduleItemQueryProcessor::testExceptionGetUserDaySchedule() noexcept
+{
+    selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("ScheduleItemQueryProcessor::testExceptionGgetUserDaySchedule()",
+         std::bind(&ScheduleItemQueryProcessor::getUserDaySchedule, this, std::placeholders::_1), commonTestDateValue);
+}
+
+TestStatus ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByContentAndDateRange() noexcept
+{
+    selfTestResetAllValues();
+
+    std::string titleSearch("Title search");
+    std::chrono::year_month_day testStart(commonTestDateRangeStartValue);
+    std::chrono::year_month_day testEnd(commonTestDateRangeEndValue);
+
+    return testListExceptionAndSuccessNArgs("ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByContentAndDateRange()",
+         std::bind(&ScheduleItemQueryProcessor::findUserScheduleItemsByContentAndDateRange, this, std::placeholders::_1,
+            std::placeholders::_2, std::placeholders::_3), 
+        titleSearch, testStart, testEnd);
+}
+
+TestStatus ScheduleItemQueryProcessor::testExceptionFindEventSToRepeat() noexcept
+{
+    selfTestResetAllValues();
+
+    std::string titleSearch("Title search");
+
+    return testListExceptionAndSuccessNArgs("ScheduleItemQueryProcessor::testExceptionFindEventSToRepeat()",
+         std::bind(&ScheduleItemQueryProcessor::findEventSToRepeat, this, std::placeholders::_1), titleSearch);
+}
+
+TestStatus ScheduleItemQueryProcessor::testExceptionFindEventsForRepeatCompletion() noexcept
+{
+    selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("ScheduleItemQueryProcessor::testExceptionFindEventsForRepeatCompletion()",
+         std::bind(&ScheduleItemQueryProcessor::findEventsForRepeatCompletion, this));
+}
+
+TestStatus ScheduleItemQueryProcessor::testExceptionFindLocationsForRepeatCompletion() noexcept
+{
+    selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("ScheduleItemQueryProcessor::testExceptionFindLocationsForRepeatCompletion()",
+         std::bind(&ScheduleItemQueryProcessor::findLocationsForRepeatCompletion, this));
+}
+
+TestStatus ScheduleItemQueryProcessor::testExceptionGetScheduleItemByID() noexcept
+{
+    selfTestResetAllValues();
+
+    std::size_t eventId = 1;
+
+    return testExceptionAndSuccessNArgs("ScheduleItemQueryProcessor::testExceptionGetScheduleItemByID()",
+         std::bind(&ScheduleItemQueryProcessor::getScheduleItemById, this, std::placeholders::_1), 
+        eventId);
+}
+
+```
+
+
+

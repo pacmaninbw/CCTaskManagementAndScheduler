@@ -1,0 +1,1627 @@
+In a previous question [Self / Unit test of polymorphic database model](https://codereview.stackexchange.com/questions/299494/self-unit-test-of-polymorphic-database-model)
+I presented a C++ class for performing unit tests of a database access class.
+ The closest I got to an answer was a comment:  
+
+> your classes are not doing one thing, each is super complex. i got a headache by just getting to the end of the question
+> - BЈовић
+> Commented Nov 12, 2025 at 16:17  
+
+This caused me to completely rewrite the code, which I present here. I broke the self test 
+file into multiple template class files. The model object being tested in the question is 
+one of five object models that is tested, it is the `ScheduleItemModel` that will be 
+included in some other questions as well.  
+
+The code performs a unit test of a object model that accesses a MySQL or MariaDB database.  
+
+# The Code  
+The code can be found in my
+[GitHub Repository](https://github.com/pacmaninbw/CCTaskManagementAndScheduler/tree/ScheduleSliceForCodeReview_07052026/Development/Prototypes/DBModelDevAndTest). 
+The link is to a branch created specifically for these code review question and the code there will not be changing.
+ The regression test scripts that I use to generate the the test coverage tables can be found in the 
+ [TestCommands directory](https://github.com/pacmaninbw/CCTaskManagementAndScheduler/tree/ScheduleSliceForCodeReview_07052026/Development/Prototypes/DBModelDevAndTest/TestCommands). 
+ The primary regression tests that are always run are presented in another Code Review question.   
+ 
+Due to the amount of code the source files for the Model (CoreDBInterface.cpp, ModelDBInterface.cpp, ScheduleItemModel.h, and ScheduleItemModel.cpp) being tested can be found in the question [The ScheduleItemModel implementation in the view per day planner](https://codereview.stackexchange.com/questions/302564/the-scheduleitemmodel-implementation-in-the-view-per-day-planner)   
+
+## CommandLineParser.h  
+ 
+```cpp
+#ifndef COMMAND_LINE_PARSER_H_
+#define COMMAND_LINE_PARSER_H_
+
+// Standard C++ Header Files
+#ifdef TESTCOMMANDLINEENABLED
+#include <expected>
+#endif // TESTCOMMANDLINEENABLED
+#include <string>
+
+struct ProgramOptions
+{
+    std::string progName;
+    std::string mySqlUser;
+    std::string mySqlPassword;
+    std::string mySqlUrl;
+    unsigned int mySqlPort;
+    std::string mySqlDBName;
+    std::string userTestDataFile;
+    std::string taskTestDataFile;
+	bool enableExecutionTime = false;
+    bool verboseOutput = false;
+    bool runSelfTest = false;
+    bool forceErrors = false;
+    bool forceExceptions = false;
+    bool quitFirstFail = false;
+    bool canConnectToDatabase = false;
+    bool showTimeStamps = false;
+    std::string userName;
+    std::string userPassword;
+};
+
+#ifdef TESTCOMMANDLINEENABLED
+enum class CommandLineStatus
+{
+    NoErrors,
+    HelpRequested,
+    HasErrors
+};
+
+auto parseCommandLine(int argc, char* argv[]) -> std::expected<ProgramOptions, CommandLineStatus>;
+#endif // TESTCOMMANDLINEENABLED
+
+extern ProgramOptions programOptions;
+
+#endif // COMMAND_LINE_PARSER_H_
+```
+ 
+## CoreDBInterface.h  
+ 
+```cpp
+#ifndef COREDBINTERFACECORE_H_
+#define COREDBINTERFACECORE_H_
+
+// Project Header Files
+
+// External Libraries
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
+// Standard C++ Header Files
+#include <chrono>
+#include <iostream>
+#include <optional>
+#include <string>
+
+class CoreDBInterface
+{
+public:
+    CoreDBInterface();
+    virtual ~CoreDBInterface() = default;
+    std::string getAllErrorMessages() const noexcept { return m_errorMessages; };
+    inline void clearErrorMessages() { m_errorMessages.clear(); };
+    void setForceExceptions(bool forceIt) { m_forceException = forceIt; };
+    void setSelfTest(bool isSelfTest) { m_selfTest = isSelfTest; };
+    void testResetFormatOpts() { m_formatOpts.reset(); };
+    void debugShowVariables(std::string functionName) const noexcept;
+
+protected:
+    void initFormatOptions();
+    void appendErrorMessage(const std::string& newError) { m_errorMessages.append(newError); m_errorMessages.append("\n");};
+/*
+ * Utility functions to perform conversions from C++ class fields to 
+ * database fields and back. 
+ */
+/*
+ * Conversions from std::chrono to boost::mysql
+ */
+    boost::mysql::date stdchronoDateToBoostMySQLDate(const std::chrono::year_month_day& source) noexcept;
+    std::chrono::year_month_day boostMysqlDateToChronoDate(const boost::mysql::date& source) noexcept;
+    boost::mysql::datetime stdChronoTimePointToBoostDateTime(std::chrono::system_clock::time_point source) noexcept;
+    std::chrono::system_clock::time_point boostMysqlDateTimeToChronoTimePoint(boost::mysql::datetime dbDateTime);
+    std::optional<boost::mysql::date> optionalDateConversion(std::optional<std::chrono::year_month_day> optDate);
+    std::optional<boost::mysql::datetime> optionalDateTimeConversion(std::optional<std::chrono::system_clock::time_point> optDateTime);
+/*
+ * for MySQL pattern match of string
+ */
+    std::string wrapSearchContentSQLPatternMatch(std::string searchString) noexcept;
+
+/*
+ * All calls to runQueryAsync and getConnectionFormatOptsAsync should be
+ * implemented within try blocks.
+ */
+    boost::mysql::results runQueryAsync(const std::string& query);
+    boost::mysql::format_options getConnectionFormatOptsAsync();
+    boost::asio::awaitable<boost::mysql::results> coRoutineExecuteSqlStatement(const std::string& query);
+    boost::asio::awaitable<boost::mysql::format_options> coRoutineGetFormatOptions();
+
+    std::string m_errorMessages;
+    boost::mysql::connect_params m_dbConnection;
+    bool m_verboseOutput;
+    bool m_forceError;
+    bool m_forceException;
+    bool m_selfTest;
+    std::optional<boost::mysql::format_options> m_formatOpts;
+};
+
+#endif // COREDBINTERFACECORE_H_
+
+```
+ 
+## CoreDBInterface.cpp  
+ 
+[See CoreDBInterface.cpp in this question](https://codereview.stackexchange.com/questions/302564/the-scheduleitemmodel-implementation-in-the-view-per-day-planner)
+ 
+## ModelDBInterface.h  
+  
+```cpp
+#ifndef MODELDBINTERFACECORE_H_
+#define MODELDBINTERFACECORE_H_
+
+// Project Header Files
+#include "CoreDBInterface.h"
+
+// External Libraries
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
+// Standard C++ Header Files
+#include <functional>
+#include <memory>
+#include <string>
+#include <vector>
+
+class ModelDBInterface : public CoreDBInterface
+{
+public:
+    ModelDBInterface(std::string modelNameIn, std::string primaryKeyNameIn);
+    virtual ~ModelDBInterface() = default;
+    bool save() noexcept;
+    bool insert() noexcept;
+    bool update() noexcept;
+    virtual bool hide(std::size_t userRequestingDelete) noexcept;
+    bool isInDataBase() const noexcept { return (m_primaryKey > 0); };
+    bool isModified() const noexcept { return m_modified; };
+    void clearModified() { m_modified = false; };
+    bool hasRequiredValues();
+    void reportMissingFields() noexcept;
+    std::string getModelName() { return m_modelName; };
+    bool isDeleted() const noexcept { return m_deleted; };
+
+protected:
+/*
+ * Each model will have 1 or more required fields, the model must specify what those
+ * fields are.
+ */
+    virtual void initRequiredFields() = 0;
+/*
+ * Each model must provide formating for Delete, Insert, Update and Select by
+ * object ID. Additional select statements will be handled by each model as necessary.
+ */
+    virtual std::string formatInsertStatement() = 0;
+    virtual std::string formatUpdateStatement() = 0;
+    virtual std::string formatDeleteStatement() = 0;
+
+/*
+ * To process TEXT fields that contain model fields.
+ */
+    std::vector<std::string> explodeTextField(std::string const& textField) noexcept;
+    std::string implodeTextField(std::vector<std::string>& fields) noexcept;
+
+/*
+ * Get the primary key value after a record is inserted in the database.
+ */
+    std::size_t getPrimaryKeyValue(boost::mysql::results& dbResultSet);
+
+protected:
+    std::size_t m_primaryKey;
+    std::string m_modelName;
+    std::string m_primaryKeyName;
+    bool m_modified;
+    bool m_deleted;
+    char m_delimiter;
+    struct RequireField
+    {
+        std::function<bool(void)> errorCondition;
+        std::string fieldName;
+    };
+    std::vector<RequireField> m_missingRequiredFieldsTests;
+};
+
+using AnyModel_shp = std::shared_ptr<ModelDBInterface>;
+
+#endif // MODELDBINTERFACECORE_H_
+
+```
+ 
+## ModelDBInterface.cpp  
+ 
+[See ModelDBInterface.cpp in this question](https://codereview.stackexchange.com/questions/302564/the-scheduleitemmodel-implementation-in-the-view-per-day-planner)
+
+## TestStatus.h
+
+```cpp
+#ifndef TESTSTATUS_H_
+#define TESTSTATUS_H_
+
+enum class TestStatus {TestPassed, TestFailed};
+const TestStatus TESTFAILED = TestStatus::TestFailed;
+const TestStatus TESTPASSED = TestStatus::TestPassed;
+
+#endif	// TESTSTATUS_H_
+
+```
+
+## commonUtilities.h  
+
+```cpp
+#ifndef COMMONUTILITIES_H_
+#define COMMONUTILITIES_H_
+#include <chrono>
+#include <string>
+
+extern unsigned int OneWeek;
+extern unsigned int TwoWeeks;
+
+extern std::chrono::year_month_day getTodaysDate();
+extern std::chrono::year_month_day getTodaysDatePlus(unsigned int offset);
+extern std::chrono::year_month_day getTodaysDateMinus(unsigned int offset);
+extern std::chrono::year_month_day constantStringToChronoDate(std::string dateStr);
+extern std::chrono::system_clock::time_point constantStringToChronoTimePoint(std::string dateTimeStr);
+extern std::chrono::system_clock::time_point getLocalMidnight(std::chrono::year_month_day scheduleDate);
+
+#endif // COMMONUTILITIES_H_
+
+```
+
+## commonUtilities.cpp  
+
+```cpp
+#include <chrono>
+#include "commonUtilities.h"
+#include <format>
+#include <iostream>
+#include <sstream>
+#include <string>
+
+unsigned int OneWeek = 7;
+unsigned int TwoWeeks = 14;
+
+std::chrono::year_month_day getTodaysDate()
+{
+    std::chrono::time_point<std::chrono::system_clock> today = std::chrono::system_clock::now();
+    return std::chrono::floor<std::chrono::days>(today);
+}
+
+std::chrono::year_month_day getTodaysDatePlus(unsigned int offset)
+{
+    std::chrono::time_point<std::chrono::system_clock> futureDate = std::chrono::system_clock::now();
+    futureDate += std::chrono::days(offset);
+    return std::chrono::floor<std::chrono::days>(futureDate);
+}
+
+std::chrono::year_month_day getTodaysDateMinus(unsigned int offset)
+{
+    std::chrono::time_point<std::chrono::system_clock> pastDate = std::chrono::system_clock::now();
+    pastDate -= std::chrono::days(offset);
+    return std::chrono::floor<std::chrono::days>(pastDate);
+}
+
+std::chrono::year_month_day constantStringToChronoDate(std::string dateStr)
+{
+    std::chrono::year_month_day dateValue;
+    std::istringstream ss(dateStr);
+
+    ss >> std::chrono::parse("%Y-%m-%d", dateValue);
+    if (ss.fail())
+    {
+        std::cerr << std::format("{} Failed to parse string {} to year_month_day.", __func__, dateStr) << std::endl;
+    }
+
+    return dateValue;
+}
+
+std::chrono::system_clock::time_point constantStringToChronoTimePoint(std::string dateTimeStr)
+{
+    std::chrono::system_clock::time_point dateTimeValue;
+
+ 
+    std::stringstream ss(dateTimeStr);
+    // Use std::chrono::from_stream with the desired format specifier
+    ss >> std::chrono::parse("%Y-%m-%d %H:%M:%S", dateTimeValue);
+
+    if (ss.fail()) {
+        std::cerr << std::format("{} Failed to parse string {} to time_point.", __func__, dateTimeStr) << std::endl;
+    }
+
+    return dateTimeValue;
+}
+
+std::chrono::system_clock::time_point getLocalMidnight(std::chrono::year_month_day scheduleDate)
+{
+    const std::chrono::time_zone* localTimeZone = std::chrono::current_zone();
+    const std::chrono::local_days local_midnight{scheduleDate};
+    const std::chrono::zoned_time zt_midnight = localTimeZone->to_sys(local_midnight);
+    return zt_midnight.get_sys_time();
+}
+
+```
+
+## commonTestValues.h  
+ 
+```cpp
+#ifndef COMMONTESTVALUE_H_
+#define COMMONTESTVALUE_H_
+
+// Project Header Files
+#include "TestStatus.h"
+
+// Standard C++ Header Files
+#include <chrono>
+#include <string>
+
+extern std::chrono::system_clock::time_point commonTestTimeStampValue;
+extern std::chrono::year_month_day commonTestDateValue;
+extern std::chrono::year_month_day commonTestDateRangeStartValue;
+extern std::chrono::year_month_day commonTestDateRangeEndValue;
+extern std::chrono::year_month_day commonProductionTestDataAddedDate;
+
+extern void initCommonTestValues(std::string testTimeStampStr);
+
+#endif	// COMMONTESTVALUE_H_
+
+```
+
+## commonTestValues.cpp    
+ 
+```cpp
+#include <chrono>
+#include "commonUtilities.h"
+#include <format>
+#include <iostream>
+#include <sstream>
+#include <string>
+
+unsigned int OneWeek = 7;
+unsigned int TwoWeeks = 14;
+
+std::chrono::year_month_day getTodaysDate()
+{
+    std::chrono::time_point<std::chrono::system_clock> today = std::chrono::system_clock::now();
+    return std::chrono::floor<std::chrono::days>(today);
+}
+
+std::chrono::year_month_day getTodaysDatePlus(unsigned int offset)
+{
+    std::chrono::time_point<std::chrono::system_clock> futureDate = std::chrono::system_clock::now();
+    futureDate += std::chrono::days(offset);
+    return std::chrono::floor<std::chrono::days>(futureDate);
+}
+
+std::chrono::year_month_day getTodaysDateMinus(unsigned int offset)
+{
+    std::chrono::time_point<std::chrono::system_clock> pastDate = std::chrono::system_clock::now();
+    pastDate -= std::chrono::days(offset);
+    return std::chrono::floor<std::chrono::days>(pastDate);
+}
+
+std::chrono::year_month_day constantStringToChronoDate(std::string dateStr)
+{
+    std::chrono::year_month_day dateValue;
+    std::istringstream ss(dateStr);
+
+    ss >> std::chrono::parse("%Y-%m-%d", dateValue);
+    if (ss.fail())
+    {
+        std::cerr << std::format("{} Failed to parse string {} to year_month_day.", __func__, dateStr) << std::endl;
+    }
+
+    return dateValue;
+}
+
+std::chrono::system_clock::time_point constantStringToChronoTimePoint(std::string dateTimeStr)
+{
+    std::chrono::system_clock::time_point dateTimeValue;
+
+ 
+    std::stringstream ss(dateTimeStr);
+    // Use std::chrono::from_stream with the desired format specifier
+    ss >> std::chrono::parse("%Y-%m-%d %H:%M:%S", dateTimeValue);
+
+    if (ss.fail()) {
+        std::cerr << std::format("{} Failed to parse string {} to time_point.", __func__, dateTimeStr) << std::endl;
+    }
+
+    return dateTimeValue;
+}
+
+std::chrono::system_clock::time_point getLocalMidnight(std::chrono::year_month_day scheduleDate)
+{
+    const std::chrono::time_zone* localTimeZone = std::chrono::current_zone();
+    const std::chrono::local_days local_midnight{scheduleDate};
+    const std::chrono::zoned_time zt_midnight = localTimeZone->to_sys(local_midnight);
+    return zt_midnight.get_sys_time();
+}
+```
+
+## AttributeSelfTest.h  
+ 
+```cpp
+#ifndef ATTRIBUTESELFTEST_H_
+#define ATTRIBUTESELFTEST_H_
+
+// Project Header Files
+#include "ModelDBInterface.h"
+#include "TestStatus.h"
+
+// External Libraries
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
+// Standard C++ Header Files
+#include <chrono>
+#include <concepts>
+#include <functional>
+#include <iostream>
+#include <optional>
+#include <ranges>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <vector>
+
+/*
+ * The AttributeSelfTest template class provides unit testing for the attributes
+ * of the model being tested. The tests include setting the attribute value
+ * through an attribute accessor function, getting the attrribute value with an
+ * accessor function, and testing if the model modified attribute or "dirty" is 
+ * set when the value is set.
+ * 
+ * This class is expected to be used by a class explicitly for testinmg a particular
+ * model. The class that tests a particular model will create a list of attribute
+ * tests that use the template test methods in this class. 
+ */
+
+ using AttributeTestFunction = std::function<TestStatus(void)>;
+
+template<class Model>
+requires std::is_base_of_v<ModelDBInterface, Model>
+class AttributeSelfTest : public virtual Model
+{
+protected:
+/*****
+ * These methods must be implemented.
+ * The tests they implement require the details of the particular model being tested.
+ * 
+ * Init functions should call the local version of selfTestResetAllValues().
+ */
+    virtual std::vector<AttributeTestFunction> initAttributeAccessTests() noexcept = 0;
+
+public:
+
+    AttributeSelfTest() : Model() { }
+
+    virtual ~AttributeSelfTest() = default;
+
+protected:
+
+/*
+ * In some instances a text field is used to contain a list of values. This
+ * function provides the ability to test those text fields.
+ */
+    virtual TestStatus testTextFieldManipulation()
+    {
+        TestStatus testStatus = TESTPASSED;
+        int testFieldCount = 31;
+        std::vector<std::string> testInputFields;
+        std::string expectedImplodeOutput;
+
+        for (std::size_t i : std::views::iota(1, testFieldCount))
+        {
+            std::string fieldName = std::format("InputField{}", i);
+            testInputFields.push_back(fieldName);
+            expectedImplodeOutput.append(fieldName);
+            expectedImplodeOutput += ModelDBInterface::m_delimiter;
+        }
+
+        std::string implodeOutput = ModelDBInterface::implodeTextField(testInputFields);
+        if (implodeOutput != expectedImplodeOutput)
+        {
+            testStatus = TESTFAILED;
+            std::cerr << std::format("Unit test of implodeTextField() FAILED!\nExpected Output = {}\nActual Output ={}\n",
+                expectedImplodeOutput, implodeOutput);
+        }
+
+        if (testStatus == TESTPASSED)
+        {
+            std::vector<std::string> explodeOutput = ModelDBInterface::explodeTextField(implodeOutput);
+            if (explodeOutput != testInputFields)
+            {
+                testStatus = TESTFAILED;
+                std::cerr << "Unit test of explodeTextField() FAILED!\n";
+            }
+        }
+
+        return testStatus;
+    }
+
+    virtual TestStatus testAttributeAccessFunctions() noexcept
+    {
+        TestStatus testStatus = TESTPASSED;
+        std::vector<AttributeTestFunction> attributeAccessTests = initAttributeAccessTests();
+
+        for (auto attributeAccessTest: attributeAccessTests)
+        {
+            if (attributeAccessTest() == TESTFAILED)
+            {
+                testStatus = TESTFAILED;
+            }
+        }
+
+        return testStatus ;
+    }
+
+    /*
+     * Test the attribute access functions for a particular attribute. Used
+     * to test required attributes in a model.
+     */
+    template <typename U>
+    TestStatus testAccessorFunctions(U testValue, U* member, std::string_view memberName,
+         std::function<void(U)>setFunct, std::function<U(void)>getFunct) noexcept
+    {
+        std::string_view modelName(ModelDBInterface::m_modelName);
+
+        std::cout << "Running self test on set and get functions for " << modelName << "::" << memberName << "\n";
+
+        ModelDBInterface::m_modified = false;
+
+        setFunct(testValue);
+        if (!ModelDBInterface::isModified())
+        {
+            std::cerr << "In self test for: " << modelName << " Set function for " << memberName << " FAILED to set modified\n";
+            return TESTFAILED;
+        }
+
+        if (*member != testValue)
+        {
+            std::cerr  << "In self test for: " << modelName << "Set function for " << memberName << " FAILED to set member value\n";
+            return TESTFAILED;
+        }
+
+        if (getFunct() != testValue)
+        {
+            std::cerr  << "In self test for: " << modelName << "Get function for " << memberName << " FAILED\n";
+            return TESTFAILED;
+        }
+
+        std::cout << "Self test on set and get functions for " << modelName << "::" << memberName << " PASSED\n";
+
+        return TESTPASSED;
+    }
+
+    /*
+     * Test the attribute access functions for a particular optional attribute. Due
+     * to the difference of how optional values are stored the method for required
+     * attributes can't be used here.
+     */
+    template <typename U>
+    TestStatus testOptionalAccessorFunctions(std::optional<U> testValue, std::optional<U>* member, std::string_view memberName,
+        std::function<void(U)>setFunct, std::function<std::optional<U>(void)>getFunct) noexcept
+    {
+        std::string_view modelName(ModelDBInterface::m_modelName);
+
+        std::cout << "Running self test on set and get functions for " << modelName << "::" << memberName << "\n";
+
+        ModelDBInterface::m_modified = false;
+
+        setFunct(testValue.value());
+        if (!ModelDBInterface::isModified())
+        {
+            std::cerr << "In self test for: " << modelName << " set function for " << memberName << " FAILED to set modified\n";
+            return TESTFAILED;
+        }
+
+        if (*member != testValue)
+        {
+            if (!member->has_value())
+            {
+                std::cerr  << "In self test for: " << modelName << "Set function for " << memberName << " FAILED to set member value\n";
+            }
+            if (member->value() != testValue.value())
+            {
+                std::cerr  << "In self test for: " << modelName << " expected value: " << testValue.value()
+                         << "actual value: " << member->value() << " FAILED to set member value\n";
+            }
+            return TESTFAILED;
+        }
+
+        std::optional<U> returnValue = getFunct();
+        if (returnValue != testValue)
+        {
+            std::cerr  << "In self test for: " << modelName << "Get function for " << memberName << " FAILED\n";
+            return TESTFAILED;
+        }
+
+        std::cout << "Self test on set and get functions for " << modelName << "::" << memberName << " PASSED\n";
+
+        return TESTPASSED;
+    }
+
+    /*
+     * TimeStamp attributes are required, but the only way to test if the have a
+     * value is to store it as an optional value. This method tests the access to
+     * TimeStamp attributes.
+     */
+    TestStatus testTimeStampAccessorFunctions(std::chrono::system_clock::time_point testValue,
+        std::optional<std::chrono::system_clock::time_point>* member,
+        std::string_view memberName,
+        std::function<void(std::chrono::system_clock::time_point)>setFunct,
+        std::function<std::chrono::system_clock::time_point(void)>getFunct) noexcept
+    {
+        std::string_view modelName(ModelDBInterface::m_modelName);
+        std::cout << "Running self test on set and get functions for " << modelName << "::" << memberName << "\n";
+
+        ModelDBInterface::m_modified = false;
+
+        setFunct(testValue);
+        if (!ModelDBInterface::isModified())
+        {
+            std::cerr << "In self test for: " << modelName << " set function for " << memberName << " FAILED to set modified\n";
+            return TESTFAILED;
+        }
+
+        if (!member->has_value() || member->value() != testValue)
+        {
+            std::cerr  << "In self test for: " << modelName << "Set function for " << memberName << " FAILED to set member value\n";
+            return TESTFAILED;
+        }
+
+        if (getFunct() != testValue)
+        {
+            std::cerr  << "In self test for: " << modelName << "Get function for " << memberName << " FAILED\n";
+            return TESTFAILED;
+        }
+
+        std::cout << "Self test on set and get functions for " << modelName << "::" << memberName << " PASSED\n";
+
+        return TESTPASSED;
+    }
+
+};
+
+#endif // ATTRIBUTESELFTEST_H_
+
+```
+
+## ExceptionSelfTest.h  
+
+```cpp
+#ifndef EXCEPTIONSELFTEST_H_
+#define EXCEPTIONSELFTEST_H_
+
+// Project Header Files
+#include "ModelDBInterface.h"
+#include "TestStatus.h"
+
+// External Libraries
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
+// Standard C++ Header Files
+#include <concepts>
+#include <functional>
+#include <iostream>
+#include <ranges>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <vector>
+
+/*
+ * Each of the model classes will be used in application that provides a graphic
+ * user interface. The application needs to be robust and handle exceptions as
+ * they occur in a manor where the application will provide necessary information
+ * to the user if an error occurs. Error messages returned by the libraries in
+ * use may not be meaningful to a user. This class tests the functions in the
+ * model that may receive an exception from the underlying libraries.
+ * 
+ * Exceptions are forced at what be the library level to test the exception
+ * handling capability of the model.
+ * 
+ * An exception test should first test what the function will do if an exception
+ * is thrown and then test to see that the function properly works otherwise.
+ * 
+ * A list of exception tests needs tyo be provided by the class that is testing
+ * the model.
+ */
+
+struct ExceptionTestElement
+{
+    std::function<TestStatus(void)> testExceptionFunction;
+    std::string_view functionUnderTest;
+};
+
+template<class Model>
+requires std::is_base_of_v<ModelDBInterface, Model>
+class ExceptionSelfTest : public virtual Model
+{
+protected:
+/*****
+ * These methods must be implemented.
+ * The tests they implement require the details of the particular model being tested.
+ * 
+ * Init functions should call the local version of selfTestResetAllValues().
+ */
+    virtual void selfTestResetAllValues() noexcept = 0;
+    virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept = 0;
+    virtual TestStatus testExceptionInsert() = 0;     // Should be added to the vector returned by initExceptionTests()
+    virtual TestStatus testExceptionUpdate() = 0;     // Should be added to the vector returned by initExceptionTests()
+    virtual TestStatus testExceptionHide() = 0;   // Should be added to the vector returned by initExceptionTests()
+
+public:
+
+    ExceptionSelfTest() : Model() { }
+
+    virtual ~ExceptionSelfTest() = default;
+
+protected:
+
+    std::string_view itemUnderTest;
+
+    virtual TestStatus testExceptionHandling() noexcept
+    {
+        std::cout << "\n\nRunning Exception Handling Test Cases\n";
+
+        selfTestResetAllValues();
+
+        bool globalForceException = CoreDBInterface::m_forceException;
+
+        std::vector<ExceptionTestElement> exceptionTests = initExceptionTests();
+
+        TestStatus exceptionHandlingPassed = forceExceptionsLoop(exceptionTests);
+
+        CoreDBInterface::m_forceException = globalForceException;
+
+        std::cout << "\n\n";
+
+        return exceptionHandlingPassed;
+    }
+
+    virtual TestStatus forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) noexcept
+    {
+        TestStatus testAllExceptionHandling = TESTPASSED;
+        std::string_view failFunction;
+        
+        try
+        {
+            for (auto exceptionTest: exceptionTests)
+            {
+                failFunction = exceptionTest.functionUnderTest;
+                if (exceptionTest.testExceptionFunction() == TESTFAILED)
+                {
+                    std::cerr << std::format("{}::{} returned true with exception: Exception Test Failed\n",
+                        itemUnderTest, failFunction);
+                    testAllExceptionHandling = TESTFAILED;
+                }
+            }
+        }
+
+        catch (std::exception &uncaughtException)
+        {
+            std::cerr << std::format("{}::{}:: Caught Unhandled Exception!! Test FAILED!\n{}",
+                itemUnderTest, failFunction, uncaughtException.what());
+            testAllExceptionHandling = TESTFAILED;
+        }
+
+        return testAllExceptionHandling;
+    }
+
+    TestStatus testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName) noexcept
+    {
+        std::string reportFailure = std::format("In {}::{}: ", ModelDBInterface::m_modelName, testExceptionFuncName);
+
+        if (expectSuccess)
+        {
+            reportFailure.append(std::format("expected success returned {} \n", isBool? "false" : "empty string"));
+            reportFailure.append(CoreDBInterface::m_errorMessages);
+            reportFailure.append("\n");
+        }
+        else
+        {
+            reportFailure.append(std::format("expected failure returned {} ", isBool? "true" : "formatted string"));
+        }
+
+        std::cout << reportFailure << "\n";
+
+        return TESTFAILED;
+    }
+
+    template <typename F, typename... Ts>
+    requires std::is_invocable_v<F, Ts...>
+    TestStatus testExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
+    {
+        CoreDBInterface::m_forceException = true;
+        if (funcUnderTest(args...))
+        {
+            return testExceptionReportFailure(false, true, funcName);
+        }
+
+        CoreDBInterface::m_forceException = false;
+        if (!funcUnderTest(args...))
+        {
+            return testExceptionReportFailure(true, true, funcName);
+        }
+
+        return TESTPASSED;
+    }
+
+/*
+ * Format functions return strings rather than bool.
+ */
+    template <typename F, typename... Ts>
+    requires std::is_invocable_v<F, Ts...>
+    TestStatus testFormatExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
+    {
+        CoreDBInterface::m_forceException = true;
+        std::string formattedQuery = funcUnderTest(args...);
+        if (!formattedQuery.empty())
+        {
+            return testExceptionReportFailure(false, false, funcName);
+        }
+
+        CoreDBInterface::m_forceException = false;
+        formattedQuery.clear();
+        formattedQuery = funcUnderTest(args...);
+        if (formattedQuery.empty())
+        {
+            return testExceptionReportFailure(true, false, funcName);
+        }
+
+        return TESTPASSED;
+    }
+
+/*
+ * Used to test formatSQL functions that do not contain a try catch block.
+ */
+    template <typename F, typename... Ts>
+    requires std::is_invocable_v<F, Ts...>
+    TestStatus testFormatExceptionCatchSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
+    {
+        std::string formattedQuery;
+
+        try
+        {
+            CoreDBInterface::m_forceException = true;
+            formattedQuery = funcUnderTest(args...);
+            return testExceptionReportFailure(false, false, funcName);    
+        }
+        catch(const std::exception& e)
+        {
+            std::cout << "Caught expected exception from " << funcName << "(): " << e.what() << "\n";
+            CoreDBInterface::m_forceException = false; 
+            formattedQuery = funcUnderTest(args...);
+            if (formattedQuery.empty())
+            {
+                return testExceptionReportFailure(true, false, funcName);
+            }
+        }        
+
+        return TESTPASSED;
+    }
+
+};
+
+#endif // EXCEPTIONSELFTEST_H_
+
+```
+
+## FunctionalSelfTest.h  
+ 
+```cpp
+#ifndef FUNCTIONALSELFTEST_H_
+#define FUNCTIONALSELFTEST_H_
+
+// Project Header Files
+#include "ModelDBInterface.h"
+#include "TestStatus.h"
+
+// External Libraries
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
+// Standard C++ Header Files
+#include <concepts>
+#include <iostream>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <vector>
+
+/*
+ * The FunctionalSelfTest class provides unit testing for methods common to all 
+ * models that are not tested by either the attribute testing or the exception
+ * testing. Each model has an equality operator that needs to be tested. Each
+ * model has an output operator ("<<"). The ModelDBInterface provides methods
+ * such as insert(), update() and and retrieve() that are implemented within
+ * each model due to the different attributes and requirements of the model.
+ * 
+ * This class provides the unit tests for those methods.
+ */
+
+template<class Model>
+requires std::is_base_of_v<ModelDBInterface, Model>
+class FunctionalSelfTest :  public virtual Model
+{
+protected:
+/*****
+ * These methods must be implemented.
+ * The tests they implement require the details of the particular model being tested.
+ * 
+ * Init functions should call the local version of selfTestResetAllValues().
+ */
+    virtual void selfTestResetAllValues() noexcept = 0;
+    virtual TestStatus testAllInsertFailures() = 0;
+    virtual TestStatus testEqualityOperator() noexcept = 0;
+    virtual void testOutput() noexcept = 0;
+
+public:
+
+    FunctionalSelfTest() : Model() { }
+
+    virtual ~FunctionalSelfTest() = default;
+
+protected:
+
+    virtual TestStatus testSave()
+    {
+        selfTestResetAllValues();
+
+        TestStatus testStatus = TESTPASSED;
+        ModelDBInterface::m_modified = false;
+        ModelDBInterface::m_primaryKey = 0;
+        std::string_view modelName(ModelDBInterface::m_modelName);
+        ModelDBInterface::m_deleted = false;
+
+        if (ModelDBInterface::save())
+        {
+            std::cout << modelName << "::save worked without being modified\n";
+            testStatus = TESTFAILED;
+        }
+        else
+        {
+            if (hasErrorMessage() == TESTFAILED)
+            {
+                std::cout << modelName << "::save Missing expected error messages\n";
+                testStatus = TESTFAILED;
+            }
+            else
+            {
+                if (wrongErrorMessage("not modified, no changes to save") != TESTPASSED)
+                {
+                    std::cout << modelName << "::save Wrong error message\n";
+                    testStatus = TESTFAILED;
+                }
+            }
+        }
+
+        return testStatus;
+    }
+
+    TestStatus hasErrorMessage()
+    {
+        std::string testErrorMessage = CoreDBInterface::getAllErrorMessages();
+        if (testErrorMessage.empty())
+        {
+            std::cerr << "No error message generated! TEST FAILED!\n";
+            return TESTFAILED;
+        }
+
+        return TESTPASSED;
+    }
+
+    TestStatus wrongErrorMessage(std::string expectedString)
+    {
+        std::size_t found = CoreDBInterface::m_errorMessages.find(expectedString);
+        if (found == std::string::npos)
+        {
+            std::cerr << "Wrong message generated! TEST FAILED!\n";
+            std::cerr << CoreDBInterface::m_errorMessages << "\n";
+            std::cerr << "Missing expected: " << expectedString << "\n";
+            std::cerr << "Error Messages:" << CoreDBInterface::m_errorMessages << "\n";
+            return TESTFAILED;
+        }
+
+        return TESTPASSED;
+    }
+
+    virtual TestStatus testInsertionFailureMessages(std::vector<std::string> expectedErrors)
+    {
+        if (ModelDBInterface::insert())
+        {
+            std::cerr << std::format("Inserted {} missing required fields!  TEST FAILED\n", ModelDBInterface::m_modelName);
+            return TESTFAILED;
+        }
+
+        if (hasErrorMessage() == TESTFAILED)
+        {
+            return TESTFAILED;
+        }
+
+        for (auto expectedError: expectedErrors)
+        {
+            if (wrongErrorMessage(expectedError) == TESTFAILED)
+            {
+                return TESTFAILED;
+            }
+        }
+
+            return TESTPASSED;
+    }
+
+    virtual TestStatus testUpdateFailureMessages(std::vector<std::string> expectedErrors)
+    {
+        if (ModelDBInterface::update())
+        {
+            std::cerr << std::format("Update successful with expected errors!  TEST FAILED\n", ModelDBInterface::m_modelName);
+            return TESTFAILED;
+        }
+
+        if (hasErrorMessage() == TESTFAILED)
+        {
+            return TESTFAILED;
+        }
+
+        for (auto expectedError: expectedErrors)
+        {
+            if (wrongErrorMessage(expectedError) == TESTFAILED)
+            {
+                return TESTFAILED;
+            }
+        }
+
+        return TESTPASSED;
+    }
+
+    TestStatus testCommonInsertFailurePath()
+    {
+        selfTestResetAllValues();
+
+        ModelDBInterface::m_primaryKey = 1;
+        ModelDBInterface::m_modified = true;
+
+        std::vector<std::string> alreadyInDB = {"already in Database"};
+        if (testInsertionFailureMessages(alreadyInDB) != TESTPASSED)
+        {
+            return TESTFAILED;
+        }
+
+        selfTestResetAllValues();
+
+        std::vector<std::string> notModified = {"not modified!"};
+        if (testInsertionFailureMessages(notModified) != TESTPASSED)
+        {
+            return TESTFAILED;
+        }
+
+        return TESTPASSED;
+    }
+
+    TestStatus testCommonUpdateFailurePath()
+    {
+        selfTestResetAllValues();
+
+        std::vector<std::string> notInDB = {"not in Database"};
+        if (testUpdateFailureMessages(notInDB) != TESTPASSED)
+        {
+            return TESTFAILED;
+        }
+
+        ModelDBInterface::m_primaryKey = 1;
+        std::vector<std::string> notModified = {"not modified!"};
+        if (testUpdateFailureMessages(notModified) != TESTPASSED)
+        {
+            return TESTFAILED;
+        }
+
+        return TESTPASSED;
+    }
+    
+};
+
+#endif // FUNCTIONALSELFTEST_H_
+
+```
+
+## ModelSelfTest.h  
+ 
+```cpp
+#ifndef MODELDSELFTEST_H_
+#define MODELDSELFTEST_H_
+
+// Project Header Files
+#include "AttributeSelfTest.h"
+#include "ExceptionSelfTest.h"
+#include "FunctionalSelfTest.h"
+#include "ModelDBInterface.h"
+#include "commonTestValues.h"
+
+// External Libraries
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
+// Standard C++ Header Files
+#include <concepts>
+#include <type_traits>
+
+/*
+ * The ModelSelfTest provides a base class for unit testing all ModelDBInterface
+ * classes. It merges attribute tests, exception handling tests and functionality
+ * tests for a particular model into one class.
+ * 
+ * Each Model Self Test (Unit Test) provides the details to test that particular
+ * Model.
+ */
+template<class Model>
+requires std::is_base_of_v<ModelDBInterface, Model>
+class ModelSelfTest :   public virtual ExceptionSelfTest<Model>,
+                        public virtual AttributeSelfTest<Model>,
+                        public virtual FunctionalSelfTest<Model>,
+                        public virtual Model
+{
+public:
+
+    ModelSelfTest() : Model() { }
+
+    virtual ~ModelSelfTest() = default;
+    virtual TestStatus runSelfTest() noexcept = 0;
+
+protected:
+/*****
+ * ModelSelfTest::selfTestResetAllValues() should be called by any override.
+ * The override should provide resets for any of the model under tests attributes.
+ */
+    virtual void selfTestResetAllValues() noexcept
+    {
+        ModelDBInterface::m_primaryKey = 0;
+        ModelDBInterface::m_modified = false;
+/*****
+ * format_opts needs to be reset before any exception test
+ */
+        CoreDBInterface::m_formatOpts.reset();
+        CoreDBInterface::clearErrorMessages();
+    }
+ 
+};
+
+#endif // MODELDSELFTEST_H_
+
+```
+
+## ScheduleItemSelfTest.h  
+
+```cpp
+#ifndef SCHEDULEITEMSELFTEST_H_
+#define SCHEDULEITEMSELFTEST_H_
+
+// Project Header Files
+#include "commonUtilities.h"
+#include "ModelSelfTest.h"
+#include "ScheduleItemModel.h"
+
+// Standard C++ Header Files
+#include <memory>
+#include <vector>
+
+class ScheduleItemSelfTest : public ModelSelfTest<ScheduleItemModel>
+{
+public:
+    ScheduleItemSelfTest();
+    ~ScheduleItemSelfTest() = default;
+    virtual TestStatus runSelfTest() noexcept override;
+
+protected:
+/*
+ * Unit Testing
+ */
+    virtual void selfTestResetAllValues() noexcept override;
+    virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
+    virtual TestStatus testExceptionInsert() noexcept override;
+    virtual TestStatus testExceptionUpdate() noexcept override;
+    virtual TestStatus testExceptionHide() noexcept override;
+    virtual TestStatus testAllInsertFailures() override;
+    virtual TestStatus testEqualityOperator() noexcept override;
+    virtual void testOutput() noexcept override;
+
+    virtual std::vector<AttributeTestFunction> initAttributeAccessTests() noexcept override;
+    TestStatus testScheduleItemIDAccess() noexcept;
+    TestStatus testUserIDAccess() noexcept;
+    TestStatus testTitleAccess() noexcept;
+    TestStatus testStartTimeAccess() noexcept;
+    TestStatus testEndTimeAccess() noexcept;
+    TestStatus testCreationTimeStampAccess() noexcept;
+    TestStatus testLastUpDateTimeStampAccess() noexcept;
+    TestStatus testLocationAccess() noexcept;
+    TestStatus testPersonalAccess() noexcept;
+
+};
+
+using ScheduleItemSelfTest_shp = std::shared_ptr<ScheduleItemSelfTest>;
+
+#endif  // SCHEDULEITEMSELFTEST_H_
+
+```
+
+## ScheduleItemSelfTest.cpp  
+
+```cpp
+// Project Header Files
+#include "commonUtilities.h"
+#include "GenericDictionary.h"
+#include "ScheduleItemSelfTest.h"
+
+// Standard C++ Header Files
+#include <chrono>
+#include <exception>
+#include <format>
+#include <functional>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
+
+ScheduleItemSelfTest::ScheduleItemSelfTest()
+{
+
+}
+
+TestStatus ScheduleItemSelfTest::runSelfTest() noexcept
+{
+    m_selfTest = true;
+    TestStatus selfTestStatus = TESTPASSED;
+
+    std::cout << "\nRunning " << m_modelName << " Self Test" << std::endl;
+
+    if (testExceptionHandling()!= TESTPASSED)
+    {
+        std::cerr  << m_modelName << "::runSelfTest: Exception handling FAILED!\n";
+        selfTestStatus = TESTFAILED;
+    }
+    
+    if (testSave() == TESTFAILED)
+    {
+        selfTestStatus = TESTFAILED;
+    }
+
+    if (testAttributeAccessFunctions() == TESTFAILED)
+    {
+        std::cerr << m_modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
+        selfTestStatus = TESTFAILED;
+    }
+
+    if (testEqualityOperator() == TESTFAILED)
+    {
+        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", m_modelName);
+        selfTestStatus = TESTFAILED;
+    }
+
+    testOutput();
+
+    if (testAllInsertFailures() != TESTPASSED)
+    {
+        std::cerr << "Test of all insertion failures FAILED!\n";
+        selfTestStatus = TESTFAILED;
+    }
+
+    if (testCommonInsertFailurePath() != TESTPASSED)
+    {
+        selfTestStatus = TESTFAILED;
+    }
+    else
+    {
+        std::cout << "Common Insertion Failure Test PASSED!\n";
+    }
+
+    if (testCommonUpdateFailurePath() != TESTPASSED)
+    {
+        selfTestStatus = TESTFAILED;
+    }
+    else
+    {
+        std::cout << "Common Update Failure Test PASSED!\n";
+    }
+
+    if (testTextFieldManipulation() == TESTFAILED)
+    {
+        selfTestStatus = TESTFAILED;
+    }
+
+    m_selfTest = false;
+    
+    if (selfTestStatus == TESTPASSED)
+    {
+        std::cout <<  std::format("{} Self Test {}\n", m_modelName, "PASSED");
+    }
+    else
+    {
+        std::cerr <<  std::format("{} Self Test {}\n", m_modelName, "FAILED");
+    }
+
+    return selfTestStatus;
+}
+
+void ScheduleItemSelfTest::selfTestResetAllValues() noexcept
+{
+    ModelSelfTest::selfTestResetAllValues();
+
+    m_userID = 0;
+    m_title.clear();
+    m_startTime.reset();
+    m_endTime.reset();
+    m_personal = false;
+    m_location.reset();
+    m_creation.reset();
+    m_lastUpdate.reset();
+}
+
+std::vector<ExceptionTestElement> ScheduleItemSelfTest::initExceptionTests() noexcept
+{
+    std::vector<ExceptionTestElement> exceptionTests;
+    exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionInsert, this), "testExceeptionInsert"});
+    exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionUpdate, this), "testExceptionUpdate"});
+    exceptionTests.push_back({std::bind(&ScheduleItemSelfTest::testExceptionHide, this), "testExceptionHide"});
+
+    return exceptionTests;
+}
+
+TestStatus ScheduleItemSelfTest::testExceptionInsert() noexcept
+{
+    selfTestResetAllValues();
+    m_forceException = true;
+
+    setUserID(1);
+    setTitle("Testing Exception handling for Schedule Item Insert");
+    setStartDateAndTime(commonTestTimeStampValue);
+    setEndDateAndTime(commonTestTimeStampValue);
+    setCreationDate(commonTestTimeStampValue);
+
+    if (testFormatExceptionCatchSuccessNArgs(
+        "ScheduleItemSelfTest::formatInsertStatement", std::bind(&ScheduleItemSelfTest::formatInsertStatement, this)) == TESTFAILED)
+    {
+        std::cerr << "ScheduleItemSelfTest::formatInsertStatement() returned a string in Exception Test, FAILED\n";
+        return TESTFAILED;
+    }
+
+    return testExceptionAndSuccessNArgs("ScheduleItemModel::insert", std::bind(&ScheduleItemModel::insert, this));
+}
+
+TestStatus ScheduleItemSelfTest::testExceptionUpdate() noexcept
+{
+    selfTestResetAllValues();
+
+    setScheduleItemID(57);
+    setUserID(1);
+    setTitle("Testing Exception handling for Schedule Item Update");
+    setStartDateAndTime(commonTestTimeStampValue);
+    setEndDateAndTime(commonTestTimeStampValue);
+    setCreationDate(commonTestTimeStampValue);
+    setLastUpdate(commonTestTimeStampValue);
+
+    if (testFormatExceptionCatchSuccessNArgs(
+        "ScheduleItemSelfTest::formatUpdateStatement", std::bind(&ScheduleItemSelfTest::formatUpdateStatement, this)) == TESTFAILED)
+    {
+        std::cerr << "ScheduleItemSelfTest::formatUpdateStatement() returned a string in Exception Test, FAILED\n";
+        return TESTFAILED;
+    }
+
+    return testExceptionAndSuccessNArgs("ScheduleItemModel::update", std::bind(&ScheduleItemModel::update, this));
+}
+
+TestStatus ScheduleItemSelfTest::testExceptionHide() noexcept
+{
+    selfTestResetAllValues();
+    std::size_t testUserId = 1;
+
+    setScheduleItemID(57);
+    setUserID(testUserId);
+    setTitle("Testing Exception handling for Schedule Item Update");
+    setStartDateAndTime(commonTestTimeStampValue);
+    setEndDateAndTime(commonTestTimeStampValue);
+    setCreationDate(commonTestTimeStampValue);
+    setLastUpdate(commonTestTimeStampValue);
+
+    return testExceptionAndSuccessNArgs("ScheduleItemModel::hide", std::bind(&ScheduleItemModel::hide, this, std::placeholders::_1), testUserId);}
+
+TestStatus ScheduleItemSelfTest::testAllInsertFailures()
+{
+    selfTestResetAllValues();
+
+    if (testCommonInsertFailurePath() != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    std::vector<std::string> expectedErrors =
+    {
+        "User ID", "Title", "Start Time", "End Time", " missing required values"
+    };
+
+    setScheduleItemID(0);
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+
+    setUserID(1);
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+
+    setTitle("Test missing required fields: Set title");
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+
+    setStartDateAndTime(commonTestTimeStampValue);
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+
+    setEndDateAndTime(commonTestTimeStampValue);
+
+    expectedErrors.clear();
+    clearErrorMessages();
+
+    setCreationDate(commonTestTimeStampValue);
+
+    if (m_verboseOutput)
+    {
+        std::cout << std::format("{}::{} before successful insert this = \n", m_modelName, __func__) << *this << "\n";
+    }
+
+    if (!insert())
+    {
+        std::cout << "In ScheduleItemSelfTest::testAllInsertFailuresExpected successful insert failed\n" << m_errorMessages << "\n";
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
+}
+
+TestStatus ScheduleItemSelfTest::testEqualityOperator() noexcept
+{
+    try
+    {
+        ScheduleItemModel other;
+
+        other.setScheduleItemID(m_primaryKey);
+
+        if (*this == other)
+        {
+            return TESTFAILED;
+        }
+
+        other = *this;
+
+        return (*this == other)? TESTPASSED : TESTFAILED;
+    }
+    catch(std::exception &e)
+    {
+        std::cerr << std::format("ScheduleItemSelfTest::testEqualityOperator:: Caught Exception:: {}\n", e.what());
+        return TESTFAILED;
+    }
+}
+
+void ScheduleItemSelfTest::testOutput() noexcept
+{
+    std::cout << "Test Output: " << *this << "\n";
+}
+
+std::vector<AttributeTestFunction> ScheduleItemSelfTest::initAttributeAccessTests() noexcept
+{
+    selfTestResetAllValues();
+
+    std::vector<AttributeTestFunction> attributeAccessTests; 
+    attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testScheduleItemIDAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testUserIDAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testTitleAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testStartTimeAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testEndTimeAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testCreationTimeStampAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testLastUpDateTimeStampAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testLocationAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testPersonalAccess, this)});
+
+    return attributeAccessTests;
+}
+
+TestStatus ScheduleItemSelfTest::testScheduleItemIDAccess() noexcept
+{
+    std::size_t testPrimaryKey = 57;
+
+    return testAccessorFunctions<std::size_t>(testPrimaryKey, &m_primaryKey, "Primary Key",
+        std::bind(&ScheduleItemModel::setScheduleItemID, this, std::placeholders::_1),
+        std::bind(&ScheduleItemModel::getScheduleItemID, this));
+}
+
+TestStatus ScheduleItemSelfTest::testUserIDAccess() noexcept
+{
+    std::size_t testValue = 1;
+
+    return testAccessorFunctions<std::size_t>(testValue, &m_userID, "User ID",
+        std::bind(&ScheduleItemModel::setUserID, this, std::placeholders::_1),
+        std::bind(&ScheduleItemModel::getUserID, this));
+}
+
+TestStatus ScheduleItemSelfTest::testTitleAccess() noexcept
+{
+    std::string testValue("Testing schedule item Title string access");
+
+    return testAccessorFunctions<std::string>(testValue, &m_title, "Title",
+        std::bind(&ScheduleItemModel::setTitle, this, std::placeholders::_1),
+        std::bind(&ScheduleItemModel::getTitle, this));
+}
+
+TestStatus ScheduleItemSelfTest::testStartTimeAccess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
+
+    return testTimeStampAccessorFunctions(testValue, &m_startTime, "Schedule Item Start Time",
+        std::bind(&ScheduleItemSelfTest::setStartDateAndTime, this, std::placeholders::_1),
+        std::bind(&ScheduleItemSelfTest::getStartTime, this));
+}
+
+TestStatus ScheduleItemSelfTest::testEndTimeAccess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
+
+    return testTimeStampAccessorFunctions(testValue, &m_endTime, "Schedule Item End Time",
+        std::bind(&ScheduleItemSelfTest::setEndDateAndTime, this, std::placeholders::_1),
+        std::bind(&ScheduleItemSelfTest::getEndTime, this));
+}
+
+TestStatus ScheduleItemSelfTest::testCreationTimeStampAccess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
+
+    return testTimeStampAccessorFunctions(testValue, &m_creation, "Schedule Item Creation Timestamp",
+        std::bind(&ScheduleItemSelfTest::setCreationDate, this, std::placeholders::_1),
+        std::bind(&ScheduleItemSelfTest::getCreationDate, this));
+}
+
+TestStatus ScheduleItemSelfTest::testLastUpDateTimeStampAccess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
+
+    return testTimeStampAccessorFunctions(testValue, &m_lastUpdate, "Schedule Item Last Update Timestamp",
+        std::bind(&ScheduleItemSelfTest::setLastUpdate, this, std::placeholders::_1),
+        std::bind(&ScheduleItemSelfTest::getLastUpdate, this));
+}
+
+TestStatus ScheduleItemSelfTest::testPersonalAccess() noexcept
+{
+    bool testValue = true;
+
+    return testAccessorFunctions<bool>(testValue, &m_personal, "Personal",
+        std::bind(&ScheduleItemModel::setPersonal, this, std::placeholders::_1),
+        std::bind(&ScheduleItemModel::isPersonal, this));
+}
+
+TestStatus ScheduleItemSelfTest::testLocationAccess() noexcept
+{
+    std::string testValue("Home Office");
+
+    return testOptionalAccessorFunctions<std::string>(testValue, &m_location, "Location",
+        std::bind(&ScheduleItemSelfTest::setLocation, this, std::placeholders::_1),
+        std::bind(&ScheduleItemSelfTest::getLocation, this));
+}
+
+```
+
+
