@@ -1,0 +1,1917 @@
+The questions I have asked over the last 2 days have been leading up to this
+question.  
+ - [Follow up to Self / Unit test of polymorphic database model](https://codereview.stackexchange.com/questions/302569/follow-up-to-self-unit-test-of-polymorphic-database-model)  
+ - [The ScheduleItemModel implementation in the view per day planner](https://codereview.stackexchange.com/questions/302564/the-scheduleitemmodel-implementation-in-the-view-per-day-planner)  
+ - [A SQL Database to implement a per day at a view planner](https://codereview.stackexchange.com/questions/302562/a-sql-database-to-implement-a-per-day-at-a-view-planner)  
+
+I would like a code review of the application code that shows the
+users' schedule. The user dashboard shown in the image below contains 3 windows,
+the first is the To Do list, the second is the user schedule, the third is any
+notes for the user on that day. This question is only about the user schedule
+window.  
+
+If you have previously reviewed my code I hope you see some of the suggestions you made.  
+
+# Development Environment  
+
+ - Ubuntu 24.04  
+ - g++ 14.2.0  
+ - C++23  
+ - Qt 6.10.3  
+ - cmake 4.3.3  
+ - Boost 187  
+ - mariadb  Ver 15.1 Distrib 10.11.14-MariaDB
+
+# The Code  
+
+The full code can be found in the [GitHub Repository](https://github.com/pacmaninbw/CCTaskManagementAndScheduler/tree/ScheduleSliceForCodeReview_07052026/Development/Prototypes/MyDayPlanner). This is a branch off the master and will not be changing. Please note
+that the Qt application is not in the same directory as the unit testing for
+the database, the database files are included in the DBModels subdirectory
+using symbolic links. This allows for separate development of the unit and
+integration tests.  
+
+
+## ScheduleItemQueryProcessor.h ScheduleItemModel.h ModelDBInterface.h CoreDBInterface.h
+These files can be found in the [previous question](https://codereview.stackexchange.com/questions/302564/the-scheduleitemmodel-implementation-in-the-view-per-day-planner)  
+
+## commonQTWidgetsForApp.h  
+
+```cpp
+#ifndef COMMONQTWIDGETSFORAPP_H_
+#define COMMONQTWIDGETSFORAPP_H_
+
+/* 
+ * All functions provided by commonQTWidgetsForApp.h and commonQTWidgetsForApp.cpp
+ * start with cqtfa_ to identify them.
+ * 
+ * This file provides functions that provide named QT Widgets. Many of the functions
+ * provide layout information or other common features used by the Planner application.
+ * 
+ * These functions are provided to reduce code in the application GUI files.
+ * 
+ * Named QT Objects may provide an easier mechanism for connecting events with actions.
+ */
+
+#include <QDateEdit>
+#include <QFormLayout>
+#include <QLineEdit>
+#include <QPlainTextEdit>
+#include <QTextEdit>
+#include <QWidget>
+
+template <typename WidgetType>
+WidgetType* cqtfa_QTWidget(const char* objectName, QWidget* parent)
+{
+    WidgetType* objectPointer = new WidgetType(parent);
+    objectPointer->setObjectName(objectName);
+
+    return objectPointer;
+}
+
+/*
+ * For buttons and checkboxes.
+ */
+template <typename WidgetType>
+WidgetType *cqtfa_QTWidgetWithText(const char* textContent, const char* objectName, QWidget* parent)
+{
+    WidgetType* objectPointer = new WidgetType(textContent, parent);
+    objectPointer->setObjectName(objectName);
+
+    return objectPointer;
+}
+
+extern QLineEdit* cqtfa_LineEditWithWidthAndLength(const char* lineEditName, QWidget* parent, std::size_t width=200, std::size_t charCount=20);
+
+/*
+ * Provides a fixed width QLineEdit based on the maximum number of characters expected.
+ */
+extern QLineEdit* cqtfa_LineEditFixedWidthByCharCount(const char* objName, QWidget* parent, int charcount);
+
+extern QFormLayout* cqtfa_FormLayoutWithPolicy(const char* formName, QWidget* parent,
+    QFormLayout::FieldGrowthPolicy policy=QFormLayout::ExpandingFieldsGrow);
+
+extern QDateEdit* cqtfa_DateEditWithCalendarPopUpCurrentDate(const char* formName, QWidget* parent);
+
+extern QPlainTextEdit* cqtfa_flexibleWidthPlainTextEdit(const char* objName, QWidget* parent, int boxWidthMin, int boxWidthMax, int rowCount);
+
+extern QPlainTextEdit* cqtfa_flexiblePlainTextEditEbasedOnCharCount(const char* objName, QWidget* parent, int minCharCount, int maxCharCount, int rowCount);
+
+extern QTextEdit* cqtfa_flexibleWidthTextEdit(const char* objName, QWidget* parent, int boxWidthMin, int boxWidthMax, int rowCount);
+
+extern QTextEdit* cqtfa_flexibleTextEditEbasedOnCharCount(const char* objName, QWidget* parent, int minCharCount, int maxCharCount, int rowCount);
+
+extern int cqtfa_getFormLayoutMaxWidth(QFormLayout* formToSize);
+
+extern int cqtfa_calculateFormLayoutMaxHeight(QFormLayout* formToSize);
+
+#endif // COMMONQTWIDGETSFORAPP_H_
+```
+
+## commonQTWidgetsForApp.cpp  
+
+```cpp
+// Project Header Files
+#include "commonQTWidgetsForApp.h"
+
+// QT Header Files
+#include <QDateEdit>
+#include <QFormLayout>
+#include <QLineEdit>
+#include <QPlainTextEdit>
+#include <QSizePolicy>
+#include <QStyleOptionFrame>
+#include <QTextEdit>
+#include <QWidget>
+#include <QLabel>
+
+// Standard C++ Header Files
+#include <format>
+#include <string>
+
+static const int maxWidthUndefined = 16777215;
+static const int maxHeightUndefind = 16777215;
+
+QLineEdit* cqtfa_LineEditWithWidthAndLength(const char* lineEditName, QWidget *parent, std::size_t width, std::size_t charCount)
+{
+    QLineEdit* newLineEdit = cqtfa_QTWidget<QLineEdit>(lineEditName, parent);
+    std::string styleSheetStr(std::format("width: {}px;", width));
+    newLineEdit->setStyleSheet(styleSheetStr.c_str());
+    newLineEdit->setMaxLength(charCount);
+
+    return newLineEdit;
+}
+
+QLineEdit *cqtfa_LineEditFixedWidthByCharCount(const char *objName, QWidget *parent, int charCount)
+{
+    QLineEdit* newLineEdit = cqtfa_QTWidget<QLineEdit>(objName, parent);
+
+    QFontMetrics fm(newLineEdit->font());
+    int desiredWidth = fm.horizontalAdvance(QString(charCount, 'x'));
+
+    newLineEdit->setFixedWidth(desiredWidth);
+    newLineEdit->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    newLineEdit->setMaxLength(charCount);
+
+    return newLineEdit;
+}
+
+QFormLayout* cqtfa_FormLayoutWithPolicy(const char* formName, QWidget* parent, QFormLayout::FieldGrowthPolicy policy)
+{
+    QFormLayout* newFormLayout = cqtfa_QTWidget<QFormLayout>(formName, parent);
+    newFormLayout->setFieldGrowthPolicy(policy);
+
+    return newFormLayout;
+}
+
+QDateEdit *cqtfa_DateEditWithCalendarPopUpCurrentDate(const char *formName, QWidget *parent)
+{
+    const int TwoWeeks = 14;
+    const int OneYear = 365;
+
+    QDateEdit* newDateEdit = new QDateEdit(QDate::currentDate(), parent);
+    newDateEdit->setObjectName(formName);
+
+    newDateEdit->setCalendarPopup(true);
+
+    newDateEdit->setDisplayFormat("MM/dd/yyyy");
+    
+    newDateEdit->setMinimumDate(QDate::currentDate().addDays(-TwoWeeks));
+    
+    newDateEdit->setMaximumDate(QDate::currentDate().addDays(OneYear));
+
+    return newDateEdit;
+}
+
+QPlainTextEdit *cqtfa_flexibleWidthPlainTextEdit(const char *objName, QWidget *parent, int boxWidthMin, int boxWidthMax, int rowCount)
+{
+    QPlainTextEdit* newPTextEdit = new QPlainTextEdit(parent);
+
+    newPTextEdit->setObjectName(objName);
+
+    newPTextEdit->setMinimumHeight(newPTextEdit->fontMetrics().height() * rowCount);
+
+    newPTextEdit->setMaximumHeight(newPTextEdit->fontMetrics().height() * (rowCount + 2));
+
+    newPTextEdit->setMinimumWidth(boxWidthMin);
+
+    newPTextEdit->setMaximumWidth(boxWidthMax);
+
+    newPTextEdit->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+
+    newPTextEdit->setTabChangesFocus(true);
+
+    return newPTextEdit;
+}
+
+QPlainTextEdit *cqtfa_flexiblePlainTextEditEbasedOnCharCount(const char *objName, QWidget *parent, int minCharCount, int maxCharCount, int rowCount)
+{
+    QPlainTextEdit* newPTextEdit = new QPlainTextEdit(parent);
+    QFontMetrics qfm(newPTextEdit->font());
+
+    newPTextEdit->setObjectName(objName);
+
+    newPTextEdit->setObjectName(objName);
+
+    newPTextEdit->setMinimumHeight(qfm.height() * rowCount);
+
+    newPTextEdit->setMaximumHeight(qfm.height() * (rowCount + 2));
+
+    newPTextEdit->setMinimumWidth(qfm.horizontalAdvance(QString(minCharCount, 'x')));
+
+    newPTextEdit->setMaximumWidth(qfm.horizontalAdvance(QString(maxCharCount, 'x')));
+
+    newPTextEdit->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+
+    newPTextEdit->setTabChangesFocus(true);
+
+    return newPTextEdit;
+}
+
+QTextEdit *cqtfa_flexibleWidthTextEdit(const char *objName, QWidget *parent, int boxWidthMin, int boxWidthMax, int rowCount)
+{
+    QTextEdit* newTextEdit = new QTextEdit(parent);
+
+    newTextEdit->setObjectName(objName);
+
+    newTextEdit->setMinimumHeight(newTextEdit->fontMetrics().height() * rowCount);
+
+    newTextEdit->setMaximumHeight(newTextEdit->fontMetrics().height() * (rowCount + 2));
+
+    newTextEdit->setMinimumWidth(boxWidthMin);
+
+    newTextEdit->setMaximumWidth(boxWidthMax);
+
+    newTextEdit->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+
+    return newTextEdit;
+}
+
+QTextEdit *cqtfa_flexibleTextEditEbasedOnCharCount(const char *objName, QWidget *parent, int minCharCount, int maxCharCount, int rowCount)
+{
+    QTextEdit* newTextEdit = new QTextEdit(parent);
+    QFontMetrics qfm(newTextEdit->font());
+
+    newTextEdit->setObjectName(objName);
+
+    newTextEdit->setObjectName(objName);
+
+    newTextEdit->setMinimumHeight(qfm.height() * rowCount);
+
+    newTextEdit->setMaximumHeight(qfm.height() * (rowCount + 2));
+
+    newTextEdit->setMinimumWidth(qfm.horizontalAdvance(QString(minCharCount, 'x')));
+
+    newTextEdit->setMaximumWidth(qfm.horizontalAdvance(QString(maxCharCount, 'x')));
+
+    newTextEdit->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+
+    return newTextEdit;
+}
+
+static int getRowMaximumWidth(QFormLayout* layout, int row)
+{
+    int maxLabelWidth = 0;
+    int maxFieldWidth = 0;
+
+    QLayoutItem* labelItem = layout->itemAt(row, QFormLayout::LabelRole);
+    QLayoutItem* fieldItem = layout->itemAt(row, QFormLayout::FieldRole);
+
+    if (labelItem) {
+        maxLabelWidth = labelItem->maximumSize().width();
+        if (maxLabelWidth >= maxWidthUndefined) { 
+            maxLabelWidth = labelItem->sizeHint().width();
+        }
+    }
+
+    if (fieldItem) {
+        maxFieldWidth = fieldItem->maximumSize().width();
+        if (maxFieldWidth >= maxWidthUndefined) {
+            maxFieldWidth = fieldItem->sizeHint().width();
+        }
+    }
+
+    int horizontalSpacing = layout->horizontalSpacing();
+    if (horizontalSpacing < 0) {
+        horizontalSpacing = 15;
+    }
+
+    return maxLabelWidth + maxFieldWidth + horizontalSpacing;
+}
+
+int cqtfa_getFormLayoutMaxWidth(QFormLayout* formToSize)
+{
+    int maxWidth = 0;
+
+    for (int i = 0; i < formToSize->rowCount(); ++i)
+    {
+        int tempMaxWidth = getRowMaximumWidth(formToSize, i);
+        if (tempMaxWidth > maxWidth)
+        {
+            maxWidth = tempMaxWidth;
+        }
+    }
+
+    return maxWidth;
+}
+
+int cqtfa_calculateFormLayoutMaxHeight(QFormLayout *formToSize)
+{
+    int maxHeight = formToSize->verticalSpacing();
+
+    for (int row = 0; row < formToSize->rowCount(); ++row)
+    {
+        QLayoutItem *fieldItem = formToSize->itemAt(row, QFormLayout::FieldRole);
+        int fieldHeight = 0;
+        if (fieldItem && fieldItem->widget()) {
+            fieldHeight = fieldItem->widget()->maximumHeight();
+            if (fieldHeight >= maxHeightUndefind)
+            {
+                fieldHeight = fieldItem->widget()->height();
+            }
+        }
+        maxHeight += fieldHeight + formToSize->verticalSpacing();
+    }
+
+    return maxHeight;
+}
+```
+
+## stdChronoToQTConversions.h  
+
+```cpp
+#ifndef STDCHRONOTOQTCONVERSIONS_H_
+#define STDCHRONOTOQTCONVERSIONS_H_
+
+#include <chrono>
+#include <QDate>
+#include <QDateTime>
+
+extern QDateTime chronoTimePointToQDateTime(std::chrono::system_clock::time_point inputChronoTP);
+extern std::chrono::system_clock::time_point qDateTimeToChrono(const QDateTime& qtDateTime);
+extern std::chrono::year_month_day qDateToChrono(const QDate& qdate);
+
+#endif // STDCHRONOTOQTCONVERSIONS_H_
+```
+
+## stdChronoToQTConversions.cpp  
+
+```cpp
+#include <QTimeZone>
+#include "stdChronoToQTConversions.h"
+
+QDateTime chronoTimePointToQDateTime(std::chrono::system_clock::time_point inputChronoTP)
+{
+    auto duration = inputChronoTP.time_since_epoch();
+    auto msecs = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+
+    QDateTime qdt = QDateTime::fromMSecsSinceEpoch(msecs, Qt::UTC);
+
+    return qdt;
+}
+
+std::chrono::system_clock::time_point qDateTimeToChrono(const QDateTime& qtDateTime) {
+    // Ensure the QDateTime is in UTC for a direct conversion to std::chrono::system_clock
+    // which typically uses the Unix epoch (UTC) as its reference.
+
+    QDateTime utcDateTime = qtDateTime;
+    if (qtDateTime.timeZone() != QTimeZone::utc()) {
+        utcDateTime = qtDateTime.toUTC();
+    }
+
+    // Get milliseconds since the epoch
+    qint64 msecsSinceEpoch = utcDateTime.toMSecsSinceEpoch();
+
+    // Create a std::chrono::milliseconds duration
+    std::chrono::milliseconds durationSinceEpoch(msecsSinceEpoch);
+
+    // Create the std::chrono::system_clock::time_point
+    std::chrono::system_clock::time_point timePoint = std::chrono::system_clock::from_time_t(0) + durationSinceEpoch;
+
+    return timePoint;
+}
+
+std::chrono::year_month_day qDateToChrono(const QDate &qdate)
+{
+        // Requires C++20
+    std::chrono::sys_days sysDays = qdate.toStdSysDays();
+
+    // std::chrono::year_month_day can be constructed from std::chrono::sys_days
+    std::chrono::year_month_day ymd{sysDays};
+    return ymd;
+}
+```
+
+## GuiDashboardScheduleTable.h
+
+```cpp
+#ifndef SCHEDULEITEMEDITORDIALOG_H_
+#define SCHEDULEITEMEDITORDIALOG_H_
+
+class ScheduleItemModel;
+
+// Project Header Files
+#include "BaseObjectEditorDialog.h"
+
+// QT Header Files
+#include <QCheckBox>
+#include <QCompleter>
+#include <QDateEdit>
+#include <QDateTimeEdit>
+#include <QFormLayout>
+#include <QGroupBox>
+#include <QLineEdit>
+#include <QPlainTextEdit>
+#include <QVBoxLayout>
+
+// Standard C++ Header Files
+#include <chrono>
+
+
+class ScheduleItemEditorDialog : public BaseObjectEditorDialog
+{
+public:
+    explicit ScheduleItemEditorDialog(std::size_t userId, std::size_t eventId = 0, QWidget* parent = nullptr);
+// Edit an empty event in the day schedule
+    explicit ScheduleItemEditorDialog(std::size_t userId, std::chrono::system_clock::time_point startTime,
+            std::chrono::system_clock::time_point endTime, QWidget* parent = nullptr);
+    ~ScheduleItemEditorDialog();
+    virtual void initEditorFieldsFromDataBase() override;
+
+private Q_SLOTS:
+    void handleEventDate_DateChanged();
+
+private:
+    const int EventTextEditMinWidth = 300;
+    const int EventTextEditMaxWidth = 700;
+    const int MaxCharLineEdit = 128;
+    const int TitleLineCount = 2;
+    const int LocationLineCount = 3;
+
+    virtual void setUpEditorUI() override;
+    virtual QGroupBox* setUpEditorDialogForm() override;
+    void initDateTimeEdit(QDateTimeEdit* dtEdit, std::chrono::system_clock::time_point initValue);
+    void initCompletersFromDB();
+    QDateTime initValidDateTime(std::chrono::system_clock::time_point dateTime);
+    virtual void createSharedPtrDBModelForAddObject() override;
+    virtual void transferEditorValuesToDBModel() override;
+    virtual void transferDBModelDataToEditorFields() override;
+
+    std::chrono::system_clock::time_point m_startTime;
+    std::chrono::system_clock::time_point m_endTime;
+    bool m_userPresetTime = false;
+
+    QDateEdit* m_qt_eventDate = nullptr;
+    QDateTimeEdit* m_qt_startTime = nullptr;
+    QDateTimeEdit* m_qt_endTime = nullptr;
+    QPlainTextEdit* m_qt_editTitle = nullptr;
+    QLineEdit* m_qt_addTitle = nullptr;
+    QCompleter* m_qt_titleCompleter = nullptr;
+    QLineEdit* m_qt_addLocation = nullptr;
+    QPlainTextEdit* m_qt_editLocation = nullptr;
+    QCompleter* m_qt_locationCompleter = nullptr;
+    QCheckBox* m_qt_personal = nullptr;
+
+};
+
+#endif // SCHEDULEITEMEDITORDIALOG_H_
+```
+
+## GuiDashboardScheduleTable.cpp
+
+```cpp
+// Project Header Files
+#include "commonUtilities.h"
+#include "ScheduleItemModel.h"
+#include "ScheduleItemQueryProcessor.h"
+#include "stdChronoToQTConversions.h"
+
+// QT Header Files
+#include "GuiDashboardScheduleTable.h"
+#include <QAbstractTableModel>
+#include <QDate>
+#include <QDateTime>
+#include <QObject>
+#include <QString>
+#include <QTime>
+
+// Standard C++ Header Files
+#include <algorithm>
+#include <chrono>
+#include <memory>
+#include <vector>
+
+GuiDashboardScheduleTable::GuiDashboardScheduleTable(std::size_t userID, QDate dateOfSchedule, QObject *parent)
+    : QAbstractTableModel(parent),
+    m_userID{userID},
+    m_dateOfSchedule{dateOfSchedule}
+{
+    m_chronoDateOfSchedule = qDateToChrono(dateOfSchedule);
+}
+
+void GuiDashboardScheduleTable::append(std::shared_ptr<ScheduleItemModel> scheduledItem)
+{
+    beginInsertRows(QModelIndex(), m_data.size(), m_data.size());
+    m_data.push_back(scheduledItem);
+    endInsertRows();
+}
+
+void GuiDashboardScheduleTable::clearData()
+{
+    m_scheduledItems.clear();
+
+    beginResetModel();
+    m_data.clear();
+    endResetModel();
+}
+
+std::chrono::system_clock::time_point GuiDashboardScheduleTable::getScheduleItemStartTime(const QModelIndex &index)
+{
+    std::chrono::system_clock::time_point startTime;
+
+    if (!index.isValid())
+    {
+        return startTime;
+    }
+
+    std::shared_ptr<ScheduleItemModel> scheduleItem = m_data[index.row()];
+    startTime = scheduleItem->getStartTime();
+
+    return startTime;
+}
+
+std::chrono::system_clock::time_point GuiDashboardScheduleTable::getScheduleItemEndTime(const QModelIndex &index)
+{
+    std::chrono::system_clock::time_point endTime;
+
+    if (!index.isValid())
+    {
+        return endTime;
+    }
+
+    std::shared_ptr<ScheduleItemModel> scheduleItem = m_data[index.row()];
+    endTime = scheduleItem->getEndTime();
+
+    return endTime;
+}
+
+QVariant GuiDashboardScheduleTable::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if (orientation != Qt::Horizontal || role != Qt::DisplayRole) return {};
+    switch (section) {
+        case 0: return "Start Time";
+        case 1: return "Description";
+        default: return {};
+    }
+}
+
+int GuiDashboardScheduleTable::rowCount(const QModelIndex &parent) const
+{
+    if (parent.isValid())
+    {
+        return 0;
+    }
+
+    return m_data.size();
+}
+
+int GuiDashboardScheduleTable::columnCount(const QModelIndex &parent) const
+{
+    if (parent.isValid())
+    {
+        return 0;
+    }
+
+    return 2;
+}
+
+QVariant GuiDashboardScheduleTable::data(const QModelIndex &index, int role) const
+{
+    if (!index.isValid())
+    {
+        return QVariant();
+    }
+
+    if (role != Qt::DisplayRole && role != Qt::EditRole) return {};
+    const ScheduleItemModel* scheduleItem = m_data[index.row()].get();
+    switch (index.column()) {
+        case 0: {
+            QDateTime startTime(chronoTimePointToQDateTime(scheduleItem->getStartTime()));
+            return startTime.toLocalTime().time().toString("h:mm ap");
+        }
+        case 1: return QString::fromStdString(scheduleItem->getTitle());
+        default: return {};
+    }
+}
+
+bool GuiDashboardScheduleTable::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (data(index, role) != value) {
+        Q_EMIT dataChanged(index, index, {role});
+        return true;
+    }
+
+    return false;
+}
+
+Qt::ItemFlags GuiDashboardScheduleTable::flags(const QModelIndex &index) const
+{
+    if (!index.isValid())
+    {
+        return Qt::NoItemFlags;
+    }
+
+    return QAbstractItemModel::flags(index) | Qt::ItemIsEditable; // FIXME: Implement me!
+}
+
+QModelIndex GuiDashboardScheduleTable::index(int row, int column, const QModelIndex &parent) const
+{
+    if (!hasIndex(row, column, parent))
+    {
+        return QModelIndex();
+    }
+
+    std::shared_ptr<ScheduleItemModel> scheduleItem = m_data.at(row);
+    if (scheduleItem)
+    {
+        return createIndex(row, column, scheduleItem->getScheduleItemID());
+    }
+
+    return QModelIndex();
+}
+
+void GuiDashboardScheduleTable::fillSchedule()
+{
+    clearData();
+    std::chrono::year_month_day dateOfSchedule(qDateToChrono(m_dateOfSchedule));
+
+    if (m_userID)
+    {
+        ScheduleItemQueryProcessor dbScheduleList(m_userID);
+        m_scheduledItems = dbScheduleList.getUserDaySchedule(dateOfSchedule);
+    }
+
+    setUserDay(dateOfSchedule);
+    addBlankHoursForDisplay();
+/*
+ * Schedule items in the database may be in any order and we need to display
+ * the schedule chronologically.
+ */
+    std::sort(m_scheduledItems.begin(), m_scheduledItems.end(),
+        [](ScheduleItemModel_shp left, ScheduleItemModel_shp right)
+        { return left->getStartTime() < right->getStartTime();}
+    );
+
+    for (const auto &scheduledItem: m_scheduledItems)
+    {
+        if (m_userID)
+        {
+            scheduledItem->setUserID(m_userID);
+        }
+        append(scheduledItem);
+    }
+}
+
+/*
+ * To correct from GMT time to local time we get the local midnight value and
+ * offset from that. Currently the default start time is 08:00 or 8:00AM and
+ * the default end time is 20:00 or 8:00PM. In future versions the user will
+ * be able to set this in their preferences.
+ */
+void GuiDashboardScheduleTable::setUserDay(std::chrono::year_month_day scheduleDate)
+{
+    std::chrono::hours hour(1);
+    m_userStartDay = getLocalMidnight(scheduleDate);
+    // TODO get the users preferred start time and use that in the following calculation
+    m_userStartDay += 8 * hour;
+    // TODO get the users preferred end time and use that in the following calculation
+    m_userEndDay = m_userStartDay + 12 * hour;
+}
+
+bool GuiDashboardScheduleTable::hasNoTimeConflicts(std::chrono::system_clock::time_point proposedHour)
+{
+    for (auto &scheduledItem: m_scheduledItems)
+    {
+        if (proposedHour >= scheduledItem->getStartTime() && proposedHour <= scheduledItem->getEndTime())
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/*
+ * Hours that do not have events are not in the database. To provide a full view
+ * of the users day schedule blank hours need to be added.
+ */
+void GuiDashboardScheduleTable::addBlankHoursForDisplay()
+{
+    const int secondsInHour = 3600;
+    /*
+     * To prevent any overlaps in the schedule the end of an hour is one less
+     * second than a real hour.
+     */
+    const std::chrono::seconds endOfHour(secondsInHour - 1);
+    const std::chrono::hours oneHour{1};
+        
+    std::chrono::system_clock::time_point proposedStartTime = std::chrono::floor<std::chrono::hours>(m_userStartDay);
+    std::chrono::system_clock::time_point endDay = std::chrono::ceil<std::chrono::hours>(m_userEndDay);
+    while (proposedStartTime < endDay)
+    {
+        if (hasNoTimeConflicts(proposedStartTime))
+        {
+            ScheduleItemModel_shp blankHour = std::make_shared<ScheduleItemModel>();
+            blankHour->setStartDateAndTime(proposedStartTime);
+            blankHour->setEndDateAndTime(proposedStartTime + endOfHour);
+            blankHour->setTitle(" ");
+            blankHour->setCreationDate(std::chrono::system_clock::now());
+            blankHour->setLastUpdate(std::chrono::system_clock::now());
+            m_scheduledItems.push_back(blankHour);
+        }
+        proposedStartTime += oneHour;
+    }
+}
+```
+
+## BaseObjectEditorDialog.h
+
+```cpp
+#ifndef BASEOBJECTEDITORDIALOG_H_
+#define BASEOBJECTEDITORDIALOG_H_
+
+/*
+ * Provide a common set of widgets and actions for all editors of model items.
+ *
+ * Data fields specific to a model item will be defined in the sub class
+ * editor for that model object.
+ */
+class ModelDBInterface;
+
+// Project Header Files
+
+// QT Header Files
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QString>
+#include <QVBoxLayout>
+#include <QWidget>
+
+// Standard C++ Header Files
+#include <memory>
+
+class BaseObjectEditorDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    BaseObjectEditorDialog(const char* objectType, std::size_t userId = 0, std::size_t dbModelTableIndex = 0, QWidget* parent = nullptr);
+/*
+ * The initEditorFieldsFromDataBase() method is called after the editor has been
+ * instantiated. This method retrieve the model object being edited from the
+ * database and initializes the field values in the editor. Each model editor
+ * will include the proper database model object header file. This function is
+ * pure because this base class has no way of knowing what the object is or
+ * what fields are necessary.
+ *
+ * The database retrieval is performed in this function to keep any database
+ * access out of the constructors for the editor.
+ */
+    virtual void initEditorFieldsFromDataBase() = 0;
+
+public Q_SLOTS:
+    void accept() override;
+
+protected Q_SLOTS:
+    void handleDeleteButton_Clicked();
+
+protected:
+    const int MarginAndSpacing = 30;
+    const int MaxWidthUndefined = 16777215;
+    const int MaxHeightUndefind = 16777215;
+
+    virtual QGroupBox* setUpEditorDialogForm() { return nullptr; };
+/*
+ * The createSharedPtrDBModelForAddObject(), transferEditorValuesToDBModel() and
+ * transferDBModelDataToEditorFields() functions all affect specific model objects
+ * and data fields, there is no way to provide definitions for them in the super
+ * class. Each editor sub class will include different model item header files.
+ */
+    virtual void createSharedPtrDBModelForAddObject() = 0;
+    virtual void transferEditorValuesToDBModel() = 0;
+    virtual void transferDBModelDataToEditorFields() = 0;
+    
+    virtual void setUpEditorUI();
+    QDialogButtonBox* setUpEditorButtonBox();
+    virtual void limitDialogGrowth();
+    QPushButton* createDeleteButton(QWidget* buttonBox);
+    int getFormLayoutMaxWidth(QFormLayout* formToSize);
+    int getRowMaximumWidth(QFormLayout* layout, int row);
+
+    std::size_t m_userID;
+    std::size_t m_dbModelId;
+    std::shared_ptr<ModelDBInterface> m_dbObjectModel = nullptr;
+    QString m_editorObjectTypeString;
+    QString m_editorTitleString;
+    int m_maxGroupBoxHeight = 0;
+    int m_maxButtonBoxHeight = 0;
+
+    QVBoxLayout* m_qt_editorLayout = nullptr;
+    QDialogButtonBox* m_qt_buttonBox = nullptr;
+    QPushButton* m_qt_deleteButton = nullptr;
+    QGroupBox* m_qt_editorDialogFormGB = nullptr;
+    QFormLayout* m_qt_editorFormLayout = nullptr;
+
+};
+
+#endif // BASEOBJECTEDITORDIALOG_H_
+```
+
+## BaseObjectEditorDialog.cpp
+
+```cpp
+// Project Header Files
+#include "BaseObjectEditorDialog.h"
+#include "ModelDBInterface.h"
+
+// QT Header Files
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QGroupBox>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QVBoxLayout>
+
+// Standard C++ Header Files
+#include <stdexcept>
+
+
+BaseObjectEditorDialog::BaseObjectEditorDialog(const char* objectType, std::size_t userId, std::size_t dbModelTableIndex, QWidget* parent)
+    : QDialog(parent),
+    m_userID{userId},
+    m_dbModelId{dbModelTableIndex},
+    m_editorObjectTypeString{objectType}
+{
+    m_editorTitleString = dbModelTableIndex? "Edit " : "Add ";
+    m_editorTitleString += objectType;
+    setWindowTitle(m_editorTitleString + " Dialog");
+}
+
+void BaseObjectEditorDialog::initEditorFieldsFromDataBase()
+{
+    throw std::logic_error("initEditorFieldsFromDataBase not implemented!");
+}
+
+void BaseObjectEditorDialog::accept()
+{
+    if (!m_dbObjectModel)
+    {
+        createSharedPtrDBModelForAddObject();
+    }
+
+    transferEditorValuesToDBModel();
+
+    if (m_dbObjectModel->save())
+    {
+        QDialog::accept();
+    }
+    else
+    {
+        QString errorReport = m_editorObjectTypeString + " edit failed.\n";
+        errorReport += QString::fromStdString(m_dbObjectModel->getAllErrorMessages());
+        QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
+    }
+}
+
+void BaseObjectEditorDialog::handleDeleteButton_Clicked()
+{
+    if (m_dbObjectModel)
+    {
+        m_dbObjectModel->hide(m_userID);
+    }
+
+    done(QDialog::Accepted);
+}
+
+void BaseObjectEditorDialog::setUpEditorUI()
+{
+    m_qt_editorLayout = new QVBoxLayout(this);
+    m_qt_editorLayout->setObjectName("m_qt_editorLayout");
+
+    m_qt_editorDialogFormGB = setUpEditorDialogForm();
+    m_qt_editorDialogFormGB->setObjectName("m_qt_editorDialogFormGB");
+
+    m_qt_editorLayout->addWidget(m_qt_editorDialogFormGB);
+
+    m_qt_buttonBox = setUpEditorButtonBox();
+    m_qt_buttonBox->setObjectName("m_qt_buttonBox");
+    m_qt_editorLayout->addWidget(m_qt_buttonBox);
+
+    setLayout(m_qt_editorLayout);
+
+    limitDialogGrowth();
+
+    adjustSize();
+}
+
+QDialogButtonBox* BaseObjectEditorDialog::setUpEditorButtonBox()
+{
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
+    buttonBox->setObjectName("buttonBox");
+    buttonBox->setOrientation(Qt::Horizontal);
+
+    QPushButton *saveButton = buttonBox->button(QDialogButtonBox::Ok);
+    if (saveButton) {
+        saveButton->setText(tr("Save"));
+    }
+
+/*
+ * If this is an edit rather than add action then allow the user to delete the object.
+ */
+    if (m_dbModelId)
+    {
+        m_qt_deleteButton = createDeleteButton(buttonBox);
+
+        buttonBox->addButton(m_qt_deleteButton, QDialogButtonBox::DestructiveRole);
+        connect(m_qt_deleteButton, &QPushButton::clicked, this, &BaseObjectEditorDialog::handleDeleteButton_Clicked);
+    }
+
+    m_maxButtonBoxHeight = buttonBox->height() + MarginAndSpacing;
+
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+
+    return buttonBox;
+}
+
+void BaseObjectEditorDialog::limitDialogGrowth()
+{
+    if (!m_qt_editorDialogFormGB || !m_qt_buttonBox)
+    {
+        return;
+    }
+
+    m_qt_editorDialogFormGB->setMaximumHeight(m_maxGroupBoxHeight);
+
+    m_qt_buttonBox->setMaximumHeight(m_maxButtonBoxHeight);
+
+    int maxDialogWidth = getFormLayoutMaxWidth(m_qt_editorFormLayout) + MarginAndSpacing;
+
+    setMaximumWidth(maxDialogWidth);
+    setMaximumHeight(m_maxGroupBoxHeight + m_maxButtonBoxHeight + MarginAndSpacing);
+}
+
+QPushButton* BaseObjectEditorDialog::createDeleteButton(QWidget *buttonBox)
+{
+    QPushButton* deleteButton = new QPushButton(buttonBox);
+    QString buttonText = "Delete " + m_editorObjectTypeString;
+    deleteButton->setText(buttonText);
+    deleteButton->setAutoFillBackground(true);
+    QPalette palette = deleteButton->palette();
+    palette.setColor(QPalette::ButtonText, Qt::black);
+    palette.setColor(QPalette::Button, Qt::red);
+    deleteButton->setPalette(palette);
+
+    return deleteButton;
+}
+
+int BaseObjectEditorDialog::getFormLayoutMaxWidth(QFormLayout *formToSize)
+{
+    int maxWidth = 0;
+
+    for (int i = 0; i < formToSize->rowCount(); ++i)
+    {
+        int tempMaxWidth = getRowMaximumWidth(formToSize, i);
+        if (tempMaxWidth > maxWidth)
+        {
+            maxWidth = tempMaxWidth;
+        }
+    }
+
+    return maxWidth;
+}
+
+int BaseObjectEditorDialog::getRowMaximumWidth(QFormLayout *layout, int row)
+{
+    int maxLabelWidth = 0;
+    int maxFieldWidth = 0;
+
+    QLayoutItem* labelItem = layout->itemAt(row, QFormLayout::LabelRole);
+    QLayoutItem* fieldItem = layout->itemAt(row, QFormLayout::FieldRole);
+
+    if (labelItem) {
+        maxLabelWidth = labelItem->maximumSize().width();
+        if (maxLabelWidth >= MaxWidthUndefined) {
+            maxLabelWidth = labelItem->sizeHint().width();
+        }
+    }
+
+    if (fieldItem) {
+        maxFieldWidth = fieldItem->maximumSize().width();
+        if (maxFieldWidth >= MaxWidthUndefined) {
+            maxFieldWidth = fieldItem->sizeHint().width();
+        }
+    }
+
+    int horizontalSpacing = layout->horizontalSpacing();
+    if (horizontalSpacing < 0) {
+        horizontalSpacing = 15;
+    }
+
+    return maxLabelWidth + maxFieldWidth + horizontalSpacing;
+}
+```
+
+## ScheduleItemEditorDialog.h  
+
+```cpp
+#ifndef SCHEDULEITEMEDITORDIALOG_H_
+#define SCHEDULEITEMEDITORDIALOG_H_
+
+class ScheduleItemModel;
+
+// Project Header Files
+#include "BaseObjectEditorDialog.h"
+
+// QT Header Files
+#include <QCheckBox>
+#include <QCompleter>
+#include <QDateEdit>
+#include <QDateTimeEdit>
+#include <QFormLayout>
+#include <QGroupBox>
+#include <QLineEdit>
+#include <QPlainTextEdit>
+#include <QVBoxLayout>
+
+// Standard C++ Header Files
+#include <chrono>
+
+
+class ScheduleItemEditorDialog : public BaseObjectEditorDialog
+{
+public:
+    explicit ScheduleItemEditorDialog(std::size_t userId, std::size_t eventId = 0, QWidget* parent = nullptr);
+// Edit an empty event in the day schedule
+    explicit ScheduleItemEditorDialog(std::size_t userId, std::chrono::system_clock::time_point startTime,
+            std::chrono::system_clock::time_point endTime, QWidget* parent = nullptr);
+    ~ScheduleItemEditorDialog();
+    virtual void initEditorFieldsFromDataBase() override;
+
+private Q_SLOTS:
+    void handleEventDate_DateChanged();
+
+private:
+    const int EventTextEditMinWidth = 300;
+    const int EventTextEditMaxWidth = 700;
+    const int MaxCharLineEdit = 128;
+    const int TitleLineCount = 2;
+    const int LocationLineCount = 3;
+
+    virtual void setUpEditorUI() override;
+    virtual QGroupBox* setUpEditorDialogForm() override;
+    void initDateTimeEdit(QDateTimeEdit* dtEdit, std::chrono::system_clock::time_point initValue);
+    void initCompletersFromDB();
+    QDateTime initValidDateTime(std::chrono::system_clock::time_point dateTime);
+    virtual void createSharedPtrDBModelForAddObject() override;
+    virtual void transferEditorValuesToDBModel() override;
+    virtual void transferDBModelDataToEditorFields() override;
+
+    std::chrono::system_clock::time_point m_startTime;
+    std::chrono::system_clock::time_point m_endTime;
+    bool m_userPresetTime = false;
+
+    QDateEdit* m_qt_eventDate = nullptr;
+    QDateTimeEdit* m_qt_startTime = nullptr;
+    QDateTimeEdit* m_qt_endTime = nullptr;
+    QPlainTextEdit* m_qt_editTitle = nullptr;
+    QLineEdit* m_qt_addTitle = nullptr;
+    QCompleter* m_qt_titleCompleter = nullptr;
+    QLineEdit* m_qt_addLocation = nullptr;
+    QPlainTextEdit* m_qt_editLocation = nullptr;
+    QCompleter* m_qt_locationCompleter = nullptr;
+    QCheckBox* m_qt_personal = nullptr;
+
+};
+
+#endif // SCHEDULEITEMEDITORDIALOG_H_
+```
+
+## ScheduleItemEditorDialog.cpp
+
+```cpp
+// Project Header Files
+#include "commonQTWidgetsForApp.h"
+#include "ScheduleItemEditorDialog.h"
+#include "ScheduleItemQueryProcessor.h"
+#include "ScheduleItemModel.h"
+#include "stdChronoToQTConversions.h"
+
+// QT Header Files
+#include <QCheckBox>
+#include <QCompleter>
+#include <QDateEdit>
+#include <QDateTimeEdit>
+#include <QFormLayout>
+#include <QGroupBox>
+#include <QLineEdit>
+#include <QPlainTextEdit>
+#include <QVBoxLayout>
+
+// Standard C++ Header Files
+#include <chrono>
+#include <memory>
+#include <string>
+#include <vector>
+
+const std::chrono::seconds nextHour{3599}; // There are 3600 seconds in an hour.
+
+ScheduleItemEditorDialog::ScheduleItemEditorDialog(std::size_t userId, std::size_t eventId, QWidget *parent)
+    : BaseObjectEditorDialog("Event", userId, eventId, parent),
+    m_qt_eventDate{nullptr}
+{
+    if (!eventId)
+    {
+        m_startTime = std::chrono::system_clock::now();
+        m_endTime = m_startTime + nextHour;
+    }
+    
+    setUpEditorUI();
+}
+
+// Edit an empty event in the day schedule
+ScheduleItemEditorDialog::ScheduleItemEditorDialog(
+    std::size_t userId,
+    std::chrono::system_clock::time_point startTime,
+    std::chrono::system_clock::time_point endTime,
+    QWidget *parent
+)
+    : BaseObjectEditorDialog("Event", userId, 0, parent),
+    m_startTime{startTime},
+    m_endTime{endTime},
+    m_qt_eventDate{nullptr}
+{
+    m_userPresetTime = true;
+
+    setUpEditorUI();
+}
+
+ScheduleItemEditorDialog::~ScheduleItemEditorDialog()
+{
+}
+
+// Do not initialize the constructor from the database, this function must
+// be called after the constructor has been executed.
+void ScheduleItemEditorDialog::initEditorFieldsFromDataBase()
+{
+    ScheduleItemModel_shp eventData;        
+
+    // If we are editing a previously existing schedule item
+    if (m_dbModelId)
+    {
+        ScheduleItemQueryProcessor scheduleItemQueryProcessor(m_userID);
+        eventData = scheduleItemQueryProcessor.getScheduleItemById(m_dbModelId);
+        m_dbObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(eventData);
+        transferDBModelDataToEditorFields();
+    }
+    else
+    {
+        eventData = std::make_shared<ScheduleItemModel>();
+        eventData->setUserID(m_userID);
+        m_dbObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(eventData);
+    }
+
+    QDateTime startTime = initValidDateTime(m_startTime);
+    m_qt_eventDate->setDate(startTime.toLocalTime().date());
+    initDateTimeEdit(m_qt_startTime, m_startTime);
+    initDateTimeEdit(m_qt_endTime, m_endTime);
+
+    initCompletersFromDB();
+
+/*
+ * Wait until all date information is assigned before connecting this, it
+ * is to allow the user to change the date after initialization.
+ */
+    connect(m_qt_eventDate, &QDateEdit::dateChanged, this,
+        &ScheduleItemEditorDialog::handleEventDate_DateChanged);
+}
+
+void ScheduleItemEditorDialog::setUpEditorUI()
+{
+    m_qt_editorLayout = new QVBoxLayout(this);
+    m_qt_editorLayout->setObjectName("m_qt_editorLayout");
+
+    m_qt_editorDialogFormGB = setUpEditorDialogForm();
+    m_qt_editorDialogFormGB->setObjectName("m_qt_editorDialogFormGB");
+
+    m_qt_editorLayout->addWidget(m_qt_editorDialogFormGB);
+
+    m_qt_buttonBox = setUpEditorButtonBox();
+    m_qt_buttonBox->setObjectName("m_qt_buttonBox");
+    m_qt_editorLayout->addWidget(m_qt_buttonBox);
+
+    setLayout(m_qt_editorLayout);
+
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    adjustSize();
+}
+
+QGroupBox *ScheduleItemEditorDialog::setUpEditorDialogForm()
+{
+    QGroupBox* formGroupBox = new QGroupBox("Event Details:", this);
+    formGroupBox->setObjectName("formGroupBox");
+    formGroupBox->setAlignment(Qt::AlignHCenter);
+
+    m_qt_editorFormLayout = new QFormLayout(formGroupBox);
+    m_qt_editorFormLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
+
+    m_qt_eventDate = cqtfa_DateEditWithCalendarPopUpCurrentDate("m_qt_eventDate", formGroupBox);
+    m_qt_editorFormLayout->addRow("Date:", m_qt_eventDate);
+
+    m_qt_startTime = new QDateTimeEdit(formGroupBox);
+    m_qt_startTime->setObjectName("m_qt_startTime");
+    m_qt_editorFormLayout->addRow("Start:", m_qt_startTime);
+    
+    m_qt_endTime = new QDateTimeEdit(formGroupBox);
+    m_qt_endTime->setObjectName("m_qt_endTime");
+    m_qt_editorFormLayout->addRow("End:", m_qt_endTime);
+
+    if (m_dbModelId)
+    {
+        m_qt_editTitle = cqtfa_flexibleWidthPlainTextEdit("m_qt_editTitle",
+            formGroupBox, EventTextEditMinWidth, EventTextEditMaxWidth, TitleLineCount);
+        m_qt_editorFormLayout->addRow("What:", m_qt_editTitle);
+
+        m_qt_editLocation = cqtfa_flexibleWidthPlainTextEdit("m_qt_editLocation", formGroupBox,
+            EventTextEditMinWidth, EventTextEditMaxWidth, LocationLineCount);
+        m_qt_editorFormLayout->addRow("Where:", m_qt_editLocation);
+    }
+    else
+    {
+        m_qt_addTitle = cqtfa_LineEditFixedWidthByCharCount("m_qt_addTitle", formGroupBox, MaxCharLineEdit);
+        m_qt_editorFormLayout->addRow("What:", m_qt_addTitle);
+
+        m_qt_addLocation = cqtfa_LineEditFixedWidthByCharCount("m_qt_addLocation", formGroupBox, MaxCharLineEdit);
+        m_qt_editorFormLayout->addRow("Where:", m_qt_addLocation);
+    }
+
+    m_qt_personal = cqtfa_QTWidgetWithText<QCheckBox>("Personal", "m_qt_personal", formGroupBox);
+    m_qt_editorFormLayout->addRow(m_qt_personal);
+
+    formGroupBox->setLayout(m_qt_editorFormLayout);
+
+    return formGroupBox;
+}
+
+void ScheduleItemEditorDialog::initDateTimeEdit(
+    QDateTimeEdit* dtEdit,
+    std::chrono::system_clock::time_point initValue
+)
+{
+    QDateTime initDateTime = initValidDateTime(initValue);
+
+    dtEdit->setDateTime(initDateTime);
+
+    dtEdit->setDisplayFormat("HH:mm");
+
+    dtEdit->setMinimumDateTime(initDateTime.addDays(-2));
+    dtEdit->setMaximumDateTime(initDateTime.addYears(1));
+    
+    dtEdit->setCalendarPopup(false);
+}
+
+void ScheduleItemEditorDialog::handleEventDate_DateChanged()
+{
+    QDate newDate = m_qt_eventDate->date();
+
+    m_qt_startTime->setDate(newDate);
+    m_qt_endTime->setDate(newDate);
+
+    m_qt_startTime->setMinimumDate(newDate.addDays(-2));
+    m_qt_endTime->setMinimumDate(m_qt_startTime->minimumDate());
+
+    m_qt_startTime->setMaximumDate(newDate.addYears(1));
+    m_qt_endTime->setMaximumDate(m_qt_startTime->maximumDate());
+}
+
+void ScheduleItemEditorDialog::initCompletersFromDB()
+{
+    // QCompleter doesn't work with QPlainTextEdit
+    if (m_qt_editTitle)
+    {
+        return;
+    }
+
+    ScheduleItemQueryProcessor previousEventFinder(m_userID);
+    std::vector<std::string> previousEventTitles = previousEventFinder.findEventsForRepeatCompletion();
+    QStringList previousEventList;
+
+    for (const std::string& str : previousEventTitles) {
+        previousEventList.append(QString::fromStdString(str));
+    }
+
+    m_qt_titleCompleter = new QCompleter(previousEventList, m_qt_editorDialogFormGB);
+    m_qt_addTitle->setCompleter(m_qt_titleCompleter);
+
+    std::vector<std::string> previousLocations = previousEventFinder.findLocationsForRepeatCompletion();
+    QStringList locationList;
+
+    for (const std::string& str : previousLocations) {
+        locationList.append(QString::fromStdString(str));
+    }
+
+    m_qt_locationCompleter = new QCompleter(locationList, m_qt_editorDialogFormGB);
+    m_qt_addLocation->setCompleter(m_qt_locationCompleter);
+}
+
+QDateTime ScheduleItemEditorDialog::initValidDateTime(std::chrono::system_clock::time_point dateTime)
+{
+    QDateTime tempDate(chronoTimePointToQDateTime(dateTime));
+    if (!tempDate.isValid())
+    {
+        tempDate = QDateTime::currentDateTime();
+    }
+    
+    return tempDate;
+}
+
+void ScheduleItemEditorDialog::createSharedPtrDBModelForAddObject()
+{
+    ScheduleItemModel_shp newEvent = std::make_shared<ScheduleItemModel>();
+    newEvent->setUserID(m_userID);
+
+    m_dbObjectModel = std::dynamic_pointer_cast<ScheduleItemModel>(newEvent);
+}
+
+void ScheduleItemEditorDialog::transferEditorValuesToDBModel()
+{
+    if (m_dbObjectModel)
+    {
+        ScheduleItemModel_shp eventData = std::dynamic_pointer_cast<ScheduleItemModel>(m_dbObjectModel);
+        if (m_qt_editTitle)
+        {
+            eventData->setTitle(m_qt_editTitle->toPlainText().toStdString());
+            eventData->setLocation(m_qt_editLocation->toPlainText().toStdString());
+        }
+        else
+        {
+            eventData->setTitle(m_qt_addTitle->text().toStdString());
+            eventData->setLocation(m_qt_addLocation->text().toStdString());
+        }
+
+        eventData->setStartDateAndTime(qDateTimeToChrono(m_qt_startTime->dateTime()));
+        eventData->setEndDateAndTime(qDateTimeToChrono(m_qt_endTime->dateTime()));
+        eventData->setPersonal(m_qt_personal->isChecked());
+    }
+}
+
+void ScheduleItemEditorDialog::transferDBModelDataToEditorFields()
+{
+    if (m_dbObjectModel)
+    {
+        ScheduleItemModel_shp eventData = std::dynamic_pointer_cast<ScheduleItemModel>(m_dbObjectModel);
+
+        m_qt_editTitle->setPlainText(QString::fromStdString(eventData->getTitle()));
+        m_qt_editLocation->setPlainText(QString::fromStdString(eventData->getLocation()));
+        m_qt_personal->setChecked(eventData->isPersonal());
+
+        m_startTime = eventData->getStartTime();
+        m_endTime = eventData->getEndTime();
+    }
+}
+
+```
+
+## ModelSubWindow.h
+
+```cpp
+#ifndef MODELSUBWINDOW_H_
+#define MODELSUBWINDOW_H_
+
+/*
+ * The ModelSubWindow class is a SuperClass. It provides the functionality 
+ * that every model window is expected to have such as providing an editor for
+ * the model and providing a table to view all pertinent model items,
+ * displaying a close button when the window is shown outside the user
+ * dashboard and not displaying a close button when the window is shown within
+ * the user dashboard.
+ * 
+ * The ModelSubWindow class is an Abstract class because some of the actions
+ * must be defined by the subclasses because they can't be known by the super
+ * class.
+ * 
+ * Actions that are common to all or most windows should be added to this class.
+ *
+ * The setUpWindowContentAndActions() function provided by the sub class
+ * will add necessary visual components such as the table view and editors.
+ */
+class UserModel;
+
+// Project Header Files
+
+// QT Header Files
+#include <QDate>
+#include <QLabel>
+#include <QMainWindow>
+#include <QPushButton>
+#include <QString>
+#include <QTableView>
+#include <QVBoxLayout>
+#include <QWidget>
+
+// Standard C++ Header Files
+#include <memory>
+#include <string>
+
+class ModelSubWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    explicit ModelSubWindow(std::string titleText, bool makeSubWindow = false, QWidget *parent = nullptr);
+    void setDate(QDate dateToShow);
+    void setUser(std::shared_ptr<UserModel> user);
+    void changeDataRefreshTable(std::shared_ptr<UserModel> user, QDate dateToShow);
+    void setUpWindowUi();
+    /*
+     * The refresh() function is pure because there is no way to provide a
+     * common way to refresh the table of models being displayed.
+     */
+    virtual void refresh() = 0;
+    void changeWindowSize(int newWidth, int newHeight);
+
+Q_SIGNALS:
+
+protected Q_SLOTS:
+
+protected:
+    const int DefaultSubWindowWidth = 300;
+    const int DefaultSubWindowHeight = 400;
+    const int DefaultFullWindowWidth = 1000;
+    const int DefaultFullWindowHeight = 720;
+
+    virtual void setUpWindowContentAndActions();
+
+    /*
+     * The m_isSubWindow variable indicates if the window is being shown in
+     * the user dash board or not. This controls what elements need to be
+     * displayed.
+     */
+    bool m_isSubWindow;
+    QVBoxLayout* m_qt_modelWindowLayout = nullptr;
+    QPushButton* m_qt_addModelObject = nullptr;
+    /*
+     * To date all sub windows contain a table to be displayed, this may always
+     * be true, but if not the m_qt_ModelTableView variable will remain null.
+     */
+    QTableView* m_qt_modelTableView = nullptr;
+    QPushButton* m_qt_closeModelWindow = nullptr;
+    QWidget* m_qt_centralwidget = nullptr;
+    /*
+     * There are 2 modes that this window may appear in, one is a stand alone
+     * window and one as a window embedded in the user dashboard. The stand
+     * alone window will have a title, as a window embedded in the user
+     * dashboard the title will have to be added as a label.
+     */
+    QLabel* m_qt_alternateTitle = nullptr;
+
+    std::shared_ptr<UserModel> m_userData;
+    QDate m_dateOfViewToDisplay;
+    QString m_windowTitleText;
+    int m_width;
+    int m_height;
+    int m_lineEditWidth;
+    int m_vSpacing = 10;
+    int m_hSpacing = 10;
+};
+
+#endif // MODELSUBWINDOW_H_
+```
+
+## ModelSubWindow.cpp
+
+```cpp
+// Project Header Files
+#include "commonQTWidgetsForApp.h"  // cqtfa_ functions
+#include "ModelSubWindow.h"
+
+// QT Header Files
+#include <QMessageBox>
+#include <QVBoxLayout>
+#include <QString>
+
+// Standard C++ Header Files
+#include <string>
+
+ModelSubWindow::ModelSubWindow(std::string titleText, bool makeSubWindow, QWidget *parent)
+ :  QMainWindow{parent},
+    m_isSubWindow{makeSubWindow},
+    m_userData{nullptr},
+    m_windowTitleText{QString::fromStdString(titleText)}
+{
+    if (makeSubWindow)
+    {
+        m_width = DefaultSubWindowWidth;
+        m_height = DefaultSubWindowHeight;
+        m_lineEditWidth = static_cast<int>(0.9 * m_width);
+    }
+    else
+    {
+        m_width = DefaultFullWindowWidth;
+        m_height = DefaultFullWindowHeight;
+        m_lineEditWidth = static_cast<int>(0.9 * m_width);
+    }
+}
+
+void ModelSubWindow::setDate(QDate dateToShow)
+{
+    m_dateOfViewToDisplay = dateToShow;
+}
+
+void ModelSubWindow::setUser(std::shared_ptr<UserModel> user)
+{
+    m_userData = user;
+}
+
+void ModelSubWindow::changeDataRefreshTable(std::shared_ptr<UserModel> user, QDate dateToShow)
+{
+    m_dateOfViewToDisplay = dateToShow;
+    m_userData = user;
+    refresh();
+}
+
+void ModelSubWindow::setUpWindowUi()
+{
+    m_qt_centralwidget = new QWidget(this);
+    m_qt_centralwidget->setObjectName(QString::fromUtf8("m_qt_centralwidget"));
+
+    m_qt_modelWindowLayout = new QVBoxLayout(m_qt_centralwidget);
+    m_qt_modelWindowLayout->setObjectName("modelWindowLayout");
+
+    resize(m_width, m_height);
+
+    if (m_isSubWindow)
+    {
+        m_qt_alternateTitle = cqtfa_QTWidgetWithText<QLabel>(m_windowTitleText.toUtf8().constData(), "m_qt_alternateTitle", this);
+        m_qt_modelWindowLayout->addWidget(m_qt_alternateTitle, 0, Qt::AlignHCenter);
+    }
+    else {
+        setWindowTitle(m_windowTitleText);
+    }
+
+    /*
+     * The setUpWindowContentAndActions() function provided by the sub class
+     * will add necessary visual components such as the table view and editors.
+     */
+    setUpWindowContentAndActions();
+
+    if (!m_isSubWindow)
+    {
+        if (!m_qt_closeModelWindow)
+        {
+            m_qt_closeModelWindow = cqtfa_QTWidgetWithText<QPushButton>("Close Window", "m_qt_closeModelWindow", this);
+            m_qt_modelWindowLayout->addWidget(m_qt_closeModelWindow);
+            connect(m_qt_closeModelWindow, &QPushButton::clicked, this, &QWidget::close);
+        }
+    }
+
+    setCentralWidget(m_qt_centralwidget);
+}
+
+void ModelSubWindow::changeWindowSize(int newWidth, int newHeight)
+{
+    m_width = newWidth;
+    m_height = newHeight;
+    m_lineEditWidth = static_cast<int>(m_width * 0.90);
+}
+
+void ModelSubWindow::setUpWindowContentAndActions()
+{
+    QString errorReport = "setUpWindowContentAndActions NOT IMPLEMENTED!!!\n";
+    QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
+}
+
+```
+
+## UserModel.h  
+
+```cpp
+#ifndef USERMODEL_H_
+#define USERMODEL_H_
+
+// Project Header Files
+#include "ModelDBInterface.h"
+
+// Standard C++ Header Files
+#include <chrono>
+#include <format>
+#include <iostream>
+#include <memory>
+#include <optional>
+#include <string>
+
+class UserModel : public ModelDBInterface
+{
+public:
+    struct UserPreferences
+    {
+        std::string startTime;
+        std::string endTime;
+        bool includePriorityInSchedule;
+        bool includeMinorPriorityInSchedule;
+        bool userLetterForMajorPriority;
+        bool separateMajorAndMinorWithDot;
+    };
+
+    UserModel();
+    UserModel(std::size_t userID,
+        std::string lastName,
+        std::string firstName,
+        std::string middleinit,
+        std::string email,
+        std::string loginName,
+        std::string password,
+        std::string preferences,
+        std::chrono::system_clock::time_point dateAdded,
+        std::chrono::system_clock::time_point lastLogin,
+        std::size_t orgId
+    );
+    ~UserModel() = default;
+
+    void autoGenerateLoginAndPassword() noexcept;
+    std::string getLastName() const noexcept { return m_lastName;};
+    std::string getFirstName() const noexcept { return m_firstName; };
+    std::string getMiddleInitial() const noexcept { return m_middleInitial; };
+    std::string getEmail() const noexcept { return m_email; };
+    std::string getLoginName() const noexcept { return m_loginName; };
+    std::string getPassword() const noexcept { return m_password; };
+    std::string getStartTime() const noexcept { return m_preferences.startTime; };
+    std::string getEndTime() const noexcept { return m_preferences.endTime; };
+    std::size_t getUserID() const noexcept { return m_primaryKey; };
+    std::chrono::system_clock::time_point getCreationDate() const noexcept { return m_created.value(); };
+    std::optional<std::chrono::system_clock::time_point> getLastLogin() const noexcept { return m_lastLogin; };
+    bool isPriorityInSchedule() const noexcept { return m_preferences.includePriorityInSchedule; };
+    bool isMinorPriorityInSchedule() const noexcept { return m_preferences.includeMinorPriorityInSchedule; };
+    bool isUsingLettersForMaorPriority() const noexcept { return m_preferences.userLetterForMajorPriority; };
+    bool isSeparatingPriorityWithDot() const noexcept { return m_preferences.separateMajorAndMinorWithDot; };
+
+    void setLastName(const std::string& lastName) noexcept;
+    void setFirstName(const std::string& firstName) noexcept;
+    void setMiddleInitial(const std::string& middleinit) noexcept;
+    void setEmail(const std::string& email) noexcept;
+    void setLoginName(const std::string& loginName) noexcept;
+    void setPassword(const std::string& password) noexcept;
+    void setStartTime(const std::string& startTime) noexcept;
+    void setEndTime(const std::string& endTime) noexcept;
+    void setPriorityInSchedule(bool inSchedule) noexcept;
+    void setMinorPriorityInSchedule(bool inSchedule) noexcept;
+    void setUsingLettersForMaorPriority(bool usingLetters) noexcept;
+    void setSeparatingPriorityWithDot(bool separate) noexcept;
+    void setUserID(std::size_t UserID) noexcept;
+    void setCreationDate(std::chrono::system_clock::time_point dateIn) noexcept;
+    void setLastLogin(std::chrono::system_clock::time_point dateAndTime) noexcept;
+
+/*
+ * Required fields.
+ */
+    bool isMissingLastName() const noexcept;
+    bool isMissingFirstName() const noexcept;
+    bool isMissingLoginName() const noexcept;
+    bool isMissingPassword() const noexcept;
+    bool isMissingEmail() const noexcept;
+    void initRequiredFields() noexcept override;
+
+    bool operator==(UserModel& other)
+    {
+        return diffUser(other);
+    };
+    bool operator==(std::shared_ptr<UserModel> other)
+    {
+        return diffUser(*other);
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const UserModel& user)
+    {
+        constexpr const char* outFmtStr = "\t{}: {}\n";
+        os << std::format(outFmtStr, "User ID", user.m_primaryKey);
+        os << std::format(outFmtStr, "Last Name", user.m_lastName);
+        os << std::format(outFmtStr, "First Name", user.m_firstName);
+        os << std::format(outFmtStr, "Middle Initial", user.m_middleInitial);
+        os << std::format(outFmtStr, "Email", user.m_email);
+        os << std::format(outFmtStr, "Login Name", user.m_loginName);
+        if (user.m_selfTest)
+        {
+            os << std::format(outFmtStr, "PassWord", user.m_password);
+        }
+        if (user.m_created.has_value())
+        {
+            os << std::format(outFmtStr, "User Added", user.m_created.value());
+        }
+        if (user.m_lastLogin.has_value())
+        {
+            os << std::format(outFmtStr, "Last Login", user.m_lastLogin.value());
+        }
+
+        return os;
+    };
+
+protected:
+    void createLoginBasedOnUserName(const std::string& lastName,
+        const std::string& firstName,const std::string& middleInitial) noexcept;
+    bool diffUser(UserModel& other) const noexcept;
+    std::string formatInsertStatement() override;
+    std::string formatUpdateStatement() override;
+    std::string formatDeleteStatement() override;
+
+    std::string buildPreferenceText() noexcept;
+    void parsePrefenceText(std::string preferences) noexcept;
+    
+    static const std::size_t minNameLenght = 2;
+    static const std::size_t minPasswordLenght = 8;
+    static const std::size_t minEmailLength = 10;
+
+    std::string m_lastName;
+    std::string m_firstName;
+    std::string m_middleInitial;
+    std::string m_email;
+    std::string m_loginName;
+    std::string m_password;
+    UserPreferences m_preferences;
+    std::optional<std::chrono::system_clock::time_point> m_created;
+    std::optional<std::chrono::system_clock::time_point> m_lastLogin;
+    std::optional<std::size_t> m_organizationId;
+
+private:
+// Preference subfield indexes
+    static const std::size_t PrefDayStartIdx = 0;
+    static const std::size_t PrefDayEndIdx = 1;
+    static const std::size_t PrefMajorPriorityIdx = 2;
+    static const std::size_t PrefMinorPriorityIdx = 3;
+    static const std::size_t PrefUsingLetterIdx = 4;
+    static const std::size_t PrefUsingDotIdx = 5;
+};
+
+using UserModel_shp = std::shared_ptr<UserModel>;
+
+#endif // USERMODEL_H_
+```
+
+## ScheduleWindow.h
+
+```cpp
+#ifndef SCHEDULEWINDOW_H_
+#define SCHEDULEWINDOW_H_
+
+/*
+ * Provide the window to display the user's schedule and allow the user to edit
+ * their schedule.
+ */
+class GuiDashboardScheduleTable;
+
+// Project Header Files
+#include "ModelSubWindow.h"
+
+// QT Header Files
+#include <QDate>
+#include <QPushButton>
+#include <QString>
+#include <QTableView>
+
+// Standard C++ Header Files
+
+class ScheduleWindow  : public ModelSubWindow
+{
+public:
+    ScheduleWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow, bool makeSubWindow = false, QWidget *parent = nullptr);
+    void refresh() override;
+
+Q_SIGNALS:
+
+private Q_SLOTS:
+    void handleAddEvent();
+    void handleScheduleItemClicked(const QModelIndex &index);
+
+protected:
+    virtual void setUpWindowContentAndActions() override;
+    void tableViewReset(QTableView* tableView);
+
+    GuiDashboardScheduleTable* m_scheduleTable = nullptr;
+};
+
+#endif // SCHEDULEWINDOW_H_
+```
+
+## ScheduleWindow.cpp
+
+```cpp
+// Project Header Files
+#include "commonQTWidgetsForApp.h"  // cqtfa_ functions
+#include "GuiDashboardScheduleTable.h"
+#include "ScheduleItemEditorDialog.h"
+#include "ScheduleWindow.h"
+#include "UserModel.h"
+
+// QT Header Files
+#include <QDate>
+#include <QHeaderView>
+#include <QPushButton>
+#include <QString>
+#include <QTableView>
+#include <QWidget>
+
+// Standard C++ Header Files
+#include <chrono>
+#include <memory>
+
+ScheduleWindow::ScheduleWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow, bool makeSubWindow, QWidget *parent)
+    : ModelSubWindow("Schedule:", makeSubWindow, parent)
+{
+    setUser(currentUser);
+    setDate(dateToShow);
+}
+
+void ScheduleWindow::refresh()
+{
+    tableViewReset(m_qt_modelTableView);
+}
+
+void ScheduleWindow::handleAddEvent()
+{
+    ScheduleItemEditorDialog addScheduleItemDialog(m_userData->getUserID(), 0, this);
+    addScheduleItemDialog.initEditorFieldsFromDataBase();
+    addScheduleItemDialog.exec();
+    tableViewReset(m_qt_modelTableView);
+}
+
+void ScheduleWindow::handleScheduleItemClicked(const QModelIndex &index)
+{
+    if (!index.isValid())
+    {
+        return;
+    }
+
+    std::size_t sheduleItemToEdit = static_cast<std::size_t>(index.internalId());
+
+    ScheduleItemEditorDialog* editScheduleItemDialog;
+    /*
+     * If the event (schedule item) is in the database pass in the table row 
+     * otherwise the user is creating a new event by clicking the schedule time.
+     */
+    if (sheduleItemToEdit)
+    {
+        editScheduleItemDialog = new ScheduleItemEditorDialog(m_userData->getUserID(), sheduleItemToEdit, this);
+    }
+    else
+    {
+        std::chrono::system_clock::time_point startTime = m_scheduleTable->getScheduleItemStartTime(index);
+        std::chrono::system_clock::time_point endTime = m_scheduleTable->getScheduleItemEndTime(index);
+        editScheduleItemDialog = new ScheduleItemEditorDialog(m_userData->getUserID(), startTime,  endTime, this);
+    }
+
+    editScheduleItemDialog->initEditorFieldsFromDataBase();
+    editScheduleItemDialog->exec();
+
+    tableViewReset(m_qt_modelTableView);
+}
+
+void ScheduleWindow::setUpWindowContentAndActions()
+{
+    m_qt_addModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add Event to Schedule", "m_qt_addModelObject", this);
+    connect(m_qt_addModelObject, &QPushButton::clicked, this, &ScheduleWindow::handleAddEvent);
+    m_qt_modelWindowLayout->addWidget(m_qt_addModelObject);
+
+    m_qt_modelTableView = new QTableView(this);
+    m_qt_modelTableView->setObjectName("m_qt_modelTableView");
+    tableViewReset(m_qt_modelTableView);
+
+    connect(m_qt_modelTableView, &QTableView::clicked, this, &ScheduleWindow::handleScheduleItemClicked);
+    connect(m_qt_modelTableView, &QTableView::doubleClicked, this, &ScheduleWindow::handleScheduleItemClicked);
+
+    m_qt_modelWindowLayout->addWidget(m_qt_modelTableView);
+}
+
+void ScheduleWindow::tableViewReset(QTableView *tableView)
+{
+    if (m_scheduleTable)
+    {
+        delete m_scheduleTable;
+    }
+
+    m_scheduleTable = new GuiDashboardScheduleTable(m_userData->getUserID(), m_dateOfViewToDisplay, this);
+    m_scheduleTable->setObjectName("m_scheduleTable");
+    m_scheduleTable->fillSchedule();
+
+    tableView->setModel(m_scheduleTable);
+    tableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    tableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    tableView->clearSelection();
+    tableView->clearFocus();
+}
+
+```
+
+
