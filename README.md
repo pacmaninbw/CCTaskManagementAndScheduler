@@ -13,6 +13,16 @@ I have been using this planner since January of 2026 to organize my development 
 
 ![Planner User Dashboard](images/PlannerDashboardView_06232026.png)
 
+## Code Reviews  
+
+Significant portions of the code were posted on the [Stack Overflow Code Review community](https://codereview.stackexchange.com/) July 7, 2026 through July 9, 2026. Issues found in those code reviews are currently being recorded.  
+ - [A SQL Database to implement a per day at a view planner](https://codereview.stackexchange.com/questions/302562/a-sql-database-to-implement-a-per-day-at-a-view-planner)  
+ - [The ScheduleItemModel implementation in the view per day planner](https://codereview.stackexchange.com/questions/302564/the-scheduleitemmodel-implementation-in-the-view-per-day-planner)  
+ - [Follow up to Self / Unit test of polymorphic database model](https://codereview.stackexchange.com/questions/302569/follow-up-to-self-unit-test-of-polymorphic-database-model)  
+ - [A second regression test of the polymorphic c++ database access classes](https://codereview.stackexchange.com/questions/302570/a-second-regression-test-of-the-polymorphic-c-database-access-classes)  
+ - [A Qt C++ application: The schedule window in the day per view planner](https://codereview.stackexchange.com/questions/302590/a-qt-c-application-the-schedule-window-in-the-day-per-view-planner)  
+
+
 ## Test Coverage  
 
 The models and database used by the tool access are tested separately. The test coverage of the models and database used by the tool is currently 95.7%.
@@ -24,6 +34,7 @@ There is a list of known issues.
 ## Development Environment  
  - Ubuntu 24.04  
  - g++ 14.2.0  
+ - C++23
  - Qt 6.10.3  
  - cmake 4.3.3  
  - Boost 187  
