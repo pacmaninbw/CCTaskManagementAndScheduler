@@ -27,6 +27,10 @@ public:
 
 protected:
     void initFormatOptions();
+    const boost::mysql::format_options& getFormatOptions() {
+        initFormatOptions();
+        return m_formatOpts.value();
+    }
     void appendErrorMessage(const std::string& newError) { m_errorMessages.append(newError); m_errorMessages.append("\n");};
 /*
  * Utility functions to perform conversions from C++ class fields to 
