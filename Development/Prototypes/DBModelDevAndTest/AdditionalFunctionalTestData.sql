@@ -1,19 +1,17 @@
 --
--- Database: `testPTSDB`
+-- Database: test_ptsdb
 --
-# USE `testPTSDB`;
+USE test_ptsdb;
 
 DELIMITER $$
-USE `testPTSDB`;
-DROP PROCEDURE IF EXISTS `testPTSDB`.`AddTestUsers`;
 
-CREATE PROCEDURE `testPTSDB`.`AddTestUsers`()
+CREATE OR REPLACE PROCEDURE test_ptsdb.`AddTestUsers`()
 
 BEGIN
 
-CALL AddUser(1, 'Black', 'Paul', 'A', 'paul.black@blacksw.com', 'pacmaninbw', 'mYfAv0r1t3Pas5MorD', '8:30 AM;5:00 PM;1;1;1;0;');
-CALL AddUser(1, 'Black', 'Paul2', 'B', 'pcfriends@blacksw.com', 'BlackPaulA', 'pacmaninbw', '8:30 AM;5:00 PM;1;1;1;0;');
-CALL AddUser(1, 'Shinny', 'Eric', 'Y', 'EricShinny@google.com', 'ShinnyEricY', 'ShinnyEricY', '8:30 AM;5:00 PM;1;1;1;0;');
+CALL add_user(1, 'Black', 'Paul', 'A', 'paul.black@blacksw.com', 'pacmaninbw', 'mYfAv0r1t3Pas5MorD', '8:30 AM;5:00 PM;1;1;1;0;');
+CALL add_user(1, 'Black', 'Paul2', 'B', 'pcfriends@blacksw.com', 'BlackPaulA', 'pacmaninbw', '8:30 AM;5:00 PM;1;1;1;0;');
+CALL add_user(1, 'Shinny', 'Eric', 'Y', 'EricShinny@google.com', 'ShinnyEricY', 'ShinnyEricY', '8:30 AM;5:00 PM;1;1;1;0;');
 
 END$$
 
@@ -21,10 +19,8 @@ DELIMITER ;
 
 
 DELIMITER $$
-USE `testPTSDB`;
-DROP PROCEDURE IF EXISTS `testPTSDB`.`AddTestTasks`;
 
-CREATE PROCEDURE `testPTSDB`.`AddTestTasks`()
+CREATE OR REPLACE PROCEDURE test_ptsdb.`AddTestTasks`()
 
 BEGIN
 
@@ -81,15 +77,13 @@ DELIMITER ;
 
 -- --------------------------------------------------------
 DELIMITER $$
-USE `testPTSDB`;
-DROP PROCEDURE IF EXISTS `testPTSDB`.`AddTestNotes`;
 
-CREATE PROCEDURE `testPTSDB`.`AddTestNotes`()
+CREATE OR REPLACE PROCEDURE test_ptsdb.`AddTestNotes`()
 
 BEGIN
 
 
-INSERT INTO `testPTSDB`.`UserNotes` (`idUserNotes`, `UserID`, `NotationDateTime`, `Content`, `LastUpdate`) VALUES
+INSERT INTO test_ptsdb.user_notes (id_user_notes, user_id, note_creation, content, last_modifed) VALUES
 (1, 1, '2026-03-12 13:51:37', 'This is a test of the add note dialog!', '2026-03-12 13:51:37'),
 (2, 1, '2026-03-14 13:23:50', 'Add updateNoteTable when updating user or date', '2026-03-14 13:23:50'),
 (3, 1, '2026-03-14 13:35:41', 'Connect note edits to handlers.', '2026-03-14 13:35:41'),
@@ -124,15 +118,13 @@ DELIMITER ;
 
 -- --------------------------------------------------------
 DELIMITER $$
-USE `testPTSDB`;
-DROP PROCEDURE IF EXISTS `testPTSDB`.`AddTestSchedule`;
 
-CREATE PROCEDURE `testPTSDB`.`AddTestSchedule`()
+CREATE OR REPLACE PROCEDURE test_ptsdb.`AddTestSchedule`()
 
 BEGIN
 
 
-INSERT INTO `UserScheduleItem` (`idUserScheduleItem`, `UserID`, `StartDateTime`, `EndDateTime`, `Title`, `Personal`, `Location`, `CreatedTS`, `LastUpdateTS`, `Hidden`) VALUES
+INSERT INTO user_schedule_item (id_user_schedule_item, user_id, start_date_time, end_date_time, title, personal, location, created_timestamp, last_modified_time_stamp, deleted) VALUES
 (1, 1, '2026-02-05 15:29:05', '2026-02-05 15:29:05', 'CDC Chinese New Year luncheon', 1, 'China Buffet', '2026-02-05 15:29:05', '2026-02-05 15:29:05', 0),
 (2, 1, '2026-02-05 15:31:02', '2026-02-05 15:31:02', 'Dr. Lakdawala', 1, '8641 Wilshire Blvd', '2026-02-05 15:31:02', '2026-02-05 15:31:02', 0),
 (3, 1, '2026-02-05 15:32:35', '2026-02-05 15:32:35', 'Dr. Aftergood', 1, '99 N. La Cienaga', '2026-02-05 15:32:35', '2026-02-05 15:32:35', 0),
@@ -452,7 +444,7 @@ INSERT INTO `UserScheduleItem` (`idUserScheduleItem`, `UserID`, `StartDateTime`,
 (317, 1, '2026-03-24 19:00:00', '2026-03-24 19:59:59', 'Check to see why the Cedars bill wasn\'t paid.', 1, 'Home', '2026-03-24 11:38:31', '2026-03-24 11:39:02', 0),
 (318, 1, '2026-03-26 11:30:00', '2026-03-26 11:44:59', 'Check vital signs, log data on iPhone and in spreadsheet', 1, 'Home', '2026-03-26 12:44:23', '2026-03-26 12:44:23', 0),
 (319, 1, '2026-03-26 11:45:00', '2026-03-26 11:59:59', 'Coffee, say hello to everyone ', 1, 'Starbucks', '2026-03-26 12:45:18', '2026-03-26 12:45:18', 0);
-INSERT INTO `UserScheduleItem` (`idUserScheduleItem`, `UserID`, `StartDateTime`, `EndDateTime`, `Title`, `Personal`, `Location`, `CreatedTS`, `LastUpdateTS`, `Hidden`) VALUES
+INSERT INTO user_schedule_item (id_user_schedule_item, user_id, start_date_time, end_date_time, title, personal, location, created_timestamp, last_modified_time_stamp, deleted) VALUES
 (320, 1, '2026-03-26 12:00:00', '2026-03-26 12:29:59', 'Code review moderator oversight ', 0, 'Starbucks', '2026-03-26 12:46:25', '2026-03-26 12:46:25', 0),
 (321, 1, '2026-03-26 12:30:00', '2026-03-26 12:59:59', 'Check email, plan day ', 1, 'Starbucks', '2026-03-26 12:47:12', '2026-03-26 12:47:12', 0),
 (322, 1, '2026-03-26 13:00:00', '2026-03-26 15:59:59', 'Work on stored procedure necessary to implement the non-modal pop-up with similar contents', 0, 'Starbucks', '2026-03-26 12:48:29', '2026-03-26 12:48:29', 0),
@@ -764,7 +756,7 @@ INSERT INTO `UserScheduleItem` (`idUserScheduleItem`, `UserID`, `StartDateTime`,
 (628, 1, '2026-05-20 10:45:00', '2026-05-20 10:59:59', 'Check vital signs, log data on iPhone and in spreadsheet', 1, 'Home', '2026-05-20 15:42:50', '2026-05-20 15:42:50', 0),
 (629, 1, '2026-05-20 11:00:00', '2026-05-20 11:14:59', 'Coffee, say hellp to everyone ', 1, 'Starbucks', '2026-05-20 15:43:29', '2026-05-20 15:43:29', 0),
 (630, 1, '2026-05-20 11:15:00', '2026-05-20 11:45:59', 'Read email, clear notifications on LinkedIn, plan day ', 1, 'Starbucks', '2026-05-20 15:44:13', '2026-05-20 15:44:13', 0);
-INSERT INTO `UserScheduleItem` (`idUserScheduleItem`, `UserID`, `StartDateTime`, `EndDateTime`, `Title`, `Personal`, `Location`, `CreatedTS`, `LastUpdateTS`, `Hidden`) VALUES
+INSERT INTO user_schedule_item (id_user_schedule_item, user_id, start_date_time, end_date_time, title, personal, location, created_timestamp, last_modified_time_stamp, deleted) VALUES
 (631, 1, '2026-05-20 11:45:00', '2026-05-20 14:14:59', 'Get all Unit tests working with new architecture.', 0, 'Starbucks', '2026-05-20 15:45:23', '2026-05-20 15:45:23', 0),
 (632, 1, '2026-05-20 14:30:00', '2026-05-20 15:14:59', 'Get gas vacuum car', 1, '', '2026-05-20 15:46:23', '2026-05-20 15:46:23', 0),
 (633, 1, '2026-05-20 17:00:00', '2026-05-20 18:29:59', 'Drive to 99 N. La Cienega', 1, '', '2026-05-20 15:47:10', '2026-05-20 15:47:10', 0),
@@ -953,14 +945,13 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-USE `testPTSDB`;
-DROP PROCEDURE IF EXISTS `testPTSDB`.`AddTestData`;
 
-CREATE PROCEDURE `testPTSDB`.`AddTestData`()
+CREATE OR REPLACE PROCEDURE test_ptsdb.`AddTestData`()
 
 BEGIN
 
-   CALL AddOrganization('Organization Name', 'anyemailaddress@anyURL.org', '(800) 555-1212', NULL, NULL, '1 Nowhere Street', 'Big City', 'Any state', 'postal code', 'any country');
+   INSERT INTO test_ptsdb.organization_profile (organization_name, email_address, phone_number, primary_contact_user, secondary_contact_user, address_line_1, city, state_or_province, postal_code, nation)
+   VALUES ('Test Organization Name', 'anyemailaddress@anyURL.org', '(800) 555-1212', NULL, NULL, '1 Nowhere Street', 'Big City', 'Any state', 'postal code', 'any country');
 
    CALL AddTestUsers();
 
@@ -977,36 +968,32 @@ DELIMITER ;
 DELIMITER $$
 
 DELIMITER $$
-USE `testPTSDB`;
-DROP PROCEDURE IF EXISTS `testPTSDB`.`TestUserStoredProcedures`;
 
-CREATE PROCEDURE `testPTSDB`.`TestUserStoredProcedures`()
+CREATE OR REPLACE PROCEDURE test_ptsdb.`TestUserStoredProcedures`()
 
 BEGIN
 
-   CALL GetAllUsers();
+   CALL get_all_users();
 
-   CALL GetUserByID(1);
+   CALL get_user_by_id(1);
 
-   CALL GetUserByLoginName('UserOne');
+   CALL get_user_by_user_login('UserOne');
 
-   CALL GetUserByEmail('UserOne@readyUserOne.com');
+   CALL get_user_by_email('UserOne@readyUserOne.com');
 
-   CALL GetUserByLoginAndPassword('UserOne', 'testPassword');
+   CALL get_user_by_login_and_password('UserOne', 'testPassword');
 
-   CALL GetUserByFullName('Shinny', 'Eric', 'Y');
+   CALL get_user_by_full_name('Shinny', 'Eric', 'Y');
 
-   CALL UpdateUserAllFields(3, 1, 'AlteredLast', 'AlteredFirst', 'D', 'AlteredEmail', 'AlteredUname', 'AlteredPW', 'AlteredPreffs', '2026-04-17 22:00:00');
+   CALL update_user_all_fields(3, 1, 'AlteredLast', 'AlteredFirst', 'D', 'AlteredEmail', 'AlteredUname', 'AlteredPW', 'AlteredPreffs', '2026-04-17 22:00:00');
 
 END$$
 
 DELIMITER ;
 
 DELIMITER $$
-USE `testPTSDB`;
-DROP PROCEDURE IF EXISTS `testPTSDB`.`TestTaskStoredProcedures`;
 
-CREATE PROCEDURE `testPTSDB`.`TestTaskStoredProcedures`()
+CREATE OR REPLACE PROCEDURE test_ptsdb.`TestTaskStoredProcedures`()
 
 BEGIN
 
@@ -1026,10 +1013,10 @@ BEGIN
 
    CALL HideTask(4, 59);
 
-   CALL UpdateTaskAllFields(50, 4, 5, 'Install a WordPress Archive Plugin', 2, 4, '2025-05-01', '2025-05-01', '2025-05-11', '2025-05-12', '2025-05-11', 2, 1.5, 4, 3, 0, 1, '49;', 0);
+   CALL UpdateTaskAllFields(50, 4, 5, 'Install a WordPress Archive Plugin', 2, 4, '2025-05-01', '2025-05-01', '2025-05-11', '2025-05-12', 2, 1.5, 4, 3, 0, 1, '49;', 0);
    
-   SELECT TaskID FROM Tasks  WHERE AsignedTo = 1 AND RequiredDelivery < '2026-03-22' AND Completed IS NULL AND (Hidden IS NULL OR Hidden <> 1) ORDER BY SchedulePriorityGroup 
-ASC, PriorityInGroup ASC;
+   SELECT task_id FROM tasks  WHERE tasks.assigned_to = 1 AND tasks.due_date < '2026-03-22' AND tasks.delivered IS NULL AND (deleted <> 1) ORDER BY priority_category 
+ASC, priority ASC;
 
 END$$
 
@@ -1037,10 +1024,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-USE `testPTSDB`;
-DROP PROCEDURE IF EXISTS `testPTSDB`.`TestNoteStoredProcedures`;
-
-CREATE PROCEDURE `testPTSDB`.`TestNoteStoredProcedures`()
+CREATE OR REPLACE PROCEDURE test_ptsdb.`TestNoteStoredProcedures`()
 
 BEGIN
 
@@ -1070,10 +1054,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-USE `testPTSDB`;
-DROP PROCEDURE IF EXISTS `testPTSDB`.`TestScheduleItemsStoredProcedures`;
-
-CREATE PROCEDURE `testPTSDB`.`TestScheduleItemsStoredProcedures`()
+CREATE OR REPLACE PROCEDURE test_ptsdb.`TestScheduleItemsStoredProcedures`()
 
 BEGIN
 
@@ -1081,8 +1062,8 @@ BEGIN
 
    CALL HideScheduleItem(1, 53);
 
-   SELECT idUserScheduleItem FROM UserScheduleItem  WHERE UserID = 1 AND (Hidden IS NULL OR Hidden <> 1) AND StartDateTime >= '2026-03-08 08:00:00.000000' AND StartDateTime <= '20
-26-03-09 07:59:59.000000' ORDER BY StartDateTime ASC;
+   SELECT id_user_schedule_item FROM user_schedule_item  WHERE user_id = 1 AND (deleted <> 1) AND start_date_time >= '2026-03-08 08:00:00.000000' AND start_date_time <= '20
+26-03-09 07:59:59.000000' ORDER BY start_date_time ASC;
 
    CALL UpdateScheduleItemAllFields(1, 238, '2026-03-15 01:00:00', '2026-03-15 02:29:59', 'Sorry, no pea soup today.', 1, 'Norm\'s');
 
@@ -1098,18 +1079,15 @@ DELIMITER ;
 
 DELIMITER $$
 
-USE `testPTSDB`;
-DROP PROCEDURE IF EXISTS `testPTSDB`.`TestUserGoalStoredProcedures`;
-
-CREATE PROCEDURE `testPTSDB`.`TestUserGoalStoredProcedures`()
+CREATE OR REPLACE PROCEDURE test_ptsdb.`TestUserGoalStoredProcedures`()
 
 BEGIN
 
-   CALL AddUserGoal(1, 'Test AddUserGoal SQL implementation.', 0, 0);
+   CALL add_user_goal(1, 'Test AddUserGoal SQL implementation.', 0, 0);
 
-   CALL UpdateUserGoalAllFields(1, 1, 'Test AddUserGoal SQL implementation.', 2, 1);
+   CALL update_user_goal_all_fields(1, 1, 'Test AddUserGoal SQL implementation.', 2, 1);
 
-   CALL GetGoalById(1);
+   CALL get_goal_by_id(1);
 
    CALL GetAllGoalsForUser(1);
 
@@ -1125,10 +1103,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-USE `testPTSDB`;
-DROP PROCEDURE IF EXISTS `testPTSDB`.`TestStoredProceduresAndFunctions`;
-
-CREATE PROCEDURE `testPTSDB`.`TestStoredProceduresAndFunctions`()
+CREATE OR REPLACE PROCEDURE test_ptsdb.`TestStoredProceduresAndFunctions`()
 
 BEGIN
 

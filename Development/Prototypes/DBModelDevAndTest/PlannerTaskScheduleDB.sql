@@ -1,391 +1,209 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 
-DROP DATABASE IF EXISTS `testPTSDB`;
-
-CREATE DATABASE `testPTSDB`;
+DROP DATABASE IF EXISTS test_ptsdb;
+CREATE DATABASE test_ptsdb;
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `testPTSDB`.`OrganizationProfile`;
-CREATE TABLE IF NOT EXISTS  `testPTSDB`.`OrganizationProfile` (
-    `OrganizationID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `Organization_Name` VARCHAR(256) NOT NULL,
-    `EmailAddress` VARCHAR(256) NOT NULL,
-    `PhoneNumber` VARCHAR(32) NOT NULL,
-    `PrimaryContactUser` INT UNSIGNED,
-    `SecondaryContactUser` INT UNSIGNED,
-    `Street_Address` VARCHAR(256),
-    `City_Address` VARCHAR(64),
-    `Postal_Code` VARCHAR(32),
-    `State_or_Province` VARCHAR(256),
-    `Nation` VARCHAR(64),
-    `CreatedTS` DATETIME NOT NULL,
-    `LastUpdateTS` DATETIME NOT NULL,
-    `Hidden` TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
-    PRIMARY KEY (`OrganizationID`),
-    UNIQUE INDEX `OrgName_idx` (`Organization_Name` ASC),
-    INDEX `fk_OrganizationProfile_PrimaryContact_idx` (`PrimaryContactUser` ASC)
+CREATE OR REPLACE TABLE test_ptsdb.organization_profile (
+    id_organization INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    organization_name VARCHAR(256) NOT NULL,
+    email_address VARCHAR(256) NOT NULL,
+    phone_number VARCHAR(32) NOT NULL,
+    primary_contact_user INT UNSIGNED,    # This should  be a foriegn key from user_profile, but that table does not exist yet
+    secondary_contact_user INT UNSIGNED,  # This should  be a foriegn key from user_profile, but that table does not exist yet
+    address_line_1 VARCHAR(256),
+    address_line_2 VARCHAR(256),
+    city VARCHAR(128),
+    postal_code VARCHAR(32),
+    state_or_province VARCHAR(256),
+    nation VARCHAR(64),
+    created_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_modified_time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
+    PRIMARY KEY (id_organization),
+    INDEX organization_name_idx (organization_name ASC),
+    INDEX fk_orgn_prime_contact_idx (primary_contact_user ASC)
 );
 
--- --------------------------------------------------------
--- Stored Procedures for OrganizationProfile
--- --------------------------------------------------------
-
-DELIMITER $$
-USE `testPTSDB`;
-
-DROP PROCEDURE IF EXISTS `AddOrganization`$$
-
-CREATE PROCEDURE `AddOrganization`
-(
-    IN `orgName` VARCHAR(256),
-    IN `email` VARCHAR(256),
-    IN `phoneNo` VARCHAR(32),
-    IN `primaryContact` INT UNSIGNED,
-    IN `secondaryContact` INT UNSIGNED,
-    IN `streetAddress` VARCHAR(256),
-    IN `city` VARCHAR(64),
-    IN `postalCode` VARCHAR(32),
-    IN `stateOrProvince` VARCHAR(64),
-    IN `nation` VARCHAR(64)
-)
-BEGIN
-
-    INSERT INTO OrganizationProfile (
-        Organization_Name,
-        EmailAddress,
-        PhoneNumber,
-        PrimaryContactUser,
-        SecondaryContactUser,
-        Street_Address,
-        City_Address,
-        State_or_Province,
-        Postal_Code,
-        Nation,
-        CreatedTS,
-        LastUpdateTS,
-        Hidden
-        )
-    VALUES (
-        orgName, email, phoneNo, primaryContact, secondaryContact, streetAddress, city, stateOrProvince, postalCode, nation, UTC_TIMESTAMP(), UTC_TIMESTAMP(), 0
-    ) RETURNING OrganizationID;
-
-END$$
-
-DROP PROCEDURE IF EXISTS `testPTSDB`.`HideOrganization`;
-
-CREATE PROCEDURE `testPTSDB`.`HideOrganization`
-(
-    IN OrgID INT 
-)
-
-BEGIN
-
-    UPDATE OrganizationProfile
-        SET Hidden = 1
-        WHERE Organization_ID = OrgID;
-
-END$$
-
-DELIMITER ;
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `testPTSDB`.`UserProfile`;
-CREATE TABLE IF NOT EXISTS  `testPTSDB`.`UserProfile` (
-    `UserID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `Organization_ID` INT UNSIGNED,
-    `LastName` VARCHAR(45) NOT NULL,
-    `FirstName` VARCHAR(45) NOT NULL,
-    `MiddleInitial` VARCHAR(45),
-    `EmailAddress` VARCHAR(256),
-    `LoginName` VARCHAR(45) NOT NULL,
-    `HashedPassWord` VARCHAR(45) NOT NULL,
-    `Preferences` MEDIUMTEXT NOT NULL,
-    `UserAdded` DATETIME NOT NULL,
-    `LastLogin` DATETIME,
-    `Hidden` TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
-    PRIMARY KEY (`UserID`, `LastName`, `LoginName`),
-    UNIQUE INDEX `UP_UserID_UNIQUE` (`UserID` ASC),
-    UNIQUE INDEX `UP_FullName_UNIQUE` (`LastName`, `FirstName`, `MiddleInitial`),
-    UNIQUE INDEX `UP_LoginName_UNIQUE` (`LoginName` ASC),
-    UNIQUE INDEX `UP_Email_UNIQUE` (`EmailAddress` ASC),
-    INDEX `UP_LastLogin` (`LastLogin` DESC),
-    CONSTRAINT `fk_UserProfile_OrgID`
-        FOREIGN KEY (`Organization_ID`)
-        REFERENCES `OrganizationProfile` (`OrganizationID`)
+CREATE OR REPLACE TABLE test_ptsdb.user_profile (
+    user_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    id_organization INT UNSIGNED,
+    last_name VARCHAR(45) NOT NULL,
+    first_name VARCHAR(45) NOT NULL,
+    middle_initial VARCHAR(45),
+    email_address VARCHAR(256),
+    user_login VARCHAR(45) NOT NULL,
+    hashed_password VARCHAR(45) NOT NULL,
+    preferences MEDIUMTEXT NOT NULL,
+    created_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_modified_time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_login DATETIME,
+    deleted TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
+    PRIMARY KEY (user_id),
+    INDEX full_name_idx (last_name, first_name, middle_initial),
+    UNIQUE INDEX user_login_unique (user_login ASC),
+    UNIQUE INDEX email_unique (email_address ASC),
+    INDEX up_last_login (last_login DESC),
+    CONSTRAINT fk_user_profile_org_id
+        FOREIGN KEY (id_organization)
+        REFERENCES organization_profile (id_organization)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT,
-    INDEX `fk_UserProfile_OrgID_idx` (`Organization_ID`)
+    INDEX fk_user_orgid_idx (id_organization)
 );
 
 -- --------------------------------------------------------
--- Stored Procedures for UserProfile
+-- Stored Procedures for user_profile
 -- --------------------------------------------------------
 
+USE test_ptsdb;
 DELIMITER $$
-USE `testPTSDB`;
-DROP PROCEDURE IF EXISTS `testPTSDB`.`HideUser`;
-
-CREATE PROCEDURE `testPTSDB`.`HideUser`
+CREATE OR REPLACE PROCEDURE test_ptsdb.hide_user
 (
-    IN IDUser INT 
+    IN user_id INT 
 )
 
 BEGIN
 
-    UPDATE UserProfile
-        SET Hidden = 1
-        WHERE UserID = IDUser;
+    UPDATE user_profile SET user_profile.deleted = 1 WHERE organization_profile.user_id = user_id;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `AddUser`$$
-
-CREATE PROCEDURE `AddUser`
+CREATE OR REPLACE PROCEDURE add_user
 (
-    IN `OrgId` INT UNSIGNED,
-    IN `lastName` VARCHAR(45),
-    IN `firstName` VARCHAR(45),
-    IN `middleInitial` VARCHAR(45),
-    IN `email` VARCHAR(256),
-    IN `username` VARCHAR(45),
-    IN `password` VARCHAR(45),
-    IN `preferrences` MEDIUMTEXT
+    IN id_organization INT UNSIGNED,
+    IN last_name VARCHAR(45),
+    IN first_name VARCHAR(45),
+    IN middle_initial VARCHAR(45),
+    IN email_address VARCHAR(256),
+    IN user_login VARCHAR(45),
+    IN hashed_password VARCHAR(45),
+    IN preferences MEDIUMTEXT
 )
 BEGIN
 
-    INSERT INTO UserProfile
+    INSERT INTO user_profile
         (
-            Organization_ID,
-            LastName,
-            FirstName,
-            MiddleInitial,
-            EmailAddress,
-            LoginName,
-            HashedPassWord,
-            UserAdded,
-            Preferences,
-            Hidden
+            id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences, deleted
         )
         VALUES
         (
-            OrgId,
-            lastName,
-            firstName,
-            middleInitial,
-            email,
-            username,
-            password,
-            UTC_TIMESTAMP(),
-            preferrences,
+            id_organization,
+            last_name,
+            first_name,
+            middle_initial,
+            email_address,
+            user_login,
+            hashed_password,
+            preferences,
             0
         )
-        RETURNING UserID;
+        RETURNING user_id;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `UpdateUserAllFields`$$
-
-CREATE PROCEDURE `UpdateUserAllFields`
+CREATE OR REPLACE PROCEDURE update_user_all_fields
 (
-    IN `userId` INT UNSIGNED,
-    IN `OrgId` INT UNSIGNED,
-    IN `lastName` VARCHAR(45),
-    IN `firstName` VARCHAR(45),
-    IN `middleInitial` VARCHAR(45),
-    IN `email` VARCHAR(256),
-    IN `username` VARCHAR(45),
-    IN `password` VARCHAR(45),
-    IN `preferrences` MEDIUMTEXT,
-    IN `lastLogin` DATETIME
+    IN user_id INT UNSIGNED,
+    IN id_organization INT UNSIGNED,
+    IN last_name VARCHAR(45),
+    IN first_name VARCHAR(45),
+    IN middle_initial VARCHAR(45),
+    IN email_address VARCHAR(256),
+    IN user_login VARCHAR(45),
+    IN hashed_password VARCHAR(45),
+    IN preferences MEDIUMTEXT,
+    IN last_login DATETIME
 )
 
 BEGIN
 
-    UPDATE UserProfile SET
-        UserProfile.Organization_ID = OrgId,
-        UserProfile.LastName = lastName,
-        UserProfile.FirstName = firstName,
-        UserProfile.MiddleInitial = middleInitial,
-        UserProfile.EmailAddress = email,
-        UserProfile.LoginName = username,
-        UserProfile.HashedPassWord = password,
-        UserProfile.Preferences = preferrences,
-        UserProfile.LastLogin = lastLogin
-    WHERE UserProfile.UserID = userId;
+    UPDATE user_profile SET
+        user_profile.id_organization = id_organization,
+        user_profile.last_name = last_name,
+        user_profile.first_name = first_name,
+        user_profile.middle_initial = middle_initial,
+        user_profile.email_address = email_address,
+        user_profile.user_login = user_login,
+        user_profile.hashed_password = hashed_password,
+        user_profile.preferences = preferences,
+        user_profile.last_login = last_login
+    WHERE user_profile.user_id = user_id;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `GetAllUsers`$$
-
-CREATE PROCEDURE `GetAllUsers`
+CREATE OR REPLACE PROCEDURE get_all_users
 ()
 
 BEGIN
 
-    SELECT * FROM UserProfile;
+    SELECT * FROM user_profile;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `GetUserByID`$$
-
-CREATE PROCEDURE `GetUserByID`
+CREATE OR REPLACE PROCEDURE get_user_by_id
 (
-    IN `userId` INT UNSIGNED
+    IN user_id INT UNSIGNED
 )
 
 BEGIN
 
-    SELECT * FROM UserProfile WHERE UserProfile.UserID = userId;
+    SELECT * FROM user_profile WHERE user_profile.user_id = user_id;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `GetUserByLoginName`$$
-
-CREATE PROCEDURE `GetUserByLoginName`
+CREATE OR REPLACE PROCEDURE get_user_by_user_login
 (
-    IN `username` VARCHAR(45)
+    IN user_login VARCHAR(45)
 )
 
 BEGIN
 
-    SELECT * FROM UserProfile WHERE UserProfile.LoginName = username;
+    SELECT * FROM user_profile WHERE user_profile.user_login = user_login;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `GetUserByEmail`$$
-
-CREATE PROCEDURE `GetUserByEmail`
+CREATE OR REPLACE PROCEDURE get_user_by_email
 (
-    IN `email` VARCHAR(256)
+    IN email_address VARCHAR(256)
 )
 
 BEGIN
 
-    SELECT * FROM UserProfile WHERE UserProfile.EmailAddress = email;
+    SELECT * FROM user_profile WHERE user_profile.email_address = email_address;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `GetUserByLoginAndPassword`$$
-
-CREATE PROCEDURE `GetUserByLoginAndPassword`
+CREATE OR REPLACE PROCEDURE get_user_by_login_and_password
 (
-    IN `username` VARCHAR(45),
-    IN `password` VARCHAR(45)
+    IN user_login VARCHAR(45),
+    IN hashed_password VARCHAR(45)
 )
 
 BEGIN
 
-    SELECT * FROM UserProfile WHERE UserProfile.LoginName = username  AND UserProfile.HashedPassWord = password;
+    SELECT * FROM user_profile WHERE user_profile.user_login = user_login  AND user_profile.hashed_password = hashed_password;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `GetUserByFullName`$$
-
-CREATE PROCEDURE `GetUserByFullName`
+CREATE OR REPLACE PROCEDURE get_user_by_full_name
 (
-    IN `lastName` VARCHAR(45),
-    IN `firstName` VARCHAR(45),
-    IN `middleInitial` VARCHAR(45)
+    IN last_name VARCHAR(45),
+    IN first_name VARCHAR(45),
+    IN middle_initial VARCHAR(45)
 )
 
 BEGIN
 
-    SELECT * FROM UserProfile WHERE UserProfile.LastName = lastName AND UserProfile.FirstName = firstName AND UserProfile.MiddleInitial = middleInitial;
-
-END$$
-
--- -----------------------------------------------------
--- Stored Functions
--- -----------------------------------------------------
-
--- -----------------------------------------------------
--- function findUserIDKeyByLoginName
--- -----------------------------------------------------
-
-USE `testPTSDB`;
-DROP function IF EXISTS `testPTSDB`.`findUserIDKeyByLoginName`;
-
-CREATE FUNCTION `findUserIDKeyByLoginName`(
-    LoginName VARCHAR(45)
-) RETURNS INT
-DETERMINISTIC
-BEGIN
-
-    SET @UserIDKey = 0;
-
-    SELECT UserLoginAndPassword.UserID INTO @UserIDKey
-        FROM UserLoginAndPassword
-        WHERE UserLoginAndPassword.LoginName = LoginName;
-    IF @UserIDKey IS NULL THEN
-        SET @UserIDKey = 0;
-    END IF;
-
-    RETURN @UserIDKey;
-    
-END$$
-
-
--- -----------------------------------------------------
--- function findUserIDKeyByFullName
--- -----------------------------------------------------
-
-DROP function IF EXISTS `testPTSDB`.`findUserIDKeyByFullName`;
-
-CREATE FUNCTION `findUserIDKeyByFullName`(
-    LastName VARCHAR(45),
-    FirstName TINYTEXT,
-    MiddleInitial TINYTEXT
-) RETURNS INT
-DETERMINISTIC
-BEGIN
-
-    SET @UserIDKey = 0;
-
-    SELECT UserProfile.UserID INTO @UserIDKey
-        FROM UserProfile
-        WHERE UserProfile.LastName = LastName AND
-            UserProfile.FirstName = FirstName AND
-            UserProfile.MiddleInitial = MiddleInitial;
-    IF @UserIDKey IS NULL THEN
-        SET @UserIDKey = 0;
-    END IF;
-
-    RETURN @UserIDKey;
-    
-END$$
-
-
--- -----------------------------------------------------
--- function isValidUserLoginAndPassword
--- -----------------------------------------------------
-
-DROP function IF EXISTS `isValidUserLoginAndPassword`;
-
-CREATE FUNCTION `isValidUserLoginAndPassword`
-(
-    LoginName VARCHAR(45),
-    HashedPassWord TINYTEXT
-)
-RETURNS TINYINT
-DETERMINISTIC
-BEGIN
-
-    SET @UserIDKey = 0;
-    SET @isValid = 1;
-
-    SELECT UserLoginAndPassword.UserID INTO @UserIDKey
-        FROM UserLoginAndPassword
-        WHERE UserLoginAndPassword.LoginName = LoginName AND
-            UserLoginAndPassword.HashedPassWord = HashedPassWord;
-
-    IF @UserIDKey IS NULL THEN
-        SET @isValid = 0;
-    END IF;
-
-    RETURN @isValid;
+    SELECT * FROM user_profile
+    WHERE user_profile.last_name = last_name
+        AND user_profile.first_name = first_name
+        AND user_profile.middle_initial = middle_initial;
 
 END$$
 
@@ -394,183 +212,161 @@ DELIMITER ;
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `testPTSDB`.`UserGoals`;
-CREATE TABLE IF NOT EXISTS  `testPTSDB`.`UserGoals` (
-    `idUserGoals` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `UserID` INT UNSIGNED NOT NULL,
-    `Description` VARCHAR(1024) NOT NULL,
-    `Priority` INT DEFAULT NULL,
-    `ParentGoal` INT UNSIGNED DEFAULT NULL,
-    `CreationTS` DATETIME NOT NULL,
-    `LastUpdateTS` DATETIME NOT NULL,
-    `Hidden` TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
-    PRIMARY KEY (`idUserGoals`, `UserID`),
-    UNIQUE INDEX `idUserGoals_UNIQUE` (`idUserGoals` ASC),
-    INDEX `UG_Description_idx` (`Description` ASC),
-    INDEX `UG_CreationTS_idx` (`CreationTS` DESC),
-    INDEX `UG_LastUpdateTS_idx` (`LastUpdateTS` DESC),
-    CONSTRAINT `fk_UserGoals_UserID`
-        FOREIGN KEY (`UserID`)
-        REFERENCES `UserProfile` (`UserID`)
+CREATE OR REPLACE TABLE  test_ptsdb.user_goals (
+    id_user_goals INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id INT UNSIGNED NOT NULL,
+    description VARCHAR(1024) NOT NULL,
+    priority INT DEFAULT NULL,
+    parent_goal INT UNSIGNED DEFAULT NULL,
+    creation_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_modified_time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
+    PRIMARY KEY (id_user_goals, user_id),
+    UNIQUE INDEX id_user_goals_unique (id_user_goals ASC),
+    INDEX ug_description_idx (description ASC),
+    INDEX ug_creation_timestamp_idx (creation_timestamp DESC),
+    INDEX ug_last_modified_time_stamp_idx (last_modified_time_stamp DESC),
+    CONSTRAINT `fk_user_goals_user_id`
+        FOREIGN KEY (user_id)
+        REFERENCES user_profile (user_id)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT,
-    INDEX `fk_UserGoals_UserID_idx` (`UserID`)
+    INDEX fk_user_goals_user_id_idx (user_id)
 );
 
 -- --------------------------------------------------------
--- Stored Procedures for UserGoals
+-- Stored Procedures for user_goals
 -- --------------------------------------------------------
 
+USE test_ptsdb;
 DELIMITER $$
-USE `testPTSDB`;
-DROP PROCEDURE IF EXISTS `testPTSDB`.`HideGoal`;
-
-CREATE PROCEDURE `testPTSDB`.`HideGoal`
+CREATE OR REPLACE PROCEDURE test_ptsdb.hide_goal
 (
-    IN IDUser INT,
-    IN GoalID INT
+    IN user_id INT,
+    IN id_user_goals INT
 )
 
 BEGIN
 
-    UPDATE UserGoals
-        SET Hidden = 1, LastUpdateTS = UTC_TIMESTAMP()
-        WHERE UserID = IDUser AND idUserGoals = GoalID;
+    UPDATE user_goals
+        SET user_goals.deleted = 1
+        WHERE user_goals.user_id = user_id AND user_goals.id_user_goals = id_user_goals;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `AddUserGoal`$$
-
-CREATE PROCEDURE `AddUserGoal`
+CREATE OR REPLACE PROCEDURE add_user_goal
 (
-    IN `userId` INT UNSIGNED,
-    IN `description` VARCHAR(1024),
-    IN `priority` INT ZEROFILL,
-    IN `parentGoalId` INT UNSIGNED ZEROFILL
+    IN user_id INT UNSIGNED,
+    IN description VARCHAR(1024),
+    IN priority INT ZEROFILL,
+    IN parent_goal INT UNSIGNED ZEROFILL
 )
 
 BEGIN
 
-    INSERT INTO UserGoals
+    INSERT INTO user_goals
         (
-            UserID,
-            Description,
-            CreationTS,
-            LastUpdateTS,
-            Priority,
-            ParentGoal,
-            Hidden
+            user_id,
+            description,
+            priority,
+            parent_goal,
+            deleted
         )
         VALUES
         (
-            userId,
+            user_id,
             description,
-            UTC_TIMESTAMP(),
-            UTC_TIMESTAMP(),
             priority,
-            parentGoalId,
+            parent_goal,
             0
         )
-        RETURNING idUserGoals;
+        RETURNING id_user_goals;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `UpdateUserGoalAllFields`$$
-
-CREATE PROCEDURE `UpdateUserGoalAllFields`
+CREATE OR REPLACE PROCEDURE update_user_goal_all_fields
 (
-    IN `userIdIn` INT UNSIGNED,
-    IN `goalId` INT UNSIGNED,
-    IN `description` VARCHAR(1024),
-    IN `priority` INT UNSIGNED,
-    IN `parentGoalID` INT UNSIGNED
+    IN user_id INT UNSIGNED,
+    IN id_user_goals INT UNSIGNED,
+    IN description VARCHAR(1024),
+    IN priority INT UNSIGNED,
+    IN parent_goal INT UNSIGNED
 )
 BEGIN
 
-    UPDATE UserGoals SET
-        UserGoals.Description = description,
-        UserGoals.LastUpdateTS = UTC_TIMESTAMP(),
-        UserGoals.Priority = priority,
-        UserGoals.ParentGoal = parentGoalID
-    WHERE UserGoals.UserID = userIdIn AND UserGoals.idUserGoals = goalId;
+    UPDATE user_goals SET
+        user_goals.description = description,
+        user_goals.priority = priority,
+        user_goals.parent_goal = parent_goal
+    WHERE user_goals.user_id = user_id AND user_goals.id_user_goals = id_user_goals;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`GetGoalById`;
-
-CREATE PROCEDURE `testPTSDB`.`GetGoalById`
+CREATE OR REPLACE PROCEDURE test_ptsdb.get_goal_by_id
 (
-    IN `goalId` INT UNSIGNED
+    IN id_user_goals INT UNSIGNED
 )
 
 BEGIN
 
-    SELECT * FROM UserGoals WHERE UserGoals.idUserGoals = goalId;
+    SELECT * FROM user_goals WHERE user_goals.id_user_goals = id_user_goals;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`FindGoalByUserIdAndExactDescription`;
-
-CREATE PROCEDURE `testPTSDB`.`FindGoalByUserIdAndExactDescription`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`FindGoalByUserIdAndExactdescription`
 (
-    IN `userId` INT UNSIGNED,
-    IN `fullDescription` VARCHAR(1024)
+    IN user_id INT UNSIGNED,
+    IN `fulldescription` VARCHAR(1024)
 )
 
 BEGIN
 
-    SELECT * FROM UserGoals
-    WHERE UserGoals.UserID = userId
-    AND UserGoals.Description = fullDescription
-        AND UserGoals.Hidden <> 1;
+    SELECT * FROM user_goals
+    WHERE user_goals.user_id = user_id
+    AND user_goals.description = fulldescription
+        AND user_goals.deleted <> 1;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`GetAllGoalsForUser`;
-
-CREATE PROCEDURE `testPTSDB`.`GetAllGoalsForUser`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`GetAllGoalsForUser`
 (
-    IN `userId` INT UNSIGNED
+    IN user_id INT UNSIGNED
 )
 
 BEGIN
 
-    SELECT * FROM UserGoals
-    WHERE UserGoals.UserID = userId
-        AND UserGoals.Hidden <> 1;
+    SELECT * FROM user_goals
+    WHERE user_goals.user_id = user_id
+        AND user_goals.deleted <> 1;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`GetAllChildGoalsFromParent`;
-
-CREATE PROCEDURE `testPTSDB`.`GetAllChildGoalsFromParent`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`GetAllChildGoalsFromParent`
 (
-    IN `userId` INT UNSIGNED,
-    IN `parentGoalId` INT UNSIGNED
+    IN user_id INT UNSIGNED,
+    IN `parent_goal` INT UNSIGNED
 )
 
 BEGIN
 
-    SELECT * FROM UserGoals
-    WHERE UserGoals.UserID = userId
-        AND UserGoals.ParentGoal = parentGoalId
-        AND UserGoals.Hidden <> 1;
+    SELECT * FROM user_goals
+    WHERE user_goals.user_id = user_id
+        AND user_goals.parent_goal = parent_goal
+        AND user_goals.deleted <> 1;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`FindGoalsByUserIdAndSimilarDescription`;
-
-CREATE PROCEDURE `testPTSDB`.`FindGoalsByUserIdAndSimilarDescription`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`FindGoalsByUserIdAndSimilardescription`
 (
-    IN `userId` INT UNSIGNED,
-    IN `partialDescription` VARCHAR(1024)
+    IN user_id INT UNSIGNED,
+    IN `partialdescription` VARCHAR(1024)
 )
 
 BEGIN
 
-    SELECT * FROM UserGoals
-    WHERE UserGoals.UserID = userId AND UserGoals.Description LIKE CONCAT('%', partialDescription, '%')
-        AND UserGoals.Hidden <> 1;
+    SELECT * FROM user_goals
+    WHERE user_goals.user_id = user_id AND user_goals.description LIKE CONCAT('%', partialdescription, '%')
+        AND user_goals.deleted <> 1;
 
 END$$
 
@@ -578,188 +374,165 @@ DELIMITER ;
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `testPTSDB`.`UserNotes`;
-CREATE TABLE IF NOT EXISTS `testPTSDB`.`UserNotes` (
-    `idUserNotes` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `UserID` INT UNSIGNED NOT NULL,
-    `NotationDateTime` DATETIME NOT NULL,
-    `Content` VARCHAR(1024) NOT NULL,
-    `LastUpdate` DATETIME NOT NULL,
-    `Hidden` TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
-    PRIMARY KEY (`idUserNotes`, `UserID`),
-    INDEX `NotationDateTime` (`NotationDateTime` DESC),
-    INDEX `UserNotesLastUpdate` (`LastUpdate` DESC),
-    UNIQUE INDEX `idUserNotes_UNIQUE` (`idUserNotes` ASC),
-    INDEX `UN_Content_idx` (`Content` ASC),
-    INDEX `fk_UserNotes_UserID_idx` (`UserID` ASC),
-    CONSTRAINT `fk_UserNotes_UserID`
-      FOREIGN KEY (`UserID`)
-      REFERENCES `testPTSDB`.`UserProfile` (`UserID`)
+CREATE OR REPLACE TABLE test_ptsdb.user_notes (
+    id_user_notes INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id INT UNSIGNED NOT NULL,
+    note_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    content VARCHAR(1024) NOT NULL,
+    last_modifed TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
+    PRIMARY KEY (id_user_notes, user_id),
+    INDEX note_creation (note_creation DESC),
+    INDEX user_notes_last_modifed (last_modifed DESC),
+    INDEX un_content_idx (content ASC),
+    INDEX fk_user_notes_user_id_idx (user_id ASC),
+    CONSTRAINT fk_user_notes_user_id
+      FOREIGN KEY (user_id)
+      REFERENCES test_ptsdb.user_profile (user_id)
       ON DELETE RESTRICT
       ON UPDATE RESTRICT
 );
     
 -- --------------------------------------------------------
--- Stored Procedures for UserNotes
+-- Stored Procedures for user_notes
 -- --------------------------------------------------------
 
-USE `testPTSDB`;
+USE test_ptsdb;
 
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `testPTSDB`.`HideNote`;
-
-CREATE PROCEDURE `testPTSDB`.`HideNote`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`HideNote`
 (
-    IN IDUser INT,
+    IN user_id INT,
     IN NoteID INT
 )
 
 BEGIN
 
-    UPDATE UserNotes
-        SET Hidden = 1, LastUpdate = UTC_TIMESTAMP()
-        WHERE UserID = IDUser AND idUserNotes = NoteID;
+    UPDATE user_notes
+        SET user_notes.deleted = 1
+        WHERE user_notes.user_id = user_id AND user_notes.id_user_notes = NoteID;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `AddUserNote`$$
-
-CREATE PROCEDURE `AddUserNote`
+CREATE OR REPLACE PROCEDURE `AddUserNote`
 (
-    IN `userId` INT UNSIGNED,
-    IN `content` VARCHAR(1024)
+    IN user_id INT UNSIGNED,
+    IN content VARCHAR(1024)
 )
 
 BEGIN
 
-    INSERT INTO UserNotes(UserID, NotationDateTime, Content, LastUpdate, Hidden)
-        VALUES (userId, UTC_TIMESTAMP(), content, UTC_TIMESTAMP(), 0)
-        RETURNING idUserNotes;
+    INSERT INTO user_notes(user_id, content, deleted)
+        VALUES (user_id, content, 0)
+        RETURNING id_user_notes;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `UpdateNoteAllFields`$$
-
-CREATE PROCEDURE `UpdateNoteAllFields`
+CREATE OR REPLACE PROCEDURE `UpdateNoteAllFields`
 (
-    IN `userId` INT UNSIGNED,
-    IN `noteId` INT UNSIGNED,
-    IN `content` VARCHAR(1024)
+    IN user_id INT UNSIGNED,
+    IN note_id INT UNSIGNED,
+    IN content VARCHAR(1024)
 )
 
 BEGIN
 
-    UPDATE UserNotes SET
-        UserNotes.Content = content,
-        UserNotes.LastUpdate = UTC_TIMESTAMP()
-    WHERE UserNotes.idUserNotes = noteId AND UserNotes.UserID = userId;
+    UPDATE user_notes SET
+        user_notes.content = content
+    WHERE user_notes.id_user_notes = note_id AND user_notes.user_id = user_id;
     
 END$$
 
-DROP PROCEDURE IF EXISTS `GetNoteByID`$$
-
-CREATE PROCEDURE `GetNoteByID`
+CREATE OR REPLACE PROCEDURE `GetNoteByID`
 (
     IN `noteId` INT UNSIGNED
 )
 
 BEGIN
  
-    SELECT * FROM UserNotes  WHERE UserNotes.idUserNotes = noteId;
+    SELECT * FROM user_notes  WHERE user_notes.id_user_notes = noteId;
  
 END$$
  
-DROP PROCEDURE IF EXISTS `GetAllNotesForUser`$$
- 
-CREATE PROCEDURE `GetAllNotesForUser` (IN `userId` INT UNSIGNED)   BEGIN
+CREATE OR REPLACE PROCEDURE `GetAllNotesForUser` (IN user_id INT UNSIGNED)   BEGIN
   
-    SELECT * FROM UserNotes WHERE UserNotes.UserID = userId;
+    SELECT * FROM user_notes WHERE user_notes.user_id = user_id;
 
 END$$
  
-DROP PROCEDURE IF EXISTS `GetAllUndeletedNotesForUser`$$
-
-CREATE PROCEDURE `GetAllUndeletedNotesForUser`
+CREATE OR REPLACE PROCEDURE `GetAllUndeletedNotesForUser`
 (
-    IN `userId` INT UNSIGNED
+    IN user_id INT UNSIGNED
 )
 
 BEGIN
 
-    SELECT * FROM UserNotes
-    WHERE UserNotes.UserID = userId
-        AND UserNotes.Hidden <> 1;
+    SELECT * FROM user_notes
+    WHERE user_notes.user_id = user_id
+        AND user_notes.deleted <> 1;
  
 END$$
 
-DROP PROCEDURE IF EXISTS `GetNotesForUserSimlarToContent`$$
- 
-CREATE PROCEDURE `GetNotesForUserSimlarToContent`
+CREATE OR REPLACE PROCEDURE `GetNotesForUserSimlarTocontent`
 (
-    IN `userId` INT UNSIGNED,
-    IN `likeContent` VARCHAR(1024)
+    IN user_id INT UNSIGNED,
+    IN `likecontent` VARCHAR(1024)
 )
 BEGIN
  
-    SELECT * FROM UserNotes 
-    WHERE UserNotes.UserID = userId
-        AND UserNotes.Content LIKE CONCAT('%', likeContent, '%')
-        AND UserNotes.Hidden <> 1;
+    SELECT * FROM user_notes 
+    WHERE user_notes.user_id = user_id
+        AND user_notes.content LIKE CONCAT('%', likecontent, '%')
+        AND user_notes.deleted <> 1;
     
 END$$    
  
-DROP PROCEDURE IF EXISTS `GetAllNotesForUserCreatedInDatgeRange`$$
-
-CREATE PROCEDURE `GetAllNotesForUserCreatedInDatgeRange`
+CREATE OR REPLACE PROCEDURE `GetAllNotesForUserCreatedInDatgeRange`
 (
-    IN `UserID` INT UNSIGNED,
+    IN user_id INT UNSIGNED,
     IN `timePeriodStart` DATE,
     IN `timePeriodEnd` DATE
 ) 
 BEGIN
 
-    SELECT * FROM UserNotes
-    WHERE UserNotes.UserID = 4
-        AND UserNotes.NotationDateTime >= timePeriodStart
-        AND UserNotes.NotationDateTime <= timePeriodEnd
-        AND UserNotes.Hidden <> 1;
+    SELECT * FROM user_notes
+    WHERE user_notes.user_id = 4
+        AND user_notes.note_creation >= timePeriodStart
+        AND user_notes.note_creation <= timePeriodEnd
+        AND user_notes.deleted <> 1;
  
 END$$
  
-DROP PROCEDURE IF EXISTS `GetAllNotesForUserEditedInDatgeRange`$$
-
-CREATE PROCEDURE `GetAllNotesForUserEditedInDatgeRange`
+CREATE OR REPLACE PROCEDURE `GetAllNotesForUserEditedInDatgeRange`
 (
-    IN `UserID` INT UNSIGNED,
+    IN user_id INT UNSIGNED,
     IN `timePeriodStart` DATE,
     IN `timePeriodEnd` DATE
 ) 
 BEGIN
 
-    SELECT * FROM UserNotes
-    WHERE UserNotes.UserID = 4
-        AND UserNotes.LastUpdate >= timePeriodStart
-        AND UserNotes.LastUpdate <= timePeriodEnd
-        AND UserNotes.Hidden <> 1;
+    SELECT * FROM user_notes
+    WHERE user_notes.user_id = 4
+        AND user_notes.last_modifed >= timePeriodStart
+        AND user_notes.last_modifed <= timePeriodEnd
+        AND user_notes.deleted <> 1;
  
 END$$
  
-DROP PROCEDURE IF EXISTS `GetDashboardNoteTable`$$
-
-CREATE PROCEDURE `GetDashboardNoteTable` 
+CREATE OR REPLACE PROCEDURE `GetDashboardNoteTable` 
 (
-    IN `userId` INT UNSIGNED,
+    IN user_id INT UNSIGNED,
     IN `startDay` DATETIME,
     IN `endDay` DATETIME
 )
 BEGIN
 
-    SELECT * FROM UserNotes
-    WHERE UserNotes.UserID = userId
-        AND UserNotes.NotationDateTime >= startDay
-        AND UserNotes.NotationDateTime <= endDay
-        AND UserNotes.Hidden <> 1
-    ORDER BY UserNotes.NotationDateTime ASC;
+    SELECT * FROM user_notes
+    WHERE user_notes.user_id = user_id
+        AND user_notes.note_creation >= startDay
+        AND user_notes.note_creation <= endDay
+        AND user_notes.deleted <> 1
+    ORDER BY user_notes.note_creation ASC;
 
 END$$
 
@@ -767,250 +540,225 @@ DELIMITER ;
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `testPTSDB`.`Tasks`;
-CREATE TABLE IF NOT EXISTS  `testPTSDB`.`Tasks` (
-    `TaskID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `CreatedBy` INT UNSIGNED NOT NULL,
-    `AsignedTo` INT UNSIGNED NOT NULL,
-    `Description` VARCHAR(256) NOT NULL,
-    `ParentTask` INT UNSIGNED DEFAULT NULL,
-    `Status` INT UNSIGNED DEFAULT NULL,
-    `CreatedOn` DATETIME NOT NULL,
-    `RequiredDelivery` date NOT NULL,
-    `ScheduledStart` date NOT NULL,
-    `ActualStart` date DEFAULT NULL,
-    `EstimatedCompletion` date DEFAULT NULL,
-    `Completed` date DEFAULT NULL,
-    `EstimatedEffortHours` INT UNSIGNED NOT NULL,
-    `ActualEffortHours` double NOT NULL,
-    `SchedulePriorityGroup` INT UNSIGNED NOT NULL,
-    `PriorityInGroup` INT UNSIGNED NOT NULL,
-    `Personal` BOOLEAN,
-    `DependencyCount` INT UNSIGNED,
-    `Dependencies` MEDIUMTEXT,
-    `LastUpdateTS` DATETIME NOT NULL,
-    `Hidden` TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
-    PRIMARY KEY (`TaskID`, `CreatedBy`),
-    UNIQUE INDEX `TaskID_UNIQUE` (`TaskID` ASC),
-    INDEX `fk_Tasks_CreatedBy_idx` (`CreatedBy` ASC),
-    INDEX `fk_Tasks_AsignedTo_idx` (`AsignedTo` ASC),
-    INDEX `Task_Description_idx` (`Description` ASC),
-    INDEX `Task_LastUpdateTS_idx` (`LastUpdateTS` DESC),
-    INDEX `Task_SchedulePriorityGroup_idx` (`SchedulePriorityGroup` ASC),
-    INDEX `Task_PriorityInGroup_idx` (`PriorityInGroup` ASC),
-    INDEX `Task_Status_idx` (`Status` ASC),
-    INDEX `Task_RequiredDelivery_idx` (`RequiredDelivery` ASC),
-    INDEX `Task_ScheduledStart_idx` (`ScheduledStart` ASC),
-    CONSTRAINT `fk_Tasks_CreatedBy`
-        FOREIGN KEY (`CreatedBy`)
-        REFERENCES `UserProfile` (`UserID`)
+CREATE OR REPLACE TABLE test_ptsdb.tasks (
+    task_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    created_by INT UNSIGNED NOT NULL,
+    assigned_to INT UNSIGNED NOT NULL,
+    description VARCHAR(256) NOT NULL,
+    parent_task INT UNSIGNED DEFAULT NULL,
+    task_status INT UNSIGNED DEFAULT NULL,
+    creation_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    due_date DATE NOT NULL,
+    planned_start DATE NOT NULL,
+    actual_start DATE DEFAULT NULL,
+    estimated_delivery DATE DEFAULT NULL,
+    delivered DATE DEFAULT NULL,
+    est_hours_effort DOUBLE NOT NULL,
+    hours_effort DOUBLE NOT NULL,
+    priority_category INT UNSIGNED NOT NULL,
+    priority INT UNSIGNED NOT NULL,
+    personal TINYINT DEFAULT 0,
+    dependency_count INT UNSIGNED,
+    dependencies MEDIUMTEXT,
+    last_modified_time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
+    PRIMARY KEY (task_id, created_by),
+    INDEX fk_tasks_created_by_idx (created_by ASC),
+    INDEX fk_tasks_assigned_to_idx (assigned_to ASC),
+    INDEX task_description_idx (description ASC),
+    INDEX task_last_modified_time_stamp_idx (last_modified_time_stamp DESC),
+    INDEX task_priority_category_idx (priority_category ASC),
+    INDEX task_priority_idx (priority ASC),
+    INDEX task_task_status_idx (task_status ASC),
+    INDEX task_due_date_idx (due_date ASC),
+    INDEX task_planned_start_idx (planned_start ASC),
+    CONSTRAINT fk_tasks_created_by
+        FOREIGN KEY (created_by)
+        REFERENCES user_profile (user_id)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT,
-    CONSTRAINT `fk_Tasks_AsignedTo`
-        FOREIGN KEY (`AsignedTo`)
-        REFERENCES `UserProfile` (`UserID`)
+    CONSTRAINT fk_tasks_assigned_to
+        FOREIGN KEY (assigned_to)
+        REFERENCES user_profile (user_id)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
 );
 
 -- --------------------------------------------------------
--- Stored Procedures for Tasks
+-- Stored Procedures for tasks
 -- --------------------------------------------------------
 
-USE `testPTSDB`;
+USE test_ptsdb;
 
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `testPTSDB`.`HideTask`;
-
-CREATE PROCEDURE `testPTSDB`.`HideTask`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`HideTask`
 (
-    IN IDUser INT,
+    IN user_id INT,
     IN IDTask INT
 )
 
 BEGIN
 
-    UPDATE Tasks
-        SET Tasks.Hidden = 1, Tasks.LastUpdateTS = UTC_TIMESTAMP()
-        WHERE Tasks.CreatedBy = IDUser AND Tasks.TaskID = IDTask;
+    UPDATE tasks
+        SET tasks.deleted = 1
+        WHERE tasks.created_by = user_id AND tasks.task_id = IDTask;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `AddTask`$$
-
-CREATE PROCEDURE `AddTask`
+CREATE OR REPLACE PROCEDURE `AddTask`
 (
     IN `creatorID` INT UNSIGNED,
     IN `assignedID` INT UNSIGNED,
-    IN `description` VARCHAR(256),
-    IN `parentTaskID` INT UNSIGNED,
-    IN `taskStatus` INT UNSIGNED,
+    IN description VARCHAR(256),
+    IN `parenttask_id` INT UNSIGNED,
+    IN `tasktask_status` INT UNSIGNED,
     IN `dueDate` DATE,
     IN `planStart` DATE,
     IN `startDate` DATE,
     IN `expectedDate` DATE,
     IN `completedDate` DATE,
-    IN `estimatedEffort` INT UNSIGNED,
+    IN `estimatedEffort` DOUBLE,
     IN `effortToDate` DOUBLE,
     IN `priorityCategory` INT UNSIGNED,
-    IN `priority` INT UNSIGNED,
-    IN `isPersonal` TINYINT,
+    IN priority INT UNSIGNED,
+    IN `ispersonal` TINYINT,
     IN `dependencyCount` INT UNSIGNED,
-    IN `dependencies` MEDIUMTEXT
+    IN dependencies MEDIUMTEXT
 )
 BEGIN
 
-    INSERT INTO Tasks
+    INSERT INTO tasks
     (
-        CreatedBy,
-        AsignedTo,
-        Description,
-        ParentTask,
-        Status,
-        CreatedOn,
-        RequiredDelivery,
-        ScheduledStart,
-        ActualStart,
-        EstimatedCompletion,
-        Completed,
-        EstimatedEffortHours,
-        ActualEffortHours,
-        SchedulePriorityGroup,
-        PriorityInGroup,
-        Personal,
-        DependencyCount,
-        Dependencies,
-        LastUpdateTS,
-        Hidden
+        created_by,
+        assigned_to,
+        description,
+        parent_task,
+        task_status,
+        due_date,
+        planned_start,
+        actual_start,
+        delivered,
+        est_hours_effort,
+        hours_effort,
+        priority_category,
+        priority,
+        personal,
+        dependency_count,
+        dependencies,
+        deleted
     )
     VALUES
     (
         creatorID,
         assignedID,
         description,
-        parentTaskID,
-        taskStatus,
-        UTC_TIMESTAMP(),
+        parenttask_id,
+        tasktask_status,
         dueDate,
         planStart,
         startDate,
-        expectedDate,
         completedDate,
         estimatedEffort,
         effortToDate,
         priorityCategory,
         priority,
-        isPersonal,
+        ispersonal,
         dependencyCount,
         dependencies,
-        UTC_TIMESTAMP(),
         0
     )
-    RETURNING TaskID;
+    RETURNING task_id;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `UpdateTaskAllFields`$$
-
-CREATE PROCEDURE `UpdateTaskAllFields`
+CREATE OR REPLACE PROCEDURE `UpdateTaskAllFields`
 (
     IN `primaryKeyValue` INT UNSIGNED,
     IN `creatorID` INT UNSIGNED,
     IN `assignedID` INT UNSIGNED,
-    IN `description` VARCHAR(256),
-    IN `parentTaskID` INT UNSIGNED,
-    IN `taskStatus` INT UNSIGNED,
+    IN description VARCHAR(256),
+    IN `parenttask_id` INT UNSIGNED,
+    IN `tasktask_status` INT UNSIGNED,
     IN `dueDate` DATE,
     IN `planStart` DATE,
     IN `startDate` DATE,
-    IN `expectedDate` DATE,
     IN `completedDate` DATE,
-    IN `estimatedEffort` INT UNSIGNED,
+    IN `estimatedEffort` DOUBLE,
     IN `effortToDate` DOUBLE,
     IN `priorityCategory` INT UNSIGNED,
-    IN `priority` INT UNSIGNED,
-    IN `isPersonal` TINYINT,
+    IN priority INT UNSIGNED,
+    IN `ispersonal` TINYINT,
     IN `dependencyCount` INT UNSIGNED,
-    IN `dependencies` MEDIUMTEXT,
-    IN `deleted` TINYINT
+    IN dependencies MEDIUMTEXT,
+    IN deleted TINYINT
 )
 
 BEGIN
 
-    UPDATE Tasks SET
-        Tasks.CreatedBy = creatorID,
-        Tasks.AsignedTo = assignedID,
-        Tasks.Description = description,
-        Tasks.ParentTask = parentTaskID,
-        Tasks.Status = taskStatus,
-        Tasks.RequiredDelivery = dueDate,
-        Tasks.ScheduledStart = planStart,
-        Tasks.ActualStart = startDate,
-        Tasks.EstimatedCompletion = expectedDate,
-        Tasks.Completed = completedDate,
-        Tasks.EstimatedEffortHours = estimatedEffort,
-        Tasks.ActualEffortHours = effortToDate,
-        Tasks.SchedulePriorityGroup = priorityCategory,
-        Tasks.PriorityInGroup = priority,
-        Tasks.Personal = isPersonal,
-        Tasks.DependencyCount = dependencyCount,
-        Tasks.Dependencies = dependencies,
-        Tasks.LastUpdateTS = UTC_TIMESTAMP(),
-        Tasks.Hidden = deleted
-    WHERE Tasks.TaskID = primaryKeyValue;
+    UPDATE tasks SET
+        tasks.created_by = creatorID,
+        tasks.assigned_to = assignedID,
+        tasks.description = description,
+        tasks.parent_task = parenttask_id,
+        tasks.task_status = tasktask_status,
+        tasks.due_date = dueDate,
+        tasks.planned_start = planStart,
+        tasks.actual_start = startDate,
+        tasks.delivered = completedDate,
+        tasks.est_hours_effort = estimatedEffort,
+        tasks.hours_effort = effortToDate,
+        tasks.priority_category = priorityCategory,
+        tasks.priority = priority,
+        tasks.personal = ispersonal,
+        tasks.dependency_count = dependencyCount,
+        tasks.dependencies = dependencies,
+        tasks.deleted = deleted
+    WHERE tasks.task_id = primaryKeyValue;
     
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`GetTaskByTaskID`;
-
-CREATE PROCEDURE `testPTSDB`.`GetTaskByTaskID`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`GetTaskByTaskID`
 (
     IN IDTask INT
 )
 
 BEGIN
 
-    SELECT * FROM Tasks WHERE Tasks.TaskID = IDTask;
+    SELECT * FROM tasks WHERE tasks.task_id = IDTask;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`GetTaskByDescriptionAndAssignedUser`;
-
-CREATE PROCEDURE `testPTSDB`.`GetTaskByDescriptionAndAssignedUser`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`GetTaskBydescriptionAndAssignedUser`
 (
     IN `assignedID` INT UNSIGNED,
-    IN `description` VARCHAR(256)
+    IN description VARCHAR(256)
 )
 
 BEGIN
 
-    SELECT * FROM Tasks
-    WHERE Tasks.Description = description
-        AND Tasks.AsignedTo = assignedID
-        AND Tasks.Hidden <> 1;
+    SELECT * FROM tasks
+    WHERE tasks.description = description
+        AND tasks.assigned_to = assignedID
+        AND tasks.deleted <> 1;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`GetActiveTasksForAssignedUser`;
-
-CREATE PROCEDURE `testPTSDB`.`GetActiveTasksForAssignedUser`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`GetActivetasksForAssignedUser`
 (
     IN `assignedID` INT UNSIGNED
 )
 
 BEGIN
 
-    SELECT * FROM Tasks
-    WHERE Tasks.AsignedTo = assignedID
-        AND Tasks.Completed IS NULL
-        AND (Tasks.Status IS NOT NULL AND Tasks.Status <> 0)
-        AND Tasks.Hidden <> 1;
+    SELECT * FROM tasks
+    WHERE tasks.assigned_to = assignedID
+        AND tasks.delivered IS NULL
+        AND (tasks.task_status IS NOT NULL AND tasks.task_status <> 0)
+        AND tasks.deleted <> 1;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`GetUnstartedDueForStartForAssignedUser`;
-
-CREATE PROCEDURE `testPTSDB`.`GetUnstartedDueForStartForAssignedUser`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`GetUnstartedDueForStartForAssignedUser`
 (
     IN `assignedID` INT UNSIGNED,
     IN `planStart` DATE
@@ -1018,17 +766,15 @@ CREATE PROCEDURE `testPTSDB`.`GetUnstartedDueForStartForAssignedUser`
 
 BEGIN
 
-    SELECT * FROM Tasks
-    WHERE Tasks.AsignedTo = assignedID
-        AND Tasks.ScheduledStart < planStart
-        AND (Tasks.Status IS NULL OR Tasks.Status = 0)
-        AND Tasks.Hidden <> 1;
+    SELECT * FROM tasks
+    WHERE tasks.assigned_to = assignedID
+        AND tasks.planned_start < planStart
+        AND (tasks.task_status IS NULL OR tasks.task_status = 0)
+        AND tasks.deleted <> 1;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`GetTasksCompletedByAssignedAfterDate`;
-
-CREATE PROCEDURE `testPTSDB`.`GetTasksCompletedByAssignedAfterDate`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`GetTasksCompletedByAssignedAfterDate`
 (
     IN `assignedID` INT UNSIGNED,
     IN `searchStartDate` DATE
@@ -1036,15 +782,13 @@ CREATE PROCEDURE `testPTSDB`.`GetTasksCompletedByAssignedAfterDate`
 
 BEGIN
 
-    SELECT * FROM Tasks
-    WHERE Tasks.AsignedTo = assignedID
-        AND Tasks.Completed >= searchStartDate;
+    SELECT * FROM tasks
+    WHERE tasks.assigned_to = assignedID
+        AND tasks.delivered >= searchStartDate;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`GetTasksByAssignedIDandParentID`;
-
-CREATE PROCEDURE `testPTSDB`.`GetTasksByAssignedIDandParentID`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`GetTasksByAssignedIDandParentID`
 (
     IN `assignedID` INT UNSIGNED,
     IN `parentID` INT UNSIGNED
@@ -1052,16 +796,14 @@ CREATE PROCEDURE `testPTSDB`.`GetTasksByAssignedIDandParentID`
 
 BEGIN
 
-    SELECT * FROM Tasks
-    WHERE Tasks.AsignedTo = assignedID
-        AND Tasks.ParentTask = parentID
-        AND Tasks.Hidden <> 1;
+    SELECT * FROM tasks
+    WHERE tasks.assigned_to = assignedID
+        AND tasks.parent_task = parentID
+        AND tasks.deleted <> 1;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`GetDefaultDashboardTaskList`;
-
-CREATE PROCEDURE `testPTSDB`.`GetDefaultDashboardTaskList`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`GetDefaultDashboardTaskList`
 (
     IN `assignedID` INT UNSIGNED,
     IN `dueDate` DATE
@@ -1069,12 +811,12 @@ CREATE PROCEDURE `testPTSDB`.`GetDefaultDashboardTaskList`
 
 BEGIN
 
-    SELECT * FROM Tasks
-    WHERE Tasks.AsignedTo = assignedID
-        AND Tasks.Completed IS NULL
-        AND Tasks.Hidden <> 1
-        AND (Tasks.Status = 3 OR Tasks.RequiredDelivery < dueDate)
-    ORDER BY Tasks.SchedulePriorityGroup ASC, Tasks.PriorityInGroup ASC;
+    SELECT * FROM tasks
+    WHERE tasks.assigned_to = assignedID
+        AND tasks.delivered IS NULL
+        AND tasks.deleted <> 1
+        AND (tasks.task_status = 3 OR tasks.due_date < dueDate)
+    ORDER BY tasks.priority_category ASC, tasks.priority ASC;
 
 END$$
 
@@ -1085,247 +827,224 @@ DELIMITER ;
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `testPTSDB`.`UserTaskGoals`;
-CREATE TABLE IF NOT EXISTS  `testPTSDB`.`UserTaskGoals` (
-    `UserID` INT UNSIGNED NOT NULL,
-    `TaskID`  INT UNSIGNED NOT NULL,
-    `TaskGoalList` VARCHAR(45) NOT NULL,
-    `CreationTS` DATETIME NOT NULL,
-    `LastUpdateTS` DATETIME NOT NULL,
-    `Hidden` TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
-    PRIMARY KEY (`UserID`,`TaskID`),
-    INDEX `UTG_Task_idx` (`TaskID` ASC),
-    INDEX `UTG_CreationTS_idx` (`CreationTS` DESC),
-    INDEX `UTG_LastUpdateTS_idx` (`LastUpdateTS` DESC),
-    CONSTRAINT `fk_UserTaskGoals_AsignedTo`
-        FOREIGN KEY (`UserID`)
-        REFERENCES `UserProfile` (`UserID`)
+CREATE OR REPLACE TABLE  test_ptsdb.user_task_goals (
+    user_id INT UNSIGNED NOT NULL,
+    task_id  INT UNSIGNED NOT NULL,
+    task_goal_list VARCHAR(45) NOT NULL,
+    creation_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_modified_time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
+    PRIMARY KEY (user_id, task_id),
+    INDEX utg_task_idx (task_id ASC),
+    INDEX utg_creation_timestamp_idx (creation_timestamp DESC),
+    INDEX utg_last_modified_time_stamp_idx (last_modified_time_stamp DESC),
+    CONSTRAINT fk_user_task_goals_assigned_to
+        FOREIGN KEY (user_id)
+        REFERENCES user_profile (user_id)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT,
-    CONSTRAINT `fk_UserTaskGoals_TaskID`
-        FOREIGN KEY (`TaskID`)
-        REFERENCES `Tasks` (`TaskID`)
+    CONSTRAINT fk_user_task_goals_task_id
+        FOREIGN KEY (task_id)
+        REFERENCES tasks (task_id)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
 );
 
 -- --------------------------------------------------------
--- Stored Procedures for UserTaskGoals
+-- Stored Procedures for user_task_goals
 -- --------------------------------------------------------
 
-USE `testPTSDB`;
+USE test_ptsdb;
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS  `testPTSDB`.`UserScheduleItem`;
-CREATE TABLE IF NOT EXISTS `testPTSDB`.`UserScheduleItem` (
-    `idUserScheduleItem` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `UserID` INT UNSIGNED NOT NULL,
-    `StartDateTime` DATETIME NOT NULL,
-    `EndDateTime` DATETIME NOT NULL,
-    `Title` VARCHAR(128) NOT NULL,
-    `Personal` TINYINT NOT NULL,
-    `Location` VARCHAR(128) DEFAULT NULL,
-    `CreatedTS` DATETIME NOT NULL,
-    `LastUpdateTS` DATETIME NOT NULL,
-    `Hidden` TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
-    PRIMARY KEY (`idUserScheduleItem`, `UserID`),
-    UNIQUE INDEX `idUserScheduleItem_UNIQUE` (`idUserScheduleItem` ASC),
-    INDEX `ScheduleItem_Title_idx` (`Title` ASC),
-    INDEX `ScheduleItem_StartDateTime_idx` (`StartDateTime` DESC),
-    INDEX `ScheduleItem_CreatedTS_idx` (`CreatedTS` DESC),
-    INDEX `ScheduleItem_LastUpdateTS_idx` (`LastUpdateTS` DESC),
-    INDEX `fk_UserScheduleItem_UserID_idx` (`UserID` ASC),
-    INDEX `ScheduleItem_Location_idx` (`Location` ASC),
-    CONSTRAINT `fk_UserScheduleItem_UserID`
-        FOREIGN KEY (`UserID`)
-        REFERENCES `testPTSDB`.`UserProfile` (`UserID`)
+CREATE OR REPLACE TABLE test_ptsdb.user_schedule_item (
+    id_user_schedule_item INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id INT UNSIGNED NOT NULL,
+    start_date_time DATETIME NOT NULL,
+    end_date_time DATETIME NOT NULL,
+    title VARCHAR(128) NOT NULL,
+    personal TINYINT NOT NULL,
+    location VARCHAR(128) DEFAULT NULL,
+    created_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_modified_time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
+    PRIMARY KEY (id_user_schedule_item, user_id),
+    INDEX schedule_item_title_idx (title ASC),
+    INDEX schedule_item_start_date_time_idx (start_date_time DESC),
+    INDEX schedule_item_created_timestamp_idx (created_timestamp DESC),
+    INDEX schedule_item_last_modified_time_stamp_idx (last_modified_time_stamp DESC),
+    INDEX fk_user_schedule_item_user_id_idx (user_id ASC),
+    INDEX schedule_item_location_idx (location ASC),
+    CONSTRAINT fk_user_schedule_item_user_id
+        FOREIGN KEY (user_id)
+        REFERENCES test_ptsdb.user_profile (user_id)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
 );
 
 -- --------------------------------------------------------
--- Stored Procedures for UserScheduleItem
+-- Stored Procedures for user_schedule_item
 -- --------------------------------------------------------
 
-USE `testPTSDB`;
+USE test_ptsdb;
 
 DELIMITER $$
-USE `testPTSDB`;
-DROP PROCEDURE IF EXISTS `testPTSDB`.`ScheduleItemContentSelectionList`;
-
-CREATE PROCEDURE `testPTSDB`.`ScheduleItemContentSelectionList`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`ScheduleItemcontentSelectionList`
 (
-    IN Content VARCHAR(128),
-    IN IDUser INT
+    IN content VARCHAR(128),
+    IN user_id INT
 )
 
 BEGIN
 
-    SELECT DISTINCT UserScheduleItem.Title FROM UserScheduleItem
+    SELECT DISTINCT user_schedule_item.title FROM user_schedule_item
     WHERE
-        UserScheduleItem.UserID = IDUser AND UserScheduleItem.Title LIKE CONCAT('%', Content, '%')
-        ORDER BY UserScheduleItem.Title ASC;
+        user_schedule_item.user_id = user_id AND user_schedule_item.title LIKE CONCAT('%', content, '%')
+        ORDER BY user_schedule_item.title ASC;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`EventTitlesForCompleter`;
-
-CREATE PROCEDURE `testPTSDB`.`EventTitlesForCompleter`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`EventtitlesForCompleter`
 (
-    IN IDUser INT
+    IN user_id INT
 )
 
 BEGIN
 
-    SELECT DISTINCT UserScheduleItem.Title FROM UserScheduleItem
+    SELECT DISTINCT user_schedule_item.title FROM user_schedule_item
     WHERE
-        UserScheduleItem.UserID = IDUser
-        ORDER BY UserScheduleItem.Title ASC;
+        user_schedule_item.user_id = user_id
+        ORDER BY user_schedule_item.title ASC;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`EventLocationsForCompleter`;
-
-CREATE PROCEDURE `testPTSDB`.`EventLocationsForCompleter`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`EventlocationsForCompleter`
 (
-    IN IDUser INT
+    IN user_id INT
 )
 
 BEGIN
 
-    SELECT DISTINCT UserScheduleItem.Location FROM UserScheduleItem
+    SELECT DISTINCT user_schedule_item.location FROM user_schedule_item
     WHERE
-        UserScheduleItem.UserID = IDUser
-        ORDER BY UserScheduleItem.Location ASC;
+        user_schedule_item.user_id = user_id
+        ORDER BY user_schedule_item.location ASC;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`HideScheduleItem`;
-
-CREATE PROCEDURE `testPTSDB`.`HideScheduleItem`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`HideScheduleItem`
 (
-    IN IDUser INT,
+    IN user_id INT,
     IN ScheduleItemID INT
 )
 
 BEGIN
 
-    UPDATE UserScheduleItem
-        SET Hidden = 1, LastUpdateTS = UTC_TIMESTAMP()
-        WHERE UserID = IDUser AND idUserScheduleItem = ScheduleItemID;
+    UPDATE user_schedule_item
+        SET user_schedule_item.deleted = 1
+        WHERE user_schedule_item.user_id = user_id AND user_schedule_item.id_user_schedule_item = ScheduleItemID;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`GetScheduleItemById`;
-
-CREATE PROCEDURE `testPTSDB`.`GetScheduleItemById`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`GetScheduleItemById`
 (
     IN scheduleItemID INT UNSIGNED 
 )
 
 BEGIN
 
-    SELECT * FROM UserScheduleItem
-    WHERE UserScheduleItem.idUserScheduleItem = scheduleItemID
-        AND UserScheduleItem.Hidden <> 1;
+    SELECT * FROM user_schedule_item
+    WHERE user_schedule_item.id_user_schedule_item = scheduleItemID
+        AND user_schedule_item.deleted <> 1;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`GetUserDaySchedule`;
-
-CREATE PROCEDURE `testPTSDB`.`GetUserDaySchedule`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`GetUserDaySchedule`
 (
-    IN `userId` INT UNSIGNED,
+    IN user_id INT UNSIGNED,
     IN `eventStart` DATETIME,
     IN `eventEnd` DATETIME
 )
 
 BEGIN
 
-    SELECT * FROM UserScheduleItem
-    WHERE UserScheduleItem.UserID = userId
-        AND UserScheduleItem.Hidden <> 1
-        AND UserScheduleItem.StartDateTime >= eventStart
-        AND UserScheduleItem.StartDateTime <= eventEnd
-    ORDER BY UserScheduleItem.StartDateTime ASC;
+    SELECT * FROM user_schedule_item
+    WHERE user_schedule_item.user_id = user_id
+        AND user_schedule_item.deleted <> 1
+        AND user_schedule_item.start_date_time >= eventStart
+        AND user_schedule_item.start_date_time <= eventEnd
+    ORDER BY user_schedule_item.start_date_time ASC;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `testPTSDB`.`FindUserScheduleItemsByContentAndDateRange`;
-
-CREATE PROCEDURE `testPTSDB`.`FindUserScheduleItemsByContentAndDateRange`
+CREATE OR REPLACE PROCEDURE test_ptsdb.`FindUserScheduleItemsByContentAndDateRange`
 (
-    IN `userId` INT UNSIGNED,
-    IN `matchContent`VARCHAR(128),
+    IN user_id INT UNSIGNED,
+    IN `matchcontent`VARCHAR(128),
     IN `searchStart` DATE,
     IN `searchEnd` DATE
 )
 
 BEGIN
 
-    SELECT * FROM UserScheduleItem  WHERE UserID = userId
-    AND Title LIKE CONCAT('%', matchContent, '%')
-    AND Hidden <> 1
-    AND StartDateTime >= searchStart
-    AND StartDateTime <= searchEnd;
+    SELECT * FROM user_schedule_item  WHERE user_id = user_id
+    AND title LIKE CONCAT('%', matchcontent, '%')
+    AND deleted <> 1
+    AND start_date_time >= searchStart
+    AND start_date_time <= searchEnd;
 
 END$$
 
-DROP PROCEDURE IF EXISTS `AddScheduleEvent`$$
-
-CREATE PROCEDURE `AddScheduleEvent`
+CREATE OR REPLACE PROCEDURE `AddScheduleEvent`
 (
-    IN `userId` INT UNSIGNED,
+    IN user_id INT UNSIGNED,
     IN `eventStart` DATETIME,
     IN `eventEnd` DATETIME,
-    IN `eventTitle` VARCHAR(128),
-    IN `isPersonal` TINYINT,
-    IN `location` VARCHAR(128)
+    IN `eventtitle` VARCHAR(128),
+    IN `ispersonal` TINYINT,
+    IN location VARCHAR(128)
 )
 
 BEGIN
 
-INSERT INTO UserScheduleItem
+INSERT INTO user_schedule_item
     (
-        UserID, StartDateTime, EndDateTime, Title, Personal, Location, CreatedTS, LastUpdateTS, Hidden
+        user_id, start_date_time, end_date_time, title, personal, location, deleted
     )
     VALUES
     (
-        userId,
+        user_id,
         eventStart,
         eventEnd,
-        eventTitle,
-        isPersonal,
+        eventtitle,
+        ispersonal,
         location,
-        UTC_TIMESTAMP(),
-        UTC_TIMESTAMP(),
         0
     )
-    RETURNING idUserScheduleItem;
+    RETURNING id_user_schedule_item;
     
 END$$
 
-CREATE PROCEDURE `UpdateScheduleItemAllFields`
+CREATE OR REPLACE PROCEDURE `UpdateScheduleItemAllFields`
 (
-    IN `userId` INT UNSIGNED,
+    IN user_id INT UNSIGNED,
     IN `eventId` INT UNSIGNED,
     IN `startTime` DATETIME,
     IN `endTime` DATETIME,
-    IN `title` VARCHAR(128),
-    IN `personal` TINYINT,
-    IN `location` VARCHAR(128)
+    IN title VARCHAR(128),
+    IN personal TINYINT,
+    IN location VARCHAR(128)
 )
 BEGIN
 
-    UPDATE UserScheduleItem SET
-        UserScheduleItem.StartDateTime = startTime,
-        UserScheduleItem.EndDateTime = endTime,
-        UserScheduleItem.Title = title,
-        UserScheduleItem.Personal = personal,
-        UserScheduleItem.Location = location,
-        UserScheduleItem.LastUpdateTS = UTC_TIMESTAMP()
-    WHERE UserScheduleItem.idUserScheduleItem = eventId AND UserScheduleItem.UserID = userId;
+    UPDATE user_schedule_item SET
+        user_schedule_item.start_date_time = startTime,
+        user_schedule_item.end_date_time = endTime,
+        user_schedule_item.title = title,
+        user_schedule_item.personal = personal,
+        user_schedule_item.location = location
+    WHERE user_schedule_item.id_user_schedule_item = eventId AND user_schedule_item.user_id = user_id;
     
 END$$
 DELIMITER ;
