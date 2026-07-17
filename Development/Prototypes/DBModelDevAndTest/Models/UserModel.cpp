@@ -204,10 +204,9 @@ void UserModel::initRequiredFields() noexcept
 
 std::string UserModel::formatInsertStatement()
 {
-    initFormatOptions();
-
-    std::string insertStatement = boost::mysql::format_sql(m_formatOpts.value(),
-        "CALL AddUser({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})",
+    std::string insertStatement = boost::mysql::format_sql(getFormatOptions(),
+        "INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address,"
+        " user_login, hashed_password, preferences) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})",
         m_organizationId, m_lastName, m_firstName, m_middleInitial, m_email, m_loginName, m_password, buildPreferenceText()
     );
 
@@ -216,21 +215,26 @@ std::string UserModel::formatInsertStatement()
 
 std::string UserModel::formatUpdateStatement()
 {
-    initFormatOptions();
-
-    std::string updateStatement = boost::mysql::format_sql(m_formatOpts.value(),
-        "CALL UpdateUserAllFields({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9})",
-            m_primaryKey, m_organizationId, m_lastName, m_firstName, m_middleInitial, m_email, m_loginName, m_password, 
-            buildPreferenceText(), optionalDateTimeConversion(m_lastLogin));
+    boost::mysql::format_context fctx(getFormatOptions());
+    boost::mysql::format_sql_to(fctx, "UPDATE user_profile SET ");
+    boost::mysql::format_sql_to(fctx, "user_profile.id_organization = {}, ", m_organizationId);
+    boost::mysql::format_sql_to(fctx, "user_profile.last_name = {}, ", m_lastName);
+    boost::mysql::format_sql_to(fctx, "user_profile.first_name = {}, ", m_firstName);
+    boost::mysql::format_sql_to(fctx, "user_profile.middle_initial = {}, ", m_middleInitial);
+    boost::mysql::format_sql_to(fctx, "user_profile.email_address = {}, ", m_email);
+    boost::mysql::format_sql_to(fctx, "user_profile.user_login = {}, ", m_loginName);
+    boost::mysql::format_sql_to(fctx, "user_profile.hashed_password = {}, ", m_password);
+    boost::mysql::format_sql_to(fctx, "user_profile.preferences = {}, ", buildPreferenceText());
+    boost::mysql::format_sql_to(fctx, "user_profile.last_login = {} ", optionalDateTimeConversion(m_lastLogin));
+    boost::mysql::format_sql_to(fctx, "WHERE user_profile.user_id = {}", m_primaryKey);
         
-    return updateStatement;
+    return std::move(fctx).get().value();
 }
 
 std::string UserModel::formatDeleteStatement()
 {
-    initFormatOptions();
-
-    return boost::mysql::format_sql(m_formatOpts.value(), "CALL HideUser({})", m_primaryKey);
+    return boost::mysql::format_sql(getFormatOptions(),
+        "UPDATE user_profile SET user_profile.deleted = 1 WHERE organization_profile.user_id = {}", m_primaryKey);
 }
 
 std::string UserModel::buildPreferenceText() noexcept

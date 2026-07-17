@@ -12,9 +12,9 @@ UserQueryProcessor::UserQueryProcessor()
 : QueryProcessor<UserModel>(
     "User",
     {
-        "UserID", "Organization_ID", "LastName", "FirstName", "MiddleInitial", 
-        "EmailAddress", "LoginName", "HashedPassWord", "UserAdded", "LastLogin",
-        "Preferences", "Hidden"
+        "user_id", "id_organization", "last_name", "first_name", "middle_initial", 
+        "email_address", "user_login", "hashed_password", "created_timestamp", "last_login",
+        "preferences", "deleted"
     }
 )
 {
@@ -29,10 +29,8 @@ UserModelList UserQueryProcessor::getAllUsers() noexcept
 
     try
     {
-        initFormatOptions();
-        boost::mysql::format_context fctx(m_formatOpts.value());
         boost::mysql::results localResult = runQueryAsync(boost::mysql::format_sql(
-            m_formatOpts.value(), "CALL GetAllUsers()"));
+            getFormatOptions(), "SELECT * FROM user_profile"));
         allUsers = processResults(localResult);
     }
         
@@ -51,9 +49,8 @@ UserModel_shp UserQueryProcessor::getUserByID(std::size_t userId) noexcept
 
     try
     {
-        initFormatOptions();
-        boost::mysql::format_context fctx(m_formatOpts.value());
-        boost::mysql::format_sql_to(fctx, "CALL GetUserByID({})", userId);
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM user_profile WHERE user_profile.user_id ={}", userId);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
     }
@@ -73,9 +70,8 @@ UserModel_shp UserQueryProcessor::getUserByLoginName(const std::string_view &log
 
     try
     {
-        initFormatOptions();
-        boost::mysql::format_context fctx(m_formatOpts.value());
-        boost::mysql::format_sql_to(fctx, "CALL GetUserByLoginName({})", loginName);
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM user_profile WHERE user_profile.user_login = {}", loginName);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
     }
@@ -95,9 +91,8 @@ UserModel_shp UserQueryProcessor::getUserByEmail(const std::string_view &emailAd
 
     try
     {
-        initFormatOptions();
-        boost::mysql::format_context fctx(m_formatOpts.value());
-        boost::mysql::format_sql_to(fctx, "CALL GetUserByEmail({})", emailAddress);
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM user_profile WHERE user_profile.email_address = {}", emailAddress);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
     }
@@ -117,9 +112,10 @@ UserModel_shp UserQueryProcessor::getUserByLoginAndPassword(const std::string_vi
 
     try
     {
-        initFormatOptions();
-        boost::mysql::format_context fctx(m_formatOpts.value());
-        boost::mysql::format_sql_to(fctx, "CALL GetUserByLoginAndPassword({}, {})", loginName, password);
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx,
+            "SELECT * FROM user_profile WHERE user_profile.user_login = {}  AND user_profile.hashed_password = {}",
+            loginName, password);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
     }
@@ -142,9 +138,11 @@ UserModel_shp UserQueryProcessor::getUserByFullName(
 
     try
     {
-        initFormatOptions();
-        boost::mysql::format_context fctx(m_formatOpts.value());
-        boost::mysql::format_sql_to(fctx, "CALL GetUserByFullName({}, {}, {})", lastName, firstName, middleI);
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM user_profile ");
+        boost::mysql::format_sql_to(fctx, "WHERE user_profile.last_name = {} ", lastName);
+        boost::mysql::format_sql_to(fctx, "AND user_profile.first_name = {} ", firstName);
+        boost::mysql::format_sql_to(fctx, "AND user_profile.middle_initial = {}", middleI);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
     }
@@ -185,18 +183,18 @@ UserModel_shp UserQueryProcessor::processResultRow(boost::mysql::row_view &query
 
 void UserQueryProcessor::fillRequiredIndexes()
 {
-    assignValueToIndex("UserID", m_userIdIdx);
-    assignValueToIndex("Organization_ID", m_organizationIdx);
-    assignValueToIndex("LastName", m_lastNameIdx);
-    assignValueToIndex("FirstName", m_firstNameIdx);
-    assignValueToIndex("MiddleInitial", m_middleInitialIdx);
-    assignValueToIndex("EmailAddress", m_emailAddressIdx);
-    assignValueToIndex("LoginName", m_loginNameIdx);
-    assignValueToIndex("HashedPassWord", m_passwordIdx);
-    assignValueToIndex("UserAdded", m_userAddedIdx);
-    assignValueToIndex("LastLogin", m_lastLoginIdx);
-    assignValueToIndex("Preferences", m_preferencesIdx);
-    assignValueToIndex("Hidden", m_hiddenIdx);
+    assignValueToIndex("user_id", m_userIdIdx);
+    assignValueToIndex("id_organization", m_organizationIdx);
+    assignValueToIndex("last_name", m_lastNameIdx);
+    assignValueToIndex("first_name", m_firstNameIdx);
+    assignValueToIndex("middle_initial", m_middleInitialIdx);
+    assignValueToIndex("email_address", m_emailAddressIdx);
+    assignValueToIndex("user_login", m_loginNameIdx);
+    assignValueToIndex("hashed_password", m_passwordIdx);
+    assignValueToIndex("created_timestamp", m_userAddedIdx);
+    assignValueToIndex("last_login", m_lastLoginIdx);
+    assignValueToIndex("preferences", m_preferencesIdx);
+    assignValueToIndex("deleted", m_hiddenIdx);
 }
 
 /*
