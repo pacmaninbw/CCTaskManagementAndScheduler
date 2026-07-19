@@ -37,7 +37,7 @@ public:
         std::optional<std::chrono::year_month_day> actualStartDate,
         std::optional<std::chrono::year_month_day> estimatedCompletion,
         std::optional<std::chrono::year_month_day> completionDate,
-        unsigned int estimatedEffort,
+        double estimatedEffort,
         double actualEffortToDate,
         unsigned int priorityGroup,
         unsigned int priority,
@@ -76,7 +76,7 @@ public:
     std::optional<std::chrono::year_month_day> rawEstimatedCompletion() const { return m_estimatedCompletion; };
     std::chrono::year_month_day getCompletionDate() const ;
     std::optional<std::chrono::year_month_day> rawCompletionDate() const { return m_completed; };
-    unsigned int getEstimatedEffort() const { return m_estimatedEffort; };
+    double getEstimatedEffort() const { return m_estimatedEffort; };
     double getactualEffortToDate() const { return m_actualEffort; };
     unsigned int getPriorityGroup() const { return m_priorityCategory; };
     unsigned int getPriority() const { return m_priority; };
@@ -95,7 +95,7 @@ public:
     void setactualStartDate(std::chrono::year_month_day startDate);
     void setEstimatedCompletion(std::chrono::year_month_day completionDate);
     void setCompletionDate(std::chrono::year_month_day completionDate);
-    void setEstimatedEffort(unsigned int estimatedHours);
+    void setEstimatedEffort(double estimatedHours);
     void setActualEffortToDate(double effortHoursYTD);
     void setPriorityGroup(unsigned int priorityGroup);
     void setPriorityGroupC(const char priorityGroup);
@@ -115,7 +115,7 @@ public:
     bool isMissingDescription() const noexcept { return (m_description.empty() || m_description.length() < MinimumDescriptionLength); };
     bool isMissingCreatorID() const noexcept { return m_creatorID == 0; };
     bool isMissingAssignedID() const noexcept { return m_assignToID == 0; };
-    bool isMissingEffortEstimate() const noexcept { return m_estimatedEffort == 0; };
+    bool isMissingEffortEstimate() const noexcept { return m_estimatedEffort == 0.0; };
     bool isMissingPriorityGroup() const noexcept { return m_priorityCategory == 0; };
     bool isMissingCreationDate() const noexcept { return !m_created.has_value(); };
     bool isMissingScheduledStart() const noexcept { return !m_planedStart.has_value(); };
@@ -210,7 +210,7 @@ protected:
     std::optional<std::chrono::year_month_day> m_actualStart;
     std::optional<std::chrono::year_month_day> m_estimatedCompletion;
     std::optional<std::chrono::year_month_day> m_completed;
-    unsigned int m_estimatedEffort;
+    double m_estimatedEffort;
     double m_actualEffort;
     unsigned int m_priorityCategory;
     unsigned int m_priority;

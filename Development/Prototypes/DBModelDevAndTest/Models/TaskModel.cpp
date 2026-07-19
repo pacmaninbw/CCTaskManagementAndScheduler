@@ -31,7 +31,7 @@ TaskModel::TaskModel()
   m_creatorID = 0;
   m_assignToID = 0;
   m_description = "";
-  m_estimatedEffort = 0;
+  m_estimatedEffort = 0.0;
   m_actualEffort = 0.0;
   m_priorityCategory = 0;
   m_priority = 0;
@@ -50,7 +50,7 @@ TaskModel::TaskModel(
     std::optional<std::chrono::year_month_day> actualStartDate,
     std::optional<std::chrono::year_month_day> estimatedCompletion,
     std::optional<std::chrono::year_month_day> completionDate,
-    unsigned int estimatedEffort,
+    double estimatedEffort,
     double actualEffort,
     unsigned int priorityCategory,
     unsigned int priority,
@@ -248,7 +248,7 @@ void TaskModel::setCompletionDate(std::chrono::year_month_day completionDate)
     m_completed = completionDate;
 }
 
-void TaskModel::setEstimatedEffort(unsigned int estimatedHours)
+void TaskModel::setEstimatedEffort(double estimatedHours)
 {
     m_modified = true;
     m_estimatedEffort = estimatedHours;
@@ -333,6 +333,10 @@ bool TaskModel::diffTask(TaskModel& other)
     );
 }
 
+/*
+ * To make the code more maintainable each field / column in a table will have
+ * its own line in insert and update statements. 
+ */
 std::string TaskModel::formatInsertStatement()
 {
     std::size_t dependencyCount = getDependencies().size();
@@ -345,25 +349,25 @@ std::string TaskModel::formatInsertStatement()
 
     boost::mysql::format_context fctx(getFormatOptions());
 
-    boost::mysql::format_sql_to(fctx, "INSERT INTO tasks ("
-        "created_by, "
-        "assigned_to, "
-        "description, "
-        "parent_task, "
-        "task_status, "
-        "due_date, "
-        "planned_start, "
-        "actual_start, "
-        "estimated_delivery, "
-        "delivered, "
-        "est_hours_effort, "
-        "hours_effort, "
-        "priority_category, "
-        "priority, "
-        "personal, "
-        "dependency_count, "
-        "dependencies"
-    ") VALUES (");
+    boost::mysql::format_sql_to(fctx, "INSERT INTO tasks (");
+    boost::mysql::format_sql_to(fctx, "created_by, ");
+    boost::mysql::format_sql_to(fctx, "assigned_to, ");
+    boost::mysql::format_sql_to(fctx, "description, ");
+    boost::mysql::format_sql_to(fctx, "parent_task, ");
+    boost::mysql::format_sql_to(fctx, "task_status, ");
+    boost::mysql::format_sql_to(fctx, "due_date, ");
+    boost::mysql::format_sql_to(fctx, "planned_start, ");
+    boost::mysql::format_sql_to(fctx, "actual_start, ");
+    boost::mysql::format_sql_to(fctx, "estimated_delivery, ");
+    boost::mysql::format_sql_to(fctx, "delivered, ");
+    boost::mysql::format_sql_to(fctx, "est_hours_effort, ");
+    boost::mysql::format_sql_to(fctx, "hours_effort, ");
+    boost::mysql::format_sql_to(fctx, "priority_category, ");
+    boost::mysql::format_sql_to(fctx, "priority, ");
+    boost::mysql::format_sql_to(fctx, "personal, ");
+    boost::mysql::format_sql_to(fctx, "dependency_count, ");
+    boost::mysql::format_sql_to(fctx, "dependencies");
+    boost::mysql::format_sql_to(fctx, ") VALUES (");
     boost::mysql::format_sql_to(fctx, "{}, ", m_creatorID);
     boost::mysql::format_sql_to(fctx, "{}, ", m_assignToID);
     boost::mysql::format_sql_to(fctx, "{}, ", m_description);

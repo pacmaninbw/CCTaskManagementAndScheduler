@@ -599,9 +599,7 @@ CREATE OR REPLACE PROCEDURE test_ptsdb.`HideTask`
 
 BEGIN
 
-    UPDATE tasks
-        SET tasks.deleted = 1
-        WHERE tasks.created_by = user_id AND tasks.task_id = IDTask;
+    UPDATE tasks SET tasks.deleted = 1 WHERE tasks.created_by = user_id AND tasks.task_id = IDTask;
 
 END$$
 
@@ -637,6 +635,7 @@ BEGIN
         due_date,
         planned_start,
         actual_start,
+        estimated_delivery,
         delivered,
         est_hours_effort,
         hours_effort,
@@ -657,6 +656,7 @@ BEGIN
         dueDate,
         planStart,
         startDate,
+        expectedDate,
         completedDate,
         estimatedEffort,
         effortToDate,
@@ -736,10 +736,7 @@ CREATE OR REPLACE PROCEDURE test_ptsdb.`GetTaskBydescriptionAndAssignedUser`
 
 BEGIN
 
-    SELECT * FROM tasks
-    WHERE tasks.description = description
-        AND tasks.assigned_to = assignedID
-        AND tasks.deleted <> 1;
+    SELECT * FROM tasks WHERE tasks.description = description AND tasks.assigned_to = assignedID AND tasks.deleted <> 1;
 
 END$$
 

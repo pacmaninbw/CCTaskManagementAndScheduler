@@ -195,7 +195,7 @@ TaskModel_shp TaskQueryProcessor::processResultRow(boost::mysql::row_view &query
     std::optional<std::chrono::year_month_day> actualStartDate;
     std::optional<std::chrono::year_month_day> estimatedCompletion;
     std::optional<std::chrono::year_month_day> completionDate;
-    unsigned int estimatedEffort;
+    double estimatedEffort;
     double actualEffortToDate;
     unsigned int priorityGroup;
     unsigned int priority;
@@ -212,7 +212,7 @@ TaskModel_shp TaskQueryProcessor::processResultRow(boost::mysql::row_view &query
     creationTimeStamp = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_createdIdx).as_datetime());
     dueDate = boostMysqlDateToChronoDate(queryRow.at(m_dueDateIdx).as_date());
     scheduledStart = boostMysqlDateToChronoDate(queryRow.at(m_planedStartIdx).as_date());
-    estimatedEffort = queryRow.at(m_estimatedEffortIdx).as_uint64();
+    estimatedEffort = queryRow.at(m_estimatedEffortIdx).as_double();
     actualEffortToDate = queryRow.at(m_efforToDateIdx).as_double();
     priorityGroup = queryRow.at(m_priorityCategoryIdx).as_uint64();
     priority = queryRow.at(m_priorityIdx).as_uint64();

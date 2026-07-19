@@ -560,9 +560,9 @@ TestStatus TaskSelfTest::testActualStartDateAccess()
 
 TestStatus TaskSelfTest::testEstimatedEffortAccess()
 {
-    unsigned int testValue = 1024;
+    double testValue = 10.24;
 
-    return testAccessorFunctions<unsigned int>(testValue, &m_estimatedEffort, "Estimated Effort",
+    return testAccessorFunctions<double>(testValue, &m_estimatedEffort, "Estimated Effort",
         std::bind(&TaskModel::setEstimatedEffort, this, std::placeholders::_1),
         std::bind(&TaskModel::getEstimatedEffort, this));
 }
