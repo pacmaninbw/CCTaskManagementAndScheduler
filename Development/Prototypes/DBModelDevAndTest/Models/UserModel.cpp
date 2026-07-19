@@ -202,15 +202,34 @@ void UserModel::initRequiredFields() noexcept
     m_missingRequiredFieldsTests.push_back({std::bind(&UserModel::isMissingPassword, this), "Password"});
 }
 
+/*
+ * To make the code more maintainable each field / column in a table will have
+ * its own line in insert and update statements. 
+ */
 std::string UserModel::formatInsertStatement()
 {
-    std::string insertStatement = boost::mysql::format_sql(getFormatOptions(),
-        "INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address,"
-        " user_login, hashed_password, preferences) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})",
-        m_organizationId, m_lastName, m_firstName, m_middleInitial, m_email, m_loginName, m_password, buildPreferenceText()
-    );
-
-    return insertStatement;
+    boost::mysql::format_context fctx(getFormatOptions());
+    boost::mysql::format_sql_to(fctx, "INSERT INTO user_profile(");
+    boost::mysql::format_sql_to(fctx, "id_organization, ");
+    boost::mysql::format_sql_to(fctx, "last_name, ");
+    boost::mysql::format_sql_to(fctx, "first_name, " );
+    boost::mysql::format_sql_to(fctx, "middle_initial, ");
+    boost::mysql::format_sql_to(fctx, "email_address, ");
+    boost::mysql::format_sql_to(fctx, "user_login, ");
+    boost::mysql::format_sql_to(fctx, "hashed_password, ");
+    boost::mysql::format_sql_to(fctx, "preferences ");
+    boost::mysql::format_sql_to(fctx, ") VALUES (");
+    boost::mysql::format_sql_to(fctx, "{}, ", m_organizationId);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_lastName);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_firstName);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_middleInitial);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_email);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_loginName);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_password);
+    boost::mysql::format_sql_to(fctx, "{} ", buildPreferenceText());
+    boost::mysql::format_sql_to(fctx, ")");
+    
+    return std::move(fctx).get().value();
 }
 
 std::string UserModel::formatUpdateStatement()
