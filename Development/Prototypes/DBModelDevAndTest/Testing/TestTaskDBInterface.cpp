@@ -90,9 +90,14 @@ bool TestTaskDBInterface::testGetTaskByDescription(TaskModel_shp insertedTask)
 
 bool TestTaskDBInterface::testGetTaskByID(TaskModel_shp insertedTask)
 {
+    if (!insertedTask || !insertedTask->isInDataBase())
+    {
+        std::cerr << __func__ << " insertedTask does not have value\n";
+        std::cerr << *insertedTask << std::endl;
+    }
     TaskQueryProcessor taskQueryProcessor;
     TaskModel_shp retrievedTask = taskQueryProcessor.getTaskByTaskID(insertedTask->getTaskID());
-    if (retrievedTask->isInDataBase())
+    if (retrievedTask && retrievedTask->isInDataBase())
     {
         if (*retrievedTask == *insertedTask)
         {
@@ -111,6 +116,7 @@ bool TestTaskDBInterface::testGetTaskByID(TaskModel_shp insertedTask)
     else
     {
         std::cerr << "taskQueryProcessor.getTaskByTaskID()) FAILED!\n" << taskQueryProcessor.getAllErrorMessages() << "\n";
+        std::cerr << "insertedTask " << *insertedTask;
         return false;
     }
 }
