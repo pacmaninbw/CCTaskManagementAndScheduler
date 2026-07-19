@@ -343,28 +343,47 @@ std::string TaskModel::formatInsertStatement()
         depenenciesText = buildDependenciesText(dependencyList);
     }
 
-    initFormatOptions();
+    boost::mysql::format_context fctx(getFormatOptions());
 
-    return boost::mysql::format_sql(m_formatOpts.value(),
-        "CALL AddTask({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16})",
-            m_creatorID,
-            m_assignToID,
-            m_description,
-            m_parentTaskID,
-            getStatusIntVal(),
-            stdchronoDateToBoostMySQLDate(m_dueDate.value()),
-            stdchronoDateToBoostMySQLDate(m_planedStart.value()),
-            optionalDateConversion(m_actualStart),
-            optionalDateConversion(m_estimatedCompletion),
-            optionalDateConversion(m_completed),
-            m_estimatedEffort,
-            m_actualEffort,
-            m_priorityCategory,
-            m_priority,
-            m_personal,
-            dependencyCount,
-            depenenciesText
-    );
+    boost::mysql::format_sql_to(fctx, "INSERT INTO tasks ("
+        "created_by, "
+        "assigned_to, "
+        "description, "
+        "parent_task, "
+        "task_status, "
+        "due_date, "
+        "planned_start, "
+        "actual_start, "
+        "estimated_delivery, "
+        "delivered, "
+        "est_hours_effort, "
+        "hours_effort, "
+        "priority_category, "
+        "priority, "
+        "personal, "
+        "dependency_count, "
+        "dependencies"
+    ") VALUES (");
+    boost::mysql::format_sql_to(fctx, "{}, ", m_creatorID);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_assignToID);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_description);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_parentTaskID);
+    boost::mysql::format_sql_to(fctx, "{}, ", getStatusIntVal());
+    boost::mysql::format_sql_to(fctx, "{}, ", stdchronoDateToBoostMySQLDate(m_dueDate.value()));
+    boost::mysql::format_sql_to(fctx, "{}, ", stdchronoDateToBoostMySQLDate(m_planedStart.value()));
+    boost::mysql::format_sql_to(fctx, "{}, ", optionalDateConversion(m_actualStart));
+    boost::mysql::format_sql_to(fctx, "{}, ", optionalDateConversion(m_estimatedCompletion));
+    boost::mysql::format_sql_to(fctx, "{}, ", optionalDateConversion(m_completed));
+    boost::mysql::format_sql_to(fctx, "{}, ", m_estimatedEffort);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_actualEffort);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_priorityCategory);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_priority);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_personal);
+    boost::mysql::format_sql_to(fctx, "{}, ", dependencyCount);
+    boost::mysql::format_sql_to(fctx, "{}", depenenciesText);
+    boost::mysql::format_sql_to(fctx, ")");
+
+    return (std::move(fctx).get().value());
 }
 
 std::string TaskModel::formatUpdateStatement()
@@ -377,26 +396,35 @@ std::string TaskModel::formatUpdateStatement()
         depenenciesText = buildDependenciesText(dependencyList);
     }
 
-    initFormatOptions();
+    boost::mysql::format_context fctx(getFormatOptions());
+    boost::mysql::format_sql_to(fctx, "UPDATE tasks SET ");
+    boost::mysql::format_sql_to(fctx, "tasks.created_by = {}, ", m_creatorID);
+    boost::mysql::format_sql_to(fctx, "tasks.assigned_to = {}, ", m_assignToID);
+    boost::mysql::format_sql_to(fctx, "tasks.description = {}, ", m_description);
+    boost::mysql::format_sql_to(fctx, "tasks.parent_task = {}, ", m_parentTaskID);
+    boost::mysql::format_sql_to(fctx, "tasks.task_status = {}, ", getStatusIntVal());
+    boost::mysql::format_sql_to(fctx, "tasks.due_date = {}, ", stdchronoDateToBoostMySQLDate(m_dueDate.value()));
+    boost::mysql::format_sql_to(fctx, "tasks.planned_start = {}, ", stdchronoDateToBoostMySQLDate(m_planedStart.value()));
+    boost::mysql::format_sql_to(fctx, "tasks.actual_start = {}, ", optionalDateConversion(m_actualStart));
+    boost::mysql::format_sql_to(fctx, "tasks.estimated_delivery = {}, ", optionalDateConversion(m_estimatedCompletion));
+    boost::mysql::format_sql_to(fctx, "tasks.delivered = {}, ", optionalDateConversion(m_completed));
+    boost::mysql::format_sql_to(fctx, "tasks.est_hours_effort = {}, ", m_estimatedEffort);
+    boost::mysql::format_sql_to(fctx, "tasks.hours_effort = {}, ", m_actualEffort);
+    boost::mysql::format_sql_to(fctx, "tasks.priority_category = {}, ", m_priorityCategory);
+    boost::mysql::format_sql_to(fctx, "tasks.priority = {}, ", m_priority);
+    boost::mysql::format_sql_to(fctx, "tasks.personal = {}, ", m_personal);
+    boost::mysql::format_sql_to(fctx, "tasks.dependency_count = {}, ", dependencyCount);
+    boost::mysql::format_sql_to(fctx, "tasks.dependencies = {}, ", depenenciesText);
+    boost::mysql::format_sql_to(fctx, "tasks.deleted = {} ", m_deleted);
+    boost::mysql::format_sql_to(fctx, "WHERE tasks.task_id = {} ", m_primaryKey);
 
-    return boost::mysql::format_sql(m_formatOpts.value(),
-        "CALL UpdateTaskAllFields({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, {18})",
-        m_primaryKey, m_creatorID, m_assignToID, m_description, m_parentTaskID, getStatusIntVal(),
-            stdchronoDateToBoostMySQLDate(m_dueDate.value()),
-            stdchronoDateToBoostMySQLDate(m_planedStart.value()),
-            optionalDateConversion(m_actualStart),
-            optionalDateConversion(m_estimatedCompletion),
-            optionalDateConversion(m_completed),
-            m_estimatedEffort, m_actualEffort, m_priorityCategory,m_priority, m_personal,
-            dependencyCount, depenenciesText, m_deleted
-    );
+    return (std::move(fctx).get().value());
 }
 
 std::string TaskModel::formatDeleteStatement()
 {
-    initFormatOptions();
-
-    return boost::mysql::format_sql(m_formatOpts.value(), "CALL HideTask({}, {})", m_creatorID, m_primaryKey);
+    return boost::mysql::format_sql(getFormatOptions(),
+        "UPDATE tasks SET tasks.deleted = 1 WHERE tasks.created_by = {} AND tasks.task_id = {}", m_creatorID, m_primaryKey);
 }
 
 void TaskModel::initRequiredFields()
