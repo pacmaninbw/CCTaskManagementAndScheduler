@@ -13,20 +13,20 @@
 #include <vector>
 
 NoteQueryProcessor::NoteQueryProcessor()
-: QueryProcessor<NoteModel>("NoteModel", {"idUserNotes", "UserID", "Content", "Hidden", "NotationDateTime",  "LastUpdate"})
+: QueryProcessor<NoteModel>("NoteModel", {"id_user_notes", "user_id", "content", "deleted", "note_creation", "last_modifed"})
 {
 }
 
 NoteModel_shp NoteQueryProcessor::getNoteById(std::size_t noteId) noexcept
 {
     clearErrorMessages();
+
     NoteModel_shp found = nullptr;
 
     try
     {
-        initFormatOptions();
-        boost::mysql::format_context fctx(m_formatOpts.value());
-        boost::mysql::format_sql_to(fctx, "CALL GetNoteByID({})", noteId);
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM user_notes  WHERE user_notes.id_user_notes = {}", noteId);
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
     }
@@ -49,9 +49,13 @@ NoteList NoteQueryProcessor::getAllNotesForUser(std::size_t userId) noexcept
 
     try
     {
-        initFormatOptions();
-        boost::mysql::results localResult = runQueryAsync(boost::mysql::format_sql(
-            m_formatOpts.value(), "CALL GetAllUndeletedNotesForUser({})", userId));
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM user_notes ");
+        boost::mysql::format_sql_to(fctx, "WHERE user_notes.user_id = {} ", userId);
+        boost::mysql::format_sql_to(fctx, "AND user_notes.deleted <> 1");
+
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+
         return processResults(localResult);
     }
 
@@ -70,11 +74,16 @@ NoteList NoteQueryProcessor::getNotesForUserSimlarToContent(std::size_t userId, 
 
     try
     {
-        initFormatOptions();
-        boost::mysql::results localResult = runQueryAsync(
-            boost::mysql::format_sql(m_formatOpts.value(), 
-                "CALL GetNotesForUserSimlarToContent({}, {})", userId, likeContent
-        ));
+        std::string contentPattern = wrapSearchContentSQLPatternMatch(likeContent);
+
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM user_notes ");
+        boost::mysql::format_sql_to(fctx, "WHERE user_notes.user_id = {} ", userId);
+        boost::mysql::format_sql_to(fctx, "AND user_notes.content LIKE {} ", contentPattern);
+        boost::mysql::format_sql_to(fctx, "AND user_notes.deleted <> 1");
+
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        
         return processResults(localResult);
     }
 
@@ -94,12 +103,15 @@ NoteList NoteQueryProcessor::getAllNotesForUserCreatedInDatgeRange(
 
     try
     {
-        initFormatOptions();
-        boost::mysql::results localResult = runQueryAsync(
-            boost::mysql::format_sql(m_formatOpts.value(),
-                "CALL GetAllNotesForUserCreatedInDatgeRange({}, {}, {})", userId,
-                stdchronoDateToBoostMySQLDate(startDate), stdchronoDateToBoostMySQLDate(endDate)
-        ));
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM user_notes ");
+        boost::mysql::format_sql_to(fctx, "WHERE user_notes.user_id = {} ", userId);
+        boost::mysql::format_sql_to(fctx, "AND user_notes.note_creation >= {} ", stdchronoDateToBoostMySQLDate(startDate));
+        boost::mysql::format_sql_to(fctx, "AND user_notes.note_creation <= {} ", stdchronoDateToBoostMySQLDate(endDate));
+        boost::mysql::format_sql_to(fctx, "AND user_notes.deleted <> 1");
+
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+
         return processResults(localResult);
     }
 
@@ -119,12 +131,15 @@ NoteList NoteQueryProcessor::getAllNotesForUserEditedInDatgeRange(
 
     try
     {
-        initFormatOptions();
-        boost::mysql::results localResult = runQueryAsync(
-            boost::mysql::format_sql(m_formatOpts.value(),
-                "CALL GetAllNotesForUserEditedInDatgeRange({}, {}, {})", userId,
-                stdchronoDateToBoostMySQLDate(startDate), stdchronoDateToBoostMySQLDate(endDate))
-        );
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM user_notes ");
+        boost::mysql::format_sql_to(fctx, "WHERE user_notes.user_id = {} ", userId);
+        boost::mysql::format_sql_to(fctx, "AND user_notes.last_modifed >= {} ", stdchronoDateToBoostMySQLDate(startDate));
+        boost::mysql::format_sql_to(fctx, "AND user_notes.last_modifed <= {} ", stdchronoDateToBoostMySQLDate(endDate));
+        boost::mysql::format_sql_to(fctx, "AND user_notes.deleted <> 1");
+
+        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+
         return processResults(localResult);
     }
 
@@ -166,22 +181,25 @@ std::string NoteQueryProcessor::formatGetNotesFromUserForDate(std::size_t userId
     std::chrono::system_clock::duration oneDayOffset = mostHoursInDay + minutesInLastHour;
     std::chrono::system_clock::time_point endDay(startDay + oneDayOffset);
 
-    initFormatOptions();
-    boost::mysql::format_context fctx(m_formatOpts.value());
-    boost::mysql::format_sql_to(fctx, "CALL GetDashboardNoteTable({}, {}, {})", userId,
-        stdChronoTimePointToBoostDateTime(startDay), stdChronoTimePointToBoostDateTime(endDay));
+    boost::mysql::format_context fctx(getFormatOptions());
+    boost::mysql::format_sql_to(fctx, "SELECT * FROM user_notes ");
+    boost::mysql::format_sql_to(fctx, "WHERE user_notes.user_id = {} ", userId);
+    boost::mysql::format_sql_to(fctx, "AND user_notes.note_creation >= {} ", stdChronoTimePointToBoostDateTime(startDay));
+    boost::mysql::format_sql_to(fctx, "AND user_notes.note_creation <= {} ", stdChronoTimePointToBoostDateTime(endDay));
+    boost::mysql::format_sql_to(fctx, "AND user_notes.deleted <> 1 ");
+    boost::mysql::format_sql_to(fctx, "ORDER BY user_notes.note_creation ASC");
 
     return std::move(fctx).get().value();
 }
 
 void NoteQueryProcessor::fillRequiredIndexes()
 {
-    assignValueToIndex("idUserNotes", m_noteIdx);
-    assignValueToIndex("UserID", m_userIdx);
-    assignValueToIndex("Content", m_contentIdx);
-    assignValueToIndex("Hidden", m_hiddenIdx);
-    assignValueToIndex("NotationDateTime", m_createdIdx);
-    assignValueToIndex("LastUpdate", m_lastmodIdx);
+    assignValueToIndex("id_user_notes", m_noteIdx);
+    assignValueToIndex("user_id", m_userIdx);
+    assignValueToIndex("content", m_contentIdx);
+    assignValueToIndex("deleted", m_hiddenIdx);
+    assignValueToIndex("note_creation", m_createdIdx);
+    assignValueToIndex("last_modifed", m_lastmodIdx);
 }
 
 NoteModel_shp NoteQueryProcessor::processResultRow(boost::mysql::row_view &noteQueryRow)

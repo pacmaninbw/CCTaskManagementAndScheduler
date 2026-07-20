@@ -75,26 +75,44 @@ void NoteModel::initRequiredFields()
     m_missingRequiredFieldsTests.push_back({std::bind(&NoteModel::isMissingContent, this), "Content"});
 }
 
+/*
+ * To make the code more maintainable each field / column in a table will have
+ * its own line in insert and update statements. 
+ */
 std::string NoteModel::formatInsertStatement()
 {
-    initFormatOptions();
+    boost::mysql::format_context fctx(getFormatOptions());
+    boost::mysql::format_sql_to(fctx, "INSERT INTO user_notes(");
+    boost::mysql::format_sql_to(fctx, "user_id, ");
+    boost::mysql::format_sql_to(fctx, "content, ");
+    boost::mysql::format_sql_to(fctx, "deleted ");
+    boost::mysql::format_sql_to(fctx, ") VALUES (");
+    boost::mysql::format_sql_to(fctx, "{}, ", m_userID);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_content);
+    boost::mysql::format_sql_to(fctx, "{}", m_deleted);
+    boost::mysql::format_sql_to(fctx, ")");
 
-    return boost::mysql::format_sql(m_formatOpts.value(), "CALL AddUserNote({0}, {1})", m_userID, m_content);
+    return (std::move(fctx).get().value());
 }
 
 std::string NoteModel::formatUpdateStatement()
 {
-    initFormatOptions();
+    boost::mysql::format_context fctx(getFormatOptions());
+    boost::mysql::format_sql_to(fctx, "UPDATE user_notes SET user_notes.content = {} ", m_content);
+    boost::mysql::format_sql_to(fctx, "WHERE user_notes.id_user_notes = {} ", m_primaryKey);
+    boost::mysql::format_sql_to(fctx, "AND user_notes.user_id = {}", m_userID);
 
-    return boost::mysql::format_sql(m_formatOpts.value(),
-        "CALL UpdateNoteAllFields({0}, {1}, {2})", m_userID, m_primaryKey, m_content);
+    return (std::move(fctx).get().value());
 }
 
 std::string NoteModel::formatDeleteStatement()
 {
-    initFormatOptions();
+    boost::mysql::format_context fctx(getFormatOptions());
+    boost::mysql::format_sql_to(fctx, "UPDATE user_notes SET user_notes.deleted = 1 ");
+    boost::mysql::format_sql_to(fctx, "WHERE user_notes.user_id = {} ", m_userID);
+    boost::mysql::format_sql_to(fctx, "AND user_notes.id_user_notes = {}", m_primaryKey);
 
-    return boost::mysql::format_sql(m_formatOpts.value(), "CALL HideNote({}, {})", m_userID, m_primaryKey);
+    return (std::move(fctx).get().value());
 }
 
 

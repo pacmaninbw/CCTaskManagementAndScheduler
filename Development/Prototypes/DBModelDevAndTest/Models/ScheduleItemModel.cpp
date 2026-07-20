@@ -111,41 +111,57 @@ bool ScheduleItemModel::diffScheduleItem(ScheduleItemModel &other)
     );
 }
 
+/*
+ * To make the code more maintainable each field / column in a table will have
+ * its own line in insert and update statements. 
+ */
 std::string ScheduleItemModel::formatInsertStatement()
 {
-    initFormatOptions();
+    boost::mysql::format_context fctx(getFormatOptions());
+    boost::mysql::format_sql_to(fctx, "INSERT INTO user_schedule_item  (");
+    boost::mysql::format_sql_to(fctx, "user_id, ");
+    boost::mysql::format_sql_to(fctx, "start_date_time, ");
+    boost::mysql::format_sql_to(fctx, "end_date_time, ");
+    boost::mysql::format_sql_to(fctx, "title, ");
+    boost::mysql::format_sql_to(fctx, "personal, ");
+    boost::mysql::format_sql_to(fctx, "location, ");
+    boost::mysql::format_sql_to(fctx, "deleted");
+    boost::mysql::format_sql_to(fctx, ") VALUES (");
+    boost::mysql::format_sql_to(fctx, "{}, ", m_userID);
+    boost::mysql::format_sql_to(fctx, "{}, ", optionalDateTimeConversion(m_startTime.value()));
+    boost::mysql::format_sql_to(fctx, "{}, ", optionalDateTimeConversion(m_endTime.value()));
+    boost::mysql::format_sql_to(fctx, "{}, ", m_title);
+    boost::mysql::format_sql_to(fctx, "{}, ", static_cast<unsigned int>(m_personal?1:0));
+    boost::mysql::format_sql_to(fctx, "{}, ", m_location);
+    boost::mysql::format_sql_to(fctx, "{} ", m_deleted);
+    boost::mysql::format_sql_to(fctx, ")");
 
-    return boost::mysql::format_sql(m_formatOpts.value(),
-        "CALL AddScheduleEvent({0}, {1}, {2}, {3}, {4}, {5})",
-            m_userID,
-            optionalDateTimeConversion(m_startTime.value()),
-            optionalDateTimeConversion(m_endTime.value()),
-            m_title,
-            static_cast<unsigned int>(m_personal?1:0),
-            m_location
-    );
+    return (std::move(fctx).get().value());
 }
 
 std::string ScheduleItemModel::formatUpdateStatement()
 {
-    initFormatOptions();
+    boost::mysql::format_context fctx(getFormatOptions());
+    boost::mysql::format_sql_to(fctx, "UPDATE user_schedule_item SET ");
+    boost::mysql::format_sql_to(fctx, "user_schedule_item.start_date_time = {}, ", optionalDateTimeConversion(m_startTime));
+    boost::mysql::format_sql_to(fctx, "user_schedule_item.end_date_time = {}, ", optionalDateTimeConversion(m_endTime));
+    boost::mysql::format_sql_to(fctx, "user_schedule_item.title = {}, ", m_title);
+    boost::mysql::format_sql_to(fctx, "user_schedule_item.personal = {}, ", static_cast<unsigned int>(m_personal?1:0));
+    boost::mysql::format_sql_to(fctx, "user_schedule_item.location = {} ", m_location);
+    boost::mysql::format_sql_to(fctx, "WHERE user_schedule_item.id_user_schedule_item = {} ", m_primaryKey);
+    boost::mysql::format_sql_to(fctx, "AND user_schedule_item.user_id = user_id", m_userID);
 
-    return boost::mysql::format_sql(m_formatOpts.value(),
-        "CALL UpdateScheduleItemAllFields({0}, {1}, {2}, {3}, {4}, {5}, {6})",
-            m_userID, m_primaryKey,
-            optionalDateTimeConversion(m_startTime),
-            optionalDateTimeConversion(m_endTime),
-            m_title,
-            static_cast<unsigned int>(m_personal?1:0),
-            m_location
-    );
+    return (std::move(fctx).get().value());
 }
 
 std::string ScheduleItemModel::formatDeleteStatement()
 {
-    initFormatOptions();
+    boost::mysql::format_context fctx(getFormatOptions());
+    boost::mysql::format_sql_to(fctx, "UPDATE user_schedule_item SET user_schedule_item.deleted = 1 ");
+    boost::mysql::format_sql_to(fctx, "WHERE user_schedule_item.user_id = {} ", m_userID);
+    boost::mysql::format_sql_to(fctx, "AND user_schedule_item.id_user_schedule_item = {}", m_primaryKey);
 
-    return boost::mysql::format_sql(m_formatOpts.value(), "CALL HideScheduleItem({}, {})", m_userID, m_primaryKey);
+    return (std::move(fctx).get().value());
 }
 
 void ScheduleItemModel::initRequiredFields()

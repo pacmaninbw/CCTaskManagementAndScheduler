@@ -12,8 +12,8 @@
 ScheduleItemQueryProcessor::ScheduleItemQueryProcessor(std::size_t userId)
 : QueryProcessor<ScheduleItemModel>("ScheduleItem", 
         {
-            "idUserScheduleItem", "UserID", "StartDateTime", "EndDateTime", "Title",
-            "Personal", "Location", "CreatedTS", "LastUpdateTS", "Hidden"
+            "id_user_schedule_item", "user_id", "start_date_time", "end_date_time", "title",
+            "personal", "location", "created_timestamp", "last_modified_time_stamp", "deleted"
         }
     )
 {
@@ -27,9 +27,10 @@ ScheduleItemModel_shp ScheduleItemQueryProcessor::getScheduleItemById(std::size_
 
     try
     {
-        initFormatOptions();
-        boost::mysql::format_context fctx(m_formatOpts.value());
-        boost::mysql::format_sql_to(fctx, "CALL GetScheduleItemById({})", eventId);
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM user_schedule_item ");
+        boost::mysql::format_sql_to(fctx, "WHERE user_schedule_item.id_user_schedule_item = {} ", eventId);
+        boost::mysql::format_sql_to(fctx, "AND user_schedule_item.deleted <> 1");
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         found = getOneResult(localResult);
     }
@@ -56,10 +57,15 @@ ScheduleItemList ScheduleItemQueryProcessor::getUserDaySchedule(std::chrono::yea
         std::chrono::system_clock::time_point startSearch = getLocalMidnight(scheduleDate);
         std::chrono::system_clock::time_point endSearch = startSearch + dateAdjustor;
 
-        initFormatOptions();
-        boost::mysql::format_context fctx(m_formatOpts.value());
-        boost::mysql::format_sql_to(fctx, "CALL GetUserDaySchedule({}, {}, {})",
-            m_userID, stdChronoTimePointToBoostDateTime(startSearch), stdChronoTimePointToBoostDateTime(endSearch));
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM user_schedule_item ");
+        boost::mysql::format_sql_to(fctx, "WHERE user_schedule_item.user_id = {} ", m_userID);
+        boost::mysql::format_sql_to(fctx, "AND user_schedule_item.deleted <> 1 ");
+        boost::mysql::format_sql_to(fctx, "AND user_schedule_item.start_date_time >= {} ",
+            stdChronoTimePointToBoostDateTime(startSearch));
+        boost::mysql::format_sql_to(fctx, "AND user_schedule_item.start_date_time <= {} ",
+            stdChronoTimePointToBoostDateTime(endSearch));
+        boost::mysql::format_sql_to(fctx, "ORDER BY user_schedule_item.start_date_time ASC");
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         return processResults(localResult);
     }
@@ -83,11 +89,14 @@ ScheduleItemList ScheduleItemQueryProcessor::findUserScheduleItemsByContentAndDa
 
     try
     {
-        initFormatOptions();
-        boost::mysql::format_context fctx(m_formatOpts.value());
-        boost::mysql::format_sql_to(fctx, "CALL FindUserScheduleItemsByContentAndDateRange({}, {}, {}, {})",
-            m_userID, searchTitle, stdchronoDateToBoostMySQLDate(searchStart),
-            stdchronoDateToBoostMySQLDate(searchEnd));
+        std::string patternMatcher = wrapSearchContentSQLPatternMatch(searchTitle);
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM user_schedule_item ");
+        boost::mysql::format_sql_to(fctx, "WHERE user_id = {} ", m_userID);
+        boost::mysql::format_sql_to(fctx, "AND title LIKE {} ", patternMatcher);
+        boost::mysql::format_sql_to(fctx, "AND deleted <> 1 ");
+        boost::mysql::format_sql_to(fctx, "AND start_date_time >= {} ", stdchronoDateToBoostMySQLDate(searchStart));
+        boost::mysql::format_sql_to(fctx, "AND start_date_time <= {}", stdchronoDateToBoostMySQLDate(searchEnd));
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
         return processResults(localResult);
     }
@@ -108,9 +117,13 @@ std::vector<std::string> ScheduleItemQueryProcessor::findEventSToRepeat(std::str
 
     try
     {
-        initFormatOptions();
-        boost::mysql::format_context fctx(m_formatOpts.value());
-        boost::mysql::format_sql_to(fctx, "CALL ScheduleItemContentSelectionList({}, {})", searchTitle, m_userID);
+        std::string contentPattern = wrapSearchContentSQLPatternMatch(searchTitle);
+
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT DISTINCT user_schedule_item.title FROM user_schedule_item ");
+        boost::mysql::format_sql_to(fctx, "WHERE user_schedule_item.user_id = {} ", m_userID);
+        boost::mysql::format_sql_to(fctx, "AND user_schedule_item.title LIKE {} ", contentPattern);
+        boost::mysql::format_sql_to(fctx, "ORDER BY user_schedule_item.title ASC");
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
 
         if (!m_selfTest)
@@ -152,9 +165,10 @@ std::vector<std::string> ScheduleItemQueryProcessor::findEventsForRepeatCompleti
 
     try
     {
-        initFormatOptions();
-        boost::mysql::format_context fctx(m_formatOpts.value());
-        boost::mysql::format_sql_to(fctx, "CALL EventTitlesForCompleter({})", m_userID);
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT DISTINCT user_schedule_item.title FROM user_schedule_item ");
+        boost::mysql::format_sql_to(fctx, "WHERE user_schedule_item.user_id = {} ", m_userID);
+        boost::mysql::format_sql_to(fctx, "ORDER BY user_schedule_item.title ASC");
 
         if (runStringOnlyQuery(std::move(fctx).get().value()))
         {
@@ -181,9 +195,10 @@ std::vector<std::string> ScheduleItemQueryProcessor::findLocationsForRepeatCompl
 
     try
     {
-        initFormatOptions();
-        boost::mysql::format_context fctx(m_formatOpts.value());
-        boost::mysql::format_sql_to(fctx, "CALL EventLocationsForCompleter({})", m_userID);
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT DISTINCT user_schedule_item.location FROM user_schedule_item ");
+        boost::mysql::format_sql_to(fctx, "WHERE user_schedule_item.user_id = {} ", m_userID);
+        boost::mysql::format_sql_to(fctx, "ORDER BY user_schedule_item.location ASC");
 
         if (runStringOnlyQuery(std::move(fctx).get().value()))
         {
@@ -224,16 +239,16 @@ ScheduleItemModel_shp ScheduleItemQueryProcessor::processResultRow(boost::mysql:
 
 void ScheduleItemQueryProcessor::fillRequiredIndexes()
 {
-    assignValueToIndex("idUserScheduleItem", m_scheduleItemIdIdx);
-    assignValueToIndex("UserID", m_userIdIdx);
-    assignValueToIndex("StartDateTime", m_startTimeIdx);
-    assignValueToIndex("EndDateTime", m_endTimeIdx);
-    assignValueToIndex("Title", m_titleIdx);
-    assignValueToIndex("Personal", m_personalIdx);
-    assignValueToIndex("Location", m_locationIdx);
-    assignValueToIndex("CreatedTS", m_createdOnIdx);
-    assignValueToIndex("LastUpdateTS", m_lastUpdateIdx);
-    assignValueToIndex("Hidden", m_hiddenIdx);
+    assignValueToIndex("id_user_schedule_item", m_scheduleItemIdIdx);
+    assignValueToIndex("user_id", m_userIdIdx);
+    assignValueToIndex("start_date_time", m_startTimeIdx);
+    assignValueToIndex("end_date_time", m_endTimeIdx);
+    assignValueToIndex("title", m_titleIdx);
+    assignValueToIndex("personal", m_personalIdx);
+    assignValueToIndex("location", m_locationIdx);
+    assignValueToIndex("created_timestamp", m_createdOnIdx);
+    assignValueToIndex("last_modified_time_stamp", m_lastUpdateIdx);
+    assignValueToIndex("deleted", m_hiddenIdx);
 }
 
 std::vector<ListExceptionTestElement> ScheduleItemQueryProcessor::initListExceptionTests() noexcept

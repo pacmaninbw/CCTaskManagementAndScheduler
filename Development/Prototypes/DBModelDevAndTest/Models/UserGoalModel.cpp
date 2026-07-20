@@ -84,32 +84,54 @@ void UserGoalModel::initRequiredFields()
     m_missingRequiredFieldsTests.push_back({std::bind(&UserGoalModel::isMissingDescription, this), "Description"});
 }
 
+/*
+ * To make the code more maintainable each field / column in a table will have
+ * its own line in insert and update statements. 
+ */
 std::string UserGoalModel::formatInsertStatement()
 {
-    initFormatOptions();
+    boost::mysql::format_context fctx(getFormatOptions());
 
-    std::string insertStatement = boost::mysql::format_sql(m_formatOpts.value(),
-        "CALL AddUserGoal({0}, {1}, {2}, {3})", m_userID, m_description, m_priority, m_parentID);
+    boost::mysql::format_sql_to(fctx, "INSERT INTO user_goals (");
+    boost::mysql::format_sql_to(fctx, "user_id, ");
+    boost::mysql::format_sql_to(fctx, "description, ");
+    boost::mysql::format_sql_to(fctx, "priority, ");
+    boost::mysql::format_sql_to(fctx, "parent_goal, ");
+    boost::mysql::format_sql_to(fctx, "deleted");
+    boost::mysql::format_sql_to(fctx, ") VALUES (");
+    boost::mysql::format_sql_to(fctx, "{}, ", m_userID);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_description);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_priority);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_parentID);
+    boost::mysql::format_sql_to(fctx, "{}", m_deleted);
+    boost::mysql::format_sql_to(fctx, ")");
 
-    return insertStatement;
+    return (std::move(fctx).get().value());
 }
 
 std::string UserGoalModel::formatUpdateStatement()
 {
-    initFormatOptions();
+    boost::mysql::format_context fctx(getFormatOptions());
 
-    std::string updateStatement = boost::mysql::format_sql(m_formatOpts.value(),
-        "CALL UpdateUserGoalAllFields({0}, {1}, {2}, {3}, {4})",
-        m_userID, m_primaryKey, m_description, m_priority, m_parentID);
-        
-    return updateStatement;
+    boost::mysql::format_sql_to(fctx, "UPDATE user_goals SET ");
+    boost::mysql::format_sql_to(fctx, "user_goals.description = {}, ", m_description);
+    boost::mysql::format_sql_to(fctx, "user_goals.priority = {}, ", m_priority);
+    boost::mysql::format_sql_to(fctx, "user_goals.parent_goal = {} ", m_parentID);
+    boost::mysql::format_sql_to(fctx, "WHERE user_goals.user_id = {} ", m_userID);
+    boost::mysql::format_sql_to(fctx, "AND user_goals.id_user_goals = {}", m_primaryKey);
+
+    return (std::move(fctx).get().value());
 }
 
 std::string UserGoalModel::formatDeleteStatement()
 {
-    initFormatOptions();
+    boost::mysql::format_context fctx(getFormatOptions());
 
-    return boost::mysql::format_sql(m_formatOpts.value(),"CALL HideGoal({}, {})", m_userID, m_primaryKey);
+    boost::mysql::format_sql_to(fctx, "UPDATE user_goals SET user_goals.deleted = 1 ");
+    boost::mysql::format_sql_to(fctx, "WHERE user_goals.user_id = {} ", m_userID);
+    boost::mysql::format_sql_to(fctx, "AND user_goals.id_user_goals = {}", m_primaryKey);
+
+    return (std::move(fctx).get().value());
 }
 
 
