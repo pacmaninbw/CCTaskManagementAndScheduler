@@ -108,7 +108,7 @@ TestStatus TestScheduleItemModel::testPositivePathUpdateScheduleItem()
 
     ScheduleItemQueryProcessor scheduleItemQueryProcessor(m_userOne->getUserID());
     ScheduleItemModel_shp scheduleitemToUpdate = scheduleItemQueryProcessor.getScheduleItemById(m_firstScheduleItem);
-    if (!scheduleitemToUpdate->isInDataBase())
+    if (!scheduleitemToUpdate || !scheduleitemToUpdate->isInDataBase())
     {
         std::cout << "ScheduleItem 1 not found in database!!\n";
         return TESTFAILED;
@@ -330,7 +330,7 @@ TestStatus TestScheduleItemModel::testNegativePathAlreadyInDataBase()
 {
     ScheduleItemQueryProcessor scheduleItemQueryProcessor(m_userOne->getUserID());
     ScheduleItemModel_shp scheduleitemsAlreadyInDB = scheduleItemQueryProcessor.getScheduleItemById(m_firstScheduleItem);
-    if (!scheduleitemsAlreadyInDB->isInDataBase())
+    if (!scheduleitemsAlreadyInDB || !scheduleitemsAlreadyInDB->isInDataBase())
     {
         std::cout << "ScheduleItem 1 not found in database!!\n";
         return TESTFAILED;
@@ -344,7 +344,7 @@ TestStatus TestScheduleItemModel::testnegativePathNotModified()
 {
     ScheduleItemQueryProcessor scheduleItemQueryProcessor(m_userOne->getUserID());
     ScheduleItemModel_shp scheduleitemsNotModified = scheduleItemQueryProcessor.getScheduleItemById(m_firstScheduleItem);
-    if (!scheduleitemsNotModified->isInDataBase())
+    if (!scheduleitemsNotModified || !scheduleitemsNotModified->isInDataBase())
     {
         std::cout << "ScheduleItem 1 not found in database!!\n";
         return TESTFAILED;
