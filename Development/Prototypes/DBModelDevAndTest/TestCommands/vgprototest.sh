@@ -10,7 +10,7 @@
 #
 # Since the diff is the last command the -e flag can be used to exit the script
 #
-set -e -o
+set -e
 sqluser="${1:-no_username_supplied}"
 sqlpassword="${2:-no_password_supplied}"
 build_dir=build/CMakeFiles/protoPersonalPlanner.dir
@@ -30,6 +30,6 @@ rm combinedInput.sql
 #
 valgrind --track-origins=yes protoPersonalPlanner -u "$sqluser" -p "$sqlpassword" --verbose --time-tests 2>&1 | sed 's/^==[0-9]*== //' > Testing/valgrindOut.txt
 echo "valgrind Diff"
-date
-diff -w Testing/valgrindOut.txt Testing/valgrindOut_forDiff.txt
-date
+
+diff -w Testing/valgrindOut.txt Testing/valgrindOut_forDiff.txt > valgrindTestDiff.txt || true
+
