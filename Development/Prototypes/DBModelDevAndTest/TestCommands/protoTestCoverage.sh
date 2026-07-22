@@ -1,3 +1,4 @@
+#!/bin/sh
 #
 # usage protoTestCoverage.sh SQLUSER SQLUSERPASSWORD
 #
@@ -6,7 +7,6 @@
 # just the output from the tests. If any of the tests fail the vgprototest.sh
 # test script can be run to determine what is causing the failure.
 #
-#!/bin/sh
 sqluser="${1:-no_username_supplied}"
 sqlpassword="${2:-no_password_supplied}"
 build_dir=build/CMakeFiles/protoPersonalPlanner.dir

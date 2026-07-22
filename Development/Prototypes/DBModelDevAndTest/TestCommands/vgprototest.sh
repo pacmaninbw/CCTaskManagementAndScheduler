@@ -1,3 +1,4 @@
+#!/bin/sh
 #
 # usage vgprototest.sh SQLUSER SQLUSERPASSWORD
 #
@@ -6,9 +7,6 @@
 # The regression test is run through valgrind to check for memory leakage as well as memory
 # usage errors. The test database is recreated each time and provided with previous versions
 # of real data. The verbose output flag is used to generate additional debug information.
-#
-#!/bin/sh
-
 #
 # Since the diff is the last command the -e flag can be used to exit the script
 #
