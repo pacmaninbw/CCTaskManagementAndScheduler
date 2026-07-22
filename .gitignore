@@ -71,6 +71,7 @@ TestTableMap
 *.gcda
 *.gcno
 *Out.txt
+*TestDiff.txt
 *.jpg
 TestCoverage
 
