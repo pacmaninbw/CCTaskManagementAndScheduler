@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# usage protoTestCoverage.sh SQLUSER SQLUSERPASSWORD
+# usage modelOnlyTestCoverage.sh SQLUSER SQLUSERPASSWORD
 #
 # Runs the regression test and generates test coverage information.
 # The regression test is run without the verbose flag. This provides
@@ -9,32 +9,32 @@
 #
 sqluser="${1:-no_username_supplied}"
 sqlpassword="${2:-no_password_supplied}"
-build_dir=build/CMakeFiles/protoPersonalPlanner.dir
 
 # Remove previously generated files
-rm -f $build_dir/*.gcda $build_dir/{common,Models,Testing}/*.gcda
 rm -rf TestCoverage
+find . -type f -name "*.gcda" -delete
 
-#
-# Combine the data definitions with the test data and create the test database
-#
-cat PlannerTaskScheduleDB.sql AdditionalFunctionalTestData.sql > combinedInput.sql
-mysql -u $sqluser -p$sqlpassword < combinedInput.sql || exit
-rm combinedInput.sql
+echo "Creating test database with test data"
+cat PlannerTaskScheduleDB.sql AdditionalFunctionalTestData.sql | mysql -u $sqluser -p$sqlpassword || { echo "Exiting now Database Load Failed"; exit 1; }
 
-protoPersonalPlanner -u $sqluser -p $sqlpassword  2>&1 > Testing/testOut.txt
+echo "Running Regression Tests"
+# If regression tests fails the diff and test coverage reports are still valid
+build/protoPersonalPlanner -u "$sqluser" -p "$sqlpassword" --time-tests > Testing/modelTestOut.txt || echo "REGRESSION TESTS FAILED!"
+
 echo "Diff"
-diff Testing/testOut.txt Testing/testOut_forDiff.txt
+diff Testing/modelTestOut.txt Testing/modelTestOut_forDiff.txt
 
 mkdir TestCoverage || exit
 echo "copy Gcov data"
-cp -t TestCoverage build/protoPersonalPlanner \
-    build/CMakeFiles/protoPersonalPlanner.dir/*.gc* \
-    build/CMakeFiles/protoPersonalPlanner.dir/*/*.gc*
-#
-# Provide test coverage on just the models which are used by the application
-#
-lcov --directory . --capture --output-file TestCoverage/protoPersonalPlanner_Total.info  2>&1  > lcovOut.txt
-lcov --remove TestCoverage/protoPersonalPlanner_Total.info '/usr/include/*' '*/boost/*' -o TestCoverage/protoPersonalPlanner_filtered.info
-lcov --remove TestCoverage/protoPersonalPlanner_filtered.info '*/Models/*SelfTest*' -o TestCoverage/ModelOnly.info
-genhtml TestCoverage/ModelOnly.info --output-directory TestCoverage
+# Using ln -s creates broken links and moving the files forces a rebuild to regenerate 
+# files built at compile time.
+find . -type f -name "*.gc*" -exec cp -t TestCoverage {} +
+
+echo "Running Lcov"
+lcov --directory . --capture --output-file TestCoverage/ModelOnly.info --ignore-errors gcov,mismatch 2>&1 > TestCoverage/lcovOut.txt || { echo "LCOV gather data failed."; exit 1; }
+echo "Removing Library Coverage" 
+lcov --remove TestCoverage/ModelOnly.info '/usr/include/*' '*/boost/*' -o TestCoverage/ModelOnly.info 2>&1 >> TestCoverage/lcovOut.txt || { echo "LCOV remove libraries failed"; exit 1; }
+echo "Removing Self Test Coverage"
+lcov --remove TestCoverage/ModelOnly.info '*/Models/*SelfTest*' -o TestCoverage/ModelOnly.info 2>&1 >> TestCoverage/lcovOut.txt || { echo "LCOV remove selftest failed"; exit 1; }
+echo "Generating test coverage report"
+genhtml TestCoverage/ModelOnly.info --output-directory TestCoverage 2>&1 > TestCoverage/genhtmlOut.txt || { echo "HTML report generation failed"; exit 1; }
