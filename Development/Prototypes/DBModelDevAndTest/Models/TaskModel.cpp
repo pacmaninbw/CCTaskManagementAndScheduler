@@ -1,6 +1,7 @@
 // Project Header Files
 #include "commonUtilities.h"
 #include "GenericDictionary.h"
+#include "stdChronoBoostConversions.h"
 #include "TaskModel.h"
 
 // Standard C++ Header Files
@@ -49,6 +50,9 @@ TaskModel::TaskModel(const TaskDbQueryValues &dbTranslator)
     m_parentTaskID = dbTranslator.parent_task;
     m_dueDate = boostMysqlDateToChronoDate(dbTranslator.due_date);
     m_planedStart = boostMysqlDateToChronoDate(dbTranslator.planned_start);
+    m_actualStart = dbTranslator.actual_start.transform(boostMysqlDateToChronoDate);
+    m_estimatedCompletion = dbTranslator.estimated_delivery.transform(boostMysqlDateToChronoDate);
+    m_completed = dbTranslator.delivered.transform(boostMysqlDateToChronoDate);
     m_estimatedEffort = dbTranslator.est_hours_effort;
     m_actualEffort = dbTranslator.hours_effort;
     m_priorityCategory = dbTranslator.priority_category;
@@ -57,21 +61,6 @@ TaskModel::TaskModel(const TaskDbQueryValues &dbTranslator)
     m_created = boostMysqlDateTimeToChronoTimePoint(dbTranslator.creation_timestamp);
     m_lastUpdate = boostMysqlDateTimeToChronoTimePoint(dbTranslator.last_modified_time_stamp);
     m_deleted = dbTranslator.deleted;
-
-    if (dbTranslator.actual_start.has_value())
-    {
-        m_actualStart = boostMysqlDateToChronoDate(dbTranslator.actual_start.value());
-    }
-
-    if (dbTranslator.estimated_delivery.has_value())
-    {
-        m_estimatedCompletion = boostMysqlDateToChronoDate(dbTranslator.estimated_delivery.value());
-    }
-
-    if (dbTranslator.delivered.has_value())
-    {
-        m_completed = boostMysqlDateToChronoDate(dbTranslator.delivered.value());
-    }
 
     if (dbTranslator.dependency_count)
     {
@@ -364,9 +353,9 @@ std::string TaskModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "{}, ", getStatusIntVal());
     boost::mysql::format_sql_to(fctx, "{}, ", stdchronoDateToBoostMySQLDate(m_dueDate.value()));
     boost::mysql::format_sql_to(fctx, "{}, ", stdchronoDateToBoostMySQLDate(m_planedStart.value()));
-    boost::mysql::format_sql_to(fctx, "{}, ", optionalDateConversion(m_actualStart));
-    boost::mysql::format_sql_to(fctx, "{}, ", optionalDateConversion(m_estimatedCompletion));
-    boost::mysql::format_sql_to(fctx, "{}, ", optionalDateConversion(m_completed));
+    boost::mysql::format_sql_to(fctx, "{}, ", m_actualStart.transform(stdchronoDateToBoostMySQLDate));
+    boost::mysql::format_sql_to(fctx, "{}, ", m_estimatedCompletion.transform(stdchronoDateToBoostMySQLDate));
+    boost::mysql::format_sql_to(fctx, "{}, ", m_completed.transform(stdchronoDateToBoostMySQLDate));
     boost::mysql::format_sql_to(fctx, "{}, ", m_estimatedEffort);
     boost::mysql::format_sql_to(fctx, "{}, ", m_actualEffort);
     boost::mysql::format_sql_to(fctx, "{}, ", m_priorityCategory);
@@ -398,9 +387,9 @@ std::string TaskModel::formatUpdateStatement()
     boost::mysql::format_sql_to(fctx, "tasks.task_status = {}, ", getStatusIntVal());
     boost::mysql::format_sql_to(fctx, "tasks.due_date = {}, ", stdchronoDateToBoostMySQLDate(m_dueDate.value()));
     boost::mysql::format_sql_to(fctx, "tasks.planned_start = {}, ", stdchronoDateToBoostMySQLDate(m_planedStart.value()));
-    boost::mysql::format_sql_to(fctx, "tasks.actual_start = {}, ", optionalDateConversion(m_actualStart));
-    boost::mysql::format_sql_to(fctx, "tasks.estimated_delivery = {}, ", optionalDateConversion(m_estimatedCompletion));
-    boost::mysql::format_sql_to(fctx, "tasks.delivered = {}, ", optionalDateConversion(m_completed));
+    boost::mysql::format_sql_to(fctx, "tasks.actual_start = {}, ", m_actualStart.transform(stdchronoDateToBoostMySQLDate));
+    boost::mysql::format_sql_to(fctx, "tasks.estimated_delivery = {}, ", m_estimatedCompletion.transform(stdchronoDateToBoostMySQLDate));
+    boost::mysql::format_sql_to(fctx, "tasks.delivered = {}, ", m_completed.transform(stdchronoDateToBoostMySQLDate));
     boost::mysql::format_sql_to(fctx, "tasks.est_hours_effort = {}, ", m_estimatedEffort);
     boost::mysql::format_sql_to(fctx, "tasks.hours_effort = {}, ", m_actualEffort);
     boost::mysql::format_sql_to(fctx, "tasks.priority_category = {}, ", m_priorityCategory);

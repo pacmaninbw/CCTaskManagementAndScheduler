@@ -1,5 +1,6 @@
 // Project Header Files
 #include "QueryProcessor.h"
+#include "stdChronoBoostConversions.h"
 #include "TaskQueryProcessor.h"
 #include "TaskModel.h"
 

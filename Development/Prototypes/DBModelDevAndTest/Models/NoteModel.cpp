@@ -1,5 +1,6 @@
 // Project Header Files
 #include "NoteModel.h"
+#include "stdChronoBoostConversions.h"
 
 // Standard C++ Header Files
 #include <chrono>

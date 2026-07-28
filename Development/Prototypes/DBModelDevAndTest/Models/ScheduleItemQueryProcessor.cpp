@@ -3,6 +3,7 @@
 #include "QueryProcessor.h"
 #include "ScheduleItemQueryProcessor.h"
 #include "ScheduleItemModel.h"
+#include "stdChronoBoostConversions.h"
 
 // Standard C++ Header Files
 #include <chrono>
