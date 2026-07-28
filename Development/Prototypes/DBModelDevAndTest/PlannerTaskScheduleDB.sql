@@ -19,9 +19,9 @@ CREATE OR REPLACE TABLE test_ptsdb.organization_profile (
     postal_code VARCHAR(32),
     state_or_province VARCHAR(256),
     nation VARCHAR(64),
-    created_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_modified_time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
+    created_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_modified_time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (id_organization),
     INDEX organization_name_idx (organization_name ASC),
     INDEX fk_orgn_prime_contact_idx (primary_contact_user ASC)
@@ -36,14 +36,14 @@ CREATE OR REPLACE TABLE test_ptsdb.user_profile (
     last_name VARCHAR(45) NOT NULL,
     first_name VARCHAR(45) NOT NULL,
     middle_initial VARCHAR(45),
-    email_address VARCHAR(256),
+    email_address VARCHAR(256) NOT NULL,
     user_login VARCHAR(45) NOT NULL,
     hashed_password VARCHAR(45) NOT NULL,
     preferences MEDIUMTEXT NOT NULL,
-    created_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_modified_time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_modified_time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     last_login DATETIME,
-    deleted TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
+    deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (user_id),
     INDEX full_name_idx (last_name, first_name, middle_initial),
     UNIQUE INDEX user_login_unique (user_login ASC),
@@ -65,9 +65,9 @@ CREATE OR REPLACE TABLE  test_ptsdb.user_goals (
     description VARCHAR(1024) NOT NULL,
     priority INT DEFAULT NULL,
     parent_goal INT UNSIGNED DEFAULT NULL,
-    creation_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_modified_time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
+    creation_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_modified_time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (id_user_goals, user_id),
     UNIQUE INDEX id_user_goals_unique (id_user_goals ASC),
     INDEX ug_description_idx (description ASC),
@@ -86,10 +86,10 @@ CREATE OR REPLACE TABLE  test_ptsdb.user_goals (
 CREATE OR REPLACE TABLE test_ptsdb.user_notes (
     id_user_notes INT UNSIGNED NOT NULL AUTO_INCREMENT,
     user_id INT UNSIGNED NOT NULL,
-    note_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    note_creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     content VARCHAR(1024) NOT NULL,
-    last_modifed TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
+    last_modifed TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (id_user_notes, user_id),
     INDEX note_creation (note_creation DESC),
     INDEX user_notes_last_modifed (last_modifed DESC),
@@ -111,7 +111,7 @@ CREATE OR REPLACE TABLE test_ptsdb.tasks (
     description VARCHAR(256) NOT NULL,
     parent_task INT UNSIGNED DEFAULT NULL,
     task_status INT UNSIGNED DEFAULT NULL,
-    creation_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    creation_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     due_date DATE NOT NULL,
     planned_start DATE NOT NULL,
     actual_start DATE DEFAULT NULL,
@@ -121,11 +121,11 @@ CREATE OR REPLACE TABLE test_ptsdb.tasks (
     hours_effort DOUBLE NOT NULL,
     priority_category INT UNSIGNED NOT NULL,
     priority INT UNSIGNED NOT NULL,
-    personal TINYINT DEFAULT 0,
-    dependency_count INT UNSIGNED,
+    personal TINYINT NOT NULL DEFAULT 0,
+    dependency_count INT UNSIGNED NOT NULL DEFAULT 0,
     dependencies MEDIUMTEXT,
-    last_modified_time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
+    last_modified_time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (task_id, created_by),
     INDEX fk_tasks_created_by_idx (created_by ASC),
     INDEX fk_tasks_assigned_to_idx (assigned_to ASC),
@@ -155,9 +155,9 @@ CREATE OR REPLACE TABLE  test_ptsdb.user_task_goals (
     user_id INT UNSIGNED NOT NULL,
     task_id  INT UNSIGNED NOT NULL,
     task_goal_list VARCHAR(45) NOT NULL,
-    creation_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_modified_time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
+    creation_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_modified_time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (user_id, task_id),
     INDEX utg_task_idx (task_id ASC),
     INDEX utg_creation_timestamp_idx (creation_timestamp DESC),
@@ -185,9 +185,9 @@ CREATE OR REPLACE TABLE test_ptsdb.user_schedule_item (
     title VARCHAR(128) NOT NULL,
     personal TINYINT NOT NULL,
     location VARCHAR(128) DEFAULT NULL,
-    created_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_modified_time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted TINYINT DEFAULT 0,    # Records are never deleted but they can be hidden.
+    created_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_modified_time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (id_user_schedule_item, user_id),
     INDEX schedule_item_title_idx (title ASC),
     INDEX schedule_item_start_date_time_idx (start_date_time DESC),
