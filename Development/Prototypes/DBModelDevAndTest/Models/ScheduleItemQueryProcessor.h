@@ -11,8 +11,9 @@
 #include <vector>
 
 using ScheduleItemList = std::vector<ScheduleItemModel_shp>;
+using StaticQueryEvent = boost::mysql::static_results<boost::mysql::pfr_by_name<ScheduleItemDbQueryValues>>;
 
-class ScheduleItemQueryProcessor : public QueryProcessor<ScheduleItemModel>
+class ScheduleItemQueryProcessor : public QueryProcessor<ScheduleItemModel, ScheduleItemDbQueryValues>
 {
 public:
     ScheduleItemQueryProcessor(std::size_t userId);
@@ -27,9 +28,6 @@ public:
     std::vector<std::string> findLocationsForRepeatCompletion() noexcept; 
 
 private:
-    virtual ScheduleItemModel_shp processResultRow(boost::mysql::row_view& queryRow);
-    virtual void fillRequiredIndexes() override;
-
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
     TestStatus testExceptionGetUserDaySchedule() noexcept;
     TestStatus testExceptionFindUserScheduleItemsByContentAndDateRange() noexcept;

@@ -2,23 +2,20 @@
 #define QUERYPROCESSOR_H_
 
 // Project Header Files
-#include "CoreDBInterface.h"
 #include "ModelDBInterface.h"
 #include "commonTestValues.h"
 
 // External Libraries
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
+#include <boost/mysql/pfr.hpp>
 
 // Standard C++ Header Files
-#include <algorithm>
 #include <concepts>
 #include <exception>
 #include <format>
-#include <initializer_list>
 #include <iostream>
 #include <memory>
-#include <optional>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -37,32 +34,14 @@ struct ListExceptionTestElement
     const char* functionUnderTest;
 };
 
-struct ColumnNameToIndexmapping
-{
-    /*
-     * this struct is used while processing query results. boost::mysql returns
-     * results that include the column names,
-     */
-    std::string columnName;
-    std::optional<std::size_t> columnIndex;
-    ColumnNameToIndexmapping(std::string name) : columnName{name}{};
-};
-
-
-template<typename ListType>
+template<typename ListType, typename DbTransLator>
 requires std::is_base_of<ModelDBInterface, ListType>::value
 class QueryProcessor : public CoreDBInterface
 {
 protected:
-/*
- * The details of each of the subclasses are required for the following functions,
- * each class must define these functions.
- */
-    virtual void fillRequiredIndexes() = 0;
-    virtual std::shared_ptr<ListType> processResultRow(boost::mysql::row_view &queryRow) = 0;
 
 public:
-    QueryProcessor(std::string modelname, std::initializer_list<std::string> requiredColumns)
+    QueryProcessor(std::string modelname)
     : CoreDBInterface()
     {
         /*
@@ -72,12 +51,6 @@ public:
         std::string tempListType(modelname);
         tempListType.append("QueryProcessor");
         listTypeName = tempListType;
-
-        for (auto columnName: requiredColumns)
-        {
-            columnToIndexMap.push_back(columnName);
-        }
-
     }
     virtual ~QueryProcessor() = default;
 
@@ -112,111 +85,11 @@ public:
 
 protected:
     /*
-     * assignValueToIndex is called multiple times in the implementations of fillRequiredIndexes().
+     * The results of a database query are passed in and converted into a list of
+     * model objects.
      */
-    void assignValueToIndex(std::string columnName, std::size_t &columnIndex)
-    {
-        auto iterToIndex = std::find_if(columnToIndexMap.begin(), columnToIndexMap.end(),
-            [columnName](const ColumnNameToIndexmapping& ctim){ return ctim.columnName == columnName; });
-        if (iterToIndex != columnToIndexMap.end())
-        {
-            if (iterToIndex->columnIndex.has_value())
-            {
-                columnIndex = iterToIndex->columnIndex.value();
-            }
-            else
-            {
-                appendErrorMessage(std::format("NULL Value to index for {}", columnName));
-            }
-        }
-        else
-        {
-            appendErrorMessage(std::format("Column Name: {} NOT FOUND in assignValueToIndex()", columnName));
-        }
-    }
-
-
-    /*
-    * Map the column names to the indexes for the columns, the order of the columns
-    * in the result set is not guarenteed. Ensure that the columns necessary to fill
-    * the model are present. Currently there is no error if there are too many fields.
-    */
-    void mapColumnNameToIndex(boost::mysql::resultset_view &noteQueryresultSet)
-    {
-        std::vector<std::string> columnNames;
-        bool hasAllRequiredColumns = true;
-
-        /*
-         * Get all the column names in the result set.
-         */
-        for (auto metaIter: noteQueryresultSet.meta())
-        {
-            columnNames.push_back(metaIter.column_name());
-        }
-
-        /*
-         * For each expected column, search the column names and set the index
-         * based on the column name location.
-         */
-        for (std::size_t i = 0; i < columnToIndexMap.size(); ++i)
-        {
-            std::string nameToFind = columnToIndexMap[i].columnName;
-            auto iterToIndex = std::find(columnNames.begin(), columnNames.end(), nameToFind);
-            if (iterToIndex != columnNames.end())
-            {
-                columnToIndexMap[i].columnIndex = std::distance(columnNames.begin(), iterToIndex);
-            }
-            else
-            {
-                appendErrorMessage(std::format("Required field {} not found in results", nameToFind));
-                hasAllRequiredColumns = false;
-                std::cerr << std::format("Required field {} not found in:\n", nameToFind);
-                for (auto columnName: columnNames)
-                {
-                    std::cerr << std::format("{}, ", columnName);
-                }
-                std::cerr << std::endl;
-            }
-        }
-
-        if (!hasAllRequiredColumns)
-        {
-            throw std::out_of_range("Results missing required fields");
-        }
-
-        fillRequiredIndexes();
-    }
-
-    /*
-    * Each boost::mysql result set contain a list of the column names in the result set.
-    * Given the current implementation these columns should be in the same order for 
-    * every result set, but we can't depend on that so we need to map the column names
-    * to the indexes for every result set. For performance reasons we want to map the
-    * indexes once per result set rather than doing a string search for each row of 
-    * data. Create an object of the proper model for each row of data in the result set.
-    */
-    virtual std::vector<std::shared_ptr<ListType>> processResultSet(boost::mysql::resultset_view &queryresultSet)
-    {
-        std::vector<std::shared_ptr<ListType>> intermediateResults;
-
-        if (queryresultSet.rows().num_columns() > 0)
-        {
-            mapColumnNameToIndex(queryresultSet);
-            for (auto rv: queryresultSet.rows())
-            {
-                intermediateResults.push_back(processResultRow(rv));
-            }
-        }
-
-        return intermediateResults;
-    }
-
-    /*
-    * The boost::mysql::results class should contain all the results from the current
-    * query, the results may span multiple result sets. The processResults method
-    * should return all the results found in a single list.
-    */
-    virtual std::vector<std::shared_ptr<ListType>> processResults(boost::mysql::results &noteQueryResults)
+    virtual std::vector<std::shared_ptr<ListType>>
+        processStaticResults(boost::mysql::static_results<boost::mysql::pfr_by_name<DbTransLator>> &queryResults)
     {
         std::vector<std::shared_ptr<ListType>> queryResultValues;
         queryResultValues.clear();
@@ -236,20 +109,22 @@ protected:
             queryResultValues.push_back(std::make_shared<ListType>());
         }
         else {
-            for (std::size_t i = 0; i < noteQueryResults.size(); ++i)
+            for (const DbTransLator& dbTranslator : queryResults.rows())
             {
-                boost::mysql::resultset_view resultview = noteQueryResults[i];
-                std::vector<std::shared_ptr<ListType>> intermediateResults = processResultSet(resultview);
-                queryResultValues.insert(queryResultValues.end(), intermediateResults.begin(), intermediateResults.end());
+                queryResultValues.push_back(std::make_shared<ListType>(dbTranslator));
             }
         }
 
         return queryResultValues;
     }
 
-    virtual std::shared_ptr<ListType> getOneResult(boost::mysql::results& localResult)
+    /*
+     * The query is expecting exactly one model to be returned, such as select
+     * by the primarykey.
+     */
+    virtual std::shared_ptr<ListType> getOneStaticResult(boost::mysql::static_results<boost::mysql::pfr_by_name<DbTransLator>>& localResult)
     {
-        std::vector<std::shared_ptr<ListType>> shouldHaveOnlyOne = processResults(localResult);
+        std::vector<std::shared_ptr<ListType>> shouldHaveOnlyOne = processStaticResults(localResult);
         std::shared_ptr<ListType> found = nullptr;
 
         if (shouldHaveOnlyOne.empty())
@@ -441,7 +316,6 @@ protected:
     std::string listTypeName;
     std::string modelName;
     std::vector<std::string> stringOnlyResults;
-    std::vector<ColumnNameToIndexmapping> columnToIndexMap;
 };
 
 #endif // QUERYPROCESSOR_H_

@@ -5,12 +5,18 @@
 #include "QueryProcessor.h"
 #include "UserGoalModel.h"
 
+// External Libraries
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+#include <boost/mysql/pfr.hpp>
+
 // Standard C++ Header Files
 #include <string>
 
 using UserGoalList = std::vector<UserGoalModel_shp>;
+using StaticQueryGoal = boost::mysql::static_results<boost::mysql::pfr_by_name<GoalDbQueryValues>>;
 
-class GoalQueryProcessor : public QueryProcessor<UserGoalModel>
+class GoalQueryProcessor : public QueryProcessor<UserGoalModel, GoalDbQueryValues>
 {
 public:
     GoalQueryProcessor();
@@ -23,8 +29,7 @@ public:
     UserGoalList findGoalsByUserIdAndSimilarDescription(std::size_t userID, std::string searchString) noexcept;
 
 private:
-    virtual UserGoalModel_shp processResultRow(boost::mysql::row_view& queryRow) override;
-    virtual void fillRequiredIndexes() override;
+
     std::string formatSelectAllChildGoalsWithParentFromUser(std::size_t parentId, std::size_t userId);
     std::string formatSelectAllChildGoalsWithParent(UserGoalModel& parentGoal);
 

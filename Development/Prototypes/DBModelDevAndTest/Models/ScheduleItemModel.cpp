@@ -15,31 +15,20 @@ ScheduleItemModel::ScheduleItemModel()
     m_personal = false;
 }
 
-ScheduleItemModel::ScheduleItemModel(
-    std::size_t eventId,
-    std::size_t userId,
-    std::string title,
-    std::chrono::system_clock::time_point startTime,
-    std::chrono::system_clock::time_point endTime,
-    std::string location,
-    bool personal,
-    std::chrono::system_clock::time_point creationDate,
-    std::chrono::system_clock::time_point lastUpdate
-)
+ScheduleItemModel::ScheduleItemModel(const ScheduleItemDbQueryValues &databaseValues)
 : ScheduleItemModel()
 {
-    m_primaryKey = eventId;
-    m_userID = userId;
-    m_title = title;
-    m_startTime = startTime;
-    m_endTime = endTime;
-    m_personal = personal;
-    m_location = location;
-    m_creation = creationDate;
-    m_lastUpdate = lastUpdate;
-    m_deleted = false;
+    m_primaryKey = databaseValues.id_user_schedule_item;
+    m_userID = databaseValues.user_id;
+    m_title = databaseValues.title;
+    m_startTime = boostMysqlDateTimeToChronoTimePoint(databaseValues.start_date_time);
+    m_endTime = boostMysqlDateTimeToChronoTimePoint(databaseValues.end_date_time);
+    m_personal = static_cast<bool>(databaseValues.personal);
+    m_location = databaseValues.location.value_or("");
+    m_creation = boostMysqlDateTimeToChronoTimePoint(databaseValues.created_timestamp);
+    m_lastUpdate = boostMysqlDateTimeToChronoTimePoint(databaseValues.last_modified_time_stamp);
+    m_deleted = databaseValues.deleted;
 }
-
 
 void ScheduleItemModel::setUserID(std::size_t userId)
 {

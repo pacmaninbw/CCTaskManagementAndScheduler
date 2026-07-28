@@ -13,23 +13,15 @@ NoteModel::NoteModel()
 {
 }
 
-NoteModel::NoteModel
-(
-    std::size_t noteId,
-    std::size_t userId,
-    std::string content,
-    std::chrono::system_clock::time_point created,
-    std::chrono::system_clock::time_point lastModification,
-    bool hidden
-)
+NoteModel::NoteModel(const NoteDbQueryValues &dbTranslator)
 : NoteModel()
 {
-    m_primaryKey = noteId;
-    m_userID = userId;
-    m_content = content;
-    m_creationDate = created;
-    m_lastUpdate = lastModification;
-    m_deleted = hidden;
+    m_primaryKey = dbTranslator.id_user_notes;
+    m_userID = dbTranslator.user_id;
+    m_content = dbTranslator.content;
+    m_creationDate = boostMysqlDateTimeToChronoTimePoint(dbTranslator.note_creation);
+    m_lastUpdate = boostMysqlDateTimeToChronoTimePoint(dbTranslator.last_modifed);
+    m_deleted = dbTranslator.deleted;
 }
 
 void NoteModel::setNoteId(std::size_t noteId)
@@ -114,5 +106,4 @@ std::string NoteModel::formatDeleteStatement()
 
     return (std::move(fctx).get().value());
 }
-
 

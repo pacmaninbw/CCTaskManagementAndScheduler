@@ -13,19 +13,28 @@
 #include <optional>
 #include <string>
 
+/*
+ * Used to retrieve values from the database by the boost library. The names
+ * of the variables in the struct must match the names of the columns in
+ * the user goal table in the database because the boost reflection library is 
+ * used to retrieve them.
+ */
+struct NoteDbQueryValues
+{
+    std::uint64_t id_user_notes;
+    std::uint64_t user_id;
+    std::string content;
+    std::int64_t deleted;
+    boost::mysql::datetime note_creation;
+    boost::mysql::datetime last_modifed;
+};
+
 class NoteModel : public ModelDBInterface
 {
 public:
 
     NoteModel();
-    NoteModel(
-        std::size_t noteId,
-        std::size_t userId,
-        std::string content,
-        std::chrono::system_clock::time_point created,
-        std::chrono::system_clock::time_point lastModification,
-        bool deleted = false
-    );
+    NoteModel(const NoteDbQueryValues& dbTranslator);
     ~NoteModel() = default;
 
     std::size_t getNoteId() const { return m_primaryKey; };

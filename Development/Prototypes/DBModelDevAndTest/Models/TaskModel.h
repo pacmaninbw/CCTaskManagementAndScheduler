@@ -15,6 +15,37 @@
 #include <string>
 #include <vector>
 
+/*
+ * Used to retrieve values from the database by the boost library. The names
+ * of the variables in the struct must match the names of the columns in
+ * the user goal table in the database because the boost reflection library is 
+ * used to retrieve them.
+ */
+struct TaskDbQueryValues
+{
+    std::int64_t task_id;
+    std::uint64_t created_by;
+    std::uint64_t assigned_to;
+    std::string description;
+    std::optional<std::uint64_t> parent_task;
+    std::optional<std::uint64_t> task_status;
+    boost::mysql::datetime creation_timestamp;
+    boost::mysql::date due_date;
+    boost::mysql::date planned_start;
+    std::optional<boost::mysql::date> actual_start;
+    std::optional<boost::mysql::date> estimated_delivery;
+    std::optional<boost::mysql::date> delivered;
+    double est_hours_effort;
+    double hours_effort;
+    std::uint64_t priority_category;
+    std::uint64_t priority;
+    std::int64_t personal;
+    std::uint64_t dependency_count;
+    std::optional<std::string> dependencies;
+    boost::mysql::datetime last_modified_time_stamp;
+    std::int64_t deleted;
+};
+
 class TaskModel : public ModelDBInterface
 {
 public:
@@ -26,28 +57,7 @@ public:
     TaskModel();
     TaskModel(std::size_t creatorID);
     TaskModel(std::size_t creatorID, std::string description);
-    TaskModel(std::size_t taskId,
-        std::size_t creatorID,
-        std::size_t assignToID,
-        std::string description,
-        std::optional<TaskStatus> status,
-        std::optional<std::size_t> parentTaskID,
-        std::optional<std::chrono::year_month_day> dueDate,
-        std::optional<std::chrono::year_month_day> scheduledStart,
-        std::optional<std::chrono::year_month_day> actualStartDate,
-        std::optional<std::chrono::year_month_day> estimatedCompletion,
-        std::optional<std::chrono::year_month_day> completionDate,
-        double estimatedEffort,
-        double actualEffortToDate,
-        unsigned int priorityGroup,
-        unsigned int priority,
-        bool personal,
-        std::size_t dependencyCount,
-        std::string dependencies,
-        std::optional<std::chrono::system_clock::time_point> creationTimeStamp,
-        std::optional<std::chrono::system_clock::time_point> lastUpdate,
-        bool hidden = false
-    );
+    TaskModel(const TaskDbQueryValues& dbTranslator);
     virtual ~TaskModel() = default;
 
     virtual bool hide(std::size_t userRequestingDelete) noexcept override;

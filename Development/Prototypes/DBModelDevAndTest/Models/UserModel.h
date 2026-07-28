@@ -12,6 +12,29 @@
 #include <optional>
 #include <string>
 
+/*
+ * Used to retrieve values from the database by the boost library. The names
+ * of the variables in the struct must match the names of the columns in
+ * the user goal table in the database because the boost reflection library is 
+ * used to retrieve them.
+ */
+struct UserDbQueryValues
+{
+    std::int64_t user_id;
+    std::optional<std::uint64_t> id_organization;
+    std::string last_name;
+    std::string first_name;
+    std::optional<std::string> middle_initial;
+    std::string email_address;
+    std::string user_login;
+    std::string hashed_password;
+    boost::mysql::datetime created_timestamp;
+    boost::mysql::datetime last_modified_time_stamp;
+    std::optional<boost::mysql::datetime> last_login;
+    std::string preferences;
+    std::int64_t deleted;
+};
+
 class UserModel : public ModelDBInterface
 {
 public:
@@ -26,18 +49,7 @@ public:
     };
 
     UserModel();
-    UserModel(std::size_t userID,
-        std::string lastName,
-        std::string firstName,
-        std::string middleinit,
-        std::string email,
-        std::string loginName,
-        std::string password,
-        std::string preferences,
-        std::chrono::system_clock::time_point dateAdded,
-        std::chrono::system_clock::time_point lastLogin,
-        std::size_t orgId
-    );
+    UserModel(const UserDbQueryValues &databaseValues);
     ~UserModel() = default;
 
     void autoGenerateLoginAndPassword() noexcept;

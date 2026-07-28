@@ -6,6 +6,7 @@
 // External Libraries
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
+#include <boost/mysql/pfr.hpp>
 
 // Standard C++ Header Files
 #include <chrono>
@@ -51,13 +52,73 @@ protected:
     std::string wrapSearchContentSQLPatternMatch(std::string searchString) noexcept;
 
 /*
- * All calls to runQueryAsync and getConnectionFormatOptsAsync should be
- * implemented within try blocks.
+ * All calls to runQueryAsync, staticRunQueryAsync and getConnectionFormatOptsAsync
+ * should be implemented within try blocks.
  */
     boost::mysql::results runQueryAsync(const std::string& query);
     boost::mysql::format_options getConnectionFormatOptsAsync();
     boost::asio::awaitable<boost::mysql::results> coRoutineExecuteSqlStatement(const std::string& query);
     boost::asio::awaitable<boost::mysql::format_options> coRoutineGetFormatOptions();
+    template <typename T>
+    boost::asio::awaitable<boost::mysql::static_results<boost::mysql::pfr_by_name<T>>>
+        coRoutineExecuteSqlStatement(const std::string& query)
+    {
+        boost::mysql::static_results<boost::mysql::pfr_by_name<T>> staticResults;
+        if (m_forceException)
+        {
+            std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineExecuteSqlStatement");
+            std::domain_error forcedException(forcingException);
+            throw forcedException;
+        }
+
+        if (m_selfTest)
+        {
+            if (m_verboseOutput)
+            {
+                std::cout << "In Self Test Query is: \n\t" << query << std::endl;
+            }
+            co_return staticResults;
+        }
+
+        boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+
+        co_await conn.async_connect(m_dbConnection);
+        
+        if (m_verboseOutput)
+        {
+            std::cout << "Running: \n\t" << query << std::endl;
+        }
+
+        co_await conn.async_execute(query, staticResults);
+
+        co_await conn.async_close();
+
+        co_return staticResults;
+    };
+
+    template <typename T>
+    boost::mysql::static_results<boost::mysql::pfr_by_name<T>> staticRunQueryAsync(const std::string& query)
+    {
+        boost::mysql::static_results<boost::mysql::pfr_by_name<T>> staticResults;
+        boost::asio::io_context ctx;
+
+        boost::asio::co_spawn(ctx, coRoutineExecuteSqlStatement<T>(query),
+            [&staticResults, this](std::exception_ptr ptr,
+                boost::mysql::static_results<boost::mysql::pfr_by_name<T>> result)
+            {
+                if (ptr)
+                {
+                    std::rethrow_exception(ptr);
+                }
+                staticResults = std::move(result);
+            }
+        );
+
+        ctx.run();
+
+        return staticResults;
+    };
+
 
     std::string m_errorMessages;
     boost::mysql::connect_params m_dbConnection;

@@ -10,12 +10,7 @@
 #include <iostream>
 
 ScheduleItemQueryProcessor::ScheduleItemQueryProcessor(std::size_t userId)
-: QueryProcessor<ScheduleItemModel>("ScheduleItem", 
-        {
-            "id_user_schedule_item", "user_id", "start_date_time", "end_date_time", "title",
-            "personal", "location", "created_timestamp", "last_modified_time_stamp", "deleted"
-        }
-    )
+: QueryProcessor<ScheduleItemModel, ScheduleItemDbQueryValues>("ScheduleItem")
 {
     m_userID = userId;
 }
@@ -31,8 +26,9 @@ ScheduleItemModel_shp ScheduleItemQueryProcessor::getScheduleItemById(std::size_
         boost::mysql::format_sql_to(fctx, "SELECT * FROM user_schedule_item ");
         boost::mysql::format_sql_to(fctx, "WHERE user_schedule_item.id_user_schedule_item = {} ", eventId);
         boost::mysql::format_sql_to(fctx, "AND user_schedule_item.deleted <> 1");
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
-        found = getOneResult(localResult);
+        
+        StaticQueryEvent localResult = staticRunQueryAsync<ScheduleItemDbQueryValues>(std::move(fctx).get().value());
+        found = getOneStaticResult(localResult);
     }
 
     catch(const std::exception& e)
@@ -66,8 +62,9 @@ ScheduleItemList ScheduleItemQueryProcessor::getUserDaySchedule(std::chrono::yea
         boost::mysql::format_sql_to(fctx, "AND user_schedule_item.start_date_time <= {} ",
             stdChronoTimePointToBoostDateTime(endSearch));
         boost::mysql::format_sql_to(fctx, "ORDER BY user_schedule_item.start_date_time ASC");
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
-        return processResults(localResult);
+
+        StaticQueryEvent localResult = staticRunQueryAsync<ScheduleItemDbQueryValues>(std::move(fctx).get().value());
+        return processStaticResults(localResult);
     }
 
     catch(const std::exception& e)
@@ -97,8 +94,9 @@ ScheduleItemList ScheduleItemQueryProcessor::findUserScheduleItemsByContentAndDa
         boost::mysql::format_sql_to(fctx, "AND deleted <> 1 ");
         boost::mysql::format_sql_to(fctx, "AND start_date_time >= {} ", stdchronoDateToBoostMySQLDate(searchStart));
         boost::mysql::format_sql_to(fctx, "AND start_date_time <= {}", stdchronoDateToBoostMySQLDate(searchEnd));
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
-        return processResults(localResult);
+
+        StaticQueryEvent localResult = staticRunQueryAsync<ScheduleItemDbQueryValues>(std::move(fctx).get().value());
+        return processStaticResults(localResult);
     }
 
     catch(const std::exception& e)
@@ -123,6 +121,7 @@ std::vector<std::string> ScheduleItemQueryProcessor::findEventSToRepeat(std::str
         boost::mysql::format_sql_to(fctx, "SELECT DISTINCT user_schedule_item.title FROM user_schedule_item ");
         boost::mysql::format_sql_to(fctx, "WHERE user_schedule_item.user_id = {} ", m_userID);
         boost::mysql::format_sql_to(fctx, "AND user_schedule_item.title LIKE {} ", contentPattern);
+
         boost::mysql::format_sql_to(fctx, "ORDER BY user_schedule_item.title ASC");
         boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
 
@@ -215,40 +214,6 @@ std::vector<std::string> ScheduleItemQueryProcessor::findLocationsForRepeatCompl
     }
     
     return matchingLocations;
-}
-
-ScheduleItemModel_shp ScheduleItemQueryProcessor::processResultRow(boost::mysql::row_view &queryRow)
-{
-    std::size_t scheduleId = queryRow.at(m_scheduleItemIdIdx).as_uint64();
-    std::size_t userID = queryRow.at(m_userIdIdx).as_uint64();
-    std::chrono::system_clock::time_point startTime = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_startTimeIdx).as_datetime());
-    std::chrono::system_clock::time_point endTime = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_endTimeIdx).as_datetime());
-    std::string title = queryRow.at(m_titleIdx).as_string();
-    std::string location;
-    if (!queryRow.at(m_locationIdx).is_null())
-    {
-        location = queryRow.at(m_locationIdx).as_string();
-    }
-    std::chrono::system_clock::time_point creationTimeStamp = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_createdOnIdx).as_datetime());
-    std::chrono::system_clock::time_point lastUpdate = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_lastUpdateIdx).as_datetime());
-    bool personal = queryRow.at(m_personalIdx).as_int64();
-
-    return std::make_shared<ScheduleItemModel>(scheduleId, userID, title, startTime, endTime, location, personal, creationTimeStamp, lastUpdate);
-
-}
-
-void ScheduleItemQueryProcessor::fillRequiredIndexes()
-{
-    assignValueToIndex("id_user_schedule_item", m_scheduleItemIdIdx);
-    assignValueToIndex("user_id", m_userIdIdx);
-    assignValueToIndex("start_date_time", m_startTimeIdx);
-    assignValueToIndex("end_date_time", m_endTimeIdx);
-    assignValueToIndex("title", m_titleIdx);
-    assignValueToIndex("personal", m_personalIdx);
-    assignValueToIndex("location", m_locationIdx);
-    assignValueToIndex("created_timestamp", m_createdOnIdx);
-    assignValueToIndex("last_modified_time_stamp", m_lastUpdateIdx);
-    assignValueToIndex("deleted", m_hiddenIdx);
 }
 
 std::vector<ListExceptionTestElement> ScheduleItemQueryProcessor::initListExceptionTests() noexcept

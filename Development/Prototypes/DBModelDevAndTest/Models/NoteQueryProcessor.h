@@ -16,8 +16,9 @@
 #include <vector>
 
 using NoteList = std::vector<NoteModel_shp>;
+using StaticQueryNote = boost::mysql::static_results<boost::mysql::pfr_by_name<NoteDbQueryValues>>;
 
-class NoteQueryProcessor : public QueryProcessor<NoteModel>
+class NoteQueryProcessor : public QueryProcessor<NoteModel, NoteDbQueryValues>
 {
 public:
     NoteQueryProcessor();
@@ -33,8 +34,6 @@ public:
 
 private:
     std::string formatGetNotesFromUserForDate(std::size_t userId, std::chrono::year_month_day searchDate);
-    virtual void fillRequiredIndexes() override;
-    virtual NoteModel_shp processResultRow(boost::mysql::row_view& noteQueryRow) override;
 
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
     TestStatus testExceptionGetNoteByID() noexcept;

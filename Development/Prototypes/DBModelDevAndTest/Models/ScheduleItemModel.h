@@ -13,21 +13,31 @@
 #include <optional>
 #include <string>
 
+/*
+ * Used to retrieve values from the database by the boost library. The names
+ * of the variables in the struct must match the names of the columns in
+ * the user goal table in the database because the boost reflection library is 
+ * used to retrieve them.
+ */
+struct ScheduleItemDbQueryValues
+{
+    std::uint64_t id_user_schedule_item;
+    std::uint64_t user_id;
+    boost::mysql::datetime start_date_time;
+    boost::mysql::datetime end_date_time;
+    std::string title;
+    std::int64_t personal;
+    std::optional<std::string> location;
+    boost::mysql::datetime created_timestamp;
+    boost::mysql::datetime last_modified_time_stamp;
+    std::int64_t deleted;
+};
+
 class ScheduleItemModel : public ModelDBInterface
 {
 public:
     ScheduleItemModel();
-    ScheduleItemModel(
-        std::size_t eventID,
-        std::size_t userId,
-        std::string title,
-        std::chrono::system_clock::time_point startTime,
-        std::chrono::system_clock::time_point endTime,
-        std::string location,
-        bool personal,
-        std::chrono::system_clock::time_point creationDate,
-        std::chrono::system_clock::time_point lastUpdate
-    );
+    ScheduleItemModel(const ScheduleItemDbQueryValues& databaseValues);
     virtual ~ScheduleItemModel() = default;
 
     std::size_t getScheduleItemID() const { return m_primaryKey; };

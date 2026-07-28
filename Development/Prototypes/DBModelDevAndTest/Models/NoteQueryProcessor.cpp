@@ -13,7 +13,7 @@
 #include <vector>
 
 NoteQueryProcessor::NoteQueryProcessor()
-: QueryProcessor<NoteModel>("NoteModel", {"id_user_notes", "user_id", "content", "deleted", "note_creation", "last_modifed"})
+: QueryProcessor<NoteModel, NoteDbQueryValues>("NoteModel")
 {
 }
 
@@ -27,8 +27,8 @@ NoteModel_shp NoteQueryProcessor::getNoteById(std::size_t noteId) noexcept
     {
         boost::mysql::format_context fctx(getFormatOptions());
         boost::mysql::format_sql_to(fctx, "SELECT * FROM user_notes  WHERE user_notes.id_user_notes = {}", noteId);
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
-        found = getOneResult(localResult);
+        StaticQueryNote localResult = staticRunQueryAsync<NoteDbQueryValues>(std::move(fctx).get().value());
+        found = getOneStaticResult(localResult);
     }
 
     catch(const std::exception& e)
@@ -54,9 +54,9 @@ NoteList NoteQueryProcessor::getAllNotesForUser(std::size_t userId) noexcept
         boost::mysql::format_sql_to(fctx, "WHERE user_notes.user_id = {} ", userId);
         boost::mysql::format_sql_to(fctx, "AND user_notes.deleted <> 1");
 
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        StaticQueryNote localResult = staticRunQueryAsync<NoteDbQueryValues>(std::move(fctx).get().value());
 
-        return processResults(localResult);
+        return processStaticResults(localResult);
     }
 
     catch(const std::exception& e)
@@ -82,9 +82,9 @@ NoteList NoteQueryProcessor::getNotesForUserSimlarToContent(std::size_t userId, 
         boost::mysql::format_sql_to(fctx, "AND user_notes.content LIKE {} ", contentPattern);
         boost::mysql::format_sql_to(fctx, "AND user_notes.deleted <> 1");
 
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
-        
-        return processResults(localResult);
+        StaticQueryNote localResult = staticRunQueryAsync<NoteDbQueryValues>(std::move(fctx).get().value());
+
+        return processStaticResults(localResult);
     }
 
     catch(const std::exception& e)
@@ -110,9 +110,9 @@ NoteList NoteQueryProcessor::getAllNotesForUserCreatedInDatgeRange(
         boost::mysql::format_sql_to(fctx, "AND user_notes.note_creation <= {} ", stdchronoDateToBoostMySQLDate(endDate));
         boost::mysql::format_sql_to(fctx, "AND user_notes.deleted <> 1");
 
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        StaticQueryNote localResult = staticRunQueryAsync<NoteDbQueryValues>(std::move(fctx).get().value());
 
-        return processResults(localResult);
+        return processStaticResults(localResult);
     }
 
     catch(const std::exception& e)
@@ -138,9 +138,9 @@ NoteList NoteQueryProcessor::getAllNotesForUserEditedInDatgeRange(
         boost::mysql::format_sql_to(fctx, "AND user_notes.last_modifed <= {} ", stdchronoDateToBoostMySQLDate(endDate));
         boost::mysql::format_sql_to(fctx, "AND user_notes.deleted <> 1");
 
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
+        StaticQueryNote localResult = staticRunQueryAsync<NoteDbQueryValues>(std::move(fctx).get().value());
 
-        return processResults(localResult);
+        return processStaticResults(localResult);
     }
 
     catch(const std::exception& e)
@@ -158,8 +158,8 @@ NoteList NoteQueryProcessor::getDashboardNoteTable(std::size_t userId, std::chro
 
     try
     {
-        boost::mysql::results localResult = runQueryAsync(formatGetNotesFromUserForDate(userId, searchDate));
-        return processResults(localResult);
+        StaticQueryNote localResult = staticRunQueryAsync<NoteDbQueryValues>(formatGetNotesFromUserForDate(userId, searchDate));
+        return processStaticResults(localResult);
     }
 
     catch(const std::exception& e)
@@ -190,35 +190,6 @@ std::string NoteQueryProcessor::formatGetNotesFromUserForDate(std::size_t userId
     boost::mysql::format_sql_to(fctx, "ORDER BY user_notes.note_creation ASC");
 
     return std::move(fctx).get().value();
-}
-
-void NoteQueryProcessor::fillRequiredIndexes()
-{
-    assignValueToIndex("id_user_notes", m_noteIdx);
-    assignValueToIndex("user_id", m_userIdx);
-    assignValueToIndex("content", m_contentIdx);
-    assignValueToIndex("deleted", m_hiddenIdx);
-    assignValueToIndex("note_creation", m_createdIdx);
-    assignValueToIndex("last_modifed", m_lastmodIdx);
-}
-
-NoteModel_shp NoteQueryProcessor::processResultRow(boost::mysql::row_view &noteQueryRow)
-{
-    std::size_t noteId = noteQueryRow.at(m_noteIdx).as_uint64();
-    std::size_t userID = noteQueryRow.at(m_userIdx).as_uint64();
-    std::string content = noteQueryRow.at(m_contentIdx).as_string();
-    bool deleted = false;
-    if (!noteQueryRow.at(m_hiddenIdx).is_null())
-    {
-        deleted = noteQueryRow.at(m_hiddenIdx).as_int64() == 1? true : false;
-    }
-
-    std::chrono::system_clock::time_point creationDate = boostMysqlDateTimeToChronoTimePoint(noteQueryRow.at(m_createdIdx).as_datetime());
-    std::chrono::system_clock::time_point lastUpdate = boostMysqlDateTimeToChronoTimePoint(noteQueryRow.at(m_lastmodIdx).as_datetime());
-
-    NoteModel_shp noteListMember = std::make_shared<NoteModel>(noteId, userID, content, creationDate, lastUpdate, deleted);
-
-    return noteListMember;
 }
 
 std::vector<ListExceptionTestElement> NoteQueryProcessor::initListExceptionTests() noexcept 

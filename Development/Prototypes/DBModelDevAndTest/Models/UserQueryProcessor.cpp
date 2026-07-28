@@ -9,16 +9,8 @@
 #include <memory>
 
 UserQueryProcessor::UserQueryProcessor()
-: QueryProcessor<UserModel>(
-    "User",
-    {
-        "user_id", "id_organization", "last_name", "first_name", "middle_initial", 
-        "email_address", "user_login", "hashed_password", "created_timestamp", "last_login",
-        "preferences", "deleted"
-    }
-)
+: QueryProcessor<UserModel, UserDbQueryValues>("User")
 {
-
 }
 
 UserModelList UserQueryProcessor::getAllUsers() noexcept
@@ -29,9 +21,9 @@ UserModelList UserQueryProcessor::getAllUsers() noexcept
 
     try
     {
-        boost::mysql::results localResult = runQueryAsync(boost::mysql::format_sql(
+        StaticQueryUser localResult = staticRunQueryAsync<UserDbQueryValues>(boost::mysql::format_sql(
             getFormatOptions(), "SELECT * FROM user_profile"));
-        allUsers = processResults(localResult);
+        allUsers = processStaticResults(localResult);
     }
         
     catch(const std::exception& e)
@@ -51,8 +43,8 @@ UserModel_shp UserQueryProcessor::getUserByID(std::size_t userId) noexcept
     {
         boost::mysql::format_context fctx(getFormatOptions());
         boost::mysql::format_sql_to(fctx, "SELECT * FROM user_profile WHERE user_profile.user_id ={}", userId);
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
-        found = getOneResult(localResult);
+        StaticQueryUser localResult = staticRunQueryAsync<UserDbQueryValues>(std::move(fctx).get().value());
+        found = getOneStaticResult(localResult);
     }
 
     catch(const std::exception& e)
@@ -72,8 +64,8 @@ UserModel_shp UserQueryProcessor::getUserByLoginName(const std::string_view &log
     {
         boost::mysql::format_context fctx(getFormatOptions());
         boost::mysql::format_sql_to(fctx, "SELECT * FROM user_profile WHERE user_profile.user_login = {}", loginName);
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
-        found = getOneResult(localResult);
+        StaticQueryUser localResult = staticRunQueryAsync<UserDbQueryValues>(std::move(fctx).get().value());
+        found = getOneStaticResult(localResult);
     }
 
     catch(const std::exception& e)
@@ -93,8 +85,8 @@ UserModel_shp UserQueryProcessor::getUserByEmail(const std::string_view &emailAd
     {
         boost::mysql::format_context fctx(getFormatOptions());
         boost::mysql::format_sql_to(fctx, "SELECT * FROM user_profile WHERE user_profile.email_address = {}", emailAddress);
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
-        found = getOneResult(localResult);
+        StaticQueryUser localResult = staticRunQueryAsync<UserDbQueryValues>(std::move(fctx).get().value());
+        found = getOneStaticResult(localResult);
     }
 
     catch(const std::exception& e)
@@ -116,8 +108,8 @@ UserModel_shp UserQueryProcessor::getUserByLoginAndPassword(const std::string_vi
         boost::mysql::format_sql_to(fctx,
             "SELECT * FROM user_profile WHERE user_profile.user_login = {}  AND user_profile.hashed_password = {}",
             loginName, password);
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
-        found = getOneResult(localResult);
+        StaticQueryUser localResult = staticRunQueryAsync<UserDbQueryValues>(std::move(fctx).get().value());
+        found = getOneStaticResult(localResult);
     }
 
     catch(const std::exception& e)
@@ -143,8 +135,8 @@ UserModel_shp UserQueryProcessor::getUserByFullName(
         boost::mysql::format_sql_to(fctx, "WHERE user_profile.last_name = {} ", lastName);
         boost::mysql::format_sql_to(fctx, "AND user_profile.first_name = {} ", firstName);
         boost::mysql::format_sql_to(fctx, "AND user_profile.middle_initial = {}", middleI);
-        boost::mysql::results localResult = runQueryAsync(std::move(fctx).get().value());
-        found = getOneResult(localResult);
+        StaticQueryUser localResult = staticRunQueryAsync<UserDbQueryValues>(std::move(fctx).get().value());
+        found = getOneStaticResult(localResult);
     }
 
     catch(const std::exception& e)
@@ -153,48 +145,6 @@ UserModel_shp UserQueryProcessor::getUserByFullName(
     }
 
     return found;
-}
-
-UserModel_shp UserQueryProcessor::processResultRow(boost::mysql::row_view &queryRow)
-{
-    std::size_t userId = queryRow.at(m_userIdIdx).as_uint64();
-    std::string lastName = queryRow.at(m_lastNameIdx).as_string();
-    std::string firstName = queryRow.at(m_firstNameIdx).as_string();
-    std::string middleInitial = queryRow.at(m_middleInitialIdx).as_string();
-    std::string email = queryRow.at(m_emailAddressIdx).as_string();
-    std::string loginName = queryRow.at(m_loginNameIdx).as_string();
-    std::string password = queryRow.at(m_passwordIdx).as_string();
-    std::chrono::system_clock::time_point created = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_userAddedIdx).as_datetime());
-    std::chrono::system_clock::time_point lastLogin;
-    std::size_t organizationId = 0;
-    if (!queryRow.at(m_lastLoginIdx).is_null())
-    {
-        lastLogin = boostMysqlDateTimeToChronoTimePoint(queryRow.at(m_lastLoginIdx).as_datetime());
-    }
-    std::string preferences = queryRow.at(m_preferencesIdx).as_string();
-    if (!queryRow.at(m_organizationIdx).is_null())
-    {
-        organizationId = queryRow.at(m_organizationIdx).as_uint64();
-    }
-
-    return std::make_shared<UserModel>(userId, lastName, firstName, middleInitial, email, loginName,
-        password, preferences, created, lastLogin, organizationId);
-}
-
-void UserQueryProcessor::fillRequiredIndexes()
-{
-    assignValueToIndex("user_id", m_userIdIdx);
-    assignValueToIndex("id_organization", m_organizationIdx);
-    assignValueToIndex("last_name", m_lastNameIdx);
-    assignValueToIndex("first_name", m_firstNameIdx);
-    assignValueToIndex("middle_initial", m_middleInitialIdx);
-    assignValueToIndex("email_address", m_emailAddressIdx);
-    assignValueToIndex("user_login", m_loginNameIdx);
-    assignValueToIndex("hashed_password", m_passwordIdx);
-    assignValueToIndex("created_timestamp", m_userAddedIdx);
-    assignValueToIndex("last_login", m_lastLoginIdx);
-    assignValueToIndex("preferences", m_preferencesIdx);
-    assignValueToIndex("deleted", m_hiddenIdx);
 }
 
 /*
@@ -275,3 +225,4 @@ TestStatus UserQueryProcessor::testExceptionGetUserByFullName() noexcept
         std::bind(&UserQueryProcessor::getUserByFullName, this, std::placeholders::_1,
             std::placeholders::_2, std::placeholders::_3), testFirstName, testLastName, testMiddleI);
 }
+

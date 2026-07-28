@@ -9,8 +9,9 @@
 #include <chrono>
 
 using TaskList = std::vector<TaskModel_shp>;
+using StaticQueryTask = boost::mysql::static_results<boost::mysql::pfr_by_name<TaskDbQueryValues>>;
 
-class TaskQueryProcessor : public QueryProcessor<TaskModel>
+class TaskQueryProcessor : public QueryProcessor<TaskModel, TaskDbQueryValues>
 {
 public:
     TaskQueryProcessor();
@@ -27,9 +28,6 @@ public:
         std::chrono::year_month_day searchStartDate) noexcept;
 
 private:
-    virtual TaskModel_shp processResultRow(boost::mysql::row_view& queryRow) override;
-    virtual void fillRequiredIndexes() override;
-
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
     TestStatus testExceptionGetByTaskID() noexcept;
     TestStatus testExceptionGetByDescriptionAndAssignedUser() noexcept;

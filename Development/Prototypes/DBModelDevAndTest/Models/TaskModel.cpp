@@ -38,58 +38,47 @@ TaskModel::TaskModel()
   m_personal = false;
 }
 
-TaskModel::TaskModel(
-    std::size_t taskId,
-    std::size_t creator,
-    std::size_t assignTo,
-    std::string description,
-    std::optional<TaskStatus> status,
-    std::optional<std::size_t> parentTask,
-    std::optional<std::chrono::year_month_day> dueDate,
-    std::optional<std::chrono::year_month_day> scheduledStart,
-    std::optional<std::chrono::year_month_day> actualStartDate,
-    std::optional<std::chrono::year_month_day> estimatedCompletion,
-    std::optional<std::chrono::year_month_day> completionDate,
-    double estimatedEffort,
-    double actualEffort,
-    unsigned int priorityCategory,
-    unsigned int priority,
-    bool personal,
-    std::size_t dependencyCount,
-    std::string dependencies,
-    std::optional<std::chrono::system_clock::time_point> creationed,
-    std::optional<std::chrono::system_clock::time_point> lastModified,
-    bool hidden
-)
+TaskModel::TaskModel(const TaskDbQueryValues &dbTranslator)
 : TaskModel()
 {
-    m_primaryKey = taskId;
-    m_creatorID = creator;
-    m_assignToID = assignTo;
-    m_description = description;
-    m_status = status;
-    m_parentTaskID = parentTask;
-    m_dueDate = dueDate;
-    m_planedStart = scheduledStart;
-    m_actualStart = actualStartDate;
-    m_estimatedCompletion = estimatedCompletion;
-    m_completed = completionDate;
-    m_estimatedEffort = estimatedEffort;
-    m_actualEffort = actualEffort;
-    m_priorityCategory = priorityCategory;
-    m_priority = priority;
-    m_personal = personal;
-    m_created = creationed;
-    m_lastUpdate = lastModified;
-    m_deleted = hidden;
+    m_primaryKey = dbTranslator.task_id;
+    m_creatorID = dbTranslator.created_by;
+    m_assignToID = dbTranslator.assigned_to;
+    m_description = dbTranslator.description;
+    m_status = static_cast<TaskModel::TaskStatus>(dbTranslator.task_status.value_or(0));
+    m_parentTaskID = dbTranslator.parent_task;
+    m_dueDate = boostMysqlDateToChronoDate(dbTranslator.due_date);
+    m_planedStart = boostMysqlDateToChronoDate(dbTranslator.planned_start);
+    m_estimatedEffort = dbTranslator.est_hours_effort;
+    m_actualEffort = dbTranslator.hours_effort;
+    m_priorityCategory = dbTranslator.priority_category;
+    m_priority = dbTranslator.priority;
+    m_personal = dbTranslator.personal;
+    m_created = boostMysqlDateTimeToChronoTimePoint(dbTranslator.creation_timestamp);
+    m_lastUpdate = boostMysqlDateTimeToChronoTimePoint(dbTranslator.last_modified_time_stamp);
+    m_deleted = dbTranslator.deleted;
 
-    if (dependencyCount)
+    if (dbTranslator.actual_start.has_value())
     {
-        addDependencies(dependencies);
+        m_actualStart = boostMysqlDateToChronoDate(dbTranslator.actual_start.value());
+    }
+
+    if (dbTranslator.estimated_delivery.has_value())
+    {
+        m_estimatedCompletion = boostMysqlDateToChronoDate(dbTranslator.estimated_delivery.value());
+    }
+
+    if (dbTranslator.delivered.has_value())
+    {
+        m_completed = boostMysqlDateToChronoDate(dbTranslator.delivered.value());
+    }
+
+    if (dbTranslator.dependency_count)
+    {
+        const std::string temp = dbTranslator.dependencies.value();
+        addDependencies(temp);
     }
 }
-
-
 
 TaskModel::TaskModel(std::size_t creatorID)
 : TaskModel()
@@ -479,5 +468,4 @@ std::string TaskModel::buildDependenciesText(std::vector<std::size_t>& dependenc
 
     return implodeTextField(dependencyStrings);
 }
-
 

@@ -8,8 +8,9 @@
 // Standard C++ Header Files
 
 using UserModelList = std::vector<UserModel_shp>;
+using StaticQueryUser = boost::mysql::static_results<boost::mysql::pfr_by_name<UserDbQueryValues>>;
 
-class UserQueryProcessor : public QueryProcessor<UserModel>
+class UserQueryProcessor : public QueryProcessor<UserModel, UserDbQueryValues>
 {
 public:
     UserQueryProcessor();
@@ -24,9 +25,6 @@ public:
 
 
 private:
-    virtual UserModel_shp processResultRow(boost::mysql::row_view& queryRow) override;
-    virtual void fillRequiredIndexes() override;
-
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
     TestStatus testExceptionsGetAllUsers() noexcept;
     TestStatus testExceptionGetUserById() noexcept;

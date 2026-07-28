@@ -121,8 +121,8 @@ static TestStatus runAllUnitTests()
     return allUnintTestsPassed;
 }
 
-template <class A>
-static TestStatus runListUnitTest(QueryProcessor<A>* unitTest)
+template <class A, class B>
+static TestStatus runListUnitTest(QueryProcessor<A, B>* unitTest)
 {
     separateTestCaseOutput();
 

@@ -14,27 +14,19 @@ UserGoalModel::UserGoalModel()
     m_userID = 0;
 }
 
-UserGoalModel::UserGoalModel(
-    std::size_t goalId,
-    std::size_t userId,
-    std::string descriptionIn,
-    unsigned int priorityIn,
-    std::size_t parentIdIn,
-    std::chrono::system_clock::time_point creationDateIn,
-    std::chrono::system_clock::time_point lastUpdateIn,
-    bool hidden
-)
+UserGoalModel::UserGoalModel(const GoalDbQueryValues &databaseValues)
 : UserGoalModel()
 {
-    m_primaryKey = goalId;
-    m_userID = userId;
-    m_description = descriptionIn;
-    m_priority = priorityIn;
-    m_parentID = parentIdIn;
-    m_created = creationDateIn;
-    m_lastUpdate = lastUpdateIn;
-    m_deleted = hidden;
+    m_primaryKey = databaseValues.id_user_goals;
+    m_userID = databaseValues.user_id;
+    m_description = databaseValues.description;
+    m_priority = databaseValues.priority;
+    m_parentID = databaseValues.parent_goal;
+    m_created = boostMysqlDateTimeToChronoTimePoint(databaseValues.creation_timestamp);
+    m_lastUpdate = boostMysqlDateTimeToChronoTimePoint(databaseValues.last_modified_time_stamp);
+    m_deleted = databaseValues.deleted;
 }
+
 
 void UserGoalModel::setGoalId(std::size_t userGoalId)
 {
@@ -133,5 +125,4 @@ std::string UserGoalModel::formatDeleteStatement()
 
     return (std::move(fctx).get().value());
 }
-
 

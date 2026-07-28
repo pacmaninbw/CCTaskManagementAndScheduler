@@ -19,35 +19,24 @@ UserModel::UserModel()
     m_preferences.endTime = "5:00 PM";
 }
 
-UserModel::UserModel(
-    std::size_t userID,
-    std::string lastName,
-    std::string firstName,
-    std::string middleinit,
-    std::string email,
-    std::string loginName,
-    std::string password,
-    std::string preferences,
-    std::chrono::system_clock::time_point dateAdded,
-    std::chrono::system_clock::time_point lastLogin,
-    std::size_t orgId
-)
-: UserModel()
+UserModel::UserModel(const UserDbQueryValues &databaseValues)
+: ModelDBInterface("User", "UserID")
 {
-    m_primaryKey = userID;
-    m_lastName = lastName;
-    m_firstName = firstName;
-    m_middleInitial = middleinit;
-    m_email = email;
-    m_loginName = loginName;
-    m_password = password;
-    parsePrefenceText(preferences);
-    m_created = dateAdded;
-    m_lastLogin = lastLogin;
-    m_organizationId = orgId;
+    m_primaryKey = databaseValues.user_id;
+    m_lastName = databaseValues.last_name;
+    m_firstName = databaseValues.first_name;
+    m_middleInitial = databaseValues.middle_initial.value_or("");
+    m_email = databaseValues.email_address;
+    m_loginName = databaseValues.user_login;
+    m_password = databaseValues.hashed_password;
+    parsePrefenceText(databaseValues.preferences);
+    m_created = boostMysqlDateTimeToChronoTimePoint(databaseValues.created_timestamp);
+    if (databaseValues.last_login.has_value())
+    {
+        m_lastLogin = boostMysqlDateTimeToChronoTimePoint(databaseValues.last_login.value());
+    }
+    m_organizationId = databaseValues.id_organization;
 }
-
-
 
 void UserModel::autoGenerateLoginAndPassword() noexcept
 {
@@ -294,5 +283,4 @@ void UserModel::parsePrefenceText(std::string preferences) noexcept
     // Since we are using the setter functions we have to clear the modified flag.
     clearModified();
 }
-
 

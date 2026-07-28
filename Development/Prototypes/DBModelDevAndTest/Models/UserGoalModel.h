@@ -13,15 +13,30 @@
 #include <optional>
 #include <string>
 
+/*
+ * Used to retrieve values from the database by the boost library. The names
+ * of the variables in the struct must match the names of the columns in
+ * the user goal table in the database because the boost reflection library is 
+ * used to retrieve them.
+ */
+struct GoalDbQueryValues
+{
+    std::int64_t id_user_goals;
+    std::uint64_t user_id;
+    std::string description;
+    std::optional<std::int64_t> priority;
+    std::optional<std::uint64_t> parent_goal;
+    boost::mysql::datetime creation_timestamp;
+    boost::mysql::datetime last_modified_time_stamp;
+    std::int64_t deleted;
+};
+
 class UserGoalModel : public ModelDBInterface
 {
 public:
 
     UserGoalModel();
-    UserGoalModel(std::size_t goalId, std::size_t userId, std::string description, unsigned int priority,
-        std::size_t parentID, std::chrono::system_clock::time_point creationDate,
-        std::chrono::system_clock::time_point lastUpdate, bool hidden
-    );
+    UserGoalModel(const GoalDbQueryValues& databaseValues);
     ~UserGoalModel() = default;
 
 // get access methods
