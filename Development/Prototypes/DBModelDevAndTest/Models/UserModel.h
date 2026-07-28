@@ -99,10 +99,6 @@ public:
     {
         return diffUser(other);
     };
-    bool operator==(std::shared_ptr<UserModel> other)
-    {
-        return diffUser(*other);
-    }
 
     friend std::ostream& operator<<(std::ostream& os, const UserModel& user)
     {

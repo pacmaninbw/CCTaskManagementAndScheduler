@@ -68,11 +68,6 @@ public:
     {
         return diffGoal(other);
     };
-    bool operator==(std::shared_ptr<UserGoalModel> other)
-    {
-        return diffGoal(*other);
-    }
-
 
     friend std::ostream& operator<<(std::ostream& os, const UserGoalModel& goal)
     {

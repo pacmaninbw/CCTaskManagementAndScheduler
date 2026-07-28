@@ -138,10 +138,6 @@ public:
     {
         return diffTask(other);
     }
-    bool operator==(std::shared_ptr<TaskModel> other)
-    {
-        return diffTask(*other);
-    }
 
     friend std::ostream& operator<<(std::ostream& os, const TaskModel& task)
     {

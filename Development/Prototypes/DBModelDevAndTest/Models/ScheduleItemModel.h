@@ -75,10 +75,6 @@ public:
     {
         return diffScheduleItem(other);
     }
-    bool operator==(std::shared_ptr<ScheduleItemModel> other)
-    {
-        return diffScheduleItem(*other);
-    }
 
     friend std::ostream& operator<<(std::ostream& os, const ScheduleItemModel& scheduleItem)
     {

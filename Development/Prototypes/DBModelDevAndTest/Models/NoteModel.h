@@ -59,10 +59,6 @@ public:
     {
         return diffNote(other);
     };
-    bool operator==(std::shared_ptr<NoteModel> other)
-    {
-        return diffNote(*other);
-    }
 
     friend std::ostream& operator<<(std::ostream& os, const NoteModel& note)
     {
