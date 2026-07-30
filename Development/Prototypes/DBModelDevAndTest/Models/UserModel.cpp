@@ -6,6 +6,7 @@
 #include <chrono>
 #include <functional>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <vector>
 
@@ -254,7 +255,8 @@ std::string UserModel::buildPreferenceText() noexcept
     preferences.push_back(std::to_string(static_cast<int>(isUsingLettersForMaorPriority())));
     preferences.push_back(std::to_string(static_cast<int>(isSeparatingPriorityWithDot())));
 
-    return implodeTextField(preferences);
+    auto joined_view = preferences | std::views::join_with(m_delimiter);
+    return std::ranges::to<std::string>(joined_view);
 }
 
 void UserModel::parsePrefenceText(std::string preferences) noexcept
@@ -265,7 +267,10 @@ void UserModel::parsePrefenceText(std::string preferences) noexcept
     {
         return;
     }
-    std::vector<std::string> subfields = explodeTextField(preferences);
+    std::vector<std::string> subfields = preferences
+        | std::views::split(m_delimiter) 
+        | std::ranges::to<std::vector<std::string>>();
+
     if (subfields.size() <= PrefUsingDotIdx)
     {
         return;

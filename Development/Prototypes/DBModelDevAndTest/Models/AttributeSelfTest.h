@@ -56,46 +56,6 @@ public:
 
 protected:
 
-/*
- * In some instances a text field is used to contain a list of values. This
- * function provides the ability to test those text fields.
- */
-    virtual TestStatus testTextFieldManipulation()
-    {
-        TestStatus testStatus = TESTPASSED;
-        int testFieldCount = 31;
-        std::vector<std::string> testInputFields;
-        std::string expectedImplodeOutput;
-
-        for (std::size_t i : std::views::iota(1, testFieldCount))
-        {
-            std::string fieldName = std::format("InputField{}", i);
-            testInputFields.push_back(fieldName);
-            expectedImplodeOutput.append(fieldName);
-            expectedImplodeOutput += ModelDBInterface::m_delimiter;
-        }
-
-        std::string implodeOutput = ModelDBInterface::implodeTextField(testInputFields);
-        if (implodeOutput != expectedImplodeOutput)
-        {
-            testStatus = TESTFAILED;
-            std::cerr << std::format("Unit test of implodeTextField() FAILED!\nExpected Output = {}\nActual Output ={}\n",
-                expectedImplodeOutput, implodeOutput);
-        }
-
-        if (testStatus == TESTPASSED)
-        {
-            std::vector<std::string> explodeOutput = ModelDBInterface::explodeTextField(implodeOutput);
-            if (explodeOutput != testInputFields)
-            {
-                testStatus = TESTFAILED;
-                std::cerr << "Unit test of explodeTextField() FAILED!\n";
-            }
-        }
-
-        return testStatus;
-    }
-
     virtual TestStatus testAttributeAccessFunctions() noexcept
     {
         TestStatus testStatus = TESTPASSED;

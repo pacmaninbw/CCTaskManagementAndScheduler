@@ -10,6 +10,7 @@
 #include <exception>
 #include <format>
 #include <functional>
+#include <ranges>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -420,13 +421,15 @@ void TaskModel::initRequiredFields()
     m_missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingDueDate, this), "due date (deadline)"});
 }
 
-void TaskModel::addDependencies(const std::string & dependenciesText)
+void TaskModel::addDependencies(const std::string& dependenciesText)
 {
-    std::vector<std::string> dependencyStrings = explodeTextField(dependenciesText);
+    std::vector<std::string> dependencyStrings = dependenciesText
+        | std::views::split(m_delimiter) 
+        | std::ranges::to<std::vector<std::string>>();
 
     if (!dependencyStrings.empty())
     {
-        for (auto dependencyStr: dependencyStrings)
+        for (auto& dependencyStr: dependencyStrings)
         {
             m_dependencies.push_back(static_cast<std::size_t>(std::stol(dependencyStr)));
         }
@@ -454,7 +457,7 @@ std::string TaskModel::buildDependenciesText(std::vector<std::size_t>& dependenc
     {
         dependencyStrings.push_back(std::to_string(dependency));
     }
-
-    return implodeTextField(dependencyStrings);
+    auto joined_view = dependencyStrings | std::views::join_with(m_delimiter);
+    return std::ranges::to<std::string>(joined_view);
 }
 

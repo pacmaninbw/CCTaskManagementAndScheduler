@@ -169,31 +169,6 @@ void ModelDBInterface::reportMissingFields() noexcept
     }
 }
 
-std::vector<std::string> ModelDBInterface::explodeTextField(std::string const& textField) noexcept
-{
-    std::vector<std::string> subFields;
-    std::istringstream iss(textField);
-
-    for (std::string token; std::getline(iss, token, m_delimiter); )
-    {
-        subFields.push_back(std::move(token));
-    }
-    return subFields;
-}
-
-std::string ModelDBInterface::implodeTextField(std::vector<std::string> &fields) noexcept
-{
-    std::string textField;
-
-    for (auto field: fields)
-    {
-        textField.append(field);
-        textField += m_delimiter;
-    }
-
-    return textField;
-}
-
 std::size_t ModelDBInterface::getPrimaryKeyValue(boost::mysql::results &dbResultSet)
 {
     // If this is self test then we don't actually connect to the database, the code that

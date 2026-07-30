@@ -75,11 +75,6 @@ TestStatus TaskSelfTest::runSelfTest() noexcept
         std::cout << "Common Update Failure Test PASSED!\n";
     }
 
-    if (testTextFieldManipulation() == TESTFAILED)
-    {
-        selfTestStatus = TESTFAILED;
-    }
-
     m_selfTest = false;
     
     if (selfTestStatus == TESTPASSED)

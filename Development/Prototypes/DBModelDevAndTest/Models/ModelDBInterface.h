@@ -46,12 +46,6 @@ protected:
     virtual std::string formatDeleteStatement() = 0;
 
 /*
- * To process TEXT fields that contain model fields.
- */
-    std::vector<std::string> explodeTextField(std::string const& textField) noexcept;
-    std::string implodeTextField(std::vector<std::string>& fields) noexcept;
-
-/*
  * Get the primary key value after a record is inserted in the database.
  */
     std::size_t getPrimaryKeyValue(boost::mysql::results& dbResultSet);
