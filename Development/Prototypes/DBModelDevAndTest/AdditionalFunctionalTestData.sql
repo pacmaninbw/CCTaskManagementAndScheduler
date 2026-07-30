@@ -7,14 +7,14 @@ INSERT INTO test_ptsdb.organization_profile (organization_name, email_address, p
 VALUES ('Test Organization Name', 'anyemailaddress@anyURL.org', '(800) 555-1212', NULL, NULL, '1 Nowhere Street', 'Big City', 'Any state', 'postal code', 'any country');
 
 INSERT INTO test_ptsdb.user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES
-(1, 'Black', 'Paul', 'A', 'paul.black@blacksw.com', 'pacmaninbw', 'mYfAv0r1t3Pas5MorD', '8:30 AM;5:00 PM;1;1;1;0;'),
-(1, 'Black', 'Paul2', 'B', 'pcfriends@blacksw.com', 'BlackPaulA', 'pacmaninbw', '8:30 AM;5:00 PM;1;1;1;0;'),
-(1, 'Shinny', 'Eric', 'Y', 'EricShinny@google.com', 'ShinnyEricY', 'ShinnyEricY', '8:30 AM;5:00 PM;1;1;1;0;');
+(1, 'Black', 'Paul', 'A', 'paul.black@blacksw.com', 'pacmaninbw', 'mYfAv0r1t3Pas5MorD', '8:30 AM;5:00 PM;1;1;1;0'),
+(1, 'Black', 'Paul2', 'B', 'pcfriends@blacksw.com', 'BlackPaulA', 'pacmaninbw', '8:30 AM;5:00 PM;1;1;1;0'),
+(1, 'Shinny', 'Eric', 'Y', 'EricShinny@google.com', 'ShinnyEricY', 'ShinnyEricY', '8:30 AM;5:00 PM;1;1;1;0');
 
 
 INSERT INTO test_ptsdb.tasks (created_by, assigned_to, description, parent_task, task_status, due_date, planned_start, actual_start,
     estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, dependency_count, dependencies) VALUES 
-(1, 1, 'Create a personal planner program that allows task mangement using QT and C++.', NULL, 3, '2026-02-20', '2026-02-20', '2026-02-23','2026-04-30', NULL, 1000, 500, 1, 1, 0, 24, '2;3;5;10;12;13;14;15;19;20;24;25;26;27;30;31;33;35;37;38;39;40;43;46;'),
+(1, 1, 'Create a personal planner program that allows task mangement using QT and C++.', NULL, 3, '2026-02-20', '2026-02-20', '2026-02-23','2026-04-30', NULL, 1000, 500, 1, 1, 0, 24, '2;3;5;10;12;13;14;15;19;20;24;25;26;27;30;31;33;35;37;38;39;40;43;46'),
 (1, 1, 'Add creation of notes in Database.', 1, 4, '2026-02-28', '2026-02-28', NULL, '2026-02-28', '2026-03-14', 8, 8, 1, 3, 0, 0, NULL),
 (1, 1, 'Add editing of note to update database.', 1, 4, '2026-02-28', '2026-02-28', NULL, '2026-02-28', '2026-03-14', 4, 4, 1, 4, 0, 0, NULL),
 (1, 1, 'Get toenails trimmed', NULL, 4, '2026-02-07', '2026-02-07', NULL, '2026-02-07', '2026-02-21', 1, 0, 3, 1, 0, 0, NULL),
@@ -25,7 +25,7 @@ INSERT INTO test_ptsdb.tasks (created_by, assigned_to, description, parent_task,
 (1, 1, 'Sort tasks by group priority and priority.', NULL, 4, '2026-02-15', '2026-02-13', '2026-02-21', '2026-02-16', '2026-02-21', 6, 4, 1, 3, 0, 0, NULL),
 (1, 1, 'Implement editing of existing tasks', 1, 3, '2026-03-08', '2026-03-08', '2026-02-21', '2026-03-08', NULL, 8, 24, 1, 9, 0, 0, NULL),
 (1, 1, 'Implement editing of schedule.', NULL, 4,'2026-02-19', '2026-02-18', NULL, '2026-02-19', '2026-02-21', 8, 0, 1, 5, 0, 0, NULL),
-(1, 1, 'Finish the ability to edit tasks. Implement select parent task, add dependencies, display of dependencies.', 1, 3, '2026-03-11', '2026-03-08', '2026-03-07', '2026-03-11', NULL, 16, 20, 1, 8, 0, 1, '44;'),
+(1, 1, 'Finish the ability to edit tasks. Implement select parent task, add dependencies, display of dependencies.', 1, 3, '2026-03-11', '2026-03-08', '2026-03-07', '2026-03-11', NULL, 16, 20, 1, 8, 0, 1, '44'),
 (1, 1, 'Figure out how to use signals and slots to implement table view updates.', 0, 0, '2026-03-06', '2026-03-06', NULL, '2026-03-06', NULL, 4, 1, 2, 5, 0, 0, NULL),
 (1, 1, 'Clear selections after table edits.', 1, 4, '2026-03-06', '2026-03-06', NULL, '2026-03-06', '2026-03-20', 4, 1, 2, 1, 0, 0, NULL),
 (1, 1, 'Create Task View Table for select parent task', 1, 4, '2026-02-28', '2026-02-28', '2026-03-06', '2026-02-28', '2026-03-14', 8, 8, 1, 11, 0, 0, NULL),
@@ -48,7 +48,7 @@ INSERT INTO test_ptsdb.tasks (created_by, assigned_to, description, parent_task,
 (1, 1, 'Do the laundry', NULL, 0, '2026-03-09', '2026-03-07', NULL, '2026-03-10', NULL, 3, 0, 3, 6, 0, 0, NULL),
 (1, 1, 'Change PG to Cat, short for category in Dashboard display task list', 1, 4, '2026-03-11', '2026-03-10', NULL, '2026-03-11', '2026-03-10', 1, 0.25, 3, 6, 0, 0, NULL),
 (1, 1, 'Buy proper tools for grill pan maintenance\n1) oil brush\n2) soft cloths for washing pan', NULL, 4, '2026-03-07', '2026-03-07', NULL, '2026-03-07', '2026-03-09', 2, 1, 2, 1, 0, 0, NULL),
-(1, 1, 'Rework the build and the code so that the GuiModels are not required.', 1, 4, '2026-03-21', '2026-03-12', '2026-03-14', '2026-03-21', '2026-03-19', 3, 23, 1, 3, 0, 1, '41;'),
+(1, 1, 'Rework the build and the code so that the GuiModels are not required.', 1, 4, '2026-03-21', '2026-03-12', '2026-03-14', '2026-03-21', '2026-03-19', 3, 23, 1, 3, 0, 1, '41'),
 (1, 1, 'Create a personal website using WordPress.', NULL, 0, '2026-03-27', '2026-03-23', NULL, '2026-03-28', NULL, 32, 0, 1, 2, 0, 0, NULL),
 (1, 1, 'Provide a method to sort the potential parent tasks in the select parent task dialog.', 1, 0, '2026-03-09', '2026-03-09', NULL, '2026-03-09', NULL, 6, 0, 2, 1, 0, 0, NULL),
 (1, 1, 'Change PG to Category in the dashboard task list.', 1, 4, '2026-03-09', '2026-03-09', NULL, '2026-03-09', '2026-03-09', 1, 0, 2, 7, 0, 0, NULL),
@@ -57,7 +57,7 @@ INSERT INTO test_ptsdb.tasks (created_by, assigned_to, description, parent_task,
 (1, 1, 'Change all pointers to model classes to database table IDs wherever possible', 35, 4, '2026-03-18', '2026-03-18', '2026-03-18', '2026-03-18', '2026-03-19', 4, 8, 1, 10, 0, 0, NULL),
 (1, 1, 'Testing the new push button interface for add task', NULL, 4, '2026-03-20', '2026-03-20', '2026-03-20', '2026-03-20', '2026-03-20', 1, 0.25, 1, 1, 0, 0, NULL),
 (1, 1, 'Remove dependencies on TaskModel from user dashboard', 1, 4, '2026-03-21', '2026-03-21', '2026-03-21', '2026-03-21', '2026-03-21', 1, 1, 1, 1, 0, 0, NULL),
-(1, 1, 'Show parent task name in task editor after it is selected.', 12, 4, '2026-03-21', '2026-03-21', NULL, '2026-03-21', '2026-03-21', 2, 0.5, 1, 9, 0, 1, '45;'),
+(1, 1, 'Show parent task name in task editor after it is selected.', 12, 4, '2026-03-21', '2026-03-21', NULL, '2026-03-21', '2026-03-21', 2, 0.5, 1, 9, 0, 1, '45'),
 (1, 1, 'Test add parent task display', 44, 4, '2026-03-21', '2026-03-21', NULL, '2026-03-21', '2026-03-21', 1, 0.25, 1, 10, 0, 0, NULL),
 (1, 1, 'Create a non-modal pop-up with similar contents for the user to select as the basis for a new schedule item', 1, 0, '2026-03-22', '2026-03-22', NULL, '2026-03-22', NULL, 24, 2, 1, 3, 0, 0, NULL);
 
