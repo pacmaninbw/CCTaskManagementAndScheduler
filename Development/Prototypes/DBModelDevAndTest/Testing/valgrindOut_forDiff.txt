@@ -3,7 +3,7 @@ Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
 Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
 Command: protoPersonalPlanner -u -p --verbose --time-tests
 
-Connected to testPTSDB
+Connected to test_ptsdb
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
@@ -13,11 +13,11 @@ Running User Self Test
 
 Running Exception Handling Test Cases
 In Self Test Query is: 
-	CALL AddUser(NULL, 'LastName', 'FirstName', 'M', 'FirstName.LastName@LastName.com', 'LastNameFirstNameM', 'LastNameFirstNameM', '8:30 AM;5:00 PM;1;1;1;0;')
+	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (NULL, 'LastName', 'FirstName', 'M', 'FirstName.LastName@LastName.com', 'LastNameFirstNameM', 'LastNameFirstNameM', '8:30 AM;5:00 PM;1;1;1;0' )
 In Self Test Query is: 
-	CALL UpdateUserAllFields(1, NULL, 'LastName', 'FirstName', 'M', 'FirstName.LastName@LastName.com', 'LastNameFirstNameM', 'LastNameFirstNameM', '8:30 AM;5:00 PM;1;1;1;0;', '2024-05-14 08:31:53.000000')
+	UPDATE user_profile SET user_profile.id_organization = NULL, user_profile.last_name = 'LastName', user_profile.first_name = 'FirstName', user_profile.middle_initial = 'M', user_profile.email_address = 'FirstName.LastName@LastName.com', user_profile.user_login = 'LastNameFirstNameM', user_profile.hashed_password = 'LastNameFirstNameM', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = '2024-05-14 08:31:53.000000' WHERE user_profile.user_id = 1
 In Self Test Query is: 
-	CALL HideUser(1)
+	UPDATE user_profile SET user_profile.deleted = 1 WHERE organization_profile.user_id = 1
 
 
 Running self test on set and get functions for User::Primary Key
@@ -70,7 +70,7 @@ User::testAllInsertFailures before successful insert this =
 	PassWord: teststringvalue
 
 In Self Test Query is: 
-	CALL AddUser(NULL, 'teststringvalue', 'teststringvalue', '', 'teststringvalue', 'teststringvalue', 'teststringvalue', '4:30 AM;4:15 PM;1;1;1;1;')
+	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (NULL, 'teststringvalue', 'teststringvalue', '', 'teststringvalue', 'teststringvalue', 'teststringvalue', '4:30 AM;4:15 PM;1;1;1;1' )
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
 User Self Test PASSED
@@ -85,12 +85,12 @@ Running Task Self Test
 Running Exception Handling Test Cases
 Caught expected exception from TaskModel::formatInsertStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
-	CALL AddTask(1, 2, 'Testing Exception handling', 1, 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 6, 0e+00, 65, 1, 0, 3, '3;5;7;')
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (1, 2, 'Testing Exception handling', 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 6e+00, 0e+00, 65, 1, 0)
 Caught expected exception from TaskSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
-	CALL UpdateTaskAllFields(1, 1, 2, 'Testing Exception handling', NULL, 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 6, 0e+00, 65, 1, 0, 3, '2;4;6;', 0)
+	UPDATE tasks SET tasks.created_by = 1, tasks.assigned_to = 2, tasks.description = 'Testing Exception handling', tasks.task_status = 0, tasks.due_date = '2024-05-21', tasks.planned_start = '2024-05-14', tasks.actual_start = NULL, tasks.estimated_delivery = NULL, tasks.delivered = NULL, tasks.est_hours_effort = 6e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0 WHERE tasks.task_id = 1 
 In Self Test Query is: 
-	CALL HideTask(1, 53)
+	UPDATE tasks SET tasks.deleted = 1 WHERE tasks.created_by = 1 AND tasks.task_id = 53
 
 
 Running self test on set and get functions for Task::Primary Key
@@ -131,8 +131,6 @@ Running self test on set and get functions for Task::Priority
 Self test on set and get functions for Task::Priority PASSED
 Running self test on set and get functions for Task::Personal
 Self test on set and get functions for Task::Personal PASSED
-Running self test on add and get functions for Task::dependencies
-Self test on set and get functions for Task::dependencoies PASSED
 Running self test for TaskSelfTest::markComplete
 Self test for TaskSelfTest::markComplete PASSED
 Test Output: TaskModel:
@@ -143,17 +141,16 @@ Test Output: TaskModel:
 	Status: 4
 	Scheduled Start Date: 2024-05-07
 	Due Date: 2024-05-14
-	Estimated Effort Hours: 1024
+	Estimated Effort Hours: 10.24
 	Actual Effort Hours: 760
 	Priority Group: 2
 	Priority: 5
-	Dependency Count: 3
 Optional Fields
 	Status: Completed
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-07-04
+	Completed Date: 2026-08-05
 	Deleted : FALSE
 
 Task::testAllInsertFailures before successful insert this = 
@@ -169,12 +166,11 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 1
 	Priority: 0
-	Dependency Count: 0
 Optional Fields
 	Deleted : FALSE
 
 In Self Test Query is: 
-	CALL AddTask(1, 1, 'Test missing required fields: Set Description', NULL, 0, '2024-05-21', '2024-05-07', NULL, NULL, NULL, 5, 0e+00, 1, 0, 0, 0, NULL)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (1, 1, 'Test missing required fields: Set Description', 0, '2024-05-21', '2024-05-07', NULL, NULL, NULL, 5e+00, 0e+00, 1, 0, 0)
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
 Task Self Test PASSED
@@ -188,11 +184,11 @@ Running UserGoalModel Self Test
 
 Running Exception Handling Test Cases
 In Self Test Query is: 
-	CALL AddUserGoal(27, 'Testing insertion exception', NULL, NULL)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (27, 'Testing insertion exception', NULL, NULL, 0)
 In Self Test Query is: 
-	CALL UpdateUserGoalAllFields(23, 37, 'Testing insertion exception', NULL, NULL)
+	UPDATE user_goals SET user_goals.description = 'Testing insertion exception', user_goals.priority = NULL, user_goals.parent_goal = NULL WHERE user_goals.user_id = 23 AND user_goals.id_user_goals = 37
 In Self Test Query is: 
-	CALL HideGoal(1, 1)
+	UPDATE user_goals SET user_goals.deleted = 1 WHERE user_goals.user_id = 1 AND user_goals.id_user_goals = 1
 
 
 Running self test on set and get functions for UserGoalModel::Primary Key
@@ -223,7 +219,7 @@ Model Name UserGoalModel
 	Parent ID: 0
 
 In Self Test Query is: 
-	CALL AddUserGoal(51, 'Testing negative note insertion path', NULL, NULL)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (51, 'Testing negative note insertion path', NULL, NULL, 0)
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
 UserGoalModel Self Test PASSED
@@ -237,11 +233,11 @@ Running Note Self Test
 
 Running Exception Handling Test Cases
 In Self Test Query is: 
-	CALL AddUserNote(27, 'Testing insertion exception')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (27, 'Testing insertion exception', 0)
 In Self Test Query is: 
-	CALL UpdateNoteAllFields(27, 1, 'Testing insertion exception')
+	UPDATE user_notes SET user_notes.content = 'Testing insertion exception' WHERE user_notes.id_user_notes = 1 AND user_notes.user_id = 27
 In Self Test Query is: 
-	CALL HideNote(27, 1)
+	UPDATE user_notes SET user_notes.deleted = 1 WHERE user_notes.user_id = 27 AND user_notes.id_user_notes = 1
 
 
 Running self test on set and get functions for Note::Primary Key
@@ -264,7 +260,7 @@ Note::testAllInsertFailures before successful insert this =
 	Content: Testing negative note insertion path
 
 In Self Test Query is: 
-	CALL AddUserNote(27, 'Testing negative note insertion path')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (27, 'Testing negative note insertion path', 0)
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
 Note Self Test PASSED
@@ -279,12 +275,12 @@ Running ScheduleItem Self Test
 Running Exception Handling Test Cases
 Caught expected exception from ScheduleItemSelfTest::formatInsertStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
-	CALL AddScheduleEvent(1, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Testing Exception handling for Schedule Item Insert', 0, NULL)
+	INSERT INTO user_schedule_item  (user_id, start_date_time, end_date_time, title, personal, location, deleted) VALUES (1, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Testing Exception handling for Schedule Item Insert', 0, NULL, 0 )
 Caught expected exception from ScheduleItemSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 In Self Test Query is: 
-	CALL UpdateScheduleItemAllFields(1, 57, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Testing Exception handling for Schedule Item Update', 0, NULL)
+	UPDATE user_schedule_item SET user_schedule_item.start_date_time = '2024-05-14 08:31:53.000000', user_schedule_item.end_date_time = '2024-05-14 08:31:53.000000', user_schedule_item.title = 'Testing Exception handling for Schedule Item Update', user_schedule_item.personal = 0, user_schedule_item.location = NULL WHERE user_schedule_item.id_user_schedule_item = 57 AND user_schedule_item.user_id = user_id
 In Self Test Query is: 
-	CALL HideScheduleItem(1, 57)
+	UPDATE user_schedule_item SET user_schedule_item.deleted = 1 WHERE user_schedule_item.user_id = 1 AND user_schedule_item.id_user_schedule_item = 57
 
 
 Running self test on set and get functions for ScheduleItem::Primary Key
@@ -327,7 +323,7 @@ ScheduleItemModel:
 Optional Fields
 
 In Self Test Query is: 
-	CALL AddScheduleEvent(1, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Test missing required fields: Set title', 0, NULL)
+	INSERT INTO user_schedule_item  (user_id, start_date_time, end_date_time, title, personal, location, deleted) VALUES (1, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Test missing required fields: Set title', 0, NULL, 0 )
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
 ScheduleItem Self Test PASSED
@@ -343,17 +339,17 @@ Running Exception Handling Test Cases UserQueryProcessor
 
 Exception Test for UserQueryProcessorSelfTest::testExceptionsGetAllUsers()
 In Self Test Query is: 
-	CALL GetAllUsers()
+	SELECT * FROM user_profile
 In Self Test Query is: 
-	CALL GetUserByID(1)
+	SELECT * FROM user_profile WHERE user_profile.user_id =1
 In Self Test Query is: 
-	CALL GetUserByLoginName('UserOne')
+	SELECT * FROM user_profile WHERE user_profile.user_login = 'UserOne'
 In Self Test Query is: 
-	CALL GetUserByEmail('UserOne@readyUserOne.com')
+	SELECT * FROM user_profile WHERE user_profile.email_address = 'UserOne@readyUserOne.com'
 In Self Test Query is: 
-	CALL GetUserByLoginAndPassword('UserOne', 'testPassword')
+	SELECT * FROM user_profile WHERE user_profile.user_login = 'UserOne'  AND user_profile.hashed_password = 'testPassword'
 In Self Test Query is: 
-	CALL GetUserByFullName('First', 'Last', 'middle')
+	SELECT * FROM user_profile WHERE user_profile.last_name = 'First' AND user_profile.first_name = 'Last' AND user_profile.middle_initial = 'middle'
 
 
 UserQueryProcessor PASSED Self Test
@@ -366,31 +362,31 @@ Running TaskQueryProcessor Self Test
 
 Running Exception Handling Test Cases TaskQueryProcessor
 In Self Test Query is: 
-	CALL GetTaskByTaskID(0)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 0
 
 Exception Test for TaskQueryProcessor::getTaskByDescriptionAndAssignedUser
 In Self Test Query is: 
-	CALL GetTaskByDescriptionAndAssignedUser(1, 'A task description')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'A task description' AND tasks.assigned_to = 1 AND tasks.deleted <> 1
 
 Exception Test for TaskQueryProcessor::testExceptionGetActiveTasksForAssignedUser()
 In Self Test Query is: 
-	CALL GetActiveTasksForAssignedUser(1)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.delivered IS NULL AND (tasks.task_status IS NOT NULL AND tasks.task_status <> 0) AND tasks.deleted <> 1
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	CALL GetUnstartedDueForStartForAssignedUser(1, '2026-07-11')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-08-12' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 
 Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
 In Self Test Query is: 
-	CALL GetTasksCompletedByAssignedAfterDate(1,'2024-05-14')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.delivered >= '2024-05-14'
 
 Exception Test for TaskQueryProcessor::getTasksByAssignedIDandParentID
 In Self Test Query is: 
-	CALL GetTasksByAssignedIDandParentID(1, 1)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.parent_task = 1 AND tasks.deleted <> 1
 
 Exception Test for TaskQueryProcessor::testExceptionGetDefaultDashboardTaskList()
 In Self Test Query is: 
-	CALL GetDefaultDashboardTaskList(1, '2026-03-22')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.delivered IS NULL AND tasks.deleted <> 1 AND (tasks.task_status = 3 OR tasks.due_date < '2026-03-22') ORDER BY tasks.priority_category ASC, tasks.priority ASC
 
 
 TaskQueryProcessor PASSED Self Test
@@ -403,21 +399,21 @@ Running UserGoalModelQueryProcessor Self Test
 
 Running Exception Handling Test Cases UserGoalModelQueryProcessor
 In Self Test Query is: 
-	CALL GetGoalById(1)
+	SELECT * FROM user_goals WHERE user_goals.id_user_goals = 1
 
 Exception Test for GoalQueryProcessor::testExceptionsGetAllGoalsForUser()
 In Self Test Query is: 
-	CALL GetAllGoalsForUser(1)
+	SELECT * FROM user_goals WHERE user_goals.user_id = 1 AND user_goals.deleted <> 1
 
 Exception Test for GoalQueryProcessor::testExceptionsGetAllChildrenFromParent()
 In Self Test Query is: 
-	CALL GetAllChildGoalsFromParent(0, 1)
+	SELECT * FROM user_goals WHERE user_goals.user_id = 0 AND user_goals.parent_goal = 1 AND user_goals.deleted <> 1
 
 Exception Test for GoalQueryProcessor::findGoalsByUserIdAndSimilarDescription()
 In Self Test Query is: 
-	CALL FindGoalsByUserIdAndSimilarDescription(1, 'Maintain')
+	SELECT * FROM user_goals WHERE user_goals.user_id = 1 AND user_goals.description LIKE '%Maintain%' AND user_goals.deleted <> 1
 In Self Test Query is: 
-	CALL FindGoalByUserIdAndExactDescription(1, 'Test SelectByUserIDAndDescription Exception Handling')
+	SELECT * FROM user_goals WHERE user_goals.user_id = 1 AND user_goals.description = 'Test SelectByUserIDAndDescription Exception Handling' AND user_goals.deleted <> 1
 
 
 UserGoalModelQueryProcessor PASSED Self Test
@@ -430,27 +426,27 @@ Running NoteModelQueryProcessor Self Test
 
 Running Exception Handling Test Cases NoteModelQueryProcessor
 In Self Test Query is: 
-	CALL GetNoteByID(1)
+	SELECT * FROM user_notes  WHERE user_notes.id_user_notes = 1
 
 Exception Test for NoteQueryProcessor::testExceptionsGetAllNotes()
 In Self Test Query is: 
-	CALL GetAllUndeletedNotesForUser(1)
+	SELECT * FROM user_notes WHERE user_notes.user_id = 1 AND user_notes.deleted <> 1
 
 Exception Test for NoteQueryProcessor::testExceptionsGetNotesForUserLikeContent()
 In Self Test Query is: 
-	CALL GetNotesForUserSimlarToContent(1, 'Test Content')
+	SELECT * FROM user_notes WHERE user_notes.user_id = 1 AND user_notes.content LIKE '%Test Content%' AND user_notes.deleted <> 1
 
 Exception Test for NoteQueryProcessor::testExceptionsGetNotesForUserCreatedDateRange()
 In Self Test Query is: 
-	CALL GetAllNotesForUserCreatedInDatgeRange(1, '2024-05-07', '2024-05-14')
+	SELECT * FROM user_notes WHERE user_notes.user_id = 1 AND user_notes.note_creation >= '2024-05-07' AND user_notes.note_creation <= '2024-05-14' AND user_notes.deleted <> 1
 
 Exception Test for NoteQueryProcessor::testExceptionsGetNotesForUserEditedDateRange()
 In Self Test Query is: 
-	CALL GetAllNotesForUserEditedInDatgeRange(1, '2024-05-07', '2024-05-14')
+	SELECT * FROM user_notes WHERE user_notes.user_id = 1 AND user_notes.last_modifed >= '2024-05-07' AND user_notes.last_modifed <= '2024-05-14' AND user_notes.deleted <> 1
 
 Exception Test for NoteQueryProcessor::testExceptionsGetDashboardNoteTable()
 In Self Test Query is: 
-	CALL GetDashboardNoteTable(1, '2024-05-14 07:00:00.000000', '2024-05-15 06:59:00.000000')
+	SELECT * FROM user_notes WHERE user_notes.user_id = 1 AND user_notes.note_creation >= '2024-05-14 07:00:00.000000' AND user_notes.note_creation <= '2024-05-15 06:59:00.000000' AND user_notes.deleted <> 1 ORDER BY user_notes.note_creation ASC
 
 
 NoteModelQueryProcessor PASSED Self Test
@@ -465,25 +461,25 @@ Running Exception Handling Test Cases ScheduleItemQueryProcessor
 
 Exception Test for ScheduleItemQueryProcessor::testExceptionGgetUserDaySchedule()
 In Self Test Query is: 
-	CALL GetUserDaySchedule(1, '2024-05-14 07:00:00.000000', '2024-05-15 06:59:59.000000')
+	SELECT * FROM user_schedule_item WHERE user_schedule_item.user_id = 1 AND user_schedule_item.deleted <> 1 AND user_schedule_item.start_date_time >= '2024-05-14 07:00:00.000000' AND user_schedule_item.start_date_time <= '2024-05-15 06:59:59.000000' ORDER BY user_schedule_item.start_date_time ASC
 In Self Test Query is: 
-	CALL GetScheduleItemById(1)
+	SELECT * FROM user_schedule_item WHERE user_schedule_item.id_user_schedule_item = 1 AND user_schedule_item.deleted <> 1
 
 Exception Test for ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByContentAndDateRange()
 In Self Test Query is: 
-	CALL FindUserScheduleItemsByContentAndDateRange(1, 'Title search', '2024-05-07', '2024-05-21')
+	SELECT * FROM user_schedule_item WHERE user_id = 1 AND title LIKE '%Title search%' AND deleted <> 1 AND start_date_time >= '2024-05-07' AND start_date_time <= '2024-05-21'
 
 Exception Test for ScheduleItemQueryProcessor::testExceptionFindEventSToRepeat()
 In Self Test Query is: 
-	CALL ScheduleItemContentSelectionList('Title search', 1)
+	SELECT DISTINCT user_schedule_item.title FROM user_schedule_item WHERE user_schedule_item.user_id = 1 AND user_schedule_item.title LIKE '%Title search%' ORDER BY user_schedule_item.title ASC
 
 Exception Test for ScheduleItemQueryProcessor::testExceptionFindEventsForRepeatCompletion()
 In Self Test Query is: 
-	CALL EventTitlesForCompleter(1)
+	SELECT DISTINCT user_schedule_item.title FROM user_schedule_item WHERE user_schedule_item.user_id = 1 ORDER BY user_schedule_item.title ASC
 
 Exception Test for ScheduleItemQueryProcessor::testExceptionFindLocationsForRepeatCompletion()
 In Self Test Query is: 
-	CALL EventLocationsForCompleter(1)
+	SELECT DISTINCT user_schedule_item.location FROM user_schedule_item WHERE user_schedule_item.user_id = 1 ORDER BY user_schedule_item.location ASC
 
 
 ScheduleItemQueryProcessor PASSED Self Test
@@ -493,96 +489,96 @@ ScheduleItemQueryProcessor PASSED Self Test
 
 Running user Integration Tests
 Running: 
-	CALL GetAllUsers()
+	SELECT * FROM user_profile
 Running: 
-	CALL AddUser(NULL, 'One', 'User', 'P', 'UserOne@gmail.com', 'OneUserP', 'OneUserP', '8:30 AM;5:00 PM;1;1;1;0;')
+	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (NULL, 'One', 'User', 'P', 'UserOne@gmail.com', 'OneUserP', 'OneUserP', '8:30 AM;5:00 PM;1;1;1;0' )
 Running: 
-	CALL GetUserByLoginName('OneUserP')
+	SELECT * FROM user_profile WHERE user_profile.user_login = 'OneUserP'
 Running: 
-	CALL GetUserByLoginAndPassword('OneUserP', 'OneUserP')
+	SELECT * FROM user_profile WHERE user_profile.user_login = 'OneUserP'  AND user_profile.hashed_password = 'OneUserP'
 Running: 
-	CALL GetUserByLoginAndPassword('OneUserP', 'NotThePassword')
+	SELECT * FROM user_profile WHERE user_profile.user_login = 'OneUserP'  AND user_profile.hashed_password = 'NotThePassword'
 Running: 
-	CALL GetUserByFullName('One', 'User', 'P')
+	SELECT * FROM user_profile WHERE user_profile.last_name = 'One' AND user_profile.first_name = 'User' AND user_profile.middle_initial = 'P'
 Running: 
-	CALL GetUserByEmail('UserOne@gmail.com')
+	SELECT * FROM user_profile WHERE user_profile.email_address = 'UserOne@gmail.com'
 Running: 
-	CALL UpdateUserAllFields(4, NULL, 'One', 'User', 'P', 'UserOne@gmail.com', 'OneUserP', 'MyNew**&pAs5Word4', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
+	UPDATE user_profile SET user_profile.id_organization = NULL, user_profile.last_name = 'One', user_profile.first_name = 'User', user_profile.middle_initial = 'P', user_profile.email_address = 'UserOne@gmail.com', user_profile.user_login = 'OneUserP', user_profile.hashed_password = 'MyNew**&pAs5Word4', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL WHERE user_profile.user_id = 4
 Running: 
-	CALL GetUserByID(4)
+	SELECT * FROM user_profile WHERE user_profile.user_id =4
 Running: 
-	CALL AddUser(NULL, 'Doe', 'John', 'Q', 'johndoe@gmail.com', 'DoeJohnQ', 'DoeJohnQ', '8:30 AM;5:00 PM;1;1;1;0;')
+	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (NULL, 'Doe', 'John', 'Q', 'johndoe@gmail.com', 'DoeJohnQ', 'DoeJohnQ', '8:30 AM;5:00 PM;1;1;1;0' )
 Running: 
-	CALL GetUserByLoginName('DoeJohnQ')
+	SELECT * FROM user_profile WHERE user_profile.user_login = 'DoeJohnQ'
 Running: 
-	CALL GetUserByLoginAndPassword('DoeJohnQ', 'DoeJohnQ')
+	SELECT * FROM user_profile WHERE user_profile.user_login = 'DoeJohnQ'  AND user_profile.hashed_password = 'DoeJohnQ'
 Running: 
-	CALL GetUserByLoginAndPassword('DoeJohnQ', 'NotThePassword')
+	SELECT * FROM user_profile WHERE user_profile.user_login = 'DoeJohnQ'  AND user_profile.hashed_password = 'NotThePassword'
 Running: 
-	CALL GetUserByFullName('Doe', 'John', 'Q')
+	SELECT * FROM user_profile WHERE user_profile.last_name = 'Doe' AND user_profile.first_name = 'John' AND user_profile.middle_initial = 'Q'
 Running: 
-	CALL GetUserByEmail('johndoe@gmail.com')
+	SELECT * FROM user_profile WHERE user_profile.email_address = 'johndoe@gmail.com'
 Running: 
-	CALL UpdateUserAllFields(5, NULL, 'Doe', 'John', 'Q', 'johndoe@gmail.com', 'DoeJohnQ', 'MyNew**&pAs5Word5', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
+	UPDATE user_profile SET user_profile.id_organization = NULL, user_profile.last_name = 'Doe', user_profile.first_name = 'John', user_profile.middle_initial = 'Q', user_profile.email_address = 'johndoe@gmail.com', user_profile.user_login = 'DoeJohnQ', user_profile.hashed_password = 'MyNew**&pAs5Word5', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL WHERE user_profile.user_id = 5
 Running: 
-	CALL GetUserByID(5)
+	SELECT * FROM user_profile WHERE user_profile.user_id =5
 Running: 
-	CALL AddUser(NULL, 'Public', 'John', 'Q', 'anyone@gmail.com', 'PublicJohnQ', 'PublicJohnQ', '8:30 AM;5:00 PM;1;1;1;0;')
+	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (NULL, 'Public', 'John', 'Q', 'anyone@gmail.com', 'PublicJohnQ', 'PublicJohnQ', '8:30 AM;5:00 PM;1;1;1;0' )
 Running: 
-	CALL GetUserByLoginName('PublicJohnQ')
+	SELECT * FROM user_profile WHERE user_profile.user_login = 'PublicJohnQ'
 Running: 
-	CALL GetUserByLoginAndPassword('PublicJohnQ', 'PublicJohnQ')
+	SELECT * FROM user_profile WHERE user_profile.user_login = 'PublicJohnQ'  AND user_profile.hashed_password = 'PublicJohnQ'
 Running: 
-	CALL GetUserByLoginAndPassword('PublicJohnQ', 'NotThePassword')
+	SELECT * FROM user_profile WHERE user_profile.user_login = 'PublicJohnQ'  AND user_profile.hashed_password = 'NotThePassword'
 Running: 
-	CALL GetUserByFullName('Public', 'John', 'Q')
+	SELECT * FROM user_profile WHERE user_profile.last_name = 'Public' AND user_profile.first_name = 'John' AND user_profile.middle_initial = 'Q'
 Running: 
-	CALL GetUserByEmail('anyone@gmail.com')
+	SELECT * FROM user_profile WHERE user_profile.email_address = 'anyone@gmail.com'
 Running: 
-	CALL UpdateUserAllFields(6, NULL, 'Public', 'John', 'Q', 'anyone@gmail.com', 'PublicJohnQ', 'MyNew**&pAs5Word6', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
+	UPDATE user_profile SET user_profile.id_organization = NULL, user_profile.last_name = 'Public', user_profile.first_name = 'John', user_profile.middle_initial = 'Q', user_profile.email_address = 'anyone@gmail.com', user_profile.user_login = 'PublicJohnQ', user_profile.hashed_password = 'MyNew**&pAs5Word6', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL WHERE user_profile.user_id = 6
 Running: 
-	CALL GetUserByID(6)
+	SELECT * FROM user_profile WHERE user_profile.user_id =6
 Running: 
-	CALL AddUser(NULL, 'Doe', 'Jane', 'R', 'jdr@gmail.com', 'DoeJaneR', 'DoeJaneR', '8:30 AM;5:00 PM;1;1;1;0;')
+	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (NULL, 'Doe', 'Jane', 'R', 'jdr@gmail.com', 'DoeJaneR', 'DoeJaneR', '8:30 AM;5:00 PM;1;1;1;0' )
 Running: 
-	CALL GetUserByLoginName('DoeJaneR')
+	SELECT * FROM user_profile WHERE user_profile.user_login = 'DoeJaneR'
 Running: 
-	CALL GetUserByLoginAndPassword('DoeJaneR', 'DoeJaneR')
+	SELECT * FROM user_profile WHERE user_profile.user_login = 'DoeJaneR'  AND user_profile.hashed_password = 'DoeJaneR'
 Running: 
-	CALL GetUserByLoginAndPassword('DoeJaneR', 'NotThePassword')
+	SELECT * FROM user_profile WHERE user_profile.user_login = 'DoeJaneR'  AND user_profile.hashed_password = 'NotThePassword'
 Running: 
-	CALL GetUserByFullName('Doe', 'Jane', 'R')
+	SELECT * FROM user_profile WHERE user_profile.last_name = 'Doe' AND user_profile.first_name = 'Jane' AND user_profile.middle_initial = 'R'
 Running: 
-	CALL GetUserByEmail('jdr@gmail.com')
+	SELECT * FROM user_profile WHERE user_profile.email_address = 'jdr@gmail.com'
 Running: 
-	CALL UpdateUserAllFields(7, NULL, 'Doe', 'Jane', 'R', 'jdr@gmail.com', 'DoeJaneR', 'MyNew**&pAs5Word7', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
+	UPDATE user_profile SET user_profile.id_organization = NULL, user_profile.last_name = 'Doe', user_profile.first_name = 'Jane', user_profile.middle_initial = 'R', user_profile.email_address = 'jdr@gmail.com', user_profile.user_login = 'DoeJaneR', user_profile.hashed_password = 'MyNew**&pAs5Word7', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL WHERE user_profile.user_id = 7
 Running: 
-	CALL GetUserByID(7)
+	SELECT * FROM user_profile WHERE user_profile.user_id =7
 Running: 
-	CALL AddUser(NULL, 'Case', 'Space', 'O', 'spacecase@gmail.com', 'CaseSpaceO', 'CaseSpaceO', '8:30 AM;5:00 PM;1;1;1;0;')
+	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (NULL, 'Case', 'Space', 'O', 'spacecase@gmail.com', 'CaseSpaceO', 'CaseSpaceO', '8:30 AM;5:00 PM;1;1;1;0' )
 Running: 
-	CALL GetUserByLoginName('CaseSpaceO')
+	SELECT * FROM user_profile WHERE user_profile.user_login = 'CaseSpaceO'
 Running: 
-	CALL GetUserByLoginAndPassword('CaseSpaceO', 'CaseSpaceO')
+	SELECT * FROM user_profile WHERE user_profile.user_login = 'CaseSpaceO'  AND user_profile.hashed_password = 'CaseSpaceO'
 Running: 
-	CALL GetUserByLoginAndPassword('CaseSpaceO', 'NotThePassword')
+	SELECT * FROM user_profile WHERE user_profile.user_login = 'CaseSpaceO'  AND user_profile.hashed_password = 'NotThePassword'
 Running: 
-	CALL GetUserByFullName('Case', 'Space', 'O')
+	SELECT * FROM user_profile WHERE user_profile.last_name = 'Case' AND user_profile.first_name = 'Space' AND user_profile.middle_initial = 'O'
 Running: 
-	CALL GetUserByEmail('spacecase@gmail.com')
+	SELECT * FROM user_profile WHERE user_profile.email_address = 'spacecase@gmail.com'
 Running: 
-	CALL UpdateUserAllFields(8, NULL, 'Case', 'Space', 'O', 'spacecase@gmail.com', 'CaseSpaceO', 'MyNew**&pAs5Word8', '8:30 AM;5:00 PM;1;1;1;0;', NULL)
+	UPDATE user_profile SET user_profile.id_organization = NULL, user_profile.last_name = 'Case', user_profile.first_name = 'Space', user_profile.middle_initial = 'O', user_profile.email_address = 'spacecase@gmail.com', user_profile.user_login = 'CaseSpaceO', user_profile.hashed_password = 'MyNew**&pAs5Word8', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL WHERE user_profile.user_id = 8
 Running: 
-	CALL GetUserByID(8)
+	SELECT * FROM user_profile WHERE user_profile.user_id =8
 Running: 
-	CALL GetAllUsers()
+	SELECT * FROM user_profile
 All positive path tests for database insertions and retrievals of user PASSED!
 Running: 
-	CALL GetUserByID(1)
+	SELECT * FROM user_profile WHERE user_profile.user_id =1
 Expected error was; User not modified!
 
 Running: 
-	CALL GetUserByID(1)
+	SELECT * FROM user_profile WHERE user_profile.user_id =1
 Expected error was; User already in Database, use Update!
 
 All negative path tests for database insertions and retrievals of user PASSED!
@@ -593,93 +589,111 @@ All tests for database insertions and retrievals of user PASSED!
 
 Running task Integration Tests
 Running: 
-	CALL GetUserByFullName('One', 'User', 'P')
+	SELECT * FROM user_profile WHERE user_profile.last_name = 'One' AND user_profile.first_name = 'User' AND user_profile.middle_initial = 'P'
 Running: 
-	CALL AddTask(4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 3, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', NULL, 12, 1e+00, 65, 1, 0, 0, NULL)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Archive BHHS74Reunion website to external SSD', 3, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', NULL, 1.2e+01, 1e+00, 65, 1, 0)
 Running: 
-	CALL GetTaskByTaskID(47)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Archive BHHS74Reunion website to external SSD')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Archive BHHS74Reunion website to external SSD' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	CALL AddTask(4, 4, 'Develop Personal Planning Tool', 0, 3, '2025-05-05', '2025-03-20', '2025-03-20', '2025-05-15', NULL, 300, 4e+01, 65, 2, 0, 0, NULL)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Develop Personal Planning Tool', 3, '2025-05-05', '2025-03-20', '2025-03-20', '2025-05-15', NULL, 3e+02, 4e+01, 65, 2, 0)
 Running: 
-	CALL GetTaskByTaskID(48)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 48
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Develop Personal Planning Tool')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Develop Personal Planning Tool' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	CALL AddTask(4, 4, 'Check with GoDaddy about providing service to archive website to external SSD', 1, 3, '2025-04-15', '2025-04-15', '2025-04-15', '2025-04-15', NULL, 2, 1e+00, 65, 1, 0, 0, NULL)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Check with GoDaddy about providing service to archive website to external SSD', 3, '2025-04-15', '2025-04-15', '2025-04-15', '2025-04-15', NULL, 2e+00, 1e+00, 65, 1, 0)
 Running: 
-	CALL GetTaskByTaskID(49)
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (49, 1)
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Check with GoDaddy about providing service to archive website to external SSD')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 49
 Running: 
-	CALL AddTask(4, 4, 'Install a WordPress Archive Plugin', 1, 0, '2025-05-01', '2025-05-01', NULL, '2025-05-01', NULL, 1, 0e+00, 66, 2, 0, 0, NULL)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Check with GoDaddy about providing service to archive website to external SSD' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	CALL GetTaskByTaskID(50)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Install a WordPress Archive Plugin', 0, '2025-05-01', '2025-05-01', NULL, '2025-05-01', NULL, 1e+00, 0e+00, 66, 2, 0)
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Install a WordPress Archive Plugin')
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (50, 1)
 Running: 
-	CALL AddTask(4, 4, 'Have GoDaddy install PHPMyAdmin', 1, 0, '2025-05-02', '2025-05-02', NULL, '2025-05-03', NULL, 1, 0e+00, 66, 3, 0, 0, NULL)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 50
 Running: 
-	CALL GetTaskByTaskID(51)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Install a WordPress Archive Plugin' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Have GoDaddy install PHPMyAdmin')
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Have GoDaddy install PHPMyAdmin', 0, '2025-05-02', '2025-05-02', NULL, '2025-05-03', NULL, 1e+00, 0e+00, 66, 3, 0)
 Running: 
-	CALL AddTask(4, 4, 'Run Archive Plugin', 1, 0, '2025-05-03', '2025-05-03', NULL, '2025-05-03', NULL, 2, 0e+00, 66, 4, 0, 0, NULL)
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (51, 1)
 Running: 
-	CALL GetTaskByTaskID(52)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 51
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Run Archive Plugin')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Have GoDaddy install PHPMyAdmin' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	CALL AddTask(4, 4, 'Log into PHPMyAdmin and save Database to disk', 1, 0, '2025-05-04', '2025-05-04', NULL, '2025-05-04', NULL, 1, 0e+00, 66, 5, 0, 0, NULL)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Run Archive Plugin', 0, '2025-05-03', '2025-05-03', NULL, '2025-05-03', NULL, 2e+00, 0e+00, 66, 4, 0)
 Running: 
-	CALL GetTaskByTaskID(53)
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (52, 1)
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Log into PHPMyAdmin and save Database to disk')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 52
 Running: 
-	CALL AddTask(4, 4, 'FTP all website files to computer', 1, 0, '2025-05-05', '2025-05-05', NULL, '2025-05-05', NULL, 3, 0e+00, 66, 6, 0, 0, NULL)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Run Archive Plugin' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	CALL GetTaskByTaskID(54)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Log into PHPMyAdmin and save Database to disk', 0, '2025-05-04', '2025-05-04', NULL, '2025-05-04', NULL, 1e+00, 0e+00, 66, 5, 0)
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'FTP all website files to computer')
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (53, 1)
 Running: 
-	CALL AddTask(4, 4, 'Store all website files on external SSD', 1, 0, '2025-05-05', '2025-05-05', NULL, '2025-05-05', NULL, 2, 0e+00, 66, 7, 0, 0, NULL)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 53
 Running: 
-	CALL GetTaskByTaskID(55)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Log into PHPMyAdmin and save Database to disk' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Store all website files on external SSD')
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'FTP all website files to computer', 0, '2025-05-05', '2025-05-05', NULL, '2025-05-05', NULL, 3e+00, 0e+00, 66, 6, 0)
 Running: 
-	CALL AddTask(4, 4, 'Design Database for Personal Planner', 2, 3, '2025-04-08', '2025-03-20', '2025-03-20', '2025-05-01', NULL, 24, 1.6e+01, 65, 0, 0, 0, NULL)
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (54, 1)
 Running: 
-	CALL GetTaskByTaskID(56)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 54
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Design Database for Personal Planner')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'FTP all website files to computer' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	CALL AddTask(4, 4, 'Design UML Diagram for Personal Planner', 2, 3, '2025-04-12', '2025-04-08', '2025-04-08', '2025-04-15', NULL, 16, 5.25e+00, 65, 0, 0, 0, NULL)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Store all website files on external SSD', 0, '2025-05-05', '2025-05-05', NULL, '2025-05-05', NULL, 2e+00, 0e+00, 66, 7, 0)
 Running: 
-	CALL GetTaskByTaskID(57)
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (55, 1)
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Design UML Diagram for Personal Planner')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 55
 Running: 
-	CALL AddTask(4, 4, 'Grocery Shopping', 0, 0, '2025-04-12', '2025-04-11', NULL, '2026-07-04', NULL, 2, 2e+00, 67, 1, 0, 0, NULL)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Store all website files on external SSD' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	CALL GetTaskByTaskID(58)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Design Database for Personal Planner', 3, '2025-04-08', '2025-03-20', '2025-03-20', '2025-05-01', NULL, 2.4e+01, 1.6e+01, 65, 0, 0)
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Grocery Shopping')
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (56, 2)
 Running: 
-	CALL AddTask(4, 4, 'Daily 30 minute walk', 0, 0, '2025-04-11', '2025-04-11', NULL, '2056-07-07', NULL, 1, 0e+00, 67, 2, 0, 0, NULL)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 56
 Running: 
-	CALL GetTaskByTaskID(59)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Design Database for Personal Planner' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Daily 30 minute walk')
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Design UML Diagram for Personal Planner', 3, '2025-04-12', '2025-04-08', '2025-04-08', '2025-04-15', NULL, 1.6e+01, 5.25e+00, 65, 0, 0)
 Running: 
-	CALL AddTask(4, 4, 'Clean apartment', 0, 0, '2025-04-12', '2025-04-12', NULL, '2026-07-04', NULL, 2, 0e+00, 67, 3, 0, 0, NULL)
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (57, 2)
 Running: 
-	CALL GetTaskByTaskID(60)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 57
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Clean apartment')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Design UML Diagram for Personal Planner' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-07-11')
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-08-05', NULL, 2e+00, 2e+00, 67, 1, 0)
+Running: 
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 58
+Running: 
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Grocery Shopping' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
+Running: 
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Daily 30 minute walk', 0, '2025-04-11', '2025-04-11', NULL, '2056-07-07', NULL, 1e+00, 0e+00, 67, 2, 0)
+Running: 
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 59
+Running: 
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Daily 30 minute walk' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
+Running: 
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-08-05', NULL, 2e+00, 0e+00, 67, 3, 0)
+Running: 
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 60
+Running: 
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Clean apartment' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
+Running: 
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-08-12' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Find unstarted tasks for user(4) PASSED!
 User 4 has 9 unstarted tasks
 TaskModel:
@@ -694,7 +708,6 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 66
 	Priority: 2
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Parent ID: 1
@@ -713,7 +726,6 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 66
 	Priority: 3
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Parent ID: 1
@@ -732,7 +744,6 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 66
 	Priority: 4
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Parent ID: 1
@@ -751,7 +762,6 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 66
 	Priority: 5
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Parent ID: 1
@@ -770,7 +780,6 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 66
 	Priority: 6
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Parent ID: 1
@@ -789,7 +798,6 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 66
 	Priority: 7
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Parent ID: 1
@@ -808,11 +816,9 @@ TaskModel:
 	Actual Effort Hours: 2
 	Priority Group: 67
 	Priority: 1
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
-	Parent ID: 0
-	Estimated Completion Date: 2026-07-04
+	Estimated Completion Date: 2026-08-05
 	Deleted : FALSE
 
 TaskModel:
@@ -827,10 +833,8 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 67
 	Priority: 2
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
-	Parent ID: 0
 	Estimated Completion Date: 2056-07-07
 	Deleted : FALSE
 
@@ -846,17 +850,15 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 67
 	Priority: 3
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
-	Parent ID: 0
-	Estimated Completion Date: 2026-07-04
+	Estimated Completion Date: 2026-08-05
 	Deleted : FALSE
 
 Running: 
-	CALL GetUserByFullName('Black', 'Paul', 'A')
+	SELECT * FROM user_profile WHERE user_profile.last_name = 'Black' AND user_profile.first_name = 'Paul' AND user_profile.middle_initial = 'A'
 Running: 
-	CALL GetDefaultDashboardTaskList(1, '2026-03-22')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.delivered IS NULL AND tasks.deleted <> 1 AND (tasks.task_status = 3 OR tasks.due_date < '2026-03-22') ORDER BY tasks.priority_category ASC, tasks.priority ASC
 Find default task list for user(1) PASSED!
 User 1 dashboard has 18 tasks
 TaskModel:
@@ -871,7 +873,6 @@ TaskModel:
 	Actual Effort Hours: 500
 	Priority Group: 1
 	Priority: 1
-	Dependency Count: 24
 Optional Fields
 	Status: Work in Progress
 	Actual Start Date: 2026-02-23
@@ -890,7 +891,6 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 1
 	Priority: 4
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Parent ID: 1
@@ -909,7 +909,6 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 1
 	Priority: 5
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Parent ID: 1
@@ -928,7 +927,6 @@ TaskModel:
 	Actual Effort Hours: 20
 	Priority Group: 1
 	Priority: 6
-	Dependency Count: 0
 Optional Fields
 	Status: Work in Progress
 	Parent ID: 1
@@ -948,7 +946,6 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 1
 	Priority: 7
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Parent ID: 1
@@ -967,7 +964,6 @@ TaskModel:
 	Actual Effort Hours: 20
 	Priority Group: 1
 	Priority: 8
-	Dependency Count: 1
 Optional Fields
 	Status: Work in Progress
 	Parent ID: 1
@@ -987,7 +983,6 @@ TaskModel:
 	Actual Effort Hours: 24
 	Priority Group: 1
 	Priority: 9
-	Dependency Count: 0
 Optional Fields
 	Status: Work in Progress
 	Parent ID: 1
@@ -1007,7 +1002,6 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 2
 	Priority: 1
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Parent ID: 1
@@ -1026,7 +1020,6 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 2
 	Priority: 2
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Parent ID: 1
@@ -1045,7 +1038,6 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 2
 	Priority: 3
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Parent ID: 1
@@ -1064,7 +1056,6 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 2
 	Priority: 4
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-03-06
@@ -1082,10 +1073,9 @@ TaskModel:
 	Actual Effort Hours: 1
 	Priority Group: 2
 	Priority: 5
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
-	Parent ID: 0
+	Parent ID: 1
 	Estimated Completion Date: 2026-03-06
 	Deleted : FALSE
 
@@ -1101,7 +1091,6 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 3
 	Priority: 1
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-03-04
@@ -1119,7 +1108,6 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 3
 	Priority: 2
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-02-27
@@ -1137,7 +1125,6 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 3
 	Priority: 3
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-02-27
@@ -1155,10 +1142,9 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 3
 	Priority: 4
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
-	Parent ID: 0
+	Parent ID: 1
 	Estimated Completion Date: 2026-03-01
 	Deleted : FALSE
 
@@ -1174,7 +1160,6 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 3
 	Priority: 5
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-03-05
@@ -1192,48 +1177,27 @@ TaskModel:
 	Actual Effort Hours: 0
 	Priority Group: 3
 	Priority: 6
-	Dependency Count: 0
 Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-03-10
 	Deleted : FALSE
 
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Archive BHHS74Reunion website to external SSD')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Archive BHHS74Reunion website to external SSD' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	CALL GetTaskByTaskID(47)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
-	CALL UpdateTaskAllFields(47, 4, 4, 'Archive BHHS74Reunion website to external SSD', 0, 4, '2025-05-05', '2025-04-08', '2025-04-08', '2025-05-05', '2026-07-04', 12, 6e+00, 65, 1, 0, 0, NULL, 0)
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-08-05', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0 WHERE tasks.task_id = 47 
 Running: 
-	CALL GetTaskByTaskID(47)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Check with GoDaddy about providing service to archive website to external SSD')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Archive BHHS74Reunion website to external SSD' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Install a WordPress Archive Plugin')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.parent_task = 47 AND tasks.deleted <> 1
 Running: 
-	CALL UpdateTaskAllFields(50, 4, 4, 'Install a WordPress Archive Plugin', 1, 0, '2025-05-01', '2025-05-01', NULL, '2025-05-01', NULL, 1, 0e+00, 66, 2, 0, 1, '49;', 0)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.delivered >= '2025-05-11'
 Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Log into PHPMyAdmin and save Database to disk')
-Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Check with GoDaddy about providing service to archive website to external SSD')
-Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Install a WordPress Archive Plugin')
-Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Have GoDaddy install PHPMyAdmin')
-Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Run Archive Plugin')
-Running: 
-	CALL UpdateTaskAllFields(53, 4, 4, 'Log into PHPMyAdmin and save Database to disk', 1, 0, '2025-05-04', '2025-05-04', NULL, '2025-05-04', NULL, 1, 0e+00, 66, 5, 0, 4, '49;50;51;52;', 0)
-Running: 
-	CALL GetTaskByTaskID(53)
-Running: 
-	CALL GetTaskByDescriptionAndAssignedUser(4, 'Archive BHHS74Reunion website to external SSD')
-Running: 
-	CALL GetTasksByAssignedIDandParentID(4, 47)
-Running: 
-	CALL GetTasksCompletedByAssignedAfterDate(4,'2025-05-11')
-Running: 
-	CALL GetActiveTasksForAssignedUser(4)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.delivered IS NULL AND (tasks.task_status IS NOT NULL AND tasks.task_status <> 0) AND tasks.deleted <> 1
 Find active tasks for user(4) PASSED!
 User 4 has 4 unstarted tasks
 TaskModel:
@@ -1248,10 +1212,8 @@ TaskModel:
 	Actual Effort Hours: 40
 	Priority Group: 65
 	Priority: 2
-	Dependency Count: 0
 Optional Fields
 	Status: Work in Progress
-	Parent ID: 0
 	Actual Start Date: 2025-03-20
 	Estimated Completion Date: 2025-05-15
 	Deleted : FALSE
@@ -1268,7 +1230,6 @@ TaskModel:
 	Actual Effort Hours: 1
 	Priority Group: 65
 	Priority: 1
-	Dependency Count: 0
 Optional Fields
 	Status: Work in Progress
 	Parent ID: 1
@@ -1288,7 +1249,6 @@ TaskModel:
 	Actual Effort Hours: 16
 	Priority Group: 65
 	Priority: 0
-	Dependency Count: 0
 Optional Fields
 	Status: Work in Progress
 	Parent ID: 2
@@ -1308,7 +1268,6 @@ TaskModel:
 	Actual Effort Hours: 5.25
 	Priority Group: 65
 	Priority: 0
-	Dependency Count: 0
 Optional Fields
 	Status: Work in Progress
 	Parent ID: 2
@@ -1317,19 +1276,19 @@ Optional Fields
 	Deleted : FALSE
 
 Running: 
-	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-07-11')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-08-12' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Running: 
-	CALL HideTask(4, 59)
+	UPDATE tasks SET tasks.deleted = 1 WHERE tasks.created_by = 4 AND tasks.task_id = 59
 Running: 
-	CALL GetUnstartedDueForStartForAssignedUser(4, '2026-07-11')
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-08-12' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Task (59) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of task PASSED!
 Running: 
-	CALL GetTaskByTaskID(1)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 1
 Expected error was; Task already in Database, use Update!
 
 Running: 
-	CALL GetTaskByTaskID(1)
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 1
 Expected error was; Task not modified!
 
 Expected error was; Task is missing required values!
@@ -1358,7 +1317,7 @@ Expected error was; Task is missing required values!
 Missing Task required priority!
 
 Running: 
-	CALL AddTask(4, 4, 'Test missing required fields: Set Description', NULL, 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 3, 0e+00, 65, 1, 0, 0, NULL)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Test missing required fields: Set Description', 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 3e+00, 0e+00, 65, 1, 0)
 Expected error was; Task is missing required values!
 Missing Task required description!
 Missing Task required estimated effort in hours!
@@ -1385,78 +1344,78 @@ Expected error was; Task is missing required values!
 Missing Task required priority!
 
 Running: 
-	CALL AddTask(4, 4, 'Test shared pointer interaction in missing required fields', NULL, 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 3, 0e+00, 65, 1, 0, 0, NULL)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Test shared pointer interaction in missing required fields', 0, '2024-05-21', '2024-05-14', NULL, NULL, NULL, 3e+00, 0e+00, 65, 1, 0)
 All negative path tests for database insertions and retrievals of task PASSED!
 All tests for database insertions and retrievals of task PASSED!
 ---------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------
 Running: 
-	CALL GetUserByFullName('One', 'User', 'P')
+	SELECT * FROM user_profile WHERE user_profile.last_name = 'One' AND user_profile.first_name = 'User' AND user_profile.middle_initial = 'P'
 
 Running Goal Integration Tests
 Running: 
-	CALL AddUserGoal(4, 'Get a Job in Software Engineering', 1, NULL)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (4, 'Get a Job in Software Engineering', 1, NULL, 0)
 Running: 
-	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
-	CALL AddUserGoal(4, 'Maintain and improve my software engineering skills', 1, 1)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (4, 'Maintain and improve my software engineering skills', 1, 1, 0)
 Running: 
-	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
-	CALL AddUserGoal(4, 'Maintain and improve my C++ programming skills', 1, 1)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (4, 'Maintain and improve my C++ programming skills', 1, 1, 0)
 Running: 
-	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
-	CALL AddUserGoal(4, 'Maintain and improve my  C programming skills', 2, 1)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (4, 'Maintain and improve my  C programming skills', 2, 1, 0)
 Running: 
-	CALL AddUserGoal(4, 'Maintain or archive the BHHS 74 Reunion website', 2, NULL)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (4, 'Maintain or archive the BHHS 74 Reunion website', 2, NULL, 0)
 Running: 
-	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
-	CALL AddUserGoal(4, 'Maintain and improve my SQL skills', 3, 1)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (4, 'Maintain and improve my SQL skills', 3, 1, 0)
 Running: 
-	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
-	CALL AddUserGoal(4, 'Learn QT graphic system', 4, 1)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (4, 'Learn QT graphic system', 4, 1, 0)
 Running: 
-	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
-	CALL AddUserGoal(4, 'Improve my Linux Programming skills', 5, 1)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (4, 'Improve my Linux Programming skills', 5, 1, 0)
 Running: 
-	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
-	CALL AddUserGoal(4, 'Get an embedded programming certificate', 4, 1)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (4, 'Get an embedded programming certificate', 4, 1, 0)
 Running: 
-	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
-	CALL AddUserGoal(4, 'Learn open source Linux Core Programming', 4, 1)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (4, 'Learn open source Linux Core Programming', 4, 1, 0)
 Running: 
-	CALL AddUserGoal(4, 'Maintain my health', 2, NULL)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (4, 'Maintain my health', 2, NULL, 0)
 Running: 
-	CALL FindGoalByUserIdAndExactDescription(4, 'Maintain my health')
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Maintain my health' AND user_goals.deleted <> 1
 Running: 
-	CALL AddUserGoal(4, 'Eat as healthy as possible', 3, 11)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (4, 'Eat as healthy as possible', 3, 11, 0)
 Running: 
-	CALL FindGoalByUserIdAndExactDescription(4, 'Maintain my health')
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Maintain my health' AND user_goals.deleted <> 1
 Running: 
-	CALL AddUserGoal(4, 'Walk 30 minutes a day', 4, 11)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (4, 'Walk 30 minutes a day', 4, 11, 0)
 Running: 
-	CALL FindGoalByUserIdAndExactDescription(4, 'Maintain my health')
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Maintain my health' AND user_goals.deleted <> 1
 Running: 
-	CALL AddUserGoal(4, 'Track my vital signs', 3, 11)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (4, 'Track my vital signs', 3, 11, 0)
 Running: 
-	CALL FindGoalByUserIdAndExactDescription(4, 'Maintain my health')
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Maintain my health' AND user_goals.deleted <> 1
 Running: 
-	CALL AddUserGoal(4, 'Get my weight down to 190 pounds', 4, 11)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (4, 'Get my weight down to 190 pounds', 4, 11, 0)
 Running: 
-	CALL AddUserGoal(4, 'Be more organized', 1, NULL)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (4, 'Be more organized', 1, NULL, 0)
 Running: 
-	CALL AddUserGoal(4, 'Effectively moderate the code review site on stack exchange', 1, NULL)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (4, 'Effectively moderate the code review site on stack exchange', 1, NULL, 0)
 Running: 
-	CALL FindGoalByUserIdAndExactDescription(4, 'Get a Job in Software Engineering')
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
-	CALL GetAllChildGoalsFromParent(4, 1)
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.parent_goal = 1 AND user_goals.deleted <> 1
 Model Name UserGoalModel
 	Goal ID: 1
 	User ID: 4
@@ -1523,7 +1482,7 @@ Model Name UserGoalModel
 	Parent ID: 1
 
 Running: 
-	CALL GetAllGoalsForUser(4)
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.deleted <> 1
 Find all goals for user (4) PASSED!
 User 4 has 17 goals
 Model Name UserGoalModel
@@ -1646,7 +1605,7 @@ Model Name UserGoalModel
 	Parent ID: 0
 
 Running: 
-	CALL FindGoalsByUserIdAndSimilarDescription(4, 'Maintain')
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description LIKE '%Maintain%' AND user_goals.deleted <> 1
 Find all goals for user (4) containing Maintain PASSED!
 User 4 has 6 goals
 Model Name UserGoalModel
@@ -1692,11 +1651,11 @@ Model Name UserGoalModel
 	Parent ID: 0
 
 Running: 
-	CALL GetAllGoalsForUser(4)
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.deleted <> 1
 Running: 
-	CALL HideGoal(4, 16)
+	UPDATE user_goals SET user_goals.deleted = 1 WHERE user_goals.user_id = 4 AND user_goals.id_user_goals = 16
 Running: 
-	CALL GetAllGoalsForUser(4)
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.deleted <> 1
 Original goal list size: 17 Altered goal list size: 16
 goal (16) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of Goal PASSED!
@@ -1709,13 +1668,13 @@ Missing UserGoalModel required Description!
 Missing UserGoalModel required Description!
 
 Running: 
-	CALL AddUserGoal(1, 'Test missing field Description', NULL, NULL)
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (1, 'Test missing field Description', NULL, NULL, 0)
 Running: 
-	CALL GetGoalById(1)
+	SELECT * FROM user_goals WHERE user_goals.id_user_goals = 1
 Expected error was; UserGoalModel not modified!
 
 Running: 
-	CALL GetGoalById(1)
+	SELECT * FROM user_goals WHERE user_goals.id_user_goals = 1
 Expected error was; UserGoalModel already in Database, use Update!
 
 All negative path tests for database insertions and retrievals of Goal PASSED!
@@ -1724,54 +1683,54 @@ All tests for database insertions and retrievals of Goal PASSED!
 
 ---------------------------------------------------------------------------------
 Running: 
-	CALL GetUserByFullName('One', 'User', 'P')
+	SELECT * FROM user_profile WHERE user_profile.last_name = 'One' AND user_profile.first_name = 'User' AND user_profile.middle_initial = 'P'
 
 Running Note Integration Tests
 Running: 
-	CALL AddUserNote(4, 'Get a Job in Software Engineering')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Get a Job in Software Engineering', 0)
 Running: 
-	CALL AddUserNote(4, 'Maintain and improve my software engineering skills')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Maintain and improve my software engineering skills', 0)
 Running: 
-	CALL AddUserNote(4, 'Maintain and improve my C++ programming skills')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Maintain and improve my C++ programming skills', 0)
 Running: 
-	CALL AddUserNote(4, 'Maintain and improve my  C programming skills')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Maintain and improve my  C programming skills', 0)
 Running: 
-	CALL AddUserNote(4, 'Maintain or archive the BHHS 74 Reunion website')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Maintain or archive the BHHS 74 Reunion website', 0)
 Running: 
-	CALL AddUserNote(4, 'Maintain and improve my SQL skills')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Maintain and improve my SQL skills', 0)
 Running: 
-	CALL AddUserNote(4, 'Learn QT graphic system')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Learn QT graphic system', 0)
 Running: 
-	CALL AddUserNote(4, 'Improve my Linux Programming skills')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Improve my Linux Programming skills', 0)
 Running: 
-	CALL AddUserNote(4, 'Get an embedded programming certificate')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Get an embedded programming certificate', 0)
 Running: 
-	CALL AddUserNote(4, 'Learn open source Linux Core Programming')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Learn open source Linux Core Programming', 0)
 Running: 
-	CALL AddUserNote(4, 'Maintain my health')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Maintain my health', 0)
 Running: 
-	CALL AddUserNote(4, 'Eat as healthy as possible')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Eat as healthy as possible', 0)
 Running: 
-	CALL AddUserNote(4, 'Walk 30 minutes a day')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Walk 30 minutes a day', 0)
 Running: 
-	CALL AddUserNote(4, 'Track my vital signs')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Track my vital signs', 0)
 Running: 
-	CALL AddUserNote(4, 'Get my weight down to 190 pounds')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Get my weight down to 190 pounds', 0)
 Running: 
-	CALL AddUserNote(4, 'Be more organized')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Be more organized', 0)
 Running: 
-	CALL AddUserNote(4, 'Effectively moderate the code review site on stack exchange')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Effectively moderate the code review site on stack exchange', 0)
 Running: 
-	CALL GetNotesForUserSimlarToContent(4, 'Be more organized')
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.content LIKE '%Be more organized%' AND user_notes.deleted <> 1
 Running: 
-	CALL UpdateNoteAllFields(4, 42, 'Use a planner / organizer')
+	UPDATE user_notes SET user_notes.content = 'Use a planner / organizer' WHERE user_notes.id_user_notes = 42 AND user_notes.user_id = 4
 Update UserNote Passed integration test
 	Note ID: 42
 	User ID: 4
 	Content: Use a planner / organizer
 
 Running: 
-	CALL GetAllUndeletedNotesForUser(4)
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.deleted <> 1
 Find all notes for user (4) PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -1843,7 +1802,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	CALL GetNotesForUserSimlarToContent(4, 'Maintain')
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.content LIKE '%Maintain%' AND user_notes.deleted <> 1
 Find all notes for user (4) similar to Maintain PASSED!
 User 4 has 6 notes
 	Note ID: 28
@@ -1871,7 +1830,7 @@ User 4 has 6 notes
 	Content: Maintain my health
 
 Running: 
-	CALL GetAllNotesForUserCreatedInDatgeRange(4, '2026-06-27', '2026-07-11')
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.note_creation >= '2026-07-29' AND user_notes.note_creation <= '2026-08-12' AND user_notes.deleted <> 1
 Find all notes for user (4) created in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -1943,7 +1902,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	CALL GetAllNotesForUserEditedInDatgeRange(4, '2026-06-27', '2026-07-11')
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-07-29' AND user_notes.last_modifed <= '2026-08-12' AND user_notes.deleted <> 1
 Find all notes for user (4) edited in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2015,7 +1974,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	CALL GetDashboardNoteTable(4, '2026-07-04 07:00:00.000000', '2026-07-05 06:59:00.000000')
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.note_creation >= '2026-08-05 07:00:00.000000' AND user_notes.note_creation <= '2026-08-06 06:59:00.000000' AND user_notes.deleted <> 1 ORDER BY user_notes.note_creation ASC
 Find all notes for user (4) for a date PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2087,11 +2046,11 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	CALL GetAllUndeletedNotesForUser(4)
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.deleted <> 1
 Running: 
-	CALL HideNote(4, 42)
+	UPDATE user_notes SET user_notes.deleted = 1 WHERE user_notes.user_id = 4 AND user_notes.id_user_notes = 42
 Running: 
-	CALL GetAllUndeletedNotesForUser(4)
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.deleted <> 1
 Original note list size: 17 Altered schedule size: 16
 note (42) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of Note PASSED!
@@ -2104,13 +2063,13 @@ Missing Note required Content!
 Missing Note required Content!
 
 Running: 
-	CALL AddUserNote(4, 'Test missing field Content')
+	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Test missing field Content', 0)
 Running: 
-	CALL GetNoteByID(1)
+	SELECT * FROM user_notes  WHERE user_notes.id_user_notes = 1
 Expected error was; Note not modified!
 
 Running: 
-	CALL GetNoteByID(1)
+	SELECT * FROM user_notes  WHERE user_notes.id_user_notes = 1
 Expected error was; Note already in Database, use Update!
 
 All negative path tests for database insertions and retrievals of Note PASSED!
@@ -2119,35 +2078,35 @@ All tests for database insertions and retrievals of Note PASSED!
 
 ---------------------------------------------------------------------------------
 Running: 
-	CALL GetUserByFullName('One', 'User', 'P')
+	SELECT * FROM user_profile WHERE user_profile.last_name = 'One' AND user_profile.first_name = 'User' AND user_profile.middle_initial = 'P'
 
 Running ScheduleItem Integration Tests
 Running: 
-	CALL AddScheduleEvent(4, '2024-12-02 09:30:00.000000', '2024-12-02 10:30:00.000000', 'Dr. Cinman', 1, '8635 W. Third Street')
+	INSERT INTO user_schedule_item  (user_id, start_date_time, end_date_time, title, personal, location, deleted) VALUES (4, '2024-12-02 09:30:00.000000', '2024-12-02 10:30:00.000000', 'Dr. Cinman', 1, '8635 W. Third Street', 0 )
 Running: 
-	CALL AddScheduleEvent(4, '2024-12-11 09:00:00.000000', '2024-12-11 10:30:00.000000', 'Bill McCandless birthday call', 1, '')
+	INSERT INTO user_schedule_item  (user_id, start_date_time, end_date_time, title, personal, location, deleted) VALUES (4, '2024-12-11 09:00:00.000000', '2024-12-11 10:30:00.000000', 'Bill McCandless birthday call', 1, '', 0 )
 Running: 
-	CALL AddScheduleEvent(4, '2024-12-13 09:00:00.000000', '2024-12-13 10:30:00.000000', 'Jean Hom birthday call', 1, '')
+	INSERT INTO user_schedule_item  (user_id, start_date_time, end_date_time, title, personal, location, deleted) VALUES (4, '2024-12-13 09:00:00.000000', '2024-12-13 10:30:00.000000', 'Jean Hom birthday call', 1, '', 0 )
 Running: 
-	CALL AddScheduleEvent(4, '2024-12-13 10:00:00.000000', '2024-12-13 11:00:00.000000', 'Dr. David Aftergood', 1, '99 N. La Cienega Blvd.')
+	INSERT INTO user_schedule_item  (user_id, start_date_time, end_date_time, title, personal, location, deleted) VALUES (4, '2024-12-13 10:00:00.000000', '2024-12-13 11:00:00.000000', 'Dr. David Aftergood', 1, '99 N. La Cienega Blvd.', 0 )
 Running: 
-	CALL AddScheduleEvent(4, '2024-12-18 09:00:00.000000', '2024-12-18 10:30:00.000000', 'Dina birthday call', 1, '')
+	INSERT INTO user_schedule_item  (user_id, start_date_time, end_date_time, title, personal, location, deleted) VALUES (4, '2024-12-18 09:00:00.000000', '2024-12-18 10:30:00.000000', 'Dina birthday call', 1, '', 0 )
 Running: 
-	CALL AddScheduleEvent(4, '2025-12-11 09:00:00.000000', '2025-12-11 10:30:00.000000', 'Bill McCandless birthday call', 1, '')
+	INSERT INTO user_schedule_item  (user_id, start_date_time, end_date_time, title, personal, location, deleted) VALUES (4, '2025-12-11 09:00:00.000000', '2025-12-11 10:30:00.000000', 'Bill McCandless birthday call', 1, '', 0 )
 Running: 
-	CALL AddScheduleEvent(4, '2025-12-13 09:00:00.000000', '2025-12-11 10:30:00.000000', 'Jean Hom birthday call', 1, '')
+	INSERT INTO user_schedule_item  (user_id, start_date_time, end_date_time, title, personal, location, deleted) VALUES (4, '2025-12-13 09:00:00.000000', '2025-12-11 10:30:00.000000', 'Jean Hom birthday call', 1, '', 0 )
 Running: 
-	CALL AddScheduleEvent(4, '2025-12-18 11:00:00.000000', '2025-12-18 11:15:00.000000', 'Dina birthday call', 1, '')
+	INSERT INTO user_schedule_item  (user_id, start_date_time, end_date_time, title, personal, location, deleted) VALUES (4, '2025-12-18 11:00:00.000000', '2025-12-18 11:15:00.000000', 'Dina birthday call', 1, '', 0 )
 Running: 
-	CALL FindUserScheduleItemsByContentAndDateRange(4, 'birthday', '2024-12-01', '2024-12-31')
+	SELECT * FROM user_schedule_item WHERE user_id = 4 AND title LIKE '%birthday%' AND deleted <> 1 AND start_date_time >= '2024-12-01' AND start_date_time <= '2024-12-31'
 Find all schedule items for user (4) similar to birthday PASSED!
 User 4 has 3 schedule items
 ScheduleItemModel:
-	ScheduleItem ID: 816
+	ScheduleItem ID: 813
 	User ID: 4
-	Title: Dina birthday call
-	Start Date and Time: 2024-12-18 09:00:00.000000000
-	End Date and Time: 2024-12-18 10:30:00.000000000
+	Title: Bill McCandless birthday call
+	Start Date and Time: 2024-12-11 09:00:00.000000000
+	End Date and Time: 2024-12-11 10:30:00.000000000
 	Personal: TRUE
 	location: 
 Optional Fields
@@ -2163,17 +2122,17 @@ ScheduleItemModel:
 Optional Fields
 
 ScheduleItemModel:
-	ScheduleItem ID: 813
+	ScheduleItem ID: 816
 	User ID: 4
-	Title: Bill McCandless birthday call
-	Start Date and Time: 2024-12-11 09:00:00.000000000
-	End Date and Time: 2024-12-11 10:30:00.000000000
+	Title: Dina birthday call
+	Start Date and Time: 2024-12-18 09:00:00.000000000
+	End Date and Time: 2024-12-18 10:30:00.000000000
 	Personal: TRUE
 	location: 
 Optional Fields
 
 Running: 
-	CALL GetUserDaySchedule(4, '2024-12-13 08:00:00.000000', '2024-12-14 07:59:59.000000')
+	SELECT * FROM user_schedule_item WHERE user_schedule_item.user_id = 4 AND user_schedule_item.deleted <> 1 AND user_schedule_item.start_date_time >= '2024-12-13 08:00:00.000000' AND user_schedule_item.start_date_time <= '2024-12-14 07:59:59.000000' ORDER BY user_schedule_item.start_date_time ASC
 Find all schedule items for user (4) edited in date range PASSED!
 User 4 has 2 schedule items
 ScheduleItemModel:
@@ -2197,18 +2156,18 @@ ScheduleItemModel:
 Optional Fields
 
 Running: 
-	CALL GetScheduleItemById(812)
+	SELECT * FROM user_schedule_item WHERE user_schedule_item.id_user_schedule_item = 812 AND user_schedule_item.deleted <> 1
 Running: 
-	CALL UpdateScheduleItemAllFields(4, 812, '2024-12-02 09:30:00.000000', '2024-12-02 10:30:00.000000', 'Dr. David Aftergood', 0, '99. N. La Cienega')
+	UPDATE user_schedule_item SET user_schedule_item.start_date_time = '2024-12-02 09:30:00.000000', user_schedule_item.end_date_time = '2024-12-02 10:30:00.000000', user_schedule_item.title = 'Dr. David Aftergood', user_schedule_item.personal = 0, user_schedule_item.location = '99. N. La Cienega' WHERE user_schedule_item.id_user_schedule_item = 812 AND user_schedule_item.user_id = user_id
 Running: 
-	CALL ScheduleItemContentSelectionList('birthday', 4)
+	SELECT DISTINCT user_schedule_item.title FROM user_schedule_item WHERE user_schedule_item.user_id = 4 AND user_schedule_item.title LIKE '%birthday%' ORDER BY user_schedule_item.title ASC
 Find all schedule items for user (4) similar to birthday PASSED!
 User 4 has 3 schedule items
 Bill McCandless birthday call
 Dina birthday call
 Jean Hom birthday call
 Running: 
-	CALL EventTitlesForCompleter(4)
+	SELECT DISTINCT user_schedule_item.title FROM user_schedule_item WHERE user_schedule_item.user_id = 4 ORDER BY user_schedule_item.title ASC
 Find all schedule items for user (4) PASSED!
 User 4 has 4 schedule items
 Bill McCandless birthday call
@@ -2216,20 +2175,20 @@ Dina birthday call
 Dr. David Aftergood
 Jean Hom birthday call
 Running: 
-	CALL EventLocationsForCompleter(4)
+	SELECT DISTINCT user_schedule_item.location FROM user_schedule_item WHERE user_schedule_item.user_id = 4 ORDER BY user_schedule_item.location ASC
 Find all schedule locations for user (4) PASSED!
 User 4 has 3 schedule locations
 
 99 N. La Cienega Blvd.
 99. N. La Cienega
 Running: 
-	CALL GetUserByFullName('Black', 'Paul', 'A')
+	SELECT * FROM user_profile WHERE user_profile.last_name = 'Black' AND user_profile.first_name = 'Paul' AND user_profile.middle_initial = 'A'
 Running: 
-	CALL GetUserDaySchedule(1, '2026-03-08 08:00:00.000000', '2026-03-09 07:59:59.000000')
+	SELECT * FROM user_schedule_item WHERE user_schedule_item.user_id = 1 AND user_schedule_item.deleted <> 1 AND user_schedule_item.start_date_time >= '2026-03-08 08:00:00.000000' AND user_schedule_item.start_date_time <= '2026-03-09 07:59:59.000000' ORDER BY user_schedule_item.start_date_time ASC
 Running: 
-	CALL HideScheduleItem(1, 189)
+	UPDATE user_schedule_item SET user_schedule_item.deleted = 1 WHERE user_schedule_item.user_id = 1 AND user_schedule_item.id_user_schedule_item = 189
 Running: 
-	CALL GetUserDaySchedule(1, '2026-03-08 08:00:00.000000', '2026-03-09 07:59:59.000000')
+	SELECT * FROM user_schedule_item WHERE user_schedule_item.user_id = 1 AND user_schedule_item.deleted <> 1 AND user_schedule_item.start_date_time >= '2026-03-08 08:00:00.000000' AND user_schedule_item.start_date_time <= '2026-03-09 07:59:59.000000' ORDER BY user_schedule_item.start_date_time ASC
 Original schedule size: 9 Altered schedule size: 8
 Schedule Item (189) for user (1) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of ScheduleItem PASSED!
@@ -2262,27 +2221,27 @@ Missing ScheduleItem required End Time!
 Missing ScheduleItem required End Time!
 
 Running: 
-	CALL AddScheduleEvent(4, '2024-12-31 08:30:00.000000', '2024-12-31 10:00:00.000000', 'Test missing field Title', 0, NULL)
+	INSERT INTO user_schedule_item  (user_id, start_date_time, end_date_time, title, personal, location, deleted) VALUES (4, '2024-12-31 08:30:00.000000', '2024-12-31 10:00:00.000000', 'Test missing field Title', 0, NULL, 0 )
 Running: 
-	CALL GetScheduleItemById(812)
+	SELECT * FROM user_schedule_item WHERE user_schedule_item.id_user_schedule_item = 812 AND user_schedule_item.deleted <> 1
 Expected error was; ScheduleItem not modified!
 
 Running: 
-	CALL GetScheduleItemById(812)
+	SELECT * FROM user_schedule_item WHERE user_schedule_item.id_user_schedule_item = 812 AND user_schedule_item.deleted <> 1
 Expected error was; ScheduleItem already in Database, use Update!
 
 All negative path tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Sun Jun 28 05:25:15 2026
-elapsed time in seconds: 22.6537
+Wed Aug  5 13:43:44 2026
+elapsed time in seconds: 17.1761
 
 
 
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
-  total heap usage: 63,206 allocs, 63,206 frees, 8,604,788 bytes allocated
+  total heap usage: 56,877 allocs, 56,877 frees, 8,049,021 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 
