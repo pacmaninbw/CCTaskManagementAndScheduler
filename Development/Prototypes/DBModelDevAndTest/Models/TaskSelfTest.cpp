@@ -110,7 +110,6 @@ void TaskSelfTest::selfTestResetAllValues() noexcept
     m_priorityCategory = 0;
     m_priority = 0;
     m_personal = false;
-    m_dependencies.clear();
     m_lastUpdate.reset();
 }
 
@@ -139,9 +138,6 @@ TestStatus TaskSelfTest::testExceptionInsert() noexcept
     setPriorityGroup('A');
     setPriority(1);
     setParentTaskID(1);
-    addDependency(3);
-    addDependency(5);
-    addDependency(7);
     setCreationDate(commonTestTimeStampValue);
 
     if (testFormatExceptionCatchSuccessNArgs(
@@ -171,9 +167,6 @@ TestStatus TaskSelfTest::testExceptionUpdate() noexcept
     setPriorityGroup('A');
     setPriority(1);
     setCreationDate(timeStamp);
-    addDependency(2);
-    addDependency(4);
-    addDependency(6);
     setCreationDate(commonTestTimeStampValue);
     setLastUpdate(commonTestTimeStampValue);
     
@@ -204,9 +197,6 @@ TestStatus TaskSelfTest::testExceptionHide() noexcept
     setPriorityGroup('A');
     setPriority(1);
     setParentTaskID(1);
-    addDependency(3);
-    addDependency(5);
-    addDependency(7);
     setCreationDate(commonTestTimeStampValue);
 
     return testExceptionAndSuccessNArgs("TaskSelfTest::hide", std::bind(&TaskModel::hide, this, std::placeholders::_1), creatorIDTestValue);
@@ -336,7 +326,6 @@ std::vector<AttributeTestFunction> TaskSelfTest::initAttributeAccessTests() noex
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testPriorityGroupCAccess, this)});
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testPriorityAccess, this)});
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testPersonalAccess, this)});
-    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testDependenciesAccess, this)});
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testMarkComplete, this)});
 
     return attributeAccessTests;
@@ -652,44 +641,6 @@ TestStatus TaskSelfTest::testPersonalAccess()
     return testAccessorFunctions<bool>(testValue, &m_personal, "Personal",
         std::bind(&TaskModel::setPersonal, this, std::placeholders::_1),
         std::bind(&TaskSelfTest::isPersonal, this));
-}
-
-TestStatus TaskSelfTest::testDependenciesAccess()
-{
-    m_modified = false;
-
-    std::cout << "Running self test on add and get functions for " << m_modelName << "::dependencies\n";
-
-    std::vector<std::size_t> testDependencies;
-    testDependencies.push_back(1);
-    testDependencies.push_back(3);
-    testDependencies.push_back(5);
-
-    for (auto dependency: testDependencies)
-    {
-        addDependency(dependency);
-        if (!isModified())
-        {
-            std::cerr << "In self test for: " << m_modelName << "::addDependency()" << " FAILED to set modified\n";
-            return TESTFAILED;
-        }
-    }
-
-    if (m_dependencies != testDependencies)
-    {
-        std::cerr << "Self Test for " << m_modelName << "::addDependency()" << " FAILED to set values\n";
-        return TESTFAILED;
-    }
-
-    if (getDependencies() != testDependencies)
-    {
-        std::cerr << "Self Test for " << m_modelName << "::getDependencies()" << " FAILED to get values\n";
-        return TESTFAILED;
-    }
-
-    std::cout << "Self test on set and get functions for " << m_modelName << "::dependencoies PASSED\n";
-
-    return TESTPASSED;
 }
 
 /*

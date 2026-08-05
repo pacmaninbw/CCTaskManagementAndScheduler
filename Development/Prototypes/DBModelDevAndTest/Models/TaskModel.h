@@ -27,7 +27,6 @@ struct TaskDbQueryValues
     std::uint64_t created_by;
     std::uint64_t assigned_to;
     std::string description;
-    std::optional<std::uint64_t> parent_task;
     std::optional<std::uint64_t> task_status;
     boost::mysql::datetime creation_timestamp;
     boost::mysql::date due_date;
@@ -40,9 +39,8 @@ struct TaskDbQueryValues
     std::uint64_t priority_category;
     std::uint64_t priority;
     std::int64_t personal;
-    std::uint64_t dependency_count;
-    std::optional<std::string> dependencies;
     boost::mysql::datetime last_modified_time_stamp;
+    std::optional<std::uint64_t> dependent_task;
     std::int64_t deleted;
 };
 
@@ -60,6 +58,8 @@ public:
     TaskModel(const TaskDbQueryValues& dbTranslator);
     virtual ~TaskModel() = default;
 
+    virtual bool insert() noexcept override;
+    virtual bool update() noexcept override;
     virtual bool hide(std::size_t userRequestingDelete) noexcept override;
     void addEffortHours(double hours);
     void markComplete()
@@ -90,7 +90,6 @@ public:
     double getactualEffortToDate() const { return m_actualEffort; };
     unsigned int getPriorityGroup() const { return m_priorityCategory; };
     unsigned int getPriority() const { return m_priority; };
-    std::vector<std::size_t> getDependencies() { return m_dependencies; };
     bool isPersonal() const { return m_personal; };
     void setCreatorID(std::size_t creatorID);
     void setAssignToID(std::size_t assignedID);
@@ -112,9 +111,6 @@ public:
     void setPriority(unsigned int priority);
     void setPersonal(bool personalIn);
     void setLastUpdate(std::chrono::system_clock::time_point lastUpdateTS);
-    void addDependency(std::size_t taskId);
-    void addDependency(TaskModel& dependency) { addDependency(dependency.getTaskID()); };
-    void addDependency(std::shared_ptr<TaskModel> dependency) { addDependency(dependency->getTaskID()); };
     void setTaskID(std::size_t taskID);
     std::string taskStatusString(TaskModel::TaskStatus status) const;
     TaskModel::TaskStatus stringToStatus(std::string statusName) const;
@@ -158,7 +154,6 @@ public:
         os << std::format(outFmtStr, "Actual Effort Hours", task.m_actualEffort);
         os << std::format(outFmtStr, "Priority Group", task.m_priorityCategory);
         os << std::format(outFmtStr, "Priority", task.m_priority);
-        os << std::format(outFmtStr, "Dependency Count", task.m_dependencies.size());
 
         os << "Optional Fields\n";
         if (task.m_status.has_value())
@@ -195,8 +190,8 @@ protected:
     virtual std::string formatUpdateStatement() override;
     virtual std::string formatDeleteStatement() override;
     void initRequiredFields() override;
-    void addDependencies(const std::string& dependenciesText);
-    std::string buildDependenciesText(std::vector<std::size_t>& dependencyList) noexcept;
+    void insertDependency();
+    void updateDependency();
 
     static const std::size_t MinimumDescriptionLength = 10;
 
@@ -221,7 +216,6 @@ protected:
     unsigned int m_priorityCategory;
     unsigned int m_priority;
     bool m_personal;
-    std::vector<std::size_t> m_dependencies;
     std::optional<std::chrono::system_clock::time_point> m_lastUpdate;
 };
 

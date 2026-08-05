@@ -23,7 +23,7 @@ public:
 private:
     bool testGetTaskByDescription(TaskModel_shp task);
     bool testGetTaskByID(TaskModel_shp task);
-    TaskList loadTasksFromDataFile();
+    TaskList loadTasksFromDataFile() noexcept;
     void commonTaskInit(TaskModel_shp newTask, CSVRow taskData);
     TaskModel_shp creatOddTask(CSVRow taskData);
     TaskModel_shp creatEvenTask(CSVRow taskData);
@@ -33,7 +33,6 @@ private:
     TestStatus testTaskUpdates();
     TestStatus testHideUnstartedTask();
     bool testTaskUpdate(TaskModel_shp changedTask);
-    bool testAddDepenedcies();
     bool testGetCompletedList();
     std::chrono::year_month_day stringToDate(std::string dateString);
     TestStatus testnegativePathNotModified();

@@ -109,7 +109,6 @@ CREATE OR REPLACE TABLE test_ptsdb.tasks (
     created_by INT UNSIGNED NOT NULL,
     assigned_to INT UNSIGNED NOT NULL,
     description VARCHAR(256) NOT NULL,
-    parent_task INT UNSIGNED DEFAULT NULL,
     task_status INT UNSIGNED DEFAULT NULL,
     creation_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     due_date DATE NOT NULL,
@@ -122,8 +121,6 @@ CREATE OR REPLACE TABLE test_ptsdb.tasks (
     priority_category INT UNSIGNED NOT NULL,
     priority INT UNSIGNED NOT NULL,
     personal TINYINT NOT NULL DEFAULT 0,
-    dependency_count INT UNSIGNED NOT NULL DEFAULT 0,
-    dependencies MEDIUMTEXT,
     last_modified_time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (task_id, created_by),
@@ -148,7 +145,25 @@ CREATE OR REPLACE TABLE test_ptsdb.tasks (
         ON UPDATE RESTRICT
 );
 
+-- --------------------------------------------------------
+-- The dependent can have many dependencies, a dependency can have only one dependent.
 
+CREATE OR REPLACE TABLE test_ptsdb.task_dependencies (
+    dependency INT UNSIGNED NOT NULL,
+    dependent_task INT UNSIGNED NOT NULL,
+    PRIMARY KEY (dependency),
+    INDEX fk_dependent_task_idx (dependent_task ASC),
+    CONSTRAINT dependency
+        FOREIGN KEY (dependency)
+        REFERENCES tasks (task_id)
+        ON DELETE RESTRICT
+        ON UPDATE RESTRICT,
+    CONSTRAINT fk_dependent_task
+        FOREIGN KEY (dependent_task)
+        REFERENCES tasks (task_id)
+        ON DELETE RESTRICT
+        ON UPDATE RESTRICT
+);
 -- --------------------------------------------------------
 
 CREATE OR REPLACE TABLE  test_ptsdb.user_task_goals (

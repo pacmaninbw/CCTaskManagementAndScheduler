@@ -22,7 +22,10 @@ TaskModel_shp TaskQueryProcessor::getTaskByTaskID(std::size_t taskId) noexcept
     try
     {
         boost::mysql::format_context fctx(getFormatOptions());
-        boost::mysql::format_sql_to(fctx, "SELECT * FROM tasks WHERE tasks.task_id = {}", taskId);
+        boost::mysql::format_sql_to(fctx, "SELECT tasks.*, task_dependencies.dependent_task ");
+        boost::mysql::format_sql_to(fctx, "FROM tasks ");
+        boost::mysql::format_sql_to(fctx, "LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency ");
+        boost::mysql::format_sql_to(fctx, "WHERE tasks.task_id = {}", taskId);
 
         StaticQueryTask localResult = staticRunQueryAsync<TaskDbQueryValues>(std::move(fctx).get().value());
         found = getOneStaticResult(localResult);
@@ -39,17 +42,20 @@ TaskModel_shp TaskQueryProcessor::getTaskByTaskID(std::size_t taskId) noexcept
 TaskList TaskQueryProcessor::getTaskByDescriptionAndAssignedUser(std::string_view description, std::size_t assignedUserID) noexcept
 {
     clearErrorMessages();
+    TaskList results;
 
     try
     {
         boost::mysql::format_context fctx(getFormatOptions());
-        boost::mysql::format_sql_to(fctx, "SELECT * FROM tasks ");
+        boost::mysql::format_sql_to(fctx, "SELECT tasks.*, task_dependencies.dependent_task ");
+        boost::mysql::format_sql_to(fctx, "FROM tasks ");
+        boost::mysql::format_sql_to(fctx, "LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency ");
         boost::mysql::format_sql_to(fctx, "WHERE tasks.description = {} ", description);
         boost::mysql::format_sql_to(fctx, "AND tasks.assigned_to = {} ", assignedUserID);
         boost::mysql::format_sql_to(fctx, "AND tasks.deleted <> 1");
 
         StaticQueryTask localResult = staticRunQueryAsync<TaskDbQueryValues>(std::move(fctx).get().value());
-        return processStaticResults(localResult);
+        results = processStaticResults(localResult);
     }
 
     catch(const std::exception& e)
@@ -57,24 +63,27 @@ TaskList TaskQueryProcessor::getTaskByDescriptionAndAssignedUser(std::string_vie
         appendErrorMessage(std::format("In TaskQueryProcessor::{}({}) : {}", __func__, assignedUserID, e.what()));
     }
     
-    return TaskList();
+    return results;
 }
 
 TaskList TaskQueryProcessor::getActiveTasksForAssignedUser(std::size_t assignedUserID) noexcept
 {
     clearErrorMessages();
+    TaskList results;
 
     try
     {
         boost::mysql::format_context fctx(getFormatOptions());
-        boost::mysql::format_sql_to(fctx, "SELECT * FROM tasks ");
+        boost::mysql::format_sql_to(fctx, "SELECT tasks.*, task_dependencies.dependent_task ");
+        boost::mysql::format_sql_to(fctx, "FROM tasks ");
+        boost::mysql::format_sql_to(fctx, "LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency ");
         boost::mysql::format_sql_to(fctx, "WHERE tasks.assigned_to = {} ", assignedUserID);
         boost::mysql::format_sql_to(fctx, "AND tasks.delivered IS NULL ");
         boost::mysql::format_sql_to(fctx, "AND (tasks.task_status IS NOT NULL AND tasks.task_status <> 0) ");
         boost::mysql::format_sql_to(fctx, "AND tasks.deleted <> 1");
 
         StaticQueryTask localResult = staticRunQueryAsync<TaskDbQueryValues>(std::move(fctx).get().value());
-        return processStaticResults(localResult);
+        results = processStaticResults(localResult);
     }
 
     catch(const std::exception& e)
@@ -82,24 +91,27 @@ TaskList TaskQueryProcessor::getActiveTasksForAssignedUser(std::size_t assignedU
         appendErrorMessage(std::format("In TaskQueryProcessor::{}({}) : {}", __func__, assignedUserID, e.what()));
     }
     
-    return TaskList();
+    return results;
 }
 
 TaskList TaskQueryProcessor::getUnstartedDueForStartForAssignedUser(std::size_t assignedUserID) noexcept
 {
     clearErrorMessages();
+    TaskList results;
 
     try
     {
         boost::mysql::format_context fctx(getFormatOptions());
-        boost::mysql::format_sql_to(fctx, "SELECT * FROM tasks ");
+        boost::mysql::format_sql_to(fctx, "SELECT tasks.*, task_dependencies.dependent_task ");
+        boost::mysql::format_sql_to(fctx, "FROM tasks ");
+        boost::mysql::format_sql_to(fctx, "LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency ");
         boost::mysql::format_sql_to(fctx, "WHERE tasks.assigned_to = {} ", assignedUserID);
         boost::mysql::format_sql_to(fctx, "AND tasks.planned_start < {} ", stdchronoDateToBoostMySQLDate(getTodaysDatePlus(OneWeek)));
         boost::mysql::format_sql_to(fctx, "AND (tasks.task_status IS NULL OR tasks.task_status = 0) ");
         boost::mysql::format_sql_to(fctx, "AND tasks.deleted <> 1");
 
         StaticQueryTask localResult = staticRunQueryAsync<TaskDbQueryValues>(std::move(fctx).get().value());
-        return processStaticResults(localResult);
+        results = processStaticResults(localResult);
     }
 
     catch(const std::exception& e)
@@ -107,23 +119,26 @@ TaskList TaskQueryProcessor::getUnstartedDueForStartForAssignedUser(std::size_t 
         appendErrorMessage(std::format("In TaskQueryProcessor::{}({}) : {}", __func__, assignedUserID, e.what()));
     }
     
-    return TaskList();
+    return results;
 }
 
 TaskList TaskQueryProcessor::getTasksCompletedByAssignedAfterDate(std::size_t assignedUserID,
     std::chrono::year_month_day searchStartDate) noexcept
 {
     clearErrorMessages();
+    TaskList results;
 
     try
     {
         boost::mysql::format_context fctx(getFormatOptions());
-        boost::mysql::format_sql_to(fctx, "SELECT * FROM tasks ");
+        boost::mysql::format_sql_to(fctx, "SELECT tasks.*, task_dependencies.dependent_task ");
+        boost::mysql::format_sql_to(fctx, "FROM tasks ");
+        boost::mysql::format_sql_to(fctx, "LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency ");
         boost::mysql::format_sql_to(fctx, "WHERE tasks.assigned_to = {} ", assignedUserID);
         boost::mysql::format_sql_to(fctx, "AND tasks.delivered >= {}", stdchronoDateToBoostMySQLDate(searchStartDate));
 
         StaticQueryTask localResult = staticRunQueryAsync<TaskDbQueryValues>(std::move(fctx).get().value());
-        return processStaticResults(localResult);
+        results = processStaticResults(localResult);
     }
 
     catch(const std::exception& e)
@@ -131,23 +146,26 @@ TaskList TaskQueryProcessor::getTasksCompletedByAssignedAfterDate(std::size_t as
         appendErrorMessage(std::format("In TaskQueryProcessor::{}({}) : {}", __func__, assignedUserID, e.what()));
     }
     
-    return TaskList();
+    return results;
 }
 
 TaskList TaskQueryProcessor::getTasksByAssignedIDandParentID(std::size_t assignedUserID, std::size_t parentID) noexcept
 {
     clearErrorMessages();
+    TaskList results;
 
     try
     {
         boost::mysql::format_context fctx(getFormatOptions());
-        boost::mysql::format_sql_to(fctx, "SELECT * FROM tasks ");
+        boost::mysql::format_sql_to(fctx, "SELECT tasks.*, task_dependencies.dependent_task ");
+        boost::mysql::format_sql_to(fctx, "FROM tasks ");
+        boost::mysql::format_sql_to(fctx, "LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency ");
         boost::mysql::format_sql_to(fctx, "WHERE tasks.assigned_to = {} ", assignedUserID);
         boost::mysql::format_sql_to(fctx, "AND tasks.parent_task = {} ", parentID);
         boost::mysql::format_sql_to(fctx, "AND tasks.deleted <> 1");
 
         StaticQueryTask localResult = staticRunQueryAsync<TaskDbQueryValues>(std::move(fctx).get().value());
-        return processStaticResults(localResult);
+        results = processStaticResults(localResult);
     }
 
     catch(const std::exception& e)
@@ -155,17 +173,20 @@ TaskList TaskQueryProcessor::getTasksByAssignedIDandParentID(std::size_t assigne
         appendErrorMessage(std::format("In TaskQueryProcessor::{}({}) : {}", __func__, assignedUserID, e.what()));
     }
     
-    return TaskList();
+    return results;
 }
 
 TaskList TaskQueryProcessor::getDefaultDashboardTaskList(std::size_t assignedUserID, std::chrono::year_month_day searchStartDate) noexcept
 {
     clearErrorMessages();
+    TaskList results;
 
     try
     {
         boost::mysql::format_context fctx(getFormatOptions());
-        boost::mysql::format_sql_to(fctx, "SELECT * FROM tasks ");
+        boost::mysql::format_sql_to(fctx, "SELECT tasks.*, task_dependencies.dependent_task ");
+        boost::mysql::format_sql_to(fctx, "FROM tasks ");
+        boost::mysql::format_sql_to(fctx, "LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency ");
         boost::mysql::format_sql_to(fctx, "WHERE tasks.assigned_to = {} ", assignedUserID);
         boost::mysql::format_sql_to(fctx, "AND tasks.delivered IS NULL ");
         boost::mysql::format_sql_to(fctx, "AND tasks.deleted <> 1 ");
@@ -174,7 +195,7 @@ TaskList TaskQueryProcessor::getDefaultDashboardTaskList(std::size_t assignedUse
         boost::mysql::format_sql_to(fctx, "ORDER BY tasks.priority_category ASC, tasks.priority ASC");
 
         StaticQueryTask localResult = staticRunQueryAsync<TaskDbQueryValues>(std::move(fctx).get().value());
-        return processStaticResults(localResult);
+        results = processStaticResults(localResult);
     }
 
     catch(const std::exception& e)
@@ -182,7 +203,7 @@ TaskList TaskQueryProcessor::getDefaultDashboardTaskList(std::size_t assignedUse
         appendErrorMessage(std::format("In TaskQueryProcessor::{}({}) : {}", __func__, assignedUserID, e.what()));
     }
     
-    return TaskList();
+    return results;
 }
 
 std::vector<ListExceptionTestElement> TaskQueryProcessor::initListExceptionTests() noexcept
@@ -275,4 +296,5 @@ TestStatus TaskQueryProcessor::testExceptionGetDefaultDashboardTaskList() noexce
          std::bind(&TaskQueryProcessor::getDefaultDashboardTaskList, this, std::placeholders::_1, std::placeholders::_2),
         assignedUser, searchStartDate);
 }
+
 

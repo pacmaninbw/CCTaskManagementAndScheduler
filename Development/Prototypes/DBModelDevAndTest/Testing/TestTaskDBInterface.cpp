@@ -121,19 +121,26 @@ bool TestTaskDBInterface::testGetTaskByID(TaskModel_shp insertedTask)
     }
 }
 
-TaskList TestTaskDBInterface::loadTasksFromDataFile()
+TaskList TestTaskDBInterface::loadTasksFromDataFile() noexcept
 {
-    std::size_t lCount = 0;
-    TaskList inputTaskData;
 
-    std::ifstream taskDataFile(m_dataFileName);
-    
-    for (auto row: CSVRange(taskDataFile))
+    TaskList inputTaskData;
+    std::size_t lCount = 0;
+
+    try {
+        std::ifstream taskDataFile(m_dataFileName);
+        
+        for (auto row: CSVRange(taskDataFile))
+        {
+            // Try both constructors on an alternating basis.
+            TaskModel_shp testTask = (lCount & 0x000001)? creatOddTask(row) : creatEvenTask(row);
+            inputTaskData.push_back(testTask);
+            ++lCount;
+        }
+    }
+    catch (const std::exception& e)
     {
-        // Try both constructors on an alternating basis.
-        TaskModel_shp testTask = (lCount & 0x000001)? creatOddTask(row) : creatEvenTask(row);
-        inputTaskData.push_back(testTask);
-        ++lCount;
+        std::cerr << std::format("TestTaskDBInterface::{} FAILED with exception: {}", __func__, e.what()) << std::endl;
     }
 
     return inputTaskData;
@@ -168,7 +175,11 @@ void TestTaskDBInterface::commonTaskInit(TaskModel_shp newTask, CSVRow taskData)
     // Optional fields
     if (!taskData[CSV_ParentTaskColIdx].empty())
     {
-        newTask->setParentTaskID(std::stoi(taskData[CSV_ParentTaskColIdx]));
+        std::size_t parentId = std::stoi(taskData[CSV_ParentTaskColIdx]);
+        if (parentId > 0)
+        {
+            newTask->setParentTaskID(parentId);
+        }
     }
 
     if (!taskData[CSV_ActualStartDateColIdx].empty())
@@ -303,11 +314,6 @@ TestStatus TestTaskDBInterface::testTaskUpdates()
         return TESTFAILED;
     }
 
-    if (!testAddDepenedcies())
-    {
-        return TESTFAILED;
-    }
-
     if (!testGetCompletedList())
     {
         return TESTFAILED;
@@ -389,60 +395,6 @@ bool TestTaskDBInterface::testTaskUpdate(TaskModel_shp changedTask)
     }
 
     return testPassed;
-}
-
-bool TestTaskDBInterface::testAddDepenedcies()
-{
-    std::string dependentDescription("Install a WordPress Archive Plugin");
-    std::string mostDependentTaskDesc("Log into PHPMyAdmin and save Database to disk");
-    std::vector<std::string> taskDescriptions = {
-        {"Check with GoDaddy about providing service to archive website to external SSD"},
-        dependentDescription,
-        {"Have GoDaddy install PHPMyAdmin"},
-        {"Run Archive Plugin"}
-    };
-
-    TaskQueryProcessor taskQueryProcessor;
-    // Tests the use of both UserModel & and UserModel_shp 
-    std::size_t user1ID = m_userOne->getUserID();
-    TaskList dependsOnList = taskQueryProcessor.getTaskByDescriptionAndAssignedUser(taskDescriptions[0], user1ID);
-    TaskModel_shp depenedsOn = dependsOnList[0];
-    
-    TaskList depenedentTasks = taskQueryProcessor.getTaskByDescriptionAndAssignedUser(taskDescriptions[1], user1ID);
-    TaskModel_shp depenedentTask = depenedentTasks[0];
-
-    depenedentTask->addDependency(depenedsOn);
-    if (!depenedentTask->update())
-    {
-        std::cerr << std::format("Update to add depenency to '{}' FAILED\n", taskDescriptions[0]);
-        return false;
-    }
-
-    std::vector<std::size_t> comparison;
-    TaskList mostDepenedentTasks = taskQueryProcessor.getTaskByDescriptionAndAssignedUser(mostDependentTaskDesc, user1ID);
-    TaskModel_shp mostDepenedentTask = mostDepenedentTasks[0];
-    for (auto task: taskDescriptions)
-    {
-        TaskList dependencies = taskQueryProcessor.getTaskByDescriptionAndAssignedUser(task, user1ID);
-        TaskModel_shp dependency = dependencies[0];
-        comparison.push_back(dependency->getTaskID());
-        mostDepenedentTask->addDependency(dependency);
-    }
-    if (!mostDepenedentTask->update())
-    {
-        std::cerr << std::format("Update to add depenency to '{}' FAILED\n", mostDependentTaskDesc);
-        return false;
-    }
-
-    TaskModel_shp testDepenedenciesInDB = taskQueryProcessor.getTaskByTaskID(mostDepenedentTask->getTaskID());
-    std::vector<std::size_t> dbValue = testDepenedenciesInDB->getDependencies();
-    if (comparison != dbValue)
-    {
-        std::cerr << "Retrival of task dependencies differ, Test FAILED\n";
-        return false;
-    }
-
-    return true;
 }
 
 bool TestTaskDBInterface::testGetCompletedList()

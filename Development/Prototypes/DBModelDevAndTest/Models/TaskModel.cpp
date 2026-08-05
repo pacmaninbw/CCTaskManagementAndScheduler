@@ -48,7 +48,6 @@ TaskModel::TaskModel(const TaskDbQueryValues &dbTranslator)
     m_assignToID = dbTranslator.assigned_to;
     m_description = dbTranslator.description;
     m_status = static_cast<TaskModel::TaskStatus>(dbTranslator.task_status.value_or(0));
-    m_parentTaskID = dbTranslator.parent_task;
     m_dueDate = boostMysqlDateToChronoDate(dbTranslator.due_date);
     m_planedStart = boostMysqlDateToChronoDate(dbTranslator.planned_start);
     m_actualStart = dbTranslator.actual_start.transform(boostMysqlDateToChronoDate);
@@ -62,12 +61,7 @@ TaskModel::TaskModel(const TaskDbQueryValues &dbTranslator)
     m_created = boostMysqlDateTimeToChronoTimePoint(dbTranslator.creation_timestamp);
     m_lastUpdate = boostMysqlDateTimeToChronoTimePoint(dbTranslator.last_modified_time_stamp);
     m_deleted = dbTranslator.deleted;
-
-    if (dbTranslator.dependency_count)
-    {
-        const std::string temp = dbTranslator.dependencies.value();
-        addDependencies(temp);
-    }
+    m_parentTaskID = dbTranslator.dependent_task;
 }
 
 TaskModel::TaskModel(std::size_t creatorID)
@@ -83,6 +77,66 @@ TaskModel::TaskModel(std::size_t creatorID, std::string description)
     setCreatorID(creatorID);
     setAssignToID(creatorID);
     setDescription(description);
+}
+
+bool TaskModel::insert() noexcept
+{
+    if (!preInsertCheck())
+    {
+        return false;
+    }
+
+    try
+    {
+        boost::mysql::results localResult = runQueryAsync(formatInsertStatement());
+        m_primaryKey =  getPrimaryKeyValue(localResult);
+
+        if (m_parentTaskID.has_value())
+        {
+            if (m_parentTaskID.value() != 0 && m_parentTaskID.value() != m_primaryKey)
+            {
+                insertDependency();
+            }
+        }
+
+        m_modified = false;
+
+        return true;
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In {}.insert : {}", m_modelName, e.what()));
+        return false;
+    }
+}
+
+bool TaskModel::update() noexcept
+{
+    if (!preUpdateCheck())
+    {
+        return false;
+    }
+
+    try
+    {
+        boost::mysql::results localResult = runQueryAsync(formatUpdateStatement());
+
+        if (m_parentTaskID.has_value())
+        {
+            updateDependency();
+        }
+
+        m_modified = false;
+            
+        return true;
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In {}.update : {}", m_modelName, e.what()));
+        return false;
+    }
 }
 
 bool TaskModel::hide(std::size_t userRequestingDelete) noexcept
@@ -187,6 +241,18 @@ void TaskModel::setStatus(TaskModel::TaskStatus status)
 
 void TaskModel::setParentTaskID(std::size_t parentTaskID)
 {
+    if (parentTaskID == 0)
+    {
+        appendErrorMessage(std::format("In TaskModel.{} : {}", __func__, "Parent Task ID must be greater than zero."));
+        throw std::out_of_range("Parent Task ID must be greater than zero.");
+    }
+
+    if (m_primaryKey > 0 && parentTaskID == m_primaryKey)
+    {
+        appendErrorMessage(std::format("In TaskModel.{} : {}", __func__, "Parent Task ID can't be same as current Task id"));
+        throw std::out_of_range("Parent Task ID can't be same as current Task id");
+    }
+
     m_modified = true;
     m_parentTaskID = parentTaskID;
 }
@@ -263,12 +329,6 @@ void TaskModel::setPersonal(bool personal)
     m_personal = personal;
 }
 
-void TaskModel::addDependency(std::size_t taskId)
-{
-    m_modified = true;
-    m_dependencies.push_back(taskId);
-}
-
 void TaskModel::setLastUpdate(std::chrono::system_clock::time_point lastModified)
 {
     m_modified = true;
@@ -307,8 +367,7 @@ bool TaskModel::diffTask(TaskModel& other)
         m_priorityCategory == other.m_priorityCategory &&
         m_priority == other.m_priority &&
         m_personal == other.m_personal &&
-        m_deleted == other.m_deleted &&
-        m_dependencies.size() == other.m_dependencies.size()
+        m_deleted == other.m_deleted
     );
 }
 
@@ -318,21 +377,12 @@ bool TaskModel::diffTask(TaskModel& other)
  */
 std::string TaskModel::formatInsertStatement()
 {
-    std::size_t dependencyCount = getDependencies().size();
-    std::optional<std::string> depenenciesText;
-    if (dependencyCount)
-    {
-        std::vector<std::size_t> dependencyList = getDependencies();
-        depenenciesText = buildDependenciesText(dependencyList);
-    }
-
     boost::mysql::format_context fctx(getFormatOptions());
 
     boost::mysql::format_sql_to(fctx, "INSERT INTO tasks (");
     boost::mysql::format_sql_to(fctx, "created_by, ");
     boost::mysql::format_sql_to(fctx, "assigned_to, ");
     boost::mysql::format_sql_to(fctx, "description, ");
-    boost::mysql::format_sql_to(fctx, "parent_task, ");
     boost::mysql::format_sql_to(fctx, "task_status, ");
     boost::mysql::format_sql_to(fctx, "due_date, ");
     boost::mysql::format_sql_to(fctx, "planned_start, ");
@@ -343,14 +393,11 @@ std::string TaskModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "hours_effort, ");
     boost::mysql::format_sql_to(fctx, "priority_category, ");
     boost::mysql::format_sql_to(fctx, "priority, ");
-    boost::mysql::format_sql_to(fctx, "personal, ");
-    boost::mysql::format_sql_to(fctx, "dependency_count, ");
-    boost::mysql::format_sql_to(fctx, "dependencies");
+    boost::mysql::format_sql_to(fctx, "personal");
     boost::mysql::format_sql_to(fctx, ") VALUES (");
     boost::mysql::format_sql_to(fctx, "{}, ", m_creatorID);
     boost::mysql::format_sql_to(fctx, "{}, ", m_assignToID);
     boost::mysql::format_sql_to(fctx, "{}, ", m_description);
-    boost::mysql::format_sql_to(fctx, "{}, ", m_parentTaskID);
     boost::mysql::format_sql_to(fctx, "{}, ", getStatusIntVal());
     boost::mysql::format_sql_to(fctx, "{}, ", stdchronoDateToBoostMySQLDate(m_dueDate.value()));
     boost::mysql::format_sql_to(fctx, "{}, ", stdchronoDateToBoostMySQLDate(m_planedStart.value()));
@@ -361,9 +408,7 @@ std::string TaskModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "{}, ", m_actualEffort);
     boost::mysql::format_sql_to(fctx, "{}, ", m_priorityCategory);
     boost::mysql::format_sql_to(fctx, "{}, ", m_priority);
-    boost::mysql::format_sql_to(fctx, "{}, ", m_personal);
-    boost::mysql::format_sql_to(fctx, "{}, ", dependencyCount);
-    boost::mysql::format_sql_to(fctx, "{}", depenenciesText);
+    boost::mysql::format_sql_to(fctx, "{}", m_personal);
     boost::mysql::format_sql_to(fctx, ")");
 
     return (std::move(fctx).get().value());
@@ -371,20 +416,11 @@ std::string TaskModel::formatInsertStatement()
 
 std::string TaskModel::formatUpdateStatement()
 {
-    std::size_t dependencyCount = getDependencies().size();
-    std::optional<std::string> depenenciesText;
-    if (dependencyCount)
-    {
-        std::vector<std::size_t> dependencyList = getDependencies();
-        depenenciesText = buildDependenciesText(dependencyList);
-    }
-
     boost::mysql::format_context fctx(getFormatOptions());
     boost::mysql::format_sql_to(fctx, "UPDATE tasks SET ");
     boost::mysql::format_sql_to(fctx, "tasks.created_by = {}, ", m_creatorID);
     boost::mysql::format_sql_to(fctx, "tasks.assigned_to = {}, ", m_assignToID);
     boost::mysql::format_sql_to(fctx, "tasks.description = {}, ", m_description);
-    boost::mysql::format_sql_to(fctx, "tasks.parent_task = {}, ", m_parentTaskID);
     boost::mysql::format_sql_to(fctx, "tasks.task_status = {}, ", getStatusIntVal());
     boost::mysql::format_sql_to(fctx, "tasks.due_date = {}, ", stdchronoDateToBoostMySQLDate(m_dueDate.value()));
     boost::mysql::format_sql_to(fctx, "tasks.planned_start = {}, ", stdchronoDateToBoostMySQLDate(m_planedStart.value()));
@@ -396,8 +432,6 @@ std::string TaskModel::formatUpdateStatement()
     boost::mysql::format_sql_to(fctx, "tasks.priority_category = {}, ", m_priorityCategory);
     boost::mysql::format_sql_to(fctx, "tasks.priority = {}, ", m_priority);
     boost::mysql::format_sql_to(fctx, "tasks.personal = {}, ", m_personal);
-    boost::mysql::format_sql_to(fctx, "tasks.dependency_count = {}, ", dependencyCount);
-    boost::mysql::format_sql_to(fctx, "tasks.dependencies = {}, ", depenenciesText);
     boost::mysql::format_sql_to(fctx, "tasks.deleted = {} ", m_deleted);
     boost::mysql::format_sql_to(fctx, "WHERE tasks.task_id = {} ", m_primaryKey);
 
@@ -421,43 +455,21 @@ void TaskModel::initRequiredFields()
     m_missingRequiredFieldsTests.push_back({std::bind(&TaskModel::isMissingDueDate, this), "due date (deadline)"});
 }
 
-void TaskModel::addDependencies(const std::string& dependenciesText)
+void TaskModel::insertDependency()
 {
-    std::vector<std::string> dependencyStrings = dependenciesText
-        | std::views::split(m_delimiter) 
-        | std::ranges::to<std::vector<std::string>>();
+    boost::mysql::format_context fctx(getFormatOptions());
+    boost::mysql::format_sql_to(fctx, "INSERT INTO task_dependencies (dependency, dependent_task) VALUES ({}, {})",
+        m_primaryKey, m_parentTaskID.value());
 
-    if (!dependencyStrings.empty())
-    {
-        for (auto& dependencyStr: dependencyStrings)
-        {
-            m_dependencies.push_back(static_cast<std::size_t>(std::stol(dependencyStr)));
-        }
-    }
-    else
-    {
-        std::runtime_error NoExpectedDependencies("Dependencies expected but not found!");
-        throw NoExpectedDependencies;
-    }
+    runQueryAsync(std::move(fctx).get().value());
 }
 
-std::string TaskModel::buildDependenciesText(std::vector<std::size_t>& dependencyList) noexcept
+void TaskModel::updateDependency()
 {
-    if (dependencyList.size() > 1)
-    {
-        std::sort(dependencyList.begin(), dependencyList.end());
+    boost::mysql::format_context fctx(getFormatOptions());
+    boost::mysql::format_sql_to(fctx, "UPDATE task_dependencies SET task_dependencies.dependent_task = {} ",
+        m_parentTaskID.value());
+    boost::mysql::format_sql_to(fctx, "WHERE task_dependencies.dependency = {}", m_primaryKey);
 
-        auto last = std::unique(dependencyList.begin(), dependencyList.end());
-
-        dependencyList.erase(last, dependencyList.end());
-    }
-
-    std::vector<std::string> dependencyStrings;
-    for (auto dependency: dependencyList)
-    {
-        dependencyStrings.push_back(std::to_string(dependency));
-    }
-    auto joined_view = dependencyStrings | std::views::join_with(m_delimiter);
-    return std::ranges::to<std::string>(joined_view);
+    runQueryAsync(std::move(fctx).get().value());
 }
-

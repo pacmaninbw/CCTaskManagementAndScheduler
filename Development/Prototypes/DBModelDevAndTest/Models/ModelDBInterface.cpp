@@ -44,24 +44,8 @@ bool ModelDBInterface::save() noexcept
 
 bool ModelDBInterface::insert() noexcept
 {
-    clearErrorMessages();
-
-    if (isInDataBase())
+    if (!preInsertCheck())
     {
-        appendErrorMessage(std::format("{} already in Database, use Update!", m_modelName));
-        return false;
-    }
-
-    if (!isModified())
-    {
-        appendErrorMessage(std::format("{} not modified!", m_modelName));
-        return false;
-    }
-
-    if (!hasRequiredValues())
-    {
-        appendErrorMessage(std::format("{} is missing required values!", m_modelName));
-        reportMissingFields();
         return false;
     }
 
@@ -83,17 +67,8 @@ bool ModelDBInterface::insert() noexcept
 
 bool ModelDBInterface::update() noexcept
 {
-    clearErrorMessages();
-
-    if (!isInDataBase())
+    if (!preUpdateCheck())
     {
-        appendErrorMessage(std::format("{} not in Database, use Insert!", m_modelName));
-        return false;
-    }
-
-    if (!isModified())
-    {
-        appendErrorMessage(std::format("{} not modified!", m_modelName));
         return false;
     }
 
@@ -183,3 +158,47 @@ std::size_t ModelDBInterface::getPrimaryKeyValue(boost::mysql::results &dbResult
     return pKeyValue;
 }
 
+bool ModelDBInterface::preInsertCheck() noexcept
+{
+    clearErrorMessages();
+
+    if (isInDataBase())
+    {
+        appendErrorMessage(std::format("{} already in Database, use Update!", m_modelName));
+        return false;
+    }
+
+    if (!isModified())
+    {
+        appendErrorMessage(std::format("{} not modified!", m_modelName));
+        return false;
+    }
+
+    if (!hasRequiredValues())
+    {
+        appendErrorMessage(std::format("{} is missing required values!", m_modelName));
+        reportMissingFields();
+        return false;
+    }
+
+    return true;
+}
+
+bool ModelDBInterface::preUpdateCheck() noexcept
+{
+    clearErrorMessages();
+
+    if (!isInDataBase())
+    {
+        appendErrorMessage(std::format("{} not in Database, use Insert!", m_modelName));
+        return false;
+    }
+
+    if (!isModified())
+    {
+        appendErrorMessage(std::format("{} not modified!", m_modelName));
+        return false;
+    }
+
+    return true;
+}

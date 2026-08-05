@@ -19,9 +19,9 @@ class ModelDBInterface : public CoreDBInterface
 public:
     ModelDBInterface(std::string modelNameIn, std::string primaryKeyNameIn);
     virtual ~ModelDBInterface() = default;
-    bool save() noexcept;
-    bool insert() noexcept;
-    bool update() noexcept;
+    virtual bool save() noexcept;
+    virtual bool insert() noexcept;
+    virtual bool update() noexcept;
     virtual bool hide(std::size_t userRequestingDelete) noexcept;
     bool isInDataBase() const noexcept { return (m_primaryKey > 0); };
     bool isModified() const noexcept { return m_modified; };
@@ -49,8 +49,15 @@ protected:
  * Get the primary key value after a record is inserted in the database.
  */
     std::size_t getPrimaryKeyValue(boost::mysql::results& dbResultSet);
+/*
+ * Pre database action checks.
+ */
+    bool preInsertCheck() noexcept;
+    bool preUpdateCheck() noexcept;
 
-protected:
+ /*
+  * common protected variables used by all Models.
+  */
     std::size_t m_primaryKey;
     std::string m_modelName;
     std::string m_primaryKeyName;
