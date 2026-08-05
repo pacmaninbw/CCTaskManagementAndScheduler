@@ -14,7 +14,9 @@ TaskQueryProcessor::TaskQueryProcessor()
 {
 }
 
-static boost::mysql::constant_string_view baseTaskQuery("SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency ");
+static boost::mysql::constant_string_view baseTaskQuery(
+    "SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT "
+    "JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency ");
 
 TaskModel_shp TaskQueryProcessor::getTaskByTaskID(std::size_t taskId) noexcept
 {
