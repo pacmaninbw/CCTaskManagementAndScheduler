@@ -14,6 +14,8 @@ TaskQueryProcessor::TaskQueryProcessor()
 {
 }
 
+static boost::mysql::constant_string_view baseTaskQuery("SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency ");
+
 TaskModel_shp TaskQueryProcessor::getTaskByTaskID(std::size_t taskId) noexcept
 {
     clearErrorMessages();
@@ -22,9 +24,7 @@ TaskModel_shp TaskQueryProcessor::getTaskByTaskID(std::size_t taskId) noexcept
     try
     {
         boost::mysql::format_context fctx(getFormatOptions());
-        boost::mysql::format_sql_to(fctx, "SELECT tasks.*, task_dependencies.dependent_task ");
-        boost::mysql::format_sql_to(fctx, "FROM tasks ");
-        boost::mysql::format_sql_to(fctx, "LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency ");
+        boost::mysql::format_sql_to(fctx, baseTaskQuery);
         boost::mysql::format_sql_to(fctx, "WHERE tasks.task_id = {}", taskId);
 
         StaticQueryTask localResult = staticRunQueryAsync<TaskDbQueryValues>(std::move(fctx).get().value());
@@ -47,9 +47,7 @@ TaskList TaskQueryProcessor::getTaskByDescriptionAndAssignedUser(std::string_vie
     try
     {
         boost::mysql::format_context fctx(getFormatOptions());
-        boost::mysql::format_sql_to(fctx, "SELECT tasks.*, task_dependencies.dependent_task ");
-        boost::mysql::format_sql_to(fctx, "FROM tasks ");
-        boost::mysql::format_sql_to(fctx, "LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency ");
+        boost::mysql::format_sql_to(fctx, baseTaskQuery);
         boost::mysql::format_sql_to(fctx, "WHERE tasks.description = {} ", description);
         boost::mysql::format_sql_to(fctx, "AND tasks.assigned_to = {} ", assignedUserID);
         boost::mysql::format_sql_to(fctx, "AND tasks.deleted <> 1");
@@ -74,9 +72,7 @@ TaskList TaskQueryProcessor::getActiveTasksForAssignedUser(std::size_t assignedU
     try
     {
         boost::mysql::format_context fctx(getFormatOptions());
-        boost::mysql::format_sql_to(fctx, "SELECT tasks.*, task_dependencies.dependent_task ");
-        boost::mysql::format_sql_to(fctx, "FROM tasks ");
-        boost::mysql::format_sql_to(fctx, "LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency ");
+        boost::mysql::format_sql_to(fctx, baseTaskQuery);
         boost::mysql::format_sql_to(fctx, "WHERE tasks.assigned_to = {} ", assignedUserID);
         boost::mysql::format_sql_to(fctx, "AND tasks.delivered IS NULL ");
         boost::mysql::format_sql_to(fctx, "AND (tasks.task_status IS NOT NULL AND tasks.task_status <> 0) ");
@@ -102,9 +98,7 @@ TaskList TaskQueryProcessor::getUnstartedDueForStartForAssignedUser(std::size_t 
     try
     {
         boost::mysql::format_context fctx(getFormatOptions());
-        boost::mysql::format_sql_to(fctx, "SELECT tasks.*, task_dependencies.dependent_task ");
-        boost::mysql::format_sql_to(fctx, "FROM tasks ");
-        boost::mysql::format_sql_to(fctx, "LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency ");
+        boost::mysql::format_sql_to(fctx, baseTaskQuery);
         boost::mysql::format_sql_to(fctx, "WHERE tasks.assigned_to = {} ", assignedUserID);
         boost::mysql::format_sql_to(fctx, "AND tasks.planned_start < {} ", stdchronoDateToBoostMySQLDate(getTodaysDatePlus(OneWeek)));
         boost::mysql::format_sql_to(fctx, "AND (tasks.task_status IS NULL OR tasks.task_status = 0) ");
@@ -131,9 +125,7 @@ TaskList TaskQueryProcessor::getTasksCompletedByAssignedAfterDate(std::size_t as
     try
     {
         boost::mysql::format_context fctx(getFormatOptions());
-        boost::mysql::format_sql_to(fctx, "SELECT tasks.*, task_dependencies.dependent_task ");
-        boost::mysql::format_sql_to(fctx, "FROM tasks ");
-        boost::mysql::format_sql_to(fctx, "LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency ");
+        boost::mysql::format_sql_to(fctx, baseTaskQuery);
         boost::mysql::format_sql_to(fctx, "WHERE tasks.assigned_to = {} ", assignedUserID);
         boost::mysql::format_sql_to(fctx, "AND tasks.delivered >= {}", stdchronoDateToBoostMySQLDate(searchStartDate));
 
@@ -157,9 +149,7 @@ TaskList TaskQueryProcessor::getTasksByAssignedIDandParentID(std::size_t assigne
     try
     {
         boost::mysql::format_context fctx(getFormatOptions());
-        boost::mysql::format_sql_to(fctx, "SELECT tasks.*, task_dependencies.dependent_task ");
-        boost::mysql::format_sql_to(fctx, "FROM tasks ");
-        boost::mysql::format_sql_to(fctx, "LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency ");
+        boost::mysql::format_sql_to(fctx, baseTaskQuery);
         boost::mysql::format_sql_to(fctx, "WHERE tasks.assigned_to = {} ", assignedUserID);
         boost::mysql::format_sql_to(fctx, "AND tasks.parent_task = {} ", parentID);
         boost::mysql::format_sql_to(fctx, "AND tasks.deleted <> 1");
@@ -184,9 +174,7 @@ TaskList TaskQueryProcessor::getDefaultDashboardTaskList(std::size_t assignedUse
     try
     {
         boost::mysql::format_context fctx(getFormatOptions());
-        boost::mysql::format_sql_to(fctx, "SELECT tasks.*, task_dependencies.dependent_task ");
-        boost::mysql::format_sql_to(fctx, "FROM tasks ");
-        boost::mysql::format_sql_to(fctx, "LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency ");
+        boost::mysql::format_sql_to(fctx, baseTaskQuery);
         boost::mysql::format_sql_to(fctx, "WHERE tasks.assigned_to = {} ", assignedUserID);
         boost::mysql::format_sql_to(fctx, "AND tasks.delivered IS NULL ");
         boost::mysql::format_sql_to(fctx, "AND tasks.deleted <> 1 ");
