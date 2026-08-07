@@ -33,8 +33,6 @@ public:
     NoteList getDashboardNoteTable(std::size_t userId, std::chrono::year_month_day searchDate) noexcept;
 
 private:
-    std::string formatGetNotesFromUserForDate(std::size_t userId, std::chrono::year_month_day searchDate);
-
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
     TestStatus testExceptionGetNoteByID() noexcept;
     TestStatus testExceptionsGetAllNotes() noexcept;

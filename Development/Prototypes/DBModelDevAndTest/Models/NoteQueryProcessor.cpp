@@ -159,7 +159,17 @@ NoteList NoteQueryProcessor::getDashboardNoteTable(std::size_t userId, std::chro
 
     try
     {
-        StaticQueryNote localResult = staticRunQueryAsync<NoteDbQueryValues>(formatGetNotesFromUserForDate(userId, searchDate));
+    std::chrono::sys_days endDay = searchDate;
+    endDay += std::chrono::days(1);
+
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM user_notes ");
+        boost::mysql::format_sql_to(fctx, "WHERE user_notes.user_id = {} ", userId);
+        boost::mysql::format_sql_to(fctx, "AND user_notes.note_creation >= {} ", stdchronoDateToBoostMySQLDate(searchDate));
+        boost::mysql::format_sql_to(fctx, "AND user_notes.note_creation < {} ", stdchronoDateToBoostMySQLDate(endDay));
+        boost::mysql::format_sql_to(fctx, "AND user_notes.deleted <> 1 ");
+        boost::mysql::format_sql_to(fctx, "ORDER BY user_notes.note_creation ASC");
+        StaticQueryNote localResult = staticRunQueryAsync<NoteDbQueryValues>(std::move(fctx).get().value());
         return processStaticResults(localResult);
     }
 
@@ -169,28 +179,6 @@ NoteList NoteQueryProcessor::getDashboardNoteTable(std::size_t userId, std::chro
     }
     
     return NoteList();
-}
-
-/*
- * Get the notes for the date requested. Adjust for local time to GMT.
- */
-std::string NoteQueryProcessor::formatGetNotesFromUserForDate(std::size_t userId, std::chrono::year_month_day searchDate)
-{
-    std::chrono::system_clock::time_point startDay(getLocalMidnight(searchDate));
-    std::chrono::hours mostHoursInDay{23};
-    std::chrono::minutes minutesInLastHour{59};
-    std::chrono::system_clock::duration oneDayOffset = mostHoursInDay + minutesInLastHour;
-    std::chrono::system_clock::time_point endDay(startDay + oneDayOffset);
-
-    boost::mysql::format_context fctx(getFormatOptions());
-    boost::mysql::format_sql_to(fctx, "SELECT * FROM user_notes ");
-    boost::mysql::format_sql_to(fctx, "WHERE user_notes.user_id = {} ", userId);
-    boost::mysql::format_sql_to(fctx, "AND user_notes.note_creation >= {} ", stdChronoTimePointToBoostDateTime(startDay));
-    boost::mysql::format_sql_to(fctx, "AND user_notes.note_creation <= {} ", stdChronoTimePointToBoostDateTime(endDay));
-    boost::mysql::format_sql_to(fctx, "AND user_notes.deleted <> 1 ");
-    boost::mysql::format_sql_to(fctx, "ORDER BY user_notes.note_creation ASC");
-
-    return std::move(fctx).get().value();
 }
 
 std::vector<ListExceptionTestElement> NoteQueryProcessor::initListExceptionTests() noexcept 
