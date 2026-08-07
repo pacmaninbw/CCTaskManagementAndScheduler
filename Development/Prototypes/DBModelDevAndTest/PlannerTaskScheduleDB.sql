@@ -69,7 +69,6 @@ CREATE OR REPLACE TABLE  test_ptsdb.user_goals (
     last_modified_time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (id_user_goals, user_id),
-    UNIQUE INDEX id_user_goals_unique (id_user_goals ASC),
     INDEX ug_description_idx (description ASC),
     INDEX ug_creation_timestamp_idx (creation_timestamp DESC),
     INDEX ug_last_modified_time_stamp_idx (last_modified_time_stamp DESC),
@@ -78,7 +77,10 @@ CREATE OR REPLACE TABLE  test_ptsdb.user_goals (
         REFERENCES user_profile (user_id)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT,
-    INDEX fk_user_goals_user_id_idx (user_id)
+    INDEX fk_user_goals_user_id_idx (user_id),
+    CONSTRAINT fk_parent_goal
+        FOREIGN KEY (parent_goal)
+        REFERENCES user_goals (id_user_goals)
 );
 
 -- --------------------------------------------------------
