@@ -185,68 +185,81 @@ static TestStatus runAllListUnitTests()
     return allUnintTestsPassed;
 }
 
-static TestStatus runAllIntegrationTests()
+static TestStatus runAllIntegrationTests() noexcept
 {
     separateTestCaseOutput();
     TestStatus allInitgrationTests = TESTPASSED;
+    std::string_view modelBeingTested;
 
-    TestUserDBInterface userTests(programOptions.userTestDataFile);
-    if (userTests.runAllTests() == TESTFAILED)
-    {
-        allInitgrationTests = TESTFAILED;
-
-        if (programOptions.quitFirstFail)
+    try {
+        TestUserDBInterface userTests(programOptions.userTestDataFile);
+        modelBeingTested = userTests.getModelName();
+        if (userTests.runAllTests() != TESTPASSED)
         {
-            return TESTFAILED;
+            allInitgrationTests = TESTFAILED;
+
+            if (programOptions.quitFirstFail)
+            {
+                return TESTFAILED;
+            }
+        }
+
+        separateTestCaseOutput();
+        TestTaskDBInterface tasktests(programOptions.taskTestDataFile);
+        modelBeingTested = tasktests.getModelName();
+        if (tasktests.runAllTests() != TESTPASSED)
+        {
+            allInitgrationTests = TESTFAILED;
+
+            if (programOptions.quitFirstFail)
+            {
+                return TESTFAILED;
+            }
+        }
+
+        separateTestCaseOutput();
+        TestGoalModel goalTests;
+        modelBeingTested = goalTests.getModelName();
+        if (goalTests.runAllTests() != TESTPASSED)
+        {
+            allInitgrationTests = TESTFAILED;
+
+            if (programOptions.quitFirstFail)
+            {
+                return TESTFAILED;
+            }
+        }
+
+        separateTestCaseOutput();
+        TestNoteModel noteTests;
+        modelBeingTested = noteTests.getModelName();
+        if (noteTests.runAllTests() != TESTPASSED)
+        {
+            allInitgrationTests = TESTFAILED;
+
+            if (programOptions.quitFirstFail)
+            {
+                return TESTFAILED;
+            }
+        }
+
+        separateTestCaseOutput();
+        TestScheduleItemModel scheduleItemTests;
+        modelBeingTested = scheduleItemTests.getModelName();
+        if (scheduleItemTests.runAllTests() != TESTPASSED)
+        {
+            allInitgrationTests = TESTFAILED;
+
+            if (programOptions.quitFirstFail)
+            {
+                return TESTFAILED;
+            }
         }
     }
-
-    separateTestCaseOutput();
-    TestTaskDBInterface tasktests(programOptions.taskTestDataFile);
-    if (tasktests.runAllTests() == TESTFAILED)
+    catch (std::exception& e)
     {
         allInitgrationTests = TESTFAILED;
-
-        if (programOptions.quitFirstFail)
-        {
-            return TESTFAILED;
-        }
-    }
-
-    separateTestCaseOutput();
-    TestGoalModel goalTests;
-    if (goalTests.runAllTests() == TESTFAILED)
-    {
-        allInitgrationTests = TESTFAILED;
-
-        if (programOptions.quitFirstFail)
-        {
-            return TESTFAILED;
-        }
-    }
-
-    separateTestCaseOutput();
-    TestNoteModel noteTests;
-    if (noteTests.runAllTests() == TESTFAILED)
-    {
-        allInitgrationTests = TESTFAILED;
-
-        if (programOptions.quitFirstFail)
-        {
-            return TESTFAILED;
-        }
-    }
-
-    separateTestCaseOutput();
-    TestScheduleItemModel scheduleItemTests;
-    if (scheduleItemTests.runAllTests() == TESTFAILED)
-    {
-        allInitgrationTests = TESTFAILED;
-
-        if (programOptions.quitFirstFail)
-        {
-            return TESTFAILED;
-        }
+        std::cerr << std::format("Itegration testing for {} FAILED with excpetion: {}", modelBeingTested, e.what()) << std::endl;
     }
 
     return allInitgrationTests;
@@ -303,7 +316,7 @@ int main(int argc, char* argv[])
 			}
 		}
     } catch (const std::exception& err) {
-        std::cerr << "Error: " << err.what() << "\n";
+        std::cerr << "Error: Test Program terminated abnormally!" << err.what() << std::endl;
         return EXIT_FAILURE;
     }
 

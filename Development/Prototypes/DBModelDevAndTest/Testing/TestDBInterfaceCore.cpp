@@ -20,14 +20,25 @@ TestDBInterfaceCore::TestDBInterfaceCore(std::string_view modelName)
 TestStatus TestDBInterfaceCore::runAllTests()
 {
     std::cout << std::format("\nRunning {} Integration Tests\n", m_modelUnderTest);
+    TestStatus allTestsStatus = TESTPASSED;
+    std::string failReason("");
     
-    TestStatus positivePathPassed = runPositivePathTests();
-    TestStatus negativePathPassed = runNegativePathTests();
-    
-    TestStatus allTestsStatus =
-        (positivePathPassed == TESTPASSED && negativePathPassed == TESTPASSED) ? TESTPASSED : TESTFAILED;
+    try {
+        TestStatus positivePathPassed = runPositivePathTests();
+        TestStatus negativePathPassed = runNegativePathTests();
+        
+        if (positivePathPassed != TESTPASSED || negativePathPassed != TESTPASSED)
+        {
+            allTestsStatus = TESTFAILED;
+        }
+    }
+    catch(std::exception& e)
+    {
+        failReason = std::format("Caught exception:{} ", e.what());
+        allTestsStatus = TEXTEXCEPTION;
+    }
 
-    reportTestStatus(allTestsStatus, "");
+    reportTestStatus(allTestsStatus, failReason);
 
     return allTestsStatus;
 }
@@ -131,6 +142,12 @@ TestStatus TestDBInterfaceCore::testInsertionFailureMessages(ModelDBInterface* m
 void TestDBInterfaceCore::reportTestStatus(TestStatus status, std::string_view path)
 {
     std::string_view statusStr = status == TESTPASSED? "PASSED" : "FAILED";
+    
+    if (status == TEXTEXCEPTION)
+    {
+        std::cerr << std::format("All tests for database insertions and retrievals of {} FAILED with EXCEPTION: {}!", m_modelUnderTest, path) << std::endl;
+        return;
+    }
 
     if (path.length() > 0)
     {

@@ -10,6 +10,7 @@
 
 // Standard C++ Header Files
 #include <exception>
+#include <format>
 #include <functional>
 #include <iostream>
 #include <stdexcept>
@@ -39,22 +40,33 @@ TestTaskDBInterface::TestTaskDBInterface(std::string taskFileName)
 TestStatus TestTaskDBInterface::runAllTests()
 {
     std::cout << std::format("\nRunning {} Integration Tests\n", m_modelUnderTest);
+    TestStatus positivePathPassed = TESTPASSED;
+    TestStatus negativePathPassed = TESTPASSED;
+    TestStatus allTestsStatus = TESTPASSED;
+    std::string failReason("");
 
-    UserQueryProcessor userQueryprocessor;
-    m_userOne = userQueryprocessor.getUserByFullName("One", "User", "P");
-    if (m_userOne == nullptr || !m_userOne->isInDataBase())
+    try {
+        UserQueryProcessor userQueryprocessor;
+        m_userOne = userQueryprocessor.getUserByFullName("One", "User", "P");
+        if (m_userOne == nullptr || !m_userOne->isInDataBase())
+        {
+            std::cout << "Failed to retrieve TaskIntegrationTestUserOne from DataBase!\n";
+            return TESTFAILED;
+        }
+
+        positivePathPassed = runPositivePathTests();
+        negativePathPassed = runNegativePathTests();
+
+        allTestsStatus =
+            (positivePathPassed == TESTPASSED && negativePathPassed == TESTPASSED) ? TESTPASSED : TESTFAILED;
+    }
+    catch(std::exception& e)
     {
-        std::cout << "Failed to retrieve TaskIntegrationTestUserOne from DataBase!\n";
-        return TESTFAILED;
+        failReason = std::format("Caught exception:{} ", e.what());
+        allTestsStatus = TEXTEXCEPTION;
     }
 
-    TestStatus positivePathPassed = runPositivePathTests();
-    TestStatus negativePathPassed = runNegativePathTests();
-
-    TestStatus allTestsStatus =
-        (positivePathPassed == TESTPASSED && negativePathPassed == TESTPASSED) ? TESTPASSED : TESTFAILED;
-
-    reportTestStatus(allTestsStatus, "");
+    reportTestStatus(allTestsStatus, failReason);
 
     return allTestsStatus;
 }

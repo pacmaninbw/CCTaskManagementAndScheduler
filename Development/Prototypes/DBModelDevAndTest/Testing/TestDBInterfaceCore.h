@@ -21,6 +21,7 @@ public:
     virtual TestStatus runAllTests();
     virtual TestStatus runNegativePathTests();
     virtual TestStatus runPositivePathTests();
+    std::string_view getModelName() const { return m_modelUnderTest; };
 
 protected:
     TestStatus wrongErrorMessage(std::string expectedString, ModelDBInterface* modelUnderTest);
