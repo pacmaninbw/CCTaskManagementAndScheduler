@@ -101,8 +101,6 @@ Running self test on set and get functions for Task::Priority
 Self test on set and get functions for Task::Priority PASSED
 Running self test on set and get functions for Task::Personal
 Self test on set and get functions for Task::Personal PASSED
-Running self test on add and get functions for Task::dependencies
-Self test on set and get functions for Task::dependencoies PASSED
 Running self test for TaskSelfTest::markComplete
 Self test for TaskSelfTest::markComplete PASSED
 Test Output: TaskModel:
@@ -113,17 +111,16 @@ Test Output: TaskModel:
 	Status: 4
 	Scheduled Start Date: 2024-05-07
 	Due Date: 2024-05-14
-	Estimated Effort Hours: 1024
+	Estimated Effort Hours: 10.24
 	Actual Effort Hours: 760
 	Priority Group: 2
 	Priority: 5
-	Dependency Count: 3
 Optional Fields
 	Status: Completed
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-05-24
+	Completed Date: 2026-08-07
 	Deleted : FALSE
 
 Common Insertion Failure Test PASSED!
@@ -363,7 +360,7 @@ All negative path tests for database insertions and retrievals of ScheduleItem P
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Sun May 24 15:15:28 2026
-elapsed time in seconds: 0.752752
+Fri Aug  7 07:14:59 2026
+elapsed time in seconds: 1.04915
 
 
