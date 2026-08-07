@@ -13,6 +13,10 @@ set -e
 sqluser="${1:-no_username_supplied}"
 sqlpassword="${2:-no_password_supplied}"
 
+# Remove previously generated files
+rm -rf TestCoverage
+find . -type f -name "*.gcda" -delete
+
 echo "Creating test database with test data"
 cat PlannerTaskScheduleDB.sql AdditionalFunctionalTestData.sql | mysql -u $sqluser -p$sqlpassword
 
