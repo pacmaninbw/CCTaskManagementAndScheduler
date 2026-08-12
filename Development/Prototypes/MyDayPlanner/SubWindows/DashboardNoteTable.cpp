@@ -2,8 +2,6 @@
 #include "DashboardNoteTable.h"
 #include "NoteModel.h"
 #include "NoteQueryProcessor.h"
-#include "stdChronoToQTConversions.h"
-//#include "UserModel.h"
 
 // QT Header Files
 #include <QAbstractTableModel>
@@ -42,7 +40,7 @@ void DashboardNoteTable::fillTable()
         return;
     }
 
-    std::chrono::year_month_day searchDate = qDateToChrono(m_searchDate);
+    std::chrono::year_month_day searchDate = m_searchDate.toStdSysDays();
     NoteQueryProcessor currentUserNoteList;
     NoteList userNotes = currentUserNoteList.getDashboardNoteTable(m_userID, searchDate);
 
@@ -137,7 +135,7 @@ QVariant DashboardNoteTable::data(const QModelIndex &index, int role) const
     std::shared_ptr<NoteModel> note = m_data[index.row()];
     switch (index.column()) {
         case 0: {
-            QDateTime tempTime(chronoTimePointToQDateTime(note->getDateAdded()));
+            QDateTime tempTime = QDateTime::fromStdTimePoint(std::chrono::time_point_cast<std::chrono::milliseconds>(note->getDateAdded()));
             return tempTime.toLocalTime().toString("yyyy-MM-dd hh:mm");
         }
         case 1: return QString::fromStdString(note->getContent());

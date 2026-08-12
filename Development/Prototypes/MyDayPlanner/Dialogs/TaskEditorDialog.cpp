@@ -1,7 +1,6 @@
 // Project Header Files
 #include "commonQTWidgetsForApp.h"
 #include "SelectTaskParentDialog.h"
-#include "stdChronoToQTConversions.h"
 #include "TaskEditorDialog.h"
 #include "TaskModel.h"
 #include "TaskQueryProcessor.h"
@@ -25,8 +24,7 @@
 TaskEditorDialog::TaskEditorDialog(QWidget *parent, std::shared_ptr<UserModel> creator, std::size_t taskToEdit)
     : BaseObjectEditorDialog("Task", (creator? creator->getUserID() : 0), taskToEdit, parent),
     m_creator{creator},
-    m_parentTaskData{nullptr},
-    m_parentTaskUpdated{false}
+    m_parentTaskData{nullptr}
 {
     setUpEditorUI();
 
@@ -72,26 +70,6 @@ void TaskEditorDialog::accept()
     transferEditorValuesToDBModel();
 
     bool updateSuccessful = m_dbObjectModel->save();
-
-    if (updateSuccessful)
-    {
-        if (m_parentTaskUpdated)
-        {
-            TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_dbObjectModel);
-            // Child database task id may not be correct prior to this in the case of
-            // a new task being added.
-            m_parentTaskData->addDependency(taskData->getTaskID());
-            updateSuccessful = m_parentTaskData->update();
-        }
-        if (!updateSuccessful)
-        {
-            errorGenerator = m_parentTaskData;
-        }
-    }
-    else
-    {
-        errorGenerator = std::dynamic_pointer_cast<TaskModel>(m_dbObjectModel);
-    }
 
     if (updateSuccessful)
     {
@@ -164,7 +142,6 @@ void TaskEditorDialog::handleSelectParent_Clicked()
         if (m_parentTaskData)
         {
             taskData->setParentTaskID(parentTaskid);
-            m_parentTaskUpdated = true;
             m_qt_parentTaskDescription->setText(QString::fromStdString(m_parentTaskData->getDescription()));
         }
     }
@@ -439,9 +416,9 @@ void TaskEditorDialog::transferEditorValuesToDBModel()
     taskData->setCreatorID(m_creator->getUserID());
     taskData->setAssignToID(m_assignee->getUserID());
     taskData->setDescription(m_qt_description->toPlainText().toStdString());
-    taskData->setDueDate(qDateToChrono(m_qt_dueDate->date()));
-    taskData->setScheduledStart(qDateToChrono(m_qt_scheduledStart->date()));
-    taskData->setEstimatedCompletion(qDateToChrono(m_qt_expectedCompletion->date()));
+    taskData->setDueDate(m_qt_dueDate->date().toStdSysDays());
+    taskData->setScheduledStart(m_qt_scheduledStart->date().toStdSysDays());
+    taskData->setEstimatedCompletion(m_qt_expectedCompletion->date().toStdSysDays());
     transferEffortToModel();
     transferPriorityToModel();
     taskData->setPersonal(m_qt_personal->isChecked());

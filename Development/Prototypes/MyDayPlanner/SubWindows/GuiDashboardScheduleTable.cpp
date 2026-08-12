@@ -2,7 +2,6 @@
 #include "commonUtilities.h"
 #include "ScheduleItemModel.h"
 #include "ScheduleItemQueryProcessor.h"
-#include "stdChronoToQTConversions.h"
 
 // QT Header Files
 #include "GuiDashboardScheduleTable.h"
@@ -24,7 +23,7 @@ GuiDashboardScheduleTable::GuiDashboardScheduleTable(std::size_t userID, QDate d
     m_userID{userID},
     m_dateOfSchedule{dateOfSchedule}
 {
-    m_chronoDateOfSchedule = qDateToChrono(dateOfSchedule);
+    m_chronoDateOfSchedule = dateOfSchedule.toStdSysDays();
 }
 
 void GuiDashboardScheduleTable::append(std::shared_ptr<ScheduleItemModel> scheduledItem)
@@ -114,7 +113,7 @@ QVariant GuiDashboardScheduleTable::data(const QModelIndex &index, int role) con
     const ScheduleItemModel* scheduleItem = m_data[index.row()].get();
     switch (index.column()) {
         case 0: {
-            QDateTime startTime(chronoTimePointToQDateTime(scheduleItem->getStartTime()));
+            QDateTime startTime = QDateTime::fromStdTimePoint(std::chrono::time_point_cast<std::chrono::milliseconds>(scheduleItem->getStartTime()));
             return startTime.toLocalTime().time().toString("h:mm ap");
         }
         case 1: return QString::fromStdString(scheduleItem->getTitle());
@@ -161,7 +160,7 @@ QModelIndex GuiDashboardScheduleTable::index(int row, int column, const QModelIn
 void GuiDashboardScheduleTable::fillSchedule()
 {
     clearData();
-    std::chrono::year_month_day dateOfSchedule(qDateToChrono(m_dateOfSchedule));
+    std::chrono::year_month_day dateOfSchedule(m_dateOfSchedule.toStdSysDays());
 
     if (m_userID)
     {

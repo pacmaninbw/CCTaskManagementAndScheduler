@@ -3,7 +3,6 @@
 #include "ScheduleItemEditorDialog.h"
 #include "ScheduleItemQueryProcessor.h"
 #include "ScheduleItemModel.h"
-#include "stdChronoToQTConversions.h"
 
 // QT Header Files
 #include <QCheckBox>
@@ -225,7 +224,7 @@ void ScheduleItemEditorDialog::initCompletersFromDB()
 
 QDateTime ScheduleItemEditorDialog::initValidDateTime(std::chrono::system_clock::time_point dateTime)
 {
-    QDateTime tempDate(chronoTimePointToQDateTime(dateTime));
+    QDateTime tempDate = QDateTime::fromStdTimePoint(std::chrono::time_point_cast<std::chrono::milliseconds>(dateTime));
     if (!tempDate.isValid())
     {
         tempDate = QDateTime::currentDateTime();
@@ -258,8 +257,8 @@ void ScheduleItemEditorDialog::transferEditorValuesToDBModel()
             eventData->setLocation(m_qt_addLocation->text().toStdString());
         }
 
-        eventData->setStartDateAndTime(qDateTimeToChrono(m_qt_startTime->dateTime()));
-        eventData->setEndDateAndTime(qDateTimeToChrono(m_qt_endTime->dateTime()));
+        eventData->setStartDateAndTime(m_qt_startTime->dateTime().toStdSysMilliseconds());
+        eventData->setEndDateAndTime(m_qt_endTime->dateTime().toStdSysMilliseconds());
         eventData->setPersonal(m_qt_personal->isChecked());
     }
 }

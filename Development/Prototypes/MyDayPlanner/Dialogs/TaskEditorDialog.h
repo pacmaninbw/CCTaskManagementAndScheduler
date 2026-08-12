@@ -75,7 +75,6 @@ private:
     std::shared_ptr<UserModel> m_creator;
     std::shared_ptr<UserModel> m_assignee;
     std::shared_ptr<TaskModel> m_parentTaskData;
-    bool m_parentTaskUpdated;
 
     QGroupBox* m_qt_creatorGroup = nullptr;
     QFormLayout* m_qt_creatorForm = nullptr;
