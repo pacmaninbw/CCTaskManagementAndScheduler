@@ -42,34 +42,16 @@ void GuiDashboardScheduleTable::clearData()
     endResetModel();
 }
 
-std::chrono::system_clock::time_point GuiDashboardScheduleTable::getScheduleItemStartTime(const QModelIndex &index)
+std::shared_ptr<ScheduleItemModel> GuiDashboardScheduleTable::getScheduledItem(const QModelIndex &index)
 {
-    std::chrono::system_clock::time_point startTime;
+    ScheduleItemModel_shp scheduledItem;
 
-    if (!index.isValid())
+    if (index.isValid())
     {
-        return startTime;
+        scheduledItem = m_data[index.row()];
     }
 
-    std::shared_ptr<ScheduleItemModel> scheduleItem = m_data[index.row()];
-    startTime = scheduleItem->getStartTime();
-
-    return startTime;
-}
-
-std::chrono::system_clock::time_point GuiDashboardScheduleTable::getScheduleItemEndTime(const QModelIndex &index)
-{
-    std::chrono::system_clock::time_point endTime;
-
-    if (!index.isValid())
-    {
-        return endTime;
-    }
-
-    std::shared_ptr<ScheduleItemModel> scheduleItem = m_data[index.row()];
-    endTime = scheduleItem->getEndTime();
-
-    return endTime;
+    return scheduledItem;
 }
 
 QVariant GuiDashboardScheduleTable::headerData(int section, Qt::Orientation orientation, int role) const

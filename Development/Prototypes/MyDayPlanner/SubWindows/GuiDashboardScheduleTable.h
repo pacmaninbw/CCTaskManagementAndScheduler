@@ -36,8 +36,7 @@ public:
     void append(std::shared_ptr<ScheduleItemModel> scheduledItem);
     void clearData();
     void fillSchedule();
-    std::chrono::system_clock::time_point getScheduleItemStartTime(const QModelIndex &index);
-    std::chrono::system_clock::time_point getScheduleItemEndTime(const QModelIndex &index);
+    std::shared_ptr<ScheduleItemModel> getScheduledItem(const QModelIndex& index);
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;

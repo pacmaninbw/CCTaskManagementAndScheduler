@@ -3,11 +3,13 @@
 #include "GuiDashboardScheduleTable.h"
 #include "ScheduleItemEditorDialog.h"
 #include "ScheduleWindow.h"
+#include "ScheduleItemModel.h"
 #include "UserModel.h"
 
 // QT Header Files
 #include <QDate>
 #include <QHeaderView>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QString>
 #include <QTableView>
@@ -16,6 +18,7 @@
 // Standard C++ Header Files
 #include <chrono>
 #include <memory>
+#include <optional>
 
 ScheduleWindow::ScheduleWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow, bool makeSubWindow, QWidget *parent)
     : ModelSubWindow("Schedule:", makeSubWindow, parent)
@@ -57,9 +60,30 @@ void ScheduleWindow::handleScheduleItemClicked(const QModelIndex &index)
     }
     else
     {
-        std::chrono::system_clock::time_point startTime = m_scheduleTable->getScheduleItemStartTime(index);
-        std::chrono::system_clock::time_point endTime = m_scheduleTable->getScheduleItemEndTime(index);
-        editScheduleItemDialog = new ScheduleItemEditorDialog(m_userData->getUserID(), startTime,  endTime, this);
+        /*
+         * If the user is clicking the schedule time provide the schedule item editor
+         * with the proper start and end times.
+         */
+        std::shared_ptr<ScheduleItemModel> scheduledItem = m_scheduleTable->getScheduledItem(index);
+        if (scheduledItem != nullptr)
+        {
+            std::optional<std::chrono::system_clock::time_point> startTime = scheduledItem->getOptionalStartTime();
+            std::optional<std::chrono::system_clock::time_point> endTime = scheduledItem->getOptionalEndTime();
+            if (startTime.has_value() && endTime.has_value())
+            {
+                editScheduleItemDialog = new ScheduleItemEditorDialog(m_userData->getUserID(), startTime.value(),  endTime.value(), this);
+            }
+            else {
+                QString errorReport = "Start time or End time not set for empty hour.\n";
+                QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
+                return;
+            }
+        }
+        else {
+            QString errorReport = "No Empty Event at index.\n";
+            QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
+            return;
+        }
     }
 
     editScheduleItemDialog->initEditorFieldsFromDataBase();
