@@ -48,6 +48,8 @@ public:
     std::chrono::system_clock::time_point getStartTime() const { return m_startTime.value(); };
     std::chrono::system_clock::time_point getEndTime() const { return m_endTime.value(); };
     std::string getLocation() const { return m_location.value_or(""); };
+    std::optional<std::chrono::system_clock::time_point> getOptionalStartTime() { return m_startTime; };
+    std::optional<std::chrono::system_clock::time_point> getOptionalEndTime() { return m_endTime; };
     bool isPersonal() const { return m_personal; };
     void setUserID(std::size_t userId);
     void setTitle(std::string title);

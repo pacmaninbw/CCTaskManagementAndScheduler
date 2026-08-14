@@ -35,7 +35,9 @@ protected:
     TestStatus testUserIDAccess() noexcept;
     TestStatus testTitleAccess() noexcept;
     TestStatus testStartTimeAccess() noexcept;
+    TestStatus testOptionalStartTimeAccess() noexcept;
     TestStatus testEndTimeAccess() noexcept;
+    TestStatus testOptionalEndTimeAccess() noexcept;
     TestStatus testCreationTimeStampAccess() noexcept;
     TestStatus testLastUpDateTimeStampAccess() noexcept;
     TestStatus testLocationAccess() noexcept;

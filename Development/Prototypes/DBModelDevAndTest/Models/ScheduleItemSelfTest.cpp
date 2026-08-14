@@ -273,7 +273,9 @@ std::vector<AttributeTestFunction> ScheduleItemSelfTest::initAttributeAccessTest
     attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testUserIDAccess, this)});
     attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testTitleAccess, this)});
     attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testStartTimeAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testOptionalStartTimeAccess, this)});
     attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testEndTimeAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testOptionalEndTimeAccess, this)});
     attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testCreationTimeStampAccess, this)});
     attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testLastUpDateTimeStampAccess, this)});
     attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testLocationAccess, this)});
@@ -318,6 +320,15 @@ TestStatus ScheduleItemSelfTest::testStartTimeAccess() noexcept
         std::bind(&ScheduleItemSelfTest::getStartTime, this));
 }
 
+TestStatus ScheduleItemSelfTest::testOptionalStartTimeAccess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
+
+    return testOptionalAccessorFunctions< std::chrono::system_clock::time_point>(testValue, &m_startTime, "Optional Start Time",
+        std::bind(&ScheduleItemSelfTest::setStartDateAndTime, this, std::placeholders::_1),
+        std::bind(&ScheduleItemSelfTest::getOptionalStartTime, this));
+}
+
 TestStatus ScheduleItemSelfTest::testEndTimeAccess() noexcept
 {
     std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
@@ -325,6 +336,15 @@ TestStatus ScheduleItemSelfTest::testEndTimeAccess() noexcept
     return testTimeStampAccessorFunctions(testValue, &m_endTime, "Schedule Item End Time",
         std::bind(&ScheduleItemSelfTest::setEndDateAndTime, this, std::placeholders::_1),
         std::bind(&ScheduleItemSelfTest::getEndTime, this));
+}
+
+TestStatus ScheduleItemSelfTest::testOptionalEndTimeAccess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
+
+    return testOptionalAccessorFunctions< std::chrono::system_clock::time_point>(testValue, &m_startTime, "Optional End Time",
+        std::bind(&ScheduleItemSelfTest::setEndDateAndTime, this, std::placeholders::_1),
+        std::bind(&ScheduleItemSelfTest::getOptionalEndTime, this));
 }
 
 TestStatus ScheduleItemSelfTest::testCreationTimeStampAccess() noexcept
