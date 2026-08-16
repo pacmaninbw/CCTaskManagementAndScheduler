@@ -29,7 +29,7 @@ class UserModel;
 class TaskEditorDialog : public BaseObjectEditorDialog
 {
     public:
-    explicit TaskEditorDialog(QWidget* parent = nullptr, std::shared_ptr<UserModel> creator = nullptr, std::size_t taskToEditId = 0);
+    explicit TaskEditorDialog(QWidget* parent = nullptr, std::shared_ptr<UserModel> creator = nullptr, std::shared_ptr<TaskModel> taskToEdit = nullptr);
     ~TaskEditorDialog();
     virtual void initEditorFieldsFromDataBase() override;
 

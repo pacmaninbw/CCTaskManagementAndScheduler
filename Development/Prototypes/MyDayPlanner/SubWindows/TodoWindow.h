@@ -28,7 +28,7 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void handleAddTodoItem();
-    void handleTodoTableClicked(const QModelIndex &index);
+    void handleTodoTableClicked(const QModelIndex& index);
 
 protected:
     virtual void setUpWindowContentAndActions() override;

@@ -3,6 +3,7 @@
 #include "GuiDashboardTaskTable.h"
 #include "TodoWindow.h"
 #include "TaskEditorDialog.h"
+#include "TaskModel.h"
 #include "UserModel.h"
 
 // QT Header Files
@@ -15,6 +16,7 @@
 #include <QWidget>
 
 // Standard C++ Header Files
+#include <memory>
 
 TodoWindow::TodoWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow, bool makeSubWindow, QWidget *parent)
     : ModelSubWindow("Prioritized To Do List:", makeSubWindow, parent)
@@ -30,7 +32,7 @@ void TodoWindow::refresh()
 
 void TodoWindow::handleAddTodoItem()
 {
-    TaskEditorDialog addTaskDialog(this, m_userData);
+    TaskEditorDialog addTaskDialog(this, m_userData, nullptr);
     addTaskDialog.exec();
     tableViewReset(m_qt_modelTableView);
 }
@@ -42,9 +44,8 @@ void TodoWindow::handleTodoTableClicked(const QModelIndex &index)
         return;
     }
 
-    std::size_t taskToEditId = index.internalId();
-    TaskEditorDialog editTaskDialog(this, nullptr, taskToEditId);
-    editTaskDialog.initEditorFieldsFromDataBase();
+    TaskModel_shp taskToEdit = m_todoTable->getDatabaseObject(index);
+    TaskEditorDialog editTaskDialog(this, nullptr, taskToEdit);
     editTaskDialog.exec();
     tableViewReset(m_qt_modelTableView);
 }

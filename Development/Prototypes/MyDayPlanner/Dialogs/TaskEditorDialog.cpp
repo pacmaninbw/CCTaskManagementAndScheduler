@@ -21,16 +21,26 @@
 
 // Standard C++ Header Files
 
-TaskEditorDialog::TaskEditorDialog(QWidget *parent, std::shared_ptr<UserModel> creator, std::size_t taskToEdit)
+TaskEditorDialog::TaskEditorDialog(QWidget *parent, std::shared_ptr<UserModel> creator, std::shared_ptr<TaskModel> taskToEdit)
     : BaseObjectEditorDialog("Task", (creator? creator->getUserID() : 0), taskToEdit, parent),
     m_creator{creator},
     m_parentTaskData{nullptr}
 {
     setUpEditorUI();
 
+    /* The creator variable will only have a value in the add new task mode.
+     * In edit mode the creator value will be gotten from the task itself. 
+     */
     if (creator)
     {
         initEditFields();
+    }
+
+    /* The taskToEdit variable will only have a value in edit task mode.
+     */
+    if (taskToEdit)
+    {
+        initEditorFieldsFromDataBase();
     }
 }
 
@@ -41,23 +51,12 @@ TaskEditorDialog::~TaskEditorDialog()
 
 void TaskEditorDialog::initEditorFieldsFromDataBase()
 {
-    if (!m_dbModelId)
+    if (m_dbObjectModel == nullptr)
     {
         QString errorReport = "To Do Item Edit failed.\n";
         errorReport += " No Task to Edit";
         QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
     }
-
-    TaskQueryProcessor taskQueryProcessor;
-    TaskModel_shp taskData = taskQueryProcessor.getTaskByTaskID(m_dbModelId);
-    if (!taskData)
-    {
-        QString errorReport = "To Do Item Edit failed.\n";
-        errorReport += " To Do Item not found in database";
-        QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
-    }
-
-    m_dbObjectModel = std::dynamic_pointer_cast<TaskModel>(taskData);
 
     initDisplayFields();
     initEditFieldsFromTaskData();
@@ -562,7 +561,7 @@ void TaskEditorDialog::transferEffortToModel()
     TaskModel_shp taskData = std::dynamic_pointer_cast<TaskModel>(m_dbObjectModel);
 
     bool numberisGood = false;
-    unsigned int estimatedEffort = m_qt_estimatedEffort->text().toUInt(&numberisGood);
+    double estimatedEffort = m_qt_estimatedEffort->text().toDouble(&numberisGood);
     if (numberisGood)
     {
         taskData->setEstimatedEffort(estimatedEffort);
