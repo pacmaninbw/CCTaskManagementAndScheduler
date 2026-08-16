@@ -30,6 +30,7 @@ public:
     void reportMissingFields() noexcept;
     std::string getModelName() { return m_modelName; };
     bool isDeleted() const noexcept { return m_deleted; };
+    std::size_t getPrimaryKey() const noexcept { return m_primaryKey; };
 
 protected:
 /*
