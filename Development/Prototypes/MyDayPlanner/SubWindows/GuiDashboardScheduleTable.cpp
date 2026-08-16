@@ -42,7 +42,7 @@ void GuiDashboardScheduleTable::clearData()
     endResetModel();
 }
 
-std::shared_ptr<ScheduleItemModel> GuiDashboardScheduleTable::getScheduledItem(const QModelIndex &index)
+std::shared_ptr<ScheduleItemModel> GuiDashboardScheduleTable::getDatabaseObject(const QModelIndex &index)
 {
     ScheduleItemModel_shp scheduledItem;
 

@@ -36,7 +36,7 @@ public:
     void append(std::shared_ptr<ScheduleItemModel> scheduledItem);
     void clearData();
     void fillSchedule();
-    std::shared_ptr<ScheduleItemModel> getScheduledItem(const QModelIndex& index);
+    std::shared_ptr<ScheduleItemModel> getDatabaseObject(const QModelIndex& index);
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;

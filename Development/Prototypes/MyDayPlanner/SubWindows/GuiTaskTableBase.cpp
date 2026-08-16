@@ -65,6 +65,18 @@ void GuiTaskTableBase::clearData()
     endResetModel();
 }
 
+std::shared_ptr<TaskModel> GuiTaskTableBase::getDatabaseObject(const QModelIndex &index)
+{
+    std::shared_ptr<TaskModel> taskToReturn = nullptr;
+
+    if (index.isValid())
+    {
+        taskToReturn = m_data[index.row()];
+    }
+
+    return taskToReturn;
+}
+
 QVariant GuiTaskTableBase::headerData(int section, Qt::Orientation orientation, int role) const
 {
     // FIXME: Implement me!

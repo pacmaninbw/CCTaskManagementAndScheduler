@@ -27,6 +27,7 @@ public:
     void refillTable();
     void append(std::shared_ptr<UserGoalModel> goalItem);
     void clearData();
+    std::shared_ptr<UserGoalModel> getDatabaseObject(const QModelIndex& index); 
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole) override;

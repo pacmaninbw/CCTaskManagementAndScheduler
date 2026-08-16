@@ -56,6 +56,18 @@ void DefaultGoalDisplayTable::clearData()
     endResetModel();
 }
 
+std::shared_ptr<UserGoalModel> DefaultGoalDisplayTable::getDatabaseObject(const QModelIndex &index)
+{
+    std::shared_ptr<UserGoalModel> userGoal = nullptr;
+
+    if (index.isValid())
+    {
+        userGoal = m_data[index.row()];
+    }
+
+    return userGoal;
+}
+
 QVariant DefaultGoalDisplayTable::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (orientation != Qt::Horizontal || role != Qt::DisplayRole) return {};

@@ -79,6 +79,18 @@ void DashboardNoteTable::clearData()
     endResetModel();
 }
 
+std::shared_ptr<NoteModel> DashboardNoteTable::getDatabaseObject(const QModelIndex &index)
+{
+    std::shared_ptr<NoteModel> noteModel = nullptr;
+
+    if (index.isValid())
+    {
+        noteModel = m_data[index.row()];
+    }
+
+    return noteModel;
+}
+
 QVariant DashboardNoteTable::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (orientation != Qt::Horizontal || role != Qt::DisplayRole) return {};
