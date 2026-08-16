@@ -26,6 +26,22 @@ BaseObjectEditorDialog::BaseObjectEditorDialog(const char* objectType, std::size
     setWindowTitle(m_editorTitleString + " Dialog");
 }
 
+BaseObjectEditorDialog::BaseObjectEditorDialog(const char *objectType, std::size_t userId, std::shared_ptr<ModelDBInterface> objectToEdit, QWidget *parent)
+    : QDialog(parent),
+    m_userID{userId},
+    m_dbModelId{objectToEdit != nullptr? objectToEdit->getPrimaryKey() : 0},
+    m_editorObjectTypeString{objectType}
+{
+    m_editorTitleString = "Edit ";
+    m_dbObjectModel = objectToEdit;
+    if (!m_dbObjectModel || m_dbObjectModel->isInDataBase() == false)
+    {
+        m_editorTitleString = "Add ";
+    }
+    m_editorTitleString += objectType;
+    setWindowTitle(m_editorTitleString + " Dialog");
+}
+
 void BaseObjectEditorDialog::initEditorFieldsFromDataBase()
 {
     throw std::logic_error("initEditorFieldsFromDataBase not implemented!");

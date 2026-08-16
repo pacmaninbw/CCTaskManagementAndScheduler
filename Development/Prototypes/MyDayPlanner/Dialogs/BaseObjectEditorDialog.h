@@ -30,6 +30,7 @@ class BaseObjectEditorDialog : public QDialog
 
 public:
     BaseObjectEditorDialog(const char* objectType, std::size_t userId = 0, std::size_t dbModelTableIndex = 0, QWidget* parent = nullptr);
+    BaseObjectEditorDialog(const char* objectType, std::size_t userId = 0, std::shared_ptr<ModelDBInterface> objectToEdit = nullptr, QWidget* parent = nullptr);
 /*
  * The initEditorFieldsFromDataBase() method is called after the editor has been
  * instantiated. This method retrieve the model object being edited from the
