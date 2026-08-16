@@ -42,7 +42,7 @@ public:
  * The database retrieval is performed in this function to keep any database
  * access out of the constructors for the editor.
  */
-    virtual void initEditorFieldsFromDataBase() = 0;
+    virtual void initEditorFieldsFromDataBase();
 
 public Q_SLOTS:
     void accept() override;
