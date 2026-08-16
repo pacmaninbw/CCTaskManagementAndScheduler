@@ -10,28 +10,15 @@
 // Standard C++ Header Files
 #include <memory>
 
-NoteEditorDialog::NoteEditorDialog(QWidget *parent, std::size_t userId, std::size_t noteToEdit)
-    : BaseObjectEditorDialog("Note", userId, noteToEdit, parent)
+NoteEditorDialog::NoteEditorDialog(QWidget *parent, std::size_t userId, std::shared_ptr<NoteModel> noteToEdit)
+: BaseObjectEditorDialog("Note", userId, noteToEdit, parent)
 {
     setUpEditorUI();
+    transferDBModelDataToEditorFields();
 }
 
 NoteEditorDialog::~NoteEditorDialog()
 {
-}
-
-void NoteEditorDialog::initEditorFieldsFromDataBase()
-{
-    if (m_dbModelId != 0)
-    {
-        NoteQueryProcessor noteQueryProcess;
-        NoteModel_shp noteData = noteQueryProcess.getNoteById(m_dbModelId);
-        if (noteData)
-        {
-            m_dbObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(noteData);
-            transferDBModelDataToEditorFields();
-        }
-    }
 }
 
 QGroupBox *NoteEditorDialog::setUpEditorDialogForm()

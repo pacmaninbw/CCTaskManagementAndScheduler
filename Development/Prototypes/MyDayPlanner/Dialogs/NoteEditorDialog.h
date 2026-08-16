@@ -13,13 +13,13 @@ class NoteModel;
 #include <QVBoxLayout>
 
 // Standard C++ Header Files
+#include <memory>
 
 class NoteEditorDialog : public BaseObjectEditorDialog
 {
 public:
-    explicit NoteEditorDialog(QWidget* parent = nullptr, std::size_t userId=0, std::size_t noteID=0);
+    explicit NoteEditorDialog(QWidget* parent = nullptr, std::size_t userId = 0, std::shared_ptr<NoteModel> noteToEdit = nullptr);
     ~NoteEditorDialog();
-    virtual void initEditorFieldsFromDataBase() override;
 
 private:
     const int MinNoteContentWidth = 60;
