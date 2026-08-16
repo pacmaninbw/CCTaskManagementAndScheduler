@@ -23,32 +23,19 @@
 
 const std::chrono::seconds nextHour{3599}; // There are 3600 seconds in an hour.
 
-ScheduleItemEditorDialog::ScheduleItemEditorDialog(std::size_t userId, std::size_t eventId, QWidget *parent)
-    : BaseObjectEditorDialog("Event", userId, eventId, parent),
-    m_qt_eventDate{nullptr}
+ScheduleItemEditorDialog::ScheduleItemEditorDialog(std::size_t userId, std::shared_ptr<ScheduleItemModel> eventToEdit, QWidget *parent)
+    : BaseObjectEditorDialog("Event", userId, eventToEdit, parent),
+      m_qt_eventDate{nullptr}
 {
-    if (!eventId)
+    if (eventToEdit == nullptr)
     {
-        m_startTime = std::chrono::system_clock::now();
-        m_endTime = m_startTime + nextHour;
+        eventToEdit = std::make_shared<ScheduleItemModel>();
+        eventToEdit->setUserID(m_userID);
+        std::chrono::system_clock::time_point startTime = std::chrono::system_clock::now();
+        eventToEdit->setStartDateAndTime(startTime);
+        eventToEdit->setEndDateAndTime(startTime + nextHour);
+        m_dbObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(eventToEdit);
     }
-    
-    setUpEditorUI();
-}
-
-// Edit an empty event in the day schedule
-ScheduleItemEditorDialog::ScheduleItemEditorDialog(
-    std::size_t userId,
-    std::chrono::system_clock::time_point startTime,
-    std::chrono::system_clock::time_point endTime,
-    QWidget *parent
-)
-    : BaseObjectEditorDialog("Event", userId, 0, parent),
-    m_startTime{startTime},
-    m_endTime{endTime},
-    m_qt_eventDate{nullptr}
-{
-    m_userPresetTime = true;
 
     setUpEditorUI();
 }
@@ -61,24 +48,9 @@ ScheduleItemEditorDialog::~ScheduleItemEditorDialog()
 // be called after the constructor has been executed.
 void ScheduleItemEditorDialog::initEditorFieldsFromDataBase()
 {
-    ScheduleItemModel_shp eventData;        
+    transferDBModelDataToEditorFields();
 
-    // If we are editing a previously existing schedule item
-    if (m_dbModelId)
-    {
-        ScheduleItemQueryProcessor scheduleItemQueryProcessor(m_userID);
-        eventData = scheduleItemQueryProcessor.getScheduleItemById(m_dbModelId);
-        m_dbObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(eventData);
-        transferDBModelDataToEditorFields();
-    }
-    else
-    {
-        eventData = std::make_shared<ScheduleItemModel>();
-        eventData->setUserID(m_userID);
-        m_dbObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(eventData);
-    }
-
-    QDateTime startTime = initValidDateTime(m_startTime);
+    QDateTime startTime = QDateTime::fromStdTimePoint(std::chrono::time_point_cast<std::chrono::milliseconds>(m_startTime));
     m_qt_eventDate->setDate(startTime.toLocalTime().date());
     initDateTimeEdit(m_qt_startTime, m_startTime);
     initDateTimeEdit(m_qt_endTime, m_endTime);
@@ -134,7 +106,7 @@ QGroupBox *ScheduleItemEditorDialog::setUpEditorDialogForm()
     m_qt_endTime->setObjectName("m_qt_endTime");
     m_qt_editorFormLayout->addRow("End:", m_qt_endTime);
 
-    if (m_dbModelId)
+    if (m_dbObjectModel->isInDataBase())
     {
         m_qt_editTitle = cqtfa_flexibleWidthPlainTextEdit("m_qt_editTitle",
             formGroupBox, EventTextEditMinWidth, EventTextEditMaxWidth, TitleLineCount);
@@ -166,7 +138,7 @@ void ScheduleItemEditorDialog::initDateTimeEdit(
     std::chrono::system_clock::time_point initValue
 )
 {
-    QDateTime initDateTime = initValidDateTime(initValue);
+    QDateTime initDateTime = QDateTime::fromStdTimePoint(std::chrono::time_point_cast<std::chrono::milliseconds>(initValue));
 
     dtEdit->setDateTime(initDateTime);
 
@@ -222,17 +194,6 @@ void ScheduleItemEditorDialog::initCompletersFromDB()
     m_qt_addLocation->setCompleter(m_qt_locationCompleter);
 }
 
-QDateTime ScheduleItemEditorDialog::initValidDateTime(std::chrono::system_clock::time_point dateTime)
-{
-    QDateTime tempDate = QDateTime::fromStdTimePoint(std::chrono::time_point_cast<std::chrono::milliseconds>(dateTime));
-    if (!tempDate.isValid())
-    {
-        tempDate = QDateTime::currentDateTime();
-    }
-    
-    return tempDate;
-}
-
 void ScheduleItemEditorDialog::createSharedPtrDBModelForAddObject()
 {
     ScheduleItemModel_shp newEvent = std::make_shared<ScheduleItemModel>();
@@ -265,15 +226,22 @@ void ScheduleItemEditorDialog::transferEditorValuesToDBModel()
 
 void ScheduleItemEditorDialog::transferDBModelDataToEditorFields()
 {
-    if (m_dbObjectModel)
+    if (!m_dbObjectModel)
     {
-        ScheduleItemModel_shp eventData = std::dynamic_pointer_cast<ScheduleItemModel>(m_dbObjectModel);
+        m_startTime = std::chrono::system_clock::now();
+        m_endTime = std::chrono::system_clock::now();
+        return;
+    }
 
+    ScheduleItemModel_shp eventData = std::dynamic_pointer_cast<ScheduleItemModel>(m_dbObjectModel);
+    if (eventData->isInDataBase())
+    {
         m_qt_editTitle->setPlainText(QString::fromStdString(eventData->getTitle()));
         m_qt_editLocation->setPlainText(QString::fromStdString(eventData->getLocation()));
-        m_qt_personal->setChecked(eventData->isPersonal());
-
-        m_startTime = eventData->getStartTime();
-        m_endTime = eventData->getEndTime();
     }
+
+    m_qt_personal->setChecked(eventData->isPersonal());
+
+    m_startTime = eventData->getOptionalStartTime().value_or(std::chrono::system_clock::now());
+    m_endTime = eventData->getOptionalEndTime().value_or(std::chrono::system_clock::now());
 }

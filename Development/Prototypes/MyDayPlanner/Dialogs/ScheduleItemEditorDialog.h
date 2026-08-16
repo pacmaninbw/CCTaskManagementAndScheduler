@@ -19,15 +19,13 @@ class ScheduleItemModel;
 
 // Standard C++ Header Files
 #include <chrono>
+#include <memory>
 
 
 class ScheduleItemEditorDialog : public BaseObjectEditorDialog
 {
 public:
-    explicit ScheduleItemEditorDialog(std::size_t userId, std::size_t eventId = 0, QWidget* parent = nullptr);
-// Edit an empty event in the day schedule
-    explicit ScheduleItemEditorDialog(std::size_t userId, std::chrono::system_clock::time_point startTime,
-            std::chrono::system_clock::time_point endTime, QWidget* parent = nullptr);
+    explicit ScheduleItemEditorDialog(std::size_t userId, std::shared_ptr<ScheduleItemModel> eventToEdit = nullptr, QWidget* parent = nullptr);
     ~ScheduleItemEditorDialog();
     virtual void initEditorFieldsFromDataBase() override;
 
@@ -45,14 +43,12 @@ private:
     virtual QGroupBox* setUpEditorDialogForm() override;
     void initDateTimeEdit(QDateTimeEdit* dtEdit, std::chrono::system_clock::time_point initValue);
     void initCompletersFromDB();
-    QDateTime initValidDateTime(std::chrono::system_clock::time_point dateTime);
     virtual void createSharedPtrDBModelForAddObject() override;
     virtual void transferEditorValuesToDBModel() override;
     virtual void transferDBModelDataToEditorFields() override;
 
     std::chrono::system_clock::time_point m_startTime;
     std::chrono::system_clock::time_point m_endTime;
-    bool m_userPresetTime = false;
 
     QDateEdit* m_qt_eventDate = nullptr;
     QDateTimeEdit* m_qt_startTime = nullptr;
