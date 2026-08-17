@@ -49,19 +49,6 @@ TaskEditorDialog::~TaskEditorDialog()
 
 }
 
-void TaskEditorDialog::initEditorFieldsFromDataBase()
-{
-    if (m_dbObjectModel == nullptr)
-    {
-        QString errorReport = "To Do Item Edit failed.\n";
-        errorReport += " No Task to Edit";
-        QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
-    }
-
-    initDisplayFields();
-    initEditFieldsFromTaskData();
-}
-
 void TaskEditorDialog::accept()
 {
     std::shared_ptr<TaskModel> errorGenerator = nullptr;
@@ -430,6 +417,19 @@ void TaskEditorDialog::transferEditorValuesToDBModel()
 
 void TaskEditorDialog::transferDBModelDataToEditorFields()
 {
+    initDisplayFields();
+    initEditFieldsFromTaskData();
+}
+
+void TaskEditorDialog::initEditorFieldsFromDataBase()
+{
+    if (m_dbObjectModel == nullptr)
+    {
+        QString errorReport = "To Do Item Edit failed.\n";
+        errorReport += " No Task to Edit";
+        QMessageBox::critical(nullptr, "Critical Error", errorReport, QMessageBox::Ok);
+    }
+
     initDisplayFields();
     initEditFieldsFromTaskData();
 }

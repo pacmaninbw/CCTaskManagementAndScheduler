@@ -31,7 +31,6 @@ class TaskEditorDialog : public BaseObjectEditorDialog
     public:
     explicit TaskEditorDialog(QWidget* parent = nullptr, std::shared_ptr<UserModel> creator = nullptr, std::shared_ptr<TaskModel> taskToEdit = nullptr);
     ~TaskEditorDialog();
-    virtual void initEditorFieldsFromDataBase() override;
 
 public Q_SLOTS:
     void accept() override;
@@ -62,6 +61,7 @@ private:
     QHBoxLayout* setUpEfforAndPrioritySectionLayout();
     QGroupBox* setUpTaskEfforGroupBox();
     QGroupBox* setUpTaskPriorityGroupBox();
+    void initEditorFieldsFromDataBase();
     void initEditFields();
     QDate initValidDateField(QDate fieldData);
     std::shared_ptr<UserModel> getUserDataFromTaskData(std::size_t dbUserId);
