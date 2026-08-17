@@ -14,18 +14,6 @@
 // Standard C++ Header Files
 #include <stdexcept>
 
-
-BaseObjectEditorDialog::BaseObjectEditorDialog(const char* objectType, std::size_t userId, std::size_t dbModelTableIndex, QWidget* parent)
-    : QDialog(parent),
-    m_userID{userId},
-    m_dbModelId{dbModelTableIndex},
-    m_editorObjectTypeString{objectType}
-{
-    m_editorTitleString = dbModelTableIndex? "Edit " : "Add ";
-    m_editorTitleString += objectType;
-    setWindowTitle(m_editorTitleString + " Dialog");
-}
-
 BaseObjectEditorDialog::BaseObjectEditorDialog(const char *objectType, std::size_t userId, std::shared_ptr<ModelDBInterface> objectToEdit, QWidget *parent)
     : QDialog(parent),
     m_userID{userId},
