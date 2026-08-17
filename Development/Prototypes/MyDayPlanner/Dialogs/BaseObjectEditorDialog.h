@@ -73,7 +73,6 @@ protected:
     int getRowMaximumWidth(QFormLayout* layout, int row);
 
     std::size_t m_userID;
-    std::size_t m_dbModelId;
     std::shared_ptr<ModelDBInterface> m_dbObjectModel = nullptr;
     QString m_editorObjectTypeString;
     QString m_editorTitleString;

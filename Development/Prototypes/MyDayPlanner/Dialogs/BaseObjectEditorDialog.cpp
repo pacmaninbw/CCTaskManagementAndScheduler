@@ -17,7 +17,6 @@
 BaseObjectEditorDialog::BaseObjectEditorDialog(const char *objectType, std::size_t userId, std::shared_ptr<ModelDBInterface> objectToEdit, QWidget *parent)
     : QDialog(parent),
     m_userID{userId},
-    m_dbModelId{objectToEdit != nullptr? objectToEdit->getPrimaryKey() : 0},
     m_editorObjectTypeString{objectType}
 {
     m_editorTitleString = "Edit ";
@@ -98,10 +97,7 @@ QDialogButtonBox* BaseObjectEditorDialog::setUpEditorButtonBox()
         saveButton->setText(tr("Save"));
     }
 
-/*
- * If this is an edit rather than add action then allow the user to delete the object.
- */
-    if (m_dbModelId)
+    if (m_dbObjectModel != nullptr && m_dbObjectModel->isInDataBase())
     {
         m_qt_deleteButton = createDeleteButton(buttonBox);
 
