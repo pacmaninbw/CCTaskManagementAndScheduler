@@ -29,11 +29,6 @@ BaseObjectEditorDialog::BaseObjectEditorDialog(const char *objectType, std::size
     setWindowTitle(m_editorTitleString + " Dialog");
 }
 
-void BaseObjectEditorDialog::initEditorFieldsFromDataBase()
-{
-    throw std::logic_error("initEditorFieldsFromDataBase not implemented!");
-}
-
 void BaseObjectEditorDialog::accept()
 {
     if (!m_dbObjectModel)
