@@ -34,7 +34,7 @@ void GoalWindow::refresh()
 void GoalWindow::handleAddGoalAction()
 {
     qDebug() << "In GoalWindow::" << __func__;
-    GoalEditorDialog addGoalDialog(m_userData->getUserID(), 0, this);
+    GoalEditorDialog addGoalDialog(m_userData->getUserID(), nullptr, this);
     addGoalDialog.exec();
     tableViewReset(m_qt_modelTableView);
 }
@@ -47,9 +47,7 @@ void GoalWindow::handleEditGoalAction(const QModelIndex &index)
         return;
     }
 
-    std::size_t goalToEdit = index.internalId();
-    GoalEditorDialog goalEditDialog(m_userData->getUserID(), goalToEdit, this);
-    goalEditDialog.initEditorFieldsFromDataBase();
+    GoalEditorDialog goalEditDialog(m_userData->getUserID(), m_goalTable->getDatabaseObject(index), this);
     goalEditDialog.exec();
     tableViewReset(m_qt_modelTableView);
 }

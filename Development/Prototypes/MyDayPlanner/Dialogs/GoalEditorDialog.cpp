@@ -15,34 +15,16 @@
 // Standard C++ Header Files
 #include <memory>
 
-GoalEditorDialog::GoalEditorDialog(std::size_t userId, std::size_t goalId, QWidget *parent)
-    : BaseObjectEditorDialog("Goal", userId, goalId, parent),
-    m_parentGoalData{nullptr}
+GoalEditorDialog::GoalEditorDialog(std::size_t userId, std::shared_ptr<UserGoalModel> goalToEdit, QWidget *parent)
+: BaseObjectEditorDialog("Goal", userId, goalToEdit, parent),
+  m_parentGoalData{nullptr}
 {
     setUpEditorUI();
+    transferDBModelDataToEditorFields();
 }
 
 GoalEditorDialog::~GoalEditorDialog()
 {
-}
-
-void GoalEditorDialog::initEditorFieldsFromDataBase()
-{
-    if (m_dbModelId)
-    {
-        GoalQueryProcessor goalQueryProcessor;
-        UserGoalModel_shp goalData = goalQueryProcessor.getGoalById(m_dbModelId);
-
-        m_dbObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(goalData);
-
-        std::size_t parentGoalId = goalData->getParentId();
-        if (parentGoalId)
-        {
-            m_parentGoalData = goalQueryProcessor.getGoalById(parentGoalId);
-        }
-
-        transferDBModelDataToEditorFields();
-    }
 }
 
 QGroupBox *GoalEditorDialog::setUpEditorDialogForm()
@@ -95,5 +77,6 @@ void GoalEditorDialog::transferDBModelDataToEditorFields()
 void GoalEditorDialog::createSharedPtrDBModelForAddObject()
 {
     UserGoalModel_shp goalData = std::make_shared<UserGoalModel>();
+    goalData->setUserId(m_userID);
     m_dbObjectModel = std::dynamic_pointer_cast<ModelDBInterface>(goalData);
 }

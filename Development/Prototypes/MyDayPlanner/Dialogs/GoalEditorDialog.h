@@ -19,9 +19,8 @@ class UserGoalModel;
 class GoalEditorDialog : public BaseObjectEditorDialog
 {
 public:
-    explicit GoalEditorDialog(std::size_t userId, std::size_t goalId, QWidget* parent = nullptr);
+    explicit GoalEditorDialog(std::size_t userId, std::shared_ptr<UserGoalModel> goalToEdit = nullptr, QWidget* parent = nullptr);
     ~GoalEditorDialog();
-    virtual void initEditorFieldsFromDataBase() override;
 
 private:
     const int goalDescriptionMinCharWidth = 40;
