@@ -12,7 +12,6 @@
 #include <QVBoxLayout>
 
 // Standard C++ Header Files
-#include <stdexcept>
 
 BaseObjectEditorDialog::BaseObjectEditorDialog(const char *objectType, std::size_t userId, std::shared_ptr<ModelDBInterface> objectToEdit, QWidget *parent)
     : QDialog(parent),

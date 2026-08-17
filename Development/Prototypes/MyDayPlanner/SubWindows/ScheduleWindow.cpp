@@ -16,9 +16,7 @@
 #include <QWidget>
 
 // Standard C++ Header Files
-#include <chrono>
 #include <memory>
-#include <optional>
 
 ScheduleWindow::ScheduleWindow(std::shared_ptr<UserModel> currentUser, QDate dateToShow, bool makeSubWindow, QWidget *parent)
     : ModelSubWindow("Schedule:", makeSubWindow, parent)
