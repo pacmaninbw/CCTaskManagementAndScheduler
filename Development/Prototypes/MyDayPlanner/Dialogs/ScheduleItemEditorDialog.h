@@ -27,7 +27,9 @@ class ScheduleItemEditorDialog : public BaseObjectEditorDialog
 public:
     explicit ScheduleItemEditorDialog(std::size_t userId, std::shared_ptr<ScheduleItemModel> eventToEdit = nullptr, QWidget* parent = nullptr);
     ~ScheduleItemEditorDialog();
-    virtual void initEditorFieldsFromDataBase() override;
+
+    // initCompletersFromDB requires database access, it should not be called in the constructor.
+    void initCompletersFromDB();
 
 private Q_SLOTS:
     void handleEventDate_DateChanged();
@@ -41,8 +43,8 @@ private:
 
     virtual void setUpEditorUI() override;
     virtual QGroupBox* setUpEditorDialogForm() override;
+    void initEditorFieldsFromDataBase();
     void initDateTimeEdit(QDateTimeEdit* dtEdit, std::chrono::system_clock::time_point initValue);
-    void initCompletersFromDB();
     virtual void createSharedPtrDBModelForAddObject() override;
     virtual void transferEditorValuesToDBModel() override;
     virtual void transferDBModelDataToEditorFields() override;

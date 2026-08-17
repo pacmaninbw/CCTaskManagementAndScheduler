@@ -38,31 +38,42 @@ ScheduleItemEditorDialog::ScheduleItemEditorDialog(std::size_t userId, std::shar
     }
 
     setUpEditorUI();
+
+    initEditorFieldsFromDataBase();
 }
 
 ScheduleItemEditorDialog::~ScheduleItemEditorDialog()
 {
 }
 
-// Do not initialize the constructor from the database, this function must
-// be called after the constructor has been executed.
-void ScheduleItemEditorDialog::initEditorFieldsFromDataBase()
+void ScheduleItemEditorDialog::initCompletersFromDB()
 {
-    transferDBModelDataToEditorFields();
+    // Only provide completers when this is a new event.
+    if (m_dbObjectModel != nullptr && m_dbObjectModel->isInDataBase())
+    {
+        return;
+    }
 
-    QDateTime startTime = QDateTime::fromStdTimePoint(std::chrono::time_point_cast<std::chrono::milliseconds>(m_startTime));
-    m_qt_eventDate->setDate(startTime.toLocalTime().date());
-    initDateTimeEdit(m_qt_startTime, m_startTime);
-    initDateTimeEdit(m_qt_endTime, m_endTime);
+    ScheduleItemQueryProcessor previousEventFinder(m_userID);
+    std::vector<std::string> previousEventTitles = previousEventFinder.findEventsForRepeatCompletion();
+    QStringList previousEventList;
 
-    initCompletersFromDB();
+    for (const std::string& str : previousEventTitles) {
+        previousEventList.append(QString::fromStdString(str));
+    }
 
-/*
- * Wait until all date information is assigned before connecting this, it
- * is to allow the user to change the date after initialization.
- */
-    connect(m_qt_eventDate, &QDateEdit::dateChanged, this,
-        &ScheduleItemEditorDialog::handleEventDate_DateChanged);
+    m_qt_titleCompleter = new QCompleter(previousEventList, m_qt_editorDialogFormGB);
+    m_qt_addTitle->setCompleter(m_qt_titleCompleter);
+
+    std::vector<std::string> previousLocations = previousEventFinder.findLocationsForRepeatCompletion();
+    QStringList locationList;
+
+    for (const std::string& str : previousLocations) {
+        locationList.append(QString::fromStdString(str));
+    }
+
+    m_qt_locationCompleter = new QCompleter(locationList, m_qt_editorDialogFormGB);
+    m_qt_addLocation->setCompleter(m_qt_locationCompleter);
 }
 
 void ScheduleItemEditorDialog::setUpEditorUI()
@@ -133,6 +144,23 @@ QGroupBox *ScheduleItemEditorDialog::setUpEditorDialogForm()
     return formGroupBox;
 }
 
+void ScheduleItemEditorDialog::initEditorFieldsFromDataBase()
+{
+    transferDBModelDataToEditorFields();
+
+    QDateTime startTime = QDateTime::fromStdTimePoint(std::chrono::time_point_cast<std::chrono::milliseconds>(m_startTime));
+    m_qt_eventDate->setDate(startTime.toLocalTime().date());
+    initDateTimeEdit(m_qt_startTime, m_startTime);
+    initDateTimeEdit(m_qt_endTime, m_endTime);
+
+/*
+ * Wait until all date information is assigned before connecting this, it
+ * is to allow the user to change the date after initialization.
+ */
+    connect(m_qt_eventDate, &QDateEdit::dateChanged, this,
+        &ScheduleItemEditorDialog::handleEventDate_DateChanged);
+}
+
 void ScheduleItemEditorDialog::initDateTimeEdit(
     QDateTimeEdit* dtEdit,
     std::chrono::system_clock::time_point initValue
@@ -162,36 +190,6 @@ void ScheduleItemEditorDialog::handleEventDate_DateChanged()
 
     m_qt_startTime->setMaximumDate(newDate.addYears(1));
     m_qt_endTime->setMaximumDate(m_qt_startTime->maximumDate());
-}
-
-void ScheduleItemEditorDialog::initCompletersFromDB()
-{
-    // QCompleter doesn't work with QPlainTextEdit
-    if (m_qt_editTitle)
-    {
-        return;
-    }
-
-    ScheduleItemQueryProcessor previousEventFinder(m_userID);
-    std::vector<std::string> previousEventTitles = previousEventFinder.findEventsForRepeatCompletion();
-    QStringList previousEventList;
-
-    for (const std::string& str : previousEventTitles) {
-        previousEventList.append(QString::fromStdString(str));
-    }
-
-    m_qt_titleCompleter = new QCompleter(previousEventList, m_qt_editorDialogFormGB);
-    m_qt_addTitle->setCompleter(m_qt_titleCompleter);
-
-    std::vector<std::string> previousLocations = previousEventFinder.findLocationsForRepeatCompletion();
-    QStringList locationList;
-
-    for (const std::string& str : previousLocations) {
-        locationList.append(QString::fromStdString(str));
-    }
-
-    m_qt_locationCompleter = new QCompleter(locationList, m_qt_editorDialogFormGB);
-    m_qt_addLocation->setCompleter(m_qt_locationCompleter);
 }
 
 void ScheduleItemEditorDialog::createSharedPtrDBModelForAddObject()

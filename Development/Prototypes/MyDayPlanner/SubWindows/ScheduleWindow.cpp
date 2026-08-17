@@ -35,8 +35,10 @@ void ScheduleWindow::refresh()
 void ScheduleWindow::handleAddEvent()
 {
     ScheduleItemEditorDialog addScheduleItemDialog(m_userData->getUserID(), nullptr, this);
-    addScheduleItemDialog.initEditorFieldsFromDataBase();
+    // initCompletersFromDB requires database access, it should not be called in the ScheduleItemEditorDialog constructor.
+    addScheduleItemDialog.initCompletersFromDB();
     addScheduleItemDialog.exec();
+
     tableViewReset(m_qt_modelTableView);
 }
 
@@ -47,14 +49,13 @@ void ScheduleWindow::handleScheduleItemClicked(const QModelIndex &index)
         return;
     }
 
-    ScheduleItemEditorDialog* editScheduleItemDialog;
-
-    std::shared_ptr<ScheduleItemModel> sheduleItemToEdit = m_scheduleTable->getDatabaseObject(index);
-
-    editScheduleItemDialog = new ScheduleItemEditorDialog(m_userData->getUserID(), sheduleItemToEdit, this);
-
-    editScheduleItemDialog->initEditorFieldsFromDataBase();
-    editScheduleItemDialog->exec();
+    ScheduleItemModel_shp sheduleItemToEdit = m_scheduleTable->getDatabaseObject(index);
+    ScheduleItemEditorDialog editScheduleItemDialog(m_userData->getUserID(), sheduleItemToEdit, this);
+    if (sheduleItemToEdit->isInDataBase() == false)
+    {
+        editScheduleItemDialog.initCompletersFromDB();
+    }
+    editScheduleItemDialog.exec();
 
     tableViewReset(m_qt_modelTableView);
 }
