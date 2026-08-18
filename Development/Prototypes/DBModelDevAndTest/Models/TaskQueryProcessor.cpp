@@ -1,6 +1,6 @@
 // Project Header Files
 #include "QueryProcessor.h"
-#include "stdChronoBoostConversions.h"
+#include "chronoBoostConversions.h"
 #include "TaskQueryProcessor.h"
 #include "TaskModel.h"
 
@@ -102,7 +102,7 @@ TaskList TaskQueryProcessor::getUnstartedDueForStartForAssignedUser(std::size_t 
         boost::mysql::format_context fctx(getFormatOptions());
         boost::mysql::format_sql_to(fctx, baseTaskQuery);
         boost::mysql::format_sql_to(fctx, "WHERE tasks.assigned_to = {} ", assignedUserID);
-        boost::mysql::format_sql_to(fctx, "AND tasks.planned_start < {} ", stdchronoDateToBoostMySQLDate(getTodaysDatePlus(OneWeek)));
+        boost::mysql::format_sql_to(fctx, "AND tasks.planned_start < {} ", common::toBoostMySQLDate(getTodaysDatePlus(OneWeek)));
         boost::mysql::format_sql_to(fctx, "AND (tasks.task_status IS NULL OR tasks.task_status = 0) ");
         boost::mysql::format_sql_to(fctx, "AND tasks.deleted <> 1");
 
@@ -129,7 +129,7 @@ TaskList TaskQueryProcessor::getTasksCompletedByAssignedAfterDate(std::size_t as
         boost::mysql::format_context fctx(getFormatOptions());
         boost::mysql::format_sql_to(fctx, baseTaskQuery);
         boost::mysql::format_sql_to(fctx, "WHERE tasks.assigned_to = {} ", assignedUserID);
-        boost::mysql::format_sql_to(fctx, "AND tasks.delivered >= {}", stdchronoDateToBoostMySQLDate(searchStartDate));
+        boost::mysql::format_sql_to(fctx, "AND tasks.delivered >= {}", common::toBoostMySQLDate(searchStartDate));
 
         StaticQueryTask localResult = staticRunQueryAsync<TaskDbQueryValues>(std::move(fctx).get().value());
         results = processStaticResults(localResult);
@@ -181,7 +181,7 @@ TaskList TaskQueryProcessor::getDefaultDashboardTaskList(std::size_t assignedUse
         boost::mysql::format_sql_to(fctx, "AND tasks.delivered IS NULL ");
         boost::mysql::format_sql_to(fctx, "AND tasks.deleted <> 1 ");
         boost::mysql::format_sql_to(fctx, "AND (tasks.task_status = {} ", static_cast<unsigned int>(TaskModel::TaskStatus::Work_in_Progress));
-        boost::mysql::format_sql_to(fctx, "OR tasks.due_date < {}) ", stdchronoDateToBoostMySQLDate(searchStartDate));
+        boost::mysql::format_sql_to(fctx, "OR tasks.due_date < {}) ", common::toBoostMySQLDate(searchStartDate));
         boost::mysql::format_sql_to(fctx, "ORDER BY tasks.priority_category ASC, tasks.priority ASC");
 
         StaticQueryTask localResult = staticRunQueryAsync<TaskDbQueryValues>(std::move(fctx).get().value());

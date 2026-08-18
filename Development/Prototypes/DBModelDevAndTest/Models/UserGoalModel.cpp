@@ -1,5 +1,5 @@
 // Project Header Files
-#include "stdChronoBoostConversions.h"
+#include "chronoBoostConversions.h"
 #include "UserGoalModel.h"
 
 // Standard C++ Header Files
@@ -23,8 +23,8 @@ UserGoalModel::UserGoalModel(const GoalDbQueryValues &databaseValues)
     m_description = databaseValues.description;
     m_priority = databaseValues.priority;
     m_parentID = databaseValues.parent_goal;
-    m_created = boostMysqlDateTimeToChronoTimePoint(databaseValues.creation_timestamp);
-    m_lastUpdate = boostMysqlDateTimeToChronoTimePoint(databaseValues.last_modified_time_stamp);
+    m_created = common::toChronoTimePoint(databaseValues.creation_timestamp);
+    m_lastUpdate = common::toChronoTimePoint(databaseValues.last_modified_time_stamp);
     m_deleted = databaseValues.deleted;
 }
 

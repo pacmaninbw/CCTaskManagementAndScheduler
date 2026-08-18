@@ -1,6 +1,6 @@
 // Project Header Files
 #include "NoteModel.h"
-#include "stdChronoBoostConversions.h"
+#include "chronoBoostConversions.h"
 
 // Standard C++ Header Files
 #include <chrono>
@@ -20,8 +20,8 @@ NoteModel::NoteModel(const NoteDbQueryValues &dbTranslator)
     m_primaryKey = dbTranslator.id_user_notes;
     m_userID = dbTranslator.user_id;
     m_content = dbTranslator.content;
-    m_creationDate = boostMysqlDateTimeToChronoTimePoint(dbTranslator.note_creation);
-    m_lastUpdate = boostMysqlDateTimeToChronoTimePoint(dbTranslator.last_modifed);
+    m_creationDate = common::toChronoTimePoint(dbTranslator.note_creation);
+    m_lastUpdate = common::toChronoTimePoint(dbTranslator.last_modifed);
     m_deleted = dbTranslator.deleted;
 }
 

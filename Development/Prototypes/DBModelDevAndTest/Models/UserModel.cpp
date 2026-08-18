@@ -1,6 +1,6 @@
 // Project Header Files
 #include "UserModel.h"
-#include "stdChronoBoostConversions.h"
+#include "chronoBoostConversions.h"
 
 // Standard C++ Header Files
 #include <chrono>
@@ -32,8 +32,8 @@ UserModel::UserModel(const UserDbQueryValues &databaseValues)
     m_loginName = databaseValues.user_login;
     m_password = databaseValues.hashed_password;
     parsePrefenceText(databaseValues.preferences);
-    m_created = boostMysqlDateTimeToChronoTimePoint(databaseValues.created_timestamp);
-    m_lastLogin = databaseValues.last_login.transform(boostMysqlDateTimeToChronoTimePoint);
+    m_created = common::toChronoTimePoint(databaseValues.created_timestamp);
+    m_lastLogin = databaseValues.last_login.transform(common::toChronoTimePoint);
     m_organizationId = databaseValues.id_organization;
 }
 
@@ -232,7 +232,7 @@ std::string UserModel::formatUpdateStatement()
     boost::mysql::format_sql_to(fctx, "user_profile.user_login = {}, ", m_loginName);
     boost::mysql::format_sql_to(fctx, "user_profile.hashed_password = {}, ", m_password);
     boost::mysql::format_sql_to(fctx, "user_profile.preferences = {}, ", buildPreferenceText());
-    boost::mysql::format_sql_to(fctx, "user_profile.last_login = {} ", m_lastLogin.transform(stdChronoTimePointToBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "user_profile.last_login = {} ", m_lastLogin.transform(common::toBoostDateTime));
     boost::mysql::format_sql_to(fctx, "WHERE user_profile.user_id = {}", m_primaryKey);
         
     return std::move(fctx).get().value();

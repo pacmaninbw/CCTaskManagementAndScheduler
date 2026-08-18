@@ -3,7 +3,7 @@
 #include "QueryProcessor.h"
 #include "ScheduleItemQueryProcessor.h"
 #include "ScheduleItemModel.h"
-#include "stdChronoBoostConversions.h"
+#include "chronoBoostConversions.h"
 
 // Standard C++ Header Files
 #include <chrono>
@@ -59,9 +59,9 @@ ScheduleItemList ScheduleItemQueryProcessor::getUserDaySchedule(std::chrono::yea
         boost::mysql::format_sql_to(fctx, "WHERE user_schedule_item.user_id = {} ", m_userID);
         boost::mysql::format_sql_to(fctx, "AND user_schedule_item.deleted <> 1 ");
         boost::mysql::format_sql_to(fctx, "AND user_schedule_item.start_date_time >= {} ",
-            stdChronoTimePointToBoostDateTime(startSearch));
+            common::toBoostDateTime(startSearch));
         boost::mysql::format_sql_to(fctx, "AND user_schedule_item.start_date_time <= {} ",
-            stdChronoTimePointToBoostDateTime(endSearch));
+            common::toBoostDateTime(endSearch));
         boost::mysql::format_sql_to(fctx, "ORDER BY user_schedule_item.start_date_time ASC");
 
         StaticQueryEvent localResult = staticRunQueryAsync<ScheduleItemDbQueryValues>(std::move(fctx).get().value());
@@ -93,8 +93,8 @@ ScheduleItemList ScheduleItemQueryProcessor::findUserScheduleItemsByContentAndDa
         boost::mysql::format_sql_to(fctx, "WHERE user_id = {} ", m_userID);
         boost::mysql::format_sql_to(fctx, "AND title LIKE {} ", patternMatcher);
         boost::mysql::format_sql_to(fctx, "AND deleted <> 1 ");
-        boost::mysql::format_sql_to(fctx, "AND start_date_time >= {} ", stdchronoDateToBoostMySQLDate(searchStart));
-        boost::mysql::format_sql_to(fctx, "AND start_date_time <= {}", stdchronoDateToBoostMySQLDate(searchEnd));
+        boost::mysql::format_sql_to(fctx, "AND start_date_time >= {} ", common::toBoostMySQLDate(searchStart));
+        boost::mysql::format_sql_to(fctx, "AND start_date_time <= {}", common::toBoostMySQLDate(searchEnd));
 
         StaticQueryEvent localResult = staticRunQueryAsync<ScheduleItemDbQueryValues>(std::move(fctx).get().value());
         return processStaticResults(localResult);

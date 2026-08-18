@@ -1,6 +1,6 @@
 // Project Header Files
 #include "ScheduleItemModel.h"
-#include "stdChronoBoostConversions.h"
+#include "chronoBoostConversions.h"
 
 // Standard C++ Header Files
 #include <chrono>
@@ -22,12 +22,12 @@ ScheduleItemModel::ScheduleItemModel(const ScheduleItemDbQueryValues &databaseVa
     m_primaryKey = databaseValues.id_user_schedule_item;
     m_userID = databaseValues.user_id;
     m_title = databaseValues.title;
-    m_startTime = boostMysqlDateTimeToChronoTimePoint(databaseValues.start_date_time);
-    m_endTime = boostMysqlDateTimeToChronoTimePoint(databaseValues.end_date_time);
+    m_startTime = common::toChronoTimePoint(databaseValues.start_date_time);
+    m_endTime = common::toChronoTimePoint(databaseValues.end_date_time);
     m_personal = static_cast<bool>(databaseValues.personal);
     m_location = databaseValues.location.value_or("");
-    m_creation = boostMysqlDateTimeToChronoTimePoint(databaseValues.created_timestamp);
-    m_lastUpdate = boostMysqlDateTimeToChronoTimePoint(databaseValues.last_modified_time_stamp);
+    m_creation = common::toChronoTimePoint(databaseValues.created_timestamp);
+    m_lastUpdate = common::toChronoTimePoint(databaseValues.last_modified_time_stamp);
     m_deleted = databaseValues.deleted;
 }
 
@@ -118,8 +118,8 @@ std::string ScheduleItemModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "deleted");
     boost::mysql::format_sql_to(fctx, ") VALUES (");
     boost::mysql::format_sql_to(fctx, "{}, ", m_userID);
-    boost::mysql::format_sql_to(fctx, "{}, ", m_startTime.transform(stdChronoTimePointToBoostDateTime));
-    boost::mysql::format_sql_to(fctx, "{}, ", m_endTime.transform(stdChronoTimePointToBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "{}, ", m_startTime.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "{}, ", m_endTime.transform(common::toBoostDateTime));
     boost::mysql::format_sql_to(fctx, "{}, ", m_title);
     boost::mysql::format_sql_to(fctx, "{}, ", static_cast<unsigned int>(m_personal?1:0));
     boost::mysql::format_sql_to(fctx, "{}, ", m_location);
@@ -133,8 +133,8 @@ std::string ScheduleItemModel::formatUpdateStatement()
 {
     boost::mysql::format_context fctx(getFormatOptions());
     boost::mysql::format_sql_to(fctx, "UPDATE user_schedule_item SET ");
-    boost::mysql::format_sql_to(fctx, "user_schedule_item.start_date_time = {}, ", m_startTime.transform(stdChronoTimePointToBoostDateTime));
-    boost::mysql::format_sql_to(fctx, "user_schedule_item.end_date_time = {}, ", m_endTime.transform(stdChronoTimePointToBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "user_schedule_item.start_date_time = {}, ", m_startTime.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "user_schedule_item.end_date_time = {}, ", m_endTime.transform(common::toBoostDateTime));
     boost::mysql::format_sql_to(fctx, "user_schedule_item.title = {}, ", m_title);
     boost::mysql::format_sql_to(fctx, "user_schedule_item.personal = {}, ", static_cast<unsigned int>(m_personal?1:0));
     boost::mysql::format_sql_to(fctx, "user_schedule_item.location = {} ", m_location);
