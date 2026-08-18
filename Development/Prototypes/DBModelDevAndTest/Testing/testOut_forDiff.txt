@@ -120,7 +120,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-08-07
+	Completed Date: 2026-08-18
 	Deleted : FALSE
 
 Common Insertion Failure Test PASSED!
@@ -205,8 +205,12 @@ Running self test on set and get functions for ScheduleItem::Title
 Self test on set and get functions for ScheduleItem::Title PASSED
 Running self test on set and get functions for ScheduleItem::Schedule Item Start Time
 Self test on set and get functions for ScheduleItem::Schedule Item Start Time PASSED
+Running self test on set and get functions for ScheduleItem::Optional Start Time
+Self test on set and get functions for ScheduleItem::Optional Start Time PASSED
 Running self test on set and get functions for ScheduleItem::Schedule Item End Time
 Self test on set and get functions for ScheduleItem::Schedule Item End Time PASSED
+Running self test on set and get functions for ScheduleItem::Optional End Time
+Self test on set and get functions for ScheduleItem::Optional End Time PASSED
 Running self test on set and get functions for ScheduleItem::Schedule Item Creation Timestamp
 Self test on set and get functions for ScheduleItem::Schedule Item Creation Timestamp PASSED
 Running self test on set and get functions for ScheduleItem::Schedule Item Last Update Timestamp
@@ -360,7 +364,7 @@ All negative path tests for database insertions and retrievals of ScheduleItem P
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Fri Aug  7 07:14:59 2026
-elapsed time in seconds: 1.04915
+Tue Aug 18 07:24:27 2026
+elapsed time in seconds: 0.58967
 
 
