@@ -2,9 +2,6 @@
 #define COMMONWIDGETEXTENSIONS_H_
 
 /* 
- * All functions provided by CommonWidgetExtensions.h and CommonWidgetExtensions.cpp
- * start with cqtfa_ to identify them.
- * 
  * This file provides functions that provide named QT Widgets. Many of the functions
  * provide layout information or other common features used by the Planner application.
  * 
@@ -20,7 +17,8 @@
 #include <QTextEdit>
 #include <QWidget>
 
-namespace commonW {
+namespace commonW
+{
     template <typename WidgetType>
     WidgetType* namedWidget(const char* objectName, QWidget* parent)
     {
