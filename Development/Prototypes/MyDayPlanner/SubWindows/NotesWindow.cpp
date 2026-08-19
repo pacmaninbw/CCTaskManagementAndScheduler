@@ -1,5 +1,5 @@
 // Project Header Files
-#include "commonQTWidgetsForApp.h"  // cqtfa_ functions
+#include "CommonWidgetExtensions.h"  // cqtfa_ functions
 #include "DashboardNoteTable.h"
 #include "NoteEditorDialog.h"
 #include "NotesWindow.h"
@@ -49,7 +49,7 @@ void NotesWindow::handleNoteTableClicked(const QModelIndex &index)
 
 void NotesWindow::setUpWindowContentAndActions()
 {
-    m_qt_addModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add a Note", "udAddNotePB", this);
+    m_qt_addModelObject = commonW::namedWidgetWithText<QPushButton>("Add a Note", "udAddNotePB", this);
     connect(m_qt_addModelObject, &QPushButton::clicked, this, &NotesWindow::handleAddNoteAction);
 
     m_qt_modelWindowLayout->addWidget(m_qt_addModelObject);

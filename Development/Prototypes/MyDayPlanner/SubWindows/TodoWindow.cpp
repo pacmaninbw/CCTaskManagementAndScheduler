@@ -1,5 +1,5 @@
 // Project Header Files
-#include "commonQTWidgetsForApp.h"
+#include "CommonWidgetExtensions.h"
 #include "GuiDashboardTaskTable.h"
 #include "TodoWindow.h"
 #include "TaskEditorDialog.h"
@@ -52,7 +52,7 @@ void TodoWindow::handleTodoTableClicked(const QModelIndex &index)
 
 void TodoWindow::setUpWindowContentAndActions()
 {
-    m_qt_addModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add a ToDo Item", "m_qt_addModelObject", this);
+    m_qt_addModelObject = commonW::namedWidgetWithText<QPushButton>("Add a ToDo Item", "m_qt_addModelObject", this);
     connect(m_qt_addModelObject, &QPushButton::clicked, this, &TodoWindow::handleAddTodoItem);
 
     m_qt_modelWindowLayout->addWidget(m_qt_addModelObject);

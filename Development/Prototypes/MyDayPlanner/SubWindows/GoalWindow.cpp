@@ -1,5 +1,5 @@
 // Project Header Files
-#include "commonQTWidgetsForApp.h"  // cqtfa_ functions
+#include "CommonWidgetExtensions.h"  // cqtfa_ functions
 #include "DefaultGoalDisplayTable.h"
 #include "GoalEditorDialog.h"
 #include "GoalWindow.h"
@@ -55,7 +55,7 @@ void GoalWindow::handleEditGoalAction(const QModelIndex &index)
 void GoalWindow::setUpWindowContentAndActions()
 {
     qDebug() << "In GoalWindow::" << __func__;
-    m_qt_addModelObject = cqtfa_QTWidgetWithText<QPushButton>("Add a Goal", "m_qt_addModelObject", this);
+    m_qt_addModelObject = commonW::namedWidgetWithText<QPushButton>("Add a Goal", "m_qt_addModelObject", this);
     connect(m_qt_addModelObject, &QPushButton::clicked, this, &GoalWindow::handleAddGoalAction);
 
     m_qt_modelWindowLayout->addWidget(m_qt_addModelObject);

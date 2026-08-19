@@ -1,5 +1,5 @@
 // Project Header Files
-#include "commonQTWidgetsForApp.h"
+#include "CommonWidgetExtensions.h"
 #include "GoalEditorDialog.h"
 #include "UserGoalModel.h"
 #include "GoalQueryProcessor.h"
@@ -33,19 +33,19 @@ QGroupBox *GoalEditorDialog::setUpEditorDialogForm()
     m_qt_editorFormLayout = new QFormLayout(mainEditorGroupBox);
     m_qt_editorFormLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 
-    m_qt_description = cqtfa_flexiblePlainTextEditEbasedOnCharCount("m_qt_description", mainEditorGroupBox,
+    m_qt_description = commonW::flexPlainTextBasedOnCharCount("m_qt_description", mainEditorGroupBox,
         goalDescriptionMinCharWidth, goalDescriptionMaxCharWidth, goalDescriptionLineCount);
     m_qt_editorFormLayout->addRow("Goal Description:", m_qt_description);
 
-    m_qt_priority = cqtfa_LineEditFixedWidthByCharCount("m_qt_priority",
+    m_qt_priority = commonW::lineEditWidthByCharCount("m_qt_priority",
         mainEditorGroupBox, goalPriorityMaxChar);
     m_qt_editorFormLayout->addRow("Priority:", m_qt_priority);
 
-    m_qt_selectParentGoal = cqtfa_QTWidgetWithText<QPushButton>(
+    m_qt_selectParentGoal = commonW::namedWidgetWithText<QPushButton>(
         "Select Parent Goal", "m_qt_selectParentGoal", mainEditorGroupBox);
     m_qt_editorFormLayout->addWidget(m_qt_selectParentGoal);
 
-    m_maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(m_qt_editorFormLayout);
+    m_maxGroupBoxHeight = commonW::getMaxHeight(m_qt_editorFormLayout);
 
     mainEditorGroupBox->setLayout(m_qt_editorFormLayout);
 

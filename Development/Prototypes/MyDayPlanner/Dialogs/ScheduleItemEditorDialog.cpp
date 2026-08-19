@@ -1,5 +1,5 @@
 // Project Header Files
-#include "commonQTWidgetsForApp.h"
+#include "CommonWidgetExtensions.h"
 #include "ScheduleItemEditorDialog.h"
 #include "ScheduleItemQueryProcessor.h"
 #include "ScheduleItemModel.h"
@@ -106,7 +106,7 @@ QGroupBox *ScheduleItemEditorDialog::setUpEditorDialogForm()
     m_qt_editorFormLayout = new QFormLayout(formGroupBox);
     m_qt_editorFormLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 
-    m_qt_eventDate = cqtfa_DateEditWithCalendarPopUpCurrentDate("m_qt_eventDate", formGroupBox);
+    m_qt_eventDate = commonW::dateEditWithCalendar("m_qt_eventDate", formGroupBox);
     m_qt_editorFormLayout->addRow("Date:", m_qt_eventDate);
 
     m_qt_startTime = new QDateTimeEdit(formGroupBox);
@@ -119,24 +119,24 @@ QGroupBox *ScheduleItemEditorDialog::setUpEditorDialogForm()
 
     if (m_dbObjectModel->isInDataBase())
     {
-        m_qt_editTitle = cqtfa_flexibleWidthPlainTextEdit("m_qt_editTitle",
+        m_qt_editTitle = commonW::flexWidthPlainTextEdit("m_qt_editTitle",
             formGroupBox, EventTextEditMinWidth, EventTextEditMaxWidth, TitleLineCount);
         m_qt_editorFormLayout->addRow("What:", m_qt_editTitle);
 
-        m_qt_editLocation = cqtfa_flexibleWidthPlainTextEdit("m_qt_editLocation", formGroupBox,
+        m_qt_editLocation = commonW::flexWidthPlainTextEdit("m_qt_editLocation", formGroupBox,
             EventTextEditMinWidth, EventTextEditMaxWidth, LocationLineCount);
         m_qt_editorFormLayout->addRow("Where:", m_qt_editLocation);
     }
     else
     {
-        m_qt_addTitle = cqtfa_LineEditFixedWidthByCharCount("m_qt_addTitle", formGroupBox, MaxCharLineEdit);
+        m_qt_addTitle = commonW::lineEditWidthByCharCount("m_qt_addTitle", formGroupBox, MaxCharLineEdit);
         m_qt_editorFormLayout->addRow("What:", m_qt_addTitle);
 
-        m_qt_addLocation = cqtfa_LineEditFixedWidthByCharCount("m_qt_addLocation", formGroupBox, MaxCharLineEdit);
+        m_qt_addLocation = commonW::lineEditWidthByCharCount("m_qt_addLocation", formGroupBox, MaxCharLineEdit);
         m_qt_editorFormLayout->addRow("Where:", m_qt_addLocation);
     }
 
-    m_qt_personal = cqtfa_QTWidgetWithText<QCheckBox>("Personal", "m_qt_personal", formGroupBox);
+    m_qt_personal = commonW::namedWidgetWithText<QCheckBox>("Personal", "m_qt_personal", formGroupBox);
     m_qt_editorFormLayout->addRow(m_qt_personal);
 
     formGroupBox->setLayout(m_qt_editorFormLayout);

@@ -1,5 +1,5 @@
 // Project Header Files
-#include "commonQTWidgetsForApp.h"
+#include "CommonWidgetExtensions.h"
 #include "UserModel.h"
 #include "UserQueryProcessor.h"
 #include "LoginDialog.h"
@@ -31,15 +31,15 @@ void LoginDialog::setUpLoginDialogUI()
     m_qt_userLoginGB = new QGroupBox("Login As User", this);
     m_qt_userLoginGB->setObjectName("m_qt_userLoginGB");
 
-    QFormLayout* userLoginFormLayout = cqtfa_FormLayoutWithPolicy("userLogingFormLayout", m_qt_userLoginGB);
+    QFormLayout* userLoginFormLayout = commonW::formLayoutWithPolicy("userLogingFormLayout", m_qt_userLoginGB);
 
-    m_qt_userName = cqtfa_LineEditWithWidthAndLength("m_qt_userName", m_qt_userLoginGB);
+    m_qt_userName = commonW::lineEditWidthByLength("m_qt_userName", m_qt_userLoginGB);
     userLoginFormLayout->addRow("User Name:", m_qt_userName);
 
-    m_qt_password = cqtfa_LineEditWithWidthAndLength("m_qt_password", m_qt_userLoginGB);
+    m_qt_password = commonW::lineEditWidthByLength("m_qt_password", m_qt_userLoginGB);
     userLoginFormLayout->addRow("Password:", m_qt_password);
 
-    m_qt_loginAsUser = cqtfa_QTWidgetWithText<QPushButton>("Login As User", "m_qt_loginAsUser", m_qt_userLoginGB);
+    m_qt_loginAsUser = commonW::namedWidgetWithText<QPushButton>("Login As User", "m_qt_loginAsUser", m_qt_userLoginGB);
     connect(m_qt_loginAsUser, &QPushButton::clicked, this, &LoginDialog::onactionLoginAsUserPBClicked);
     userLoginFormLayout->addWidget(m_qt_loginAsUser);
 

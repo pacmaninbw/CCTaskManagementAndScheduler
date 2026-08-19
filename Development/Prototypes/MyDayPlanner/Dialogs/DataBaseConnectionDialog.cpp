@@ -4,7 +4,7 @@
 // Project Header Files
 #include "TestDBConnection.h"
 #include "CommandLineParser.h"
-#include "commonQTWidgetsForApp.h"
+#include "CommonWidgetExtensions.h"
 #include "DataBaseConnectionDialog.h"
 
 // QT Header Files
@@ -66,29 +66,29 @@ void DataBaseConnectionDialog::setUpDBConnectionDialogUI()
 
 QFormLayout *DataBaseConnectionDialog::setUpDBConnectionsFormLayout()
 {
-    m_qt_groupBoxFormLayout = cqtfa_FormLayoutWithPolicy("m_qt_groupBoxFormLayout", m_qt_connectionsGB);
+    m_qt_groupBoxFormLayout = commonW::formLayoutWithPolicy("m_qt_groupBoxFormLayout", m_qt_connectionsGB);
 
-    m_qt_mySqlUser = cqtfa_LineEditFixedWidthByCharCount("m_qt_mySqlUser", m_qt_connectionsGB, MaxQLineEditCharCount);
+    m_qt_mySqlUser = commonW::lineEditWidthByCharCount("m_qt_mySqlUser", m_qt_connectionsGB, MaxQLineEditCharCount);
     m_qt_mySqlUser->setText(QString::fromStdString(programOptions.mySqlUser));
     m_qt_groupBoxFormLayout->addRow("MySQL User Name:", m_qt_mySqlUser);
 
-    m_qt_mySqlPassword = cqtfa_LineEditFixedWidthByCharCount("m_qt_mySqlPassword", m_qt_connectionsGB, MaxQLineEditCharCount);
+    m_qt_mySqlPassword = commonW::lineEditWidthByCharCount("m_qt_mySqlPassword", m_qt_connectionsGB, MaxQLineEditCharCount);
     m_qt_mySqlPassword->setText(QString::fromStdString(programOptions.mySqlPassword));
     m_qt_groupBoxFormLayout->addRow("MySQL User Password:", m_qt_mySqlPassword);
 
-    m_qt_mySqlUrl = cqtfa_LineEditFixedWidthByCharCount("m_qt_mySqlUrl", m_qt_connectionsGB, MaxQLineEditCharCount);
+    m_qt_mySqlUrl = commonW::lineEditWidthByCharCount("m_qt_mySqlUrl", m_qt_connectionsGB, MaxQLineEditCharCount);
     m_qt_mySqlUrl->setText(QString::fromStdString(programOptions.mySqlUrl));
     m_qt_groupBoxFormLayout->addRow("MySQL URL:", m_qt_mySqlUrl);
 
-    m_qt_mySqlPort = cqtfa_LineEditFixedWidthByCharCount("m_qt_mySqlPort", m_qt_connectionsGB, MaxQLineEditCharCount);
+    m_qt_mySqlPort = commonW::lineEditWidthByCharCount("m_qt_mySqlPort", m_qt_connectionsGB, MaxQLineEditCharCount);
     m_qt_mySqlPort->setText(QString::number(programOptions.mySqlPort));
     m_qt_groupBoxFormLayout->addRow("MySQL Port:", m_qt_mySqlPort);
 
-    m_qt_mySqlDBName = cqtfa_LineEditFixedWidthByCharCount("m_qt_mySqlDBName", m_qt_connectionsGB, MaxQLineEditCharCount);
+    m_qt_mySqlDBName = commonW::lineEditWidthByCharCount("m_qt_mySqlDBName", m_qt_connectionsGB, MaxQLineEditCharCount);
     m_qt_mySqlDBName->setText(QString::fromStdString(programOptions.mySqlDBName));
     m_qt_groupBoxFormLayout->addRow("MySQL Database Name:", m_qt_mySqlDBName);
 
-    m_maxGroupBoxHeight = cqtfa_calculateFormLayoutMaxHeight(m_qt_groupBoxFormLayout);
+    m_maxGroupBoxHeight = commonW::getMaxHeight(m_qt_groupBoxFormLayout);
 
 
     return m_qt_groupBoxFormLayout;
@@ -113,7 +113,7 @@ QDialogButtonBox *DataBaseConnectionDialog::setUpButtonBox()
 void DataBaseConnectionDialog::limitDialogRowth()
 {
     m_qt_connectionsGB->setMaximumHeight(m_maxGroupBoxHeight);
-    m_qt_connectionsGB->setMaximumWidth(cqtfa_getFormLayoutMaxWidth(m_qt_groupBoxFormLayout) + MarginAndSpacing);
+    m_qt_connectionsGB->setMaximumWidth(commonW::getMaxWidth(m_qt_groupBoxFormLayout) + MarginAndSpacing);
 
     m_qt_buttonBox->setMaximumHeight(m_maxButtonBoxHeight);
 
@@ -196,21 +196,21 @@ QGroupBox *DataBaseConnectionDialog::setUpOptionsGB()
     m_qt_optionsGB = new QGroupBox("Program Options", this);
     m_qt_optionsGB->setObjectName("m_qt_optionsGB");
 
-    m_qt_optionsFormLayout = cqtfa_FormLayoutWithPolicy("m_qt_optionsFormLayout", m_qt_optionsGB);
+    m_qt_optionsFormLayout = commonW::formLayoutWithPolicy("m_qt_optionsFormLayout", m_qt_optionsGB);
 
-    m_qt_verboseOutput = cqtfa_QTWidgetWithText<QCheckBox>("Enable Verbose Output",
+    m_qt_verboseOutput = commonW::namedWidgetWithText<QCheckBox>("Enable Verbose Output",
         "verboseOutput", m_qt_optionsGB);
     m_qt_optionsFormLayout->addWidget(m_qt_verboseOutput);
 
-    m_qt_runSelftTest = cqtfa_QTWidgetWithText<QCheckBox>("Enable Self Test",
+    m_qt_runSelftTest = commonW::namedWidgetWithText<QCheckBox>("Enable Self Test",
         "m_qt_runSelftTest", m_qt_optionsGB);
     m_qt_optionsFormLayout->addWidget(m_qt_runSelftTest);
 
-    m_qt_forceErrors = cqtfa_QTWidgetWithText<QCheckBox>("Force Errors",
+    m_qt_forceErrors = commonW::namedWidgetWithText<QCheckBox>("Force Errors",
         "forceErrors", m_qt_optionsGB);
     m_qt_optionsFormLayout->addWidget(m_qt_forceErrors);
 
-    m_qt_forceExceptions = cqtfa_QTWidgetWithText<QCheckBox>("Force Exceptions",
+    m_qt_forceExceptions = commonW::namedWidgetWithText<QCheckBox>("Force Exceptions",
         "m_qt_forceExceptions", m_qt_optionsGB);
     m_qt_optionsFormLayout->addWidget(m_qt_forceExceptions);
 

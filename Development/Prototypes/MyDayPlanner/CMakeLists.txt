@@ -77,8 +77,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         common/commonTestValues.h
         common/commonUtilities.cpp
         common/commonUtilities.h
-        common/commonQTWidgetsForApp.cpp
-        common/commonQTWidgetsForApp.h
+        common/CommonWidgetExtensions.cpp
+        common/CommonWidgetExtensions.h
         common/chronoBoostConversions.cpp
         common/chronoBoostConversions.h
         SubWindows/GoalWindow.h
