@@ -123,7 +123,7 @@ TestStatus NoteSelfTest::testExceptionInsert() noexcept
 {
    selfTestResetAllValues();
 
-    std::chrono::system_clock::time_point timeStamp = commonTestTimeStampValue;
+    std::chrono::system_clock::time_point timeStamp = common::TestTimeStampValue;
     setContent("Testing insertion exception");
     setUserId(27);
     setDateAdded(timeStamp);
@@ -136,7 +136,7 @@ TestStatus NoteSelfTest::testExceptionUpdate() noexcept
 {
    selfTestResetAllValues();
 
-    std::chrono::system_clock::time_point timeStamp = commonTestTimeStampValue;
+    std::chrono::system_clock::time_point timeStamp = common::TestTimeStampValue;
     setNoteId(1);
     setContent("Testing insertion exception");
     setUserId(27);
@@ -151,7 +151,7 @@ TestStatus NoteSelfTest::testExceptionHide() noexcept
    selfTestResetAllValues();
    std::size_t testUserId = 27;
 
-    std::chrono::system_clock::time_point timeStamp = commonTestTimeStampValue;
+    std::chrono::system_clock::time_point timeStamp = common::TestTimeStampValue;
     setNoteId(1);
     setContent("Testing insertion exception");
     setUserId(testUserId);
@@ -230,14 +230,14 @@ TestStatus NoteSelfTest::testContentAccess() noexcept
 
 TestStatus NoteSelfTest::testDateAddedAccess() noexcept
 {
-    return testTimeStampAccessorFunctions(commonTestTimeStampValue, &m_creationDate, "Date Added",
+    return testTimeStampAccessorFunctions(common::TestTimeStampValue, &m_creationDate, "Date Added",
         std::bind(&NoteModel::setDateAdded, this, std::placeholders::_1),
         std::bind(&NoteModel::getDateAdded, this));
 }
 
 TestStatus NoteSelfTest::testLastUpdateAccess() noexcept
 {
-    std::chrono::system_clock::time_point testValue = commonTestTimeStampValue;
+    std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
     return testTimeStampAccessorFunctions(testValue, &m_lastUpdate, "Date Added",
         std::bind(&NoteModel::setLastModified, this, std::placeholders::_1),
         std::bind(&NoteModel::getLastModified, this));

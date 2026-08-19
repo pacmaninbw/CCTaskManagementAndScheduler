@@ -227,8 +227,8 @@ TestStatus NoteQueryProcessor::testExceptionsGetNotesForUserCreatedDateRange() n
     selfTestResetAllValues();
 
     std::size_t testUserId = 1;
-    std::chrono::year_month_day startDate = commonTestDateRangeStartValue;
-    std::chrono::year_month_day endDate = commonTestDateValue;
+    std::chrono::year_month_day startDate = common::TestDateRangeStartValue;
+    std::chrono::year_month_day endDate = common::TestDateValue;
 
     return testListExceptionAndSuccessNArgs("NoteQueryProcessor::testExceptionsGetNotesForUserCreatedDateRange()",
         std::bind(&NoteQueryProcessor::getAllNotesForUserCreatedInDatgeRange, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), 
@@ -240,8 +240,8 @@ TestStatus NoteQueryProcessor::testExceptionsGetNotesForUserEditedDateRange() no
     selfTestResetAllValues();
 
     std::size_t testUserId = 1;
-    std::chrono::year_month_day startDate = commonTestDateRangeStartValue;
-    std::chrono::year_month_day endDate = commonTestDateValue;
+    std::chrono::year_month_day startDate = common::TestDateRangeStartValue;
+    std::chrono::year_month_day endDate = common::TestDateValue;
 
     return testListExceptionAndSuccessNArgs("NoteQueryProcessor::testExceptionsGetNotesForUserEditedDateRange()",
         std::bind(&NoteQueryProcessor::getAllNotesForUserEditedInDatgeRange, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), 
@@ -253,7 +253,7 @@ TestStatus NoteQueryProcessor::testExceptionsGetDashboardNoteTable() noexcept
     selfTestResetAllValues();
 
     std::size_t testUserId = 1;
-    std::chrono::year_month_day searchDate = commonTestDateValue;
+    std::chrono::year_month_day searchDate = common::TestDateValue;
 
     return testListExceptionAndSuccessNArgs("NoteQueryProcessor::testExceptionsGetDashboardNoteTable()",
         std::bind(&NoteQueryProcessor::getDashboardNoteTable, this, std::placeholders::_1, std::placeholders::_2), 

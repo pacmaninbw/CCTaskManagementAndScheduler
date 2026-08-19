@@ -254,7 +254,7 @@ TestStatus TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate
 {
     selfTestResetAllValues();
 
-    std::chrono::year_month_day searchStartDate = commonTestDateValue;
+    std::chrono::year_month_day searchStartDate = common::TestDateValue;
     std::size_t assignedUser = 1;
 
     return testListExceptionAndSuccessNArgs("TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()",
@@ -279,7 +279,7 @@ TestStatus TaskQueryProcessor::testExceptionGetDefaultDashboardTaskList() noexce
 {
     selfTestResetAllValues();
 
-    std::chrono::year_month_day searchStartDate = commonProductionTestDataAddedDate;
+    std::chrono::year_month_day searchStartDate = common::ProductionTestDataAddedDate;
     std::size_t assignedUser = 1;
 
     return testListExceptionAndSuccessNArgs("TaskQueryProcessor::testExceptionGetDefaultDashboardTaskList()",

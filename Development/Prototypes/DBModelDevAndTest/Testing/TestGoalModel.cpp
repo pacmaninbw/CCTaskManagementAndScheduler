@@ -66,7 +66,7 @@ TestStatus TestGoalModel::testInsertAndGetParent(TestGoalInput testGoal)
     newGoal.setUserId(m_userOne->getUserID());
     newGoal.setDescription(testGoal.description);
     newGoal.setPriority(testGoal.priority);
-    newGoal.setCreationTimeStamp(commonTestTimeStampValue);
+    newGoal.setCreationTimeStamp(common::TestTimeStampValue);
     if (!testGoal.parentDescription.empty())
     {
         GoalQueryProcessor goalQueryProcessor;
@@ -310,7 +310,7 @@ TestStatus TestGoalModel::negativePathMissingRequiredFields()
         }
     }
 
-    testGoal.setCreationTimeStamp(commonTestTimeStampValue);
+    testGoal.setCreationTimeStamp(common::TestTimeStampValue);
     testGoal.save();
     if (!testGoal.isInDataBase())
     {

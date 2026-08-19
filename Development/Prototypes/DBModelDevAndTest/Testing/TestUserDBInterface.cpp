@@ -253,7 +253,7 @@ bool TestUserDBInterface::loadTestUsersFromFile(UserModelList& userProfileTestDa
         userIn->setMiddleInitial(row[2]);
         userIn->setEmail(row[3]);
         userIn->autoGenerateLoginAndPassword();
-        userIn->setCreationDate(commonTestTimeStampValue);
+        userIn->setCreationDate(common::TestTimeStampValue);
         userProfileTestData.push_back(userIn);
     }
 

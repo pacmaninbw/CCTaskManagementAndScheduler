@@ -237,7 +237,7 @@ TestStatus ScheduleItemQueryProcessor::testExceptionGetUserDaySchedule() noexcep
     selfTestResetAllValues();
 
     return testListExceptionAndSuccessNArgs("ScheduleItemQueryProcessor::testExceptionGgetUserDaySchedule()",
-         std::bind(&ScheduleItemQueryProcessor::getUserDaySchedule, this, std::placeholders::_1), commonTestDateValue);
+         std::bind(&ScheduleItemQueryProcessor::getUserDaySchedule, this, std::placeholders::_1), common::TestDateValue);
 }
 
 TestStatus ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByContentAndDateRange() noexcept
@@ -245,8 +245,8 @@ TestStatus ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByConte
     selfTestResetAllValues();
 
     std::string titleSearch("Title search");
-    std::chrono::year_month_day testStart(commonTestDateRangeStartValue);
-    std::chrono::year_month_day testEnd(commonTestDateRangeEndValue);
+    std::chrono::year_month_day testStart(common::TestDateRangeStartValue);
+    std::chrono::year_month_day testEnd(common::TestDateRangeEndValue);
 
     return testListExceptionAndSuccessNArgs("ScheduleItemQueryProcessor::testExceptionFindUserScheduleItemsByContentAndDateRange()",
          std::bind(&ScheduleItemQueryProcessor::findUserScheduleItemsByContentAndDateRange, this, std::placeholders::_1,

@@ -8,13 +8,15 @@
 #include <chrono>
 #include <string>
 
-extern std::chrono::system_clock::time_point commonTestTimeStampValue;
-extern std::chrono::year_month_day commonTestDateValue;
-extern std::chrono::year_month_day commonTestDateRangeStartValue;
-extern std::chrono::year_month_day commonTestDateRangeEndValue;
-extern std::chrono::year_month_day commonProductionTestDataAddedDate;
+namespace common {
+    extern std::chrono::system_clock::time_point TestTimeStampValue;
+    extern std::chrono::year_month_day TestDateValue;
+    extern std::chrono::year_month_day TestDateRangeStartValue;
+    extern std::chrono::year_month_day TestDateRangeEndValue;
+    extern std::chrono::year_month_day ProductionTestDataAddedDate;
 
-extern void initCommonTestValues(std::string testTimeStampStr);
+    extern void initCommonTestValues(std::string testTimeStampStr);
+}
 
 #endif	// COMMONTESTVALUE_H_
 

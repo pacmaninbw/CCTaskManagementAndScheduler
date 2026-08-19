@@ -273,7 +273,7 @@ int main(int argc, char* argv[])
 			programOptions = *progOptions;
             UtilityTimer stopWatch;
 
-            initCommonTestValues("2024-05-14 08:31:53");
+            common::initCommonTestValues("2024-05-14 08:31:53");
 
             TestDBConnection dbConnectionTest;
             if (dbConnectionTest.runTestConnect() == TESTFAILED)

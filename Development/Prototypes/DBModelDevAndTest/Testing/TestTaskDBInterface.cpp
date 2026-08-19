@@ -182,7 +182,7 @@ void TestTaskDBInterface::commonTaskInit(TaskModel_shp newTask, CSVRow taskData)
     newTask->setStatus(taskData[CSV_StatusColIdx]);
     newTask->setPriorityGroup(taskData[CSV_MajorPriorityColIdx][0]);
     newTask->setPriority(std::stoi(taskData[CSV_MinorPriorityColIdx]));
-    newTask->setCreationDate(commonTestTimeStampValue);
+    newTask->setCreationDate(common::TestTimeStampValue);
 
     // Optional fields
     if (!taskData[CSV_ParentTaskColIdx].empty())
@@ -260,7 +260,7 @@ TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskList()
     }
 
     TaskList defaultTaskQueryProcessor = taskDBInteface.getDefaultDashboardTaskList(realUser->getUserID(),
-        commonProductionTestDataAddedDate);
+        common::ProductionTestDataAddedDate);
     if (!defaultTaskQueryProcessor.empty())
     {    
         if (m_verboseOutput)
@@ -543,13 +543,13 @@ TestStatus TestTaskDBInterface::testNegativePathMissingRequiredFields()
         return TESTFAILED;
     }
 
-    newTask.setScheduledStart(commonTestDateValue);
+    newTask.setScheduledStart(common::TestDateValue);
     if (testMissingReuqiredField(newTask) != TESTPASSED)
     {
         return TESTFAILED;
     }
 
-    newTask.setDueDate(commonTestDateRangeEndValue);
+    newTask.setDueDate(common::TestDateRangeEndValue);
     if (testMissingReuqiredField(newTask) != TESTPASSED)
     {
         return TESTFAILED;
@@ -557,7 +557,7 @@ TestStatus TestTaskDBInterface::testNegativePathMissingRequiredFields()
 
     newTask.setPriorityGroup('A');
     newTask.setPriority(1);
-    newTask.setCreationDate(commonTestTimeStampValue);
+    newTask.setCreationDate(common::TestTimeStampValue);
     TaskModel_shp newTaskPtr = std::make_shared<TaskModel>(newTask);
     return insertShouldPass(newTaskPtr);
 }
@@ -607,13 +607,13 @@ TestStatus TestTaskDBInterface::testSharedPointerInteraction()
         return TESTFAILED;
     }
 
-    newTask->setScheduledStart(commonTestDateValue);
+    newTask->setScheduledStart(common::TestDateValue);
     if (testMissingReuqiredField(*newTask) != TESTPASSED)
     {
         return TESTFAILED;
     }
 
-    newTask->setDueDate(commonTestDateRangeEndValue);
+    newTask->setDueDate(common::TestDateRangeEndValue);
     if (testMissingReuqiredField(*newTask) != TESTPASSED)
     {
         return TESTFAILED;
@@ -621,7 +621,7 @@ TestStatus TestTaskDBInterface::testSharedPointerInteraction()
 
     newTask->setPriorityGroup('A');
     newTask->setPriority(1);
-    newTask->setCreationDate(commonTestTimeStampValue);
+    newTask->setCreationDate(common::TestTimeStampValue);
     return insertShouldPass(newTask);
 }
 
