@@ -46,7 +46,6 @@ std::chrono::system_clock::time_point constantStringToChronoTimePoint(std::strin
 {
     std::chrono::system_clock::time_point dateTimeValue;
 
- 
     std::stringstream ss(dateTimeStr);
     // Use std::chrono::from_stream with the desired format specifier
     ss >> std::chrono::parse("%Y-%m-%d %H:%M:%S", dateTimeValue);
