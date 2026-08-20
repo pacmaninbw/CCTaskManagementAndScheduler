@@ -202,7 +202,7 @@ TestStatus TestGoalModel::testPositivePathDeleteGoal()
 {
     std::string funcUnderTest("Delete Goal");
 
-    std::chrono::year_month_day testDate(constantStringToChronoDate("2026-03-08"));
+    std::chrono::year_month_day testDate(common::constantStringToChronoDate("2026-03-08"));
     GoalQueryProcessor goalListTestInterface;
     UserGoalList testGoalList = goalListTestInterface.getAllGoalsForUser(m_userOne->getUserID());
     if (testGoalList.empty())

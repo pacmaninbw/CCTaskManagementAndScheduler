@@ -102,7 +102,7 @@ TaskList TaskQueryProcessor::getUnstartedDueForStartForAssignedUser(std::size_t 
         boost::mysql::format_context fctx(getFormatOptions());
         boost::mysql::format_sql_to(fctx, baseTaskQuery);
         boost::mysql::format_sql_to(fctx, "WHERE tasks.assigned_to = {} ", assignedUserID);
-        boost::mysql::format_sql_to(fctx, "AND tasks.planned_start < {} ", common::toBoostMySQLDate(getTodaysDatePlus(OneWeek)));
+        boost::mysql::format_sql_to(fctx, "AND tasks.planned_start < {} ", common::toBoostMySQLDate(common::getTodaysDatePlus(common::OneWeek)));
         boost::mysql::format_sql_to(fctx, "AND (tasks.task_status IS NULL OR tasks.task_status = 0) ");
         boost::mysql::format_sql_to(fctx, "AND tasks.deleted <> 1");
 

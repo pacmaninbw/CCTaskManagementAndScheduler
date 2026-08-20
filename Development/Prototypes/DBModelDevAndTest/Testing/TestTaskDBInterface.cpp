@@ -456,7 +456,7 @@ bool TestTaskDBInterface::testGetCompletedList()
 
 std::chrono::year_month_day TestTaskDBInterface::stringToDate(std::string dateString)
 {
-    std::chrono::year_month_day dateValue = getTodaysDate();
+    std::chrono::year_month_day dateValue = common::getTodaysDate();
 
     // First try the ISO standard date.
     std::istringstream ss(dateString);

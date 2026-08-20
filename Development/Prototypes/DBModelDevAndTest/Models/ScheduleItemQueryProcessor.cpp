@@ -47,12 +47,9 @@ ScheduleItemList ScheduleItemQueryProcessor::getUserDaySchedule(std::chrono::yea
 
     try
     {
-        const int secondsInHour = 3600;
-        const int secondsInDay = secondsInHour * 24;
-        std::chrono::seconds dateAdjustor(secondsInDay - 1);
-
-        std::chrono::system_clock::time_point startSearch = getLocalMidnight(scheduleDate);
-        std::chrono::system_clock::time_point endSearch = startSearch + dateAdjustor;
+        std::chrono::system_clock::time_point startSearch;
+        std::chrono::system_clock::time_point endSearch;
+        common::getHourRangeForLocalDate(scheduleDate, startSearch, endSearch);
 
         boost::mysql::format_context fctx(getFormatOptions());
         boost::mysql::format_sql_to(fctx, "SELECT * FROM user_schedule_item ");

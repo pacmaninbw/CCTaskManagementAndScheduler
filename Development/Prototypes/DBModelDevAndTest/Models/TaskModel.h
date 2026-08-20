@@ -64,7 +64,7 @@ public:
     void addEffortHours(double hours);
     void markComplete()
     {
-        setCompletionDate(getTodaysDate());
+        setCompletionDate(common::getTodaysDate());
         setStatus(TaskModel::TaskStatus::Complete);
     }
     std::size_t getTaskID() const { return m_primaryKey; };
@@ -148,8 +148,8 @@ public:
         {
             os << std::format(outFmtStr, "Creation Date", task.m_created.value_or(std::chrono::system_clock::now()));
         }
-        os << std::format(outFmtStr, "Scheduled Start Date", task.m_planedStart.value_or(getTodaysDate()));
-        os << std::format(outFmtStr, "Due Date", task.m_dueDate.value_or(getTodaysDate()));
+        os << std::format(outFmtStr, "Scheduled Start Date", task.m_planedStart.value_or(common::getTodaysDate()));
+        os << std::format(outFmtStr, "Due Date", task.m_dueDate.value_or(common::getTodaysDate()));
         os << std::format(outFmtStr, "Estimated Effort Hours", task.m_estimatedEffort);
         os << std::format(outFmtStr, "Actual Effort Hours", task.m_actualEffort);
         os << std::format(outFmtStr, "Priority Group", task.m_priorityCategory);

@@ -229,13 +229,13 @@ void TaskModel::setStatus(TaskModel::TaskStatus status)
     {
         if (!m_actualStart.has_value())
         {
-            setactualStartDate(getTodaysDate());
+            setactualStartDate(common::getTodaysDate());
         }
     }
 
     if (m_status == TaskModel::TaskStatus::Complete)
     {
-        setCompletionDate(getTodaysDate());
+        setCompletionDate(common::getTodaysDate());
     }
 }
 

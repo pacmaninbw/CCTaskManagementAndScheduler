@@ -59,8 +59,8 @@ TestStatus TestScheduleItemModel::testInsertScheduleItem(TestScheduleItemInput t
     ScheduleItemModel newScheduleItem;
     newScheduleItem.setUserID(m_userOne->getUserID());
     newScheduleItem.setTitle(testScheduleItem.title);
-    newScheduleItem.setStartDateAndTime(constantStringToChronoTimePoint(testScheduleItem.startTimeStr));
-    newScheduleItem.setEndDateAndTime(constantStringToChronoTimePoint(testScheduleItem.endTimeStr));
+    newScheduleItem.setStartDateAndTime(common::constantStringToChronoTimePoint(testScheduleItem.startTimeStr));
+    newScheduleItem.setEndDateAndTime(common::constantStringToChronoTimePoint(testScheduleItem.endTimeStr));
     newScheduleItem.setPersonal(testScheduleItem.personal);
     newScheduleItem.setLocation(testScheduleItem.location);
     newScheduleItem.setCreationDate(common::TestTimeStampValue);
@@ -131,8 +131,8 @@ TestStatus TestScheduleItemModel::testPositivePathUpdateScheduleItem()
 
 TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSimilarTitleDateRange()
 {
-    std::chrono::year_month_day searchStart(constantStringToChronoDate("2024-12-1"));
-    std::chrono::year_month_day searchEnd(constantStringToChronoDate("2024-12-31"));
+    std::chrono::year_month_day searchStart(common::constantStringToChronoDate("2024-12-1"));
+    std::chrono::year_month_day searchEnd(common::constantStringToChronoDate("2024-12-31"));
 
     std::string searchString("birthday");
     ScheduleItemQueryProcessor ScheduleItemQueryProcessorTestInterface(m_userOne->getUserID());
@@ -161,7 +161,7 @@ TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserWithSim
 
 TestStatus TestScheduleItemModel::testPositivePathGetScheduleItemsForUserByDate()
 {
-    std::chrono::year_month_day startDate(constantStringToChronoDate("2024-12-13"));
+    std::chrono::year_month_day startDate(common::constantStringToChronoDate("2024-12-13"));
 
     ScheduleItemQueryProcessor schediList(m_userOne->getUserID());
     ScheduleItemList allScheduleItemsInRange = schediList.getUserDaySchedule(startDate);
@@ -274,7 +274,7 @@ TestStatus TestScheduleItemModel::testPositivePathDeleteScheduleItem()
         return TESTFAILED;
     }
 
-    std::chrono::year_month_day testDate(constantStringToChronoDate("2026-03-08"));
+    std::chrono::year_month_day testDate(common::constantStringToChronoDate("2026-03-08"));
     ScheduleItemQueryProcessor schediList(realUserOne->getUserID());
     ScheduleItemList testUserSchedule = schediList.getUserDaySchedule(testDate);
     if (testUserSchedule.empty())
@@ -429,7 +429,7 @@ TestStatus TestScheduleItemModel::testMissingRequiredFieldsAddStartTime(Schedule
     TestStatus testStatus = testInsertionFailureMessages(&testScheduleItem, expectedErrors);
 
     expectedErrors.erase(expectedErrors.begin());
-    testScheduleItem.setStartDateAndTime(constantStringToChronoTimePoint("2024-12-31 8:30:00"));
+    testScheduleItem.setStartDateAndTime(common::constantStringToChronoTimePoint("2024-12-31 8:30:00"));
 
     return testStatus;
 }
@@ -439,7 +439,7 @@ TestStatus TestScheduleItemModel::testMissingRequiredFieldsAddEndTime(ScheduleIt
     TestStatus testStatus = testInsertionFailureMessages(&testScheduleItem, expectedErrors);
 
     expectedErrors.erase(expectedErrors.begin());
-    testScheduleItem.setEndDateAndTime(constantStringToChronoTimePoint("2024-12-31 10:00:00"));
+    testScheduleItem.setEndDateAndTime(common::constantStringToChronoTimePoint("2024-12-31 10:00:00"));
 
     return testStatus;
 }

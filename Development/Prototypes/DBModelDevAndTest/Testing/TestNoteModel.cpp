@@ -186,8 +186,8 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent()
 
 TestStatus TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange()
 {
-    std::chrono::year_month_day startDate = getTodaysDateMinus(OneWeek);
-    std::chrono::year_month_day endDate = getTodaysDatePlus(OneWeek);
+    std::chrono::year_month_day startDate = common::getTodaysDateMinus(common::OneWeek);
+    std::chrono::year_month_day endDate = common::getTodaysDatePlus(common::OneWeek);
 
     NoteQueryProcessor NoteQueryProcessorTestInterface;
     NoteList allNotesInRange = NoteQueryProcessorTestInterface.getAllNotesForUserCreatedInDatgeRange(m_userOne->getUserID(), startDate, endDate);
@@ -214,8 +214,8 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange()
 
 TestStatus TestNoteModel::testPositivePathGetNotesForUserEditedDateRange()
 {
-    std::chrono::year_month_day startDate = getTodaysDateMinus(OneWeek);
-    std::chrono::year_month_day endDate = getTodaysDatePlus(OneWeek);
+    std::chrono::year_month_day startDate = common::getTodaysDateMinus(common::OneWeek);
+    std::chrono::year_month_day endDate = common::getTodaysDatePlus(common::OneWeek);
 
     NoteQueryProcessor NoteQueryProcessorTestInterface;
     NoteList allNotesInRange = NoteQueryProcessorTestInterface.getAllNotesForUserEditedInDatgeRange(m_userOne->getUserID(), startDate, endDate);
@@ -242,7 +242,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserEditedDateRange()
 
 TestStatus TestNoteModel::testPositivePathGetDashboardNoteTable()
 {
-    std::chrono::year_month_day searchDate = getTodaysDate();
+    std::chrono::year_month_day searchDate = common::getTodaysDate();
 
     NoteQueryProcessor NoteQueryProcessorTestInterface;
     NoteList allNotesInRange = NoteQueryProcessorTestInterface.getDashboardNoteTable(m_userOne->getUserID(), searchDate);
@@ -271,7 +271,7 @@ TestStatus TestNoteModel::testPositivePathDeleteNote()
 {
     std::string funcUnderTest("Delete Note");
 
-    std::chrono::year_month_day testDate(constantStringToChronoDate("2026-03-08"));
+    std::chrono::year_month_day testDate(common::constantStringToChronoDate("2026-03-08"));
     NoteQueryProcessor NoteQueryProcessorTestInterface;
     NoteList testNoteQueryProcessor = NoteQueryProcessorTestInterface.getAllNotesForUser(m_userOne->getUserID());
     if (testNoteQueryProcessor.empty())

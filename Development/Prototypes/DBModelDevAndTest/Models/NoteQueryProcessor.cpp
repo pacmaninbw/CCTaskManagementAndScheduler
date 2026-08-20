@@ -159,14 +159,15 @@ NoteList NoteQueryProcessor::getDashboardNoteTable(std::size_t userId, std::chro
 
     try
     {
-    std::chrono::sys_days endDay = searchDate;
-    endDay += std::chrono::days(1);
+        std::chrono::system_clock::time_point startSearch;
+        std::chrono::system_clock::time_point endSearch;
+        common::getHourRangeForLocalDate(searchDate, startSearch, endSearch);
 
         boost::mysql::format_context fctx(getFormatOptions());
         boost::mysql::format_sql_to(fctx, "SELECT * FROM user_notes ");
         boost::mysql::format_sql_to(fctx, "WHERE user_notes.user_id = {} ", userId);
-        boost::mysql::format_sql_to(fctx, "AND user_notes.note_creation >= {} ", common::toBoostMySQLDate(searchDate));
-        boost::mysql::format_sql_to(fctx, "AND user_notes.note_creation < {} ", common::toBoostMySQLDate(endDay));
+        boost::mysql::format_sql_to(fctx, "AND user_notes.note_creation >= {} ", common::toBoostDateTime(startSearch));
+        boost::mysql::format_sql_to(fctx, "AND user_notes.note_creation < {} ", common::toBoostDateTime(endSearch));
         boost::mysql::format_sql_to(fctx, "AND user_notes.deleted <> 1 ");
         boost::mysql::format_sql_to(fctx, "ORDER BY user_notes.note_creation ASC");
         StaticQueryNote localResult = staticRunQueryAsync<NoteDbQueryValues>(std::move(fctx).get().value());
