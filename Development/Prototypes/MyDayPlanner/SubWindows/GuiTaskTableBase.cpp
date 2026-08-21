@@ -38,7 +38,7 @@ void GuiTaskTableBase::fillTable()
         return;
     }
 
-    std::chrono::year_month_day searchDate = getTodaysDatePlus(TwoWeeks);
+    std::chrono::year_month_day searchDate = common::getTodaysDatePlus(common::TwoWeeks);
     TaskQueryProcessor currentUserTaskList;
     TaskList userTasks = currentUserTaskList.getDefaultDashboardTaskList(m_userID, searchDate);
 

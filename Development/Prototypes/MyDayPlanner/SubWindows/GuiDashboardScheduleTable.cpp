@@ -180,7 +180,7 @@ void GuiDashboardScheduleTable::fillSchedule()
 void GuiDashboardScheduleTable::setUserDay(std::chrono::year_month_day scheduleDate)
 {
     std::chrono::hours hour(1);
-    m_userStartDay = getLocalMidnight(scheduleDate);
+    m_userStartDay = common::getLocalMidnight(scheduleDate);
     // TODO get the users preferred start time and use that in the following calculation
     m_userStartDay += 8 * hour;
     // TODO get the users preferred end time and use that in the following calculation
