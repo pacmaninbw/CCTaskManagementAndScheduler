@@ -25,7 +25,9 @@ Significant portions of the code were posted on the [Stack Overflow Code Review 
 
 ## Test Coverage  
 
-The models and database used by the tool access are tested separately. The test coverage of the models and database used by the tool is currently 95.7%.
+The models and database used by the tool access are tested separately. The test coverage of the models and database used by the tool is currently 95.7%.  
+
+Regression testing is automated with shell scripts using sh rather than bash.  
 
 ![Test coverage of models and database access](images/ModelOnlyTestCoverage_06232026.png)
 
