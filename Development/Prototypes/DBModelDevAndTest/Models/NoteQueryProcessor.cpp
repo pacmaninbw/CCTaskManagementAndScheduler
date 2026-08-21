@@ -159,9 +159,9 @@ NoteList NoteQueryProcessor::getDashboardNoteTable(std::size_t userId, std::chro
 
     try
     {
-        std::chrono::system_clock::time_point startSearch;
-        std::chrono::system_clock::time_point endSearch;
-        common::getHourRangeForLocalDate(searchDate, startSearch, endSearch);
+        std::chrono::sys_days dateConversion = searchDate;
+        std::chrono::system_clock::time_point startSearch = dateConversion;
+        std::chrono::system_clock::time_point endSearch = dateConversion + std::chrono::days{1};
 
         boost::mysql::format_context fctx(getFormatOptions());
         boost::mysql::format_sql_to(fctx, "SELECT * FROM user_notes ");
