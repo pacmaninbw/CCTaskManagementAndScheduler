@@ -35,7 +35,7 @@ void SelectTaskParentDialog::setupDialogUI()
 {
     resize(DefaultDialogWidth, DefaultDialogHeight);
 
-    m_qt_selectParentDialogLayout = commonW::namedWidget<QVBoxLayout>("m_qt_selectParentDialogLayout", this);
+    m_qt_selectParentDialogLayout = common::namedWidget<QVBoxLayout>("m_qt_selectParentDialogLayout", this);
 
     m_qt_selectParentDialogLayout->addWidget(setUpGroupBox());
 
@@ -58,7 +58,7 @@ QGroupBox *SelectTaskParentDialog::setUpGroupBox()
     m_qt_selectParentGB->setObjectName("m_qt_selectParentGB");
     m_qt_selectParentGB->setAlignment(Qt::AlignHCenter);
 
-    m_qt_selectParentGBLayout = commonW::formLayoutWithPolicy("m_qt_selectParentGBLayout", m_qt_selectParentGB);
+    m_qt_selectParentGBLayout = common::formLayoutWithPolicy("m_qt_selectParentGBLayout", m_qt_selectParentGB);
 
     m_qt_selectParentGBLayout->addWidget(setUpParentTaskView());
 
@@ -70,7 +70,7 @@ QGroupBox *SelectTaskParentDialog::setUpGroupBox()
 
 QDialogButtonBox *SelectTaskParentDialog::setUpDialogButtons()
 {
-    m_qt_buttonBox = commonW::namedWidget<QDialogButtonBox>("m_qt_buttonBox", this);
+    m_qt_buttonBox = common::namedWidget<QDialogButtonBox>("m_qt_buttonBox", this);
     m_qt_buttonBox->setOrientation(Qt::Horizontal);
     m_qt_buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
 
@@ -82,7 +82,7 @@ QDialogButtonBox *SelectTaskParentDialog::setUpDialogButtons()
 
 QTableView *SelectTaskParentDialog::setUpParentTaskView()
 {
-    m_qt_selectParentTableView = commonW::namedWidget<QTableView>("m_qt_selectParentTableView", this);
+    m_qt_selectParentTableView = common::namedWidget<QTableView>("m_qt_selectParentTableView", this);
     m_qt_selectParentTableView->setModel(setUpParentTaskTable());
     m_qt_selectParentTableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     m_qt_selectParentTableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);

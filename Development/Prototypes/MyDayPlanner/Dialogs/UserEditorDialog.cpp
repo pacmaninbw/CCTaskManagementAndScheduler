@@ -61,7 +61,7 @@ void UserEditorDialog::accept()
 
 void UserEditorDialog::setUpUserEditorDialogUi()
 {
-    m_qt_editorLayout = commonW::namedWidget<QVBoxLayout>("m_qt_editorLayout", this);
+    m_qt_editorLayout = common::namedWidget<QVBoxLayout>("m_qt_editorLayout", this);
     m_qt_editorLayout->addWidget(setUpUserProfileGB(), 0, Qt::AlignHCenter);
     m_qt_editorLayout->addWidget(setUpLoginDataGB(), 0, Qt::AlignHCenter);
 
@@ -81,18 +81,18 @@ QGroupBox* UserEditorDialog::setUpUserProfileGB()
 {
     m_qt_userProfile = new QGroupBox("User Profile:");
 
-    m_qt_userProfileForm = commonW::formLayoutWithPolicy("m_qt_userProfileForm", m_qt_userProfile);
+    m_qt_userProfileForm = common::formLayoutWithPolicy("m_qt_userProfileForm", m_qt_userProfile);
 
-    m_qt_firstName = commonW::lineEditWidthByLength("m_qt_firstName", this);
+    m_qt_firstName = common::lineEditWidthByLength("m_qt_firstName", this);
     m_qt_userProfileForm->addRow("FirstName:", m_qt_firstName);
 
-    m_qt_lastName = commonW::lineEditWidthByLength("m_qt_lastName", this);
+    m_qt_lastName = common::lineEditWidthByLength("m_qt_lastName", this);
     m_qt_userProfileForm->addRow("Last Name:", m_qt_lastName);
 
-    m_qt_middleName = commonW::lineEditWidthByLength("m_qt_middleName", this);
+    m_qt_middleName = common::lineEditWidthByLength("m_qt_middleName", this);
     m_qt_userProfileForm->addRow("Middle Initial:", m_qt_middleName);
 
-    m_qt_email = commonW::lineEditWidthByLength("m_qt_email", this, EmailWidth, EmailCharCount);
+    m_qt_email = common::lineEditWidthByLength("m_qt_email", this, EmailWidth, EmailCharCount);
     m_qt_userProfileForm->addRow("eMail Address:", m_qt_email);
 
     m_qt_userProfile->setLayout(m_qt_userProfileForm);
@@ -104,17 +104,17 @@ QGroupBox* UserEditorDialog::setUpLoginDataGB()
 {
     m_qt_login = new QGroupBox("User Login:");
 
-    m_qt_loginForm = commonW::formLayoutWithPolicy("m_qt_loginForm", m_qt_login);
+    m_qt_loginForm = common::formLayoutWithPolicy("m_qt_loginForm", m_qt_login);
 
-    m_qt_userName = commonW::lineEditWidthByLength("m_qt_userName", this);
+    m_qt_userName = common::lineEditWidthByLength("m_qt_userName", this);
     m_qt_loginForm->addRow("User Name:", m_qt_userName);
 
-    m_qt_password = commonW::lineEditWidthByLength("m_qt_password", this);
+    m_qt_password = common::lineEditWidthByLength("m_qt_password", this);
     m_qt_loginForm->addRow("Password:", m_qt_password);
 
     if (m_userID == 0)
     {
-        m_qt_autoGenerateLoginAndPassword = commonW::namedWidgetWithText<QCheckBox>(
+        m_qt_autoGenerateLoginAndPassword = common::namedWidgetWithText<QCheckBox>(
             "Auto Generate Login and Password", "m_qt_autoGenerateLoginAndPassword", this);
         m_qt_loginForm->addRow(m_qt_autoGenerateLoginAndPassword);
     }

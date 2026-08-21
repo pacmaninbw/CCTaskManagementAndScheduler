@@ -52,7 +52,7 @@ void TodoWindow::handleTodoTableClicked(const QModelIndex &index)
 
 void TodoWindow::setUpWindowContentAndActions()
 {
-    m_qt_addModelObject = commonW::namedWidgetWithText<QPushButton>("Add a ToDo Item", "m_qt_addModelObject", this);
+    m_qt_addModelObject = common::namedWidgetWithText<QPushButton>("Add a ToDo Item", "m_qt_addModelObject", this);
     connect(m_qt_addModelObject, &QPushButton::clicked, this, &TodoWindow::handleAddTodoItem);
 
     m_qt_modelWindowLayout->addWidget(m_qt_addModelObject);

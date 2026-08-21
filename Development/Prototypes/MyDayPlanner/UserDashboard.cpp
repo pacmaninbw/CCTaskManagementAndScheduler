@@ -52,9 +52,9 @@ void UserDashboard::setUpUserDashboardUi()
 
     dashboardLayout->addWidget(setUpUserIdBox(), 0, Qt::AlignHCenter);
 
-    QFormLayout* dashboardDateForm = commonW::formLayoutWithPolicy("dashboardDateForm", nullptr);
+    QFormLayout* dashboardDateForm = common::formLayoutWithPolicy("dashboardDateForm", nullptr);
 
-    m_qt_dateSelector = commonW::dateEditWithCalendar("m_qt_dateSelector", this);
+    m_qt_dateSelector = common::dateEditWithCalendar("m_qt_dateSelector", this);
     
     connect(m_qt_dateSelector, &QDateEdit::dateChanged, this, &UserDashboard::handleDateChanged);
 
@@ -122,16 +122,16 @@ QGroupBox *UserDashboard::setUpUserIdBox()
     QHBoxLayout* uiBoxLaytout = new QHBoxLayout;
     uiBoxLaytout->setObjectName("uiBoxLaytout");
 
-    m_qt_userFirstName = commonW::lineEditWidthByCharCount("m_qt_userFirstName", m_qt_userIdGroupBox, userNameWidth);
+    m_qt_userFirstName = common::lineEditWidthByCharCount("m_qt_userFirstName", m_qt_userIdGroupBox, userNameWidth);
     uiBoxLaytout->addWidget(m_qt_userFirstName);
 
-    m_qt_userMiddleInitial = commonW::lineEditWidthByCharCount("m_qt_userMiddleInitial", m_qt_userIdGroupBox, userNameWidth / 4);
+    m_qt_userMiddleInitial = common::lineEditWidthByCharCount("m_qt_userMiddleInitial", m_qt_userIdGroupBox, userNameWidth / 4);
     uiBoxLaytout->addWidget(m_qt_userMiddleInitial);
 
-    m_qt_userLastName = commonW::lineEditWidthByCharCount("m_qt_userLastName", m_qt_userIdGroupBox, userNameWidth);
+    m_qt_userLastName = common::lineEditWidthByCharCount("m_qt_userLastName", m_qt_userIdGroupBox, userNameWidth);
     uiBoxLaytout->addWidget(m_qt_userLastName);
 
-    m_qt_userLogin = commonW::lineEditWidthByCharCount("m_qt_userLogin", m_qt_userIdGroupBox, userNameWidth);
+    m_qt_userLogin = common::lineEditWidthByCharCount("m_qt_userLogin", m_qt_userIdGroupBox, userNameWidth);
     uiBoxLaytout->addWidget(m_qt_userLogin);
 
     m_qt_userIdGroupBox->setLayout(uiBoxLaytout);

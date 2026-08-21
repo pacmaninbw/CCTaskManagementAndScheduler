@@ -27,11 +27,11 @@ QGroupBox *NoteEditorDialog::setUpEditorDialogForm()
     m_qt_editorFormLayout = new QFormLayout(mainEditorGroupBox);
     m_qt_editorFormLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 
-    m_qt_content = commonW::flexPlainTextBasedOnCharCount("m_qt_content",
+    m_qt_content = common::flexPlainTextBasedOnCharCount("m_qt_content",
         mainEditorGroupBox, MinNoteContentWidth, MaxNoteContentWidth, NoteLineCount);
     m_qt_editorFormLayout->addRow("Content:", m_qt_content);
 
-    m_maxGroupBoxHeight = commonW::getMaxHeight(m_qt_editorFormLayout);
+    m_maxGroupBoxHeight = common::getMaxHeight(m_qt_editorFormLayout);
 
     mainEditorGroupBox->setLayout(m_qt_editorFormLayout);
 

@@ -49,7 +49,7 @@ void NotesWindow::handleNoteTableClicked(const QModelIndex &index)
 
 void NotesWindow::setUpWindowContentAndActions()
 {
-    m_qt_addModelObject = commonW::namedWidgetWithText<QPushButton>("Add a Note", "udAddNotePB", this);
+    m_qt_addModelObject = common::namedWidgetWithText<QPushButton>("Add a Note", "udAddNotePB", this);
     connect(m_qt_addModelObject, &QPushButton::clicked, this, &NotesWindow::handleAddNoteAction);
 
     m_qt_modelWindowLayout->addWidget(m_qt_addModelObject);

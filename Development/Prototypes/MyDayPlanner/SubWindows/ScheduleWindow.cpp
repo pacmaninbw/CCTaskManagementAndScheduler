@@ -60,7 +60,7 @@ void ScheduleWindow::handleScheduleItemClicked(const QModelIndex &index)
 
 void ScheduleWindow::setUpWindowContentAndActions()
 {
-    m_qt_addModelObject = commonW::namedWidgetWithText<QPushButton>("Add Event to Schedule", "m_qt_addModelObject", this);
+    m_qt_addModelObject = common::namedWidgetWithText<QPushButton>("Add Event to Schedule", "m_qt_addModelObject", this);
     connect(m_qt_addModelObject, &QPushButton::clicked, this, &ScheduleWindow::handleAddEvent);
     m_qt_modelWindowLayout->addWidget(m_qt_addModelObject);
 

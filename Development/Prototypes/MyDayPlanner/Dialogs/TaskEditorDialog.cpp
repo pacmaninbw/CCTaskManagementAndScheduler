@@ -222,12 +222,12 @@ QGroupBox *TaskEditorDialog::setUpTaskCreatorGroupBox()
     m_qt_creatorGroup->setObjectName("m_qt_creatorGroup");
     m_qt_creatorGroup->setAlignment(Qt::AlignHCenter);
 
-    m_qt_creatorForm = commonW::formLayoutWithPolicy("m_qt_creatorForm", m_qt_creatorGroup);
+    m_qt_creatorForm = common::formLayoutWithPolicy("m_qt_creatorForm", m_qt_creatorGroup);
 
-    m_qt_creatorFirstName = commonW::lineEditWidthByLength("m_qt_creatorFirstName", m_qt_creatorGroup);
+    m_qt_creatorFirstName = common::lineEditWidthByLength("m_qt_creatorFirstName", m_qt_creatorGroup);
     m_qt_creatorForm->addRow("First Name:", m_qt_creatorFirstName);
 
-    m_qt_creatorLastName = commonW::lineEditWidthByLength("m_qt_creatorLastName", m_qt_creatorGroup);
+    m_qt_creatorLastName = common::lineEditWidthByLength("m_qt_creatorLastName", m_qt_creatorGroup);
     m_qt_creatorForm->addRow("Last Name:", m_qt_creatorLastName);
 
     m_qt_creatorGroup->setLayout(m_qt_creatorForm);
@@ -241,15 +241,15 @@ QGroupBox *TaskEditorDialog::setUpTaskAssigneeGroupBox()
     m_qt_assignedToGB->setObjectName("m_qt_assignedToGB");
     m_qt_assignedToGB->setAlignment(Qt::AlignHCenter);
 
-    m_qt_assigneeForm = commonW::formLayoutWithPolicy("m_qt_assigneeForm", m_qt_assignedToGB);
+    m_qt_assigneeForm = common::formLayoutWithPolicy("m_qt_assigneeForm", m_qt_assignedToGB);
 
-    m_qt_assignedToFirstName = commonW::lineEditWidthByLength("m_qt_assignedToFirstName", m_qt_assignedToGB);
+    m_qt_assignedToFirstName = common::lineEditWidthByLength("m_qt_assignedToFirstName", m_qt_assignedToGB);
     m_qt_assigneeForm->addRow("First Name:", m_qt_assignedToFirstName);
 
-    m_qt_assignedToLastName = commonW::lineEditWidthByLength("m_qt_assignedToLastName", m_qt_assignedToGB);
+    m_qt_assignedToLastName = common::lineEditWidthByLength("m_qt_assignedToLastName", m_qt_assignedToGB);
     m_qt_assigneeForm->addRow("Last Name:", m_qt_assignedToLastName);
 
-    m_qt_changeAssignedUser = commonW::namedWidgetWithText<QPushButton>(
+    m_qt_changeAssignedUser = common::namedWidgetWithText<QPushButton>(
         "Change Assigned User", "m_qt_changeAssignedUser", m_qt_assignedToGB);
     m_qt_assigneeForm->addWidget(m_qt_changeAssignedUser);
 
@@ -277,15 +277,15 @@ QGroupBox *TaskEditorDialog::setUpRelatedTasksGroupBox()
     m_qt_parentTaskGroup->setObjectName("m_qt_parentTaskGroup");
     m_qt_parentTaskGroup->setAlignment(Qt::AlignHCenter);
 
-    m_qt_parentForm = commonW::formLayoutWithPolicy("m_qt_parentForm", m_qt_parentTaskGroup);
+    m_qt_parentForm = common::formLayoutWithPolicy("m_qt_parentForm", m_qt_parentTaskGroup);
 
-    m_qt_parentTaskDescription = commonW::lineEditWidthByLength("", m_qt_parentTaskGroup);
+    m_qt_parentTaskDescription = common::lineEditWidthByLength("", m_qt_parentTaskGroup);
     m_qt_parentForm->addRow("", m_qt_parentTaskDescription);
 
-    m_qt_selectParent = commonW::namedWidgetWithText<QPushButton>("Select Parent Task", "m_qt_selectParent" , m_qt_parentTaskGroup);
+    m_qt_selectParent = common::namedWidgetWithText<QPushButton>("Select Parent Task", "m_qt_selectParent" , m_qt_parentTaskGroup);
     m_qt_parentForm->addWidget(m_qt_selectParent);
 
-    m_qt_addDependencies = commonW::namedWidgetWithText<QPushButton>("Add Dependencies", "m_qt_addDependencies", this);
+    m_qt_addDependencies = common::namedWidgetWithText<QPushButton>("Add Dependencies", "m_qt_addDependencies", this);
     m_qt_parentForm->addWidget(m_qt_addDependencies);
 
     m_qt_parentTaskGroup->setLayout(m_qt_parentForm);
@@ -299,10 +299,10 @@ QGroupBox *TaskEditorDialog::setUpTaskDescriptionAndStatusGroupBox()
     m_qt_descriptionAndStatus->setObjectName("m_qt_descriptionAndStatus");
     m_qt_descriptionAndStatus->setAlignment(Qt::AlignHCenter);
 
-    m_qt_descriptionAndStatusForm = commonW::formLayoutWithPolicy(
+    m_qt_descriptionAndStatusForm = common::formLayoutWithPolicy(
         "m_qt_descriptionAndStatusForm", m_qt_descriptionAndStatus);
 
-    m_qt_description = commonW::namedWidget<QPlainTextEdit>("m_qt_description", m_qt_descriptionAndStatus);
+    m_qt_description = common::namedWidget<QPlainTextEdit>("m_qt_description", m_qt_descriptionAndStatus);
     m_qt_description->resize(TaskDescriptionTEWidth, TaskDescriptionTEHeight);
     m_qt_descriptionAndStatusForm->addRow("Task Description:", m_qt_description);
 
@@ -315,7 +315,7 @@ QGroupBox *TaskEditorDialog::setUpTaskDescriptionAndStatusGroupBox()
     m_qt_statusSelector->addItem("Complete", 4);
     m_qt_descriptionAndStatusForm->addRow("Current Status:", m_qt_statusSelector);
 
-    m_qt_personal = commonW::namedWidgetWithText<QCheckBox>("Personal", "m_qt_personal", this);
+    m_qt_personal = common::namedWidgetWithText<QCheckBox>("Personal", "m_qt_personal", this);
     m_qt_descriptionAndStatusForm->addWidget(m_qt_personal);
 
     m_qt_descriptionAndStatus->setLayout(m_qt_descriptionAndStatusForm);
@@ -329,15 +329,15 @@ QGroupBox *TaskEditorDialog::setUpTaskDatesGroupBox()
     m_qt_dates->setObjectName("m_qt_dates");
     m_qt_dates->setAlignment(Qt::AlignHCenter);
 
-    m_qt_datesForm = commonW::formLayoutWithPolicy("m_qt_datesForm", m_qt_dates);
+    m_qt_datesForm = common::formLayoutWithPolicy("m_qt_datesForm", m_qt_dates);
 
-    m_qt_dueDate = commonW::dateEditWithCalendar("m_qt_dueDate", m_qt_dates);
+    m_qt_dueDate = common::dateEditWithCalendar("m_qt_dueDate", m_qt_dates);
     m_qt_datesForm->addRow("Due Date:", m_qt_dueDate);
 
-    m_qt_scheduledStart = commonW::dateEditWithCalendar("m_qt_scheduledStart", m_qt_dates);
+    m_qt_scheduledStart = common::dateEditWithCalendar("m_qt_scheduledStart", m_qt_dates);
     m_qt_datesForm->addRow("Scheduled Start:", m_qt_scheduledStart);
 
-    m_qt_expectedCompletion  = commonW::dateEditWithCalendar("m_qt_expectedCompletion", m_qt_dates);
+    m_qt_expectedCompletion  = common::dateEditWithCalendar("m_qt_expectedCompletion", m_qt_dates);
     m_qt_datesForm->addRow("Estimated Completion:", m_qt_expectedCompletion);
 
     m_qt_dates->setLayout(m_qt_datesForm);
@@ -363,12 +363,12 @@ QGroupBox *TaskEditorDialog::setUpTaskEfforGroupBox()
     m_qt_effortGB->setObjectName("m_qt_effortGB");
     m_qt_effortGB->setAlignment(Qt::AlignHCenter);
 
-    m_qt_effortForm = commonW::formLayoutWithPolicy("m_qt_effortForm", m_qt_effortGB);
+    m_qt_effortForm = common::formLayoutWithPolicy("m_qt_effortForm", m_qt_effortGB);
 
-    m_qt_estimatedEffort = commonW::lineEditWidthByLength("m_qt_estimatedEffort", m_qt_effortGB, 113, 5);
+    m_qt_estimatedEffort = common::lineEditWidthByLength("m_qt_estimatedEffort", m_qt_effortGB, 113, 5);
     m_qt_effortForm->addRow("Estimated:", m_qt_estimatedEffort);
 
-    m_qt_actualEffort = commonW::lineEditWidthByLength("m_qt_actualEffort", m_qt_effortGB, 113, 5);
+    m_qt_actualEffort = common::lineEditWidthByLength("m_qt_actualEffort", m_qt_effortGB, 113, 5);
     m_qt_effortForm->addRow("Actual:", m_qt_actualEffort);
 
     m_qt_effortGB->setLayout(m_qt_effortForm);
@@ -382,12 +382,12 @@ QGroupBox *TaskEditorDialog::setUpTaskPriorityGroupBox()
     m_qt_priorities->setObjectName("m_qt_priorities");
     m_qt_priorities->setAlignment(Qt::AlignHCenter);
 
-    m_qt_prioritiesForm = commonW::formLayoutWithPolicy("m_qt_prioritiesForm", m_qt_priorities);
+    m_qt_prioritiesForm = common::formLayoutWithPolicy("m_qt_prioritiesForm", m_qt_priorities);
 
-    m_qt_priorityCategory = commonW::lineEditWidthByLength("m_qt_priorityCategory", m_qt_priorities, 113, 5);
+    m_qt_priorityCategory = common::lineEditWidthByLength("m_qt_priorityCategory", m_qt_priorities, 113, 5);
     m_qt_prioritiesForm->addRow("Priority Group:", m_qt_priorityCategory);
 
-    m_qt_priority = commonW::lineEditWidthByLength("m_qt_priority", m_qt_priorities, 113, 5);
+    m_qt_priority = common::lineEditWidthByLength("m_qt_priority", m_qt_priorities, 113, 5);
     m_qt_prioritiesForm->addRow("Priority:", m_qt_priority);
 
     m_qt_priorities->setLayout(m_qt_prioritiesForm);

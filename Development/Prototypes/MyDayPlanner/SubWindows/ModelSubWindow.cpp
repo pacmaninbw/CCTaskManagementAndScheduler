@@ -59,7 +59,7 @@ void ModelSubWindow::setUpWindowUi()
 
     if (m_isSubWindow)
     {
-        m_qt_alternateTitle = commonW::namedWidgetWithText<QLabel>(m_windowTitleText.toUtf8().constData(), "m_qt_alternateTitle", this);
+        m_qt_alternateTitle = common::namedWidgetWithText<QLabel>(m_windowTitleText.toUtf8().constData(), "m_qt_alternateTitle", this);
         m_qt_modelWindowLayout->addWidget(m_qt_alternateTitle, 0, Qt::AlignHCenter);
     }
     else {
@@ -76,7 +76,7 @@ void ModelSubWindow::setUpWindowUi()
     {
         if (!m_qt_closeModelWindow)
         {
-            m_qt_closeModelWindow = commonW::namedWidgetWithText<QPushButton>("Close Window", "m_qt_closeModelWindow", this);
+            m_qt_closeModelWindow = common::namedWidgetWithText<QPushButton>("Close Window", "m_qt_closeModelWindow", this);
             m_qt_modelWindowLayout->addWidget(m_qt_closeModelWindow);
             connect(m_qt_closeModelWindow, &QPushButton::clicked, this, &QWidget::close);
         }

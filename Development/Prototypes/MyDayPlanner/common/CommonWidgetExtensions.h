@@ -17,7 +17,7 @@
 #include <QTextEdit>
 #include <QWidget>
 
-namespace commonW
+namespace common
 {
     template <typename WidgetType>
     WidgetType* namedWidget(const char* objectName, QWidget* parent)

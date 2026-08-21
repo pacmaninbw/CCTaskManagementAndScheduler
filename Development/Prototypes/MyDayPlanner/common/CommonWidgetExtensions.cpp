@@ -19,7 +19,7 @@
 static const int maxWidthUndefined = 16777215;
 static const int maxHeightUndefind = 16777215;
 
-namespace commonW {
+namespace common {
     QLineEdit* lineEditWidthByLength(const char* lineEditName, QWidget *parent, std::size_t width, std::size_t charCount)
     {
         QLineEdit* newLineEdit = namedWidget<QLineEdit>(lineEditName, parent);

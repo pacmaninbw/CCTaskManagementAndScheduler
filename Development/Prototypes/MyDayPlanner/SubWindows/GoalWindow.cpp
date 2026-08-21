@@ -55,7 +55,7 @@ void GoalWindow::handleEditGoalAction(const QModelIndex &index)
 void GoalWindow::setUpWindowContentAndActions()
 {
     qDebug() << "In GoalWindow::" << __func__;
-    m_qt_addModelObject = commonW::namedWidgetWithText<QPushButton>("Add a Goal", "m_qt_addModelObject", this);
+    m_qt_addModelObject = common::namedWidgetWithText<QPushButton>("Add a Goal", "m_qt_addModelObject", this);
     connect(m_qt_addModelObject, &QPushButton::clicked, this, &GoalWindow::handleAddGoalAction);
 
     m_qt_modelWindowLayout->addWidget(m_qt_addModelObject);
