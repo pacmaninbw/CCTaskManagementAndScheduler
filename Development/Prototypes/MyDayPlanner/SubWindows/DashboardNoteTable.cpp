@@ -148,7 +148,7 @@ QVariant DashboardNoteTable::data(const QModelIndex &index, int role) const
     switch (index.column()) {
         case 0: {
             QDateTime tempTime = QDateTime::fromStdTimePoint(std::chrono::time_point_cast<std::chrono::milliseconds>(note->getDateAdded()));
-            return tempTime.toLocalTime().toString("yyyy-MM-dd hh:mm");
+            return tempTime.toString("yyyy-MM-dd hh:mm");
         }
         case 1: return QString::fromStdString(note->getContent());
         default: return {};
