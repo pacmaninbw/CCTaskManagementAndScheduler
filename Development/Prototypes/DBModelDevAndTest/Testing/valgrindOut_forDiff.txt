@@ -150,7 +150,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-08-22
+	Completed Date: 2026-08-24
 	Deleted : FALSE
 
 Task::testAllInsertFailures before successful insert this = 
@@ -233,7 +233,7 @@ Running Note Self Test
 
 Running Exception Handling Test Cases
 In Self Test Query is: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (27, 'Testing insertion exception', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (27, 'Testing insertion exception', 0, '2024-05-14 08:31:53.000000')
 In Self Test Query is: 
 	UPDATE user_notes SET user_notes.content = 'Testing insertion exception' WHERE user_notes.id_user_notes = 1 AND user_notes.user_id = 27
 In Self Test Query is: 
@@ -260,7 +260,7 @@ Note::testAllInsertFailures before successful insert this =
 	Content: Testing negative note insertion path
 
 In Self Test Query is: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (27, 'Testing negative note insertion path', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (27, 'Testing negative note insertion path', 0, NULL)
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
 Note Self Test PASSED
@@ -378,7 +378,7 @@ In Self Test Query is:
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-08-29' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-08-31' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 
 Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
 In Self Test Query is: 
@@ -679,7 +679,7 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Design UML Diagram for Personal Planner' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-08-22', NULL, 2e+00, 2e+00, 67, 1, 0)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-08-24', NULL, 2e+00, 2e+00, 67, 1, 0)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 58
 Running: 
@@ -691,13 +691,13 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Daily 30 minute walk' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-08-22', NULL, 2e+00, 0e+00, 67, 3, 0)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-08-24', NULL, 2e+00, 0e+00, 67, 3, 0)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 60
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Clean apartment' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-08-29' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-08-31' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Find unstarted tasks for user(4) PASSED!
 User 4 has 9 unstarted tasks
 TaskModel:
@@ -822,7 +822,7 @@ TaskModel:
 	Priority: 1
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-08-22
+	Estimated Completion Date: 2026-08-24
 	Deleted : FALSE
 
 TaskModel:
@@ -856,7 +856,7 @@ TaskModel:
 	Priority: 3
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-08-22
+	Estimated Completion Date: 2026-08-24
 	Deleted : FALSE
 
 Running: 
@@ -1191,7 +1191,7 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-08-22', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0 WHERE tasks.task_id = 47 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-08-24', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0 WHERE tasks.task_id = 47 
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
@@ -1280,11 +1280,11 @@ Optional Fields
 	Deleted : FALSE
 
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-08-29' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-08-31' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Running: 
 	UPDATE tasks SET tasks.deleted = 1 WHERE tasks.created_by = 4 AND tasks.task_id = 59
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-08-29' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-08-31' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Task (59) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of task PASSED!
 Running: 
@@ -1691,39 +1691,39 @@ Running:
 
 Running Note Integration Tests
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Get a Job in Software Engineering', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Get a Job in Software Engineering', 0, '2024-05-14 08:31:53.000000')
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Maintain and improve my software engineering skills', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Maintain and improve my software engineering skills', 0, '2024-05-14 08:31:53.000000')
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Maintain and improve my C++ programming skills', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Maintain and improve my C++ programming skills', 0, '2024-05-14 08:31:53.000000')
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Maintain and improve my  C programming skills', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Maintain and improve my  C programming skills', 0, '2024-05-14 08:31:53.000000')
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Maintain or archive the BHHS 74 Reunion website', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Maintain or archive the BHHS 74 Reunion website', 0, '2024-05-14 08:31:53.000000')
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Maintain and improve my SQL skills', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Maintain and improve my SQL skills', 0, '2024-05-14 08:31:53.000000')
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Learn QT graphic system', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Learn QT graphic system', 0, '2024-05-14 08:31:53.000000')
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Improve my Linux Programming skills', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Improve my Linux Programming skills', 0, '2024-05-14 08:31:53.000000')
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Get an embedded programming certificate', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Get an embedded programming certificate', 0, '2024-05-14 08:31:53.000000')
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Learn open source Linux Core Programming', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Learn open source Linux Core Programming', 0, '2024-05-14 08:31:53.000000')
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Maintain my health', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Maintain my health', 0, '2024-05-14 08:31:53.000000')
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Eat as healthy as possible', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Eat as healthy as possible', 0, '2024-05-14 08:31:53.000000')
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Walk 30 minutes a day', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Walk 30 minutes a day', 0, '2024-05-14 08:31:53.000000')
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Track my vital signs', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Track my vital signs', 0, '2024-05-14 08:31:53.000000')
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Get my weight down to 190 pounds', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Get my weight down to 190 pounds', 0, '2024-05-14 08:31:53.000000')
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Be more organized', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Be more organized', 0, '2024-05-14 08:31:53.000000')
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Effectively moderate the code review site on stack exchange', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Effectively moderate the code review site on stack exchange', 0, '2024-05-14 08:31:53.000000')
 Running: 
 	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.content LIKE '%Be more organized%' AND user_notes.deleted <> 1
 Running: 
@@ -1834,7 +1834,7 @@ User 4 has 6 notes
 	Content: Maintain my health
 
 Running: 
-	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.note_creation >= '2026-08-15' AND user_notes.note_creation <= '2026-08-29' AND user_notes.deleted <> 1
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.note_creation >= '2024-05-07' AND user_notes.note_creation <= '2024-05-21' AND user_notes.deleted <> 1
 Find all notes for user (4) created in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -1906,7 +1906,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-08-15' AND user_notes.last_modifed <= '2026-08-29' AND user_notes.deleted <> 1
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-08-17' AND user_notes.last_modifed <= '2026-08-31' AND user_notes.deleted <> 1
 Find all notes for user (4) edited in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -1978,7 +1978,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.note_creation >= '2026-08-22 00:00:00.000000' AND user_notes.note_creation < '2026-08-23 00:00:00.000000' AND user_notes.deleted <> 1 ORDER BY user_notes.note_creation ASC
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.note_creation >= '2024-05-14 00:00:00.000000' AND user_notes.note_creation < '2024-05-15 00:00:00.000000' AND user_notes.deleted <> 1 ORDER BY user_notes.note_creation ASC
 Find all notes for user (4) for a date PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2067,7 +2067,7 @@ Missing Note required Content!
 Missing Note required Content!
 
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted ) VALUES (4, 'Test missing field Content', 0)
+	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (4, 'Test missing field Content', 0, '2024-05-14 08:31:53.000000')
 Running: 
 	SELECT * FROM user_notes  WHERE user_notes.id_user_notes = 1
 Expected error was; Note not modified!
@@ -2238,14 +2238,14 @@ All negative path tests for database insertions and retrievals of ScheduleItem P
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Fri Aug 21 05:37:41 2026
-elapsed time in seconds: 22.0649
+Mon Aug 24 05:57:57 2026
+elapsed time in seconds: 22.0987
 
 
 
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
-  total heap usage: 56,883 allocs, 56,883 frees, 7,715,567 bytes allocated
+  total heap usage: 56,919 allocs, 56,919 frees, 7,723,524 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 
