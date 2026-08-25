@@ -12,6 +12,12 @@
 #include <optional>
 #include <string>
 
+/*
+ * Todo:
+ *   1) Add Require field tests
+ *   2) Add access functions (getters and setters)
+ *   3) Implement formatUpdateStatement
+ */
 struct OrganizationDbQueryValues
 {
     std::uint64_t id_organization;
@@ -95,5 +101,7 @@ private:
     std::optional<std::chrono::system_clock::time_point>  m_lastModified;
     std::int64_t deleted;
 };
+
+using OrganizationModel_shp = std::shared_ptr<OrganizationModel>;
 
 #endif  // ORGANIZATIONMODEL_H_

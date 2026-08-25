@@ -16,6 +16,7 @@ add_executable(protoPersonalPlanner
     Models/CoreDBInterface.cpp
     Models/ModelDBInterface.cpp
     Models/OrganizationModel.cpp
+    Models/OrganizationSelfTest.cpp
     Models/UserModel.cpp
     Models/UserSelfTest.cpp
     Models/TaskModel.cpp

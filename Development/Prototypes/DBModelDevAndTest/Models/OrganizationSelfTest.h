@@ -1,0 +1,41 @@
+#ifndef ORGANIZATIONSELFTEST_H_
+#define ORGANIZATIONSELFTEST_H_
+
+// Project Header Files
+#include "commonUtilities.h"
+#include "ModelSelfTest.h"
+#include "OrganizationModel.h"
+
+// Standard C++ Header Files
+#include <functional>
+#include <memory>
+#include <vector>
+
+class OrganizationSelfTest : public ModelSelfTest<OrganizationModel>
+{
+public:
+    OrganizationSelfTest();
+    ~OrganizationSelfTest();
+    virtual TestStatus runSelfTest() noexcept override;
+
+private:
+
+// Unit test functions
+    virtual void selfTestResetAllValues() noexcept override;
+    virtual std::vector<AttributeTestFunction> initAttributeAccessTests() noexcept override;
+
+
+    virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
+    virtual TestStatus testExceptionInsert() noexcept override;
+    virtual TestStatus testExceptionUpdate() noexcept override;
+    virtual TestStatus testExceptionHide() noexcept override;
+
+    virtual TestStatus testAllInsertFailures() override;
+    virtual TestStatus testEqualityOperator() noexcept override;
+    virtual void testOutput() noexcept override;
+};
+
+
+using OrganizationSelfTest_shp = std::shared_ptr<OrganizationSelfTest>;
+
+#endif  // ORGANIZATIONSELFTEST_H_
