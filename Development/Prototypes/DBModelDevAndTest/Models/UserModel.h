@@ -49,7 +49,7 @@ public:
     };
 
     UserModel();
-    UserModel(const UserDbQueryValues &databaseValues);
+    UserModel(const UserDbQueryValues& databaseValues);
     ~UserModel() = default;
 
     void autoGenerateLoginAndPassword() noexcept;
