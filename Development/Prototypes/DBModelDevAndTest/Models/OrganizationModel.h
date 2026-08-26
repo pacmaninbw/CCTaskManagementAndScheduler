@@ -45,33 +45,33 @@ public:
 /*
  * Access member functions
  */
-    void setOrganizationId(std::size_t orgId);
-    std::size_t getOrganizationId() const { return m_primaryKey; };
-    void setOrganizationName(std::string& organizationName);
-    std::string getOrganizationName() const { return m_organizationName; };
-    void setEmailAddress(std::string& emailAddress);
-    std::string getEmailAddress() const { return m_email; };
-    void setPhoneNumber(std::string& phoneNumber);
-    std::string getPhoneNumber() const { return m_phoneNumber; };
-    void setPrimaryContactUserId(std::size_t userId);
-    std::size_t getPrimaryContactUserId() const { return m_primaryContactUser; };
-    void setSecondaryContactUserId(std::size_t userId);
-    std::size_t getSecondaryContactUserId() const { return m_secondaryContactUser; };
-    void setAddressLine1(std::string& streetAddress);
-    std::string getAddressLine1() const { return m_addressLine1.value_or(""); };
-    void setAddressLine2(std::string& streetAddress);
-    std::string getAddressLine2() const { return m_addressLine2.value_or(""); };
-    void setCity(std::string& city);
-    std::string getCity() const { return m_city.value_or("") ;};
-    void setPostalCode(std::string& postalCode);
-    std::string getPostalCode() const { return m_postalCode.value_or(""); };
-    void setStateOrProvince(std::string& stateOrProvince);
-    std::string getStateOrProvince() const { return m_stateOrProvince.value_or(""); };
-    void setNation(std::string& nation);
-    std::string getNation() const { return m_nation.value_or(""); };
-    void setCreationTimeStamp(std::chrono::system_clock::time_point created);
+    void setOrganizationId(std::size_t orgId) noexcept;
+    std::size_t getOrganizationId() const noexcept { return m_primaryKey; };
+    void setOrganizationName(std::string& organizationName) noexcept;
+    std::string getOrganizationName() const noexcept { return m_organizationName; };
+    void setEmailAddress(std::string& emailAddress) noexcept;
+    std::string getEmailAddress() const noexcept { return m_email; };
+    void setPhoneNumber(std::string& phoneNumber) noexcept;
+    std::string getPhoneNumber() const noexcept { return m_phoneNumber; };
+    void setPrimaryContactUserId(std::size_t userId) noexcept;
+    std::size_t getPrimaryContactUserId() const noexcept { return m_primaryContactUser; };
+    void setSecondaryContactUserId(std::size_t userId) noexcept;
+    std::size_t getSecondaryContactUserId() const noexcept { return m_secondaryContactUser; };
+    void setAddressLine1(std::string& streetAddress) noexcept;
+    std::string getAddressLine1() const noexcept { return m_addressLine1.value_or(""); };
+    void setAddressLine2(std::string& streetAddress) noexcept;
+    std::string getAddressLine2() const noexcept { return m_addressLine2.value_or(""); };
+    void setCity(std::string& city) noexcept;
+    std::string getCity() const noexcept { return m_city.value_or("") ;};
+    void setPostalCode(std::string& postalCode) noexcept;
+    std::string getPostalCode() const noexcept { return m_postalCode.value_or(""); };
+    void setStateOrProvince(std::string& stateOrProvince) noexcept;
+    std::string getStateOrProvince() const noexcept { return m_stateOrProvince.value_or(""); };
+    void setNation(std::string& nation) noexcept;
+    std::string getNation() const noexcept { return m_nation.value_or(""); };
+    void setCreationTimeStamp(std::chrono::system_clock::time_point created) noexcept;
     std::chrono::system_clock::time_point getCreationTimeStamp() {return m_created.value(); };
-    void setLastModified(std::chrono::system_clock::time_point lastModified);
+    void setLastModified(std::chrono::system_clock::time_point lastModified) noexcept;
     std::chrono::system_clock::time_point getLastModified() { return m_lastModified.value(); };
 
 /*

@@ -38,85 +38,85 @@ OrganizationModel::~OrganizationModel()
 
 }
 
-void OrganizationModel::setOrganizationId(std::size_t orgId)
+void OrganizationModel::setOrganizationId(std::size_t orgId) noexcept
 {
     m_modified = true;
     m_primaryKey = orgId;
 }
 
-void OrganizationModel::setOrganizationName(std::string& organizationName)
+void OrganizationModel::setOrganizationName(std::string& organizationName) noexcept
 {
     m_modified = true;
     m_organizationName = organizationName;
 }
 
-void OrganizationModel::setEmailAddress(std::string& emailAddress)
+void OrganizationModel::setEmailAddress(std::string& emailAddress) noexcept
 {
     m_modified = true;
     m_email = emailAddress;
 }
 
-void OrganizationModel::setPhoneNumber(std::string& phoneNumber)
+void OrganizationModel::setPhoneNumber(std::string& phoneNumber) noexcept
 {
     m_modified = true;
     m_phoneNumber = phoneNumber;
 }
 
-void OrganizationModel::setPrimaryContactUserId(std::size_t userId)
+void OrganizationModel::setPrimaryContactUserId(std::size_t userId) noexcept
 {
     m_modified = true;
     m_primaryContactUser = userId;
 }
 
-void OrganizationModel::setSecondaryContactUserId(std::size_t userId)
+void OrganizationModel::setSecondaryContactUserId(std::size_t userId) noexcept
 {
     m_modified = true;
     m_secondaryContactUser = userId;
 }
 
-void OrganizationModel::setAddressLine1(std::string& streetAddress)
+void OrganizationModel::setAddressLine1(std::string& streetAddress) noexcept
 {
     m_modified = true;
     m_addressLine1 = streetAddress;
 }
 
-void OrganizationModel::setAddressLine2(std::string& streetAddress)
+void OrganizationModel::setAddressLine2(std::string& streetAddress) noexcept
 {
     m_modified = true;
     m_addressLine2 = streetAddress;
 }
 
-void OrganizationModel::setCity(std::string& city)
+void OrganizationModel::setCity(std::string& city) noexcept
 {
     m_modified = true;
     m_city = city;
 }
 
-void OrganizationModel::setPostalCode(std::string& postalCode)
+void OrganizationModel::setPostalCode(std::string& postalCode) noexcept
 {
     m_modified = true;
     m_postalCode = postalCode;
 }
 
-void OrganizationModel::setStateOrProvince(std::string& stateOrProvince)
+void OrganizationModel::setStateOrProvince(std::string& stateOrProvince) noexcept
 {
     m_modified = true;
     m_stateOrProvince = stateOrProvince;
 }
 
-void OrganizationModel::setNation(std::string& nation)
+void OrganizationModel::setNation(std::string& nation) noexcept
 {
     m_modified = true;
     m_nation = nation;
 }
 
-void OrganizationModel::setCreationTimeStamp(std::chrono::system_clock::time_point created)
+void OrganizationModel::setCreationTimeStamp(std::chrono::system_clock::time_point created) noexcept
 {
     m_modified = true;
     m_created = created;
 }
 
-void OrganizationModel::setLastModified(std::chrono::system_clock::time_point lastModified)
+void OrganizationModel::setLastModified(std::chrono::system_clock::time_point lastModified) noexcept
 {
     m_modified = true;
     m_lastModified = lastModified;
