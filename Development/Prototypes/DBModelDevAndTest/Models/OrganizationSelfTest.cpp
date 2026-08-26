@@ -154,7 +154,7 @@ TestStatus OrganizationSelfTest::testEqualityOperator() noexcept
 {
     OrganizationModel other;
 
-//    other. = m_primaryKey;
+    other.setOrganizationId(m_primaryKey);
     if (*this == other)
     {
         return TESTFAILED;
