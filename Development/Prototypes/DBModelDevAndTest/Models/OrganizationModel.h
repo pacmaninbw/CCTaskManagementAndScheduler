@@ -14,9 +14,7 @@
 
 /*
  * Todo:
- *   1) Add Require field tests
- *   2) Add access functions (getters and setters)
- *   3) Implement formatUpdateStatement
+ *   1) Implement formatUpdateStatement
  */
 struct OrganizationDbQueryValues
 {
@@ -44,7 +42,56 @@ public:
     OrganizationModel(const OrganizationDbQueryValues& databaseValues);
     ~OrganizationModel();
 
-    bool operator==(OrganizationModel& other) { return diffOrganization(other); };
+/*
+ * Access member functions
+ */
+    void setOrganizationId(std::size_t orgId);
+    std::size_t getOrganizationId() const { return m_primaryKey; };
+    void setOrganizationName(std::string& organizationName);
+    std::string getOrganizationName() const { return m_organizationName; };
+    void setEmailAddress(std::string& emailAddress);
+    std::string getEmailAddress() const { return m_email; };
+    void setPhoneNumber(std::string& phoneNumber);
+    std::string getPhoneNumber() const { return m_phoneNumber; };
+    void setPrimaryContactUserId(std::size_t userId);
+    std::size_t getPrimaryContactUserId() const { return m_primaryContactUser; };
+    void setSecondaryContactUserId(std::size_t userId);
+    std::size_t getSecondaryContactUserId() const { return m_secondaryContactUser; };
+    void setAddressLine1(std::string& streetAddress);
+    std::string getAddressLine1() const { return m_addressLine1.value_or(""); };
+    void setAddressLine2(std::string& streetAddress);
+    std::string getAddressLine2() const { return m_addressLine2.value_or(""); };
+    void setCity(std::string& city);
+    std::string getCity() const { return m_city.value_or("") ;};
+    void setPostalCode(std::string& postalCode);
+    std::string getPostalCode() const { return m_postalCode.value_or(""); };
+    void setStateOrProvince(std::string& stateOrProvince);
+    std::string getStateOrProvince() const { return m_stateOrProvince.value_or(""); };
+    void setNation(std::string& nation);
+    std::string getNation() const { return m_nation.value_or(""); };
+    void setCreationTimeStamp(std::chrono::system_clock::time_point created);
+    std::chrono::system_clock::time_point getCreationTimeStamp() {return m_created.value(); };
+    void setLastModified(std::chrono::system_clock::time_point lastModified);
+    std::chrono::system_clock::time_point getLastModified() { return m_lastModified.value(); };
+
+/*
+ * Required fields.
+ */
+    bool isMissingOrganizationName() const noexcept;
+    bool isMissingEmail() const noexcept;
+    bool isMissingPrimaryContact() const noexcept;
+    bool isMissingSecondaryContact() const noexcept;
+    bool isMissingPhoneNumber() const noexcept;
+    void initRequiredFields() noexcept override;
+
+    bool operator==(OrganizationModel& other)
+    {
+        return diffOrganization(other);
+    };
+
+
+
+    bool operator==(OrganizationModel& other) const { return diffOrganization(other); };
 
     friend std::ostream& operator<<(std::ostream& os, const OrganizationModel& orgProfile)
     {
@@ -59,7 +106,7 @@ public:
         
         if (orgProfile.m_addressLine2.has_value())
         {
-            os << std::format(outFmtStr, "Address Line 1", orgProfile.m_addressLine2.value());
+            os << std::format(outFmtStr, "Address Line 2", orgProfile.m_addressLine2.value());
         }
 
         os << std::format(outFmtStr, "City", orgProfile.m_city.value_or(""));
@@ -86,6 +133,7 @@ private:
     std::string formatUpdateStatement() override;
     std::string formatDeleteStatement() override;
 
+protected:
     std::string m_organizationName;
     std::string m_email;
     std::string m_phoneNumber;
@@ -99,7 +147,6 @@ private:
     std::optional<std::string> m_nation;
     std::optional<std::chrono::system_clock::time_point>  m_created;
     std::optional<std::chrono::system_clock::time_point>  m_lastModified;
-    std::int64_t deleted;
 };
 
 using OrganizationModel_shp = std::shared_ptr<OrganizationModel>;

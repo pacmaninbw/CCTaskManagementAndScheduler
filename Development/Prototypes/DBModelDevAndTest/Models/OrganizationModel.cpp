@@ -38,6 +38,124 @@ OrganizationModel::~OrganizationModel()
 
 }
 
+void OrganizationModel::setOrganizationId(std::size_t orgId)
+{
+    m_modified = true;
+    m_primaryKey = orgId;
+}
+
+void OrganizationModel::setOrganizationName(std::string& organizationName)
+{
+    m_modified = true;
+    m_organizationName = organizationName;
+}
+
+void OrganizationModel::setEmailAddress(std::string& emailAddress)
+{
+    m_modified = true;
+    m_email = emailAddress;
+}
+
+void OrganizationModel::setPhoneNumber(std::string& phoneNumber)
+{
+    m_modified = true;
+    m_phoneNumber = phoneNumber;
+}
+
+void OrganizationModel::setPrimaryContactUserId(std::size_t userId)
+{
+    m_modified = true;
+    m_primaryContactUser = userId;
+}
+
+void OrganizationModel::setSecondaryContactUserId(std::size_t userId)
+{
+    m_modified = true;
+    m_secondaryContactUser = userId;
+}
+
+void OrganizationModel::setAddressLine1(std::string& streetAddress)
+{
+    m_modified = true;
+    m_addressLine1 = streetAddress;
+}
+
+void OrganizationModel::setAddressLine2(std::string& streetAddress)
+{
+    m_modified = true;
+    m_addressLine2 = streetAddress;
+}
+
+void OrganizationModel::setCity(std::string& city)
+{
+    m_modified = true;
+    m_city = city;
+}
+
+void OrganizationModel::setPostalCode(std::string& postalCode)
+{
+    m_modified = true;
+    m_postalCode = postalCode;
+}
+
+void OrganizationModel::setStateOrProvince(std::string& stateOrProvince)
+{
+    m_modified = true;
+    m_stateOrProvince = stateOrProvince;
+}
+
+void OrganizationModel::setNation(std::string& nation)
+{
+    m_modified = true;
+    m_nation = nation;
+}
+
+void OrganizationModel::setCreationTimeStamp(std::chrono::system_clock::time_point created)
+{
+    m_modified = true;
+    m_created = created;
+}
+
+void OrganizationModel::setLastModified(std::chrono::system_clock::time_point lastModified)
+{
+    m_modified = true;
+    m_lastModified = lastModified;
+}
+
+bool OrganizationModel::isMissingOrganizationName() const noexcept
+{
+    return m_organizationName.empty();
+}
+
+bool OrganizationModel::isMissingEmail() const noexcept
+{
+    return m_email.empty();
+}
+
+bool OrganizationModel::isMissingPrimaryContact() const noexcept
+{
+    return m_primaryContactUser == 0;
+}
+
+bool OrganizationModel::isMissingSecondaryContact() const noexcept
+{
+    return m_secondaryContactUser == 0;
+}
+
+bool OrganizationModel::isMissingPhoneNumber() const noexcept
+{
+    return m_phoneNumber.empty();
+}
+
+void OrganizationModel::initRequiredFields() noexcept
+{
+    m_missingRequiredFieldsTests.push_back({std::bind(&OrganizationModel::isMissingOrganizationName, this), "Organization Name"});
+    m_missingRequiredFieldsTests.push_back({std::bind(&OrganizationModel::isMissingEmail, this), "Organization Email Address"});
+    m_missingRequiredFieldsTests.push_back({std::bind(&OrganizationModel::isMissingPrimaryContact, this), "Primary Contact"});
+    m_missingRequiredFieldsTests.push_back({std::bind(&OrganizationModel::isMissingSecondaryContact, this), "Secondary Contact"});
+    m_missingRequiredFieldsTests.push_back({std::bind(&OrganizationModel::isMissingPhoneNumber, this), "Phone Number"});
+}
+
 bool OrganizationModel::diffOrganization(OrganizationModel &other) const noexcept
 {
 
