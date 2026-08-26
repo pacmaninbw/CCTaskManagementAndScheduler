@@ -2,6 +2,8 @@
 #include "CommandLineParser.h"
 #include "commonTestValues.h"
 #include "GoalQueryProcessor.h"
+#include "OrganizationModel.h"
+#include "OrganizationSelfTest.h"
 #include "NoteQueryProcessor.h"
 #include "NoteModel.h"
 #include "NoteSelfTest.h"
@@ -87,6 +89,12 @@ static TestStatus runUnitTest(ModelSelfTest<A>* unitTest)
 static TestStatus runAllUnitTests()
 {
     TestStatus allUnintTestsPassed = TESTPASSED;
+
+    OrganizationSelfTest organizationTest;
+    if (runUnitTest(&organizationTest) == TESTFAILED)
+    {
+        allUnintTestsPassed = TESTFAILED;
+    }
 
     UserSelfTest userTest;
     if (runUnitTest(&userTest) == TESTFAILED)
