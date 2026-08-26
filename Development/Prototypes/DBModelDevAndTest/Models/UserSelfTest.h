@@ -32,6 +32,7 @@ private:
     TestStatus testCreatedDateAcfcess() noexcept;
     TestStatus testLastLoginAccess() noexcept;
     TestStatus testEmailAccess() noexcept;
+    TestStatus testOrganizationAccess() noexcept;
     TestStatus testStartTimeAccess() noexcept;
     TestStatus testEndTimeAccesss() noexcept;
     TestStatus testIncludePriorityInScheduleAccess() noexcept;

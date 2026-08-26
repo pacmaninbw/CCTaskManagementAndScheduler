@@ -149,6 +149,12 @@ void UserModel::setLastLogin(std::chrono::system_clock::time_point dateAndTime) 
     m_lastLogin = dateAndTime;
 }
 
+void UserModel::setOrganizationID(std::size_t organizationId) noexcept
+{
+    m_modified = true;
+    m_organizationId = organizationId;
+}
+
 bool UserModel::isMissingLastName() const noexcept
 {
     return (m_lastName.empty() || m_lastName.length() < minNameLenght);

@@ -113,6 +113,7 @@ std::vector<AttributeTestFunction> UserSelfTest::initAttributeAccessTests() noex
     attributeAccessTests.push_back({std::bind(&UserSelfTest::testFirstNameAccess, this)});
     attributeAccessTests.push_back({std::bind(&UserSelfTest::testMiddleInitialAccess, this)});
     attributeAccessTests.push_back({std::bind(&UserSelfTest::testEmailAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testOrganizationAccess, this)});
     attributeAccessTests.push_back({std::bind(&UserSelfTest::testLoginNameAccess, this)});
     attributeAccessTests.push_back({std::bind(&UserSelfTest::testPassWordAccess, this)});
     attributeAccessTests.push_back({std::bind(&UserSelfTest::testCreatedDateAcfcess, this)});
@@ -199,6 +200,15 @@ TestStatus UserSelfTest::testEmailAccess() noexcept
         std::bind(&UserModel::setEmail, this, std::placeholders::_1),
         std::bind(&UserModel::getEmail, this));
 }
+
+TestStatus UserSelfTest::testOrganizationAccess() noexcept
+{
+    std::size_t testValue = 1;
+    return testOptionalAccessorFunctions<std::size_t>(testValue, &m_organizationId, "Organization ID", 
+        std::bind(&UserModel::setOrganizationID, this, std::placeholders::_1),
+        std::bind(&UserModel::getOrganizationID, this));
+}
+
 
 TestStatus UserSelfTest::testStartTimeAccess() noexcept
 {

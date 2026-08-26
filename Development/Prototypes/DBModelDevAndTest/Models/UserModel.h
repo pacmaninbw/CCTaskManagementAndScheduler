@@ -64,6 +64,7 @@ public:
     std::size_t getUserID() const noexcept { return m_primaryKey; };
     std::chrono::system_clock::time_point getCreationDate() const noexcept { return m_created.value(); };
     std::optional<std::chrono::system_clock::time_point> getLastLogin() const noexcept { return m_lastLogin; };
+    std::size_t getOrganizationID() const { return m_organizationId.value_or(0); };
     bool isPriorityInSchedule() const noexcept { return m_preferences.includePriorityInSchedule; };
     bool isMinorPriorityInSchedule() const noexcept { return m_preferences.includeMinorPriorityInSchedule; };
     bool isUsingLettersForMaorPriority() const noexcept { return m_preferences.userLetterForMajorPriority; };
@@ -84,6 +85,7 @@ public:
     void setUserID(std::size_t UserID) noexcept;
     void setCreationDate(std::chrono::system_clock::time_point dateIn) noexcept;
     void setLastLogin(std::chrono::system_clock::time_point dateAndTime) noexcept;
+    void setOrganizationID(std::size_t organizationId) noexcept;
 
 /*
  * Required fields.
