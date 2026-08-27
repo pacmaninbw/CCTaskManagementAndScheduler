@@ -23,7 +23,20 @@ private:
 // Unit test functions
     virtual void selfTestResetAllValues() noexcept override;
     virtual std::vector<AttributeTestFunction> initAttributeAccessTests() noexcept override;
-
+    TestStatus testOrganizationIdAccess() noexcept;
+    TestStatus testOrganizationNameAccess() noexcept;
+    TestStatus testEmailAccess() noexcept;
+    TestStatus testPhoneAccess() noexcept;
+    TestStatus testPrimaryContactAccess() noexcept;
+    TestStatus testSecondaryContactAccess() noexcept;
+    TestStatus testAddressLine1Access() noexcept;
+    TestStatus testAddressLine2Access() noexcept;
+    TestStatus testCityAccess() noexcept;
+    TestStatus testPostalCodeAccess() noexcept;
+    TestStatus testStateOrProvinceAccess() noexcept;
+    TestStatus testNationAccess() noexcept;
+    TestStatus testCreatedDateAccess() noexcept;
+    TestStatus testLastModifiedDateAccess() noexcept;
 
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
     virtual TestStatus testExceptionInsert() noexcept override;

@@ -117,7 +117,135 @@ std::vector<AttributeTestFunction> OrganizationSelfTest::initAttributeAccessTest
     selfTestResetAllValues();
     std::vector<AttributeTestFunction> attributeAccessTests;
 
+    attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testOrganizationIdAccess, this)});
+    attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testOrganizationNameAccess, this)});
+    attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testEmailAccess, this)});
+    attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testPhoneAccess, this)});
+    attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testPrimaryContactAccess, this)});
+    attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testSecondaryContactAccess, this)});
+    attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testAddressLine1Access, this)});
+    attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testAddressLine2Access, this)});
+    attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testCityAccess, this)});
+    attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testPostalCodeAccess, this)});
+    attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testStateOrProvinceAccess, this)});
+    attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testNationAccess, this)});
+    attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testCreatedDateAccess, this)});
+    attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testLastModifiedDateAccess, this)});
+
     return attributeAccessTests;
+}
+
+TestStatus OrganizationSelfTest::testOrganizationIdAccess() noexcept
+{
+    std::size_t testPrimaryKey = 1;
+
+    return testAccessorFunctions<std::size_t>(testPrimaryKey, &m_primaryKey, "Primary Key",
+        std::bind(&OrganizationModel::setOrganizationId, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getOrganizationId, this));
+}
+
+TestStatus OrganizationSelfTest::testOrganizationNameAccess() noexcept
+{
+    std::string testName("Any organization name up to 255 characters, Inc.");
+    return testAccessorFunctions<std::string>(testName, &m_organizationName, "Organization Name",
+        std::bind(&OrganizationModel::setOrganizationName, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getOrganizationName, this));
+}
+
+TestStatus OrganizationSelfTest::testEmailAccess() noexcept
+{
+    std::string testEmail("Any_organization_email_up_to255-characters@gmail.com");
+    return testAccessorFunctions<std::string>(testEmail, &m_email, "Organization Email",
+        std::bind(&OrganizationModel::setEmailAddress, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getEmailAddress, this));
+}
+
+TestStatus OrganizationSelfTest::testPhoneAccess() noexcept
+{
+    std::string testPhoneNumber("Any_organization_email_up_to255-characters@gmail.com");
+    return testAccessorFunctions<std::string>(testPhoneNumber, &m_phoneNumber, "Organization Phone Number",
+        std::bind(&OrganizationModel::setPhoneNumber, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getPhoneNumber, this));
+}
+
+TestStatus OrganizationSelfTest::testPrimaryContactAccess() noexcept
+{
+    std::size_t primaryContactUserId = 1;
+    return testAccessorFunctions<std::size_t>(primaryContactUserId, &m_primaryContactUser, "Primary Contact ID",
+        std::bind(&OrganizationModel::setPrimaryContactUserId, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getPrimaryContactUserId, this));
+}
+
+TestStatus OrganizationSelfTest::testSecondaryContactAccess() noexcept
+{
+    std::size_t secondaryContactUserId = 1;
+    return testAccessorFunctions<std::size_t>(secondaryContactUserId, &m_secondaryContactUser, "Secondary Contact ID",
+        std::bind(&OrganizationModel::setSecondaryContactUserId, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getSecondaryContactUserId, this));
+}
+
+TestStatus OrganizationSelfTest::testAddressLine1Access() noexcept
+{
+    std::string testValue("Any street address up to 255 characters.");
+    return testOptionalAccessorFunctions<std::string>(testValue, &m_addressLine1, "Address Line 1",
+        std::bind(&OrganizationModel::setAddressLine1, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getAddressLine1, this));
+}
+
+TestStatus OrganizationSelfTest::testAddressLine2Access() noexcept
+{
+    std::string testValue("Any additional street address up to 255 characters.");
+    return testOptionalAccessorFunctions<std::string>(testValue, &m_addressLine2, "Address Line 2",
+        std::bind(&OrganizationModel::setAddressLine2, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getAddressLine2, this));
+ }
+
+TestStatus OrganizationSelfTest::testCityAccess() noexcept
+{
+    std::string testValue("Any city name up to 127 characters.");
+    return testOptionalAccessorFunctions<std::string>(testValue, &m_city, "City",
+        std::bind(&OrganizationModel::setCity, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getCity, this));
+}
+
+TestStatus OrganizationSelfTest::testPostalCodeAccess() noexcept
+{
+    std::string testValue("Any postal code up to 31 characters.");
+    return testOptionalAccessorFunctions<std::string>(testValue, &m_postalCode, "Postal Code",
+        std::bind(&OrganizationModel::setPostalCode, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getPostalCode, this));
+}
+
+TestStatus OrganizationSelfTest::testStateOrProvinceAccess() noexcept
+{
+    std::string testValue("Any state or province up to 255 characters.");
+    return testOptionalAccessorFunctions<std::string>(testValue, &m_stateOrProvince, "State or Province",
+        std::bind(&OrganizationModel::setStateOrProvince, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getStateOrProvince, this));
+}
+
+TestStatus OrganizationSelfTest::testNationAccess() noexcept
+{
+    std::string testValue("Any nation up to 63 characters.");
+    return testOptionalAccessorFunctions<std::string>(testValue, &m_stateOrProvince, "Nation",
+        std::bind(&OrganizationModel::setStateOrProvince, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getStateOrProvince, this));
+}
+
+TestStatus OrganizationSelfTest::testCreatedDateAccess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
+    return testTimeStampAccessorFunctions(testValue, &m_created, "Creation TimeStamp",
+        std::bind(&OrganizationModel::setCreationTimeStamp, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getCreationTimeStamp, this));
+}
+
+TestStatus OrganizationSelfTest::testLastModifiedDateAccess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
+    return testTimeStampAccessorFunctions(testValue, &m_created, "Last Modified TimeStamp",
+        std::bind(&OrganizationModel::setLastModified, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getLastModified, this));
 }
 
 std::vector<ExceptionTestElement> OrganizationSelfTest::initExceptionTests() noexcept
@@ -168,3 +296,4 @@ TestStatus OrganizationSelfTest::testEqualityOperator() noexcept
 void OrganizationSelfTest::testOutput() noexcept
 {
 }
+
