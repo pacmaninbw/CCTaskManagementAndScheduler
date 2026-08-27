@@ -227,9 +227,9 @@ TestStatus OrganizationSelfTest::testStateOrProvinceAccess() noexcept
 TestStatus OrganizationSelfTest::testNationAccess() noexcept
 {
     std::string testValue("Any nation up to 63 characters.");
-    return testOptionalAccessorFunctions<std::string>(testValue, &m_stateOrProvince, "Nation",
-        std::bind(&OrganizationModel::setStateOrProvince, this, std::placeholders::_1),
-        std::bind(&OrganizationModel::getStateOrProvince, this));
+    return testOptionalAccessorFunctions<std::string>(testValue, &m_nation, "Nation",
+        std::bind(&OrganizationModel::setNation, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getNation, this));
 }
 
 TestStatus OrganizationSelfTest::testCreatedDateAccess() noexcept
