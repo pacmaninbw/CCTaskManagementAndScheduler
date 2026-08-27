@@ -260,17 +260,50 @@ std::vector<ExceptionTestElement> OrganizationSelfTest::initExceptionTests() noe
 
 TestStatus OrganizationSelfTest::testExceptionInsert() noexcept
 {
-    return TESTFAILED;
+    selfTestResetAllValues();
+
+    initValidTestValues();
+
+    return testExceptionAndSuccessNArgs("OrganizationModel::insert", std::bind(&OrganizationModel::insert, this));
 }
 
 TestStatus OrganizationSelfTest::testExceptionUpdate() noexcept
 {
-    return TESTFAILED;
+    selfTestResetAllValues();
+
+    initValidTestValues();
+
+    return testExceptionAndSuccessNArgs("OrganizationModel::update", std::bind(&OrganizationModel::update, this));
 }
 
 TestStatus OrganizationSelfTest::testExceptionHide() noexcept
 {
-    return TESTFAILED;
+    selfTestResetAllValues();
+
+    std::size_t testUserId = 1;
+
+    setOrganizationId(testUserId);
+
+    return testExceptionAndSuccessNArgs("OrganizationModel::hide", std::bind(&OrganizationModel::hide, this, std::placeholders::_1), testUserId);
+}
+
+void OrganizationSelfTest::initValidTestValues() noexcept
+{
+    std::chrono::system_clock::time_point timeStamp = common::TestTimeStampValue;
+
+    setOrganizationName("Any Organization .Inc");
+    setEmailAddress("AnyEmailAddress@gmail.com");
+    setPhoneNumber("800-555-1212");
+    setPrimaryContactUserId(1);
+    setSecondaryContactUserId(2);
+    setAddressLine1("11111 First Street");
+    setAddressLine2("Suite 101");
+    setCity("Home Town");
+    setStateOrProvince("California");
+    setPostalCode("90001");
+    setNation("United States");
+    setCreationTimeStamp(timeStamp);
+    setLastModified(timeStamp);
 }
 
 TestStatus OrganizationSelfTest::testAllInsertFailures()
@@ -295,5 +328,6 @@ TestStatus OrganizationSelfTest::testEqualityOperator() noexcept
 
 void OrganizationSelfTest::testOutput() noexcept
 {
+    std::cout << "Test Output: " << *this << "\n";
 }
 
