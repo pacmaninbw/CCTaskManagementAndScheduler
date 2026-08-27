@@ -209,7 +209,7 @@ std::string OrganizationModel::formatUpdateStatement()
 std::string OrganizationModel::formatDeleteStatement()
 {
     boost::mysql::format_context fctx(getFormatOptions());
-    boost::mysql::format_sql_to(fctx, "UPDATE user_notes SET organization_profile.deleted = 1 ");
+    boost::mysql::format_sql_to(fctx, "UPDATE organization_profile SET organization_profile.deleted = 1 ");
     boost::mysql::format_sql_to(fctx, "WHERE organization_profile.id_organization = {}", m_primaryKey);
 
     return (std::move(fctx).get().value());
