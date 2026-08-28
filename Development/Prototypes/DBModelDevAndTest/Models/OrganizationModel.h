@@ -12,10 +12,6 @@
 #include <optional>
 #include <string>
 
-/*
- * Todo:
- *   1) Implement formatUpdateStatement
- */
 struct OrganizationDbQueryValues
 {
     std::uint64_t id_organization;
