@@ -31,6 +31,8 @@ OrganizationModel::OrganizationModel(const OrganizationDbQueryValues &databaseVa
     m_stateOrProvince = databaseValues.state_or_province;
     m_postalCode = databaseValues.postal_code;
     m_nation = databaseValues.nation;
+    m_created = common::toChronoTimePoint(databaseValues.created_timestamp);
+    m_lastModified = common::toChronoTimePoint(databaseValues.last_modified_time_stamp);
 }
 
 OrganizationModel::~OrganizationModel()
@@ -203,7 +205,25 @@ std::string OrganizationModel::formatInsertStatement()
 
 std::string OrganizationModel::formatUpdateStatement()
 {
-    return std::string();
+    boost::mysql::format_context fctx(getFormatOptions());
+    boost::mysql::format_sql_to(fctx, "UPDATE organization_profile SET ");
+    boost::mysql::format_sql_to(fctx, "organization_profile.organization_name = {}, ", m_organizationName);
+    boost::mysql::format_sql_to(fctx, "organization_profile.email_address = {}, ", m_email);
+    boost::mysql::format_sql_to(fctx, "organization_profile.phone_number = {}, ", m_phoneNumber);
+    boost::mysql::format_sql_to(fctx, "organization_profile.primary_contact_user = {}, ", m_primaryContactUser);
+    boost::mysql::format_sql_to(fctx, "organization_profile.secondary_contact_user = {}, ", m_secondaryContactUser);
+    boost::mysql::format_sql_to(fctx, "organization_profile.address_line_1 = {}, ", m_addressLine1);
+    boost::mysql::format_sql_to(fctx, "organization_profile.address_line_2 = {}, ", m_addressLine2);
+    boost::mysql::format_sql_to(fctx, "organization_profile.city = {}, ", m_city);
+    boost::mysql::format_sql_to(fctx, "organization_profile.postal_code = {}, ", m_postalCode);
+    boost::mysql::format_sql_to(fctx, "organization_profile.state_or_province = {}, ", m_stateOrProvince);
+    boost::mysql::format_sql_to(fctx, "organization_profile.nation = {}, ", m_nation);
+    boost::mysql::format_sql_to(fctx, "organization_profile.deleted = {} ", m_deleted);
+    boost::mysql::format_sql_to(fctx, "organization_profile.created_timestamp = {}, ", m_created.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "organization_profile.last_modified_time_stamp = {} ", m_lastModified.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "WHERE organization_profile.id_organization = {} ", m_primaryKey);
+
+    return (std::move(fctx).get().value());
 }
 
 std::string OrganizationModel::formatDeleteStatement()
