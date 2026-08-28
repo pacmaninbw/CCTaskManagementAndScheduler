@@ -47,6 +47,8 @@ private:
     virtual TestStatus testAllInsertFailures() override;
     virtual TestStatus testEqualityOperator() noexcept override;
     virtual void testOutput() noexcept override;
+    void convertOrganizationModelTo(OrganizationModel_shp original, OrganizationDbQueryValues& testInput) noexcept;
+    TestStatus testDataBaseToModelConversion() noexcept;
 };
 
 

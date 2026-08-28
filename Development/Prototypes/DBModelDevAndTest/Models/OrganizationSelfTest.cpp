@@ -1,4 +1,5 @@
 // Project Header Files
+#include "chronoBoostConversions.h"
 #include "commonUtilities.h"
 #include "OrganizationSelfTest.h"
 
@@ -56,6 +57,12 @@ TestStatus OrganizationSelfTest::runSelfTest() noexcept
     }
 
     testOutput();
+
+    if (testDataBaseToModelConversion() != TESTPASSED)
+    {
+        std::cerr << std::format("Test new {} from Database Data FAILED!\n", m_modelName);
+        selfTestStatus = TESTFAILED;
+    }
 
     if (testAllInsertFailures() != TESTPASSED)
     {
@@ -272,6 +279,7 @@ TestStatus OrganizationSelfTest::testExceptionUpdate() noexcept
     selfTestResetAllValues();
 
     initValidTestValues();
+    setOrganizationId(1);
 
     return testExceptionAndSuccessNArgs("OrganizationModel::update", std::bind(&OrganizationModel::update, this));
 }
@@ -329,5 +337,57 @@ TestStatus OrganizationSelfTest::testEqualityOperator() noexcept
 void OrganizationSelfTest::testOutput() noexcept
 {
     std::cout << "Test Output: " << *this << "\n";
+}
+
+void OrganizationSelfTest::convertOrganizationModelTo(OrganizationModel_shp original, OrganizationDbQueryValues &testInput) noexcept
+{
+    testInput.id_organization = original->getOrganizationId();
+    testInput.organization_name = original->getOrganizationName();
+    testInput.email_address = original->getEmailAddress();
+    testInput.phone_number = original->getPhoneNumber();
+    testInput.primary_contact_user = original->getPrimaryContactUserId();
+    testInput.secondary_contact_user = original->getSecondaryContactUserId();
+    testInput.address_line_1 = original->getAddressLine1();
+    testInput.address_line_2 = original->getAddressLine2();
+    testInput.city = original->getCity();
+    testInput.state_or_province = original->getStateOrProvince();
+    testInput.postal_code = original->getPostalCode();
+    testInput.nation = original->getNation();
+    testInput.created_timestamp = common::toBoostDateTime(original->getCreationTimeStamp());
+    testInput.last_modified_time_stamp = common::toBoostDateTime(original->getLastModified());
+}
+
+TestStatus OrganizationSelfTest::testDataBaseToModelConversion() noexcept
+{
+    OrganizationModel_shp expectData = std::make_shared<OrganizationModel>();
+    std::chrono::system_clock::time_point timeStamp = common::TestTimeStampValue;
+
+    expectData->setOrganizationId(1);
+    expectData->setOrganizationName("Any Organization .Inc");
+    expectData->setEmailAddress("AnyEmailAddress@gmail.com");
+    expectData->setPhoneNumber("800-555-1212");
+    expectData->setPrimaryContactUserId(1);
+    expectData->setSecondaryContactUserId(2);
+    expectData->setAddressLine1("11111 First Street");
+    expectData->setAddressLine2("Suite 101");
+    expectData->setCity("Home Town");
+    expectData->setStateOrProvince("California");
+    expectData->setPostalCode("90001");
+    expectData->setNation("United States");
+    expectData->setCreationTimeStamp(timeStamp);
+    expectData->setLastModified(timeStamp);
+
+    OrganizationDbQueryValues testInput;
+    convertOrganizationModelTo(expectData, testInput);
+
+    OrganizationModel_shp testOutput = std::make_shared<OrganizationModel>(testInput);
+
+    if (*expectData == *testOutput)
+    {
+        return TESTPASSED;
+    }
+
+    std::cerr << "Test Input " << *this << "\n\n Test Output " << *testOutput << std::endl;
+    return TESTFAILED;
 }
 
