@@ -2,6 +2,62 @@
 
 ---------------------------------------------------------------------------------
 
+Running Organization Self Test
+
+
+Running Exception Handling Test Cases
+
+
+Running self test on set and get functions for Organization::Primary Key
+Self test on set and get functions for Organization::Primary Key PASSED
+Running self test on set and get functions for Organization::Organization Name
+Self test on set and get functions for Organization::Organization Name PASSED
+Running self test on set and get functions for Organization::Organization Email
+Self test on set and get functions for Organization::Organization Email PASSED
+Running self test on set and get functions for Organization::Organization Phone Number
+Self test on set and get functions for Organization::Organization Phone Number PASSED
+Running self test on set and get functions for Organization::Primary Contact ID
+Self test on set and get functions for Organization::Primary Contact ID PASSED
+Running self test on set and get functions for Organization::Secondary Contact ID
+Self test on set and get functions for Organization::Secondary Contact ID PASSED
+Running self test on set and get functions for Organization::Address Line 1
+Self test on set and get functions for Organization::Address Line 1 PASSED
+Running self test on set and get functions for Organization::Address Line 2
+Self test on set and get functions for Organization::Address Line 2 PASSED
+Running self test on set and get functions for Organization::City
+Self test on set and get functions for Organization::City PASSED
+Running self test on set and get functions for Organization::Postal Code
+Self test on set and get functions for Organization::Postal Code PASSED
+Running self test on set and get functions for Organization::State or Province
+Self test on set and get functions for Organization::State or Province PASSED
+Running self test on set and get functions for Organization::Nation
+Self test on set and get functions for Organization::Nation PASSED
+Running self test on set and get functions for Organization::Creation TimeStamp
+Self test on set and get functions for Organization::Creation TimeStamp PASSED
+Running self test on set and get functions for Organization::Last Modified TimeStamp
+Self test on set and get functions for Organization::Last Modified TimeStamp PASSED
+Test Output: 	Organization ID: 1
+	Organization Name: Any organization name up to 255 characters, Inc.
+	Email Address: Any_organization_email_up_to255-characters@gmail.com
+	Phone Number: Any_organization_email_up_to255-characters@gmail.com
+	Primary Contact User ID: 1
+	Secondary Contact User ID: 1
+	Address Line 1: Any street address up to 255 characters.
+	Address Line 2: Any additional street address up to 255 characters.
+	City: Any city name up to 127 characters.
+	Postal Code: Any postal code up to 31 characters.
+	State or Province: Any state or province up to 255 characters.
+	Nation: Any nation up to 63 characters.
+	Date Added: 2024-05-14 08:31:53.000000000
+	Date Added: 2024-05-14 08:31:53.000000000
+
+Common Insertion Failure Test PASSED!
+Common Update Failure Test PASSED!
+Organization Self Test PASSED
+---------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------
+
 Running User Self Test
 
 
@@ -18,6 +74,8 @@ Running self test on set and get functions for User::Middle Initial
 Self test on set and get functions for User::Middle Initial PASSED
 Running self test on set and get functions for User::Email
 Self test on set and get functions for User::Email PASSED
+Running self test on set and get functions for User::Organization ID
+Self test on set and get functions for User::Organization ID PASSED
 Running self test on set and get functions for User::LoginName
 Self test on set and get functions for User::LoginName PASSED
 Running self test on set and get functions for User::Password
@@ -120,7 +178,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-08-18
+	Completed Date: 2026-08-29
 	Deleted : FALSE
 
 Common Insertion Failure Test PASSED!
