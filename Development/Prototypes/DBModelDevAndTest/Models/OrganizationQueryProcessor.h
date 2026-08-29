@@ -23,9 +23,25 @@ class OrganizationQueryProcessor : public QueryProcessor<OrganizationModel, Orga
 public:
     OrganizationQueryProcessor();
     ~OrganizationQueryProcessor();
+    OrganizationList getAllOrganizations() noexcept;
+    OrganizationList findOrganizationsByName(std::string orgName) noexcept;
+    OrganizationList findOrganizationsByPrimaryContactID(std::size_t userId) noexcept;
+    OrganizationList findOrganizationsByPrimaryContactName(std::string firstName, std::string lastName, std::string middleInitial) noexcept;
+    OrganizationList getAllOrganizationsAddedBetween(std::chrono::year_month_day startRage, std::chrono::year_month_day endRange) noexcept;
+    OrganizationList getAnyOrganizationsAddedOnDate(std::chrono::year_month_day searchDate) noexcept;
+    OrganizationList getAnyOrganizationsModifiedOnDate(std::chrono::year_month_day searchDate) noexcept;
+    OrganizationModel_shp getOrganizationById(std::size_t id_organization) noexcept;
 
 private:
-
+    virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
+    TestStatus testExceptionGetAllOrganizations() noexcept;
+    TestStatus testExceptionFindOrganizationsByName() noexcept;
+    TestStatus testExceptionFindOrganizationsByPrimaryContactID() noexcept;
+    TestStatus testExceptionFindOrganizationsByPrimaryContactName() noexcept;
+    TestStatus testExceptionGetAllOrganizationsAddedBetween() noexcept;
+    TestStatus testExceptionGetAnyOrganizationsAddedOnDate() noexcept;
+    TestStatus testExceptionGetAnyOrganizationsModifiedOnDate() noexcept;
+    TestStatus testExceptionGetOrganizationById() noexcept;
 };
 
 #endif // ORGANIZATIONQUERYPROCESSOR_H_
