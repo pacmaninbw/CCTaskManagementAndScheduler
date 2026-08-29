@@ -316,7 +316,64 @@ void OrganizationSelfTest::initValidTestValues() noexcept
 
 TestStatus OrganizationSelfTest::testAllInsertFailures()
 {
-    return TESTFAILED;
+    selfTestResetAllValues();
+
+    if (testCommonInsertFailurePath() != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    std::vector<std::string> expectedErrors =
+    {
+        "Organization Name", "Email Address", "Phone Number", "Primary Contact", "Secondary Contact"
+    };
+
+    setOrganizationId(0);   // Force a modification so that missing fields can be tested.
+
+    std::vector<std::function<void(std::string)>> fieldSettings;
+    fieldSettings.push_back(std::bind(&OrganizationModel::setOrganizationName, this, std::placeholders::_1));
+    fieldSettings.push_back(std::bind(&OrganizationModel::setEmailAddress, this, std::placeholders::_1));
+    fieldSettings.push_back(std::bind(&OrganizationModel::setPhoneNumber, this, std::placeholders::_1));
+
+    for (auto setField: fieldSettings)
+    {
+        if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+        {
+            return TESTFAILED;
+        }
+        expectedErrors.erase(expectedErrors.begin());
+        setField("teststringvalue");
+    }
+
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+    setPrimaryContactUserId(1);
+
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+    setSecondaryContactUserId(2);
+
+    expectedErrors.clear();
+
+    if (m_verboseOutput)
+    {
+        std::cout << std::format("{}::{} before successful insert this = \n", m_modelName, __func__) << *this << "\n";
+    }
+
+    setCreationTimeStamp(common::TestTimeStampValue);
+    if (!insert())
+    {
+        std::cout << "In  OrganizationSelfTest::testAllInsertFailures() Expected successful insert failed\n" << m_errorMessages << "\n";
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
 }
 
 TestStatus OrganizationSelfTest::testEqualityOperator() noexcept

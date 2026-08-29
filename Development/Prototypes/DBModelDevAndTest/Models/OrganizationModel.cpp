@@ -152,7 +152,7 @@ bool OrganizationModel::isMissingPhoneNumber() const noexcept
 void OrganizationModel::initRequiredFields() noexcept
 {
     m_missingRequiredFieldsTests.push_back({std::bind(&OrganizationModel::isMissingOrganizationName, this), "Organization Name"});
-    m_missingRequiredFieldsTests.push_back({std::bind(&OrganizationModel::isMissingEmail, this), "Organization Email Address"});
+    m_missingRequiredFieldsTests.push_back({std::bind(&OrganizationModel::isMissingEmail, this), "Email Address"});
     m_missingRequiredFieldsTests.push_back({std::bind(&OrganizationModel::isMissingPrimaryContact, this), "Primary Contact"});
     m_missingRequiredFieldsTests.push_back({std::bind(&OrganizationModel::isMissingSecondaryContact, this), "Secondary Contact"});
     m_missingRequiredFieldsTests.push_back({std::bind(&OrganizationModel::isMissingPhoneNumber, this), "Phone Number"});
