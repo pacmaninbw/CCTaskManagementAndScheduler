@@ -8,6 +8,85 @@ Connected to test_ptsdb
 
 ---------------------------------------------------------------------------------
 
+Running Organization Self Test
+
+
+Running Exception Handling Test Cases
+In Self Test Query is: 
+	INSERT INTO organization_profile(organization_name, email_address, phone_number, primary_contact_user, secondary_contact_user, address_line_1, address_line_2, city, state_or_province, postal_code, nation) VALUES ('Any Organization .Inc', 'AnyEmailAddress@gmail.com', '800-555-1212', 1, 2, '11111 First Street', 'Suite 101', 'Home Town', 'California', '90001', 'United States')
+In Self Test Query is: 
+	UPDATE organization_profile SET organization_profile.organization_name = 'Any Organization .Inc', organization_profile.email_address = 'AnyEmailAddress@gmail.com', organization_profile.phone_number = '800-555-1212', organization_profile.primary_contact_user = 1, organization_profile.secondary_contact_user = 2, organization_profile.address_line_1 = '11111 First Street', organization_profile.address_line_2 = 'Suite 101', organization_profile.city = 'Home Town', organization_profile.postal_code = '90001', organization_profile.state_or_province = 'California', organization_profile.nation = 'United States', organization_profile.deleted = 0 organization_profile.created_timestamp = '2024-05-14 08:31:53.000000', organization_profile.last_modified_time_stamp = '2024-05-14 08:31:53.000000' WHERE organization_profile.id_organization = 1 
+In Self Test Query is: 
+	UPDATE organization_profile SET organization_profile.deleted = 1 WHERE organization_profile.id_organization = 1
+
+
+Running self test on set and get functions for Organization::Primary Key
+Self test on set and get functions for Organization::Primary Key PASSED
+Running self test on set and get functions for Organization::Organization Name
+Self test on set and get functions for Organization::Organization Name PASSED
+Running self test on set and get functions for Organization::Organization Email
+Self test on set and get functions for Organization::Organization Email PASSED
+Running self test on set and get functions for Organization::Organization Phone Number
+Self test on set and get functions for Organization::Organization Phone Number PASSED
+Running self test on set and get functions for Organization::Primary Contact ID
+Self test on set and get functions for Organization::Primary Contact ID PASSED
+Running self test on set and get functions for Organization::Secondary Contact ID
+Self test on set and get functions for Organization::Secondary Contact ID PASSED
+Running self test on set and get functions for Organization::Address Line 1
+Self test on set and get functions for Organization::Address Line 1 PASSED
+Running self test on set and get functions for Organization::Address Line 2
+Self test on set and get functions for Organization::Address Line 2 PASSED
+Running self test on set and get functions for Organization::City
+Self test on set and get functions for Organization::City PASSED
+Running self test on set and get functions for Organization::Postal Code
+Self test on set and get functions for Organization::Postal Code PASSED
+Running self test on set and get functions for Organization::State or Province
+Self test on set and get functions for Organization::State or Province PASSED
+Running self test on set and get functions for Organization::Nation
+Self test on set and get functions for Organization::Nation PASSED
+Running self test on set and get functions for Organization::Creation TimeStamp
+Self test on set and get functions for Organization::Creation TimeStamp PASSED
+Running self test on set and get functions for Organization::Last Modified TimeStamp
+Self test on set and get functions for Organization::Last Modified TimeStamp PASSED
+Test Output: 	Organization ID: 1
+	Organization Name: Any organization name up to 255 characters, Inc.
+	Email Address: Any_organization_email_up_to255-characters@gmail.com
+	Phone Number: Any_organization_email_up_to255-characters@gmail.com
+	Primary Contact User ID: 1
+	Secondary Contact User ID: 1
+	Address Line 1: Any street address up to 255 characters.
+	Address Line 2: Any additional street address up to 255 characters.
+	City: Any city name up to 127 characters.
+	Postal Code: Any postal code up to 31 characters.
+	State or Province: Any state or province up to 255 characters.
+	Nation: Any nation up to 63 characters.
+	Date Added: 2024-05-14 08:31:53.000000000
+	Date Added: 2024-05-14 08:31:53.000000000
+
+Organization::testAllInsertFailures before successful insert this = 
+	Organization ID: 0
+	Organization Name: teststringvalue
+	Email Address: teststringvalue
+	Phone Number: teststringvalue
+	Primary Contact User ID: 1
+	Secondary Contact User ID: 2
+	Address Line 1: 
+	City: 
+	Postal Code: 
+	State or Province: 
+	Nation: 
+	Date Added: 2024-05-14 08:31:53.000000000
+	Date Added: 2024-05-14 08:31:53.000000000
+
+In Self Test Query is: 
+	INSERT INTO organization_profile(organization_name, email_address, phone_number, primary_contact_user, secondary_contact_user, address_line_1, address_line_2, city, state_or_province, postal_code, nation) VALUES ('teststringvalue', 'teststringvalue', 'teststringvalue', 1, 2, NULL, NULL, NULL, NULL, NULL, NULL)
+Common Insertion Failure Test PASSED!
+Common Update Failure Test PASSED!
+Organization Self Test PASSED
+Organization PASSED Self Test
+---------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------
 Running User Self Test
 
 
@@ -30,6 +109,8 @@ Running self test on set and get functions for User::Middle Initial
 Self test on set and get functions for User::Middle Initial PASSED
 Running self test on set and get functions for User::Email
 Self test on set and get functions for User::Email PASSED
+Running self test on set and get functions for User::Organization ID
+Self test on set and get functions for User::Organization ID PASSED
 Running self test on set and get functions for User::LoginName
 Self test on set and get functions for User::LoginName PASSED
 Running self test on set and get functions for User::Password
@@ -70,7 +151,7 @@ User::testAllInsertFailures before successful insert this =
 	PassWord: teststringvalue
 
 In Self Test Query is: 
-	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (NULL, 'teststringvalue', 'teststringvalue', '', 'teststringvalue', 'teststringvalue', 'teststringvalue', '4:30 AM;4:15 PM;1;1;1;1' )
+	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (1, 'teststringvalue', 'teststringvalue', '', 'teststringvalue', 'teststringvalue', 'teststringvalue', '4:30 AM;4:15 PM;1;1;1;1' )
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
 User Self Test PASSED
@@ -150,7 +231,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-08-24
+	Completed Date: 2026-08-28
 	Deleted : FALSE
 
 Task::testAllInsertFailures before successful insert this = 
@@ -378,7 +459,7 @@ In Self Test Query is:
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-08-31' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-09-04' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 
 Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
 In Self Test Query is: 
@@ -679,7 +760,7 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Design UML Diagram for Personal Planner' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-08-24', NULL, 2e+00, 2e+00, 67, 1, 0)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-08-28', NULL, 2e+00, 2e+00, 67, 1, 0)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 58
 Running: 
@@ -691,13 +772,13 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Daily 30 minute walk' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-08-24', NULL, 2e+00, 0e+00, 67, 3, 0)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-08-28', NULL, 2e+00, 0e+00, 67, 3, 0)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 60
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Clean apartment' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-08-31' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-04' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Find unstarted tasks for user(4) PASSED!
 User 4 has 9 unstarted tasks
 TaskModel:
@@ -822,7 +903,7 @@ TaskModel:
 	Priority: 1
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-08-24
+	Estimated Completion Date: 2026-08-28
 	Deleted : FALSE
 
 TaskModel:
@@ -856,7 +937,7 @@ TaskModel:
 	Priority: 3
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-08-24
+	Estimated Completion Date: 2026-08-28
 	Deleted : FALSE
 
 Running: 
@@ -1191,7 +1272,7 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-08-24', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0 WHERE tasks.task_id = 47 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-08-28', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0 WHERE tasks.task_id = 47 
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
@@ -1280,11 +1361,11 @@ Optional Fields
 	Deleted : FALSE
 
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-08-31' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-04' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Running: 
 	UPDATE tasks SET tasks.deleted = 1 WHERE tasks.created_by = 4 AND tasks.task_id = 59
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-08-31' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-04' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Task (59) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of task PASSED!
 Running: 
@@ -1906,7 +1987,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-08-17' AND user_notes.last_modifed <= '2026-08-31' AND user_notes.deleted <> 1
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-08-21' AND user_notes.last_modifed <= '2026-09-04' AND user_notes.deleted <> 1
 Find all notes for user (4) edited in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
