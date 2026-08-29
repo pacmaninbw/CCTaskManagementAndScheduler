@@ -32,19 +32,6 @@ private:
     TestStatus testExceptionGetUserByEmail() noexcept;
     TestStatus testExceptionGetUserByLoginAndPassword() noexcept;
     TestStatus testExceptionGetUserByFullName() noexcept;
-
-    std::size_t m_userIdIdx = IndexNotSet;
-    std::size_t m_organizationIdx = IndexNotSet;
-    std::size_t m_lastNameIdx = IndexNotSet;
-    std::size_t m_firstNameIdx = IndexNotSet;
-    std::size_t m_middleInitialIdx = IndexNotSet;
-    std::size_t m_emailAddressIdx = IndexNotSet;
-    std::size_t m_loginNameIdx = IndexNotSet;
-    std::size_t m_passwordIdx = IndexNotSet;
-    std::size_t m_userAddedIdx = IndexNotSet;
-    std::size_t m_lastLoginIdx = IndexNotSet;
-    std::size_t m_preferencesIdx = IndexNotSet;
-    std::size_t m_hiddenIdx = IndexNotSet;
 };
 
 #endif // USERQUERYPROCESSOR_H_

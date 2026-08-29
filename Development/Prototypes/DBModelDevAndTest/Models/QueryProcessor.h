@@ -310,9 +310,6 @@ protected:
     }
 
 
-
-    static const std::size_t IndexNotSet = 0xffff;
-
     std::string listTypeName;
     std::string modelName;
     std::vector<std::string> stringOnlyResults;

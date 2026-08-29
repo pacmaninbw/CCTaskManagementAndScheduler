@@ -37,27 +37,6 @@ private:
     TestStatus testExceptionGetTasksByAssignedIDandParentID() noexcept;
     TestStatus testExceptionGetDefaultDashboardTaskList() noexcept;
 
-    std::size_t m_taskIdIdx = IndexNotSet;
-    std::size_t m_creatorIdx = IndexNotSet;
-    std::size_t m_assigneeIdx = IndexNotSet;
-    std::size_t m_descriptionIdx = IndexNotSet;
-    std::size_t m_parentIdx = IndexNotSet;
-    std::size_t m_statusIdx = IndexNotSet;
-    std::size_t m_createdIdx = IndexNotSet;
-    std::size_t m_dueDateIdx = IndexNotSet;
-    std::size_t m_planedStartIdx = IndexNotSet;
-    std::size_t m_actualStartIdx = IndexNotSet;
-    std::size_t m_planedEndIdx = IndexNotSet;
-    std::size_t m_completedIdx = IndexNotSet;
-    std::size_t m_estimatedEffortIdx = IndexNotSet;
-    std::size_t m_efforToDateIdx = IndexNotSet;
-    std::size_t m_priorityCategoryIdx = IndexNotSet;
-    std::size_t m_priorityIdx = IndexNotSet;
-    std::size_t m_personalIdx = IndexNotSet;
-    std::size_t m_dependencyCountIdx = IndexNotSet;
-    std::size_t m_depenedencyListIdx = IndexNotSet;
-    std::size_t m_lastUpdateIdx = IndexNotSet;
-    std::size_t m_hiddenIdx = IndexNotSet;
 };
 
 #endif // TASKQUERYPROCESSOR_H_

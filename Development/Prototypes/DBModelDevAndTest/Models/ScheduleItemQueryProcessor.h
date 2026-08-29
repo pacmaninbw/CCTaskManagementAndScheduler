@@ -38,16 +38,6 @@ private:
 
 
     std::size_t m_userID;
-    std::size_t m_scheduleItemIdIdx = IndexNotSet;
-    std::size_t m_userIdIdx = IndexNotSet;
-    std::size_t m_startTimeIdx = IndexNotSet;
-    std::size_t m_endTimeIdx = IndexNotSet;
-    std::size_t m_titleIdx = IndexNotSet;
-    std::size_t m_personalIdx = IndexNotSet;
-    std::size_t m_locationIdx = IndexNotSet;
-    std::size_t m_createdOnIdx = IndexNotSet;
-    std::size_t m_lastUpdateIdx = IndexNotSet;
-    std::size_t m_hiddenIdx = IndexNotSet;
 };
 
 #endif // SCHEDULEITEMLQUERYPROCESSOR_H_
