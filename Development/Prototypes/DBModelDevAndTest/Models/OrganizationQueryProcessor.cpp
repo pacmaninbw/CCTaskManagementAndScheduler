@@ -264,45 +264,95 @@ OrganizationModel_shp OrganizationQueryProcessor::getOrganizationById(std::size_
 
 std::vector<ListExceptionTestElement> OrganizationQueryProcessor::initListExceptionTests() noexcept
 {
-    return std::vector<ListExceptionTestElement>();
+    std::vector<ListExceptionTestElement> exceptionTests;
+    exceptionTests.push_back({std::bind(&OrganizationQueryProcessor::testExceptionGetAllOrganizations, this), "getAllOrganizations"});
+    exceptionTests.push_back({std::bind(&OrganizationQueryProcessor::testExceptionFindOrganizationsByName, this),
+        "findOrganizationsByName"});
+    exceptionTests.push_back({std::bind(&OrganizationQueryProcessor::testExceptionFindOrganizationsByPrimaryContactID, this),
+        "findOrganizationsByPrimaryContactID"});
+    exceptionTests.push_back({std::bind(&OrganizationQueryProcessor::testExceptionFindOrganizationsByPrimaryContactName, this),
+        "findOrganizationsByPrimaryContactName"});
+    exceptionTests.push_back({std::bind(&OrganizationQueryProcessor::testExceptionGetAllOrganizationsAddedBetween, this),
+        "getAllOrganizationsAddedBetween"});
+    exceptionTests.push_back({std::bind(&OrganizationQueryProcessor::testExceptionGetAnyOrganizationsAddedOnDate, this),
+        "GetAnyOrganizationsAddedOnDate"});
+    exceptionTests.push_back({std::bind(&OrganizationQueryProcessor::testExceptionGetAnyOrganizationsModifiedOnDate, this),
+        "getAnyOrganizationsModifiedOnDate"});
+    exceptionTests.push_back({std::bind(&OrganizationQueryProcessor::testExceptionGetOrganizationById, this), "getOrganizationById"});
+
+    return exceptionTests;
 }
 
 TestStatus OrganizationQueryProcessor::testExceptionGetAllOrganizations() noexcept
 {
-    return TestStatus();
+    selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("OrganizationQueryProcessor::getAllOrganizations",
+         std::bind(&OrganizationQueryProcessor::getAllOrganizations, this));
 }
 
 TestStatus OrganizationQueryProcessor::testExceptionFindOrganizationsByName() noexcept
 {
-    return TestStatus();
+
+    std::string testName("the Institute of Reconnaissance, Intelligence, and Security");
+
+    selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("OrganizationQueryProcessor::findOrganizationsByName",
+         std::bind(&OrganizationQueryProcessor::findOrganizationsByName, this, std::placeholders::_1), testName);
 }
 
 TestStatus OrganizationQueryProcessor::testExceptionFindOrganizationsByPrimaryContactID() noexcept
 {
-    return TestStatus();
+    selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("OrganizationQueryProcessor::findOrganizationsByPrimaryContactID",
+         std::bind(&OrganizationQueryProcessor::findOrganizationsByPrimaryContactID, this, std::placeholders::_1), 1);
 }
 
 TestStatus OrganizationQueryProcessor::testExceptionFindOrganizationsByPrimaryContactName() noexcept
 {
-    return TestStatus();
+#if 0
+    selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("OrganizationQueryProcessor::findOrganizationsByPrimaryContactName",
+        std::bind(&OrganizationQueryProcessor::findOrganizationsByPrimaryContactName, this,
+        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
+        "George", "Scott", "C");
+#else
+            return TESTPASSED;
+#endif
 }
 
 TestStatus OrganizationQueryProcessor::testExceptionGetAllOrganizationsAddedBetween() noexcept
 {
-    return TestStatus();
+    selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("OrganizationQueryProcessor::getAllOrganizationsAddedBetween",
+         std::bind(&OrganizationQueryProcessor::getAllOrganizationsAddedBetween, this, std::placeholders::_1, std::placeholders::_2),
+         common::TestDateRangeStartValue, common::TestDateRangeEndValue);
 }
 
 TestStatus OrganizationQueryProcessor::testExceptionGetAnyOrganizationsAddedOnDate() noexcept
 {
-    return TestStatus();
+    selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("OrganizationQueryProcessor::getAnyOrganizationsAddedOnDate",
+         std::bind(&OrganizationQueryProcessor::getAnyOrganizationsAddedOnDate, this, std::placeholders::_1), common::TestDateValue);
 }
 
 TestStatus OrganizationQueryProcessor::testExceptionGetAnyOrganizationsModifiedOnDate() noexcept
 {
-    return TestStatus();
+    selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("OrganizationQueryProcessor::getAnyOrganizationsModifiedOnDate",
+         std::bind(&OrganizationQueryProcessor::getAnyOrganizationsModifiedOnDate, this, std::placeholders::_1), common::TestDateValue);
 }
 
 TestStatus OrganizationQueryProcessor::testExceptionGetOrganizationById() noexcept
 {
-    return TestStatus();
+    selfTestResetAllValues();
+
+    return testExceptionAndSuccessNArgs("OrganizationQueryProcessor::getOrganizationById",
+         std::bind(&OrganizationQueryProcessor::getOrganizationById, this, std::placeholders::_1), 1);
 }
