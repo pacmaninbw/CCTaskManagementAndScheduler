@@ -3,6 +3,7 @@
 #include "commonTestValues.h"
 #include "GoalQueryProcessor.h"
 #include "OrganizationModel.h"
+#include "OrganizationQueryProcessor.h"
 #include "OrganizationSelfTest.h"
 #include "NoteQueryProcessor.h"
 #include "NoteModel.h"
@@ -18,6 +19,7 @@
 #include "TestUserDBInterface.h"
 #include "TestGoalModel.h"
 #include "TestNoteModel.h"
+#include "TestOrganizationModel.h"
 #include "TestScheduleItemModel.h"
 #include "TestStatus.h"
 #include "UserGoalModel.h"
@@ -159,6 +161,12 @@ static TestStatus runListUnitTest(QueryProcessor<A, B>* unitTest)
 static TestStatus runAllListUnitTests()
 {
     TestStatus allUnintTestsPassed = TESTPASSED;
+
+    OrganizationQueryProcessor OrganizationQueryProcessorTest;
+    if (runListUnitTest(&OrganizationQueryProcessorTest) == TESTFAILED)
+    {
+        allUnintTestsPassed = TESTFAILED;
+    }
 
     UserQueryProcessor UserQueryProcessorTest;
     if (runListUnitTest(&UserQueryProcessorTest) == TESTFAILED)

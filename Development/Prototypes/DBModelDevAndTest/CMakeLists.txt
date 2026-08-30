@@ -41,6 +41,7 @@ add_executable(protoPersonalPlanner
     Testing/TestTaskDBInterface.cpp
     Testing/TestGoalModel.cpp
     Testing/TestNoteModel.cpp
+    Testing/TestOrganizationModel.cpp
     Testing/TestScheduleItemModel.cpp
 )
 
