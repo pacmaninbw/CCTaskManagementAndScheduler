@@ -221,6 +221,19 @@ static TestStatus runAllIntegrationTests() noexcept
         }
 
         separateTestCaseOutput();
+        TestOrganizationModel organizationTests;
+        modelBeingTested = userTests.getModelName();
+        if (organizationTests.runAllTests() != TESTPASSED)
+        {
+            allInitgrationTests = TESTFAILED;
+
+            if (programOptions.quitFirstFail)
+            {
+                return TESTFAILED;
+            }
+        }
+
+        separateTestCaseOutput();
         TestTaskDBInterface tasktests(programOptions.taskTestDataFile);
         modelBeingTested = tasktests.getModelName();
         if (tasktests.runAllTests() != TESTPASSED)
