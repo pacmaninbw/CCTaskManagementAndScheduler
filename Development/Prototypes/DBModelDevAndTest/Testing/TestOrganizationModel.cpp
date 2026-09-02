@@ -2,6 +2,7 @@
 #include "chronoBoostConversions.h"
 #include "commonUtilities.h"
 #include "OrganizationModel.h"
+#include "OrganizationQueryProcessor.h"
 #include "TestOrganizationModel.h"
 #include "UserQueryProcessor.h"
 
@@ -16,23 +17,66 @@
 TestOrganizationModel::TestOrganizationModel()
 : TestDBInterfaceCore("Organization")
 {
-    UserQueryProcessor userQueryProcessor;
-    m_userOne = userQueryProcessor.getUserByFullName("One", "User", "P");
-    if (m_userOne == nullptr || !m_userOne->isInDataBase())
-    {
-        std::cerr << std::format("Failed to find userOne in DB! : {}\n", userQueryProcessor.getAllErrorMessages());
-    }
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testPositivePathInsertions, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testPositivePathUpdates, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testPositivePathGetAllOrganizations, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testPositivePathGetOrganizationById, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testPositivePathFindOrganizationsByName, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryContactID, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryContactName, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testPositivePathGetAllOrganizationsAddedBetween, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testPositivePathGetAnyOrganizationsAddedOnDate, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testPositivePathGetAnyOrganizationsModifiedOnDate, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testPositivePathDeleteOrganization, this));
 
-    m_userTwo = userQueryProcessor.getUserByFullName("Doe", "John", "Q");
-    if (m_userTwo == nullptr || !m_userTwo->isInDataBase())
-    {
-        std::cerr << std::format("Failed to find userTwo in DB! : {}\n", userQueryProcessor.getAllErrorMessages());
-    }
+    m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testNegativePathAlreadyInDataBase, this));
+    m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testnegativePathNotModified, this));
 }
 
 TestOrganizationModel::~TestOrganizationModel()
 {
 
+}
+
+TestStatus TestOrganizationModel::runAllTests()
+{
+    std::cout << std::format("\nRunning {} Integration Tests\n", m_modelUnderTest);
+    TestStatus positivePathPassed = TESTPASSED;
+    TestStatus negativePathPassed = TESTPASSED;
+    TestStatus allTestsStatus = TESTPASSED;
+    std::string failReason("");
+
+    try {
+        UserQueryProcessor userQueryProcessor;
+        m_userOne = userQueryProcessor.getUserByFullName("One", "User", "P");
+        if (m_userOne == nullptr || !m_userOne->isInDataBase())
+        {
+            std::cerr << std::format("Failed to find userOne in DB! : {}\n", userQueryProcessor.getAllErrorMessages());
+            return TESTFAILED;
+        }
+
+        m_userTwo = userQueryProcessor.getUserByFullName("Doe", "John", "Q");
+        if (m_userTwo == nullptr || !m_userTwo->isInDataBase())
+        {
+            std::cerr << std::format("Failed to find userTwo in DB! : {}\n", userQueryProcessor.getAllErrorMessages());
+            return TESTFAILED;
+        }
+
+        positivePathPassed = runPositivePathTests();
+        negativePathPassed = runNegativePathTests();
+
+        allTestsStatus =
+            (positivePathPassed == TESTPASSED && negativePathPassed == TESTPASSED) ? TESTPASSED : TESTFAILED;
+    }
+    catch(std::exception& e)
+    {
+        failReason = std::format("Caught exception:{} ", e.what());
+        allTestsStatus = TEXTEXCEPTION;
+    }
+
+    reportTestStatus(allTestsStatus, failReason);
+
+    return allTestsStatus;
 }
 
 OrganizationModel_shp TestOrganizationModel::organizationFactory(
@@ -91,5 +135,74 @@ OrganizationModel_shp TestOrganizationModel::organizationFactory(
 
 void TestOrganizationModel::creatTestOrganizations() noexcept
 {
+    std::optional<std::chrono::system_clock::time_point> optTimeStamp = common::TestTimeStampValue;
+
+    m_testData.push_back(organizationFactory("First Test Orgnaization, no address",
+        "firstTestOrganization@gmail.com", "(800) 555-1212", m_userOne, m_userTwo, optTimeStamp,
+        optTimeStamp));
 }
 
+TestStatus TestOrganizationModel::testPositivePathInsertions()
+{
+    return TESTFAILED;
+}
+
+TestStatus TestOrganizationModel::testPositivePathUpdates()
+{
+    return TESTFAILED;
+}
+
+TestStatus TestOrganizationModel::testPositivePathGetAllOrganizations()
+{
+    return TESTFAILED;
+}
+
+TestStatus TestOrganizationModel::testPositivePathGetOrganizationById()
+{
+    return TESTFAILED;
+}
+
+TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByName()
+{
+    return TESTFAILED;
+}
+
+TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryContactID()
+{
+    return TESTFAILED;
+}
+
+TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryContactName()
+{
+    return TESTFAILED;
+}
+
+TestStatus TestOrganizationModel::testPositivePathGetAllOrganizationsAddedBetween()
+{
+    return TESTFAILED;
+}
+
+TestStatus TestOrganizationModel::testPositivePathGetAnyOrganizationsAddedOnDate()
+{
+    return TESTFAILED;
+}
+
+TestStatus TestOrganizationModel::testPositivePathGetAnyOrganizationsModifiedOnDate()
+{
+    return TESTFAILED;
+}
+
+TestStatus TestOrganizationModel::testPositivePathDeleteOrganization()
+{
+    return TESTFAILED;
+}
+
+TestStatus TestOrganizationModel::testNegativePathAlreadyInDataBase()
+{
+    return TESTFAILED;
+}
+
+TestStatus TestOrganizationModel::testnegativePathNotModified()
+{
+    return TESTFAILED;
+}

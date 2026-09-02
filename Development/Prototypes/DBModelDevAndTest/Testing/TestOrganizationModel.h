@@ -21,6 +21,7 @@ class TestOrganizationModel : public TestDBInterfaceCore
 public:
     TestOrganizationModel();
     ~TestOrganizationModel();
+    virtual TestStatus runAllTests() override;
 
 private:
     OrganizationModel_shp organizationFactory(
@@ -32,6 +33,21 @@ private:
         std::string city = "", std::string zipCode = "", std::string state = "", std::string nation = ""
     ) noexcept;
     void creatTestOrganizations() noexcept;
+
+    TestStatus testPositivePathInsertions();
+    TestStatus testPositivePathUpdates();
+    TestStatus testPositivePathGetAllOrganizations();
+    TestStatus testPositivePathGetOrganizationById();
+    TestStatus testPositivePathFindOrganizationsByName();
+    TestStatus testPositivePathFindOrganizationsByPrimaryContactID();
+    TestStatus testPositivePathFindOrganizationsByPrimaryContactName();
+    TestStatus testPositivePathGetAllOrganizationsAddedBetween();
+    TestStatus testPositivePathGetAnyOrganizationsAddedOnDate();
+    TestStatus testPositivePathGetAnyOrganizationsModifiedOnDate();
+    TestStatus testPositivePathDeleteOrganization();
+    TestStatus testNegativePathAlreadyInDataBase();
+    TestStatus testnegativePathNotModified();
+    
 
     std::shared_ptr<UserModel> m_userOne;
     std::shared_ptr<UserModel> m_userTwo;
