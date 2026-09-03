@@ -144,65 +144,89 @@ void TestOrganizationModel::creatTestOrganizations() noexcept
 
 TestStatus TestOrganizationModel::testPositivePathInsertions()
 {
-    return TESTFAILED;
+    std::optional<std::chrono::system_clock::time_point> optTimeStamp = common::TestTimeStampValue;
+    OrganizationModel_shp newOrganization = organizationFactory(
+        "TestOrg1", "TestOrg1@gmail.com", "(800) 555-1212", m_userOne, m_userTwo, optTimeStamp, optTimeStamp
+    );
+
+    if (!newOrganization->insert())
+    {
+        std::cout << "Insertion failed for Organization: " << *newOrganization << " :\n";
+        std::cout << newOrganization->getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathUpdates()
 {
+    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
     return TESTFAILED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathGetAllOrganizations()
 {
+    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
     return TESTFAILED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathGetOrganizationById()
 {
+    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
     return TESTFAILED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByName()
 {
+    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
     return TESTFAILED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryContactID()
 {
+    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
     return TESTFAILED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryContactName()
 {
+    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
     return TESTFAILED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathGetAllOrganizationsAddedBetween()
 {
+    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
     return TESTFAILED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathGetAnyOrganizationsAddedOnDate()
 {
+    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
     return TESTFAILED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathGetAnyOrganizationsModifiedOnDate()
 {
+    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
     return TESTFAILED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathDeleteOrganization()
 {
+    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
     return TESTFAILED;
 }
 
 TestStatus TestOrganizationModel::testNegativePathAlreadyInDataBase()
 {
+    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
     return TESTFAILED;
 }
 
 TestStatus TestOrganizationModel::testnegativePathNotModified()
 {
+    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
     return TESTFAILED;
 }
