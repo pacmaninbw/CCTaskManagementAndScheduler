@@ -185,7 +185,9 @@ std::string OrganizationModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "city, ");
     boost::mysql::format_sql_to(fctx, "state_or_province, ");
     boost::mysql::format_sql_to(fctx, "postal_code, ");
-    boost::mysql::format_sql_to(fctx, "nation");
+    boost::mysql::format_sql_to(fctx, "nation, ");
+    boost::mysql::format_sql_to(fctx, "created_timestamp, ");
+    boost::mysql::format_sql_to(fctx, "last_modified_time_stamp");
     boost::mysql::format_sql_to(fctx, ") VALUES (");
     boost::mysql::format_sql_to(fctx, "{}, ", m_organizationName);
     boost::mysql::format_sql_to(fctx, "{}, ", m_email);
@@ -197,7 +199,9 @@ std::string OrganizationModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "{}, ", m_city);
     boost::mysql::format_sql_to(fctx, "{}, ", m_stateOrProvince);
     boost::mysql::format_sql_to(fctx, "{}, ", m_postalCode);
-    boost::mysql::format_sql_to(fctx, "{}", m_nation);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_nation);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_created.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "{}", m_lastModified.transform(common::toBoostDateTime));
     boost::mysql::format_sql_to(fctx, ")");
 
     return (std::move(fctx).get().value());
@@ -219,8 +223,7 @@ std::string OrganizationModel::formatUpdateStatement()
     boost::mysql::format_sql_to(fctx, "organization_profile.state_or_province = {}, ", m_stateOrProvince);
     boost::mysql::format_sql_to(fctx, "organization_profile.nation = {}, ", m_nation);
     boost::mysql::format_sql_to(fctx, "organization_profile.deleted = {} ", m_deleted);
-    boost::mysql::format_sql_to(fctx, "organization_profile.created_timestamp = {}, ", m_created.transform(common::toBoostDateTime));
-    boost::mysql::format_sql_to(fctx, "organization_profile.last_modified_time_stamp = {} ", m_lastModified.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "organization_profile.created_timestamp = {} ", m_created.transform(common::toBoostDateTime));
     boost::mysql::format_sql_to(fctx, "WHERE organization_profile.id_organization = {} ", m_primaryKey);
 
     return (std::move(fctx).get().value());
