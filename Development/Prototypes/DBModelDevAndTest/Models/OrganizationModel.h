@@ -18,8 +18,8 @@ struct OrganizationDbQueryValues
     std::string organization_name;
     std::string email_address;
     std::string phone_number;
-    std::uint64_t primary_contact_user;
-    std::uint64_t secondary_contact_user;
+    std::optional<std::uint64_t> primary_contact_user;
+    std::optional<std::uint64_t> secondary_contact_user;
     std::optional<std::string> address_line_1;
     std::optional<std::string> address_line_2;
     std::optional<std::string> city;

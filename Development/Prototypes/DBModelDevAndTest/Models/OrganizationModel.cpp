@@ -23,8 +23,8 @@ OrganizationModel::OrganizationModel(const OrganizationDbQueryValues &databaseVa
     m_organizationName = databaseValues.organization_name;
     m_email = databaseValues.email_address;
     m_phoneNumber = databaseValues.phone_number;
-    m_primaryContactUser = databaseValues.primary_contact_user;
-    m_secondaryContactUser = databaseValues.secondary_contact_user;
+    m_primaryContactUser = databaseValues.primary_contact_user.value_or(0);
+    m_secondaryContactUser = databaseValues.secondary_contact_user.value_or(0);
     m_addressLine1 = databaseValues.address_line_1;
     m_addressLine2 = databaseValues.address_line_2;
     m_city = databaseValues.city;
