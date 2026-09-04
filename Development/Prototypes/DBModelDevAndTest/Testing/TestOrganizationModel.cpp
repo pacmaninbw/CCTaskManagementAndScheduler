@@ -156,13 +156,72 @@ TestStatus TestOrganizationModel::testPositivePathInsertions()
         return TESTFAILED;
     }
 
+    // Test the maximum number of fields allowed
+    OrganizationModel_shp allFieldsFilled = organizationFactory(
+        "AllFieldsFilled", "AllFieldsFilled@gmail.com", "(800) 555-1313", m_userOne, m_userTwo, optTimeStamp, optTimeStamp,
+        "9999 Any Street", "Suite 101", "Los Angeles", "90049", "California", "USA"
+    );
+    if (!allFieldsFilled->insert())
+    {
+        std::cout << "Insertion failed for Organization: " << *allFieldsFilled << " :\n";
+        std::cout << allFieldsFilled->getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    // Test the absolute minimum number of fields required
+    optTimeStamp.reset();
+    OrganizationModel_shp noTimeStamp = organizationFactory(
+        "NoTimeStampOrg", "NoTimeStampOrg@gmail.com", "(800) 555-1414", m_userOne, m_userTwo, optTimeStamp, optTimeStamp
+    );
+    if (!noTimeStamp->insert())
+    {
+        std::cout << "Insertion failed for Organization: " << *noTimeStamp << " :\n";
+        std::cout << noTimeStamp->getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("TestOrganizationModel::{} PASSED!\n", __func__);
+    }
+
     return TESTPASSED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathUpdates()
 {
-    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
-    return TESTFAILED;
+    std::optional<std::chrono::system_clock::time_point> optTimeStamp = common::TestTimeStampValue;
+
+    OrganizationModel_shp testModify = organizationFactory(
+        "TestModify", "TestModify@gmail.com", "(800) 555-1515", m_userOne, m_userTwo, optTimeStamp, optTimeStamp
+    );
+
+    if (!testModify->insert())
+    {
+        std::cout << "Insertion failed for Organization in Update Test: " << *testModify << " :\n";
+        std::cout << testModify->getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    testModify->setAddressLine1("1919 Modify Way");
+    testModify->setCity("Los Angeles");
+    testModify->setPostalCode("90049");
+    testModify->setStateOrProvince("California");
+    testModify->setNation("USA");
+
+    if (!testModify->update())
+    {
+        std::cout << "Update failed for Organization: " << *testModify << " :\n";
+        std::cout << testModify->getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("TestOrganizationModel::{} PASSED!\n", __func__);
+    }
+
+    return TESTPASSED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathGetAllOrganizations()
