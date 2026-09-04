@@ -222,7 +222,7 @@ std::string OrganizationModel::formatUpdateStatement()
     boost::mysql::format_sql_to(fctx, "organization_profile.postal_code = {}, ", m_postalCode);
     boost::mysql::format_sql_to(fctx, "organization_profile.state_or_province = {}, ", m_stateOrProvince);
     boost::mysql::format_sql_to(fctx, "organization_profile.nation = {}, ", m_nation);
-    boost::mysql::format_sql_to(fctx, "organization_profile.deleted = {} ", m_deleted);
+    boost::mysql::format_sql_to(fctx, "organization_profile.deleted = {}, ", m_deleted);
     boost::mysql::format_sql_to(fctx, "organization_profile.created_timestamp = {} ", m_created.transform(common::toBoostDateTime));
     boost::mysql::format_sql_to(fctx, "WHERE organization_profile.id_organization = {} ", m_primaryKey);
 
