@@ -151,8 +151,8 @@ TestStatus TestOrganizationModel::testPositivePathInsertions()
 
     if (!newOrganization->insert())
     {
-        std::cout << std::format("TestOrganizationModel::{} FAILED!\n", __func__) << *newOrganization << " :\n";
-        std::cout << newOrganization->getAllErrorMessages() << "\n";
+        std::cerr << std::format("TestOrganizationModel::{} FAILED!\n", __func__) << *newOrganization << " :\n";
+        std::cerr << newOrganization->getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 
@@ -163,8 +163,8 @@ TestStatus TestOrganizationModel::testPositivePathInsertions()
     );
     if (!allFieldsFilled->insert())
     {
-        std::cout << std::format("TestOrganizationModel::{} FAILED!\n", __func__) << *allFieldsFilled << " :\n";
-        std::cout << allFieldsFilled->getAllErrorMessages() << "\n";
+        std::cerr << std::format("TestOrganizationModel::{} FAILED!\n", __func__) << *allFieldsFilled << " :\n";
+        std::cerr << allFieldsFilled->getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 
@@ -175,8 +175,8 @@ TestStatus TestOrganizationModel::testPositivePathInsertions()
     );
     if (!noTimeStamp->insert())
     {
-        std::cout << std::format("TestOrganizationModel::{} FAILED!\n", __func__) << *noTimeStamp << " :\n";
-        std::cout << noTimeStamp->getAllErrorMessages() << "\n";
+        std::cerr << std::format("TestOrganizationModel::{} FAILED!\n", __func__) << *noTimeStamp << " :\n";
+        std::cerr << noTimeStamp->getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 
@@ -198,8 +198,8 @@ TestStatus TestOrganizationModel::testPositivePathUpdates()
 
     if (!testModify->insert())
     {
-        std::cout << "Insertion failed for Organization in Update Test: " << *testModify << " :\n";
-        std::cout << testModify->getAllErrorMessages() << "\n";
+        std::cerr << "Insertion failed for Organization in Update Test: " << *testModify << " :\n";
+        std::cerr << testModify->getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 
@@ -211,8 +211,8 @@ TestStatus TestOrganizationModel::testPositivePathUpdates()
 
     if (!testModify->update())
     {
-        std::cout << std::format("TestOrganizationModel::{} FAILED!\n", __func__) << *testModify << " :\n";
-        std::cout << testModify->getAllErrorMessages() << "\n";
+        std::cerr << std::format("TestOrganizationModel::{} FAILED!\n", __func__) << *testModify << " :\n";
+        std::cerr << testModify->getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 
@@ -231,8 +231,8 @@ TestStatus TestOrganizationModel::testPositivePathGetAllOrganizations()
 
     if (allOrganizations.empty())
     {
-        std::cout << std::format("TestOrganizationModel::{} FAILED!\n", __func__);
-        std::cout << organizationQueryProcessor.getAllErrorMessages() << "\n";
+        std::cerr << std::format("TestOrganizationModel::{} FAILED!\n", __func__);
+        std::cerr << organizationQueryProcessor.getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 
@@ -256,8 +256,8 @@ TestStatus TestOrganizationModel::testPositivePathGetOrganizationById()
 
     if (firstOrganization == nullptr)
     {
-        std::cout << std::format("TestOrganizationModel::{} FAILED!\n", __func__);
-        std::cout << organizationQueryProcessor.getAllErrorMessages() << "\n";
+        std::cerr << std::format("TestOrganizationModel::{} FAILED!\n", __func__);
+        std::cerr << organizationQueryProcessor.getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
 
@@ -272,20 +272,79 @@ TestStatus TestOrganizationModel::testPositivePathGetOrganizationById()
 
 TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByName()
 {
-    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
-    return TESTFAILED;
+    std::string searchName("TestOrg1");
+    OrganizationQueryProcessor organizationQueryProcessor;
+    OrganizationList firstOrganization = organizationQueryProcessor.findOrganizationsByName(searchName);
+
+    if (firstOrganization.empty())
+    {
+        std::cerr << std::format("TestOrganizationModel::{} FAILED!\n", __func__);
+        std::cerr << organizationQueryProcessor.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("TestOrganizationModel::{} PASSED!\n", __func__);
+        std::cout << "Found " << firstOrganization.size() << " Organizations\n";
+        for (auto organization: firstOrganization)
+        {
+            std::cout << *organization << "\n";
+        }
+    }
+
+    return TESTPASSED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryContactID()
 {
-    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
-    return TESTFAILED;
+    OrganizationQueryProcessor organizationQueryProcessor;
+    OrganizationList orgList = organizationQueryProcessor.findOrganizationsByPrimaryContactID(m_userOne->getUserID());
+
+    if (orgList.empty())
+    {
+        std::cerr << std::format("TestOrganizationModel::{} FAILED!\n", __func__);
+        std::cerr << organizationQueryProcessor.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("TestOrganizationModel::{} PASSED!\n", __func__);
+        std::cout << "Found " << orgList.size() << " Organizations\n";
+        for (auto organization: orgList)
+        {
+            std::cout << *organization << "\n";
+        }
+    }
+
+    return TESTPASSED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryContactName()
 {
-    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
-    return TESTFAILED;
+    OrganizationQueryProcessor organizationQueryProcessor;
+    OrganizationList orgList = organizationQueryProcessor.findOrganizationsByPrimaryContactName(
+        m_userOne->getFirstName(), m_userOne->getLastName(), m_userOne->getMiddleInitial());
+
+    if (orgList.empty())
+    {
+        std::cerr << std::format("TestOrganizationModel::{} FAILED!\n", __func__);
+        std::cerr << organizationQueryProcessor.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("TestOrganizationModel::{} PASSED!\n", __func__);
+        std::cout << "Found " << orgList.size() << " Organizations\n";
+        for (auto organization: orgList)
+        {
+            std::cout << *organization << "\n";
+        }
+    }
+
+    return TESTPASSED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathGetAllOrganizationsAddedBetween()
