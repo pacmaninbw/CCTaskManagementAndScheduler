@@ -2,6 +2,7 @@
 #define ORGANIZATIONMODEL_H_
 
 // Project Header Files
+#include "CommandLineParser.h"
 #include "ModelDBInterface.h"
 
 // Standard C++ Header Files
@@ -110,14 +111,17 @@ public:
         os << std::format(outFmtStr, "State or Province", orgProfile.m_stateOrProvince.value_or(""));
         os << std::format(outFmtStr, "Nation", orgProfile.m_nation.value_or(""));
 
-        if (orgProfile.m_created.has_value())
+        if (programOptions.showTimeStamps)
         {
-            os << std::format(outFmtStr, "Date Added", orgProfile.m_created.value());
-        }
+            if (orgProfile.m_created.has_value())
+            {
+                os << std::format(outFmtStr, "Date Added", orgProfile.m_created.value());
+            }
 
-        if (orgProfile.m_lastModified.has_value())
-        {
-            os << std::format(outFmtStr, "Date Added", orgProfile.m_lastModified.value());
+            if (orgProfile.m_lastModified.has_value())
+            {
+                os << std::format(outFmtStr, "Last Modified", orgProfile.m_lastModified.value());
+            }
         }
 
         return os;
