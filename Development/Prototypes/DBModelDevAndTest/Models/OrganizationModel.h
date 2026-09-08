@@ -37,7 +37,7 @@ class OrganizationModel : public ModelDBInterface
 public:
     OrganizationModel();
     OrganizationModel(const OrganizationDbQueryValues& databaseValues);
-    ~OrganizationModel();
+    ~OrganizationModel() = default;
 
 /*
  * Access member functions
