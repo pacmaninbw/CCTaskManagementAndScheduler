@@ -7,6 +7,7 @@
 #include "UserQueryProcessor.h"
 
 // Standard C++ Header Files
+#include <algorithm>
 #include <chrono>
 #include <format>
 #include <functional>
@@ -31,11 +32,6 @@ TestOrganizationModel::TestOrganizationModel()
 
     m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testNegativePathAlreadyInDataBase, this));
     m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testnegativePathNotModified, this));
-}
-
-TestOrganizationModel::~TestOrganizationModel()
-{
-
 }
 
 TestStatus TestOrganizationModel::runAllTests()
@@ -131,15 +127,6 @@ OrganizationModel_shp TestOrganizationModel::organizationFactory(
     conditionalSetField(*newOrganization, &OrganizationModel::setNation, nation);
 
     return newOrganization;
-}
-
-void TestOrganizationModel::creatTestOrganizations() noexcept
-{
-    std::optional<std::chrono::system_clock::time_point> optTimeStamp = common::TestTimeStampValue;
-
-    m_testData.push_back(organizationFactory("First Test Orgnaization, no address",
-        "firstTestOrganization@gmail.com", "(800) 555-1212", m_userOne, m_userTwo, optTimeStamp,
-        optTimeStamp));
 }
 
 TestStatus TestOrganizationModel::testPositivePathInsertions()
@@ -349,36 +336,171 @@ TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryCont
 
 TestStatus TestOrganizationModel::testPositivePathGetAllOrganizationsAddedBetween()
 {
-    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
-    return TESTFAILED;
+    OrganizationQueryProcessor organizationQueryProcessor;
+    OrganizationList orgList = organizationQueryProcessor.getAllOrganizationsAddedBetween(common::TestDateRangeStartValue, common::TestDateRangeEndValue);
+
+    if (orgList.empty())
+    {
+        std::cerr << std::format("TestOrganizationModel::{} FAILED!\n", __func__);
+        std::cerr << organizationQueryProcessor.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("TestOrganizationModel::{} PASSED!\n", __func__);
+        std::cout << "Found " << orgList.size() << " Organizations\n";
+        for (auto organization: orgList)
+        {
+            std::cout << *organization << "\n";
+        }
+    }
+
+    return TESTPASSED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathGetAnyOrganizationsAddedOnDate()
 {
-    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
-    return TESTFAILED;
+    OrganizationQueryProcessor organizationQueryProcessor;
+    OrganizationList orgList = organizationQueryProcessor.getAnyOrganizationsAddedOnDate(common::TestDateValue);
+
+    if (orgList.empty())
+    {
+        std::cerr << std::format("TestOrganizationModel::{} FAILED!\n", __func__);
+        std::cerr << organizationQueryProcessor.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("TestOrganizationModel::{} PASSED!\n", __func__);
+        std::cout << "Found " << orgList.size() << " Organizations\n";
+        for (auto organization: orgList)
+        {
+            std::cout << *organization << "\n";
+        }
+    }
+
+    return TESTPASSED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathGetAnyOrganizationsModifiedOnDate()
 {
-    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
-    return TESTFAILED;
+    OrganizationQueryProcessor organizationQueryProcessor;
+    OrganizationList orgList = organizationQueryProcessor.getAnyOrganizationsModifiedOnDate(common::TestDateValue);
+
+    if (orgList.empty())
+    {
+        std::cerr << std::format("TestOrganizationModel::{} FAILED!\n", __func__);
+        std::cerr << organizationQueryProcessor.getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << std::format("TestOrganizationModel::{} PASSED!\n", __func__);
+        std::cout << "Found " << orgList.size() << " Organizations\n";
+        for (auto organization: orgList)
+        {
+            std::cout << *organization << "\n";
+        }
+    }
+
+    return TESTPASSED;
 }
 
 TestStatus TestOrganizationModel::testPositivePathDeleteOrganization()
 {
-    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
-    return TESTFAILED;
+    std::string testFuncName("Delete Organization");
+
+    OrganizationQueryProcessor organizationQueryProcessor;
+    OrganizationList allActiveOrganizations = organizationQueryProcessor.getAllActiveOrganizations();
+    if (allActiveOrganizations.empty())
+    {
+        std::cerr << testFuncName << ": No active organizations found!! FAILED!!" << std::endl;
+        return TESTFAILED;
+    }
+
+    std::size_t itemToHideIndex = allActiveOrganizations.size() > 3? allActiveOrganizations.size() - 2 : allActiveOrganizations.size() - 1;
+    OrganizationModel_shp organizationToDelete = allActiveOrganizations[itemToHideIndex];
+    if (!organizationToDelete->hide(m_userOne->getUserID()))
+    {
+        std::cerr << std::format("itemToHide->hide({}) FAILED!", m_userOne->getUserID()) << organizationToDelete->getAllErrorMessages() << "\n";
+        return TESTFAILED;
+    }
+
+    if (!organizationToDelete->isDeleted())
+    {
+        std::cerr << std::format("{}: Organization ({}) was not marked as deleted {} FAILED\n", testFuncName,
+            organizationToDelete->getOrganizationId(), organizationToDelete->getAllErrorMessages());
+        return TESTFAILED;
+    }
+
+    OrganizationList alteredList = organizationQueryProcessor.getAllActiveOrganizations();
+    if (!(alteredList.size() < allActiveOrganizations.size()))
+    {
+        std::cerr << std::format("{} ({}) did not decrease the size of the Organization list. TEST FAILED\n",
+            testFuncName, organizationToDelete->getOrganizationId());
+        return TESTFAILED;
+    }
+
+    auto foundDeletedOrganization = [&](OrganizationModel_shp item){ return item->getOrganizationId() == organizationToDelete->getOrganizationId(); };
+
+    if (std::find_if(alteredList.begin(), alteredList.end(), foundDeletedOrganization) != alteredList.end())
+    {
+        std::cerr << "The wrong Organization was deleted. TEST FAILED\n";
+        return TESTFAILED;
+    }
+
+    OrganizationList deletedList = organizationQueryProcessor.getAllDeletedOrganizations();
+    if (deletedList.empty())
+    {
+        std::cerr << testFuncName << ": No Deleted organizations found!! FAILED!!" << std::endl;
+        return TESTFAILED;
+    }
+
+    if (std::find_if(deletedList.begin(), deletedList.end(), foundDeletedOrganization) == deletedList.end())
+    {
+        std::cerr << testFuncName << ": Deleted organization not found in deleted organization list FAILED!!" << std::endl;
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << "Original Organization list size: " << allActiveOrganizations.size() << " Altered organization list size: " << alteredList.size() << "\n";
+        std::cout << std::format("Organization ({}) marked Deleted. TEST PASSED\n", organizationToDelete->getOrganizationId());
+    }
+
+    return TESTPASSED;
 }
 
 TestStatus TestOrganizationModel::testNegativePathAlreadyInDataBase()
 {
-    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
-    return TESTFAILED;
+    OrganizationQueryProcessor organizationQueryProcessor;
+    OrganizationModel_shp alreadyInDatabase = organizationQueryProcessor.getOrganizationById(2);
+
+    if (!alreadyInDatabase->isInDataBase())
+    {
+        std::cerr << std::format("TestOrganizationModel::{} Organization 1 not found in database!!\n", __func__);
+        return TESTFAILED;
+    }
+
+    std::vector<std::string> expectedErrors = {"already in Database"};
+    return testInsertionFailureMessages(alreadyInDatabase, expectedErrors);
 }
 
 TestStatus TestOrganizationModel::testnegativePathNotModified()
 {
-    std::cerr << std::format("TestOrganizationModel::{} NOT Implemented\n", __func__);
-    return TESTFAILED;
+    OrganizationQueryProcessor organizationQueryProcessor;
+    OrganizationModel_shp OrgNotModified = organizationQueryProcessor.getOrganizationById(1);
+    if (!OrgNotModified->isInDataBase())
+    {
+        std::cerr << "Organization 1 not found in database!! FAILED!\n";
+        return TESTFAILED;
+    }
+
+    OrgNotModified->setOrganizationId(0); // Force it to check modified rather than Already in DB.
+    OrgNotModified->clearModified();
+    std::vector<std::string> expectedErrors = {"not modified!"};
+    return testInsertionFailureMessages(OrgNotModified, expectedErrors);
 }
