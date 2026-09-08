@@ -21,11 +21,6 @@ OrganizationSelfTest::OrganizationSelfTest()
 
 }
 
-OrganizationSelfTest::~OrganizationSelfTest()
-{
-
-}
-
 TestStatus OrganizationSelfTest::runSelfTest() noexcept
 {
     m_selfTest = true;

@@ -15,7 +15,7 @@ class OrganizationSelfTest : public ModelSelfTest<OrganizationModel>
 {
 public:
     OrganizationSelfTest();
-    ~OrganizationSelfTest();
+    ~OrganizationSelfTest() = default;
     virtual TestStatus runSelfTest() noexcept override;
 
 private:
