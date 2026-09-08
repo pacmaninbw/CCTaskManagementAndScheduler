@@ -57,6 +57,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         DBModels/NoteQueryProcessor.h
         DBModels/NoteModel.cpp
         DBModels/NoteModel.h
+        DBModels/OrganizationModel.cpp
+        DBModels/OrganizationModel.h
+        DBModels/OrganizationQueryProcessor.cpp
+        DBModels/OrganizationQueryProcessor.h
         DBModels/ScheduleItemQueryProcessor.cpp
         DBModels/ScheduleItemQueryProcessor.h
         DBModels/ScheduleItemModel.cpp
