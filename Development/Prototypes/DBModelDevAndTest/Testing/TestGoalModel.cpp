@@ -8,6 +8,7 @@
 #include "UserQueryProcessor.h"
 
 // Standard C++ Header Files
+#include <algorithm>
 #include <chrono>
 #include <functional>
 #include <string>
@@ -234,13 +235,10 @@ TestStatus TestGoalModel::testPositivePathDeleteGoal()
         return TESTFAILED;
     }
 
-    for (auto itemInList: alteredList)
+    if (std::find_if(alteredList.begin(), alteredList.end(), [&](UserGoalModel_shp item){ return item->getGoalId() == goalToHide->getGoalId();}) != alteredList.end())
     {
-        if (itemInList->getGoalId() == goalToHide->getGoalId())
-        {
-            std::cerr << "The wrong goal was deleted. TEST FAILED\n";
-            return TESTFAILED;
-        }
+        std::cerr << "The wrong goal was deleted. TEST FAILED\n";
+        return TESTFAILED;
     }
 
     if (programOptions.verboseOutput)

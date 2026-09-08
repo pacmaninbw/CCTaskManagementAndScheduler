@@ -8,6 +8,7 @@
 #include "UserQueryProcessor.h"
 
 // Standard C++ Header Files
+#include <algorithm>
 #include <chrono>
 #include <functional>
 #include <string>
@@ -302,13 +303,10 @@ TestStatus TestNoteModel::testPositivePathDeleteNote()
         return TESTFAILED;
     }
 
-    for (auto itemInList: alteredList)
+    if (std::find_if(alteredList.begin(), alteredList.end(),[&](NoteModel_shp item){ return item->getNoteId() == noteToHide->getNoteId(); }) != alteredList.end())
     {
-        if (itemInList->getNoteId() == noteToHide->getNoteId())
-        {
-            std::cerr << "The wrong note was deleted. TEST FAILED\n";
-            return TESTFAILED;
-        }
+        std::cerr << "The wrong note was deleted. TEST FAILED\n";
+        return TESTFAILED;
     }
 
     if (programOptions.verboseOutput)

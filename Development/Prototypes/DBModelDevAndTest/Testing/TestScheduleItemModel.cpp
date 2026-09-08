@@ -8,6 +8,7 @@
 #include "UserQueryProcessor.h"
 
 // Standard C++ Header Files
+#include <algorithm>
 #include <chrono>
 #include <functional>
 #include <string>
@@ -306,13 +307,11 @@ TestStatus TestScheduleItemModel::testPositivePathDeleteScheduleItem()
         return TESTFAILED;
     }
 
-    for (auto itemInList: alteredList)
+    if (std::find_if(alteredList.begin(), alteredList.end(),
+        [&](ScheduleItemModel_shp item){ return item->getScheduleItemID() == itemToHide->getScheduleItemID(); }) != alteredList.end())
     {
-        if (itemInList->getScheduleItemID() == itemToHide->getScheduleItemID())
-        {
-            std::cerr << "The wrong Schedule Item was deleted. TEST FAILED\n";
-            return TESTFAILED;
-        }
+        std::cerr << "The wrong Schedule Item was deleted. TEST FAILED\n";
+        return TESTFAILED;
     }
 
     if (programOptions.verboseOutput)

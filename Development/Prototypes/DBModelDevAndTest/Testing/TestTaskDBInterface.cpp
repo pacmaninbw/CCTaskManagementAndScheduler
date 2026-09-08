@@ -9,6 +9,7 @@
 #include "UserQueryProcessor.h"
 
 // Standard C++ Header Files
+#include <algorithm>
 #include <exception>
 #include <format>
 #include <functional>
@@ -363,13 +364,10 @@ TestStatus TestTaskDBInterface::testHideUnstartedTask()
             return TESTFAILED;
         }
 
-        for (auto taskInList: alteredList)
+        if (std::find_if(alteredList.begin(), alteredList.end(), [&](TaskModel_shp item){ return item->getTaskID() == taskToHide->getTaskID(); }) != alteredList.end())
         {
-            if (taskInList->getTaskID() == taskToHide->getTaskID())
-            {
-                std::cerr << "The wrong task was deleted. TEST FAILED\n";
-                return TESTFAILED;
-            }
+            std::cerr << "The wrong task was deleted. TEST FAILED\n";
+            return TESTFAILED;
         }
 
         if (m_verboseOutput)
