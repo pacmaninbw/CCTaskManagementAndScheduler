@@ -20,7 +20,7 @@ class TestOrganizationModel : public TestDBInterfaceCore
 {
 public:
     TestOrganizationModel();
-    ~TestOrganizationModel();
+    ~TestOrganizationModel() = default;
     virtual TestStatus runAllTests() override;
 
 private:
@@ -32,7 +32,6 @@ private:
         std::string addressl1 = "", std::string addressl2 = "", 
         std::string city = "", std::string zipCode = "", std::string state = "", std::string nation = ""
     ) noexcept;
-    void creatTestOrganizations() noexcept;
 
     TestStatus testPositivePathInsertions();
     TestStatus testPositivePathUpdates();
