@@ -35,11 +35,6 @@ OrganizationModel::OrganizationModel(const OrganizationDbQueryValues &databaseVa
     m_lastModified = common::toChronoTimePoint(databaseValues.last_modified_time_stamp);
 }
 
-OrganizationModel::~OrganizationModel()
-{
-
-}
-
 void OrganizationModel::setOrganizationId(std::size_t orgId) noexcept
 {
     m_modified = true;
