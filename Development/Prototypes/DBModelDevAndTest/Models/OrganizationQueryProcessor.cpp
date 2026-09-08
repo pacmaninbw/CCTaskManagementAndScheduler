@@ -21,11 +21,6 @@ OrganizationQueryProcessor::OrganizationQueryProcessor()
 
 }
 
-OrganizationQueryProcessor::~OrganizationQueryProcessor()
-{
-
-}
-
 OrganizationList OrganizationQueryProcessor::getAllOrganizations() noexcept
 {
     clearErrorMessages();
@@ -40,6 +35,58 @@ OrganizationList OrganizationQueryProcessor::getAllOrganizations() noexcept
     {
         boost::mysql::format_context fctx(getFormatOptions());
         boost::mysql::format_sql_to(fctx, "SELECT * FROM organization_profile ");
+
+        StaticQueryOrganization localResult = staticRunQueryAsync<OrganizationDbQueryValues>(std::move(fctx).get().value());
+
+        organizationList = processStaticResults(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(e.what());
+    }
+    
+    return organizationList;
+}
+
+OrganizationList OrganizationQueryProcessor::getAllActiveOrganizations() noexcept
+{
+    clearErrorMessages();
+
+    OrganizationList organizationList;
+
+    appendErrorMessage(std::format("OrganizationQueryProcessor::{} : ", __func__));
+
+    try
+    {
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM organization_profile WHERE organization_profile.deleted <> 1");
+
+        StaticQueryOrganization localResult = staticRunQueryAsync<OrganizationDbQueryValues>(std::move(fctx).get().value());
+
+        organizationList = processStaticResults(localResult);
+    }
+
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(e.what());
+    }
+    
+    return organizationList;
+}
+
+OrganizationList OrganizationQueryProcessor::getAllDeletedOrganizations() noexcept
+{
+    clearErrorMessages();
+
+    OrganizationList organizationList;
+
+    appendErrorMessage(std::format("OrganizationQueryProcessor::{} : ", __func__));
+
+    try
+    {
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM organization_profile WHERE organization_profile.deleted = 1");
 
         StaticQueryOrganization localResult = staticRunQueryAsync<OrganizationDbQueryValues>(std::move(fctx).get().value());
 
@@ -112,6 +159,12 @@ OrganizationList OrganizationQueryProcessor::findOrganizationsByPrimaryContactID
     return organizationList;
 }
 
+/*
+ * This member can only be tested during integration because it depends on the
+ * database returning intermediate information used in the query. It also does
+ * not generate any SQL code directly, although it calls 2 functions that do.
+ * Those 2 functions are unit tested separately.
+ */
 OrganizationList OrganizationQueryProcessor::findOrganizationsByPrimaryContactName(
     std::string firstName,
     std::string lastName,
@@ -266,12 +319,12 @@ std::vector<ListExceptionTestElement> OrganizationQueryProcessor::initListExcept
 {
     std::vector<ListExceptionTestElement> exceptionTests;
     exceptionTests.push_back({std::bind(&OrganizationQueryProcessor::testExceptionGetAllOrganizations, this), "getAllOrganizations"});
+    exceptionTests.push_back({std::bind(&OrganizationQueryProcessor::testExceptionGetAllActiveOrganizations, this), "getAllActiveOrganizations"});
+    exceptionTests.push_back({std::bind(&OrganizationQueryProcessor::testExceptionGetAllDeletedOrganizations, this), "getAllDeletedOrganizations"});
     exceptionTests.push_back({std::bind(&OrganizationQueryProcessor::testExceptionFindOrganizationsByName, this),
         "findOrganizationsByName"});
     exceptionTests.push_back({std::bind(&OrganizationQueryProcessor::testExceptionFindOrganizationsByPrimaryContactID, this),
         "findOrganizationsByPrimaryContactID"});
-    exceptionTests.push_back({std::bind(&OrganizationQueryProcessor::testExceptionFindOrganizationsByPrimaryContactName, this),
-        "findOrganizationsByPrimaryContactName"});
     exceptionTests.push_back({std::bind(&OrganizationQueryProcessor::testExceptionGetAllOrganizationsAddedBetween, this),
         "getAllOrganizationsAddedBetween"});
     exceptionTests.push_back({std::bind(&OrganizationQueryProcessor::testExceptionGetAnyOrganizationsAddedOnDate, this),
@@ -291,6 +344,22 @@ TestStatus OrganizationQueryProcessor::testExceptionGetAllOrganizations() noexce
          std::bind(&OrganizationQueryProcessor::getAllOrganizations, this));
 }
 
+TestStatus OrganizationQueryProcessor::testExceptionGetAllActiveOrganizations() noexcept
+{
+    selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("OrganizationQueryProcessor::getAllActiveOrganizations",
+         std::bind(&OrganizationQueryProcessor::getAllActiveOrganizations, this));
+}
+
+TestStatus OrganizationQueryProcessor::testExceptionGetAllDeletedOrganizations() noexcept
+{
+    selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("OrganizationQueryProcessor::getAllDeletedOrganizations",
+         std::bind(&OrganizationQueryProcessor::getAllDeletedOrganizations, this));
+}
+
 TestStatus OrganizationQueryProcessor::testExceptionFindOrganizationsByName() noexcept
 {
 
@@ -308,20 +377,6 @@ TestStatus OrganizationQueryProcessor::testExceptionFindOrganizationsByPrimaryCo
 
     return testListExceptionAndSuccessNArgs("OrganizationQueryProcessor::findOrganizationsByPrimaryContactID",
          std::bind(&OrganizationQueryProcessor::findOrganizationsByPrimaryContactID, this, std::placeholders::_1), 1);
-}
-
-TestStatus OrganizationQueryProcessor::testExceptionFindOrganizationsByPrimaryContactName() noexcept
-{
-#if 0
-    selfTestResetAllValues();
-
-    return testListExceptionAndSuccessNArgs("OrganizationQueryProcessor::findOrganizationsByPrimaryContactName",
-        std::bind(&OrganizationQueryProcessor::findOrganizationsByPrimaryContactName, this,
-        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
-        "George", "Scott", "C");
-#else
-            return TESTPASSED;
-#endif
 }
 
 TestStatus OrganizationQueryProcessor::testExceptionGetAllOrganizationsAddedBetween() noexcept
@@ -356,3 +411,4 @@ TestStatus OrganizationQueryProcessor::testExceptionGetOrganizationById() noexce
     return testExceptionAndSuccessNArgs("OrganizationQueryProcessor::getOrganizationById",
          std::bind(&OrganizationQueryProcessor::getOrganizationById, this, std::placeholders::_1), 1);
 }
+

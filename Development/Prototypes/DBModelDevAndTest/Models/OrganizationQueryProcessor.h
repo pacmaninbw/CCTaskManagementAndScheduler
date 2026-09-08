@@ -22,8 +22,10 @@ class OrganizationQueryProcessor : public QueryProcessor<OrganizationModel, Orga
 {
 public:
     OrganizationQueryProcessor();
-    ~OrganizationQueryProcessor();
+    ~OrganizationQueryProcessor() = default;
     OrganizationList getAllOrganizations() noexcept;
+    OrganizationList getAllActiveOrganizations() noexcept;
+    OrganizationList getAllDeletedOrganizations() noexcept;
     OrganizationList findOrganizationsByName(std::string orgName) noexcept;
     OrganizationList findOrganizationsByPrimaryContactID(std::size_t userId) noexcept;
     OrganizationList findOrganizationsByPrimaryContactName(std::string firstName, std::string lastName, std::string middleInitial) noexcept;
@@ -35,9 +37,10 @@ public:
 private:
     virtual std::vector<ListExceptionTestElement> initListExceptionTests() noexcept override;
     TestStatus testExceptionGetAllOrganizations() noexcept;
+    TestStatus testExceptionGetAllActiveOrganizations() noexcept;
+    TestStatus testExceptionGetAllDeletedOrganizations() noexcept;
     TestStatus testExceptionFindOrganizationsByName() noexcept;
     TestStatus testExceptionFindOrganizationsByPrimaryContactID() noexcept;
-    TestStatus testExceptionFindOrganizationsByPrimaryContactName() noexcept;
     TestStatus testExceptionGetAllOrganizationsAddedBetween() noexcept;
     TestStatus testExceptionGetAnyOrganizationsAddedOnDate() noexcept;
     TestStatus testExceptionGetAnyOrganizationsModifiedOnDate() noexcept;
