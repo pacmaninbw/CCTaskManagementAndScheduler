@@ -271,7 +271,6 @@ TestStatus TestNoteModel::testPositivePathDeleteNote()
 {
     std::string funcUnderTest("Delete Note");
 
-    std::chrono::year_month_day testDate(common::constantStringToChronoDate("2026-03-08"));
     NoteQueryProcessor NoteQueryProcessorTestInterface;
     NoteList testNoteQueryProcessor = NoteQueryProcessorTestInterface.getAllNotesForUser(m_userOne->getUserID());
     if (testNoteQueryProcessor.empty())
