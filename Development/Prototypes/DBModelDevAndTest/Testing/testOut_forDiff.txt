@@ -48,8 +48,6 @@ Test Output: 	Organization ID: 1
 	Postal Code: Any postal code up to 31 characters.
 	State or Province: Any state or province up to 255 characters.
 	Nation: Any nation up to 63 characters.
-	Date Added: 2024-05-14 08:31:53.000000000
-	Date Added: 2024-05-14 08:31:53.000000000
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
@@ -178,7 +176,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-08-29
+	Completed Date: 2026-09-08
 	Deleted : FALSE
 
 Common Insertion Failure Test PASSED!
@@ -294,6 +292,32 @@ ScheduleItem Self Test PASSED
 
 ---------------------------------------------------------------------------------
 
+Running OrganizationModelQueryProcessor Self Test
+
+
+Running Exception Handling Test Cases OrganizationModelQueryProcessor
+
+Exception Test for OrganizationQueryProcessor::getAllOrganizations
+
+Exception Test for OrganizationQueryProcessor::getAllActiveOrganizations
+
+Exception Test for OrganizationQueryProcessor::getAllDeletedOrganizations
+
+Exception Test for OrganizationQueryProcessor::findOrganizationsByName
+
+Exception Test for OrganizationQueryProcessor::findOrganizationsByPrimaryContactID
+
+Exception Test for OrganizationQueryProcessor::getAllOrganizationsAddedBetween
+
+Exception Test for OrganizationQueryProcessor::getAnyOrganizationsAddedOnDate
+
+Exception Test for OrganizationQueryProcessor::getAnyOrganizationsModifiedOnDate
+
+
+---------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------
+
 Running UserQueryProcessor Self Test
 
 
@@ -392,6 +416,14 @@ All tests for database insertions and retrievals of user PASSED!
 
 ---------------------------------------------------------------------------------
 
+Running Organization Integration Tests
+All positive path tests for database insertions and retrievals of Organization PASSED!
+All negative path tests for database insertions and retrievals of Organization PASSED!
+All tests for database insertions and retrievals of Organization PASSED!
+---------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------
+
 Running task Integration Tests
 All positive path tests for database insertions and retrievals of task PASSED!
 All negative path tests for database insertions and retrievals of task PASSED!
@@ -422,7 +454,7 @@ All negative path tests for database insertions and retrievals of ScheduleItem P
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Tue Aug 18 07:24:27 2026
-elapsed time in seconds: 0.58967
+Tue Sep  8 05:36:43 2026
+elapsed time in seconds: 0.862445
 
 
