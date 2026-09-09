@@ -19,12 +19,16 @@ CREATE OR REPLACE TABLE production_ptsdb.organization_profile (
     postal_code VARCHAR(32),
     state_or_province VARCHAR(256),
     nation VARCHAR(64),
+    parent_organization INT UNSIGNED DEFAULT NULL,
     created_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_modified_time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
     PRIMARY KEY (id_organization),
     INDEX organization_name_idx (organization_name ASC),
-    INDEX fk_orgn_prime_contact_idx (primary_contact_user ASC)
+    INDEX fk_orgn_prime_contact_idx (primary_contact_user ASC),
+    CONSTRAINT fk_parent_organization
+        FOREIGN KEY (parent_organization)
+        REFERENCES organization_profile (id_organization)
 );
 
 
