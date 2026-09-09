@@ -10,7 +10,6 @@
 #include <exception>
 #include <format>
 #include <functional>
-#include <ranges>
 #include <stdexcept>
 #include <string>
 #include <vector>
