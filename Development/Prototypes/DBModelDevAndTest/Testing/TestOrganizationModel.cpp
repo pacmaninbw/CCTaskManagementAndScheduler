@@ -29,7 +29,9 @@ TestOrganizationModel::TestOrganizationModel()
     m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testPositivePathGetAnyOrganizationsAddedOnDate, this));
     m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testPositivePathGetAnyOrganizationsModifiedOnDate, this));
     m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testPositivePathDeleteOrganization, this));
+    m_positiviePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testPositivePathSetParentOrganization, this));
 
+    m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testNegativePathSetParentOrganization, this));
     m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testNegativePathAlreadyInDataBase, this));
     m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestOrganizationModel::testnegativePathNotModified, this));
 }
@@ -474,6 +476,55 @@ TestStatus TestOrganizationModel::testPositivePathDeleteOrganization()
     return TESTPASSED;
 }
 
+TestStatus TestOrganizationModel::testPositivePathSetParentOrganization()
+{
+    OrganizationQueryProcessor source;
+    OrganizationModel_shp parentTrap = source.getOrganizationById(2);
+
+    if (!parentTrap->parentOrganizationHasValue())
+    {
+        parentTrap->setParentOrganization(parentTrap->getOrganizationId() - 1);
+        if (!parentTrap->parentOrganizationHasValue())
+        {
+            std::cerr << "setParentOrganization() FAILED!!\n";
+            return TESTFAILED;
+        }
+    }
+
+    parentTrap->setParentOrganization(0);
+    if (parentTrap->parentOrganizationHasValue())
+    {
+        std::cerr << "setParentOrganization(0) FAILED!!\n";
+        return TESTFAILED;
+    }
+
+    if (programOptions.verboseOutput)
+    {
+        std::cout << "TestOrganizationModel::" << __func__ << " Test PASSED\n";
+    }
+
+    return TESTPASSED;
+}
+
+TestStatus TestOrganizationModel::testNegativePathSetParentOrganization()
+{
+    try {
+        OrganizationQueryProcessor source;
+        OrganizationModel_shp errorGenerator = source.getOrganizationById(1);
+        errorGenerator->setParentOrganization(errorGenerator->getOrganizationId());
+    }
+    catch (std::out_of_range &expectedError)
+    {
+        if (programOptions.verboseOutput)
+        {
+            std::cout << std::format("setParentOrganization() threw expected error: {} TEST PASSED\n", expectedError.what());
+        }
+        return TESTPASSED;
+    };
+
+    return TESTFAILED;
+}
+
 TestStatus TestOrganizationModel::testNegativePathAlreadyInDataBase()
 {
     OrganizationQueryProcessor organizationQueryProcessor;
@@ -504,3 +555,4 @@ TestStatus TestOrganizationModel::testnegativePathNotModified()
     std::vector<std::string> expectedErrors = {"not modified!"};
     return testInsertionFailureMessages(OrgNotModified, expectedErrors);
 }
+

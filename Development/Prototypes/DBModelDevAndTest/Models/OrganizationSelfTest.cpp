@@ -131,6 +131,7 @@ std::vector<AttributeTestFunction> OrganizationSelfTest::initAttributeAccessTest
     attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testPostalCodeAccess, this)});
     attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testStateOrProvinceAccess, this)});
     attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testNationAccess, this)});
+    attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testParentOrganizationAccess, this)});
     attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testCreatedDateAccess, this)});
     attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testLastModifiedDateAccess, this)});
 
@@ -233,6 +234,15 @@ TestStatus OrganizationSelfTest::testNationAccess() noexcept
         std::bind(&OrganizationModel::setNation, this, std::placeholders::_1),
         std::bind(&OrganizationModel::getNation, this));
 }
+
+TestStatus OrganizationSelfTest::testParentOrganizationAccess() noexcept
+{
+    std::size_t testValue = 23;
+    return testOptionalAccessorFunctions<std::size_t>(testValue, &m_parentOrganization, "Parent Organization",
+        std::bind(&OrganizationModel::setParentOrganization, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getParentOrganization, this));
+}
+
 
 TestStatus OrganizationSelfTest::testCreatedDateAccess() noexcept
 {

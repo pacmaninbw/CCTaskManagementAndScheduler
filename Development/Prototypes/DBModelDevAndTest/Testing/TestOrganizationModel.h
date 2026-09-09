@@ -44,6 +44,8 @@ private:
     TestStatus testPositivePathGetAnyOrganizationsAddedOnDate();
     TestStatus testPositivePathGetAnyOrganizationsModifiedOnDate();
     TestStatus testPositivePathDeleteOrganization();
+    TestStatus testPositivePathSetParentOrganization();
+    TestStatus testNegativePathSetParentOrganization();
     TestStatus testNegativePathAlreadyInDataBase();
     TestStatus testnegativePathNotModified();
     

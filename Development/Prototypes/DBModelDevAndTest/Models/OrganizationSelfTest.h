@@ -35,6 +35,7 @@ private:
     TestStatus testPostalCodeAccess() noexcept;
     TestStatus testStateOrProvinceAccess() noexcept;
     TestStatus testNationAccess() noexcept;
+    TestStatus testParentOrganizationAccess() noexcept;
     TestStatus testCreatedDateAccess() noexcept;
     TestStatus testLastModifiedDateAccess() noexcept;
 
