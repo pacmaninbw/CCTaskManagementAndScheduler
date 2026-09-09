@@ -4,9 +4,10 @@
 
 // Standard C++ Header Files
 #include <chrono>
+#include <exception>
 #include <functional>
 #include <optional>
-#include <ranges>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -31,6 +32,7 @@ OrganizationModel::OrganizationModel(const OrganizationDbQueryValues &databaseVa
     m_stateOrProvince = databaseValues.state_or_province;
     m_postalCode = databaseValues.postal_code;
     m_nation = databaseValues.nation;
+    m_parentOrganization = databaseValues.parent_organization;
     m_created = common::toChronoTimePoint(databaseValues.created_timestamp);
     m_lastModified = common::toChronoTimePoint(databaseValues.last_modified_time_stamp);
 }
@@ -107,6 +109,27 @@ void OrganizationModel::setNation(std::string nation) noexcept
     m_nation = nation;
 }
 
+void OrganizationModel::setParentOrganization(std::size_t parentID)
+{
+    if (m_primaryKey > 0 && parentID == m_primaryKey)
+    {
+        appendErrorMessage(std::format("In OrganizationModel.{} : {}", __func__, " Parent OrganizationModel ID can't be same as current OrganizationModel id"));
+        throw std::out_of_range("Parent OrganizationModel ID can't be same as current Task id");
+    }
+
+    // Can be zero to allow movement from parent organization.
+    if (parentID > 0)
+    {
+        m_modified = true;
+        m_parentOrganization = parentID;
+    }
+    else if (parentID == 0 && m_parentOrganization.has_value())
+    {
+        m_modified = true;
+        m_parentOrganization.reset();
+    }
+}
+
 void OrganizationModel::setCreationTimeStamp(std::chrono::system_clock::time_point created) noexcept
 {
     m_modified = true;
@@ -181,6 +204,7 @@ std::string OrganizationModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "state_or_province, ");
     boost::mysql::format_sql_to(fctx, "postal_code, ");
     boost::mysql::format_sql_to(fctx, "nation, ");
+    boost::mysql::format_sql_to(fctx, "parent_organization, ");
     boost::mysql::format_sql_to(fctx, "created_timestamp, ");
     boost::mysql::format_sql_to(fctx, "last_modified_time_stamp");
     boost::mysql::format_sql_to(fctx, ") VALUES (");
@@ -195,6 +219,7 @@ std::string OrganizationModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "{}, ", m_stateOrProvince);
     boost::mysql::format_sql_to(fctx, "{}, ", m_postalCode);
     boost::mysql::format_sql_to(fctx, "{}, ", m_nation);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_parentOrganization);
     boost::mysql::format_sql_to(fctx, "{}, ", m_created.transform(common::toBoostDateTime));
     boost::mysql::format_sql_to(fctx, "{}", m_lastModified.transform(common::toBoostDateTime));
     boost::mysql::format_sql_to(fctx, ")");
@@ -217,6 +242,7 @@ std::string OrganizationModel::formatUpdateStatement()
     boost::mysql::format_sql_to(fctx, "organization_profile.postal_code = {}, ", m_postalCode);
     boost::mysql::format_sql_to(fctx, "organization_profile.state_or_province = {}, ", m_stateOrProvince);
     boost::mysql::format_sql_to(fctx, "organization_profile.nation = {}, ", m_nation);
+    boost::mysql::format_sql_to(fctx, "organization_profile.parent_organization = {}, ", m_parentOrganization);
     boost::mysql::format_sql_to(fctx, "organization_profile.deleted = {}, ", m_deleted);
     boost::mysql::format_sql_to(fctx, "organization_profile.created_timestamp = {} ", m_created.transform(common::toBoostDateTime));
     boost::mysql::format_sql_to(fctx, "WHERE organization_profile.id_organization = {} ", m_primaryKey);
@@ -232,3 +258,4 @@ std::string OrganizationModel::formatDeleteStatement()
 
     return (std::move(fctx).get().value());
 }
+

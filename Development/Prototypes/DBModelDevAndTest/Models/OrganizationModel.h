@@ -27,6 +27,7 @@ struct OrganizationDbQueryValues
     std::optional<std::string> postal_code;
     std::optional<std::string> state_or_province;
     std::optional<std::string> nation;
+    std::optional<std::uint64_t> parent_organization;
     boost::mysql::datetime created_timestamp;
     boost::mysql::datetime last_modified_time_stamp;
     std::int64_t deleted;
@@ -66,6 +67,9 @@ public:
     std::string getStateOrProvince() const noexcept { return m_stateOrProvince.value_or(""); };
     void setNation(std::string nation) noexcept;
     std::string getNation() const noexcept { return m_nation.value_or(""); };
+    void setParentOrganization(std::size_t parentID);
+    std::size_t getParentOrganization() const noexcept { return m_parentOrganization.value_or(0); };
+    bool parentOrganizationHasValue() const noexcept { return m_parentOrganization.has_value(); };
     void setCreationTimeStamp(std::chrono::system_clock::time_point created) noexcept;
     std::chrono::system_clock::time_point getCreationTimeStamp() {return m_created.value(); };
     void setLastModified(std::chrono::system_clock::time_point lastModified) noexcept;
@@ -110,6 +114,11 @@ public:
         os << std::format(outFmtStr, "Postal Code", orgProfile.m_postalCode.value_or(""));
         os << std::format(outFmtStr, "State or Province", orgProfile.m_stateOrProvince.value_or(""));
         os << std::format(outFmtStr, "Nation", orgProfile.m_nation.value_or(""));
+        
+        if (orgProfile.m_parentOrganization.has_value())
+        {
+            os << std::format(outFmtStr, "Parent Organization", orgProfile.m_parentOrganization.value());
+        }
 
         if (programOptions.showTimeStamps)
         {
@@ -145,6 +154,7 @@ protected:
     std::optional<std::string> m_postalCode;
     std::optional<std::string> m_stateOrProvince;
     std::optional<std::string> m_nation;
+    std::optional<std::size_t> m_parentOrganization;
     std::optional<std::chrono::system_clock::time_point>  m_created;
     std::optional<std::chrono::system_clock::time_point>  m_lastModified;
 };
