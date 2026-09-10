@@ -29,6 +29,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(MyDayPlanner
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        ControlPanel.h
+        ControlPanel.cpp
         Dialogs/DataBaseConnectionDialog.cpp
         Dialogs/DataBaseConnectionDialog.h
         Dialogs/GoalEditorDialog.h
@@ -45,6 +47,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Dialogs/ScheduleItemEditorDialog.cpp
         Dialogs/TaskEditorDialog.cpp
         Dialogs/UserEditorDialog.cpp
+        Dialogs/BaseObjectEditorDialog.h
+        Dialogs/BaseObjectEditorDialog.cpp
         BusinessLogic/TestDBConnection.cpp
         BusinessLogic/TestDBConnection.h
         CommandLineParser.h
@@ -107,7 +111,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         SubWindows/DashboardNoteTable.cpp
         SubWindows/DefaultGoalDisplayTable.h
         SubWindows/DefaultGoalDisplayTable.cpp
-        Dialogs/BaseObjectEditorDialog.h Dialogs/BaseObjectEditorDialog.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET MyDayPlanner APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
