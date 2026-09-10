@@ -50,8 +50,28 @@ private:
     const int subWindowGroupBoxHeight = 400;
     const int subWindowLineEditWidth = 280;
 
+    void setUpControlPanelUi();
+    void setUpMenuBar();
+    void setUpUserMenu();
+    void setUpViewsMenu();
+    void setUpOrganizationMenu();
+    QHBoxLayout* setUpSubWindowsLayout();
+    void initViewWindows();
+    void updateViewWindows();
+    QGroupBox* setUpUserIdBox();
+
     QMenu* m_qt_userMenu = nullptr;
     QMenu* m_qt_viewsMenu = nullptr;
+    QAction* m_qt_addUserProfileUserMenu = nullptr;
+    QAction* m_qt_editUserProfileUserMenu = nullptr;
+    QAction* m_qt_openScheduleMenu = nullptr;
+    QAction* m_qt_openOrganizationSubWindow;
+    QWidget* m_qt_centralwidget = nullptr;
+    QGroupBox* m_qt_userIdGroupBox = nullptr;
+    QLineEdit* m_qt_userFirstName = nullptr;
+    QLineEdit* m_qt_userLastName = nullptr;
+    QLineEdit* m_qt_userLogin = nullptr;
+    QDateEdit* m_qt_dateSelector = nullptr;
 
     QString m_progNameStr;
     std::shared_ptr<UserModel> m_userDataPtr = nullptr;
