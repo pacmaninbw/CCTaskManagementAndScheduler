@@ -44,6 +44,7 @@ private Q_SLOTS:
     void handleOpenGoalWindowClicked();
     void handleOpenScheduleWindowClicked();
     void handleOpenNotesWindowClicked();
+    void handleOpenControlPanelClicked();
 
 private:
 /*
@@ -75,6 +76,7 @@ private:
     QAction* m_qt_openGoalMenu = nullptr;
     QAction* m_qt_openScheduleMenu = nullptr;
     QAction* m_qt_openNotesMenu = nullptr;
+    QAction* m_qt_openControlPanel;
     QWidget* m_qt_centralwidget = nullptr;
     QGroupBox* m_qt_userIdGroupBox = nullptr;
     QLineEdit* m_qt_userFirstName = nullptr;

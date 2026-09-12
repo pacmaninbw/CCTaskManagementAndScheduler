@@ -1,6 +1,7 @@
 // Project Header
 #include "CommandLineParser.h"
 #include "CommonWidgetExtensions.h"  // cqtfa_ functions
+#include "ControlPanel.h"
 #include "GoalWindow.h"
 #include "LoginDialog.h"
 #include "NotesWindow.h"
@@ -108,11 +109,16 @@ void UserDashboard::setUpViewsMenu()
     m_qt_openGoalMenu->setStatusTip("Open Goal Window");
     connect(m_qt_openGoalMenu, &QAction::triggered, this, &UserDashboard::handleOpenGoalWindowClicked);
 
+    m_qt_openControlPanel = new QAction("Control Panel", this);
+    m_qt_openControlPanel->setStatusTip("Open the Control Panel");
+    connect(m_qt_openControlPanel, &QAction::triggered, this, &UserDashboard::handleOpenControlPanelClicked);
+
     m_qt_viewsMenu = menuBar()->addMenu("&Views");
     m_qt_viewsMenu->addAction(m_qt_openTodoMenu);
     m_qt_viewsMenu->addAction(m_qt_openScheduleMenu);
     m_qt_viewsMenu->addAction(m_qt_openNotesMenu);
     m_qt_viewsMenu->addAction(m_qt_openGoalMenu);
+    m_qt_viewsMenu->addAction(m_qt_openControlPanel);
     m_qt_viewsMenu->addSeparator();
 }
 
@@ -227,4 +233,10 @@ void UserDashboard::handleOpenNotesWindowClicked()
     NotesWindow* noteExternalWindow = new NotesWindow(m_userDataPtr, m_dashboardDate, false, this);
     noteExternalWindow->setUpWindowUi();
     noteExternalWindow->show();
+}
+
+void UserDashboard::handleOpenControlPanelClicked()
+{
+    ControlPanel* controlPanelWindow = new ControlPanel(m_userDataPtr, this);
+    controlPanelWindow->show();
 }
