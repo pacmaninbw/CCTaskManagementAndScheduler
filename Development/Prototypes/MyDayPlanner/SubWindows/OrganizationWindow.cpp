@@ -7,7 +7,7 @@
 // Standard C++ Header Files
 
 OrganizationWindow::OrganizationWindow(bool makeSubWindow, QWidget *parent)
-    : ModelSubWindow("Organization Window", makeSubWindow, parent)
+: ModelSubWindow("Organization Window", makeSubWindow, parent)
 {
 
 }
