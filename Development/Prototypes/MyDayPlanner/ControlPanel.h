@@ -37,6 +37,13 @@ public:
 Q_SIGNALS:
 
 private Q_SLOTS:
+    void handleAddUserAction();
+    void handleEditUserAction();
+    void handleDateChanged(const QDate &newDate);
+    void handleToDoMenuClicked();
+    void handleOpenGoalWindowClicked();
+    void handleOpenScheduleWindowClicked();
+    void handleOpenNotesWindowClicked();
 
 private:
 /*
@@ -59,13 +66,16 @@ private:
     void initViewWindows();
     void updateViewWindows();
     QGroupBox* setUpUserIdBox();
+    void fillUserIdBox();
 
     QMenu* m_qt_userMenu = nullptr;
     QMenu* m_qt_viewsMenu = nullptr;
     QAction* m_qt_addUserProfileUserMenu = nullptr;
     QAction* m_qt_editUserProfileUserMenu = nullptr;
+    QAction* m_qt_openGoalMenu = nullptr;
     QAction* m_qt_openScheduleMenu = nullptr;
-    QAction* m_qt_openOrganizationSubWindow;
+    QAction* m_qt_openNotesMenu = nullptr;
+    QAction* m_qt_openTodoMenu = nullptr;
     QWidget* m_qt_centralwidget = nullptr;
     QGroupBox* m_qt_userIdGroupBox = nullptr;
     QLineEdit* m_qt_userFirstName = nullptr;
