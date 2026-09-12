@@ -93,14 +93,16 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         SubWindows/GoalWindow.cpp
         SubWindows/ModelSubWindow.h
         SubWindows/ModelSubWindow.cpp
-        SubWindows/OrganizationWindow.h
-        SubWindows/OrganizationWindow.cpp
-        SubWindows/TodoWindow.h
-        SubWindows/TodoWindow.cpp
-        SubWindows/ScheduleWindow.h
-        SubWindows/ScheduleWindow.cpp
         SubWindows/NotesWindow.h
         SubWindows/NotesWindow.cpp
+        SubWindows/OrganizationWindow.h
+        SubWindows/OrganizationWindow.cpp
+        SubWindows/ScheduleWindow.h
+        SubWindows/ScheduleWindow.cpp
+        SubWindows/TodoWindow.h
+        SubWindows/TodoWindow.cpp
+        SubWindows/UserWindow.h
+        SubWindows/UserWindow.cpp
         SubWindows/GuiDashboardTaskTable.cpp
         SubWindows/GuiDashboardTaskTable.h
         SubWindows/GuiDashboardScheduleTable.h
