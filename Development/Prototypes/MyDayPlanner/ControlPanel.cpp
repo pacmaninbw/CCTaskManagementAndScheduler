@@ -1,4 +1,4 @@
-// Project Header
+// Project Header Files
 #include "CommandLineParser.h"
 #include "CommonWidgetExtensions.h"  // cqtfa_ functions
 #include "ControlPanel.h"
@@ -20,8 +20,6 @@
 // Standard C++ Header Files
 #include <memory>
 #include <vector>
-
-
 
 ControlPanel::ControlPanel(std::shared_ptr<UserModel> loggedInUser, QWidget *parent)
     : QMainWindow(parent),
