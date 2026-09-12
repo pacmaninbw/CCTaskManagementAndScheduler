@@ -93,6 +93,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         SubWindows/GoalWindow.cpp
         SubWindows/ModelSubWindow.h
         SubWindows/ModelSubWindow.cpp
+        SubWindows/OrganizationWindow.h
+        SubWindows/OrganizationWindow.cpp
         SubWindows/TodoWindow.h
         SubWindows/TodoWindow.cpp
         SubWindows/ScheduleWindow.h
