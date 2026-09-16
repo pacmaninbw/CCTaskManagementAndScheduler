@@ -247,7 +247,7 @@ std::string UserModel::formatUpdateStatement()
 std::string UserModel::formatDeleteStatement()
 {
     return boost::mysql::format_sql(getFormatOptions(),
-        "UPDATE user_profile SET user_profile.deleted = 1 WHERE organization_profile.user_id = {}", m_primaryKey);
+        "UPDATE user_profile SET user_profile.deleted = 1 WHERE user_profile.user_id = {}", m_primaryKey);
 }
 
 std::string UserModel::buildPreferenceText() noexcept
