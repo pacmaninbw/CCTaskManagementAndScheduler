@@ -3,11 +3,13 @@
 #include "commonTestValues.h"
 #include "commonUtilities.h"
 #include "CSVReader.h"
+#include "OrganizationModel.h"
 #include "TestUserDBInterface.h"
 #include "UserQueryProcessor.h"
 #include "UserModel.h"
 
 // C++ Header Files
+#include <algorithm>
 #include <exception>
 #include <functional>
 #include <iostream>
@@ -33,9 +35,9 @@ TestUserDBInterface::TestUserDBInterface(std::string userFileName)
 TestStatus TestUserDBInterface::runPositivePathTests()
 {
     UserQueryProcessor databaseEntries;
-    UserModelList userProfileTestData = databaseEntries.getAllUsers();
+    m_userProfileTestData = databaseEntries.getAllUsers();
 
-    if (!loadTestUsersFromFile(userProfileTestData))
+    if (!loadTestUsersFromFile())
     {
         return TESTFAILED;
     }
@@ -43,7 +45,7 @@ TestStatus TestUserDBInterface::runPositivePathTests()
 
     bool allTestsPassed = true;
 
-    for (auto user: userProfileTestData)
+    for (auto user: m_userProfileTestData)
     {
         // Exclude real data from production testing in user integration testing.
         // The real data is know to work and inserting it again causes errors.
@@ -81,12 +83,9 @@ TestStatus TestUserDBInterface::runPositivePathTests()
         }
     }
 
-    if (allTestsPassed)
-    {
-        allTestsPassed = testGetAllUsers(userProfileTestData);
-    }
-
-    userProfileTestData.clear();
+    allTestsPassed = runPositivePathListQueries();
+ 
+    m_userProfileTestData.clear();
 
     reportTestStatus(allTestsPassed? TESTPASSED : TESTFAILED, "positive");
     return allTestsPassed? TESTPASSED : TESTFAILED;
@@ -235,7 +234,7 @@ bool TestUserDBInterface::testUpdateUserPassword(UserModel_shp insertedUser)
     return testPassed;
 }
 
-bool TestUserDBInterface::loadTestUsersFromFile(UserModelList& userProfileTestData)
+bool TestUserDBInterface::loadTestUsersFromFile()
 {
     std::ifstream userData(m_dataFileName);
 
@@ -254,7 +253,8 @@ bool TestUserDBInterface::loadTestUsersFromFile(UserModelList& userProfileTestDa
         userIn->setEmail(row[3]);
         userIn->autoGenerateLoginAndPassword();
         userIn->setCreationDate(common::TestTimeStampValue);
-        userProfileTestData.push_back(userIn);
+        userIn->setOrganizationID(1);
+        m_userProfileTestData.push_back(userIn);
     }
 
     if (userData.bad())
@@ -266,43 +266,160 @@ bool TestUserDBInterface::loadTestUsersFromFile(UserModelList& userProfileTestDa
     return true;
 }
 
-bool TestUserDBInterface::testGetAllUsers(UserModelList userProfileTestData)
+bool TestUserDBInterface::testGetAllUsers()
 {
     bool testPassed = false;
     UserQueryProcessor testULists;
     UserModelList allUsers = testULists.getAllUsers();
 
-    if ((userProfileTestData.size() == allUsers.size()) &&
-        std::equal(userProfileTestData.begin(), userProfileTestData.end(), allUsers.begin(),
+    testPassed = compareListReturnedToUserProfileTestData(allUsers, __func__);
+    if (testPassed)
+    {
+        std::cout << "TestUserDBInterface::" << __func__ << " PASSED!\n";
+    }
+    
+    allUsers.clear();
+
+    return testPassed;
+}
+
+bool TestUserDBInterface::testGetAllUsersAddedOnDate() noexcept
+{
+    bool testPassed = false;
+    UserQueryProcessor testULists;
+    UserModelList allUsers = testULists.getAllUsersAddedOn(common::getTodaysDate());
+
+    testPassed = compareListReturnedToUserProfileTestData(allUsers, __func__);
+    if (testPassed)
+    {
+        std::cout << "TestUserDBInterface::" << __func__ << " PASSED!\n";
+    }
+
+    allUsers.clear();
+
+    return testPassed;
+}
+
+/*
+ * This test alters the contents of m_userProfileTestData and m_deletedUsers.
+ * It should be the last test function executed in the positive path.
+ */
+bool TestUserDBInterface::testGetAllUsersDeletedOnDate() noexcept
+{
+    bool testPassed = true;
+
+    deleteSomeUsers();
+
+    UserQueryProcessor testULists;
+    UserModelList allUsers = testULists.getAllActiveUsers();
+
+    testPassed = compareListReturnedToUserProfileTestData(allUsers, __func__);
+
+    if (testPassed)
+    {
+        UserModelList usersDeletedToday = testULists.getAllUsersDeletedOn(common::getTodaysDate());
+        if (usersDeletedToday.size() != m_deletedUsers.size())
+        {
+            std::cerr << "Expected number of deleted users [" << m_deletedUsers.size() << "] not equal to actual number of deleted users [" <<
+            usersDeletedToday.size() << "] Test FAILED!\n";
+            return false;
+        }
+        testPassed = std::equal(m_deletedUsers.begin(), m_deletedUsers.end(), usersDeletedToday.begin(), usersDeletedToday.end(),
+            [](const UserModel_shp& left, const UserModel_shp& right){
+                if (!left || !right) 
+                {
+                    return !left && !right;
+                }
+                return *left == *right;
+            });
+    }
+
+    if (testPassed)
+    {
+        std::cout << "TestUserDBInterface::" << __func__ << " PASSED!\n";
+    }
+
+
+    return testPassed;
+}
+
+bool TestUserDBInterface::testGetAllUsersFrom() noexcept
+{
+    bool testPassed = false;
+    UserQueryProcessor testULists;
+    OrganizationModel_shp testOrg = std::make_shared<OrganizationModel>();
+
+    testOrg->setOrganizationId(1);
+
+    UserModelList allUsers = testULists.getAllUsersFrom(testOrg);
+
+    testPassed = compareListReturnedToUserProfileTestData(allUsers, __func__);
+    if (testPassed)
+    {
+        std::cout << "TestUserDBInterface::" << __func__ << " PASSED!\n";
+    }
+
+    allUsers.clear();
+
+    return testPassed;
+}
+
+bool TestUserDBInterface::compareListReturnedToUserProfileTestData(UserModelList testData, std::string funcName) noexcept
+{
+    bool testPassed = false;
+ 
+    if ((m_userProfileTestData.size() == testData.size()) &&
+        std::equal(m_userProfileTestData.begin(), m_userProfileTestData.end(), testData.begin(),
             [](const UserModel_shp a, const UserModel_shp b) { return *a == *b; }))
     {
         testPassed = true;
     }
     else
     {
-        std::cerr << "Get All users FAILED! " << allUsers.size() << "\n";
-        if (userProfileTestData.size() != allUsers.size())
+        std::cerr << "TestUserDBInterface::" << funcName << " FAILED!" << testData.size() << "\n";
+        if (m_userProfileTestData.size() != testData.size())
         {
-            std::cout << std::format("Size differs: userProfileTestData.size({}) != llUsers.size({})",
-                userProfileTestData.size(), allUsers.size());
+            std::cout << std::format("Size differs: userProfileTestData.size({}) != testData.size({})",
+                m_userProfileTestData.size(), testData.size());
         }
         else
         {
-            for (std::size_t userLisetIdx = 0; userLisetIdx < userProfileTestData.size(); ++userLisetIdx)
+            for (std::size_t userLisetIdx = 0; userLisetIdx < m_userProfileTestData.size(); ++userLisetIdx)
             {
-                if (*userProfileTestData[userLisetIdx] != *allUsers[userLisetIdx])
+                if (*m_userProfileTestData[userLisetIdx] != *testData[userLisetIdx])
                 {
                     std::cout << std::format("Original Data [{}]", userLisetIdx) << "\n" <<
-                        *userProfileTestData[userLisetIdx] << std::format("Database Data [{}]", userLisetIdx) << 
-                        "\n" << *allUsers[userLisetIdx] << "\n";
+                        *m_userProfileTestData[userLisetIdx] << std::format("Database Data [{}]", userLisetIdx) << 
+                        "\n" << *testData[userLisetIdx] << "\n";
                 }
             }
         }
     }
-
-    allUsers.clear();
-
+ 
     return testPassed;
+}
+
+bool TestUserDBInterface::runPositivePathListQueries() noexcept
+{
+    bool allTestsPassed = true;
+
+    std::vector<std::function<bool()>> postivePathListQeryTests;
+    postivePathListQeryTests.push_back(std::bind(&TestUserDBInterface::testGetAllUsers, this));
+    postivePathListQeryTests.push_back(std::bind(&TestUserDBInterface::testGetAllUsersAddedOnDate, this));
+    postivePathListQeryTests.push_back(std::bind(&TestUserDBInterface::testGetAllUsersFrom, this));
+    // Keep any tests that depend on m_userProfileTestData before this test,
+    // since this test modifies m_userProfileTestData by deleting existing items.
+    postivePathListQeryTests.push_back(std::bind(&TestUserDBInterface::testGetAllUsersDeletedOnDate, this));
+
+    for (auto test: postivePathListQeryTests)
+    {
+        if (!test())
+        {
+            allTestsPassed = false;
+        }
+    }
+
+    return allTestsPassed;
 }
 
 TestStatus TestUserDBInterface::testnegativePathNotModified()
@@ -335,3 +452,22 @@ TestStatus TestUserDBInterface::testNegativePathAlreadyInDataBase()
     return testInsertionFailureMessages(userAlreadyInDB, expectedErrors);
 }
 
+void TestUserDBInterface::deleteSomeUsers()
+{
+    std::size_t itemsToDelete = 1;
+
+    if (m_userProfileTestData.size() > 4)
+    {
+        itemsToDelete = 2;
+    }
+
+    std::size_t index = m_userProfileTestData.size() - itemsToDelete;
+    auto todelete = m_userProfileTestData.begin() + index;
+
+    while (todelete != m_userProfileTestData.end())
+    {
+        todelete->get()->hide(0);
+        m_deletedUsers.push_back(std::move(*todelete));
+        todelete = m_userProfileTestData.erase(todelete);
+    }
+}
