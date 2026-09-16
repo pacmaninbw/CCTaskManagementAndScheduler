@@ -97,7 +97,7 @@ In Self Test Query is:
 In Self Test Query is: 
 	UPDATE user_profile SET user_profile.id_organization = NULL, user_profile.last_name = 'LastName', user_profile.first_name = 'FirstName', user_profile.middle_initial = 'M', user_profile.email_address = 'FirstName.LastName@LastName.com', user_profile.user_login = 'LastNameFirstNameM', user_profile.hashed_password = 'LastNameFirstNameM', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = '2024-05-14 08:31:53.000000' WHERE user_profile.user_id = 1
 In Self Test Query is: 
-	UPDATE user_profile SET user_profile.deleted = 1 WHERE organization_profile.user_id = 1
+	UPDATE user_profile SET user_profile.deleted = 1 WHERE user_profile.user_id = 1
 
 
 Running self test on set and get functions for User::Primary Key
@@ -232,7 +232,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-09-09
+	Completed Date: 2026-09-16
 	Deleted : FALSE
 
 Task::testAllInsertFailures before successful insert this = 
@@ -482,6 +482,22 @@ In Self Test Query is:
 In Self Test Query is: 
 	SELECT * FROM user_profile WHERE user_profile.last_name = 'First' AND user_profile.first_name = 'Last' AND user_profile.middle_initial = 'middle'
 
+Exception Test for UserQueryProcessorSelfTest::testExceptionGetAllUsersAddedOnDate()
+In Self Test Query is: 
+	SELECT * FROM user_profile WHERE user_profile.created_timestamp >= '2026-03-22 00:00:00.000000' AND user_profile.created_timestamp <= '2026-03-22 23:59:59.000000' 
+
+Exception Test for UserQueryProcessorSelfTest::testExceptionGetAllUsersDeletedOnDate()
+In Self Test Query is: 
+	SELECT * FROM user_profile WHERE user_profile.last_modified_time_stamp >= '2026-03-22 00:00:00.000000' AND user_profile.last_modified_time_stamp <= '2026-03-22 23:59:59.000000' AND user_profile.deleted = 1
+
+Exception Test for UserQueryProcessorSelfTest::testExceptionGetAllUsersFrom()
+In Self Test Query is: 
+	SELECT * FROM user_profile WHERE user_profile.id_organization = 1 AND user_profile.deleted <> 1 
+
+Exception Test for UserQueryProcessorSelfTest::testExceptionGetAllActiveUsers()
+In Self Test Query is: 
+	SELECT * FROM user_profile WHERE user_profile.deleted <> 1 
+
 
 UserQueryProcessor PASSED Self Test
 ---------------------------------------------------------------------------------
@@ -505,7 +521,7 @@ In Self Test Query is:
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-09-16' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-09-23' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 
 Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
 In Self Test Query is: 
@@ -622,7 +638,7 @@ Running user Integration Tests
 Running: 
 	SELECT * FROM user_profile
 Running: 
-	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (NULL, 'One', 'User', 'P', 'UserOne@gmail.com', 'OneUserP', 'OneUserP', '8:30 AM;5:00 PM;1;1;1;0' )
+	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (1, 'One', 'User', 'P', 'UserOne@gmail.com', 'OneUserP', 'OneUserP', '8:30 AM;5:00 PM;1;1;1;0' )
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_login = 'OneUserP'
 Running: 
@@ -634,11 +650,11 @@ Running:
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.email_address = 'UserOne@gmail.com'
 Running: 
-	UPDATE user_profile SET user_profile.id_organization = NULL, user_profile.last_name = 'One', user_profile.first_name = 'User', user_profile.middle_initial = 'P', user_profile.email_address = 'UserOne@gmail.com', user_profile.user_login = 'OneUserP', user_profile.hashed_password = 'MyNew**&pAs5Word4', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL WHERE user_profile.user_id = 4
+	UPDATE user_profile SET user_profile.id_organization = 1, user_profile.last_name = 'One', user_profile.first_name = 'User', user_profile.middle_initial = 'P', user_profile.email_address = 'UserOne@gmail.com', user_profile.user_login = 'OneUserP', user_profile.hashed_password = 'MyNew**&pAs5Word4', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL WHERE user_profile.user_id = 4
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_id =4
 Running: 
-	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (NULL, 'Doe', 'John', 'Q', 'johndoe@gmail.com', 'DoeJohnQ', 'DoeJohnQ', '8:30 AM;5:00 PM;1;1;1;0' )
+	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (1, 'Doe', 'John', 'Q', 'johndoe@gmail.com', 'DoeJohnQ', 'DoeJohnQ', '8:30 AM;5:00 PM;1;1;1;0' )
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_login = 'DoeJohnQ'
 Running: 
@@ -650,11 +666,11 @@ Running:
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.email_address = 'johndoe@gmail.com'
 Running: 
-	UPDATE user_profile SET user_profile.id_organization = NULL, user_profile.last_name = 'Doe', user_profile.first_name = 'John', user_profile.middle_initial = 'Q', user_profile.email_address = 'johndoe@gmail.com', user_profile.user_login = 'DoeJohnQ', user_profile.hashed_password = 'MyNew**&pAs5Word5', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL WHERE user_profile.user_id = 5
+	UPDATE user_profile SET user_profile.id_organization = 1, user_profile.last_name = 'Doe', user_profile.first_name = 'John', user_profile.middle_initial = 'Q', user_profile.email_address = 'johndoe@gmail.com', user_profile.user_login = 'DoeJohnQ', user_profile.hashed_password = 'MyNew**&pAs5Word5', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL WHERE user_profile.user_id = 5
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_id =5
 Running: 
-	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (NULL, 'Public', 'John', 'Q', 'anyone@gmail.com', 'PublicJohnQ', 'PublicJohnQ', '8:30 AM;5:00 PM;1;1;1;0' )
+	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (1, 'Public', 'John', 'Q', 'anyone@gmail.com', 'PublicJohnQ', 'PublicJohnQ', '8:30 AM;5:00 PM;1;1;1;0' )
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_login = 'PublicJohnQ'
 Running: 
@@ -666,11 +682,11 @@ Running:
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.email_address = 'anyone@gmail.com'
 Running: 
-	UPDATE user_profile SET user_profile.id_organization = NULL, user_profile.last_name = 'Public', user_profile.first_name = 'John', user_profile.middle_initial = 'Q', user_profile.email_address = 'anyone@gmail.com', user_profile.user_login = 'PublicJohnQ', user_profile.hashed_password = 'MyNew**&pAs5Word6', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL WHERE user_profile.user_id = 6
+	UPDATE user_profile SET user_profile.id_organization = 1, user_profile.last_name = 'Public', user_profile.first_name = 'John', user_profile.middle_initial = 'Q', user_profile.email_address = 'anyone@gmail.com', user_profile.user_login = 'PublicJohnQ', user_profile.hashed_password = 'MyNew**&pAs5Word6', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL WHERE user_profile.user_id = 6
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_id =6
 Running: 
-	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (NULL, 'Doe', 'Jane', 'R', 'jdr@gmail.com', 'DoeJaneR', 'DoeJaneR', '8:30 AM;5:00 PM;1;1;1;0' )
+	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (1, 'Doe', 'Jane', 'R', 'jdr@gmail.com', 'DoeJaneR', 'DoeJaneR', '8:30 AM;5:00 PM;1;1;1;0' )
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_login = 'DoeJaneR'
 Running: 
@@ -682,11 +698,11 @@ Running:
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.email_address = 'jdr@gmail.com'
 Running: 
-	UPDATE user_profile SET user_profile.id_organization = NULL, user_profile.last_name = 'Doe', user_profile.first_name = 'Jane', user_profile.middle_initial = 'R', user_profile.email_address = 'jdr@gmail.com', user_profile.user_login = 'DoeJaneR', user_profile.hashed_password = 'MyNew**&pAs5Word7', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL WHERE user_profile.user_id = 7
+	UPDATE user_profile SET user_profile.id_organization = 1, user_profile.last_name = 'Doe', user_profile.first_name = 'Jane', user_profile.middle_initial = 'R', user_profile.email_address = 'jdr@gmail.com', user_profile.user_login = 'DoeJaneR', user_profile.hashed_password = 'MyNew**&pAs5Word7', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL WHERE user_profile.user_id = 7
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_id =7
 Running: 
-	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (NULL, 'Case', 'Space', 'O', 'spacecase@gmail.com', 'CaseSpaceO', 'CaseSpaceO', '8:30 AM;5:00 PM;1;1;1;0' )
+	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (1, 'Case', 'Space', 'O', 'spacecase@gmail.com', 'CaseSpaceO', 'CaseSpaceO', '8:30 AM;5:00 PM;1;1;1;0' )
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_login = 'CaseSpaceO'
 Running: 
@@ -698,11 +714,27 @@ Running:
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.email_address = 'spacecase@gmail.com'
 Running: 
-	UPDATE user_profile SET user_profile.id_organization = NULL, user_profile.last_name = 'Case', user_profile.first_name = 'Space', user_profile.middle_initial = 'O', user_profile.email_address = 'spacecase@gmail.com', user_profile.user_login = 'CaseSpaceO', user_profile.hashed_password = 'MyNew**&pAs5Word8', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL WHERE user_profile.user_id = 8
+	UPDATE user_profile SET user_profile.id_organization = 1, user_profile.last_name = 'Case', user_profile.first_name = 'Space', user_profile.middle_initial = 'O', user_profile.email_address = 'spacecase@gmail.com', user_profile.user_login = 'CaseSpaceO', user_profile.hashed_password = 'MyNew**&pAs5Word8', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL WHERE user_profile.user_id = 8
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_id =8
 Running: 
 	SELECT * FROM user_profile
+TestUserDBInterface::testGetAllUsers PASSED!
+Running: 
+	SELECT * FROM user_profile WHERE user_profile.created_timestamp >= '2026-09-16 00:00:00.000000' AND user_profile.created_timestamp <= '2026-09-16 23:59:59.000000' 
+TestUserDBInterface::testGetAllUsersAddedOnDate PASSED!
+Running: 
+	SELECT * FROM user_profile WHERE user_profile.id_organization = 1 AND user_profile.deleted <> 1 
+TestUserDBInterface::testGetAllUsersFrom PASSED!
+Running: 
+	UPDATE user_profile SET user_profile.deleted = 1 WHERE user_profile.user_id = 7
+Running: 
+	UPDATE user_profile SET user_profile.deleted = 1 WHERE user_profile.user_id = 8
+Running: 
+	SELECT * FROM user_profile WHERE user_profile.deleted <> 1 
+Running: 
+	SELECT * FROM user_profile WHERE user_profile.last_modified_time_stamp >= '2026-09-16 00:00:00.000000' AND user_profile.last_modified_time_stamp <= '2026-09-16 23:59:59.000000' AND user_profile.deleted = 1
+TestUserDBInterface::testGetAllUsersDeletedOnDate PASSED!
 All positive path tests for database insertions and retrievals of user PASSED!
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_id =1
@@ -1169,7 +1201,7 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Design UML Diagram for Personal Planner' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-09-09', NULL, 2e+00, 2e+00, 67, 1, 0)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-09-16', NULL, 2e+00, 2e+00, 67, 1, 0)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 58
 Running: 
@@ -1181,13 +1213,13 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Daily 30 minute walk' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-09-09', NULL, 2e+00, 0e+00, 67, 3, 0)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-09-16', NULL, 2e+00, 0e+00, 67, 3, 0)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 60
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Clean apartment' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-16' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-23' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Find unstarted tasks for user(4) PASSED!
 User 4 has 9 unstarted tasks
 TaskModel:
@@ -1312,7 +1344,7 @@ TaskModel:
 	Priority: 1
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-09-09
+	Estimated Completion Date: 2026-09-16
 	Deleted : FALSE
 
 TaskModel:
@@ -1346,7 +1378,7 @@ TaskModel:
 	Priority: 3
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-09-09
+	Estimated Completion Date: 2026-09-16
 	Deleted : FALSE
 
 Running: 
@@ -1681,7 +1713,7 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-09-09', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0 WHERE tasks.task_id = 47 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-09-16', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0 WHERE tasks.task_id = 47 
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
@@ -1770,11 +1802,11 @@ Optional Fields
 	Deleted : FALSE
 
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-16' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-23' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Running: 
 	UPDATE tasks SET tasks.deleted = 1 WHERE tasks.created_by = 4 AND tasks.task_id = 59
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-16' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-23' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Task (59) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of task PASSED!
 Running: 
@@ -2396,7 +2428,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-09-02' AND user_notes.last_modifed <= '2026-09-16' AND user_notes.deleted <> 1
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-09-09' AND user_notes.last_modifed <= '2026-09-23' AND user_notes.deleted <> 1
 Find all notes for user (4) edited in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2728,14 +2760,14 @@ All negative path tests for database insertions and retrievals of ScheduleItem P
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Wed Sep  9 16:04:49 2026
-elapsed time in seconds: 21.2403
+Wed Sep 16 07:19:02 2026
+elapsed time in seconds: 25.339
 
 
 
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
-  total heap usage: 63,831 allocs, 63,831 frees, 8,670,022 bytes allocated
+  total heap usage: 65,427 allocs, 65,427 frees, 8,904,203 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 

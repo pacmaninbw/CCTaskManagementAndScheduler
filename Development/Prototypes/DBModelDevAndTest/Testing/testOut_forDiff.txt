@@ -179,7 +179,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-09-09
+	Completed Date: 2026-09-16
 	Deleted : FALSE
 
 Common Insertion Failure Test PASSED!
@@ -328,6 +328,14 @@ Running Exception Handling Test Cases UserQueryProcessor
 
 Exception Test for UserQueryProcessorSelfTest::testExceptionsGetAllUsers()
 
+Exception Test for UserQueryProcessorSelfTest::testExceptionGetAllUsersAddedOnDate()
+
+Exception Test for UserQueryProcessorSelfTest::testExceptionGetAllUsersDeletedOnDate()
+
+Exception Test for UserQueryProcessorSelfTest::testExceptionGetAllUsersFrom()
+
+Exception Test for UserQueryProcessorSelfTest::testExceptionGetAllActiveUsers()
+
 
 ---------------------------------------------------------------------------------
 
@@ -412,6 +420,10 @@ Exception Test for ScheduleItemQueryProcessor::testExceptionFindLocationsForRepe
 ---------------------------------------------------------------------------------
 
 Running user Integration Tests
+TestUserDBInterface::testGetAllUsers PASSED!
+TestUserDBInterface::testGetAllUsersAddedOnDate PASSED!
+TestUserDBInterface::testGetAllUsersFrom PASSED!
+TestUserDBInterface::testGetAllUsersDeletedOnDate PASSED!
 All positive path tests for database insertions and retrievals of user PASSED!
 All negative path tests for database insertions and retrievals of user PASSED!
 All tests for database insertions and retrievals of user PASSED!
@@ -457,7 +469,7 @@ All negative path tests for database insertions and retrievals of ScheduleItem P
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Wed Sep  9 16:10:12 2026
-elapsed time in seconds: 0.531139
+Wed Sep 16 07:21:47 2026
+elapsed time in seconds: 0.658292
 
 
