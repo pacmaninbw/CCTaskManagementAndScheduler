@@ -17,6 +17,9 @@ namespace common
     extern void getHourRangeForLocalDate(std::chrono::year_month_day dateIn,
         std::chrono::system_clock::time_point& startTime,
         std::chrono::system_clock::time_point& endTime);
+    extern void getHourRangeForDate(std::chrono::year_month_day dateIn,
+        std::chrono::system_clock::time_point& startTime,
+        std::chrono::system_clock::time_point& endTime);
 }
 
 #endif // COMMONUTILITIES_H_

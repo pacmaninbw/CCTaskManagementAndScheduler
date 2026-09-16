@@ -5,6 +5,8 @@
 #include <sstream>
 #include <string>
 
+static const int secondsInHour = 3600;
+static const int secondsInDay = secondsInHour * 24;
 namespace common
 {
     unsigned int OneWeek = 7;
@@ -73,11 +75,22 @@ namespace common
         std::chrono::system_clock::time_point &endTime
     )
     {
-        const int secondsInHour = 3600;
-        const int secondsInDay = secondsInHour * 24;
         std::chrono::seconds dateAdjustor(secondsInDay - 1);
 
         startTime = getLocalMidnight(dateIn);
         endTime = startTime + dateAdjustor;
+    }
+    void getHourRangeForDate(
+        std::chrono::year_month_day dateIn,
+        std::chrono::system_clock::time_point &startTime,
+        std::chrono::system_clock::time_point &endTime
+    )
+    {
+        std::chrono::seconds dateAdjustor(secondsInDay - 1);
+
+        std::chrono::sys_days dateTime{dateIn};
+
+        startTime = dateTime;
+        endTime = dateTime + dateAdjustor;
     }
 }
