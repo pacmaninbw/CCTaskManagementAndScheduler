@@ -1,4 +1,7 @@
 // Project Header Files
+#include "chronoBoostConversions.h"
+#include "commonUtilities.h"
+#include "OrganizationModel.h"
 #include "QueryProcessor.h"
 #include "UserQueryProcessor.h"
 #include "UserModel.h"
@@ -147,6 +150,116 @@ UserModel_shp UserQueryProcessor::getUserByFullName(
     return found;
 }
 
+UserModelList UserQueryProcessor::getAllUsersAddedOn(std::chrono::year_month_day dateAdded) noexcept
+{
+    clearErrorMessages();
+
+    UserModelList allUsersAddedOnDate;
+    std::chrono::system_clock::time_point startSearch;
+    std::chrono::system_clock::time_point endSearch;
+    common::getHourRangeForDate(dateAdded, startSearch, endSearch);
+
+    try
+    {
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM user_profile ");
+        boost::mysql::format_sql_to(fctx, "WHERE user_profile.created_timestamp >= {} ",
+            common::toBoostDateTime(startSearch));
+        boost::mysql::format_sql_to(fctx, "AND user_profile.created_timestamp <= {} ",
+            common::toBoostDateTime(endSearch));
+
+        StaticQueryUser localResult = staticRunQueryAsync<UserDbQueryValues>(std::move(fctx).get().value());
+        allUsersAddedOnDate = processStaticResults(localResult);
+    }
+        
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserQueryProcessor::{} : {}", __func__, e.what()));
+    }
+    
+    return allUsersAddedOnDate;
+}
+
+UserModelList UserQueryProcessor::getAllUsersDeletedOn(std::chrono::year_month_day dateDeleted) noexcept
+{
+    clearErrorMessages();
+
+    UserModelList allUsersDeletedOnDate;
+    std::chrono::system_clock::time_point startSearch;
+    std::chrono::system_clock::time_point endSearch;
+    common::getHourRangeForDate(dateDeleted, startSearch, endSearch);
+
+    try
+    {
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM user_profile ");
+        boost::mysql::format_sql_to(fctx, "WHERE user_profile.last_modified_time_stamp >= {} ",
+            common::toBoostDateTime(startSearch));
+        boost::mysql::format_sql_to(fctx, "AND user_profile.last_modified_time_stamp <= {} ",
+            common::toBoostDateTime(endSearch));
+        boost::mysql::format_sql_to(fctx, "AND user_profile.deleted = 1");
+
+        StaticQueryUser localResult = staticRunQueryAsync<UserDbQueryValues>(std::move(fctx).get().value());
+        allUsersDeletedOnDate = processStaticResults(localResult);
+    }
+        
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserQueryProcessor::{} : {}", __func__, e.what()));
+    }
+    
+    return allUsersDeletedOnDate;
+}
+
+UserModelList UserQueryProcessor::getAllUsersFrom(std::shared_ptr<OrganizationModel> organization) noexcept
+{
+    clearErrorMessages();
+
+    UserModelList allUsersInOrganization;
+
+    try
+    {
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM user_profile ");
+        boost::mysql::format_sql_to(fctx, "WHERE user_profile.id_organization = {} ", organization->getOrganizationId());
+        boost::mysql::format_sql_to(fctx, "AND user_profile.deleted <> 1 ");
+
+        StaticQueryUser localResult = staticRunQueryAsync<UserDbQueryValues>(std::move(fctx).get().value());
+        allUsersInOrganization = processStaticResults(localResult);
+    }
+        
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserQueryProcessor::{} : {}", __func__, e.what()));
+    }
+    
+    return allUsersInOrganization;
+}
+
+UserModelList UserQueryProcessor::getAllActiveUsers() noexcept
+{
+    clearErrorMessages();
+
+    UserModelList allActiveUsers;
+
+    try
+    {
+        boost::mysql::format_context fctx(getFormatOptions());
+        boost::mysql::format_sql_to(fctx, "SELECT * FROM user_profile ");
+        boost::mysql::format_sql_to(fctx, "WHERE user_profile.deleted <> 1 ");
+
+        StaticQueryUser localResult = staticRunQueryAsync<UserDbQueryValues>(std::move(fctx).get().value());
+        allActiveUsers = processStaticResults(localResult);
+    }
+        
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In UserQueryProcessor::{} : {}", __func__, e.what()));
+    }
+    
+    return allActiveUsers;
+}
+
 /*
  * Unit Test / Self Test
  */
@@ -159,6 +272,10 @@ std::vector<ListExceptionTestElement> UserQueryProcessor::initListExceptionTests
     exceptionTests.push_back({std::bind(&UserQueryProcessor::testExceptionGetUserByEmail, this), "getUserByEmail"});
     exceptionTests.push_back({std::bind(&UserQueryProcessor::testExceptionGetUserByLoginAndPassword, this), "getUserByLoginAndPassword"});
     exceptionTests.push_back({std::bind(&UserQueryProcessor::testExceptionGetUserByFullName, this), "getUserByFullName"});
+    exceptionTests.push_back({std::bind(&UserQueryProcessor::testExceptionGetAllUsersAddedOnDate, this), "getAllUsersAddedOnDate"});
+    exceptionTests.push_back({std::bind(&UserQueryProcessor::testExceptionGetAllUsersDeletedOnDate, this), "getAllUsersDeletedOnDate"});
+    exceptionTests.push_back({std::bind(&UserQueryProcessor::testExceptionGetAllUsersFrom, this), "getAllUsersFrom"});
+    exceptionTests.push_back({std::bind(&UserQueryProcessor::testExceptionGetAllActiveUsers, this), "getAllActiveUsers"});
 
     return exceptionTests;
 }
@@ -226,3 +343,41 @@ TestStatus UserQueryProcessor::testExceptionGetUserByFullName() noexcept
             std::placeholders::_2, std::placeholders::_3), testFirstName, testLastName, testMiddleI);
 }
 
+TestStatus UserQueryProcessor::testExceptionGetAllUsersAddedOnDate() noexcept
+{
+    selfTestResetAllValues();
+
+    std::chrono::year_month_day testDate = common::ProductionTestDataAddedDate;
+
+    return testListExceptionAndSuccessNArgs("UserQueryProcessorSelfTest::testExceptionGetAllUsersAddedOnDate()",
+        std::bind(&UserQueryProcessor::getAllUsersAddedOn, this, std::placeholders::_1), testDate);
+}
+
+TestStatus UserQueryProcessor::testExceptionGetAllUsersDeletedOnDate() noexcept
+{
+    selfTestResetAllValues();
+
+    std::chrono::year_month_day testDate = common::ProductionTestDataAddedDate;
+
+    return testListExceptionAndSuccessNArgs("UserQueryProcessorSelfTest::testExceptionGetAllUsersDeletedOnDate()",
+        std::bind(&UserQueryProcessor::getAllUsersDeletedOn, this, std::placeholders::_1), testDate);
+}
+
+TestStatus UserQueryProcessor::testExceptionGetAllUsersFrom() noexcept
+{
+    selfTestResetAllValues();
+
+    OrganizationModel_shp testOrganization = std::make_shared<OrganizationModel>();
+    testOrganization->setOrganizationId(1);
+
+    return testListExceptionAndSuccessNArgs("UserQueryProcessorSelfTest::testExceptionGetAllUsersFrom()",
+        std::bind(&UserQueryProcessor::getAllUsersFrom, this, std::placeholders::_1), testOrganization);
+}
+
+TestStatus UserQueryProcessor::testExceptionGetAllActiveUsers() noexcept
+{
+    selfTestResetAllValues();
+
+    return testListExceptionAndSuccessNArgs("UserQueryProcessorSelfTest::testExceptionGetAllActiveUsers()",
+        std::bind(&UserQueryProcessor::getAllActiveUsers, this));
+}

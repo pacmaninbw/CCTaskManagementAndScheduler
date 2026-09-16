@@ -1,11 +1,15 @@
 #ifndef USERQUERYPROCESSOR_H_
 #define USERQUERYPROCESSOR_H_
 
+class OrganizationModel;
+
 // Project Header Files
 #include "QueryProcessor.h"
 #include "UserModel.h"
 
 // Standard C++ Header Files
+#include <chrono>
+#include <memory>
 
 using UserModelList = std::vector<UserModel_shp>;
 using StaticQueryUser = boost::mysql::static_results<boost::mysql::pfr_by_name<UserDbQueryValues>>;
@@ -22,6 +26,10 @@ public:
     UserModel_shp getUserByLoginAndPassword(const std::string_view& loginName, const std::string_view& password) noexcept;
     UserModel_shp getUserByFullName(const std::string_view& lastName, const std::string_view& firstName,
         const std::string_view& middleI) noexcept;
+    UserModelList getAllUsersAddedOn(std::chrono::year_month_day dateAdded) noexcept;
+    UserModelList getAllUsersDeletedOn(std::chrono::year_month_day dateDeleted) noexcept;
+    UserModelList getAllUsersFrom(std::shared_ptr<OrganizationModel> organization) noexcept;
+    UserModelList getAllActiveUsers() noexcept;
 
 
 private:
@@ -32,6 +40,10 @@ private:
     TestStatus testExceptionGetUserByEmail() noexcept;
     TestStatus testExceptionGetUserByLoginAndPassword() noexcept;
     TestStatus testExceptionGetUserByFullName() noexcept;
+    TestStatus testExceptionGetAllUsersAddedOnDate() noexcept;
+    TestStatus testExceptionGetAllUsersDeletedOnDate() noexcept;
+    TestStatus testExceptionGetAllUsersFrom() noexcept;
+    TestStatus testExceptionGetAllActiveUsers() noexcept;
 };
 
 #endif // USERQUERYPROCESSOR_H_
