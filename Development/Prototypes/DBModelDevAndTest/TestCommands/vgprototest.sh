@@ -18,7 +18,7 @@ rm -rf TestCoverage
 find . -type f -name "*.gcda" -delete
 
 echo "Creating test database with test data"
-cat PlannerTaskScheduleDB.sql AdditionalFunctionalTestData.sql | mysql -u $sqluser -p$sqlpassword
+cat test_ptsdb.sql AdditionalFunctionalTestData.sql | mysql -u $sqluser -p$sqlpassword
 
 #
 # sed is run to remove the process id from the valgrind output to allow for comparing the output

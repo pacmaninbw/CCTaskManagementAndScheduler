@@ -11,7 +11,7 @@ rm -rf TestCoverage
 find . -type f -name "*.gcda" -delete
 
 echo "Creating test database with test data"
-cat PlannerTaskScheduleDB.sql AdditionalFunctionalTestData.sql | mysql -u $sqluser -p$sqlpassword
+cat test_ptsdb.sql AdditionalFunctionalTestData.sql | mysql -u $sqluser -p$sqlpassword
 
 # Run the basic regression test
 protoPersonalPlanner -u $sqluser -p $sqlpassword --time-tests 2>&1 > Testing/testOut.txt || echo "REGRESSION TESTS FAILED!"
@@ -20,7 +20,7 @@ echo "Diff"
 diff -w Testing/testOut.txt Testing/testOut_forDiff.txt > protoTestDiff.txt || true
 
 echo "Recreating test database for valgrind"
-cat PlannerTaskScheduleDB.sql AdditionalFunctionalTestData.sql | mysql -u $sqluser -p$sqlpassword
+cat test_ptsdb.sql AdditionalFunctionalTestData.sql | mysql -u $sqluser -p$sqlpassword
 
 echo "Running valgrind regression test"
 valgrind --track-origins=yes protoPersonalPlanner -u "$sqluser" -p "$sqlpassword" --verbose --time-tests 2>&1 | 

@@ -5,6 +5,6 @@ rm -f build/CMakeFiles/protoPersonalPlanner.dir/*.gcda
 rm -f build/CMakeFiles/protoPersonalPlanner.dir/common/*.gcda
 rm -f build/CMakeFiles/protoPersonalPlanner.dir/Models/*.gcda
 rm -f build/CMakeFiles/protoPersonalPlanner.dir/Testing/*.gcda
-mysql -u $sqluser -p$sqlpassword < PlannerTaskScheduleDB.sql
+mysql -u $sqluser -p$sqlpassword < test_ptsdb.sql
 mysql -u $sqluser -p$sqlpassword < AdditionalFunctionalTestData.sql
 protoPersonalPlanner -u $sqluser -p $sqlpassword --time-tests

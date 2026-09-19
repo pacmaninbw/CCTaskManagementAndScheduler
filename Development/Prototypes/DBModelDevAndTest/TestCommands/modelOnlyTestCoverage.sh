@@ -15,7 +15,7 @@ rm -rf TestCoverage
 find . -type f -name "*.gcda" -delete
 
 echo "Creating test database with test data"
-cat PlannerTaskScheduleDB.sql AdditionalFunctionalTestData.sql | mysql -u $sqluser -p$sqlpassword || { echo "Exiting now Database Load Failed"; exit 1; }
+cat test_ptsdb.sql AdditionalFunctionalTestData.sql | mysql -u $sqluser -p$sqlpassword || { echo "Exiting now Database Load Failed"; exit 1; }
 
 echo "Running Regression Tests"
 # If regression tests fails the diff and test coverage reports are still valid
