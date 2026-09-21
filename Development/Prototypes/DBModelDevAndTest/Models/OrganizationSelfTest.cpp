@@ -134,6 +134,7 @@ std::vector<AttributeTestFunction> OrganizationSelfTest::initAttributeAccessTest
     attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testParentOrganizationAccess, this)});
     attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testCreatedDateAccess, this)});
     attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testLastModifiedDateAccess, this)});
+    attributeAccessTests.push_back({std::bind(&OrganizationSelfTest::testLastModifiedByUserAccess, this)});
 
     return attributeAccessTests;
 }
@@ -258,6 +259,15 @@ TestStatus OrganizationSelfTest::testLastModifiedDateAccess() noexcept
     return testTimeStampAccessorFunctions(testValue, &m_created, "Last Modified TimeStamp",
         std::bind(&OrganizationModel::setLastModified, this, std::placeholders::_1),
         std::bind(&OrganizationModel::getLastModified, this));
+}
+
+TestStatus OrganizationSelfTest::testLastModifiedByUserAccess() noexcept
+{
+    std::size_t testUserId = 1;
+
+    return testAccessorFunctions<std::size_t>(testUserId, &m_lastModifiedByUser, "Last Modified by UserId",
+        std::bind(&OrganizationModel::setLastModifiedBy, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getLastModifiedBy, this));
 }
 
 std::vector<ExceptionTestElement> OrganizationSelfTest::initExceptionTests() noexcept

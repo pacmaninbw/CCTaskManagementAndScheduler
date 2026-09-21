@@ -120,6 +120,8 @@ std::vector<AttributeTestFunction> UserSelfTest::initAttributeAccessTests() noex
     attributeAccessTests.push_back({std::bind(&UserSelfTest::testLastLoginAccess, this)});
     attributeAccessTests.push_back({std::bind(&UserSelfTest::testStartTimeAccess, this)});
     attributeAccessTests.push_back({std::bind(&UserSelfTest::testEndTimeAccesss, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testLastModifiedAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserSelfTest::testLastModifiedByUserAccess, this)});
     attributeAccessTests.push_back({std::bind(&UserSelfTest::testIncludePriorityInScheduleAccess, this)});
     attributeAccessTests.push_back({std::bind(&UserSelfTest::testIncludeMinorPriorityInScheduleAccess, this)});
     attributeAccessTests.push_back({std::bind(&UserSelfTest::testUseLetterForMajorPriorityAccess, this)});
@@ -224,6 +226,23 @@ TestStatus UserSelfTest::testEndTimeAccesss() noexcept
     return testAccessorFunctions<std::string>(testValue, &m_preferences.endTime, "End Time Preference",
         std::bind(&UserModel::setEndTime, this, std::placeholders::_1),
         std::bind(&UserModel::getEndTime, this));
+}
+
+TestStatus UserSelfTest::testLastModifiedAccess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
+    return testTimeStampAccessorFunctions(testValue, &m_LastModified, "Last Modified TimeStamp",
+        std::bind(&UserModel::setLastModified, this, std::placeholders::_1),
+        std::bind(&UserModel::getLastModified, this));
+}
+
+TestStatus UserSelfTest::testLastModifiedByUserAccess() noexcept
+{
+    std::size_t testUserId = 1;
+
+    return testAccessorFunctions<std::size_t>(testUserId, &m_lastModifiedByUser, "Last Modified by UserId",
+        std::bind(&UserModel::setLastModifiedBy, this, std::placeholders::_1),
+        std::bind(&UserModel::getLastModifiedBy, this));
 }
 
 TestStatus UserSelfTest::testIncludePriorityInScheduleAccess() noexcept

@@ -327,6 +327,7 @@ std::vector<AttributeTestFunction> TaskSelfTest::initAttributeAccessTests() noex
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testPriorityAccess, this)});
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testPersonalAccess, this)});
     attributeAccessTests.push_back({std::bind(&TaskSelfTest::testMarkComplete, this)});
+    attributeAccessTests.push_back({std::bind(&TaskSelfTest::testLastModifiedByUserAccess, this)});
 
     return attributeAccessTests;
 }
@@ -641,6 +642,15 @@ TestStatus TaskSelfTest::testPersonalAccess()
     return testAccessorFunctions<bool>(testValue, &m_personal, "Personal",
         std::bind(&TaskModel::setPersonal, this, std::placeholders::_1),
         std::bind(&TaskSelfTest::isPersonal, this));
+}
+
+TestStatus TaskSelfTest::testLastModifiedByUserAccess() noexcept
+{
+    std::size_t testUserId = 1;
+
+    return testAccessorFunctions<std::size_t>(testUserId, &m_lastModifiedByUser, "Last Modified by UserId",
+        std::bind(&TaskModel::setLastModifiedBy, this, std::placeholders::_1),
+        std::bind(&TaskModel::getLastModifiedBy, this));
 }
 
 /*

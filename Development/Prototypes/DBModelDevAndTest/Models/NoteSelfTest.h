@@ -40,6 +40,7 @@ private:
     TestStatus testContentAccess() noexcept;
     TestStatus testDateAddedAccess() noexcept;
     TestStatus testLastUpdateAccess() noexcept;
+    TestStatus testLastModifiedByUserAccess() noexcept;
 
     virtual TestStatus testEqualityOperator() noexcept override;
     virtual void testOutput() noexcept override;

@@ -104,6 +104,7 @@ std::vector<AttributeTestFunction> NoteSelfTest::initAttributeAccessTests() noex
     attributeAccessTests.push_back({std::bind(&NoteSelfTest::testContentAccess, this)});
     attributeAccessTests.push_back({std::bind(&NoteSelfTest::testDateAddedAccess, this)});
     attributeAccessTests.push_back({std::bind(&NoteSelfTest::testLastUpdateAccess, this)});
+    attributeAccessTests.push_back({std::bind(&NoteSelfTest::testLastModifiedByUserAccess, this)});
 
     return attributeAccessTests;
 }
@@ -238,9 +239,18 @@ TestStatus NoteSelfTest::testDateAddedAccess() noexcept
 TestStatus NoteSelfTest::testLastUpdateAccess() noexcept
 {
     std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
-    return testTimeStampAccessorFunctions(testValue, &m_lastUpdate, "Date Added",
+    return testTimeStampAccessorFunctions(testValue, &m_lastUpdate, "Last Modified Time Stamp",
         std::bind(&NoteModel::setLastModified, this, std::placeholders::_1),
         std::bind(&NoteModel::getLastModified, this));
+}
+
+TestStatus NoteSelfTest::testLastModifiedByUserAccess() noexcept
+{
+    std::size_t testUserId = 1;
+
+    return testAccessorFunctions<std::size_t>(testUserId, &m_lastModifiedByUser, "Last Modified by UserId",
+        std::bind(&NoteModel::setLastModifiedBy, this, std::placeholders::_1),
+        std::bind(&NoteModel::getLastModifiedBy, this));
 }
 
 TestStatus NoteSelfTest::testEqualityOperator() noexcept

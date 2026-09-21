@@ -108,6 +108,8 @@ std::vector<AttributeTestFunction> UserGoalSelfTest::initAttributeAccessTests() 
     attributeAccessTests.push_back({std::bind(&UserGoalSelfTest::testCreationDateAccess, this)});
     attributeAccessTests.push_back({std::bind(&UserGoalSelfTest::testParentIdAccess, this)});
     attributeAccessTests.push_back({std::bind(&UserGoalSelfTest::testPriorityAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserGoalSelfTest::testLastUpdateAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserGoalSelfTest::testLastModifiedByUserAccess, this)});
 
     return attributeAccessTests;
 }
@@ -154,6 +156,21 @@ TestStatus UserGoalSelfTest::testPriorityAccess() noexcept
         std::bind(&UserGoalModel::getPriority, this));
 }
 
+TestStatus UserGoalSelfTest::testLastUpdateAccess() noexcept
+{
+    return testTimeStampAccessorFunctions(common::TestTimeStampValue, &m_lastUpdate, "Last Modified Time Stamp",
+        std::bind(&UserGoalModel::setLastUpdateTimeStamp, this, std::placeholders::_1),
+        std::bind(&UserGoalModel::getLastUpdateTimeStamp, this));
+}
+
+TestStatus UserGoalSelfTest::testLastModifiedByUserAccess() noexcept
+{
+    std::size_t testUserId = 1;
+
+    return testAccessorFunctions<std::size_t>(testUserId, &m_lastModifiedByUser, "Last Modified by UserId",
+        std::bind(&UserGoalModel::setLastModifiedBy, this, std::placeholders::_1),
+        std::bind(&UserGoalModel::getLastModifiedBy, this));
+}
 
 std::vector<ExceptionTestElement> UserGoalSelfTest::initExceptionTests() noexcept
 {

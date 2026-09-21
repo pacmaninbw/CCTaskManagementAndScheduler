@@ -35,6 +35,8 @@ private:
     TestStatus testOrganizationAccess() noexcept;
     TestStatus testStartTimeAccess() noexcept;
     TestStatus testEndTimeAccesss() noexcept;
+    TestStatus testLastModifiedAccess() noexcept;
+    TestStatus testLastModifiedByUserAccess() noexcept;
     TestStatus testIncludePriorityInScheduleAccess() noexcept;
     TestStatus testIncludeMinorPriorityInScheduleAccess() noexcept;
     TestStatus testUseLetterForMajorPriorityAccess() noexcept;

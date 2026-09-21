@@ -29,6 +29,8 @@ private:
     TestStatus testCreationDateAccess() noexcept;
     TestStatus testParentIdAccess() noexcept;
     TestStatus testPriorityAccess() noexcept;
+    TestStatus testLastUpdateAccess() noexcept;
+    TestStatus testLastModifiedByUserAccess() noexcept;
 
     virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
     virtual TestStatus testExceptionInsert() noexcept override;

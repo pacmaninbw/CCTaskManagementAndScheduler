@@ -42,7 +42,7 @@ protected:
     TestStatus testLastUpDateTimeStampAccess() noexcept;
     TestStatus testLocationAccess() noexcept;
     TestStatus testPersonalAccess() noexcept;
-
+    TestStatus testLastModifiedByUserAccess() noexcept;
 };
 
 using ScheduleItemSelfTest_shp = std::shared_ptr<ScheduleItemSelfTest>;

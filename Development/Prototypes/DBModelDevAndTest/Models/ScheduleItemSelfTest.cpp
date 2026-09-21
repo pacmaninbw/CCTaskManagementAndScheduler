@@ -280,6 +280,7 @@ std::vector<AttributeTestFunction> ScheduleItemSelfTest::initAttributeAccessTest
     attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testLastUpDateTimeStampAccess, this)});
     attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testLocationAccess, this)});
     attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testPersonalAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemSelfTest::testLastModifiedByUserAccess, this)});
 
     return attributeAccessTests;
 }
@@ -372,6 +373,15 @@ TestStatus ScheduleItemSelfTest::testPersonalAccess() noexcept
     return testAccessorFunctions<bool>(testValue, &m_personal, "Personal",
         std::bind(&ScheduleItemModel::setPersonal, this, std::placeholders::_1),
         std::bind(&ScheduleItemModel::isPersonal, this));
+}
+
+TestStatus ScheduleItemSelfTest::testLastModifiedByUserAccess() noexcept
+{
+    std::size_t testUserId = 1;
+
+    return testAccessorFunctions<std::size_t>(testUserId, &m_lastModifiedByUser, "Last Modified by UserId",
+        std::bind(&ScheduleItemModel::setLastModifiedBy, this, std::placeholders::_1),
+        std::bind(&ScheduleItemModel::getLastModifiedBy, this));
 }
 
 TestStatus ScheduleItemSelfTest::testLocationAccess() noexcept

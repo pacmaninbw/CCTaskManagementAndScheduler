@@ -52,7 +52,7 @@ private:
     TestStatus testPriorityGroupCAccess();
     TestStatus testPriorityAccess();
     TestStatus testPersonalAccess();
-    TestStatus testDependenciesAccess();
+    TestStatus testLastModifiedByUserAccess() noexcept;
     TestStatus testMarkComplete();
     TestStatus testAddEffort();
 

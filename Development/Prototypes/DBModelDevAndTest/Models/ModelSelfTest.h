@@ -47,6 +47,7 @@ protected:
     {
         ModelDBInterface::m_primaryKey = 0;
         ModelDBInterface::m_modified = false;
+        ModelDBInterface::m_lastModifiedByUser = 0;
 /*****
  * format_opts needs to be reset before any exception test
  */
