@@ -50,6 +50,8 @@ Running self test on set and get functions for Organization::Creation TimeStamp
 Self test on set and get functions for Organization::Creation TimeStamp PASSED
 Running self test on set and get functions for Organization::Last Modified TimeStamp
 Self test on set and get functions for Organization::Last Modified TimeStamp PASSED
+Running self test on set and get functions for Organization::Last Modified by UserId
+Self test on set and get functions for Organization::Last Modified by UserId PASSED
 Test Output: 	Organization ID: 1
 	Organization Name: Any organization name up to 255 characters, Inc.
 	Email Address: Any_organization_email_up_to255-characters@gmail.com
@@ -124,6 +126,10 @@ Running self test on set and get functions for User::Start Time Preference
 Self test on set and get functions for User::Start Time Preference PASSED
 Running self test on set and get functions for User::End Time Preference
 Self test on set and get functions for User::End Time Preference PASSED
+Running self test on set and get functions for User::Last Modified TimeStamp
+Self test on set and get functions for User::Last Modified TimeStamp PASSED
+Running self test on set and get functions for User::Last Modified by UserId
+Self test on set and get functions for User::Last Modified by UserId PASSED
 Running self test on set and get functions for User::Include Priority In Schedule
 Self test on set and get functions for User::Include Priority In Schedule PASSED
 Running self test on set and get functions for User::Include Minor Priority In Schedule
@@ -215,6 +221,8 @@ Running self test on set and get functions for Task::Personal
 Self test on set and get functions for Task::Personal PASSED
 Running self test for TaskSelfTest::markComplete
 Self test for TaskSelfTest::markComplete PASSED
+Running self test on set and get functions for Task::Last Modified by UserId
+Self test on set and get functions for Task::Last Modified by UserId PASSED
 Test Output: TaskModel:
 	Task ID: 33
 	Creator ID: 1
@@ -232,7 +240,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-09-16
+	Completed Date: 2026-09-21
 	Deleted : FALSE
 
 Task::testAllInsertFailures before successful insert this = 
@@ -285,6 +293,10 @@ Running self test on set and get functions for UserGoalModel::Parent ID
 Self test on set and get functions for UserGoalModel::Parent ID PASSED
 Running self test on set and get functions for UserGoalModel::Priority
 Self test on set and get functions for UserGoalModel::Priority PASSED
+Running self test on set and get functions for UserGoalModel::Last Modified Time Stamp
+Self test on set and get functions for UserGoalModel::Last Modified Time Stamp PASSED
+Running self test on set and get functions for UserGoalModel::Last Modified by UserId
+Self test on set and get functions for UserGoalModel::Last Modified by UserId PASSED
 Test Output: Model Name UserGoalModel
 	Goal ID: 57
 	User ID: 23
@@ -330,8 +342,10 @@ Running self test on set and get functions for Note::Content
 Self test on set and get functions for Note::Content PASSED
 Running self test on set and get functions for Note::Date Added
 Self test on set and get functions for Note::Date Added PASSED
-Running self test on set and get functions for Note::Date Added
-Self test on set and get functions for Note::Date Added PASSED
+Running self test on set and get functions for Note::Last Modified Time Stamp
+Self test on set and get functions for Note::Last Modified Time Stamp PASSED
+Running self test on set and get functions for Note::Last Modified by UserId
+Self test on set and get functions for Note::Last Modified by UserId PASSED
 Test Output: 	Note ID: 27
 	User ID: 31
 	Content: Test note content access
@@ -387,6 +401,8 @@ Running self test on set and get functions for ScheduleItem::Location
 Self test on set and get functions for ScheduleItem::Location PASSED
 Running self test on set and get functions for ScheduleItem::Personal
 Self test on set and get functions for ScheduleItem::Personal PASSED
+Running self test on set and get functions for ScheduleItem::Last Modified by UserId
+Self test on set and get functions for ScheduleItem::Last Modified by UserId PASSED
 Test Output: ScheduleItemModel:
 	ScheduleItem ID: 57
 	User ID: 1
@@ -521,7 +537,7 @@ In Self Test Query is:
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-09-23' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-09-28' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 
 Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
 In Self Test Query is: 
@@ -721,7 +737,7 @@ Running:
 	SELECT * FROM user_profile
 TestUserDBInterface::testGetAllUsers PASSED!
 Running: 
-	SELECT * FROM user_profile WHERE user_profile.created_timestamp >= '2026-09-16 00:00:00.000000' AND user_profile.created_timestamp <= '2026-09-16 23:59:59.000000' 
+	SELECT * FROM user_profile WHERE user_profile.created_timestamp >= '2026-09-21 00:00:00.000000' AND user_profile.created_timestamp <= '2026-09-21 23:59:59.000000' 
 TestUserDBInterface::testGetAllUsersAddedOnDate PASSED!
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.id_organization = 1 AND user_profile.deleted <> 1 
@@ -733,7 +749,7 @@ Running:
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.deleted <> 1 
 Running: 
-	SELECT * FROM user_profile WHERE user_profile.last_modified_time_stamp >= '2026-09-16 00:00:00.000000' AND user_profile.last_modified_time_stamp <= '2026-09-16 23:59:59.000000' AND user_profile.deleted = 1
+	SELECT * FROM user_profile WHERE user_profile.last_modified_time_stamp >= '2026-09-21 00:00:00.000000' AND user_profile.last_modified_time_stamp <= '2026-09-21 23:59:59.000000' AND user_profile.deleted = 1
 TestUserDBInterface::testGetAllUsersDeletedOnDate PASSED!
 All positive path tests for database insertions and retrievals of user PASSED!
 Running: 
@@ -1201,7 +1217,7 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Design UML Diagram for Personal Planner' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-09-16', NULL, 2e+00, 2e+00, 67, 1, 0)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-09-21', NULL, 2e+00, 2e+00, 67, 1, 0)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 58
 Running: 
@@ -1213,13 +1229,13 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Daily 30 minute walk' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-09-16', NULL, 2e+00, 0e+00, 67, 3, 0)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-09-21', NULL, 2e+00, 0e+00, 67, 3, 0)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 60
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Clean apartment' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-23' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-28' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Find unstarted tasks for user(4) PASSED!
 User 4 has 9 unstarted tasks
 TaskModel:
@@ -1344,7 +1360,7 @@ TaskModel:
 	Priority: 1
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-09-16
+	Estimated Completion Date: 2026-09-21
 	Deleted : FALSE
 
 TaskModel:
@@ -1378,7 +1394,7 @@ TaskModel:
 	Priority: 3
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-09-16
+	Estimated Completion Date: 2026-09-21
 	Deleted : FALSE
 
 Running: 
@@ -1713,7 +1729,7 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-09-16', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0 WHERE tasks.task_id = 47 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-09-21', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0 WHERE tasks.task_id = 47 
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
@@ -1802,11 +1818,11 @@ Optional Fields
 	Deleted : FALSE
 
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-23' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-28' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Running: 
 	UPDATE tasks SET tasks.deleted = 1 WHERE tasks.created_by = 4 AND tasks.task_id = 59
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-23' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-28' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Task (59) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of task PASSED!
 Running: 
@@ -2428,7 +2444,7 @@ User 4 has 17 notes
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-09-09' AND user_notes.last_modifed <= '2026-09-23' AND user_notes.deleted <> 1
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-09-14' AND user_notes.last_modifed <= '2026-09-28' AND user_notes.deleted <> 1
 Find all notes for user (4) edited in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2760,14 +2776,14 @@ All negative path tests for database insertions and retrievals of ScheduleItem P
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Wed Sep 16 07:19:02 2026
-elapsed time in seconds: 25.339
+Mon Sep 21 05:52:27 2026
+elapsed time in seconds: 25.4659
 
 
 
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
-  total heap usage: 65,427 allocs, 65,427 frees, 8,904,203 bytes allocated
+  total heap usage: 65,452 allocs, 65,452 frees, 8,915,755 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 

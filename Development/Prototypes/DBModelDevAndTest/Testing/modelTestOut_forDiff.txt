@@ -38,6 +38,8 @@ Running self test on set and get functions for Organization::Creation TimeStamp
 Self test on set and get functions for Organization::Creation TimeStamp PASSED
 Running self test on set and get functions for Organization::Last Modified TimeStamp
 Self test on set and get functions for Organization::Last Modified TimeStamp PASSED
+Running self test on set and get functions for Organization::Last Modified by UserId
+Self test on set and get functions for Organization::Last Modified by UserId PASSED
 Test Output: 	Organization ID: 1
 	Organization Name: Any organization name up to 255 characters, Inc.
 	Email Address: Any_organization_email_up_to255-characters@gmail.com
@@ -89,6 +91,10 @@ Running self test on set and get functions for User::Start Time Preference
 Self test on set and get functions for User::Start Time Preference PASSED
 Running self test on set and get functions for User::End Time Preference
 Self test on set and get functions for User::End Time Preference PASSED
+Running self test on set and get functions for User::Last Modified TimeStamp
+Self test on set and get functions for User::Last Modified TimeStamp PASSED
+Running self test on set and get functions for User::Last Modified by UserId
+Self test on set and get functions for User::Last Modified by UserId PASSED
 Running self test on set and get functions for User::Include Priority In Schedule
 Self test on set and get functions for User::Include Priority In Schedule PASSED
 Running self test on set and get functions for User::Include Minor Priority In Schedule
@@ -162,6 +168,8 @@ Running self test on set and get functions for Task::Personal
 Self test on set and get functions for Task::Personal PASSED
 Running self test for TaskSelfTest::markComplete
 Self test for TaskSelfTest::markComplete PASSED
+Running self test on set and get functions for Task::Last Modified by UserId
+Self test on set and get functions for Task::Last Modified by UserId PASSED
 Test Output: TaskModel:
 	Task ID: 33
 	Creator ID: 1
@@ -179,7 +187,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-09-09
+	Completed Date: 2026-09-21
 	Deleted : FALSE
 
 Common Insertion Failure Test PASSED!
@@ -207,6 +215,10 @@ Running self test on set and get functions for UserGoalModel::Parent ID
 Self test on set and get functions for UserGoalModel::Parent ID PASSED
 Running self test on set and get functions for UserGoalModel::Priority
 Self test on set and get functions for UserGoalModel::Priority PASSED
+Running self test on set and get functions for UserGoalModel::Last Modified Time Stamp
+Self test on set and get functions for UserGoalModel::Last Modified Time Stamp PASSED
+Running self test on set and get functions for UserGoalModel::Last Modified by UserId
+Self test on set and get functions for UserGoalModel::Last Modified by UserId PASSED
 Test Output: Model Name UserGoalModel
 	Goal ID: 57
 	User ID: 23
@@ -235,8 +247,10 @@ Running self test on set and get functions for Note::Content
 Self test on set and get functions for Note::Content PASSED
 Running self test on set and get functions for Note::Date Added
 Self test on set and get functions for Note::Date Added PASSED
-Running self test on set and get functions for Note::Date Added
-Self test on set and get functions for Note::Date Added PASSED
+Running self test on set and get functions for Note::Last Modified Time Stamp
+Self test on set and get functions for Note::Last Modified Time Stamp PASSED
+Running self test on set and get functions for Note::Last Modified by UserId
+Self test on set and get functions for Note::Last Modified by UserId PASSED
 Test Output: 	Note ID: 27
 	User ID: 31
 	Content: Test note content access
@@ -278,6 +292,8 @@ Running self test on set and get functions for ScheduleItem::Location
 Self test on set and get functions for ScheduleItem::Location PASSED
 Running self test on set and get functions for ScheduleItem::Personal
 Self test on set and get functions for ScheduleItem::Personal PASSED
+Running self test on set and get functions for ScheduleItem::Last Modified by UserId
+Self test on set and get functions for ScheduleItem::Last Modified by UserId PASSED
 Test Output: ScheduleItemModel:
 	ScheduleItem ID: 57
 	User ID: 1
@@ -327,6 +343,14 @@ Running UserQueryProcessor Self Test
 Running Exception Handling Test Cases UserQueryProcessor
 
 Exception Test for UserQueryProcessorSelfTest::testExceptionsGetAllUsers()
+
+Exception Test for UserQueryProcessorSelfTest::testExceptionGetAllUsersAddedOnDate()
+
+Exception Test for UserQueryProcessorSelfTest::testExceptionGetAllUsersDeletedOnDate()
+
+Exception Test for UserQueryProcessorSelfTest::testExceptionGetAllUsersFrom()
+
+Exception Test for UserQueryProcessorSelfTest::testExceptionGetAllActiveUsers()
 
 
 ---------------------------------------------------------------------------------
@@ -412,6 +436,10 @@ Exception Test for ScheduleItemQueryProcessor::testExceptionFindLocationsForRepe
 ---------------------------------------------------------------------------------
 
 Running user Integration Tests
+TestUserDBInterface::testGetAllUsers PASSED!
+TestUserDBInterface::testGetAllUsersAddedOnDate PASSED!
+TestUserDBInterface::testGetAllUsersFrom PASSED!
+TestUserDBInterface::testGetAllUsersDeletedOnDate PASSED!
 All positive path tests for database insertions and retrievals of user PASSED!
 All negative path tests for database insertions and retrievals of user PASSED!
 All tests for database insertions and retrievals of user PASSED!
@@ -457,7 +485,7 @@ All negative path tests for database insertions and retrievals of ScheduleItem P
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Wed Sep  9 16:05:39 2026
-elapsed time in seconds: 0.574287
+Mon Sep 21 06:07:05 2026
+elapsed time in seconds: 0.769439
 
 
