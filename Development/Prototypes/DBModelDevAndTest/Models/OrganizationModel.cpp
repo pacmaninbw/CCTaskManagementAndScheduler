@@ -142,6 +142,12 @@ void OrganizationModel::setLastModified(std::chrono::system_clock::time_point la
     m_lastModified = lastModified;
 }
 
+void OrganizationModel::setLastModifiedBy(std::size_t userId)
+{
+    m_modified = true;
+    m_lastModifiedByUser = userId;
+}
+
 bool OrganizationModel::isMissingOrganizationName() const noexcept
 {
     return m_organizationName.empty();

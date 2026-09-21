@@ -91,6 +91,7 @@ public:
     unsigned int getPriorityGroup() const { return m_priorityCategory; };
     unsigned int getPriority() const { return m_priority; };
     bool isPersonal() const { return m_personal; };
+    std::size_t getLastModifiedBy() const { return m_lastModifiedByUser; };
     void setCreatorID(std::size_t creatorID);
     void setAssignToID(std::size_t assignedID);
     void setDescription(std::string description);
@@ -112,6 +113,7 @@ public:
     void setPersonal(bool personalIn);
     void setLastUpdate(std::chrono::system_clock::time_point lastUpdateTS);
     void setTaskID(std::size_t taskID);
+    void setLastModifiedBy(std::size_t userId);
     std::string taskStatusString(TaskModel::TaskStatus status) const;
     TaskModel::TaskStatus stringToStatus(std::string statusName) const;
 

@@ -46,7 +46,8 @@ public:
     unsigned int getPriority() const noexcept { return m_priority.value_or(0); };
     std::size_t getParentId() const noexcept { return m_parentID.value_or(0); };
     std::chrono::system_clock::time_point getCreationTimeStamp() const noexcept { return m_created.value(); };
-    std::chrono::system_clock::time_point getLastUpdateTimeStamp() const noexcept { return m_lastUpdate; };
+    std::chrono::system_clock::time_point getLastUpdateTimeStamp() const noexcept { return m_lastUpdate.value(); };
+    std::size_t getLastModifiedBy() const { return m_lastModifiedByUser; };
 
 // set access methods
     void setGoalId(std::size_t userGoalId);
@@ -55,6 +56,8 @@ public:
     void setPriority(unsigned int newPriority);
     void setParentID(std::size_t newParentID);
     void setCreationTimeStamp(std::chrono::system_clock::time_point newCreationTS);
+    void setLastUpdateTimeStamp(std::chrono::system_clock::time_point updateTimeStamp);
+    void setLastModifiedBy(std::size_t userId);
 
 /*
  * Required fields.
@@ -109,7 +112,7 @@ protected:
  * set by insertion or update into the database.
  */
     std::optional<std::chrono::system_clock::time_point> m_created;
-    std::chrono::system_clock::time_point m_lastUpdate;
+    std::optional<std::chrono::system_clock::time_point> m_lastUpdate;
 };
 
 using UserGoalModel_shp = std::shared_ptr<UserGoalModel>;

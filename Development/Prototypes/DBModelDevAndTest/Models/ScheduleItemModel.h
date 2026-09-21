@@ -43,6 +43,7 @@ public:
     std::size_t getScheduleItemID() const { return m_primaryKey; };
     std::size_t getUserID() const { return m_userID; };
     std::string getTitle() const { return m_title; };
+    std::size_t getLastModifiedBy() const { return m_lastModifiedByUser; };
     std::chrono::system_clock::time_point getCreationDate() const { return m_creation.value(); };
     std::chrono::system_clock::time_point getLastUpdate() const { return m_lastUpdate.value(); };
     std::chrono::system_clock::time_point getStartTime() const { return m_startTime.value(); };
@@ -61,6 +62,7 @@ public:
     void setPersonal(bool personal);
     void setLocation(std::string location);
     void setScheduleItemID(std::size_t eventID);
+    void setLastModifiedBy(std::size_t userId);
 
 /*
  * Required fields.

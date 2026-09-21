@@ -64,6 +64,7 @@ protected:
     std::string m_primaryKeyName;
     bool m_modified;
     bool m_deleted;
+    std::size_t m_lastModifiedByUser;
     char m_delimiter;
     struct RequireField
     {

@@ -7,7 +7,6 @@
 
 // Standard C++ Header Files
 #include <exception>
-//#include <iostream>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -22,6 +21,7 @@ ModelDBInterface::ModelDBInterface(std::string modelNameIn, std::string primaryK
     m_modified = false;
     m_delimiter = ';';  
     m_deleted = false;
+    m_lastModifiedByUser = 0;
 }
 
 bool ModelDBInterface::save() noexcept

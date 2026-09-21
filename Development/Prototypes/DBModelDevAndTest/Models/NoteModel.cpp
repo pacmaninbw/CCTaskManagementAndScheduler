@@ -55,6 +55,12 @@ void NoteModel::setLastModified(std::chrono::system_clock::time_point lastModifi
     m_lastUpdate = lastModification;
 }
 
+void NoteModel::setLastModifiedBy(std::size_t userId)
+{
+    m_modified = true;
+    m_lastModifiedByUser = userId;
+}
+
 bool NoteModel::diffNote(NoteModel &other)
 {
     // Ignore user preferences

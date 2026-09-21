@@ -155,6 +155,18 @@ void UserModel::setOrganizationID(std::size_t organizationId) noexcept
     m_organizationId = organizationId;
 }
 
+void UserModel::setLastModified(std::chrono::system_clock::time_point dateTime) noexcept
+{
+    m_modified = true;
+    m_LastModified = dateTime;
+}
+
+void UserModel::setLastModifiedBy(std::size_t userId) noexcept
+{
+    m_modified = true;
+    m_lastModifiedByUser = userId;
+}
+
 bool UserModel::isMissingLastName() const noexcept
 {
     return (m_lastName.empty() || m_lastName.length() < minNameLenght);

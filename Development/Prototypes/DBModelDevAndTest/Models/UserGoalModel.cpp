@@ -65,6 +65,18 @@ void UserGoalModel::setCreationTimeStamp(std::chrono::system_clock::time_point n
     m_created = newCreationTS;
 }
 
+void UserGoalModel::setLastUpdateTimeStamp(std::chrono::system_clock::time_point updateTimeStamp)
+{
+    m_modified = true;
+    m_lastUpdate = updateTimeStamp;
+}
+
+void UserGoalModel::setLastModifiedBy(std::size_t userId)
+{
+    m_modified = true;
+    m_lastModifiedByUser = userId;
+}
+
 bool UserGoalModel::diffGoal(UserGoalModel &other)
 {
     return (m_primaryKey == other.m_primaryKey && m_userID == other.m_userID &&

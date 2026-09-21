@@ -85,6 +85,12 @@ void ScheduleItemModel::setScheduleItemID(std::size_t eventId)
     m_primaryKey = eventId;
 }
 
+void ScheduleItemModel::setLastModifiedBy(std::size_t userId)
+{
+    m_modified = true;
+    m_lastModifiedByUser = userId;
+}
+
 bool ScheduleItemModel::diffScheduleItem(ScheduleItemModel &other)
 {
     std::chrono::system_clock::time_point localStartTime = m_startTime.value_or(std::chrono::system_clock::now());

@@ -40,7 +40,7 @@ public:
     std::size_t getNoteId() const { return m_primaryKey; };
     std::size_t getUserId() const { return m_userID; };
     std::string getContent() const { return m_content; };
-    std::chrono::system_clock::time_point getDateAdded() const { return m_creationDate.value(); };
+    std::size_t getLastModifiedBy() const { return m_lastModifiedByUser; };    std::chrono::system_clock::time_point getDateAdded() const { return m_creationDate.value(); };
     std::chrono::system_clock::time_point getLastModified() const { return m_lastUpdate.value(); };
 
     void setNoteId(std::size_t noteId);
@@ -48,6 +48,7 @@ public:
     void setContent(std::string content);
     void setDateAdded(std::chrono::system_clock::time_point created);
     void setLastModified(std::chrono::system_clock::time_point lastModification);
+    void setLastModifiedBy(std::size_t userId); 
 /*
  * Required fields.
  */

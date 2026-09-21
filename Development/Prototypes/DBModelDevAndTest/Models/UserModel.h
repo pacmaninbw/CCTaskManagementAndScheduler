@@ -65,6 +65,8 @@ public:
     std::chrono::system_clock::time_point getCreationDate() const noexcept { return m_created.value(); };
     std::optional<std::chrono::system_clock::time_point> getLastLogin() const noexcept { return m_lastLogin; };
     std::size_t getOrganizationID() const { return m_organizationId.value_or(0); };
+    std::chrono::system_clock::time_point getLastModified() const noexcept { return m_LastModified.value(); };
+    std::size_t getLastModifiedBy() const noexcept { return m_lastModifiedByUser; };
     bool isPriorityInSchedule() const noexcept { return m_preferences.includePriorityInSchedule; };
     bool isMinorPriorityInSchedule() const noexcept { return m_preferences.includeMinorPriorityInSchedule; };
     bool isUsingLettersForMaorPriority() const noexcept { return m_preferences.userLetterForMajorPriority; };
@@ -86,7 +88,8 @@ public:
     void setCreationDate(std::chrono::system_clock::time_point dateIn) noexcept;
     void setLastLogin(std::chrono::system_clock::time_point dateAndTime) noexcept;
     void setOrganizationID(std::size_t organizationId) noexcept;
-
+    void setLastModified(std::chrono::system_clock::time_point dateTime) noexcept;
+    void setLastModifiedBy(std::size_t userId) noexcept;
 /*
  * Required fields.
  */
@@ -150,8 +153,10 @@ protected:
     std::string m_password;
     UserPreferences m_preferences;
     std::optional<std::chrono::system_clock::time_point> m_created;
+    std::optional<std::chrono::system_clock::time_point> m_LastModified;
     std::optional<std::chrono::system_clock::time_point> m_lastLogin;
     std::optional<std::size_t> m_organizationId;
+    std::size_t m_lastModifiedByUser;
 
 private:
 // Preference subfield indexes

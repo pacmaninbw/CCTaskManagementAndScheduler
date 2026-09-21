@@ -340,6 +340,12 @@ void TaskModel::setTaskID(std::size_t taskID)
     m_primaryKey = taskID;
 }
 
+void TaskModel::setLastModifiedBy(std::size_t userId)
+{
+    m_modified = true;
+    m_lastModifiedByUser = userId;
+}
+
 std::string TaskModel::taskStatusString(TaskModel::TaskStatus inVal) const
 {
     auto statusName = taskStatusConversionTable.lookupName(inVal);

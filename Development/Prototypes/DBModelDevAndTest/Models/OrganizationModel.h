@@ -74,6 +74,9 @@ public:
     std::chrono::system_clock::time_point getCreationTimeStamp() {return m_created.value(); };
     void setLastModified(std::chrono::system_clock::time_point lastModified) noexcept;
     std::chrono::system_clock::time_point getLastModified() { return m_lastModified.value(); };
+    std::size_t getLastModifiedBy() const { return m_lastModifiedByUser; };
+    void setLastModifiedBy(std::size_t userId);
+
 
 /*
  * Required fields.
