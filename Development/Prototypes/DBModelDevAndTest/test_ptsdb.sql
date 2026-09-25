@@ -11,8 +11,8 @@ CREATE OR REPLACE TABLE test_ptsdb.organization_profile (
     organization_name VARCHAR(256) NOT NULL,
     email_address VARCHAR(256) NOT NULL,
     phone_number VARCHAR(32) NOT NULL,
-    primary_contact_user INT UNSIGNED,    # This should  be a foriegn key from user_profile, but that table does not exist yet
-    secondary_contact_user INT UNSIGNED,  # This should  be a foriegn key from user_profile, but that table does not exist yet
+    primary_contact_user INT UNSIGNED,    # Altered to foriegn key after user_profile is created.
+    secondary_contact_user INT UNSIGNED,  # Altered to foriegn key after user_profile is created.
     address_line_1 VARCHAR(256),
     address_line_2 VARCHAR(256),
     city VARCHAR(128),
@@ -23,12 +23,13 @@ CREATE OR REPLACE TABLE test_ptsdb.organization_profile (
     created_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_modified_time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
+    last_modified_by_user INT UNSIGNED,    # Altered to foriegn key after user_profile is created.
     PRIMARY KEY (id_organization),
     INDEX organization_name_idx (organization_name ASC),
     INDEX fk_orgn_prime_contact_idx (primary_contact_user ASC),
     CONSTRAINT fk_parent_organization
         FOREIGN KEY (parent_organization)
-        REFERENCES organization_profile (id_organization)
+        REFERENCES test_ptsdb.organization_profile (id_organization)
 );
 
 
@@ -48,6 +49,7 @@ CREATE OR REPLACE TABLE test_ptsdb.user_profile (
     last_modified_time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     last_login DATETIME,
     deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
+    last_modified_by_user INT UNSIGNED NOT NULL DEFAULT 1,
     PRIMARY KEY (user_id),
     INDEX full_name_idx (last_name, first_name, middle_initial),
     UNIQUE INDEX user_login_unique (user_login ASC),
@@ -55,11 +57,37 @@ CREATE OR REPLACE TABLE test_ptsdb.user_profile (
     INDEX up_last_login (last_login DESC),
     CONSTRAINT fk_user_profile_org_id
         FOREIGN KEY (id_organization)
-        REFERENCES organization_profile (id_organization)
+        REFERENCES test_ptsdb.organization_profile (id_organization)
         ON DELETE RESTRICT
-        ON UPDATE RESTRICT,
-    INDEX fk_user_orgid_idx (id_organization)
+        ON UPDATE CASCADE,
+    INDEX fk_user_orgid_idx (id_organization),
+    CONSTRAINT fk_user_profile_last_modified_by_user
+        FOREIGN KEY (last_modified_by_user)
+        REFERENCES test_ptsdb.user_profile (user_id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
 );
+
+ALTER TABLE test_ptsdb.organization_profile 
+ADD CONSTRAINT fk_organization_primary_contact_user 
+    FOREIGN KEY (primary_contact_user) 
+    REFERENCES test_ptsdb.user_profile (user_id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE;
+
+ALTER TABLE test_ptsdb.organization_profile 
+ADD CONSTRAINT fk_organization_secondary_contact_user 
+    FOREIGN KEY (secondary_contact_user) 
+    REFERENCES test_ptsdb.user_profile (user_id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE;
+
+ALTER TABLE test_ptsdb.organization_profile 
+ADD CONSTRAINT fk_organization_last_modified_by_user 
+    FOREIGN KEY (last_modified_by_user) 
+    REFERENCES test_ptsdb.user_profile (user_id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE;
 
 -- --------------------------------------------------------
 
@@ -72,6 +100,7 @@ CREATE OR REPLACE TABLE  test_ptsdb.user_goals (
     creation_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_modified_time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
+    last_modified_by_user INT UNSIGNED NOT NULL DEFAULT 1,
     PRIMARY KEY (id_user_goals, user_id),
     INDEX ug_description_idx (description ASC),
     INDEX ug_creation_timestamp_idx (creation_timestamp DESC),
@@ -80,11 +109,16 @@ CREATE OR REPLACE TABLE  test_ptsdb.user_goals (
         FOREIGN KEY (user_id)
         REFERENCES user_profile (user_id)
         ON DELETE RESTRICT
-        ON UPDATE RESTRICT,
+        ON UPDATE CASCADE,
     INDEX fk_user_goals_user_id_idx (user_id),
     CONSTRAINT fk_parent_goal
         FOREIGN KEY (parent_goal)
-        REFERENCES user_goals (id_user_goals)
+        REFERENCES user_goals (id_user_goals),
+    CONSTRAINT fk_user_goals_last_modified_by_user
+        FOREIGN KEY (last_modified_by_user)
+        REFERENCES test_ptsdb.user_profile (user_id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
 );
 
 -- --------------------------------------------------------
@@ -96,6 +130,7 @@ CREATE OR REPLACE TABLE test_ptsdb.user_notes (
     content VARCHAR(1024) NOT NULL,
     last_modifed TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
+    last_modified_by_user INT UNSIGNED NOT NULL DEFAULT 1,
     PRIMARY KEY (id_user_notes, user_id),
     INDEX note_creation (note_creation DESC),
     INDEX user_notes_last_modifed (last_modifed DESC),
@@ -105,7 +140,12 @@ CREATE OR REPLACE TABLE test_ptsdb.user_notes (
       FOREIGN KEY (user_id)
       REFERENCES test_ptsdb.user_profile (user_id)
       ON DELETE RESTRICT
-      ON UPDATE RESTRICT
+      ON UPDATE CASCADE,
+    CONSTRAINT fk_user_notes_last_modified_by_user
+        FOREIGN KEY (last_modified_by_user)
+        REFERENCES test_ptsdb.user_profile (user_id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
 );
     
 -- --------------------------------------------------------
@@ -129,6 +169,7 @@ CREATE OR REPLACE TABLE test_ptsdb.tasks (
     personal TINYINT NOT NULL DEFAULT 0,
     last_modified_time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
+    last_modified_by_user INT UNSIGNED NOT NULL DEFAULT 1,
     PRIMARY KEY (task_id, created_by),
     INDEX fk_tasks_created_by_idx (created_by ASC),
     INDEX fk_tasks_assigned_to_idx (assigned_to ASC),
@@ -141,14 +182,19 @@ CREATE OR REPLACE TABLE test_ptsdb.tasks (
     INDEX task_planned_start_idx (planned_start ASC),
     CONSTRAINT fk_tasks_created_by
         FOREIGN KEY (created_by)
-        REFERENCES user_profile (user_id)
+        REFERENCES test_ptsdb.user_profile (user_id)
         ON DELETE RESTRICT
-        ON UPDATE RESTRICT,
+        ON UPDATE CASCADE,
     CONSTRAINT fk_tasks_assigned_to
         FOREIGN KEY (assigned_to)
-        REFERENCES user_profile (user_id)
+        REFERENCES test_ptsdb.user_profile (user_id)
         ON DELETE RESTRICT
-        ON UPDATE RESTRICT
+        ON UPDATE CASCADE,
+    CONSTRAINT fk_tasks_last_modified_by_user
+        FOREIGN KEY (last_modified_by_user)
+        REFERENCES test_ptsdb.user_profile (user_id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
 );
 
 -- --------------------------------------------------------
@@ -161,14 +207,14 @@ CREATE OR REPLACE TABLE test_ptsdb.task_dependencies (
     INDEX fk_dependent_task_idx (dependent_task ASC),
     CONSTRAINT dependency
         FOREIGN KEY (dependency)
-        REFERENCES tasks (task_id)
+        REFERENCES test_ptsdb.tasks (task_id)
         ON DELETE RESTRICT
-        ON UPDATE RESTRICT,
+        ON UPDATE CASCADE,
     CONSTRAINT fk_dependent_task
         FOREIGN KEY (dependent_task)
-        REFERENCES tasks (task_id)
+        REFERENCES test_ptsdb.tasks (task_id)
         ON DELETE RESTRICT
-        ON UPDATE RESTRICT
+        ON UPDATE CASCADE
 );
 -- --------------------------------------------------------
 
@@ -179,20 +225,26 @@ CREATE OR REPLACE TABLE  test_ptsdb.user_task_goals (
     creation_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_modified_time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
+    last_modified_by_user INT UNSIGNED NOT NULL DEFAULT 1,
     PRIMARY KEY (user_id, task_id),
     INDEX utg_task_idx (task_id ASC),
     INDEX utg_creation_timestamp_idx (creation_timestamp DESC),
     INDEX utg_last_modified_time_stamp_idx (last_modified_time_stamp DESC),
     CONSTRAINT fk_user_task_goals_assigned_to
         FOREIGN KEY (user_id)
-        REFERENCES user_profile (user_id)
+        REFERENCES test_ptsdb.user_profile (user_id)
         ON DELETE RESTRICT
-        ON UPDATE RESTRICT,
+        ON UPDATE CASCADE,
     CONSTRAINT fk_user_task_goals_task_id
         FOREIGN KEY (task_id)
-        REFERENCES tasks (task_id)
+        REFERENCES test_ptsdb.tasks (task_id)
         ON DELETE RESTRICT
-        ON UPDATE RESTRICT
+        ON UPDATE CASCADE,
+    CONSTRAINT fk_user_task_goals_last_modified_by_user
+        FOREIGN KEY (last_modified_by_user)
+        REFERENCES test_ptsdb.user_profile (user_id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
 );
 
 
@@ -209,6 +261,7 @@ CREATE OR REPLACE TABLE test_ptsdb.user_schedule_item (
     created_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_modified_time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
+    last_modified_by_user INT UNSIGNED NOT NULL DEFAULT 1,
     PRIMARY KEY (id_user_schedule_item, user_id),
     INDEX schedule_item_title_idx (title ASC),
     INDEX schedule_item_start_date_time_idx (start_date_time DESC),
@@ -220,7 +273,41 @@ CREATE OR REPLACE TABLE test_ptsdb.user_schedule_item (
         FOREIGN KEY (user_id)
         REFERENCES test_ptsdb.user_profile (user_id)
         ON DELETE RESTRICT
-        ON UPDATE RESTRICT
+        ON UPDATE CASCADE,
+    CONSTRAINT fk_user_schedule_item_last_modified_by_user
+        FOREIGN KEY (last_modified_by_user)
+        REFERENCES test_ptsdb.user_profile (user_id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+);
+
+-- --------------------------------------------------------
+
+CREATE OR REPLACE TABLE test_ptsdb.user_permissions (
+    user_id INT UNSIGNED NOT NULL,
+    id_organization INT UNSIGNED NOT NULL,
+    application_permission INT UNSIGNED NOT NULL DEFAULT 0,
+    organization_permission INT UNSIGNED NOT NULL DEFAULT 0,
+    created_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_modified_time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_modified_by_user INT UNSIGNED NOT NULL DEFAULT 1,
+    deleted TINYINT NOT NULL DEFAULT 0,    # Records are never deleted but they can be hidden.
+    PRIMARY KEY (user_id, id_organization),
+    CONSTRAINT fk_user_permissions_user_id
+        FOREIGN KEY (user_id)
+        REFERENCES test_ptsdb.user_profile (user_id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+    CONSTRAINT fk_user_permissions_id_organization
+        FOREIGN KEY (id_organization)
+        REFERENCES organization_profile (id_organization)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+    CONSTRAINT fk_user_permissions_last_modified_by_user
+        FOREIGN KEY (last_modified_by_user)
+        REFERENCES test_ptsdb.user_profile (user_id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
 );
 
 COMMIT;
