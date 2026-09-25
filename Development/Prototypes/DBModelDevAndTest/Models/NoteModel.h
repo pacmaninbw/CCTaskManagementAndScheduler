@@ -27,6 +27,7 @@ struct NoteDbQueryValues
     std::int64_t deleted;
     boost::mysql::datetime note_creation;
     boost::mysql::datetime last_modifed;
+    std::size_t last_modified_by_user;
 };
 
 class NoteModel : public ModelDBInterface
@@ -78,6 +79,7 @@ public:
                 os << std::format(outFmtStr, "Last Update", note.m_lastUpdate.value());
             }
         }
+        os << std::format(outFmtStr, "Last Modified by User ID", note.m_lastModifiedByUser);
 
         return os;
     };

@@ -31,6 +31,7 @@ struct ScheduleItemDbQueryValues
     boost::mysql::datetime created_timestamp;
     boost::mysql::datetime last_modified_time_stamp;
     std::int64_t deleted;
+    std::uint64_t last_modified_by_user;
 };
 
 class ScheduleItemModel : public ModelDBInterface
@@ -102,6 +103,8 @@ public:
                 os << std::format(outFmtStr, "Last Update", scheduleItem.m_lastUpdate.value());
             }
         }
+
+        os << std::format(outFmtStr, "Last Modified by User ID", scheduleItem.m_lastModifiedByUser);
 
         return os;
     };

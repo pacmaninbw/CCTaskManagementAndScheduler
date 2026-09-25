@@ -23,6 +23,7 @@ NoteModel::NoteModel(const NoteDbQueryValues &dbTranslator)
     m_creationDate = common::toChronoTimePoint(dbTranslator.note_creation);
     m_lastUpdate = common::toChronoTimePoint(dbTranslator.last_modifed);
     m_deleted = dbTranslator.deleted;
+    m_lastModifiedByUser = dbTranslator.last_modified_by_user;
 }
 
 void NoteModel::setNoteId(std::size_t noteId)

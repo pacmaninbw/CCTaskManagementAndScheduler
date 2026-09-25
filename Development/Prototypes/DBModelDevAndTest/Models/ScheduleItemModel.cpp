@@ -29,6 +29,7 @@ ScheduleItemModel::ScheduleItemModel(const ScheduleItemDbQueryValues &databaseVa
     m_creation = common::toChronoTimePoint(databaseValues.created_timestamp);
     m_lastUpdate = common::toChronoTimePoint(databaseValues.last_modified_time_stamp);
     m_deleted = databaseValues.deleted;
+    m_lastModifiedByUser = databaseValues.last_modified_by_user;
 }
 
 void ScheduleItemModel::setUserID(std::size_t userId)

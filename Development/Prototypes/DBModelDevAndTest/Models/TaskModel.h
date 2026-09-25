@@ -42,6 +42,7 @@ struct TaskDbQueryValues
     boost::mysql::datetime last_modified_time_stamp;
     std::optional<std::uint64_t> dependent_task;
     std::int64_t deleted;
+    std::uint64_t last_modified_by_user;
 };
 
 class TaskModel : public ModelDBInterface
@@ -180,6 +181,8 @@ public:
         }
 
         os << std::format(outFmtStr, "Deleted ", (task.m_deleted? "TRUE" : "FALSE"));
+
+        os << std::format(outFmtStr, "Last Modified by User ID", task.m_lastModifiedByUser);
 
         return os;
     };

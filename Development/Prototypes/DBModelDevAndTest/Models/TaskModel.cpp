@@ -61,6 +61,7 @@ TaskModel::TaskModel(const TaskDbQueryValues &dbTranslator)
     m_lastUpdate = common::toChronoTimePoint(dbTranslator.last_modified_time_stamp);
     m_deleted = dbTranslator.deleted;
     m_parentTaskID = dbTranslator.dependent_task;
+    m_lastModifiedByUser = dbTranslator.last_modified_by_user;
 }
 
 TaskModel::TaskModel(std::size_t creatorID)

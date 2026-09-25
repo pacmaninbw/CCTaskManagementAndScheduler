@@ -26,6 +26,7 @@ UserGoalModel::UserGoalModel(const GoalDbQueryValues &databaseValues)
     m_created = common::toChronoTimePoint(databaseValues.creation_timestamp);
     m_lastUpdate = common::toChronoTimePoint(databaseValues.last_modified_time_stamp);
     m_deleted = databaseValues.deleted;
+    m_lastModifiedByUser = databaseValues.last_modified_by_user;
 }
 
 

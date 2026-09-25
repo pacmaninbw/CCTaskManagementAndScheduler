@@ -35,6 +35,7 @@ UserModel::UserModel(const UserDbQueryValues &databaseValues)
     m_created = common::toChronoTimePoint(databaseValues.created_timestamp);
     m_lastLogin = databaseValues.last_login.transform(common::toChronoTimePoint);
     m_organizationId = databaseValues.id_organization;
+    m_lastModifiedByUser = databaseValues.last_modified_by_user;
 }
 
 void UserModel::autoGenerateLoginAndPassword() noexcept

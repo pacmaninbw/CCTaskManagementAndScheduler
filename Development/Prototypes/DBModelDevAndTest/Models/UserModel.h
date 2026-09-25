@@ -33,6 +33,7 @@ struct UserDbQueryValues
     std::optional<boost::mysql::datetime> last_login;
     std::string preferences;
     std::int64_t deleted;
+    std::int64_t last_modified_by_user;
 };
 
 class UserModel : public ModelDBInterface
@@ -126,6 +127,8 @@ public:
         {
             os << std::format(outFmtStr, "Last Login", user.m_lastLogin.value());
         }
+
+        os << std::format(outFmtStr, "Last Modified by User ID", user.m_lastModifiedByUser);
 
         return os;
     };

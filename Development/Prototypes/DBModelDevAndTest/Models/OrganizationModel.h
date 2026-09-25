@@ -31,6 +31,7 @@ struct OrganizationDbQueryValues
     boost::mysql::datetime created_timestamp;
     boost::mysql::datetime last_modified_time_stamp;
     std::int64_t deleted;
+    std::optional<std::uint64_t> last_modified_by_user;
 };
 
 class OrganizationModel : public ModelDBInterface
@@ -117,6 +118,7 @@ public:
         os << std::format(outFmtStr, "Postal Code", orgProfile.m_postalCode.value_or(""));
         os << std::format(outFmtStr, "State or Province", orgProfile.m_stateOrProvince.value_or(""));
         os << std::format(outFmtStr, "Nation", orgProfile.m_nation.value_or(""));
+        os << std::format(outFmtStr, "Last Modified by User ID", orgProfile.m_lastModifiedByUser);
         
         if (orgProfile.m_parentOrganization.has_value())
         {

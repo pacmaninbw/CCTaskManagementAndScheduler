@@ -29,6 +29,7 @@ struct GoalDbQueryValues
     boost::mysql::datetime creation_timestamp;
     boost::mysql::datetime last_modified_time_stamp;
     std::int64_t deleted;
+    std::uint64_t last_modified_by_user;
 };
 
 class UserGoalModel : public ModelDBInterface
@@ -91,16 +92,16 @@ public:
             os << std::format(outFmtStr, "Last Update Timestamp", goal.getLastUpdateTimeStamp());
         }
 
+        os << std::format(outFmtStr, "Last Modified by User ID", goal.m_lastModifiedByUser);
+
         return os;
     };
 
 protected:
     bool diffGoal(UserGoalModel& other);
-//    void processResultRow(boost::mysql::row_view rv) override;
     std::string formatInsertStatement() override;
     std::string formatUpdateStatement() override;
     std::string formatDeleteStatement() override;
-//    std::string formatSelectStatement() override;
     
     std::size_t m_userID;
     std::string m_description;
