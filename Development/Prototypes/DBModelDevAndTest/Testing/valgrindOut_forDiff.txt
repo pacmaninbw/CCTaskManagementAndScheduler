@@ -64,6 +64,7 @@ Test Output: 	Organization ID: 1
 	Postal Code: Any postal code up to 31 characters.
 	State or Province: Any state or province up to 255 characters.
 	Nation: Any nation up to 63 characters.
+	Last Modified by User ID: 1
 	Parent Organization: 23
 
 Organization::testAllInsertFailures before successful insert this = 
@@ -78,6 +79,7 @@ Organization::testAllInsertFailures before successful insert this =
 	Postal Code: 
 	State or Province: 
 	Nation: 
+	Last Modified by User ID: 0
 	Parent Organization: 23
 
 In Self Test Query is: 
@@ -147,6 +149,7 @@ Test Output: 	User ID: 31
 	PassWord: AnyPassword
 	User Added: 2024-05-14 08:31:53.000000000
 	Last Login: 2024-05-14 08:31:53.000000000
+	Last Modified by User ID: 1
 
 User::testAllInsertFailures before successful insert this = 
 	User ID: 0
@@ -156,6 +159,7 @@ User::testAllInsertFailures before successful insert this =
 	Email: teststringvalue
 	Login Name: teststringvalue
 	PassWord: teststringvalue
+	Last Modified by User ID: 1
 
 In Self Test Query is: 
 	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences ) VALUES (1, 'teststringvalue', 'teststringvalue', '', 'teststringvalue', 'teststringvalue', 'teststringvalue', '4:30 AM;4:15 PM;1;1;1;1' )
@@ -240,8 +244,9 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-09-21
+	Completed Date: 2026-09-25
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 Task::testAllInsertFailures before successful insert this = 
 TaskModel:
@@ -258,6 +263,7 @@ TaskModel:
 	Priority: 0
 Optional Fields
 	Deleted : FALSE
+	Last Modified by User ID: 0
 
 In Self Test Query is: 
 	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (1, 1, 'Test missing required fields: Set Description', 0, '2024-05-21', '2024-05-07', NULL, NULL, NULL, 5e+00, 0e+00, 1, 0, 0)
@@ -303,6 +309,7 @@ Test Output: Model Name UserGoalModel
 	Description: Test note content access
 	Priority: 1
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 UserGoalModel::testAllInsertFailures before successful insert this = 
 Model Name UserGoalModel
@@ -311,6 +318,7 @@ Model Name UserGoalModel
 	Description: Testing negative note insertion path
 	Priority: 0
 	Parent ID: 0
+	Last Modified by User ID: 0
 
 In Self Test Query is: 
 	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted) VALUES (51, 'Testing negative note insertion path', NULL, NULL, 0)
@@ -349,11 +357,13 @@ Self test on set and get functions for Note::Last Modified by UserId PASSED
 Test Output: 	Note ID: 27
 	User ID: 31
 	Content: Test note content access
+	Last Modified by User ID: 1
 
 Note::testAllInsertFailures before successful insert this = 
 	Note ID: 0
 	User ID: 27
 	Content: Testing negative note insertion path
+	Last Modified by User ID: 0
 
 In Self Test Query is: 
 	INSERT INTO user_notes(user_id, content, deleted, note_creation) VALUES (27, 'Testing negative note insertion path', 0, NULL)
@@ -412,6 +422,7 @@ Test Output: ScheduleItemModel:
 	Personal: TRUE
 	location: Home Office
 Optional Fields
+	Last Modified by User ID: 1
 
 ScheduleItem::testAllInsertFailures before successful insert this = 
 ScheduleItemModel:
@@ -423,6 +434,7 @@ ScheduleItemModel:
 	Personal: FALSE
 	location: 
 Optional Fields
+	Last Modified by User ID: 0
 
 In Self Test Query is: 
 	INSERT INTO user_schedule_item  (user_id, start_date_time, end_date_time, title, personal, location, deleted) VALUES (1, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Test missing required fields: Set title', 0, NULL, 0 )
@@ -537,7 +549,7 @@ In Self Test Query is:
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-09-28' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-10-02' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 
 Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
 In Self Test Query is: 
@@ -737,7 +749,7 @@ Running:
 	SELECT * FROM user_profile
 TestUserDBInterface::testGetAllUsers PASSED!
 Running: 
-	SELECT * FROM user_profile WHERE user_profile.created_timestamp >= '2026-09-21 00:00:00.000000' AND user_profile.created_timestamp <= '2026-09-21 23:59:59.000000' 
+	SELECT * FROM user_profile WHERE user_profile.created_timestamp >= '2026-09-25 00:00:00.000000' AND user_profile.created_timestamp <= '2026-09-25 23:59:59.000000' 
 TestUserDBInterface::testGetAllUsersAddedOnDate PASSED!
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.id_organization = 1 AND user_profile.deleted <> 1 
@@ -749,7 +761,7 @@ Running:
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.deleted <> 1 
 Running: 
-	SELECT * FROM user_profile WHERE user_profile.last_modified_time_stamp >= '2026-09-21 00:00:00.000000' AND user_profile.last_modified_time_stamp <= '2026-09-21 23:59:59.000000' AND user_profile.deleted = 1
+	SELECT * FROM user_profile WHERE user_profile.last_modified_time_stamp >= '2026-09-25 00:00:00.000000' AND user_profile.last_modified_time_stamp <= '2026-09-25 23:59:59.000000' AND user_profile.deleted = 1
 TestUserDBInterface::testGetAllUsersDeletedOnDate PASSED!
 All positive path tests for database insertions and retrievals of user PASSED!
 Running: 
@@ -798,6 +810,7 @@ Found 5 Organizations
 	Postal Code: postal code
 	State or Province: Any state
 	Nation: any country
+	Last Modified by User ID: 0
 
 	Organization ID: 2
 	Organization Name: TestOrg1
@@ -810,6 +823,7 @@ Found 5 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
+	Last Modified by User ID: 0
 
 	Organization ID: 3
 	Organization Name: AllFieldsFilled
@@ -823,6 +837,7 @@ Found 5 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
+	Last Modified by User ID: 0
 
 	Organization ID: 4
 	Organization Name: NoTimeStampOrg
@@ -835,6 +850,7 @@ Found 5 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
+	Last Modified by User ID: 0
 
 	Organization ID: 5
 	Organization Name: TestModify
@@ -847,6 +863,7 @@ Found 5 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
+	Last Modified by User ID: 0
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.id_organization = 1 
@@ -862,6 +879,7 @@ Found 	Organization ID: 1
 	Postal Code: postal code
 	State or Province: Any state
 	Nation: any country
+	Last Modified by User ID: 0
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.organization_name LIKE '%TestOrg1%' AND organization_profile.deleted <> 1
@@ -878,6 +896,7 @@ Found 1 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
+	Last Modified by User ID: 0
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.primary_contact_user = 4 AND organization_profile.deleted <> 1
@@ -894,6 +913,7 @@ Found 4 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
+	Last Modified by User ID: 0
 
 	Organization ID: 3
 	Organization Name: AllFieldsFilled
@@ -907,6 +927,7 @@ Found 4 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
+	Last Modified by User ID: 0
 
 	Organization ID: 4
 	Organization Name: NoTimeStampOrg
@@ -919,6 +940,7 @@ Found 4 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
+	Last Modified by User ID: 0
 
 	Organization ID: 5
 	Organization Name: TestModify
@@ -931,6 +953,7 @@ Found 4 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
+	Last Modified by User ID: 0
 
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.last_name = 'One' AND user_profile.first_name = 'User' AND user_profile.middle_initial = 'P'
@@ -949,6 +972,7 @@ Found 4 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
+	Last Modified by User ID: 0
 
 	Organization ID: 3
 	Organization Name: AllFieldsFilled
@@ -962,6 +986,7 @@ Found 4 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
+	Last Modified by User ID: 0
 
 	Organization ID: 4
 	Organization Name: NoTimeStampOrg
@@ -974,6 +999,7 @@ Found 4 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
+	Last Modified by User ID: 0
 
 	Organization ID: 5
 	Organization Name: TestModify
@@ -986,6 +1012,7 @@ Found 4 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
+	Last Modified by User ID: 0
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.created_timestamp >= '2024-05-07' AND organization_profile.created_timestamp <= '2024-05-21' AND organization_profile.deleted <> 1
@@ -1002,6 +1029,7 @@ Found 3 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
+	Last Modified by User ID: 0
 
 	Organization ID: 3
 	Organization Name: AllFieldsFilled
@@ -1015,6 +1043,7 @@ Found 3 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
+	Last Modified by User ID: 0
 
 	Organization ID: 5
 	Organization Name: TestModify
@@ -1027,6 +1056,7 @@ Found 3 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
+	Last Modified by User ID: 0
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.created_timestamp >= '2024-05-14 00:00:00.000000' AND organization_profile.created_timestamp < '2024-05-15 00:00:00.000000' AND organization_profile.deleted <> 1 ORDER BY organization_profile.created_timestamp ASC
@@ -1043,6 +1073,7 @@ Found 3 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
+	Last Modified by User ID: 0
 
 	Organization ID: 3
 	Organization Name: AllFieldsFilled
@@ -1056,6 +1087,7 @@ Found 3 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
+	Last Modified by User ID: 0
 
 	Organization ID: 5
 	Organization Name: TestModify
@@ -1068,6 +1100,7 @@ Found 3 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
+	Last Modified by User ID: 0
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.last_modified_time_stamp >= '2024-05-14 00:00:00.000000' AND organization_profile.last_modified_time_stamp < '2024-05-15 00:00:00.000000' AND organization_profile.deleted <> 1 ORDER BY organization_profile.last_modified_time_stamp ASC
@@ -1084,6 +1117,7 @@ Found 2 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
+	Last Modified by User ID: 0
 
 	Organization ID: 3
 	Organization Name: AllFieldsFilled
@@ -1097,6 +1131,7 @@ Found 2 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
+	Last Modified by User ID: 0
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.deleted <> 1
@@ -1217,7 +1252,7 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Design UML Diagram for Personal Planner' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-09-21', NULL, 2e+00, 2e+00, 67, 1, 0)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-09-25', NULL, 2e+00, 2e+00, 67, 1, 0)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 58
 Running: 
@@ -1229,13 +1264,13 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Daily 30 minute walk' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-09-21', NULL, 2e+00, 0e+00, 67, 3, 0)
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-09-25', NULL, 2e+00, 0e+00, 67, 3, 0)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 60
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Clean apartment' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-28' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-02' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Find unstarted tasks for user(4) PASSED!
 User 4 has 9 unstarted tasks
 TaskModel:
@@ -1255,6 +1290,7 @@ Optional Fields
 	Parent ID: 1
 	Estimated Completion Date: 2025-05-01
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 51
@@ -1273,6 +1309,7 @@ Optional Fields
 	Parent ID: 1
 	Estimated Completion Date: 2025-05-03
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 52
@@ -1291,6 +1328,7 @@ Optional Fields
 	Parent ID: 1
 	Estimated Completion Date: 2025-05-03
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 53
@@ -1309,6 +1347,7 @@ Optional Fields
 	Parent ID: 1
 	Estimated Completion Date: 2025-05-04
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 54
@@ -1327,6 +1366,7 @@ Optional Fields
 	Parent ID: 1
 	Estimated Completion Date: 2025-05-05
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 55
@@ -1345,6 +1385,7 @@ Optional Fields
 	Parent ID: 1
 	Estimated Completion Date: 2025-05-05
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 58
@@ -1360,8 +1401,9 @@ TaskModel:
 	Priority: 1
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-09-21
+	Estimated Completion Date: 2026-09-25
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 59
@@ -1379,6 +1421,7 @@ Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2056-07-07
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 60
@@ -1394,8 +1437,9 @@ TaskModel:
 	Priority: 3
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-09-21
+	Estimated Completion Date: 2026-09-25
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.last_name = 'Black' AND user_profile.first_name = 'Paul' AND user_profile.middle_initial = 'A'
@@ -1420,6 +1464,7 @@ Optional Fields
 	Actual Start Date: 2026-02-23
 	Estimated Completion Date: 2026-04-30
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 39
@@ -1438,6 +1483,7 @@ Optional Fields
 	Parent ID: 1
 	Estimated Completion Date: 2026-03-09
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 5
@@ -1456,6 +1502,7 @@ Optional Fields
 	Parent ID: 1
 	Estimated Completion Date: 2026-03-08
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 19
@@ -1475,6 +1522,7 @@ Optional Fields
 	Actual Start Date: 2026-03-06
 	Estimated Completion Date: 2026-03-08
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 31
@@ -1493,6 +1541,7 @@ Optional Fields
 	Parent ID: 1
 	Estimated Completion Date: 2026-03-11
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 12
@@ -1512,6 +1561,7 @@ Optional Fields
 	Actual Start Date: 2026-03-07
 	Estimated Completion Date: 2026-03-11
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 10
@@ -1531,6 +1581,7 @@ Optional Fields
 	Actual Start Date: 2026-02-21
 	Estimated Completion Date: 2026-03-08
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 37
@@ -1549,6 +1600,7 @@ Optional Fields
 	Parent ID: 1
 	Estimated Completion Date: 2026-03-09
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 20
@@ -1567,6 +1619,7 @@ Optional Fields
 	Parent ID: 1
 	Estimated Completion Date: 2026-03-06
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 30
@@ -1585,6 +1638,7 @@ Optional Fields
 	Parent ID: 1
 	Estimated Completion Date: 2026-03-06
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 18
@@ -1602,6 +1656,7 @@ Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-03-06
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 13
@@ -1620,6 +1675,7 @@ Optional Fields
 	Parent ID: 1
 	Estimated Completion Date: 2026-03-06
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 17
@@ -1637,6 +1693,7 @@ Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-03-04
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 21
@@ -1654,6 +1711,7 @@ Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-02-27
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 22
@@ -1671,6 +1729,7 @@ Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-02-27
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 26
@@ -1689,6 +1748,7 @@ Optional Fields
 	Parent ID: 1
 	Estimated Completion Date: 2026-03-01
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 29
@@ -1706,6 +1766,7 @@ Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-03-05
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 32
@@ -1723,13 +1784,14 @@ Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-03-10
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Archive BHHS74Reunion website to external SSD' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-09-21', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0 WHERE tasks.task_id = 47 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-09-25', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0 WHERE tasks.task_id = 47 
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
@@ -1759,6 +1821,7 @@ Optional Fields
 	Actual Start Date: 2025-03-20
 	Estimated Completion Date: 2025-05-15
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 49
@@ -1778,6 +1841,7 @@ Optional Fields
 	Actual Start Date: 2025-04-15
 	Estimated Completion Date: 2025-04-15
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 56
@@ -1797,6 +1861,7 @@ Optional Fields
 	Actual Start Date: 2025-03-20
 	Estimated Completion Date: 2025-05-01
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 TaskModel:
 	Task ID: 57
@@ -1816,13 +1881,14 @@ Optional Fields
 	Actual Start Date: 2025-04-08
 	Estimated Completion Date: 2025-04-15
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-28' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-02' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Running: 
 	UPDATE tasks SET tasks.deleted = 1 WHERE tasks.created_by = 4 AND tasks.task_id = 59
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-09-28' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-02' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Task (59) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of task PASSED!
 Running: 
@@ -1964,6 +2030,7 @@ Model Name UserGoalModel
 	Description: Get a Job in Software Engineering
 	Priority: 1
 	Parent ID: 0
+	Last Modified by User ID: 1
 
 Find all child goals for(1) PASSED!
 Goal 1 has 8 child goals
@@ -1973,6 +2040,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my software engineering skills
 	Priority: 1
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 3
@@ -1980,6 +2048,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my C++ programming skills
 	Priority: 1
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 4
@@ -1987,6 +2056,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my  C programming skills
 	Priority: 2
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 6
@@ -1994,6 +2064,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my SQL skills
 	Priority: 3
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 7
@@ -2001,6 +2072,7 @@ Model Name UserGoalModel
 	Description: Learn QT graphic system
 	Priority: 4
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 8
@@ -2008,6 +2080,7 @@ Model Name UserGoalModel
 	Description: Improve my Linux Programming skills
 	Priority: 5
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 9
@@ -2015,6 +2088,7 @@ Model Name UserGoalModel
 	Description: Get an embedded programming certificate
 	Priority: 4
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 10
@@ -2022,6 +2096,7 @@ Model Name UserGoalModel
 	Description: Learn open source Linux Core Programming
 	Priority: 4
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.deleted <> 1
@@ -2033,6 +2108,7 @@ Model Name UserGoalModel
 	Description: Get a Job in Software Engineering
 	Priority: 1
 	Parent ID: 0
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 2
@@ -2040,6 +2116,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my software engineering skills
 	Priority: 1
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 3
@@ -2047,6 +2124,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my C++ programming skills
 	Priority: 1
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 4
@@ -2054,6 +2132,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my  C programming skills
 	Priority: 2
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 5
@@ -2061,6 +2140,7 @@ Model Name UserGoalModel
 	Description: Maintain or archive the BHHS 74 Reunion website
 	Priority: 2
 	Parent ID: 0
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 6
@@ -2068,6 +2148,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my SQL skills
 	Priority: 3
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 7
@@ -2075,6 +2156,7 @@ Model Name UserGoalModel
 	Description: Learn QT graphic system
 	Priority: 4
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 8
@@ -2082,6 +2164,7 @@ Model Name UserGoalModel
 	Description: Improve my Linux Programming skills
 	Priority: 5
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 9
@@ -2089,6 +2172,7 @@ Model Name UserGoalModel
 	Description: Get an embedded programming certificate
 	Priority: 4
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 10
@@ -2096,6 +2180,7 @@ Model Name UserGoalModel
 	Description: Learn open source Linux Core Programming
 	Priority: 4
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 11
@@ -2103,6 +2188,7 @@ Model Name UserGoalModel
 	Description: Maintain my health
 	Priority: 2
 	Parent ID: 0
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 12
@@ -2110,6 +2196,7 @@ Model Name UserGoalModel
 	Description: Eat as healthy as possible
 	Priority: 3
 	Parent ID: 11
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 13
@@ -2117,6 +2204,7 @@ Model Name UserGoalModel
 	Description: Walk 30 minutes a day
 	Priority: 4
 	Parent ID: 11
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 14
@@ -2124,6 +2212,7 @@ Model Name UserGoalModel
 	Description: Track my vital signs
 	Priority: 3
 	Parent ID: 11
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 15
@@ -2131,6 +2220,7 @@ Model Name UserGoalModel
 	Description: Get my weight down to 190 pounds
 	Priority: 4
 	Parent ID: 11
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 16
@@ -2138,6 +2228,7 @@ Model Name UserGoalModel
 	Description: Be more organized
 	Priority: 1
 	Parent ID: 0
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 17
@@ -2145,6 +2236,7 @@ Model Name UserGoalModel
 	Description: Effectively moderate the code review site on stack exchange
 	Priority: 1
 	Parent ID: 0
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description LIKE '%Maintain%' AND user_goals.deleted <> 1
@@ -2156,6 +2248,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my software engineering skills
 	Priority: 1
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 3
@@ -2163,6 +2256,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my C++ programming skills
 	Priority: 1
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 4
@@ -2170,6 +2264,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my  C programming skills
 	Priority: 2
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 5
@@ -2177,6 +2272,7 @@ Model Name UserGoalModel
 	Description: Maintain or archive the BHHS 74 Reunion website
 	Priority: 2
 	Parent ID: 0
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 6
@@ -2184,6 +2280,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my SQL skills
 	Priority: 3
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Model Name UserGoalModel
 	Goal ID: 11
@@ -2191,6 +2288,7 @@ Model Name UserGoalModel
 	Description: Maintain my health
 	Priority: 2
 	Parent ID: 0
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.deleted <> 1
@@ -2270,6 +2368,7 @@ Update UserNote Passed integration test
 	Note ID: 42
 	User ID: 4
 	Content: Use a planner / organizer
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.deleted <> 1
@@ -2278,70 +2377,87 @@ User 4 has 17 notes
 	Note ID: 27
 	User ID: 4
 	Content: Get a Job in Software Engineering
+	Last Modified by User ID: 1
 
 	Note ID: 28
 	User ID: 4
 	Content: Maintain and improve my software engineering skills
+	Last Modified by User ID: 1
 
 	Note ID: 29
 	User ID: 4
 	Content: Maintain and improve my C++ programming skills
+	Last Modified by User ID: 1
 
 	Note ID: 30
 	User ID: 4
 	Content: Maintain and improve my  C programming skills
+	Last Modified by User ID: 1
 
 	Note ID: 31
 	User ID: 4
 	Content: Maintain or archive the BHHS 74 Reunion website
+	Last Modified by User ID: 1
 
 	Note ID: 32
 	User ID: 4
 	Content: Maintain and improve my SQL skills
+	Last Modified by User ID: 1
 
 	Note ID: 33
 	User ID: 4
 	Content: Learn QT graphic system
+	Last Modified by User ID: 1
 
 	Note ID: 34
 	User ID: 4
 	Content: Improve my Linux Programming skills
+	Last Modified by User ID: 1
 
 	Note ID: 35
 	User ID: 4
 	Content: Get an embedded programming certificate
+	Last Modified by User ID: 1
 
 	Note ID: 36
 	User ID: 4
 	Content: Learn open source Linux Core Programming
+	Last Modified by User ID: 1
 
 	Note ID: 37
 	User ID: 4
 	Content: Maintain my health
+	Last Modified by User ID: 1
 
 	Note ID: 38
 	User ID: 4
 	Content: Eat as healthy as possible
+	Last Modified by User ID: 1
 
 	Note ID: 39
 	User ID: 4
 	Content: Walk 30 minutes a day
+	Last Modified by User ID: 1
 
 	Note ID: 40
 	User ID: 4
 	Content: Track my vital signs
+	Last Modified by User ID: 1
 
 	Note ID: 41
 	User ID: 4
 	Content: Get my weight down to 190 pounds
+	Last Modified by User ID: 1
 
 	Note ID: 42
 	User ID: 4
 	Content: Use a planner / organizer
+	Last Modified by User ID: 1
 
 	Note ID: 43
 	User ID: 4
 	Content: Effectively moderate the code review site on stack exchange
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.content LIKE '%Maintain%' AND user_notes.deleted <> 1
@@ -2350,26 +2466,32 @@ User 4 has 6 notes
 	Note ID: 28
 	User ID: 4
 	Content: Maintain and improve my software engineering skills
+	Last Modified by User ID: 1
 
 	Note ID: 29
 	User ID: 4
 	Content: Maintain and improve my C++ programming skills
+	Last Modified by User ID: 1
 
 	Note ID: 30
 	User ID: 4
 	Content: Maintain and improve my  C programming skills
+	Last Modified by User ID: 1
 
 	Note ID: 31
 	User ID: 4
 	Content: Maintain or archive the BHHS 74 Reunion website
+	Last Modified by User ID: 1
 
 	Note ID: 32
 	User ID: 4
 	Content: Maintain and improve my SQL skills
+	Last Modified by User ID: 1
 
 	Note ID: 37
 	User ID: 4
 	Content: Maintain my health
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.note_creation >= '2024-05-07' AND user_notes.note_creation <= '2024-05-21' AND user_notes.deleted <> 1
@@ -2378,142 +2500,176 @@ User 4 has 17 notes
 	Note ID: 27
 	User ID: 4
 	Content: Get a Job in Software Engineering
+	Last Modified by User ID: 1
 
 	Note ID: 28
 	User ID: 4
 	Content: Maintain and improve my software engineering skills
+	Last Modified by User ID: 1
 
 	Note ID: 29
 	User ID: 4
 	Content: Maintain and improve my C++ programming skills
+	Last Modified by User ID: 1
 
 	Note ID: 30
 	User ID: 4
 	Content: Maintain and improve my  C programming skills
+	Last Modified by User ID: 1
 
 	Note ID: 31
 	User ID: 4
 	Content: Maintain or archive the BHHS 74 Reunion website
+	Last Modified by User ID: 1
 
 	Note ID: 32
 	User ID: 4
 	Content: Maintain and improve my SQL skills
+	Last Modified by User ID: 1
 
 	Note ID: 33
 	User ID: 4
 	Content: Learn QT graphic system
+	Last Modified by User ID: 1
 
 	Note ID: 34
 	User ID: 4
 	Content: Improve my Linux Programming skills
+	Last Modified by User ID: 1
 
 	Note ID: 35
 	User ID: 4
 	Content: Get an embedded programming certificate
+	Last Modified by User ID: 1
 
 	Note ID: 36
 	User ID: 4
 	Content: Learn open source Linux Core Programming
+	Last Modified by User ID: 1
 
 	Note ID: 37
 	User ID: 4
 	Content: Maintain my health
+	Last Modified by User ID: 1
 
 	Note ID: 38
 	User ID: 4
 	Content: Eat as healthy as possible
+	Last Modified by User ID: 1
 
 	Note ID: 39
 	User ID: 4
 	Content: Walk 30 minutes a day
+	Last Modified by User ID: 1
 
 	Note ID: 40
 	User ID: 4
 	Content: Track my vital signs
+	Last Modified by User ID: 1
 
 	Note ID: 41
 	User ID: 4
 	Content: Get my weight down to 190 pounds
+	Last Modified by User ID: 1
 
 	Note ID: 42
 	User ID: 4
 	Content: Use a planner / organizer
+	Last Modified by User ID: 1
 
 	Note ID: 43
 	User ID: 4
 	Content: Effectively moderate the code review site on stack exchange
+	Last Modified by User ID: 1
 
 Running: 
-	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-09-14' AND user_notes.last_modifed <= '2026-09-28' AND user_notes.deleted <> 1
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-09-18' AND user_notes.last_modifed <= '2026-10-02' AND user_notes.deleted <> 1
 Find all notes for user (4) edited in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
 	User ID: 4
 	Content: Get a Job in Software Engineering
+	Last Modified by User ID: 1
 
 	Note ID: 28
 	User ID: 4
 	Content: Maintain and improve my software engineering skills
+	Last Modified by User ID: 1
 
 	Note ID: 29
 	User ID: 4
 	Content: Maintain and improve my C++ programming skills
+	Last Modified by User ID: 1
 
 	Note ID: 30
 	User ID: 4
 	Content: Maintain and improve my  C programming skills
+	Last Modified by User ID: 1
 
 	Note ID: 31
 	User ID: 4
 	Content: Maintain or archive the BHHS 74 Reunion website
+	Last Modified by User ID: 1
 
 	Note ID: 32
 	User ID: 4
 	Content: Maintain and improve my SQL skills
+	Last Modified by User ID: 1
 
 	Note ID: 33
 	User ID: 4
 	Content: Learn QT graphic system
+	Last Modified by User ID: 1
 
 	Note ID: 34
 	User ID: 4
 	Content: Improve my Linux Programming skills
+	Last Modified by User ID: 1
 
 	Note ID: 35
 	User ID: 4
 	Content: Get an embedded programming certificate
+	Last Modified by User ID: 1
 
 	Note ID: 36
 	User ID: 4
 	Content: Learn open source Linux Core Programming
+	Last Modified by User ID: 1
 
 	Note ID: 37
 	User ID: 4
 	Content: Maintain my health
+	Last Modified by User ID: 1
 
 	Note ID: 38
 	User ID: 4
 	Content: Eat as healthy as possible
+	Last Modified by User ID: 1
 
 	Note ID: 39
 	User ID: 4
 	Content: Walk 30 minutes a day
+	Last Modified by User ID: 1
 
 	Note ID: 40
 	User ID: 4
 	Content: Track my vital signs
+	Last Modified by User ID: 1
 
 	Note ID: 41
 	User ID: 4
 	Content: Get my weight down to 190 pounds
+	Last Modified by User ID: 1
 
 	Note ID: 42
 	User ID: 4
 	Content: Use a planner / organizer
+	Last Modified by User ID: 1
 
 	Note ID: 43
 	User ID: 4
 	Content: Effectively moderate the code review site on stack exchange
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.note_creation >= '2024-05-14 00:00:00.000000' AND user_notes.note_creation < '2024-05-15 00:00:00.000000' AND user_notes.deleted <> 1 ORDER BY user_notes.note_creation ASC
@@ -2522,70 +2678,87 @@ User 4 has 17 notes
 	Note ID: 27
 	User ID: 4
 	Content: Get a Job in Software Engineering
+	Last Modified by User ID: 1
 
 	Note ID: 28
 	User ID: 4
 	Content: Maintain and improve my software engineering skills
+	Last Modified by User ID: 1
 
 	Note ID: 29
 	User ID: 4
 	Content: Maintain and improve my C++ programming skills
+	Last Modified by User ID: 1
 
 	Note ID: 30
 	User ID: 4
 	Content: Maintain and improve my  C programming skills
+	Last Modified by User ID: 1
 
 	Note ID: 31
 	User ID: 4
 	Content: Maintain or archive the BHHS 74 Reunion website
+	Last Modified by User ID: 1
 
 	Note ID: 32
 	User ID: 4
 	Content: Maintain and improve my SQL skills
+	Last Modified by User ID: 1
 
 	Note ID: 33
 	User ID: 4
 	Content: Learn QT graphic system
+	Last Modified by User ID: 1
 
 	Note ID: 34
 	User ID: 4
 	Content: Improve my Linux Programming skills
+	Last Modified by User ID: 1
 
 	Note ID: 35
 	User ID: 4
 	Content: Get an embedded programming certificate
+	Last Modified by User ID: 1
 
 	Note ID: 36
 	User ID: 4
 	Content: Learn open source Linux Core Programming
+	Last Modified by User ID: 1
 
 	Note ID: 37
 	User ID: 4
 	Content: Maintain my health
+	Last Modified by User ID: 1
 
 	Note ID: 38
 	User ID: 4
 	Content: Eat as healthy as possible
+	Last Modified by User ID: 1
 
 	Note ID: 39
 	User ID: 4
 	Content: Walk 30 minutes a day
+	Last Modified by User ID: 1
 
 	Note ID: 40
 	User ID: 4
 	Content: Track my vital signs
+	Last Modified by User ID: 1
 
 	Note ID: 41
 	User ID: 4
 	Content: Get my weight down to 190 pounds
+	Last Modified by User ID: 1
 
 	Note ID: 42
 	User ID: 4
 	Content: Use a planner / organizer
+	Last Modified by User ID: 1
 
 	Note ID: 43
 	User ID: 4
 	Content: Effectively moderate the code review site on stack exchange
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.deleted <> 1
@@ -2652,6 +2825,7 @@ ScheduleItemModel:
 	Personal: TRUE
 	location: 
 Optional Fields
+	Last Modified by User ID: 1
 
 ScheduleItemModel:
 	ScheduleItem ID: 814
@@ -2662,6 +2836,7 @@ ScheduleItemModel:
 	Personal: TRUE
 	location: 
 Optional Fields
+	Last Modified by User ID: 1
 
 ScheduleItemModel:
 	ScheduleItem ID: 816
@@ -2672,6 +2847,7 @@ ScheduleItemModel:
 	Personal: TRUE
 	location: 
 Optional Fields
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM user_schedule_item WHERE user_schedule_item.user_id = 4 AND user_schedule_item.deleted <> 1 AND user_schedule_item.start_date_time >= '2024-12-13 08:00:00.000000' AND user_schedule_item.start_date_time <= '2024-12-14 07:59:59.000000' ORDER BY user_schedule_item.start_date_time ASC
@@ -2686,6 +2862,7 @@ ScheduleItemModel:
 	Personal: TRUE
 	location: 
 Optional Fields
+	Last Modified by User ID: 1
 
 ScheduleItemModel:
 	ScheduleItem ID: 815
@@ -2696,6 +2873,7 @@ ScheduleItemModel:
 	Personal: TRUE
 	location: 99 N. La Cienega Blvd.
 Optional Fields
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM user_schedule_item WHERE user_schedule_item.id_user_schedule_item = 812 AND user_schedule_item.deleted <> 1
@@ -2776,14 +2954,14 @@ All negative path tests for database insertions and retrievals of ScheduleItem P
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Mon Sep 21 05:52:27 2026
-elapsed time in seconds: 25.4659
+Fri Sep 25 06:18:45 2026
+elapsed time in seconds: 25.5529
 
 
 
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
-  total heap usage: 65,452 allocs, 65,452 frees, 8,915,755 bytes allocated
+  total heap usage: 65,742 allocs, 65,742 frees, 8,977,025 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 
