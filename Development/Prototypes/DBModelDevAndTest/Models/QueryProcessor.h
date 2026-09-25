@@ -96,8 +96,7 @@ protected:
         if (m_selfTest)
         {
             // In self test if we are not forcing an exception, the function must return
-            // something. The processResultRow function will fail in self test in the 
-            // boost::mysql code, where it will fail an assert().
+            // something.
             if (m_forceException)
             {
                 throw std::out_of_range("Forced exception");
