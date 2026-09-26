@@ -19,6 +19,7 @@ UserModel::UserModel()
     m_preferences.separateMajorAndMinorWithDot = false;
     m_preferences.startTime = "8:30 AM";
     m_preferences.endTime = "5:00 PM";
+    m_lastModifiedByUser = 0;
 }
 
 UserModel::UserModel(const UserDbQueryValues &databaseValues)
@@ -215,6 +216,10 @@ void UserModel::initRequiredFields() noexcept
  */
 std::string UserModel::formatInsertStatement()
 {
+    if (m_lastModifiedByUser == 0)
+    {
+        m_lastModifiedByUser = 1;
+    }
     boost::mysql::format_context fctx(getFormatOptions());
     boost::mysql::format_sql_to(fctx, "INSERT INTO user_profile(");
     boost::mysql::format_sql_to(fctx, "id_organization, ");
@@ -224,7 +229,8 @@ std::string UserModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "email_address, ");
     boost::mysql::format_sql_to(fctx, "user_login, ");
     boost::mysql::format_sql_to(fctx, "hashed_password, ");
-    boost::mysql::format_sql_to(fctx, "preferences ");
+    boost::mysql::format_sql_to(fctx, "preferences, ");
+    boost::mysql::format_sql_to(fctx, "last_modified_by_user ");
     boost::mysql::format_sql_to(fctx, ") VALUES (");
     boost::mysql::format_sql_to(fctx, "{}, ", m_organizationId);
     boost::mysql::format_sql_to(fctx, "{}, ", m_lastName);
@@ -233,7 +239,8 @@ std::string UserModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "{}, ", m_email);
     boost::mysql::format_sql_to(fctx, "{}, ", m_loginName);
     boost::mysql::format_sql_to(fctx, "{}, ", m_password);
-    boost::mysql::format_sql_to(fctx, "{} ", buildPreferenceText());
+    boost::mysql::format_sql_to(fctx, "{}, ", buildPreferenceText());
+    boost::mysql::format_sql_to(fctx, "{} ", m_lastModifiedByUser);
     boost::mysql::format_sql_to(fctx, ")");
     
     return std::move(fctx).get().value();
@@ -251,7 +258,8 @@ std::string UserModel::formatUpdateStatement()
     boost::mysql::format_sql_to(fctx, "user_profile.user_login = {}, ", m_loginName);
     boost::mysql::format_sql_to(fctx, "user_profile.hashed_password = {}, ", m_password);
     boost::mysql::format_sql_to(fctx, "user_profile.preferences = {}, ", buildPreferenceText());
-    boost::mysql::format_sql_to(fctx, "user_profile.last_login = {} ", m_lastLogin.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "user_profile.last_login = {}, ", m_lastLogin.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "user_profile.last_modified_by_user = {} ", m_lastModifiedByUser > 0 ? m_lastModifiedByUser : m_primaryKey);
     boost::mysql::format_sql_to(fctx, "WHERE user_profile.user_id = {}", m_primaryKey);
         
     return std::move(fctx).get().value();
@@ -260,7 +268,8 @@ std::string UserModel::formatUpdateStatement()
 std::string UserModel::formatDeleteStatement()
 {
     return boost::mysql::format_sql(getFormatOptions(),
-        "UPDATE user_profile SET user_profile.deleted = 1 WHERE user_profile.user_id = {}", m_primaryKey);
+        "UPDATE user_profile SET user_profile.deleted = 1, user_profile.last_modified_by_user = {} WHERE user_profile.user_id = {}",
+         m_lastModifiedByUser > 0 ? m_lastModifiedByUser : m_primaryKey, m_primaryKey);
 }
 
 std::string UserModel::buildPreferenceText() noexcept

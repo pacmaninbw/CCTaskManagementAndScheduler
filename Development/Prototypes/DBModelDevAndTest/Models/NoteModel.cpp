@@ -86,12 +86,14 @@ std::string NoteModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "user_id, ");
     boost::mysql::format_sql_to(fctx, "content, ");
     boost::mysql::format_sql_to(fctx, "deleted, ");
-    boost::mysql::format_sql_to(fctx, "note_creation");
+    boost::mysql::format_sql_to(fctx, "note_creation, ");
+    boost::mysql::format_sql_to(fctx, "last_modified_by_user ");
     boost::mysql::format_sql_to(fctx, ") VALUES (");
     boost::mysql::format_sql_to(fctx, "{}, ", m_userID);
     boost::mysql::format_sql_to(fctx, "{}, ", m_content);
     boost::mysql::format_sql_to(fctx, "{}, ", m_deleted);
-    boost::mysql::format_sql_to(fctx, "{}", m_creationDate.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "{}, ", m_creationDate.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "{} ", m_lastModifiedByUser > 0 ? m_lastModifiedByUser : m_userID);
     boost::mysql::format_sql_to(fctx, ")");
 
     return (std::move(fctx).get().value());
@@ -100,7 +102,8 @@ std::string NoteModel::formatInsertStatement()
 std::string NoteModel::formatUpdateStatement()
 {
     boost::mysql::format_context fctx(getFormatOptions());
-    boost::mysql::format_sql_to(fctx, "UPDATE user_notes SET user_notes.content = {} ", m_content);
+    boost::mysql::format_sql_to(fctx, "UPDATE user_notes SET user_notes.content = {}, ", m_content);
+    boost::mysql::format_sql_to(fctx, "user_notes.last_modified_by_user = {} ", m_lastModifiedByUser > 0 ? m_lastModifiedByUser : m_userID);
     boost::mysql::format_sql_to(fctx, "WHERE user_notes.id_user_notes = {} ", m_primaryKey);
     boost::mysql::format_sql_to(fctx, "AND user_notes.user_id = {}", m_userID);
 
@@ -110,7 +113,8 @@ std::string NoteModel::formatUpdateStatement()
 std::string NoteModel::formatDeleteStatement()
 {
     boost::mysql::format_context fctx(getFormatOptions());
-    boost::mysql::format_sql_to(fctx, "UPDATE user_notes SET user_notes.deleted = 1 ");
+    boost::mysql::format_sql_to(fctx, "UPDATE user_notes SET user_notes.deleted = 1, ");
+    boost::mysql::format_sql_to(fctx, "user_notes.last_modified_by_user = {} ", m_lastModifiedByUser > 0 ? m_lastModifiedByUser : m_userID);
     boost::mysql::format_sql_to(fctx, "WHERE user_notes.user_id = {} ", m_userID);
     boost::mysql::format_sql_to(fctx, "AND user_notes.id_user_notes = {}", m_primaryKey);
 

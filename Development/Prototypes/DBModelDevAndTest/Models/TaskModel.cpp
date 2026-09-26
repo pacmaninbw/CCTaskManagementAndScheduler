@@ -399,7 +399,8 @@ std::string TaskModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "hours_effort, ");
     boost::mysql::format_sql_to(fctx, "priority_category, ");
     boost::mysql::format_sql_to(fctx, "priority, ");
-    boost::mysql::format_sql_to(fctx, "personal");
+    boost::mysql::format_sql_to(fctx, "personal, ");
+    boost::mysql::format_sql_to(fctx, "last_modified_by_user ");
     boost::mysql::format_sql_to(fctx, ") VALUES (");
     boost::mysql::format_sql_to(fctx, "{}, ", m_creatorID);
     boost::mysql::format_sql_to(fctx, "{}, ", m_assignToID);
@@ -414,7 +415,8 @@ std::string TaskModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "{}, ", m_actualEffort);
     boost::mysql::format_sql_to(fctx, "{}, ", m_priorityCategory);
     boost::mysql::format_sql_to(fctx, "{}, ", m_priority);
-    boost::mysql::format_sql_to(fctx, "{}", m_personal);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_personal);
+    boost::mysql::format_sql_to(fctx, "{} ", m_lastModifiedByUser > 0 ? m_lastModifiedByUser : m_creatorID);
     boost::mysql::format_sql_to(fctx, ")");
 
     return (std::move(fctx).get().value());
@@ -438,7 +440,8 @@ std::string TaskModel::formatUpdateStatement()
     boost::mysql::format_sql_to(fctx, "tasks.priority_category = {}, ", m_priorityCategory);
     boost::mysql::format_sql_to(fctx, "tasks.priority = {}, ", m_priority);
     boost::mysql::format_sql_to(fctx, "tasks.personal = {}, ", m_personal);
-    boost::mysql::format_sql_to(fctx, "tasks.deleted = {} ", m_deleted);
+    boost::mysql::format_sql_to(fctx, "tasks.deleted = {}, ", m_deleted);
+    boost::mysql::format_sql_to(fctx, "tasks.last_modified_by_user = {} ", m_lastModifiedByUser > 0 ? m_lastModifiedByUser : m_creatorID);
     boost::mysql::format_sql_to(fctx, "WHERE tasks.task_id = {} ", m_primaryKey);
 
     return (std::move(fctx).get().value());
@@ -447,7 +450,8 @@ std::string TaskModel::formatUpdateStatement()
 std::string TaskModel::formatDeleteStatement()
 {
     return boost::mysql::format_sql(getFormatOptions(),
-        "UPDATE tasks SET tasks.deleted = 1 WHERE tasks.created_by = {} AND tasks.task_id = {}", m_creatorID, m_primaryKey);
+        "UPDATE tasks SET tasks.deleted = 1, tasks.last_modified_by_user = {}  WHERE tasks.created_by = {} AND tasks.task_id = {}",
+        m_lastModifiedByUser > 0 ? m_lastModifiedByUser : m_creatorID, m_creatorID, m_primaryKey);
 }
 
 void TaskModel::initRequiredFields()

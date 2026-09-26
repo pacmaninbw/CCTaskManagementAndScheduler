@@ -198,6 +198,13 @@ bool OrganizationModel::diffOrganization(OrganizationModel &other) const noexcep
 
 std::string OrganizationModel::formatInsertStatement()
 {
+    // For the OrganizationModel only the last_modified_by_user field is optional.
+    std::optional<std::size_t> lastModifiedByUser;
+    if (m_lastModifiedByUser > 0)
+    {
+        lastModifiedByUser = m_lastModifiedByUser;
+    }
+
     boost::mysql::format_context fctx(getFormatOptions());
     boost::mysql::format_sql_to(fctx, "INSERT INTO organization_profile(");
     boost::mysql::format_sql_to(fctx, "organization_name, ");
@@ -213,7 +220,8 @@ std::string OrganizationModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "nation, ");
     boost::mysql::format_sql_to(fctx, "parent_organization, ");
     boost::mysql::format_sql_to(fctx, "created_timestamp, ");
-    boost::mysql::format_sql_to(fctx, "last_modified_time_stamp");
+    boost::mysql::format_sql_to(fctx, "last_modified_time_stamp, ");
+    boost::mysql::format_sql_to(fctx, "last_modified_by_user ");
     boost::mysql::format_sql_to(fctx, ") VALUES (");
     boost::mysql::format_sql_to(fctx, "{}, ", m_organizationName);
     boost::mysql::format_sql_to(fctx, "{}, ", m_email);
@@ -228,7 +236,8 @@ std::string OrganizationModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "{}, ", m_nation);
     boost::mysql::format_sql_to(fctx, "{}, ", m_parentOrganization);
     boost::mysql::format_sql_to(fctx, "{}, ", m_created.transform(common::toBoostDateTime));
-    boost::mysql::format_sql_to(fctx, "{}", m_lastModified.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "{}, ", m_lastModified.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "{}", lastModifiedByUser);
     boost::mysql::format_sql_to(fctx, ")");
 
     return (std::move(fctx).get().value());
@@ -236,6 +245,13 @@ std::string OrganizationModel::formatInsertStatement()
 
 std::string OrganizationModel::formatUpdateStatement()
 {
+    // For the OrganizationModel only the last_modified_by_user field is optional.
+    std::optional<std::size_t> lastModifiedByUser;
+    if (m_lastModifiedByUser > 0)
+    {
+        lastModifiedByUser = m_lastModifiedByUser;
+    }
+
     boost::mysql::format_context fctx(getFormatOptions());
     boost::mysql::format_sql_to(fctx, "UPDATE organization_profile SET ");
     boost::mysql::format_sql_to(fctx, "organization_profile.organization_name = {}, ", m_organizationName);
@@ -251,7 +267,8 @@ std::string OrganizationModel::formatUpdateStatement()
     boost::mysql::format_sql_to(fctx, "organization_profile.nation = {}, ", m_nation);
     boost::mysql::format_sql_to(fctx, "organization_profile.parent_organization = {}, ", m_parentOrganization);
     boost::mysql::format_sql_to(fctx, "organization_profile.deleted = {}, ", m_deleted);
-    boost::mysql::format_sql_to(fctx, "organization_profile.created_timestamp = {} ", m_created.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "organization_profile.created_timestamp = {}, ", m_created.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "organization_profile.last_modified_by_user = {} ", lastModifiedByUser);
     boost::mysql::format_sql_to(fctx, "WHERE organization_profile.id_organization = {} ", m_primaryKey);
 
     return (std::move(fctx).get().value());

@@ -103,13 +103,15 @@ std::string UserGoalModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "description, ");
     boost::mysql::format_sql_to(fctx, "priority, ");
     boost::mysql::format_sql_to(fctx, "parent_goal, ");
-    boost::mysql::format_sql_to(fctx, "deleted");
+    boost::mysql::format_sql_to(fctx, "deleted, ");
+    boost::mysql::format_sql_to(fctx, "last_modified_by_user ");
     boost::mysql::format_sql_to(fctx, ") VALUES (");
     boost::mysql::format_sql_to(fctx, "{}, ", m_userID);
     boost::mysql::format_sql_to(fctx, "{}, ", m_description);
     boost::mysql::format_sql_to(fctx, "{}, ", m_priority);
     boost::mysql::format_sql_to(fctx, "{}, ", m_parentID);
-    boost::mysql::format_sql_to(fctx, "{}", m_deleted);
+    boost::mysql::format_sql_to(fctx, "{}, ", m_deleted);
+    boost::mysql::format_sql_to(fctx, "{} ", m_lastModifiedByUser > 0 ? m_lastModifiedByUser : m_userID);
     boost::mysql::format_sql_to(fctx, ")");
 
     return (std::move(fctx).get().value());
@@ -122,7 +124,8 @@ std::string UserGoalModel::formatUpdateStatement()
     boost::mysql::format_sql_to(fctx, "UPDATE user_goals SET ");
     boost::mysql::format_sql_to(fctx, "user_goals.description = {}, ", m_description);
     boost::mysql::format_sql_to(fctx, "user_goals.priority = {}, ", m_priority);
-    boost::mysql::format_sql_to(fctx, "user_goals.parent_goal = {} ", m_parentID);
+    boost::mysql::format_sql_to(fctx, "user_goals.parent_goal = {}, ", m_parentID);
+    boost::mysql::format_sql_to(fctx, "user_goals.last_modified_by_user = {} ", m_lastModifiedByUser > 0 ? m_lastModifiedByUser : m_userID);
     boost::mysql::format_sql_to(fctx, "WHERE user_goals.user_id = {} ", m_userID);
     boost::mysql::format_sql_to(fctx, "AND user_goals.id_user_goals = {}", m_primaryKey);
 
@@ -133,7 +136,8 @@ std::string UserGoalModel::formatDeleteStatement()
 {
     boost::mysql::format_context fctx(getFormatOptions());
 
-    boost::mysql::format_sql_to(fctx, "UPDATE user_goals SET user_goals.deleted = 1 ");
+    boost::mysql::format_sql_to(fctx, "UPDATE user_goals SET user_goals.deleted = 1, ");
+    boost::mysql::format_sql_to(fctx, "user_goals.last_modified_by_user = {} ", m_lastModifiedByUser > 0 ? m_lastModifiedByUser : m_userID);
     boost::mysql::format_sql_to(fctx, "WHERE user_goals.user_id = {} ", m_userID);
     boost::mysql::format_sql_to(fctx, "AND user_goals.id_user_goals = {}", m_primaryKey);
 
