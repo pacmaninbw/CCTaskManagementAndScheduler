@@ -30,7 +30,8 @@ private:
         std::optional<std::chrono::system_clock::time_point> created,
         std::optional<std::chrono::system_clock::time_point> lastModified,
         std::string addressl1 = "", std::string addressl2 = "", 
-        std::string city = "", std::string zipCode = "", std::string state = "", std::string nation = ""
+        std::string city = "", std::string zipCode = "", std::string state = "", std::string nation = "",
+        std::shared_ptr<UserModel> lastUpdatedBy = nullptr
     ) noexcept;
 
     TestStatus testPositivePathInsertions();

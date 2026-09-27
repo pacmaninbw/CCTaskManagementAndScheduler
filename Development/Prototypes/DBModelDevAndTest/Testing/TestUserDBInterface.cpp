@@ -210,6 +210,7 @@ bool TestUserDBInterface::testUpdateUserPassword(UserModel_shp insertedUser)
     std::string newPassword = "MyNew**&pAs5Word" + std::to_string(oldUserValues.getUserID());
 
     insertedUser->setPassword(newPassword);
+    insertedUser->setLastModifiedBy(insertedUser->getUserID());
     if (!insertedUser->save())
     {
         std::cerr << "insertedUser->save()() FAILED" << insertedUser->getAllErrorMessages() << "\n";
@@ -237,6 +238,7 @@ bool TestUserDBInterface::testUpdateUserPassword(UserModel_shp insertedUser)
 bool TestUserDBInterface::loadTestUsersFromFile()
 {
     std::ifstream userData(m_dataFileName);
+    std::size_t insertCount = 0;
 
     if (!userData.is_open())
     {
@@ -254,7 +256,12 @@ bool TestUserDBInterface::loadTestUsersFromFile()
         userIn->autoGenerateLoginAndPassword();
         userIn->setCreationDate(common::TestTimeStampValue);
         userIn->setOrganizationID(1);
+        if (insertCount > 0)
+        {
+            userIn->setLastModifiedBy(insertCount);
+        }
         m_userProfileTestData.push_back(userIn);
+        ++insertCount;
     }
 
     if (userData.bad())
@@ -466,6 +473,7 @@ void TestUserDBInterface::deleteSomeUsers()
 
     while (todelete != m_userProfileTestData.end())
     {
+        todelete->get()->setLastModifiedBy(1);
         todelete->get()->hide(0);
         m_deletedUsers.push_back(std::move(*todelete));
         todelete = m_userProfileTestData.erase(todelete);

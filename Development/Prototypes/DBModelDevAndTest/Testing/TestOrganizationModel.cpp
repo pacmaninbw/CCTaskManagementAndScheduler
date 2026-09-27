@@ -90,7 +90,8 @@ OrganizationModel_shp TestOrganizationModel::organizationFactory(
     std::string city,
     std::string zipCode,
     std::string state,
-    std::string nation
+    std::string nation,
+    std::shared_ptr<UserModel> lastUpdatedBy
 ) noexcept
 {
     OrganizationModel_shp newOrganization = std::make_shared<OrganizationModel>();
@@ -127,6 +128,7 @@ OrganizationModel_shp TestOrganizationModel::organizationFactory(
     conditionalSetField(*newOrganization, &OrganizationModel::setPostalCode, zipCode);
     conditionalSetField(*newOrganization, &OrganizationModel::setStateOrProvince, state);
     conditionalSetField(*newOrganization, &OrganizationModel::setNation, nation);
+    newOrganization->setLastModifiedBy(lastUpdatedBy? lastUpdatedBy->getUserID() : 1);
 
     return newOrganization;
 }
@@ -148,7 +150,7 @@ TestStatus TestOrganizationModel::testPositivePathInsertions()
     // Test the maximum number of fields allowed
     OrganizationModel_shp allFieldsFilled = organizationFactory(
         "AllFieldsFilled", "AllFieldsFilled@gmail.com", "(800) 555-1313", m_userOne, m_userTwo, optTimeStamp, optTimeStamp,
-        "9999 Any Street", "Suite 101", "Los Angeles", "90049", "California", "USA"
+        "9999 Any Street", "Suite 101", "Los Angeles", "90049", "California", "USA", m_userTwo
     );
     if (!allFieldsFilled->insert())
     {
