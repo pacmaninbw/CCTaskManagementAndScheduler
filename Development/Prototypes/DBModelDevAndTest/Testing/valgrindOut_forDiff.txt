@@ -17,7 +17,7 @@ In Self Test Query is:
 In Self Test Query is: 
 	UPDATE organization_profile SET organization_profile.organization_name = 'Any Organization .Inc', organization_profile.email_address = 'AnyEmailAddress@gmail.com', organization_profile.phone_number = '800-555-1212', organization_profile.primary_contact_user = 1, organization_profile.secondary_contact_user = 2, organization_profile.address_line_1 = '11111 First Street', organization_profile.address_line_2 = 'Suite 101', organization_profile.city = 'Home Town', organization_profile.postal_code = '90001', organization_profile.state_or_province = 'California', organization_profile.nation = 'United States', organization_profile.parent_organization = NULL, organization_profile.deleted = 0, organization_profile.created_timestamp = '2024-05-14 08:31:53.000000', organization_profile.last_modified_by_user = NULL WHERE organization_profile.id_organization = 1 
 In Self Test Query is: 
-	UPDATE organization_profile SET organization_profile.deleted = 1 WHERE organization_profile.id_organization = 1
+	UPDATE organization_profile SET organization_profile.deleted = 1, organization_profile.last_modified_by_user = 1 WHERE organization_profile.id_organization = 1
 
 
 Running self test on set and get functions for Organization::Primary Key
@@ -182,7 +182,7 @@ Caught expected exception from TaskSelfTest::formatUpdateStatement(): Forcing Ex
 In Self Test Query is: 
 	UPDATE tasks SET tasks.created_by = 1, tasks.assigned_to = 2, tasks.description = 'Testing Exception handling', tasks.task_status = 0, tasks.due_date = '2024-05-21', tasks.planned_start = '2024-05-14', tasks.actual_start = NULL, tasks.estimated_delivery = NULL, tasks.delivered = NULL, tasks.est_hours_effort = 6e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 1 WHERE tasks.task_id = 1 
 In Self Test Query is: 
-	UPDATE tasks SET tasks.deleted = 1, tasks.last_modified_by_user = 1 WHERE tasks.created_by = 1 AND tasks.task_id = 53
+	UPDATE tasks SET tasks.deleted = 1, tasks.last_modified_by_user = 1  WHERE tasks.created_by = 1 AND tasks.task_id = 53
 
 
 Running self test on set and get functions for Task::Primary Key
@@ -244,7 +244,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-09-26
+	Completed Date: 2026-09-27
 	Deleted : FALSE
 	Last Modified by User ID: 1
 
@@ -549,7 +549,7 @@ In Self Test Query is:
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-10-03' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-10-04' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 
 Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
 In Self Test Query is: 
@@ -678,7 +678,7 @@ Running:
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.email_address = 'UserOne@gmail.com'
 Running: 
-	UPDATE user_profile SET user_profile.id_organization = 1, user_profile.last_name = 'One', user_profile.first_name = 'User', user_profile.middle_initial = 'P', user_profile.email_address = 'UserOne@gmail.com', user_profile.user_login = 'OneUserP', user_profile.hashed_password = 'MyNew**&pAs5Word4', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL, user_profile.last_modified_by_user = 1 WHERE user_profile.user_id = 4
+	UPDATE user_profile SET user_profile.id_organization = 1, user_profile.last_name = 'One', user_profile.first_name = 'User', user_profile.middle_initial = 'P', user_profile.email_address = 'UserOne@gmail.com', user_profile.user_login = 'OneUserP', user_profile.hashed_password = 'MyNew**&pAs5Word4', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL, user_profile.last_modified_by_user = 4 WHERE user_profile.user_id = 4
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_id =4
 Running: 
@@ -694,11 +694,11 @@ Running:
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.email_address = 'johndoe@gmail.com'
 Running: 
-	UPDATE user_profile SET user_profile.id_organization = 1, user_profile.last_name = 'Doe', user_profile.first_name = 'John', user_profile.middle_initial = 'Q', user_profile.email_address = 'johndoe@gmail.com', user_profile.user_login = 'DoeJohnQ', user_profile.hashed_password = 'MyNew**&pAs5Word5', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL, user_profile.last_modified_by_user = 1 WHERE user_profile.user_id = 5
+	UPDATE user_profile SET user_profile.id_organization = 1, user_profile.last_name = 'Doe', user_profile.first_name = 'John', user_profile.middle_initial = 'Q', user_profile.email_address = 'johndoe@gmail.com', user_profile.user_login = 'DoeJohnQ', user_profile.hashed_password = 'MyNew**&pAs5Word5', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL, user_profile.last_modified_by_user = 5 WHERE user_profile.user_id = 5
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_id =5
 Running: 
-	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences, last_modified_by_user ) VALUES (1, 'Public', 'John', 'Q', 'anyone@gmail.com', 'PublicJohnQ', 'PublicJohnQ', '8:30 AM;5:00 PM;1;1;1;0', 1 )
+	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences, last_modified_by_user ) VALUES (1, 'Public', 'John', 'Q', 'anyone@gmail.com', 'PublicJohnQ', 'PublicJohnQ', '8:30 AM;5:00 PM;1;1;1;0', 2 )
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_login = 'PublicJohnQ'
 Running: 
@@ -710,11 +710,11 @@ Running:
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.email_address = 'anyone@gmail.com'
 Running: 
-	UPDATE user_profile SET user_profile.id_organization = 1, user_profile.last_name = 'Public', user_profile.first_name = 'John', user_profile.middle_initial = 'Q', user_profile.email_address = 'anyone@gmail.com', user_profile.user_login = 'PublicJohnQ', user_profile.hashed_password = 'MyNew**&pAs5Word6', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL, user_profile.last_modified_by_user = 1 WHERE user_profile.user_id = 6
+	UPDATE user_profile SET user_profile.id_organization = 1, user_profile.last_name = 'Public', user_profile.first_name = 'John', user_profile.middle_initial = 'Q', user_profile.email_address = 'anyone@gmail.com', user_profile.user_login = 'PublicJohnQ', user_profile.hashed_password = 'MyNew**&pAs5Word6', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL, user_profile.last_modified_by_user = 6 WHERE user_profile.user_id = 6
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_id =6
 Running: 
-	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences, last_modified_by_user ) VALUES (1, 'Doe', 'Jane', 'R', 'jdr@gmail.com', 'DoeJaneR', 'DoeJaneR', '8:30 AM;5:00 PM;1;1;1;0', 1 )
+	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences, last_modified_by_user ) VALUES (1, 'Doe', 'Jane', 'R', 'jdr@gmail.com', 'DoeJaneR', 'DoeJaneR', '8:30 AM;5:00 PM;1;1;1;0', 3 )
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_login = 'DoeJaneR'
 Running: 
@@ -726,11 +726,11 @@ Running:
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.email_address = 'jdr@gmail.com'
 Running: 
-	UPDATE user_profile SET user_profile.id_organization = 1, user_profile.last_name = 'Doe', user_profile.first_name = 'Jane', user_profile.middle_initial = 'R', user_profile.email_address = 'jdr@gmail.com', user_profile.user_login = 'DoeJaneR', user_profile.hashed_password = 'MyNew**&pAs5Word7', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL, user_profile.last_modified_by_user = 1 WHERE user_profile.user_id = 7
+	UPDATE user_profile SET user_profile.id_organization = 1, user_profile.last_name = 'Doe', user_profile.first_name = 'Jane', user_profile.middle_initial = 'R', user_profile.email_address = 'jdr@gmail.com', user_profile.user_login = 'DoeJaneR', user_profile.hashed_password = 'MyNew**&pAs5Word7', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL, user_profile.last_modified_by_user = 7 WHERE user_profile.user_id = 7
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_id =7
 Running: 
-	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences, last_modified_by_user ) VALUES (1, 'Case', 'Space', 'O', 'spacecase@gmail.com', 'CaseSpaceO', 'CaseSpaceO', '8:30 AM;5:00 PM;1;1;1;0', 1 )
+	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences, last_modified_by_user ) VALUES (1, 'Case', 'Space', 'O', 'spacecase@gmail.com', 'CaseSpaceO', 'CaseSpaceO', '8:30 AM;5:00 PM;1;1;1;0', 4 )
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_login = 'CaseSpaceO'
 Running: 
@@ -742,14 +742,14 @@ Running:
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.email_address = 'spacecase@gmail.com'
 Running: 
-	UPDATE user_profile SET user_profile.id_organization = 1, user_profile.last_name = 'Case', user_profile.first_name = 'Space', user_profile.middle_initial = 'O', user_profile.email_address = 'spacecase@gmail.com', user_profile.user_login = 'CaseSpaceO', user_profile.hashed_password = 'MyNew**&pAs5Word8', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL, user_profile.last_modified_by_user = 1 WHERE user_profile.user_id = 8
+	UPDATE user_profile SET user_profile.id_organization = 1, user_profile.last_name = 'Case', user_profile.first_name = 'Space', user_profile.middle_initial = 'O', user_profile.email_address = 'spacecase@gmail.com', user_profile.user_login = 'CaseSpaceO', user_profile.hashed_password = 'MyNew**&pAs5Word8', user_profile.preferences = '8:30 AM;5:00 PM;1;1;1;0', user_profile.last_login = NULL, user_profile.last_modified_by_user = 8 WHERE user_profile.user_id = 8
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.user_id =8
 Running: 
 	SELECT * FROM user_profile
 TestUserDBInterface::testGetAllUsers PASSED!
 Running: 
-	SELECT * FROM user_profile WHERE user_profile.created_timestamp >= '2026-09-26 00:00:00.000000' AND user_profile.created_timestamp <= '2026-09-26 23:59:59.000000' 
+	SELECT * FROM user_profile WHERE user_profile.created_timestamp >= '2026-09-27 00:00:00.000000' AND user_profile.created_timestamp <= '2026-09-27 23:59:59.000000' 
 TestUserDBInterface::testGetAllUsersAddedOnDate PASSED!
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.id_organization = 1 AND user_profile.deleted <> 1 
@@ -761,7 +761,7 @@ Running:
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.deleted <> 1 
 Running: 
-	SELECT * FROM user_profile WHERE user_profile.last_modified_time_stamp >= '2026-09-26 00:00:00.000000' AND user_profile.last_modified_time_stamp <= '2026-09-26 23:59:59.000000' AND user_profile.deleted = 1
+	SELECT * FROM user_profile WHERE user_profile.last_modified_time_stamp >= '2026-09-27 00:00:00.000000' AND user_profile.last_modified_time_stamp <= '2026-09-27 23:59:59.000000' AND user_profile.deleted = 1
 TestUserDBInterface::testGetAllUsersDeletedOnDate PASSED!
 All positive path tests for database insertions and retrievals of user PASSED!
 Running: 
@@ -784,16 +784,16 @@ Running:
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.last_name = 'Doe' AND user_profile.first_name = 'John' AND user_profile.middle_initial = 'Q'
 Running: 
-	INSERT INTO organization_profile(organization_name, email_address, phone_number, primary_contact_user, secondary_contact_user, address_line_1, address_line_2, city, state_or_province, postal_code, nation, parent_organization, created_timestamp, last_modified_time_stamp, last_modified_by_user ) VALUES ('TestOrg1', 'TestOrg1@gmail.com', '(800) 555-1212', 4, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', NULL)
+	INSERT INTO organization_profile(organization_name, email_address, phone_number, primary_contact_user, secondary_contact_user, address_line_1, address_line_2, city, state_or_province, postal_code, nation, parent_organization, created_timestamp, last_modified_time_stamp, last_modified_by_user ) VALUES ('TestOrg1', 'TestOrg1@gmail.com', '(800) 555-1212', 4, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 1)
 Running: 
-	INSERT INTO organization_profile(organization_name, email_address, phone_number, primary_contact_user, secondary_contact_user, address_line_1, address_line_2, city, state_or_province, postal_code, nation, parent_organization, created_timestamp, last_modified_time_stamp, last_modified_by_user ) VALUES ('AllFieldsFilled', 'AllFieldsFilled@gmail.com', '(800) 555-1313', 4, 5, '9999 Any Street', 'Suite 101', 'Los Angeles', 'California', '90049', 'USA', NULL, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', NULL)
+	INSERT INTO organization_profile(organization_name, email_address, phone_number, primary_contact_user, secondary_contact_user, address_line_1, address_line_2, city, state_or_province, postal_code, nation, parent_organization, created_timestamp, last_modified_time_stamp, last_modified_by_user ) VALUES ('AllFieldsFilled', 'AllFieldsFilled@gmail.com', '(800) 555-1313', 4, 5, '9999 Any Street', 'Suite 101', 'Los Angeles', 'California', '90049', 'USA', NULL, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 5)
 Running: 
-	INSERT INTO organization_profile(organization_name, email_address, phone_number, primary_contact_user, secondary_contact_user, address_line_1, address_line_2, city, state_or_province, postal_code, nation, parent_organization, created_timestamp, last_modified_time_stamp, last_modified_by_user ) VALUES ('NoTimeStampOrg', 'NoTimeStampOrg@gmail.com', '(800) 555-1414', 4, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+	INSERT INTO organization_profile(organization_name, email_address, phone_number, primary_contact_user, secondary_contact_user, address_line_1, address_line_2, city, state_or_province, postal_code, nation, parent_organization, created_timestamp, last_modified_time_stamp, last_modified_by_user ) VALUES ('NoTimeStampOrg', 'NoTimeStampOrg@gmail.com', '(800) 555-1414', 4, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1)
 TestOrganizationModel::testPositivePathInsertions PASSED!
 Running: 
-	INSERT INTO organization_profile(organization_name, email_address, phone_number, primary_contact_user, secondary_contact_user, address_line_1, address_line_2, city, state_or_province, postal_code, nation, parent_organization, created_timestamp, last_modified_time_stamp, last_modified_by_user ) VALUES ('TestModify', 'TestModify@gmail.com', '(800) 555-1515', 4, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', NULL)
+	INSERT INTO organization_profile(organization_name, email_address, phone_number, primary_contact_user, secondary_contact_user, address_line_1, address_line_2, city, state_or_province, postal_code, nation, parent_organization, created_timestamp, last_modified_time_stamp, last_modified_by_user ) VALUES ('TestModify', 'TestModify@gmail.com', '(800) 555-1515', 4, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 1)
 Running: 
-	UPDATE organization_profile SET organization_profile.organization_name = 'TestModify', organization_profile.email_address = 'TestModify@gmail.com', organization_profile.phone_number = '(800) 555-1515', organization_profile.primary_contact_user = 4, organization_profile.secondary_contact_user = 5, organization_profile.address_line_1 = '1919 Modify Way', organization_profile.address_line_2 = NULL, organization_profile.city = 'Los Angeles', organization_profile.postal_code = '90049', organization_profile.state_or_province = 'California', organization_profile.nation = 'USA', organization_profile.parent_organization = NULL, organization_profile.deleted = 0, organization_profile.created_timestamp = '2024-05-14 08:31:53.000000', organization_profile.last_modified_by_user = NULL WHERE organization_profile.id_organization = 5 
+	UPDATE organization_profile SET organization_profile.organization_name = 'TestModify', organization_profile.email_address = 'TestModify@gmail.com', organization_profile.phone_number = '(800) 555-1515', organization_profile.primary_contact_user = 4, organization_profile.secondary_contact_user = 5, organization_profile.address_line_1 = '1919 Modify Way', organization_profile.address_line_2 = NULL, organization_profile.city = 'Los Angeles', organization_profile.postal_code = '90049', organization_profile.state_or_province = 'California', organization_profile.nation = 'USA', organization_profile.parent_organization = NULL, organization_profile.deleted = 0, organization_profile.created_timestamp = '2024-05-14 08:31:53.000000', organization_profile.last_modified_by_user = 1 WHERE organization_profile.id_organization = 5 
 TestOrganizationModel::testPositivePathUpdates PASSED!
 Running: 
 	SELECT * FROM organization_profile 
@@ -823,7 +823,7 @@ Found 5 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 0
+	Last Modified by User ID: 1
 
 	Organization ID: 3
 	Organization Name: AllFieldsFilled
@@ -837,7 +837,7 @@ Found 5 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 0
+	Last Modified by User ID: 5
 
 	Organization ID: 4
 	Organization Name: NoTimeStampOrg
@@ -850,7 +850,7 @@ Found 5 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 0
+	Last Modified by User ID: 1
 
 	Organization ID: 5
 	Organization Name: TestModify
@@ -863,7 +863,7 @@ Found 5 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 0
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.id_organization = 1 
@@ -896,7 +896,7 @@ Found 1 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 0
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.primary_contact_user = 4 AND organization_profile.deleted <> 1
@@ -913,7 +913,7 @@ Found 4 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 0
+	Last Modified by User ID: 1
 
 	Organization ID: 3
 	Organization Name: AllFieldsFilled
@@ -927,7 +927,7 @@ Found 4 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 0
+	Last Modified by User ID: 5
 
 	Organization ID: 4
 	Organization Name: NoTimeStampOrg
@@ -940,7 +940,7 @@ Found 4 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 0
+	Last Modified by User ID: 1
 
 	Organization ID: 5
 	Organization Name: TestModify
@@ -953,7 +953,7 @@ Found 4 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 0
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.last_name = 'One' AND user_profile.first_name = 'User' AND user_profile.middle_initial = 'P'
@@ -972,7 +972,7 @@ Found 4 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 0
+	Last Modified by User ID: 1
 
 	Organization ID: 3
 	Organization Name: AllFieldsFilled
@@ -986,7 +986,7 @@ Found 4 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 0
+	Last Modified by User ID: 5
 
 	Organization ID: 4
 	Organization Name: NoTimeStampOrg
@@ -999,7 +999,7 @@ Found 4 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 0
+	Last Modified by User ID: 1
 
 	Organization ID: 5
 	Organization Name: TestModify
@@ -1012,7 +1012,7 @@ Found 4 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 0
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.created_timestamp >= '2024-05-07' AND organization_profile.created_timestamp <= '2024-05-21' AND organization_profile.deleted <> 1
@@ -1029,7 +1029,7 @@ Found 3 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 0
+	Last Modified by User ID: 1
 
 	Organization ID: 3
 	Organization Name: AllFieldsFilled
@@ -1043,7 +1043,7 @@ Found 3 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 0
+	Last Modified by User ID: 5
 
 	Organization ID: 5
 	Organization Name: TestModify
@@ -1056,7 +1056,7 @@ Found 3 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 0
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.created_timestamp >= '2024-05-14 00:00:00.000000' AND organization_profile.created_timestamp < '2024-05-15 00:00:00.000000' AND organization_profile.deleted <> 1 ORDER BY organization_profile.created_timestamp ASC
@@ -1073,7 +1073,7 @@ Found 3 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 0
+	Last Modified by User ID: 1
 
 	Organization ID: 3
 	Organization Name: AllFieldsFilled
@@ -1087,7 +1087,7 @@ Found 3 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 0
+	Last Modified by User ID: 5
 
 	Organization ID: 5
 	Organization Name: TestModify
@@ -1100,7 +1100,7 @@ Found 3 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 0
+	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.last_modified_time_stamp >= '2024-05-14 00:00:00.000000' AND organization_profile.last_modified_time_stamp < '2024-05-15 00:00:00.000000' AND organization_profile.deleted <> 1 ORDER BY organization_profile.last_modified_time_stamp ASC
@@ -1117,7 +1117,7 @@ Found 2 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 0
+	Last Modified by User ID: 1
 
 	Organization ID: 3
 	Organization Name: AllFieldsFilled
@@ -1131,12 +1131,12 @@ Found 2 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 0
+	Last Modified by User ID: 5
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.deleted <> 1
 Running: 
-	UPDATE organization_profile SET organization_profile.deleted = 1 WHERE organization_profile.id_organization = 4
+	UPDATE organization_profile SET organization_profile.deleted = 1, organization_profile.last_modified_by_user = 1 WHERE organization_profile.id_organization = 4
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.deleted <> 1
 Running: 
@@ -1252,7 +1252,7 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Design UML Diagram for Personal Planner' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-09-26', NULL, 2e+00, 2e+00, 67, 1, 0, 4 )
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-09-27', NULL, 2e+00, 2e+00, 67, 1, 0, 4 )
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 58
 Running: 
@@ -1264,13 +1264,13 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Daily 30 minute walk' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-09-26', NULL, 2e+00, 0e+00, 67, 3, 0, 4 )
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-09-27', NULL, 2e+00, 0e+00, 67, 3, 0, 4 )
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 60
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Clean apartment' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-03' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-04' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Find unstarted tasks for user(4) PASSED!
 User 4 has 9 unstarted tasks
 TaskModel:
@@ -1401,7 +1401,7 @@ TaskModel:
 	Priority: 1
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-09-26
+	Estimated Completion Date: 2026-09-27
 	Deleted : FALSE
 	Last Modified by User ID: 4
 
@@ -1437,7 +1437,7 @@ TaskModel:
 	Priority: 3
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-09-26
+	Estimated Completion Date: 2026-09-27
 	Deleted : FALSE
 	Last Modified by User ID: 4
 
@@ -1791,7 +1791,7 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-09-26', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 47 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-09-27', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 47 
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
@@ -1884,11 +1884,11 @@ Optional Fields
 	Last Modified by User ID: 4
 
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-03' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-04' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Running: 
 	UPDATE tasks SET tasks.deleted = 1, tasks.last_modified_by_user = 4  WHERE tasks.created_by = 4 AND tasks.task_id = 59
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-03' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-04' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Task (59) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of task PASSED!
 Running: 
@@ -2583,7 +2583,7 @@ User 4 has 17 notes
 	Last Modified by User ID: 4
 
 Running: 
-	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-09-19' AND user_notes.last_modifed <= '2026-10-03' AND user_notes.deleted <> 1
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-09-20' AND user_notes.last_modifed <= '2026-10-04' AND user_notes.deleted <> 1
 Find all notes for user (4) edited in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
@@ -2954,14 +2954,14 @@ All negative path tests for database insertions and retrievals of ScheduleItem P
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Fri Sep 25 06:18:45 2026
-elapsed time in seconds: 25.5529
+Sun Sep 27 07:24:36 2026
+elapsed time in seconds: 25.7319
 
 
 
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
-  total heap usage: 65,742 allocs, 65,742 frees, 8,977,025 bytes allocated
+  total heap usage: 65,761 allocs, 65,761 frees, 8,990,928 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 
