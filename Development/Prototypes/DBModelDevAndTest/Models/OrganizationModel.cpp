@@ -276,8 +276,12 @@ std::string OrganizationModel::formatUpdateStatement()
 
 std::string OrganizationModel::formatDeleteStatement()
 {
+    // For the OrganizationModel only the last_modified_by_user field is optional.
+    std::optional<std::size_t> lastModifiedByUser = m_lastModifiedByUser > 0 ? m_lastModifiedByUser : 1;
+
     boost::mysql::format_context fctx(getFormatOptions());
-    boost::mysql::format_sql_to(fctx, "UPDATE organization_profile SET organization_profile.deleted = 1 ");
+    boost::mysql::format_sql_to(fctx, "UPDATE organization_profile SET organization_profile.deleted = 1, ");
+    boost::mysql::format_sql_to(fctx, "organization_profile.last_modified_by_user = {} ", lastModifiedByUser);
     boost::mysql::format_sql_to(fctx, "WHERE organization_profile.id_organization = {}", m_primaryKey);
 
     return (std::move(fctx).get().value());
