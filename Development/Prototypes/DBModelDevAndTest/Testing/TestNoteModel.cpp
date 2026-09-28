@@ -66,11 +66,18 @@ TestNoteModel::TestNoteModel()
 
 TestStatus TestNoteModel::testInsertNote(TestNoteInput testNote)
 {
+    static bool firstTime = true;
     NoteModel newNote;
     newNote.setUserId(m_userOne->getUserID());
     newNote.setContent(testNote.content);
     newNote.setDateAdded(common::TestTimeStampValue);
     newNote.setLastModified(common::TestTimeStampValue);
+
+    if (firstTime)
+    {
+        newNote.setLastModifiedBy(1);
+        firstTime = false;
+    }
 
     if (!newNote.insert())
     {
@@ -282,6 +289,7 @@ TestStatus TestNoteModel::testPositivePathDeleteNote()
 
     std::size_t itemToHideIndex = testNoteQueryProcessor.size() > 3? testNoteQueryProcessor.size() - 2 : testNoteQueryProcessor.size() - 1;
     NoteModel_shp noteToHide = testNoteQueryProcessor[itemToHideIndex];
+    noteToHide->setLastModifiedBy(1);
     if (!noteToHide->hide(m_userOne->getUserID()))
     {
         std::cerr << std::format("itemToHide->hide({}) FAILED!", m_userOne->getUserID()) << noteToHide->getAllErrorMessages() << "\n";
