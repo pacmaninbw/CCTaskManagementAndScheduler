@@ -68,6 +68,7 @@ TestStatus TestGoalModel::testInsertAndGetParent(TestGoalInput testGoal)
     newGoal.setDescription(testGoal.description);
     newGoal.setPriority(testGoal.priority);
     newGoal.setCreationTimeStamp(common::TestTimeStampValue);
+    newGoal.setLastModifiedBy(2);
     if (!testGoal.parentDescription.empty())
     {
         GoalQueryProcessor goalQueryProcessor;
@@ -214,6 +215,7 @@ TestStatus TestGoalModel::testPositivePathDeleteGoal()
 
     std::size_t itemToHideIndex = testGoalList.size() > 3? testGoalList.size() - 2 : testGoalList.size() - 1;
     UserGoalModel_shp goalToHide = testGoalList[itemToHideIndex];
+    goalToHide->setLastModifiedBy(1);
     if (!goalToHide->hide(m_userOne->getUserID()))
     {
         std::cerr << std::format("itemToHide->hide({}) FAILED!", m_userOne->getUserID()) << goalToHide->getAllErrorMessages() << "\n";
