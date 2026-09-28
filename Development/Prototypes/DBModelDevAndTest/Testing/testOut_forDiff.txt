@@ -52,6 +52,7 @@ Test Output: 	Organization ID: 1
 	Postal Code: Any postal code up to 31 characters.
 	State or Province: Any state or province up to 255 characters.
 	Nation: Any nation up to 63 characters.
+	Last Modified by User ID: 1
 	Parent Organization: 23
 
 Common Insertion Failure Test PASSED!
@@ -112,6 +113,7 @@ Test Output: 	User ID: 31
 	PassWord: AnyPassword
 	User Added: 2024-05-14 08:31:53.000000000
 	Last Login: 2024-05-14 08:31:53.000000000
+	Last Modified by User ID: 1
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
@@ -187,8 +189,9 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-09-21
+	Completed Date: 2026-09-28
 	Deleted : FALSE
+	Last Modified by User ID: 1
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
@@ -225,6 +228,7 @@ Test Output: Model Name UserGoalModel
 	Description: Test note content access
 	Priority: 1
 	Parent ID: 1
+	Last Modified by User ID: 1
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
@@ -254,6 +258,7 @@ Self test on set and get functions for Note::Last Modified by UserId PASSED
 Test Output: 	Note ID: 27
 	User ID: 31
 	Content: Test note content access
+	Last Modified by User ID: 1
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
@@ -303,6 +308,7 @@ Test Output: ScheduleItemModel:
 	Personal: TRUE
 	location: Home Office
 Optional Fields
+	Last Modified by User ID: 1
 
 Common Insertion Failure Test PASSED!
 Common Update Failure Test PASSED!
@@ -485,7 +491,7 @@ All negative path tests for database insertions and retrievals of ScheduleItem P
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Mon Sep 21 06:03:42 2026
-elapsed time in seconds: 0.811475
+Mon Sep 28 05:56:27 2026
+elapsed time in seconds: 1.10681
 
 
