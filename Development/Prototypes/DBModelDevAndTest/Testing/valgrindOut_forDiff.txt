@@ -244,7 +244,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-09-27
+	Completed Date: 2026-09-30
 	Deleted : FALSE
 	Last Modified by User ID: 1
 
@@ -549,7 +549,7 @@ In Self Test Query is:
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-10-04' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-10-07' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 
 Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
 In Self Test Query is: 
@@ -557,7 +557,7 @@ In Self Test Query is:
 
 Exception Test for TaskQueryProcessor::getTasksByAssignedIDandParentID
 In Self Test Query is: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.parent_task = 1 AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND task_dependencies.dependent_task = 1 AND tasks.deleted <> 1
 
 Exception Test for TaskQueryProcessor::testExceptionGetDefaultDashboardTaskList()
 In Self Test Query is: 
@@ -749,7 +749,7 @@ Running:
 	SELECT * FROM user_profile
 TestUserDBInterface::testGetAllUsers PASSED!
 Running: 
-	SELECT * FROM user_profile WHERE user_profile.created_timestamp >= '2026-09-27 00:00:00.000000' AND user_profile.created_timestamp <= '2026-09-27 23:59:59.000000' 
+	SELECT * FROM user_profile WHERE user_profile.created_timestamp >= '2026-09-30 00:00:00.000000' AND user_profile.created_timestamp <= '2026-09-30 23:59:59.000000' 
 TestUserDBInterface::testGetAllUsersAddedOnDate PASSED!
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.id_organization = 1 AND user_profile.deleted <> 1 
@@ -761,7 +761,7 @@ Running:
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.deleted <> 1 
 Running: 
-	SELECT * FROM user_profile WHERE user_profile.last_modified_time_stamp >= '2026-09-27 00:00:00.000000' AND user_profile.last_modified_time_stamp <= '2026-09-27 23:59:59.000000' AND user_profile.deleted = 1
+	SELECT * FROM user_profile WHERE user_profile.last_modified_time_stamp >= '2026-09-30 00:00:00.000000' AND user_profile.last_modified_time_stamp <= '2026-09-30 23:59:59.000000' AND user_profile.deleted = 1
 TestUserDBInterface::testGetAllUsersDeletedOnDate PASSED!
 All positive path tests for database insertions and retrievals of user PASSED!
 Running: 
@@ -1182,7 +1182,7 @@ Running:
 Running: 
 	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Check with GoDaddy about providing service to archive website to external SSD', 3, '2025-04-15', '2025-04-15', '2025-04-15', '2025-04-15', NULL, 2e+00, 1e+00, 65, 1, 0, 4 )
 Running: 
-	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (49, 1)
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (49, 47)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 49
 Running: 
@@ -1190,7 +1190,7 @@ Running:
 Running: 
 	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Install a WordPress Archive Plugin', 0, '2025-05-01', '2025-05-01', NULL, '2025-05-01', NULL, 1e+00, 0e+00, 66, 2, 0, 4 )
 Running: 
-	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (50, 1)
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (50, 47)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 50
 Running: 
@@ -1198,7 +1198,7 @@ Running:
 Running: 
 	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Have GoDaddy install PHPMyAdmin', 0, '2025-05-02', '2025-05-02', NULL, '2025-05-03', NULL, 1e+00, 0e+00, 66, 3, 0, 4 )
 Running: 
-	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (51, 1)
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (51, 47)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 51
 Running: 
@@ -1206,7 +1206,7 @@ Running:
 Running: 
 	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Run Archive Plugin', 0, '2025-05-03', '2025-05-03', NULL, '2025-05-03', NULL, 2e+00, 0e+00, 66, 4, 0, 4 )
 Running: 
-	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (52, 1)
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (52, 47)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 52
 Running: 
@@ -1214,7 +1214,7 @@ Running:
 Running: 
 	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Log into PHPMyAdmin and save Database to disk', 0, '2025-05-04', '2025-05-04', NULL, '2025-05-04', NULL, 1e+00, 0e+00, 66, 5, 0, 4 )
 Running: 
-	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (53, 1)
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (53, 47)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 53
 Running: 
@@ -1222,7 +1222,7 @@ Running:
 Running: 
 	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'FTP all website files to computer', 0, '2025-05-05', '2025-05-05', NULL, '2025-05-05', NULL, 3e+00, 0e+00, 66, 6, 0, 4 )
 Running: 
-	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (54, 1)
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (54, 47)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 54
 Running: 
@@ -1230,7 +1230,7 @@ Running:
 Running: 
 	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Store all website files on external SSD', 0, '2025-05-05', '2025-05-05', NULL, '2025-05-05', NULL, 2e+00, 0e+00, 66, 7, 0, 4 )
 Running: 
-	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (55, 1)
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (55, 47)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 55
 Running: 
@@ -1238,7 +1238,7 @@ Running:
 Running: 
 	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Design Database for Personal Planner', 3, '2025-04-08', '2025-03-20', '2025-03-20', '2025-05-01', NULL, 2.4e+01, 1.6e+01, 65, 0, 0, 4 )
 Running: 
-	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (56, 2)
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (56, 48)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 56
 Running: 
@@ -1246,13 +1246,13 @@ Running:
 Running: 
 	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Design UML Diagram for Personal Planner', 3, '2025-04-12', '2025-04-08', '2025-04-08', '2025-04-15', NULL, 1.6e+01, 5.25e+00, 65, 0, 0, 4 )
 Running: 
-	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (57, 2)
+	INSERT INTO task_dependencies (dependency, dependent_task) VALUES (57, 48)
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 57
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Design UML Diagram for Personal Planner' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-09-27', NULL, 2e+00, 2e+00, 67, 1, 0, 4 )
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-09-30', NULL, 2e+00, 2e+00, 67, 1, 0, 4 )
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 58
 Running: 
@@ -1264,13 +1264,13 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Daily 30 minute walk' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-09-27', NULL, 2e+00, 0e+00, 67, 3, 0, 4 )
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-09-30', NULL, 2e+00, 0e+00, 67, 3, 0, 4 )
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 60
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Clean apartment' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-04' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-07' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Find unstarted tasks for user(4) PASSED!
 User 4 has 9 unstarted tasks
 TaskModel:
@@ -1287,7 +1287,7 @@ TaskModel:
 	Priority: 2
 Optional Fields
 	Status: Not Started
-	Parent ID: 1
+	Parent ID: 47
 	Estimated Completion Date: 2025-05-01
 	Deleted : FALSE
 	Last Modified by User ID: 4
@@ -1306,7 +1306,7 @@ TaskModel:
 	Priority: 3
 Optional Fields
 	Status: Not Started
-	Parent ID: 1
+	Parent ID: 47
 	Estimated Completion Date: 2025-05-03
 	Deleted : FALSE
 	Last Modified by User ID: 4
@@ -1325,7 +1325,7 @@ TaskModel:
 	Priority: 4
 Optional Fields
 	Status: Not Started
-	Parent ID: 1
+	Parent ID: 47
 	Estimated Completion Date: 2025-05-03
 	Deleted : FALSE
 	Last Modified by User ID: 4
@@ -1344,7 +1344,7 @@ TaskModel:
 	Priority: 5
 Optional Fields
 	Status: Not Started
-	Parent ID: 1
+	Parent ID: 47
 	Estimated Completion Date: 2025-05-04
 	Deleted : FALSE
 	Last Modified by User ID: 4
@@ -1363,7 +1363,7 @@ TaskModel:
 	Priority: 6
 Optional Fields
 	Status: Not Started
-	Parent ID: 1
+	Parent ID: 47
 	Estimated Completion Date: 2025-05-05
 	Deleted : FALSE
 	Last Modified by User ID: 4
@@ -1382,7 +1382,7 @@ TaskModel:
 	Priority: 7
 Optional Fields
 	Status: Not Started
-	Parent ID: 1
+	Parent ID: 47
 	Estimated Completion Date: 2025-05-05
 	Deleted : FALSE
 	Last Modified by User ID: 4
@@ -1401,7 +1401,7 @@ TaskModel:
 	Priority: 1
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-09-27
+	Estimated Completion Date: 2026-09-30
 	Deleted : FALSE
 	Last Modified by User ID: 4
 
@@ -1437,7 +1437,7 @@ TaskModel:
 	Priority: 3
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-09-27
+	Estimated Completion Date: 2026-09-30
 	Deleted : FALSE
 	Last Modified by User ID: 4
 
@@ -1791,19 +1791,47 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-09-27', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 47 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-09-30', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 47 
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Archive BHHS74Reunion website to external SSD' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.parent_task = 47 AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND task_dependencies.dependent_task = 47 AND tasks.deleted <> 1
+Running: 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Check with GoDaddy about providing service to archive website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-04-15', tasks.planned_start = '2025-04-15', tasks.actual_start = '2025-04-15', tasks.estimated_delivery = '2025-04-15', tasks.delivered = '2026-09-30', tasks.est_hours_effort = 2e+00, tasks.hours_effort = 1e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 49 
+Running: 
+	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 49
+Running: 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Install a WordPress Archive Plugin', tasks.task_status = 4, tasks.due_date = '2025-05-01', tasks.planned_start = '2025-05-01', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-01', tasks.delivered = '2026-09-30', tasks.est_hours_effort = 1e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 2, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 50 
+Running: 
+	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 50
+Running: 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Have GoDaddy install PHPMyAdmin', tasks.task_status = 4, tasks.due_date = '2025-05-02', tasks.planned_start = '2025-05-02', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-03', tasks.delivered = '2026-09-30', tasks.est_hours_effort = 1e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 3, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 51 
+Running: 
+	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 51
+Running: 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Run Archive Plugin', tasks.task_status = 4, tasks.due_date = '2025-05-03', tasks.planned_start = '2025-05-03', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-03', tasks.delivered = '2026-09-30', tasks.est_hours_effort = 2e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 4, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 52 
+Running: 
+	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 52
+Running: 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Log into PHPMyAdmin and save Database to disk', tasks.task_status = 4, tasks.due_date = '2025-05-04', tasks.planned_start = '2025-05-04', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-04', tasks.delivered = '2026-09-30', tasks.est_hours_effort = 1e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 5, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 53 
+Running: 
+	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 53
+Running: 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'FTP all website files to computer', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-05-05', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-09-30', tasks.est_hours_effort = 3e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 6, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 54 
+Running: 
+	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 54
+Running: 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Store all website files on external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-05-05', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-09-30', tasks.est_hours_effort = 2e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 7, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 55 
+Running: 
+	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 55
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.delivered >= '2025-05-11'
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.delivered IS NULL AND (tasks.task_status IS NOT NULL AND tasks.task_status <> 0) AND tasks.deleted <> 1
 Find active tasks for user(4) PASSED!
-User 4 has 4 unstarted tasks
+User 4 has 3 unstarted tasks
 TaskModel:
 	Task ID: 48
 	Creator ID: 4
@@ -1824,26 +1852,6 @@ Optional Fields
 	Last Modified by User ID: 4
 
 TaskModel:
-	Task ID: 49
-	Creator ID: 4
-	Assigned To ID: 4
-	Description: Check with GoDaddy about providing service to archive website to external SSD
-	Status: 3
-	Scheduled Start Date: 2025-04-15
-	Due Date: 2025-04-15
-	Estimated Effort Hours: 2
-	Actual Effort Hours: 1
-	Priority Group: 65
-	Priority: 1
-Optional Fields
-	Status: Work in Progress
-	Parent ID: 1
-	Actual Start Date: 2025-04-15
-	Estimated Completion Date: 2025-04-15
-	Deleted : FALSE
-	Last Modified by User ID: 4
-
-TaskModel:
 	Task ID: 56
 	Creator ID: 4
 	Assigned To ID: 4
@@ -1857,7 +1865,7 @@ TaskModel:
 	Priority: 0
 Optional Fields
 	Status: Work in Progress
-	Parent ID: 2
+	Parent ID: 48
 	Actual Start Date: 2025-03-20
 	Estimated Completion Date: 2025-05-01
 	Deleted : FALSE
@@ -1877,19 +1885,19 @@ TaskModel:
 	Priority: 0
 Optional Fields
 	Status: Work in Progress
-	Parent ID: 2
+	Parent ID: 48
 	Actual Start Date: 2025-04-08
 	Estimated Completion Date: 2025-04-15
 	Deleted : FALSE
 	Last Modified by User ID: 4
 
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-04' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-07' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Running: 
-	UPDATE tasks SET tasks.deleted = 1, tasks.last_modified_by_user = 4  WHERE tasks.created_by = 4 AND tasks.task_id = 59
+	UPDATE tasks SET tasks.deleted = 1, tasks.last_modified_by_user = 4  WHERE tasks.created_by = 4 AND tasks.task_id = 60
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-04' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
-Task (59) for user (4) marked Deleted. TEST PASSED
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-07' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+Task (60) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of task PASSED!
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 1
@@ -1963,63 +1971,63 @@ Running:
 
 Running Goal Integration Tests
 Running: 
-	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Get a Job in Software Engineering', 1, NULL, 0, 4 )
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Get a Job in Software Engineering', 1, NULL, 0, 2 )
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
-	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Maintain and improve my software engineering skills', 1, 1, 0, 4 )
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Maintain and improve my software engineering skills', 1, 1, 0, 2 )
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
-	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Maintain and improve my C++ programming skills', 1, 1, 0, 4 )
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Maintain and improve my C++ programming skills', 1, 1, 0, 2 )
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
-	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Maintain and improve my  C programming skills', 2, 1, 0, 4 )
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Maintain and improve my  C programming skills', 2, 1, 0, 2 )
 Running: 
-	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Maintain or archive the BHHS 74 Reunion website', 2, NULL, 0, 4 )
-Running: 
-	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
-Running: 
-	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Maintain and improve my SQL skills', 3, 1, 0, 4 )
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Maintain or archive the BHHS 74 Reunion website', 2, NULL, 0, 2 )
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
-	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Learn QT graphic system', 4, 1, 0, 4 )
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Maintain and improve my SQL skills', 3, 1, 0, 2 )
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
-	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Improve my Linux Programming skills', 5, 1, 0, 4 )
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Learn QT graphic system', 4, 1, 0, 2 )
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
-	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Get an embedded programming certificate', 4, 1, 0, 4 )
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Improve my Linux Programming skills', 5, 1, 0, 2 )
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
-	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Learn open source Linux Core Programming', 4, 1, 0, 4 )
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Get an embedded programming certificate', 4, 1, 0, 2 )
 Running: 
-	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Maintain my health', 2, NULL, 0, 4 )
+	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
+Running: 
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Learn open source Linux Core Programming', 4, 1, 0, 2 )
+Running: 
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Maintain my health', 2, NULL, 0, 2 )
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Maintain my health' AND user_goals.deleted <> 1
 Running: 
-	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Eat as healthy as possible', 3, 11, 0, 4 )
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Eat as healthy as possible', 3, 11, 0, 2 )
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Maintain my health' AND user_goals.deleted <> 1
 Running: 
-	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Walk 30 minutes a day', 4, 11, 0, 4 )
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Walk 30 minutes a day', 4, 11, 0, 2 )
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Maintain my health' AND user_goals.deleted <> 1
 Running: 
-	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Track my vital signs', 3, 11, 0, 4 )
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Track my vital signs', 3, 11, 0, 2 )
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Maintain my health' AND user_goals.deleted <> 1
 Running: 
-	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Get my weight down to 190 pounds', 4, 11, 0, 4 )
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Get my weight down to 190 pounds', 4, 11, 0, 2 )
 Running: 
-	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Be more organized', 1, NULL, 0, 4 )
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Be more organized', 1, NULL, 0, 2 )
 Running: 
-	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Effectively moderate the code review site on stack exchange', 1, NULL, 0, 4 )
+	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (4, 'Effectively moderate the code review site on stack exchange', 1, NULL, 0, 2 )
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
@@ -2030,7 +2038,7 @@ Model Name UserGoalModel
 	Description: Get a Job in Software Engineering
 	Priority: 1
 	Parent ID: 0
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Find all child goals for(1) PASSED!
 Goal 1 has 8 child goals
@@ -2040,7 +2048,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my software engineering skills
 	Priority: 1
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 3
@@ -2048,7 +2056,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my C++ programming skills
 	Priority: 1
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 4
@@ -2056,7 +2064,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my  C programming skills
 	Priority: 2
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 6
@@ -2064,7 +2072,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my SQL skills
 	Priority: 3
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 7
@@ -2072,7 +2080,7 @@ Model Name UserGoalModel
 	Description: Learn QT graphic system
 	Priority: 4
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 8
@@ -2080,7 +2088,7 @@ Model Name UserGoalModel
 	Description: Improve my Linux Programming skills
 	Priority: 5
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 9
@@ -2088,7 +2096,7 @@ Model Name UserGoalModel
 	Description: Get an embedded programming certificate
 	Priority: 4
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 10
@@ -2096,7 +2104,7 @@ Model Name UserGoalModel
 	Description: Learn open source Linux Core Programming
 	Priority: 4
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.deleted <> 1
@@ -2108,7 +2116,7 @@ Model Name UserGoalModel
 	Description: Get a Job in Software Engineering
 	Priority: 1
 	Parent ID: 0
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 2
@@ -2116,7 +2124,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my software engineering skills
 	Priority: 1
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 3
@@ -2124,7 +2132,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my C++ programming skills
 	Priority: 1
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 4
@@ -2132,7 +2140,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my  C programming skills
 	Priority: 2
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 5
@@ -2140,7 +2148,7 @@ Model Name UserGoalModel
 	Description: Maintain or archive the BHHS 74 Reunion website
 	Priority: 2
 	Parent ID: 0
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 6
@@ -2148,7 +2156,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my SQL skills
 	Priority: 3
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 7
@@ -2156,7 +2164,7 @@ Model Name UserGoalModel
 	Description: Learn QT graphic system
 	Priority: 4
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 8
@@ -2164,7 +2172,7 @@ Model Name UserGoalModel
 	Description: Improve my Linux Programming skills
 	Priority: 5
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 9
@@ -2172,7 +2180,7 @@ Model Name UserGoalModel
 	Description: Get an embedded programming certificate
 	Priority: 4
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 10
@@ -2180,7 +2188,7 @@ Model Name UserGoalModel
 	Description: Learn open source Linux Core Programming
 	Priority: 4
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 11
@@ -2188,7 +2196,7 @@ Model Name UserGoalModel
 	Description: Maintain my health
 	Priority: 2
 	Parent ID: 0
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 12
@@ -2196,7 +2204,7 @@ Model Name UserGoalModel
 	Description: Eat as healthy as possible
 	Priority: 3
 	Parent ID: 11
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 13
@@ -2204,7 +2212,7 @@ Model Name UserGoalModel
 	Description: Walk 30 minutes a day
 	Priority: 4
 	Parent ID: 11
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 14
@@ -2212,7 +2220,7 @@ Model Name UserGoalModel
 	Description: Track my vital signs
 	Priority: 3
 	Parent ID: 11
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 15
@@ -2220,7 +2228,7 @@ Model Name UserGoalModel
 	Description: Get my weight down to 190 pounds
 	Priority: 4
 	Parent ID: 11
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 16
@@ -2228,7 +2236,7 @@ Model Name UserGoalModel
 	Description: Be more organized
 	Priority: 1
 	Parent ID: 0
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 17
@@ -2236,7 +2244,7 @@ Model Name UserGoalModel
 	Description: Effectively moderate the code review site on stack exchange
 	Priority: 1
 	Parent ID: 0
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description LIKE '%Maintain%' AND user_goals.deleted <> 1
@@ -2248,7 +2256,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my software engineering skills
 	Priority: 1
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 3
@@ -2256,7 +2264,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my C++ programming skills
 	Priority: 1
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 4
@@ -2264,7 +2272,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my  C programming skills
 	Priority: 2
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 5
@@ -2272,7 +2280,7 @@ Model Name UserGoalModel
 	Description: Maintain or archive the BHHS 74 Reunion website
 	Priority: 2
 	Parent ID: 0
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 6
@@ -2280,7 +2288,7 @@ Model Name UserGoalModel
 	Description: Maintain and improve my SQL skills
 	Priority: 3
 	Parent ID: 1
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Model Name UserGoalModel
 	Goal ID: 11
@@ -2288,12 +2296,12 @@ Model Name UserGoalModel
 	Description: Maintain my health
 	Priority: 2
 	Parent ID: 0
-	Last Modified by User ID: 4
+	Last Modified by User ID: 2
 
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.deleted <> 1
 Running: 
-	UPDATE user_goals SET user_goals.deleted = 1, user_goals.last_modified_by_user = 4 WHERE user_goals.user_id = 4 AND user_goals.id_user_goals = 16
+	UPDATE user_goals SET user_goals.deleted = 1, user_goals.last_modified_by_user = 1 WHERE user_goals.user_id = 4 AND user_goals.id_user_goals = 16
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.deleted <> 1
 Original goal list size: 17 Altered goal list size: 16
@@ -2327,7 +2335,7 @@ Running:
 
 Running Note Integration Tests
 Running: 
-	INSERT INTO user_notes(user_id, content, deleted, note_creation, last_modified_by_user ) VALUES (4, 'Get a Job in Software Engineering', 0, '2024-05-14 08:31:53.000000', 4 )
+	INSERT INTO user_notes(user_id, content, deleted, note_creation, last_modified_by_user ) VALUES (4, 'Get a Job in Software Engineering', 0, '2024-05-14 08:31:53.000000', 1 )
 Running: 
 	INSERT INTO user_notes(user_id, content, deleted, note_creation, last_modified_by_user ) VALUES (4, 'Maintain and improve my software engineering skills', 0, '2024-05-14 08:31:53.000000', 4 )
 Running: 
@@ -2377,7 +2385,7 @@ User 4 has 17 notes
 	Note ID: 27
 	User ID: 4
 	Content: Get a Job in Software Engineering
-	Last Modified by User ID: 4
+	Last Modified by User ID: 1
 
 	Note ID: 28
 	User ID: 4
@@ -2500,7 +2508,7 @@ User 4 has 17 notes
 	Note ID: 27
 	User ID: 4
 	Content: Get a Job in Software Engineering
-	Last Modified by User ID: 4
+	Last Modified by User ID: 1
 
 	Note ID: 28
 	User ID: 4
@@ -2583,13 +2591,13 @@ User 4 has 17 notes
 	Last Modified by User ID: 4
 
 Running: 
-	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-09-20' AND user_notes.last_modifed <= '2026-10-04' AND user_notes.deleted <> 1
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-09-23' AND user_notes.last_modifed <= '2026-10-07' AND user_notes.deleted <> 1
 Find all notes for user (4) edited in date range PASSED!
 User 4 has 17 notes
 	Note ID: 27
 	User ID: 4
 	Content: Get a Job in Software Engineering
-	Last Modified by User ID: 4
+	Last Modified by User ID: 1
 
 	Note ID: 28
 	User ID: 4
@@ -2678,7 +2686,7 @@ User 4 has 17 notes
 	Note ID: 27
 	User ID: 4
 	Content: Get a Job in Software Engineering
-	Last Modified by User ID: 4
+	Last Modified by User ID: 1
 
 	Note ID: 28
 	User ID: 4
@@ -2763,7 +2771,7 @@ User 4 has 17 notes
 Running: 
 	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.deleted <> 1
 Running: 
-	UPDATE user_notes SET user_notes.deleted = 1, user_notes.last_modified_by_user = 4 WHERE user_notes.user_id = 4 AND user_notes.id_user_notes = 42
+	UPDATE user_notes SET user_notes.deleted = 1, user_notes.last_modified_by_user = 1 WHERE user_notes.user_id = 4 AND user_notes.id_user_notes = 42
 Running: 
 	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.deleted <> 1
 Original note list size: 17 Altered schedule size: 16
@@ -2954,14 +2962,14 @@ All negative path tests for database insertions and retrievals of ScheduleItem P
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Sun Sep 27 07:24:36 2026
-elapsed time in seconds: 25.7319
+Wed Sep 30 07:33:07 2026
+elapsed time in seconds: 25.998
 
 
 
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
-  total heap usage: 65,761 allocs, 65,761 frees, 8,990,928 bytes allocated
+  total heap usage: 67,627 allocs, 67,627 frees, 9,251,310 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 
