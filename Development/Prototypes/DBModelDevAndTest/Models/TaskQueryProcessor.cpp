@@ -56,6 +56,10 @@ TaskList TaskQueryProcessor::getTaskByDescriptionAndAssignedUser(std::string_vie
 
         StaticQueryTask localResult = staticRunQueryAsync<TaskDbQueryValues>(std::move(fctx).get().value());
         results = processStaticResults(localResult);
+        if (results.empty())
+        {
+            appendErrorMessage("No Tasks found!");
+        }
     }
 
     catch(const std::exception& e)
@@ -82,6 +86,10 @@ TaskList TaskQueryProcessor::getActiveTasksForAssignedUser(std::size_t assignedU
 
         StaticQueryTask localResult = staticRunQueryAsync<TaskDbQueryValues>(std::move(fctx).get().value());
         results = processStaticResults(localResult);
+        if (results.empty())
+        {
+            appendErrorMessage("No Tasks found!");
+        }
     }
 
     catch(const std::exception& e)
@@ -108,6 +116,10 @@ TaskList TaskQueryProcessor::getUnstartedDueForStartForAssignedUser(std::size_t 
 
         StaticQueryTask localResult = staticRunQueryAsync<TaskDbQueryValues>(std::move(fctx).get().value());
         results = processStaticResults(localResult);
+        if (results.empty())
+        {
+            appendErrorMessage("No Tasks found!");
+        }
     }
 
     catch(const std::exception& e)
@@ -133,6 +145,10 @@ TaskList TaskQueryProcessor::getTasksCompletedByAssignedAfterDate(std::size_t as
 
         StaticQueryTask localResult = staticRunQueryAsync<TaskDbQueryValues>(std::move(fctx).get().value());
         results = processStaticResults(localResult);
+        if (results.empty())
+        {
+            appendErrorMessage("No Tasks found!");
+        }
     }
 
     catch(const std::exception& e)
@@ -153,11 +169,15 @@ TaskList TaskQueryProcessor::getTasksByAssignedIDandParentID(std::size_t assigne
         boost::mysql::format_context fctx(getFormatOptions());
         boost::mysql::format_sql_to(fctx, baseTaskQuery);
         boost::mysql::format_sql_to(fctx, "WHERE tasks.assigned_to = {} ", assignedUserID);
-        boost::mysql::format_sql_to(fctx, "AND tasks.parent_task = {} ", parentID);
+        boost::mysql::format_sql_to(fctx, "AND task_dependencies.dependent_task = {} ", parentID);
         boost::mysql::format_sql_to(fctx, "AND tasks.deleted <> 1");
 
         StaticQueryTask localResult = staticRunQueryAsync<TaskDbQueryValues>(std::move(fctx).get().value());
         results = processStaticResults(localResult);
+        if (results.empty())
+        {
+            appendErrorMessage("No Tasks found!");
+        }
     }
 
     catch(const std::exception& e)
@@ -186,6 +206,11 @@ TaskList TaskQueryProcessor::getDefaultDashboardTaskList(std::size_t assignedUse
 
         StaticQueryTask localResult = staticRunQueryAsync<TaskDbQueryValues>(std::move(fctx).get().value());
         results = processStaticResults(localResult);
+        if (results.empty())
+        {
+            appendErrorMessage("No Tasks found!");
+        }
+
     }
 
     catch(const std::exception& e)
