@@ -427,6 +427,11 @@ bool TestTaskDBInterface::testGetCompletedList()
     TaskQueryProcessor taskSearch;
 
     TaskList tasksToMarkComplete = taskSearch.getTasksByAssignedIDandParentID(user1ID, parentTask->getTaskID());
+    if (tasksToMarkComplete.empty())
+    {
+        std::cout << std::format("In testGetCompletedList getTasksByAssignedIDandParentID Failed: \n{}\n", taskSearch.getAllErrorMessages());
+        return false;
+    }
     for (auto task: tasksToMarkComplete)
     {
         task->setCompletionDate(completedDate);
@@ -567,6 +572,17 @@ TestStatus TestTaskDBInterface::testTasksFromDataFile()
 
     for (auto testTask: userTaskTestData)
     {
+/*
+ * When this code was originally written the only tasks in the database were the
+ * ones input from loadTasksFromDataFile(). The parent id in the data file 
+ * refers to earlier tasks in that data file. Testing has been expanded and tasks
+ * are inserted earlier in a SQL file.
+ */
+        std::size_t parentId = testTask->getParentTaskID();
+        if (parentId > 0)
+        {
+            testTask->setParentTaskID(userTaskTestData[parentId - 1]->getTaskID());
+        }
         if (insertShouldPass(testTask) == TESTPASSED)
         {
             for (auto test: m_positiveTestFuncs)
