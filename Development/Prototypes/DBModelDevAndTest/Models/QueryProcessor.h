@@ -108,6 +108,14 @@ protected:
             queryResultValues.push_back(std::make_shared<ListType>());
         }
         else {
+            if (!queryResults.has_value())
+            {
+                appendErrorMessage("Query results not valid");
+            }
+            if (queryResults.warning_count() > 0)
+            {
+                appendErrorMessage(std::format("Warning count: {}", queryResults.warning_count()));
+            }
             for (const DbTransLator& dbTranslator : queryResults.rows())
             {
                 queryResultValues.push_back(std::make_shared<ListType>(dbTranslator));
