@@ -18,7 +18,6 @@
 
 OrganizationSelfTest::OrganizationSelfTest()
 {
-
 }
 
 TestStatus OrganizationSelfTest::runSelfTest() noexcept
@@ -41,13 +40,13 @@ TestStatus OrganizationSelfTest::runSelfTest() noexcept
 
     if (testAttributeAccessFunctions() == TESTFAILED)
     {
-        std::cerr << m_modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
+        std::cerr << getModelName() << "::runSelfTest: One or more get or set functions FAILED!\n";
         selfTestStatus = TESTFAILED;
     }
 
     if (testEqualityOperator() == TESTFAILED)
     {
-        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", m_modelName);
+        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", getModelName());
         selfTestStatus = TESTFAILED;
     }
 
@@ -55,7 +54,7 @@ TestStatus OrganizationSelfTest::runSelfTest() noexcept
 
     if (testDataBaseToModelConversion() != TESTPASSED)
     {
-        std::cerr << std::format("Test new {} from Database Data FAILED!\n", m_modelName);
+        std::cerr << std::format("Test new {} from Database Data FAILED!\n", getModelName());
         selfTestStatus = TESTFAILED;
     }
 
@@ -87,11 +86,11 @@ TestStatus OrganizationSelfTest::runSelfTest() noexcept
     
     if (selfTestStatus == TESTPASSED)
     {
-        std::cout <<  std::format("{} Self Test {}\n", m_modelName, "PASSED");
+        std::cout <<  std::format("{} Self Test {}\n", getModelName(), "PASSED");
     }
     else
     {
-        std::cerr <<  std::format("{} Self Test {}\n", m_modelName, "FAILED");
+        std::cerr <<  std::format("{} Self Test {}\n", getModelName(), "FAILED");
     }
 
     return selfTestStatus;
@@ -143,7 +142,7 @@ TestStatus OrganizationSelfTest::testOrganizationIdAccess() noexcept
 {
     std::size_t testPrimaryKey = 1;
 
-    return testAccessorFunctions<std::size_t>(testPrimaryKey, &m_primaryKey, "Primary Key",
+    return testPrimaryKeyAccessFunctions(testPrimaryKey,
         std::bind(&OrganizationModel::setOrganizationId, this, std::placeholders::_1),
         std::bind(&OrganizationModel::getOrganizationId, this));
 }
@@ -175,7 +174,7 @@ TestStatus OrganizationSelfTest::testPhoneAccess() noexcept
 TestStatus OrganizationSelfTest::testPrimaryContactAccess() noexcept
 {
     std::size_t primaryContactUserId = 1;
-    return testAccessorFunctions<std::size_t>(primaryContactUserId, &m_primaryContactUser, "Primary Contact ID",
+    return testForeignKeyFields(primaryContactUserId, &m_primaryContactUser, "Primary Contact ID",
         std::bind(&OrganizationModel::setPrimaryContactUserId, this, std::placeholders::_1),
         std::bind(&OrganizationModel::getPrimaryContactUserId, this));
 }
@@ -183,7 +182,7 @@ TestStatus OrganizationSelfTest::testPrimaryContactAccess() noexcept
 TestStatus OrganizationSelfTest::testSecondaryContactAccess() noexcept
 {
     std::size_t secondaryContactUserId = 1;
-    return testAccessorFunctions<std::size_t>(secondaryContactUserId, &m_secondaryContactUser, "Secondary Contact ID",
+    return testForeignKeyFields(secondaryContactUserId, &m_secondaryContactUser, "Secondary Contact ID",
         std::bind(&OrganizationModel::setSecondaryContactUserId, this, std::placeholders::_1),
         std::bind(&OrganizationModel::getSecondaryContactUserId, this));
 }
@@ -248,26 +247,24 @@ TestStatus OrganizationSelfTest::testParentOrganizationAccess() noexcept
 TestStatus OrganizationSelfTest::testCreatedDateAccess() noexcept
 {
     std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
-    return testTimeStampAccessorFunctions(testValue, &m_created, "Creation TimeStamp",
-        std::bind(&OrganizationModel::setCreationTimeStamp, this, std::placeholders::_1),
-        std::bind(&OrganizationModel::getCreationTimeStamp, this));
+    return testTimeStampAccessorFunctions(testValue, &m_createdTimeStamp, "Creation TimeStamp",
+        std::bind(&OrganizationModel::setCreatedTimeStamp, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getCreatedTSValue, this));
 }
 
 TestStatus OrganizationSelfTest::testLastModifiedDateAccess() noexcept
 {
     std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
-    return testTimeStampAccessorFunctions(testValue, &m_created, "Last Modified TimeStamp",
-        std::bind(&OrganizationModel::setLastModified, this, std::placeholders::_1),
-        std::bind(&OrganizationModel::getLastModified, this));
+    return testTimeStampAccessorFunctions(testValue, &m_lastUpdateTimeStamp, "Last Modified TimeStamp",
+        std::bind(&OrganizationModel::setLastModifiedTimeStamp, this, std::placeholders::_1),
+        std::bind(&OrganizationModel::getLastModifiedValue, this));
 }
 
 TestStatus OrganizationSelfTest::testLastModifiedByUserAccess() noexcept
 {
     std::size_t testUserId = 1;
 
-    return testAccessorFunctions<std::size_t>(testUserId, &m_lastModifiedByUser, "Last Modified by UserId",
-        std::bind(&OrganizationModel::setLastModifiedBy, this, std::placeholders::_1),
-        std::bind(&OrganizationModel::getLastModifiedBy, this));
+    return testLastModifiedByAccess(testUserId);
 }
 
 std::vector<ExceptionTestElement> OrganizationSelfTest::initExceptionTests() noexcept
@@ -325,8 +322,8 @@ void OrganizationSelfTest::initValidTestValues() noexcept
     setStateOrProvince("California");
     setPostalCode("90001");
     setNation("United States");
-    setCreationTimeStamp(timeStamp);
-    setLastModified(timeStamp);
+    setCreatedTimeStamp(timeStamp);
+    setLastModifiedTimeStamp(timeStamp);
 }
 
 TestStatus OrganizationSelfTest::testAllInsertFailures()
@@ -378,10 +375,10 @@ TestStatus OrganizationSelfTest::testAllInsertFailures()
 
     if (m_verboseOutput)
     {
-        std::cout << std::format("{}::{} before successful insert this = \n", m_modelName, __func__) << *this << "\n";
+        std::cout << std::format("{}::{} before successful insert this = \n", getModelName(), __func__) << *this << "\n";
     }
 
-    setCreationTimeStamp(common::TestTimeStampValue);
+    setCreatedTimeStamp(common::TestTimeStampValue);
     if (!insert())
     {
         std::cout << "In  OrganizationSelfTest::testAllInsertFailures() Expected successful insert failed\n" << m_errorMessages << "\n";
@@ -425,8 +422,8 @@ void OrganizationSelfTest::convertOrganizationModelTo(OrganizationModel_shp orig
     testInput.state_or_province = original->getStateOrProvince();
     testInput.postal_code = original->getPostalCode();
     testInput.nation = original->getNation();
-    testInput.created_timestamp = common::toBoostDateTime(original->getCreationTimeStamp());
-    testInput.last_modified_time_stamp = common::toBoostDateTime(original->getLastModified());
+    testInput.created_timestamp = common::toBoostDateTime(original->getCreatedTSValue());
+    testInput.last_modified_time_stamp = common::toBoostDateTime(original->getLastModifiedValue());
 }
 
 TestStatus OrganizationSelfTest::testDataBaseToModelConversion() noexcept
@@ -446,8 +443,8 @@ TestStatus OrganizationSelfTest::testDataBaseToModelConversion() noexcept
     expectData->setStateOrProvince("California");
     expectData->setPostalCode("90001");
     expectData->setNation("United States");
-    expectData->setCreationTimeStamp(timeStamp);
-    expectData->setLastModified(timeStamp);
+    expectData->setCreatedTimeStamp(timeStamp);
+    expectData->setLastModifiedTimeStamp(timeStamp);
 
     OrganizationDbQueryValues testInput;
     convertOrganizationModelTo(expectData, testInput);

@@ -20,11 +20,11 @@ TestStatus UserGoalSelfTest::runSelfTest() noexcept
     m_selfTest = true;
     TestStatus selfTestStatus = TESTPASSED;
 
-    std::cout << "\nRunning " << m_modelName << " Self Test\n";
+    std::cout << "\nRunning " << getModelName() << " Self Test\n";
 
     if (testExceptionHandling()!= TESTPASSED)
     {
-        std::cerr  << m_modelName << "::runSelfTest: Exception handling FAILED!\n";
+        std::cerr  << getModelName() << "::runSelfTest: Exception handling FAILED!\n";
         selfTestStatus = TESTFAILED;
     }
     
@@ -35,13 +35,13 @@ TestStatus UserGoalSelfTest::runSelfTest() noexcept
 
     if (testAttributeAccessFunctions() == TESTFAILED)
     {
-        std::cerr << m_modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
+        std::cerr << getModelName() << "::runSelfTest: One or more get or set functions FAILED!\n";
         selfTestStatus = TESTFAILED;
     }
 
     if (testEqualityOperator() == TESTFAILED)
     {
-        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", m_modelName);
+        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", getModelName());
         selfTestStatus = TESTFAILED;
     }
 
@@ -75,11 +75,11 @@ TestStatus UserGoalSelfTest::runSelfTest() noexcept
     
     if (selfTestStatus == TESTPASSED)
     {
-        std::cout <<  std::format("{} Self Test {}\n", m_modelName, "PASSED");
+        std::cout <<  std::format("{} Self Test {}\n", getModelName(), "PASSED");
     }
     else
     {
-        std::cerr <<  std::format("{} Self Test {}\n", m_modelName, "FAILED");
+        std::cerr <<  std::format("{} Self Test {}\n", getModelName(), "FAILED");
     }
 
     return selfTestStatus;
@@ -93,8 +93,8 @@ void UserGoalSelfTest::selfTestResetAllValues() noexcept
     m_description.clear();;
     m_priority.reset();
     m_parentID.reset();
-    m_created.reset();
-    m_lastUpdate = {};
+    m_createdTimeStamp.reset();
+    m_lastUpdateTimeStamp.reset();
 }
 
 std::vector<AttributeTestFunction> UserGoalSelfTest::initAttributeAccessTests() noexcept
@@ -116,14 +116,14 @@ std::vector<AttributeTestFunction> UserGoalSelfTest::initAttributeAccessTests() 
 
 TestStatus UserGoalSelfTest::testGoalIdAccesss() noexcept
 {
-    return testAccessorFunctions<std::size_t>(57, &m_primaryKey, "Primary Key",
+    return testPrimaryKeyAccessFunctions(57,
         std::bind(&UserGoalModel::setGoalId, this, std::placeholders::_1),
         std::bind(&UserGoalModel::getGoalId, this));
 }
 
 TestStatus UserGoalSelfTest::testUserIdAccesss() noexcept
 {
-    return testAccessorFunctions<std::size_t>(23, &m_userID, "User ID",
+    return testForeignKeyFields(23, &m_userID, "User ID",
         std::bind(&UserGoalModel::setUserId, this, std::placeholders::_1),
         std::bind(&UserGoalModel::getUserId, this));
 }
@@ -137,9 +137,9 @@ TestStatus UserGoalSelfTest::testDescriptionAccess() noexcept
 
 TestStatus UserGoalSelfTest::testCreationDateAccess() noexcept
 {
-    return testTimeStampAccessorFunctions(common::TestTimeStampValue, &m_created, "Date Added",
-        std::bind(&UserGoalModel::setCreationTimeStamp, this, std::placeholders::_1),
-        std::bind(&UserGoalModel::getCreationTimeStamp, this));
+    return testTimeStampAccessorFunctions(common::TestTimeStampValue, &m_createdTimeStamp, "Date Added",
+        std::bind(&UserGoalModel::setCreatedTimeStamp, this, std::placeholders::_1),
+        std::bind(&UserGoalModel::getCreatedTSValue, this));
 }
 
 TestStatus UserGoalSelfTest::testParentIdAccess() noexcept
@@ -158,18 +158,16 @@ TestStatus UserGoalSelfTest::testPriorityAccess() noexcept
 
 TestStatus UserGoalSelfTest::testLastUpdateAccess() noexcept
 {
-    return testTimeStampAccessorFunctions(common::TestTimeStampValue, &m_lastUpdate, "Last Modified Time Stamp",
-        std::bind(&UserGoalModel::setLastUpdateTimeStamp, this, std::placeholders::_1),
-        std::bind(&UserGoalModel::getLastUpdateTimeStamp, this));
+    return testTimeStampAccessorFunctions(common::TestTimeStampValue, &m_lastUpdateTimeStamp, "Last Modified Time Stamp",
+        std::bind(&UserGoalModel::setLastModifiedTimeStamp, this, std::placeholders::_1),
+        std::bind(&UserGoalModel::getLastModifiedValue, this));
 }
 
 TestStatus UserGoalSelfTest::testLastModifiedByUserAccess() noexcept
 {
     std::size_t testUserId = 1;
 
-    return testAccessorFunctions<std::size_t>(testUserId, &m_lastModifiedByUser, "Last Modified by UserId",
-        std::bind(&UserGoalModel::setLastModifiedBy, this, std::placeholders::_1),
-        std::bind(&UserGoalModel::getLastModifiedBy, this));
+    return testLastModifiedByAccess(testUserId);
 }
 
 std::vector<ExceptionTestElement> UserGoalSelfTest::initExceptionTests() noexcept
@@ -189,7 +187,7 @@ TestStatus UserGoalSelfTest::testExceptionInsert() noexcept
     std::chrono::system_clock::time_point timeStamp = common::TestTimeStampValue;
     setDescription("Testing insertion exception");
     setUserId(27);
-    setCreationTimeStamp(timeStamp);
+    setCreatedTimeStamp(timeStamp);
 
     return testExceptionAndSuccessNArgs("UserGoalModel::insert", std::bind(&UserGoalModel::insert, this));
 }
@@ -202,7 +200,7 @@ TestStatus UserGoalSelfTest::testExceptionUpdate() noexcept
     setGoalId(37);
     setDescription("Testing insertion exception");
     setUserId(23);
-    setCreationTimeStamp(timeStamp);
+    setCreatedTimeStamp(timeStamp);
 
     return testExceptionAndSuccessNArgs("UserGoalModel::update", std::bind(&UserGoalModel::update, this));
 }
@@ -252,11 +250,11 @@ TestStatus UserGoalSelfTest::testAllInsertFailures()
     expectedErrors.clear();
     clearErrorMessages();
 
-    setCreationTimeStamp(common::TestTimeStampValue);
+    setCreatedTimeStamp(common::TestTimeStampValue);
 
     if (m_verboseOutput)
     {
-        std::cout << std::format("{}::{} before successful insert this = \n", m_modelName, __func__) << *this << "\n";
+        std::cout << std::format("{}::{} before successful insert this = \n", getModelName(), __func__) << *this << "\n";
     }
 
     if (!insert())

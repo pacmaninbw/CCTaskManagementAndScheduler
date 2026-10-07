@@ -18,7 +18,7 @@ TestStatus NoteSelfTest::runSelfTest() noexcept
 {
     CoreDBInterface::m_selfTest = true;
     TestStatus selfTestStatus = TESTPASSED;
-    std::string_view modelName(ModelDBInterface::m_modelName);
+    std::string_view modelName(getModelName());
 
     std::cout << "\nRunning " << modelName << " Self Test\n";
 
@@ -33,7 +33,7 @@ TestStatus NoteSelfTest::runSelfTest() noexcept
         selfTestStatus = TESTFAILED;
     }
 
-    if (AttributeSelfTest::testAttributeAccessFunctions() == TESTFAILED)
+    if (testAttributeAccessFunctions() == TESTFAILED)
     {
         std::cerr << modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
         selfTestStatus = TESTFAILED;
@@ -90,8 +90,8 @@ void NoteSelfTest::selfTestResetAllValues() noexcept
     ModelSelfTest::selfTestResetAllValues();
     m_userID = 0;
     m_content.clear();
-    m_creationDate = {};
-    m_lastUpdate = {};
+    m_createdTimeStamp.reset();
+    m_lastUpdateTimeStamp.reset();
 }
 
 std::vector<AttributeTestFunction> NoteSelfTest::initAttributeAccessTests() noexcept
@@ -127,8 +127,8 @@ TestStatus NoteSelfTest::testExceptionInsert() noexcept
     std::chrono::system_clock::time_point timeStamp = common::TestTimeStampValue;
     setContent("Testing insertion exception");
     setUserId(27);
-    setDateAdded(timeStamp);
-    setLastModified(timeStamp);
+    setCreatedTimeStamp(timeStamp);
+    setLastModifiedTimeStamp(timeStamp);
 
     return testExceptionAndSuccessNArgs("NoteModel::insert", std::bind(&NoteModel::insert, this));
 }
@@ -141,8 +141,8 @@ TestStatus NoteSelfTest::testExceptionUpdate() noexcept
     setNoteId(1);
     setContent("Testing insertion exception");
     setUserId(27);
-    setDateAdded(timeStamp);
-    setLastModified(timeStamp);
+    setCreatedTimeStamp(timeStamp);
+    setLastModifiedTimeStamp(timeStamp);
 
     return testExceptionAndSuccessNArgs("NoteModel::update", std::bind(&NoteModel::update, this));
 }
@@ -156,8 +156,8 @@ TestStatus NoteSelfTest::testExceptionHide() noexcept
     setNoteId(1);
     setContent("Testing insertion exception");
     setUserId(testUserId);
-    setDateAdded(timeStamp);
-    setLastModified(timeStamp);
+    setCreatedTimeStamp(timeStamp);
+    setLastModifiedTimeStamp(timeStamp);
 
     return testExceptionAndSuccessNArgs("NoteModel::hide", std::bind(&NoteModel::hide, this, std::placeholders::_1), testUserId);
 }
@@ -196,7 +196,7 @@ TestStatus NoteSelfTest::testAllInsertFailures()
 
     if (m_verboseOutput)
     {
-        std::cout << std::format("{}::{} before successful insert this = \n", m_modelName, __func__) << *this << "\n";
+        std::cout << std::format("{}::{} before successful insert this = \n", getModelName(), __func__) << *this << "\n";
     }
 
     if (!insert())
@@ -210,14 +210,14 @@ TestStatus NoteSelfTest::testAllInsertFailures()
 
 TestStatus NoteSelfTest::testNoteIdAccesss() noexcept
 {
-    return testAccessorFunctions<std::size_t>(27, &m_primaryKey, "Primary Key",
+    return testPrimaryKeyAccessFunctions(27,
         std::bind(&NoteModel::setNoteId, this, std::placeholders::_1),
         std::bind(&NoteModel::getNoteId, this));
 }
 
 TestStatus NoteSelfTest::testUserIdAccesss() noexcept
 {
-    return testAccessorFunctions<std::size_t>(31, &m_userID, "User ID",
+    return testForeignKeyFields(31, &m_userID, "User ID",
         std::bind(&NoteModel::setUserId, this, std::placeholders::_1),
         std::bind(&NoteModel::getUserId, this));
 }
@@ -231,26 +231,24 @@ TestStatus NoteSelfTest::testContentAccess() noexcept
 
 TestStatus NoteSelfTest::testDateAddedAccess() noexcept
 {
-    return testTimeStampAccessorFunctions(common::TestTimeStampValue, &m_creationDate, "Date Added",
-        std::bind(&NoteModel::setDateAdded, this, std::placeholders::_1),
-        std::bind(&NoteModel::getDateAdded, this));
+    return testTimeStampAccessorFunctions(common::TestTimeStampValue, &m_createdTimeStamp, "Date Added",
+        std::bind(&NoteModel::setCreatedTimeStamp, this, std::placeholders::_1),
+        std::bind(&NoteModel::getCreatedTSValue, this));
 }
 
 TestStatus NoteSelfTest::testLastUpdateAccess() noexcept
 {
     std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
-    return testTimeStampAccessorFunctions(testValue, &m_lastUpdate, "Last Modified Time Stamp",
-        std::bind(&NoteModel::setLastModified, this, std::placeholders::_1),
-        std::bind(&NoteModel::getLastModified, this));
+    return testTimeStampAccessorFunctions(testValue, &m_lastUpdateTimeStamp, "Last Modified Time Stamp",
+        std::bind(&NoteModel::setLastModifiedTimeStamp, this, std::placeholders::_1),
+        std::bind(&NoteModel::getLastModifiedValue, this));
 }
 
 TestStatus NoteSelfTest::testLastModifiedByUserAccess() noexcept
 {
     std::size_t testUserId = 1;
 
-    return testAccessorFunctions<std::size_t>(testUserId, &m_lastModifiedByUser, "Last Modified by UserId",
-        std::bind(&NoteModel::setLastModifiedBy, this, std::placeholders::_1),
-        std::bind(&NoteModel::getLastModifiedBy, this));
+    return testLastModifiedByAccess(testUserId);
 }
 
 TestStatus NoteSelfTest::testEqualityOperator() noexcept

@@ -25,11 +25,11 @@ TestStatus ScheduleItemSelfTest::runSelfTest() noexcept
     m_selfTest = true;
     TestStatus selfTestStatus = TESTPASSED;
 
-    std::cout << "\nRunning " << m_modelName << " Self Test" << std::endl;
+    std::cout << "\nRunning " << getModelName() << " Self Test" << std::endl;
 
     if (testExceptionHandling()!= TESTPASSED)
     {
-        std::cerr  << m_modelName << "::runSelfTest: Exception handling FAILED!\n";
+        std::cerr  << getModelName() << "::runSelfTest: Exception handling FAILED!\n";
         selfTestStatus = TESTFAILED;
     }
     
@@ -40,13 +40,13 @@ TestStatus ScheduleItemSelfTest::runSelfTest() noexcept
 
     if (testAttributeAccessFunctions() == TESTFAILED)
     {
-        std::cerr << m_modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
+        std::cerr << getModelName() << "::runSelfTest: One or more get or set functions FAILED!\n";
         selfTestStatus = TESTFAILED;
     }
 
     if (testEqualityOperator() == TESTFAILED)
     {
-        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", m_modelName);
+        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", getModelName());
         selfTestStatus = TESTFAILED;
     }
 
@@ -80,11 +80,11 @@ TestStatus ScheduleItemSelfTest::runSelfTest() noexcept
     
     if (selfTestStatus == TESTPASSED)
     {
-        std::cout <<  std::format("{} Self Test {}\n", m_modelName, "PASSED");
+        std::cout <<  std::format("{} Self Test {}\n", getModelName(), "PASSED");
     }
     else
     {
-        std::cerr <<  std::format("{} Self Test {}\n", m_modelName, "FAILED");
+        std::cerr <<  std::format("{} Self Test {}\n", getModelName(), "FAILED");
     }
 
     return selfTestStatus;
@@ -100,8 +100,8 @@ void ScheduleItemSelfTest::selfTestResetAllValues() noexcept
     m_endTime.reset();
     m_personal = false;
     m_location.reset();
-    m_creation.reset();
-    m_lastUpdate.reset();
+    m_createdTimeStamp.reset();
+    m_lastUpdateTimeStamp.reset();
 }
 
 std::vector<ExceptionTestElement> ScheduleItemSelfTest::initExceptionTests() noexcept
@@ -123,7 +123,7 @@ TestStatus ScheduleItemSelfTest::testExceptionInsert() noexcept
     setTitle("Testing Exception handling for Schedule Item Insert");
     setStartDateAndTime(common::TestTimeStampValue);
     setEndDateAndTime(common::TestTimeStampValue);
-    setCreationDate(common::TestTimeStampValue);
+    setCreatedTimeStamp(common::TestTimeStampValue);
 
     if (testFormatExceptionCatchSuccessNArgs(
         "ScheduleItemSelfTest::formatInsertStatement", std::bind(&ScheduleItemSelfTest::formatInsertStatement, this)) == TESTFAILED)
@@ -144,8 +144,8 @@ TestStatus ScheduleItemSelfTest::testExceptionUpdate() noexcept
     setTitle("Testing Exception handling for Schedule Item Update");
     setStartDateAndTime(common::TestTimeStampValue);
     setEndDateAndTime(common::TestTimeStampValue);
-    setCreationDate(common::TestTimeStampValue);
-    setLastUpdate(common::TestTimeStampValue);
+    setCreatedTimeStamp(common::TestTimeStampValue);
+    setLastModifiedTimeStamp(common::TestTimeStampValue);
 
     if (testFormatExceptionCatchSuccessNArgs(
         "ScheduleItemSelfTest::formatUpdateStatement", std::bind(&ScheduleItemSelfTest::formatUpdateStatement, this)) == TESTFAILED)
@@ -167,8 +167,8 @@ TestStatus ScheduleItemSelfTest::testExceptionHide() noexcept
     setTitle("Testing Exception handling for Schedule Item Update");
     setStartDateAndTime(common::TestTimeStampValue);
     setEndDateAndTime(common::TestTimeStampValue);
-    setCreationDate(common::TestTimeStampValue);
-    setLastUpdate(common::TestTimeStampValue);
+    setCreatedTimeStamp(common::TestTimeStampValue);
+    setLastModifiedTimeStamp(common::TestTimeStampValue);
 
     return testExceptionAndSuccessNArgs("ScheduleItemModel::hide", std::bind(&ScheduleItemModel::hide, this, std::placeholders::_1), testUserId);}
 
@@ -219,11 +219,11 @@ TestStatus ScheduleItemSelfTest::testAllInsertFailures()
     expectedErrors.clear();
     clearErrorMessages();
 
-    setCreationDate(common::TestTimeStampValue);
+    setCreatedTimeStamp(common::TestTimeStampValue);
 
     if (m_verboseOutput)
     {
-        std::cout << std::format("{}::{} before successful insert this = \n", m_modelName, __func__) << *this << "\n";
+        std::cout << std::format("{}::{} before successful insert this = \n", getModelName(), __func__) << *this << "\n";
     }
 
     if (!insert())
@@ -289,7 +289,7 @@ TestStatus ScheduleItemSelfTest::testScheduleItemIDAccess() noexcept
 {
     std::size_t testPrimaryKey = 57;
 
-    return testAccessorFunctions<std::size_t>(testPrimaryKey, &m_primaryKey, "Primary Key",
+    return testPrimaryKeyAccessFunctions(testPrimaryKey,
         std::bind(&ScheduleItemModel::setScheduleItemID, this, std::placeholders::_1),
         std::bind(&ScheduleItemModel::getScheduleItemID, this));
 }
@@ -298,7 +298,7 @@ TestStatus ScheduleItemSelfTest::testUserIDAccess() noexcept
 {
     std::size_t testValue = 1;
 
-    return testAccessorFunctions<std::size_t>(testValue, &m_userID, "User ID",
+    return testForeignKeyFields(testValue, &m_userID, "User ID",
         std::bind(&ScheduleItemModel::setUserID, this, std::placeholders::_1),
         std::bind(&ScheduleItemModel::getUserID, this));
 }
@@ -352,18 +352,18 @@ TestStatus ScheduleItemSelfTest::testCreationTimeStampAccess() noexcept
 {
     std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
 
-    return testTimeStampAccessorFunctions(testValue, &m_creation, "Schedule Item Creation Timestamp",
-        std::bind(&ScheduleItemSelfTest::setCreationDate, this, std::placeholders::_1),
-        std::bind(&ScheduleItemSelfTest::getCreationDate, this));
+    return testTimeStampAccessorFunctions(testValue, &m_createdTimeStamp, "Schedule Item Creation Timestamp",
+        std::bind(&ScheduleItemSelfTest::setCreatedTimeStamp, this, std::placeholders::_1),
+        std::bind(&ScheduleItemSelfTest::getCreatedTSValue, this));
 }
 
 TestStatus ScheduleItemSelfTest::testLastUpDateTimeStampAccess() noexcept
 {
     std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
 
-    return testTimeStampAccessorFunctions(testValue, &m_lastUpdate, "Schedule Item Last Update Timestamp",
-        std::bind(&ScheduleItemSelfTest::setLastUpdate, this, std::placeholders::_1),
-        std::bind(&ScheduleItemSelfTest::getLastUpdate, this));
+    return testTimeStampAccessorFunctions(testValue, &m_lastUpdateTimeStamp, "Schedule Item Last Update Timestamp",
+        std::bind(&ScheduleItemSelfTest::setLastModifiedTimeStamp, this, std::placeholders::_1),
+        std::bind(&ScheduleItemSelfTest::getLastModifiedValue, this));
 }
 
 TestStatus ScheduleItemSelfTest::testPersonalAccess() noexcept
@@ -379,9 +379,7 @@ TestStatus ScheduleItemSelfTest::testLastModifiedByUserAccess() noexcept
 {
     std::size_t testUserId = 1;
 
-    return testAccessorFunctions<std::size_t>(testUserId, &m_lastModifiedByUser, "Last Modified by UserId",
-        std::bind(&ScheduleItemModel::setLastModifiedBy, this, std::placeholders::_1),
-        std::bind(&ScheduleItemModel::getLastModifiedBy, this));
+    return testLastModifiedByAccess(testUserId);
 }
 
 TestStatus ScheduleItemSelfTest::testLocationAccess() noexcept

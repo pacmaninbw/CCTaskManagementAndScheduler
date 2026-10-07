@@ -24,11 +24,11 @@ TestStatus UserSelfTest::runSelfTest() noexcept
     m_selfTest = true;
     TestStatus selfTestStatus = TESTPASSED;
 
-    std::cout << "\nRunning " << m_modelName << " Self Test\n";
+    std::cout << "\nRunning " << getModelName() << " Self Test\n";
 
     if (testExceptionHandling()!= TESTPASSED)
     {
-        std::cerr  << m_modelName << "::runSelfTest: Exception handling FAILED!\n";
+        std::cerr  << getModelName() << "::runSelfTest: Exception handling FAILED!\n";
         selfTestStatus = TESTFAILED;
     }
     
@@ -39,13 +39,13 @@ TestStatus UserSelfTest::runSelfTest() noexcept
 
     if (testAttributeAccessFunctions() == TESTFAILED)
     {
-        std::cerr << m_modelName << "::runSelfTest: One or more get or set functions FAILED!\n";
+        std::cerr << getModelName() << "::runSelfTest: One or more get or set functions FAILED!\n";
         selfTestStatus = TESTFAILED;
     }
 
     if (testEqualityOperator() == TESTFAILED)
     {
-        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", m_modelName);
+        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", getModelName());
         selfTestStatus = TESTFAILED;
     }
 
@@ -79,11 +79,11 @@ TestStatus UserSelfTest::runSelfTest() noexcept
     
     if (selfTestStatus == TESTPASSED)
     {
-        std::cout <<  std::format("{} Self Test {}\n", m_modelName, "PASSED");
+        std::cout <<  std::format("{} Self Test {}\n", getModelName(), "PASSED");
     }
     else
     {
-        std::cerr <<  std::format("{} Self Test {}\n", m_modelName, "FAILED");
+        std::cerr <<  std::format("{} Self Test {}\n", getModelName(), "FAILED");
     }
 
     return selfTestStatus;
@@ -99,7 +99,7 @@ void UserSelfTest::selfTestResetAllValues() noexcept
     m_email.clear();
     m_loginName.clear();
     m_password.clear();
-    m_created.reset();
+    m_createdTimeStamp.reset();
     m_lastLogin.reset();
 }
 
@@ -134,7 +134,7 @@ TestStatus UserSelfTest::testUserIdAccesss() noexcept
 {
     std::size_t testPrimaryKey = 31;
 
-    return testAccessorFunctions<std::size_t>(testPrimaryKey, &m_primaryKey, "Primary Key",
+    return testPrimaryKeyAccessFunctions(testPrimaryKey,
         std::bind(&UserModel::setUserID, this, std::placeholders::_1),
         std::bind(&UserModel::getUserID, this));
 }
@@ -182,9 +182,9 @@ TestStatus UserSelfTest::testPassWordAccess() noexcept
 TestStatus UserSelfTest::testCreatedDateAcfcess() noexcept
 {
     std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
-    return testTimeStampAccessorFunctions(testValue, &m_created, "Creation TimeStamp",
-        std::bind(&UserModel::setCreationDate, this, std::placeholders::_1),
-        std::bind(&UserModel::getCreationDate, this));
+    return testTimeStampAccessorFunctions(testValue, &m_createdTimeStamp, "Creation TimeStamp",
+        std::bind(&UserModel::setCreatedTimeStamp, this, std::placeholders::_1),
+        std::bind(&UserModel::getCreatedTSValue, this));
 }
 
 TestStatus UserSelfTest::testLastLoginAccess() noexcept
@@ -231,18 +231,16 @@ TestStatus UserSelfTest::testEndTimeAccesss() noexcept
 TestStatus UserSelfTest::testLastModifiedAccess() noexcept
 {
     std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
-    return testTimeStampAccessorFunctions(testValue, &m_LastModified, "Last Modified TimeStamp",
-        std::bind(&UserModel::setLastModified, this, std::placeholders::_1),
-        std::bind(&UserModel::getLastModified, this));
+    return testTimeStampAccessorFunctions(testValue, &m_lastUpdateTimeStamp, "Last Modified TimeStamp",
+        std::bind(&UserModel::setLastModifiedTimeStamp, this, std::placeholders::_1),
+        std::bind(&UserModel::getLastModifiedValue, this));
 }
 
 TestStatus UserSelfTest::testLastModifiedByUserAccess() noexcept
 {
     std::size_t testUserId = 1;
 
-    return testAccessorFunctions<std::size_t>(testUserId, &m_lastModifiedByUser, "Last Modified by UserId",
-        std::bind(&UserModel::setLastModifiedBy, this, std::placeholders::_1),
-        std::bind(&UserModel::getLastModifiedBy, this));
+    return testLastModifiedByAccess(testUserId);
 }
 
 TestStatus UserSelfTest::testIncludePriorityInScheduleAccess() noexcept
@@ -298,7 +296,7 @@ TestStatus UserSelfTest::testExceptionInsert() noexcept
     setMiddleInitial("M");
     setEmail("FirstName.LastName@LastName.com");
     autoGenerateLoginAndPassword();
-    setCreationDate(timeStamp);
+    setCreatedTimeStamp(timeStamp);
     setLastLogin(timeStamp);
 
     return testExceptionAndSuccessNArgs("UserModel::insert", std::bind(&UserModel::insert, this));
@@ -315,7 +313,7 @@ TestStatus UserSelfTest::testExceptionUpdate() noexcept
     setMiddleInitial("M");
     setEmail("FirstName.LastName@LastName.com");
     autoGenerateLoginAndPassword();
-    setCreationDate(timeStamp);
+    setCreatedTimeStamp(timeStamp);
     setLastLogin(timeStamp);
 
     return testExceptionAndSuccessNArgs("UserModel::update", std::bind(&UserModel::update, this));
@@ -369,10 +367,10 @@ TestStatus UserSelfTest::testAllInsertFailures()
 
     if (m_verboseOutput)
     {
-        std::cout << std::format("{}::{} before successful insert this = \n", m_modelName, __func__) << *this << "\n";
+        std::cout << std::format("{}::{} before successful insert this = \n", getModelName(), __func__) << *this << "\n";
     }
 
-    setCreationDate(common::TestTimeStampValue);
+    setCreatedTimeStamp(common::TestTimeStampValue);
     if (!insert())
     {
         std::cout << "In  UserSelfTest::testAllInsertFailures() Expected successful insert failed\n" << m_errorMessages << "\n";
