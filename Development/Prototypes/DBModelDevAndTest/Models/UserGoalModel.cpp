@@ -23,8 +23,8 @@ UserGoalModel::UserGoalModel(const GoalDbQueryValues &databaseValues)
     m_description = databaseValues.description;
     m_priority = databaseValues.priority;
     m_parentID = databaseValues.parent_goal;
-    m_created = common::toChronoTimePoint(databaseValues.creation_timestamp);
-    m_lastUpdate = common::toChronoTimePoint(databaseValues.last_modified_time_stamp);
+    m_createdTimeStamp = common::toChronoTimePoint(databaseValues.creation_timestamp);
+    m_lastUpdateTimeStamp = common::toChronoTimePoint(databaseValues.last_modified_time_stamp);
     m_deleted = databaseValues.deleted;
     m_lastModifiedByUser = databaseValues.last_modified_by_user;
 }
@@ -58,24 +58,6 @@ void UserGoalModel::setParentID(std::size_t newParentID)
 {
     m_modified = true;
     m_parentID = newParentID;
-}
-
-void UserGoalModel::setCreationTimeStamp(std::chrono::system_clock::time_point newCreationTS)
-{
-    m_modified = true;
-    m_created = newCreationTS;
-}
-
-void UserGoalModel::setLastUpdateTimeStamp(std::chrono::system_clock::time_point updateTimeStamp)
-{
-    m_modified = true;
-    m_lastUpdate = updateTimeStamp;
-}
-
-void UserGoalModel::setLastModifiedBy(std::size_t userId)
-{
-    m_modified = true;
-    m_lastModifiedByUser = userId;
 }
 
 bool UserGoalModel::diffGoal(UserGoalModel &other)

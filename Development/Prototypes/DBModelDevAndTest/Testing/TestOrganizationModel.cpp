@@ -109,8 +109,8 @@ OrganizationModel_shp TestOrganizationModel::organizationFactory(
         }
     };
 
-    setTimeStampIfValid(*newOrganization, &OrganizationModel::setCreationTimeStamp, created);
-    setTimeStampIfValid(*newOrganization, &OrganizationModel::setLastModified, lastModified);
+    setTimeStampIfValid(*newOrganization, &OrganizationModel::setCreatedTimeStamp, created);
+    setTimeStampIfValid(*newOrganization, &OrganizationModel::setLastModifiedTimeStamp, lastModified);
 
     // Source - https://stackoverflow.com/a/79999780
     // Posted by JaMiT

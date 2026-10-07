@@ -45,7 +45,7 @@ add_executable(protoPersonalPlanner
     Testing/TestScheduleItemModel.cpp
 )
 
-target_compile_definitions(protoPersonalPlanner PRIVATE TESTCOMMANDLINEENABLED=1)
+target_compile_definitions(protoPersonalPlanner PRIVATE TESTCOMMANDLINEENABLED=1 SELFTEST=1)
 
 target_include_directories(protoPersonalPlanner PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>

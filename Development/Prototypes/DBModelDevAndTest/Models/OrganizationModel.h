@@ -71,13 +71,6 @@ public:
     void setParentOrganization(std::size_t parentID);
     std::size_t getParentOrganization() const noexcept { return m_parentOrganization.value_or(0); };
     bool parentOrganizationHasValue() const noexcept { return m_parentOrganization.has_value(); };
-    void setCreationTimeStamp(std::chrono::system_clock::time_point created) noexcept;
-    std::chrono::system_clock::time_point getCreationTimeStamp() {return m_created.value(); };
-    void setLastModified(std::chrono::system_clock::time_point lastModified) noexcept;
-    std::chrono::system_clock::time_point getLastModified() { return m_lastModified.value(); };
-    std::size_t getLastModifiedBy() const { return m_lastModifiedByUser; };
-    void setLastModifiedBy(std::size_t userId);
-
 
 /*
  * Required fields.
@@ -127,14 +120,14 @@ public:
 
         if (programOptions.showTimeStamps)
         {
-            if (orgProfile.m_created.has_value())
+            if (orgProfile.m_createdTimeStamp.has_value())
             {
-                os << std::format(outFmtStr, "Date Added", orgProfile.m_created.value());
+                os << std::format(outFmtStr, "Date Added", orgProfile.m_createdTimeStamp.value());
             }
 
-            if (orgProfile.m_lastModified.has_value())
+            if (orgProfile.m_lastUpdateTimeStamp.has_value())
             {
-                os << std::format(outFmtStr, "Last Modified", orgProfile.m_lastModified.value());
+                os << std::format(outFmtStr, "Last Modified", orgProfile.m_lastUpdateTimeStamp.value());
             }
         }
 
@@ -151,8 +144,8 @@ protected:
     std::string m_organizationName;
     std::string m_email;
     std::string m_phoneNumber;
-    std::uint64_t m_primaryContactUser;
-    std::uint64_t m_secondaryContactUser;
+    std::size_t m_primaryContactUser;
+    std::size_t m_secondaryContactUser;
     std::optional<std::string> m_addressLine1;
     std::optional<std::string> m_addressLine2;
     std::optional<std::string> m_city;
@@ -160,8 +153,6 @@ protected:
     std::optional<std::string> m_stateOrProvince;
     std::optional<std::string> m_nation;
     std::optional<std::size_t> m_parentOrganization;
-    std::optional<std::chrono::system_clock::time_point>  m_created;
-    std::optional<std::chrono::system_clock::time_point>  m_lastModified;
 };
 
 using OrganizationModel_shp = std::shared_ptr<OrganizationModel>;

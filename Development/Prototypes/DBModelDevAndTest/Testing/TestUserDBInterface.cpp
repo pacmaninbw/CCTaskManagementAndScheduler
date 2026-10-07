@@ -254,7 +254,7 @@ bool TestUserDBInterface::loadTestUsersFromFile()
         userIn->setMiddleInitial(row[2]);
         userIn->setEmail(row[3]);
         userIn->autoGenerateLoginAndPassword();
-        userIn->setCreationDate(common::TestTimeStampValue);
+        userIn->setCreatedTimeStamp(common::TestTimeStampValue);
         userIn->setOrganizationID(1);
         if (insertCount > 0)
         {

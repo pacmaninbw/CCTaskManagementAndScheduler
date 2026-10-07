@@ -41,15 +41,10 @@ public:
     std::size_t getNoteId() const { return m_primaryKey; };
     std::size_t getUserId() const { return m_userID; };
     std::string getContent() const { return m_content; };
-    std::size_t getLastModifiedBy() const { return m_lastModifiedByUser; };    std::chrono::system_clock::time_point getDateAdded() const { return m_creationDate.value(); };
-    std::chrono::system_clock::time_point getLastModified() const { return m_lastUpdate.value(); };
 
     void setNoteId(std::size_t noteId);
     void setUserId(std::size_t userId);
     void setContent(std::string content);
-    void setDateAdded(std::chrono::system_clock::time_point created);
-    void setLastModified(std::chrono::system_clock::time_point lastModification);
-    void setLastModifiedBy(std::size_t userId); 
 /*
  * Required fields.
  */
@@ -70,13 +65,13 @@ public:
         os << std::format(outFmtStr, "Content", note.m_content);
         if (programOptions.showTimeStamps)
         {
-            if (note.m_creationDate.has_value())
+            if (note.m_createdTimeStamp.has_value())
             {
-                os << std::format(outFmtStr, "Created", note.m_creationDate.value());
+                os << std::format(outFmtStr, "Created", note.m_createdTimeStamp.value());
             }
-            if (note.m_lastUpdate.has_value())
+            if (note.m_lastUpdateTimeStamp.has_value())
             {
-                os << std::format(outFmtStr, "Last Update", note.m_lastUpdate.value());
+                os << std::format(outFmtStr, "Last Update", note.m_lastUpdateTimeStamp.value());
             }
         }
         os << std::format(outFmtStr, "Last Modified by User ID", note.m_lastModifiedByUser);
@@ -92,8 +87,6 @@ protected:
     
     std::size_t m_userID;
     std::string m_content;
-    std::optional<std::chrono::system_clock::time_point> m_creationDate;
-    std::optional<std::chrono::system_clock::time_point> m_lastUpdate;
 };
 
 using NoteModel_shp = std::shared_ptr<NoteModel>;

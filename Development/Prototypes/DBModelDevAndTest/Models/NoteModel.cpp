@@ -20,8 +20,8 @@ NoteModel::NoteModel(const NoteDbQueryValues &dbTranslator)
     m_primaryKey = dbTranslator.id_user_notes;
     m_userID = dbTranslator.user_id;
     m_content = dbTranslator.content;
-    m_creationDate = common::toChronoTimePoint(dbTranslator.note_creation);
-    m_lastUpdate = common::toChronoTimePoint(dbTranslator.last_modifed);
+    m_createdTimeStamp = common::toChronoTimePoint(dbTranslator.note_creation);
+    m_lastUpdateTimeStamp = common::toChronoTimePoint(dbTranslator.last_modifed);
     m_deleted = dbTranslator.deleted;
     m_lastModifiedByUser = dbTranslator.last_modified_by_user;
 }
@@ -44,29 +44,11 @@ void NoteModel::setContent(std::string content)
     m_content = content;
 }
 
-void NoteModel::setDateAdded(std::chrono::system_clock::time_point created)
-{
-    m_modified = true;
-    m_creationDate = created;
-}
-
-void NoteModel::setLastModified(std::chrono::system_clock::time_point lastModification)
-{
-    m_modified = true;
-    m_lastUpdate = lastModification;
-}
-
-void NoteModel::setLastModifiedBy(std::size_t userId)
-{
-    m_modified = true;
-    m_lastModifiedByUser = userId;
-}
-
 bool NoteModel::diffNote(NoteModel &other)
 {
     // Ignore user preferences
     return (m_primaryKey == other.m_primaryKey && m_userID == other.m_userID && m_content == other.m_content &&
-        m_creationDate == other.m_creationDate && m_lastUpdate == other.m_lastUpdate);
+        m_createdTimeStamp == other.m_createdTimeStamp && m_lastUpdateTimeStamp == other.m_lastUpdateTimeStamp);
 }
 
 void NoteModel::initRequiredFields()
@@ -92,7 +74,7 @@ std::string NoteModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "{}, ", m_userID);
     boost::mysql::format_sql_to(fctx, "{}, ", m_content);
     boost::mysql::format_sql_to(fctx, "{}, ", m_deleted);
-    boost::mysql::format_sql_to(fctx, "{}, ", m_creationDate.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "{}, ", m_createdTimeStamp.transform(common::toBoostDateTime));
     boost::mysql::format_sql_to(fctx, "{} ", m_lastModifiedByUser > 0 ? m_lastModifiedByUser : m_userID);
     boost::mysql::format_sql_to(fctx, ")");
 

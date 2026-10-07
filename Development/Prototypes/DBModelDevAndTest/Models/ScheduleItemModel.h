@@ -44,9 +44,6 @@ public:
     std::size_t getScheduleItemID() const { return m_primaryKey; };
     std::size_t getUserID() const { return m_userID; };
     std::string getTitle() const { return m_title; };
-    std::size_t getLastModifiedBy() const { return m_lastModifiedByUser; };
-    std::chrono::system_clock::time_point getCreationDate() const { return m_creation.value(); };
-    std::chrono::system_clock::time_point getLastUpdate() const { return m_lastUpdate.value(); };
     std::chrono::system_clock::time_point getStartTime() const { return m_startTime.value(); };
     std::chrono::system_clock::time_point getEndTime() const { return m_endTime.value(); };
     std::string getLocation() const { return m_location.value_or(""); };
@@ -58,19 +55,16 @@ public:
     void setTitle(std::string title);
     void setStartDateAndTime(std::chrono::system_clock::time_point startTime);
     void setEndDateAndTime(std::chrono::system_clock::time_point endTime);
-    void setCreationDate(std::chrono::system_clock::time_point creationDate);
-    void setLastUpdate(std::chrono::system_clock::time_point lastUpdate);
     void setPersonal(bool personal);
     void setLocation(std::string location);
     void setScheduleItemID(std::size_t eventID);
-    void setLastModifiedBy(std::size_t userId);
 
 /*
  * Required fields.
  */
     bool isMissingTitle() const noexcept { return (m_title.empty() || m_title.length() < MinimumTitleLength); };
     bool isMissingUserID() const noexcept { return m_userID == 0; };
-    bool isMissingCreationDate() const noexcept { return !m_creation.has_value(); };
+    bool isMissingCreationDate() const noexcept { return !m_createdTimeStamp.has_value(); };
     bool isMissingStartTime() const noexcept { return !m_startTime.has_value(); };
     bool isMissingEndTime() const noexcept { return !m_endTime.has_value(); };
 
@@ -97,10 +91,10 @@ public:
         os << "Optional Fields\n";
         if (programOptions.showTimeStamps)
         {
-            os << std::format(outFmtStr, "Creation Date", scheduleItem.m_creation.value_or(std::chrono::system_clock::now()));
-            if (scheduleItem.m_lastUpdate.has_value())
+            os << std::format(outFmtStr, "Creation Date", scheduleItem.m_createdTimeStamp.value_or(std::chrono::system_clock::now()));
+            if (scheduleItem.m_lastUpdateTimeStamp.has_value())
             {
-                os << std::format(outFmtStr, "Last Update", scheduleItem.m_lastUpdate.value());
+                os << std::format(outFmtStr, "Last Update", scheduleItem.m_lastUpdateTimeStamp.value());
             }
         }
 
@@ -126,8 +120,6 @@ protected:
  */
     std::optional<std::chrono::system_clock::time_point> m_startTime;
     std::optional<std::chrono::system_clock::time_point> m_endTime;
-    std::optional<std::chrono::system_clock::time_point> m_creation;
-    std::optional<std::chrono::system_clock::time_point> m_lastUpdate;
     bool m_personal;
     std::optional<std::string> m_location;
 

@@ -70,8 +70,8 @@ TestStatus TestNoteModel::testInsertNote(TestNoteInput testNote)
     NoteModel newNote;
     newNote.setUserId(m_userOne->getUserID());
     newNote.setContent(testNote.content);
-    newNote.setDateAdded(common::TestTimeStampValue);
-    newNote.setLastModified(common::TestTimeStampValue);
+    newNote.setCreatedTimeStamp(common::TestTimeStampValue);
+    newNote.setLastModifiedTimeStamp(common::TestTimeStampValue);
 
     if (firstTime)
     {
@@ -384,8 +384,8 @@ TestStatus TestNoteModel::negativePathMissingRequiredFields()
         }
     }
 
-    testNote.setDateAdded(common::TestTimeStampValue);
-    testNote.setLastModified(common::TestTimeStampValue);
+    testNote.setCreatedTimeStamp(common::TestTimeStampValue);
+    testNote.setLastModifiedTimeStamp(common::TestTimeStampValue);
     testNote.save();
     if (!testNote.isInDataBase())
     {

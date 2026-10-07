@@ -64,8 +64,8 @@ TestStatus TestScheduleItemModel::testInsertScheduleItem(TestScheduleItemInput t
     newScheduleItem.setEndDateAndTime(common::constantStringToChronoTimePoint(testScheduleItem.endTimeStr));
     newScheduleItem.setPersonal(testScheduleItem.personal);
     newScheduleItem.setLocation(testScheduleItem.location);
-    newScheduleItem.setCreationDate(common::TestTimeStampValue);
-    newScheduleItem.setLastUpdate(common::TestTimeStampValue);
+    newScheduleItem.setCreatedTimeStamp(common::TestTimeStampValue);
+    newScheduleItem.setLastModifiedTimeStamp(common::TestTimeStampValue);
 
     if (!newScheduleItem.insert())
     {
@@ -384,8 +384,8 @@ TestStatus TestScheduleItemModel::negativePathMissingRequiredFields()
         }
     }
 
-    testScheduleItem.setCreationDate(common::TestTimeStampValue);
-    testScheduleItem.setLastUpdate(common::TestTimeStampValue);
+    testScheduleItem.setCreatedTimeStamp(common::TestTimeStampValue);
+    testScheduleItem.setLastModifiedTimeStamp(common::TestTimeStampValue);
     testScheduleItem.save();
     if (!testScheduleItem.isInDataBase())
     {

@@ -77,8 +77,6 @@ public:
     std::string getStatusStringVal() const;
     std::size_t getParentTaskID() const { return m_parentTaskID.value_or(0); };
     std::optional<std::size_t> rawParentTaskID() const { return m_parentTaskID; };
-    std::chrono::system_clock::time_point getCreationDate() const { return m_created.value(); };
-    std::chrono::system_clock::time_point getLastUpdate() const { return m_lastUpdate.value(); };
     std::chrono::year_month_day getDueDate() const { return m_dueDate.value(); };
     std::chrono::year_month_day getScheduledStart() const { return m_planedStart.value(); };
     std::chrono::year_month_day getactualStartDate() const;
@@ -92,7 +90,6 @@ public:
     unsigned int getPriorityGroup() const { return m_priorityCategory; };
     unsigned int getPriority() const { return m_priority; };
     bool isPersonal() const { return m_personal; };
-    std::size_t getLastModifiedBy() const { return m_lastModifiedByUser; };
     void setCreatorID(std::size_t creatorID);
     void setAssignToID(std::size_t assignedID);
     void setDescription(std::string description);
@@ -100,7 +97,6 @@ public:
     void setStatus(std::string statusStr) { setStatus(stringToStatus(statusStr)); };
     void setParentTaskID(std::size_t parentTaskID);
     void setParentTaskID(std::shared_ptr<TaskModel> parentTask) { setParentTaskID(parentTask->getTaskID()); };
-    void setCreationDate(std::chrono::system_clock::time_point creationDate);
     void setDueDate(std::chrono::year_month_day dueDate);
     void setScheduledStart(std::chrono::year_month_day startDate);
     void setactualStartDate(std::chrono::year_month_day startDate);
@@ -112,9 +108,7 @@ public:
     void setPriorityGroupC(const char priorityGroup);
     void setPriority(unsigned int priority);
     void setPersonal(bool personalIn);
-    void setLastUpdate(std::chrono::system_clock::time_point lastUpdateTS);
     void setTaskID(std::size_t taskID);
-    void setLastModifiedBy(std::size_t userId);
     std::string taskStatusString(TaskModel::TaskStatus status) const;
     TaskModel::TaskStatus stringToStatus(std::string statusName) const;
 
@@ -126,7 +120,7 @@ public:
     bool isMissingAssignedID() const noexcept { return m_assignToID == 0; };
     bool isMissingEffortEstimate() const noexcept { return m_estimatedEffort == 0.0; };
     bool isMissingPriorityGroup() const noexcept { return m_priorityCategory == 0; };
-    bool isMissingCreationDate() const noexcept { return !m_created.has_value(); };
+    bool isMissingCreationDate() const noexcept { return !m_createdTimeStamp.has_value(); };
     bool isMissingScheduledStart() const noexcept { return !m_planedStart.has_value(); };
     bool isMissingDueDate() const noexcept { return !m_dueDate.has_value(); };
 
@@ -149,7 +143,7 @@ public:
         os << std::format(outFmtStr, "Status", task.getStatusIntVal());
         if (programOptions.showTimeStamps)
         {
-            os << std::format(outFmtStr, "Creation Date", task.m_created.value_or(std::chrono::system_clock::now()));
+            os << std::format(outFmtStr, "Creation Date", task.m_createdTimeStamp.value_or(std::chrono::system_clock::now()));
         }
         os << std::format(outFmtStr, "Scheduled Start Date", task.m_planedStart.value_or(common::getTodaysDate()));
         os << std::format(outFmtStr, "Due Date", task.m_dueDate.value_or(common::getTodaysDate()));
@@ -205,7 +199,6 @@ protected:
     std::string m_description;
     std::optional<TaskStatus> m_status;
     std::optional<std::size_t> m_parentTaskID;
-    std::optional<std::chrono::system_clock::time_point> m_created;
 /*
  * dueDate and scheduledStart are not optional in the database, We are using
  * std::optional for those 2 fields to remove errors in valgrind and possible
@@ -221,7 +214,6 @@ protected:
     unsigned int m_priorityCategory;
     unsigned int m_priority;
     bool m_personal;
-    std::optional<std::chrono::system_clock::time_point> m_lastUpdate;
 };
 
 using TaskModel_shp = std::shared_ptr<TaskModel>;

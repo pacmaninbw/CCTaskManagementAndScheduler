@@ -26,8 +26,8 @@ ScheduleItemModel::ScheduleItemModel(const ScheduleItemDbQueryValues &databaseVa
     m_endTime = common::toChronoTimePoint(databaseValues.end_date_time);
     m_personal = static_cast<bool>(databaseValues.personal);
     m_location = databaseValues.location.value_or("");
-    m_creation = common::toChronoTimePoint(databaseValues.created_timestamp);
-    m_lastUpdate = common::toChronoTimePoint(databaseValues.last_modified_time_stamp);
+    m_createdTimeStamp = common::toChronoTimePoint(databaseValues.created_timestamp);
+    m_lastUpdateTimeStamp = common::toChronoTimePoint(databaseValues.last_modified_time_stamp);
     m_deleted = databaseValues.deleted;
     m_lastModifiedByUser = databaseValues.last_modified_by_user;
 }
@@ -56,18 +56,6 @@ void ScheduleItemModel::setEndDateAndTime(std::chrono::system_clock::time_point 
     m_endTime = endTime;
 }
 
-void ScheduleItemModel::setCreationDate(std::chrono::system_clock::time_point creationDate)
-{
-    m_modified = true;
-    m_creation = creationDate;
-}
-
-void ScheduleItemModel::setLastUpdate(std::chrono::system_clock::time_point lastUpdate)
-{
-    m_modified = true;
-    m_lastUpdate = lastUpdate;
-}
-
 void ScheduleItemModel::setPersonal(bool personal)
 {
     m_modified = true;
@@ -84,12 +72,6 @@ void ScheduleItemModel::setScheduleItemID(std::size_t eventId)
 {
     m_modified = true;
     m_primaryKey = eventId;
-}
-
-void ScheduleItemModel::setLastModifiedBy(std::size_t userId)
-{
-    m_modified = true;
-    m_lastModifiedByUser = userId;
 }
 
 bool ScheduleItemModel::diffScheduleItem(ScheduleItemModel &other)

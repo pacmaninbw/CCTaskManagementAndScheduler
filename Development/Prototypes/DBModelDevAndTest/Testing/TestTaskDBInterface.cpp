@@ -183,7 +183,7 @@ void TestTaskDBInterface::commonTaskInit(TaskModel_shp newTask, CSVRow taskData)
     newTask->setStatus(taskData[CSV_StatusColIdx]);
     newTask->setPriorityGroup(taskData[CSV_MajorPriorityColIdx][0]);
     newTask->setPriority(std::stoi(taskData[CSV_MinorPriorityColIdx]));
-    newTask->setCreationDate(common::TestTimeStampValue);
+    newTask->setCreatedTimeStamp(common::TestTimeStampValue);
 
     // Optional fields
     if (!taskData[CSV_ParentTaskColIdx].empty())
@@ -560,7 +560,7 @@ TestStatus TestTaskDBInterface::testNegativePathMissingRequiredFields()
 
     newTask.setPriorityGroup('A');
     newTask.setPriority(1);
-    newTask.setCreationDate(common::TestTimeStampValue);
+    newTask.setCreatedTimeStamp(common::TestTimeStampValue);
     TaskModel_shp newTaskPtr = std::make_shared<TaskModel>(newTask);
     return insertShouldPass(newTaskPtr);
 }
@@ -635,7 +635,7 @@ TestStatus TestTaskDBInterface::testSharedPointerInteraction()
 
     newTask->setPriorityGroup('A');
     newTask->setPriority(1);
-    newTask->setCreationDate(common::TestTimeStampValue);
+    newTask->setCreatedTimeStamp(common::TestTimeStampValue);
     return insertShouldPass(newTask);
 }
 

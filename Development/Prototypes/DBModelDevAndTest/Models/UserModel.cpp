@@ -19,7 +19,6 @@ UserModel::UserModel()
     m_preferences.separateMajorAndMinorWithDot = false;
     m_preferences.startTime = "8:30 AM";
     m_preferences.endTime = "5:00 PM";
-    m_lastModifiedByUser = 0;
 }
 
 UserModel::UserModel(const UserDbQueryValues &databaseValues)
@@ -33,7 +32,7 @@ UserModel::UserModel(const UserDbQueryValues &databaseValues)
     m_loginName = databaseValues.user_login;
     m_password = databaseValues.hashed_password;
     parsePrefenceText(databaseValues.preferences);
-    m_created = common::toChronoTimePoint(databaseValues.created_timestamp);
+    m_createdTimeStamp = common::toChronoTimePoint(databaseValues.created_timestamp);
     m_lastLogin = databaseValues.last_login.transform(common::toChronoTimePoint);
     m_organizationId = databaseValues.id_organization;
     m_lastModifiedByUser = databaseValues.last_modified_by_user;
@@ -139,12 +138,6 @@ void UserModel::setUserID(std::size_t UserID) noexcept
     m_primaryKey = UserID;
 }
 
-void UserModel::setCreationDate(std::chrono::system_clock::time_point dateAndTime) noexcept
-{
-    m_modified = true;
-    m_created = dateAndTime;
-}
-
 void UserModel::setLastLogin(std::chrono::system_clock::time_point dateAndTime) noexcept
 {
     m_modified = true;
@@ -155,18 +148,6 @@ void UserModel::setOrganizationID(std::size_t organizationId) noexcept
 {
     m_modified = true;
     m_organizationId = organizationId;
-}
-
-void UserModel::setLastModified(std::chrono::system_clock::time_point dateTime) noexcept
-{
-    m_modified = true;
-    m_LastModified = dateTime;
-}
-
-void UserModel::setLastModifiedBy(std::size_t userId) noexcept
-{
-    m_modified = true;
-    m_lastModifiedByUser = userId;
 }
 
 bool UserModel::isMissingLastName() const noexcept

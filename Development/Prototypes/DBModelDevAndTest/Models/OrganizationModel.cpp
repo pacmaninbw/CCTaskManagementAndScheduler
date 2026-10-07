@@ -33,8 +33,8 @@ OrganizationModel::OrganizationModel(const OrganizationDbQueryValues &databaseVa
     m_postalCode = databaseValues.postal_code;
     m_nation = databaseValues.nation;
     m_parentOrganization = databaseValues.parent_organization;
-    m_created = common::toChronoTimePoint(databaseValues.created_timestamp);
-    m_lastModified = common::toChronoTimePoint(databaseValues.last_modified_time_stamp);
+    m_createdTimeStamp= common::toChronoTimePoint(databaseValues.created_timestamp);
+    m_lastUpdateTimeStamp = common::toChronoTimePoint(databaseValues.last_modified_time_stamp);
     m_lastModifiedByUser = databaseValues.last_modified_by_user.value_or(0);
 }
 
@@ -131,24 +131,6 @@ void OrganizationModel::setParentOrganization(std::size_t parentID)
     }
 }
 
-void OrganizationModel::setCreationTimeStamp(std::chrono::system_clock::time_point created) noexcept
-{
-    m_modified = true;
-    m_created = created;
-}
-
-void OrganizationModel::setLastModified(std::chrono::system_clock::time_point lastModified) noexcept
-{
-    m_modified = true;
-    m_lastModified = lastModified;
-}
-
-void OrganizationModel::setLastModifiedBy(std::size_t userId)
-{
-    m_modified = true;
-    m_lastModifiedByUser = userId;
-}
-
 bool OrganizationModel::isMissingOrganizationName() const noexcept
 {
     return m_organizationName.empty();
@@ -192,7 +174,7 @@ bool OrganizationModel::diffOrganization(OrganizationModel &other) const noexcep
         m_phoneNumber == other.m_phoneNumber &&
         m_primaryContactUser == other.m_primaryContactUser &&
         m_secondaryContactUser == other.m_secondaryContactUser &&
-        m_created == other.m_created
+        m_createdTimeStamp == other.m_createdTimeStamp
     );
 }
 
@@ -235,8 +217,8 @@ std::string OrganizationModel::formatInsertStatement()
     boost::mysql::format_sql_to(fctx, "{}, ", m_postalCode);
     boost::mysql::format_sql_to(fctx, "{}, ", m_nation);
     boost::mysql::format_sql_to(fctx, "{}, ", m_parentOrganization);
-    boost::mysql::format_sql_to(fctx, "{}, ", m_created.transform(common::toBoostDateTime));
-    boost::mysql::format_sql_to(fctx, "{}, ", m_lastModified.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "{}, ", m_createdTimeStamp.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "{}, ", m_lastUpdateTimeStamp.transform(common::toBoostDateTime));
     boost::mysql::format_sql_to(fctx, "{}", lastModifiedByUser);
     boost::mysql::format_sql_to(fctx, ")");
 
@@ -267,7 +249,7 @@ std::string OrganizationModel::formatUpdateStatement()
     boost::mysql::format_sql_to(fctx, "organization_profile.nation = {}, ", m_nation);
     boost::mysql::format_sql_to(fctx, "organization_profile.parent_organization = {}, ", m_parentOrganization);
     boost::mysql::format_sql_to(fctx, "organization_profile.deleted = {}, ", m_deleted);
-    boost::mysql::format_sql_to(fctx, "organization_profile.created_timestamp = {}, ", m_created.transform(common::toBoostDateTime));
+    boost::mysql::format_sql_to(fctx, "organization_profile.created_timestamp = {}, ", m_createdTimeStamp.transform(common::toBoostDateTime));
     boost::mysql::format_sql_to(fctx, "organization_profile.last_modified_by_user = {} ", lastModifiedByUser);
     boost::mysql::format_sql_to(fctx, "WHERE organization_profile.id_organization = {} ", m_primaryKey);
 

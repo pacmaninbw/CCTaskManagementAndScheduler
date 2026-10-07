@@ -57,8 +57,8 @@ TaskModel::TaskModel(const TaskDbQueryValues &dbTranslator)
     m_priorityCategory = dbTranslator.priority_category;
     m_priority = dbTranslator.priority;
     m_personal = dbTranslator.personal;
-    m_created = common::toChronoTimePoint(dbTranslator.creation_timestamp);
-    m_lastUpdate = common::toChronoTimePoint(dbTranslator.last_modified_time_stamp);
+    m_createdTimeStamp = common::toChronoTimePoint(dbTranslator.creation_timestamp);
+    m_lastUpdateTimeStamp = common::toChronoTimePoint(dbTranslator.last_modified_time_stamp);
     m_deleted = dbTranslator.deleted;
     m_parentTaskID = dbTranslator.dependent_task;
     m_lastModifiedByUser = dbTranslator.last_modified_by_user;
@@ -106,7 +106,7 @@ bool TaskModel::insert() noexcept
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In {}.insert : {}", m_modelName, e.what()));
+        appendErrorMessage(std::format("In {}.insert : {}", getModelName(), e.what()));
         return false;
     }
 }
@@ -134,7 +134,7 @@ bool TaskModel::update() noexcept
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In {}.update : {}", m_modelName, e.what()));
+        appendErrorMessage(std::format("In {}.update : {}", getModelName(), e.what()));
         return false;
     }
 }
@@ -145,7 +145,7 @@ bool TaskModel::hide(std::size_t userRequestingDelete) noexcept
 
     if (!isInDataBase())
     {
-        appendErrorMessage(std::format("{} not in Database, nothing to delete!", m_modelName));
+        appendErrorMessage(std::format("{} not in Database, nothing to delete!", getModelName()));
 
         return false;
     }
@@ -168,7 +168,7 @@ bool TaskModel::hide(std::size_t userRequestingDelete) noexcept
 
     catch(const std::exception& e)
     {
-        appendErrorMessage(std::format("In {}.hide() : {}", m_modelName, e.what()));
+        appendErrorMessage(std::format("In {}.hide() : {}", getModelName(), e.what()));
         return false;
     }
 }
@@ -257,12 +257,6 @@ void TaskModel::setParentTaskID(std::size_t parentTaskID)
     m_parentTaskID = parentTaskID;
 }
 
-void TaskModel::setCreationDate(std::chrono::system_clock::time_point created)
-{
-    m_modified = true;
-    m_created = created;
-}
-
 void TaskModel::setDueDate(std::chrono::year_month_day dueDate)
 {
     m_modified = true;
@@ -329,22 +323,10 @@ void TaskModel::setPersonal(bool personal)
     m_personal = personal;
 }
 
-void TaskModel::setLastUpdate(std::chrono::system_clock::time_point lastModified)
-{
-    m_modified = true;
-    m_lastUpdate = lastModified;
-}
-
 void TaskModel::setTaskID(std::size_t taskID)
 {
     m_modified = true;
     m_primaryKey = taskID;
-}
-
-void TaskModel::setLastModifiedBy(std::size_t userId)
-{
-    m_modified = true;
-    m_lastModifiedByUser = userId;
 }
 
 std::string TaskModel::taskStatusString(TaskModel::TaskStatus inVal) const

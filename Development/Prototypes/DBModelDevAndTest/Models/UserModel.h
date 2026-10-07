@@ -63,11 +63,8 @@ public:
     std::string getStartTime() const noexcept { return m_preferences.startTime; };
     std::string getEndTime() const noexcept { return m_preferences.endTime; };
     std::size_t getUserID() const noexcept { return m_primaryKey; };
-    std::chrono::system_clock::time_point getCreationDate() const noexcept { return m_created.value(); };
     std::optional<std::chrono::system_clock::time_point> getLastLogin() const noexcept { return m_lastLogin; };
     std::size_t getOrganizationID() const { return m_organizationId.value_or(0); };
-    std::chrono::system_clock::time_point getLastModified() const noexcept { return m_LastModified.value(); };
-    std::size_t getLastModifiedBy() const noexcept { return m_lastModifiedByUser; };
     bool isPriorityInSchedule() const noexcept { return m_preferences.includePriorityInSchedule; };
     bool isMinorPriorityInSchedule() const noexcept { return m_preferences.includeMinorPriorityInSchedule; };
     bool isUsingLettersForMaorPriority() const noexcept { return m_preferences.userLetterForMajorPriority; };
@@ -86,11 +83,8 @@ public:
     void setUsingLettersForMaorPriority(bool usingLetters) noexcept;
     void setSeparatingPriorityWithDot(bool separate) noexcept;
     void setUserID(std::size_t UserID) noexcept;
-    void setCreationDate(std::chrono::system_clock::time_point dateIn) noexcept;
     void setLastLogin(std::chrono::system_clock::time_point dateAndTime) noexcept;
     void setOrganizationID(std::size_t organizationId) noexcept;
-    void setLastModified(std::chrono::system_clock::time_point dateTime) noexcept;
-    void setLastModifiedBy(std::size_t userId) noexcept;
 /*
  * Required fields.
  */
@@ -119,9 +113,9 @@ public:
         {
             os << std::format(outFmtStr, "PassWord", user.m_password);
         }
-        if (user.m_created.has_value())
+        if (user.m_createdTimeStamp.has_value())
         {
-            os << std::format(outFmtStr, "User Added", user.m_created.value());
+            os << std::format(outFmtStr, "User Added", user.m_createdTimeStamp.value());
         }
         if (user.m_lastLogin.has_value())
         {
@@ -155,11 +149,8 @@ protected:
     std::string m_loginName;
     std::string m_password;
     UserPreferences m_preferences;
-    std::optional<std::chrono::system_clock::time_point> m_created;
-    std::optional<std::chrono::system_clock::time_point> m_LastModified;
     std::optional<std::chrono::system_clock::time_point> m_lastLogin;
     std::optional<std::size_t> m_organizationId;
-    std::size_t m_lastModifiedByUser;
 
 private:
 // Preference subfield indexes
