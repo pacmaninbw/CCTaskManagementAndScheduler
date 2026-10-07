@@ -13,15 +13,11 @@
 #include <vector>
 
 ModelDBInterface::ModelDBInterface(std::string modelNameIn, std::string primaryKeyNameIn)
-: CoreDBInterface()
+: CoreDBInterface(), m_primaryKey{0}, m_modified{false}, m_deleted{false}, m_lastModifiedByUser{0}
 {
-    m_primaryKey = 0;
     m_modelName = modelNameIn;
     m_primaryKeyName = primaryKeyNameIn;
-    m_modified = false;
     m_delimiter = ';';  
-    m_deleted = false;
-    m_lastModifiedByUser = 0;
 }
 
 bool ModelDBInterface::save() noexcept
@@ -144,6 +140,24 @@ void ModelDBInterface::reportMissingFields() noexcept
     }
 }
 
+void ModelDBInterface::setLastModifiedBy(std::size_t userId)
+{
+    m_modified = true;
+    m_lastModifiedByUser = userId;
+}
+
+void ModelDBInterface::setLastModifiedTimeStamp(std::chrono::system_clock::time_point lastModifiedTS)
+{
+    m_modified = true;
+    m_lastUpdateTimeStamp = lastModifiedTS;
+}
+
+void ModelDBInterface::setCreatedTimeStamp(std::chrono::system_clock::time_point createdTS)
+{
+    m_modified = true;
+    m_createdTimeStamp = createdTS;
+}
+
 std::size_t ModelDBInterface::getPrimaryKeyValue(boost::mysql::results &dbResultSet)
 {
     // If this is self test then we don't actually connect to the database, the code that
@@ -202,3 +216,148 @@ bool ModelDBInterface::preUpdateCheck() noexcept
 
     return true;
 }
+
+#ifdef SELFTEST
+std::vector<AttributeTestFunction> ModelDBInterface::initAttributeAccessTests() noexcept
+{
+    return std::vector<AttributeTestFunction>();
+}
+
+TestStatus ModelDBInterface::formattedAttributeFailureMessage(bool isSetter, std::string_view memberName, std::string_view message) noexcept
+{
+        std::string_view setOrGet = isSetter? "Set" : "Get";
+
+        std::cerr << std::format("In self test for:{} {} function for {} {}\n", m_modelName, setOrGet, memberName, message);
+
+        return TESTFAILED;
+}
+
+TestStatus ModelDBInterface::testAttributeAccessFunctions() noexcept
+{
+    TestStatus testStatus = TESTPASSED;
+    std::vector<AttributeTestFunction> attributeAccessTests = initAttributeAccessTests();
+
+    for (auto attributeAccessTest: attributeAccessTests)
+    {
+        if (attributeAccessTest() == TESTFAILED)
+        {
+            testStatus = TESTFAILED;
+        }
+    }
+
+    return testStatus ;
+}
+
+TestStatus ModelDBInterface::testPrimaryKeyAccessFunctions(std::size_t testPrimaryKey, std::function<void(std::size_t)> setFunct, std::function<std::size_t(void)> getFunct) noexcept
+{
+        std::cout << "Running self test on set and get functions for " << m_modelName << "::" << m_primaryKeyName << "(Primary Key)\n";
+        m_modified = false;
+        setFunct(testPrimaryKey);
+        if (!m_modified)
+        {
+            return formattedAttributeFailureMessage(true, m_primaryKeyName, "FAILED to set modified");
+        }
+
+        if (m_primaryKey != testPrimaryKey)
+        {
+            return formattedAttributeFailureMessage(true, m_primaryKeyName, "FAILED to set member value");
+        }
+
+        if (getFunct() != testPrimaryKey)
+        {
+            return formattedAttributeFailureMessage(false, m_primaryKeyName, "FAILED");
+        }
+
+        std::cout << std::format("Self test on access functions for {}::{} (Primary Key) PASSED\n", m_modelName, m_primaryKeyName);
+
+        return TESTPASSED;
+}
+
+TestStatus ModelDBInterface::testLastModifiedByAccess(std::size_t testUserIdFK) noexcept
+{
+    std::string_view memberName("Last Modified by UserId");
+
+    std::cout << "Running self test on set and get functions for " << m_modelName << "::" << memberName << "\n";
+    m_modified = false;
+    setLastModifiedBy(testUserIdFK);
+    if (!isModified())
+    {
+        return formattedAttributeFailureMessage(true, memberName, "FAILED to set modified");
+    }
+
+    if (m_lastModifiedByUser != testUserIdFK)
+    {
+        return formattedAttributeFailureMessage(true, memberName, "FAILED to set member value");
+    }
+
+    if (getLastModifiedBy() != testUserIdFK)
+    {
+        return formattedAttributeFailureMessage(false, memberName, "FAILED");
+    }
+
+    std::cout <<  std::format("Self test on access functions for {}::{} PASSED\n", m_modelName, memberName);
+
+    return TESTPASSED;
+}
+
+TestStatus ModelDBInterface::testForeignKeyFields(std::size_t testForeignKey, std::size_t *member, std::string_view memberName, std::function<void(std::size_t)> setFunct, std::function<std::size_t(void)> getFunct) noexcept
+{
+        std::cout << "Running self test on set and get functions for " << m_modelName << "::" << memberName << "(Foreign Key)\n";
+        m_modified = false;
+        setFunct(testForeignKey);
+        if (!isModified())
+        {
+            return formattedAttributeFailureMessage(true, memberName, "FAILED to set modified");
+        }
+
+        if (*member != testForeignKey)
+        {
+            return formattedAttributeFailureMessage(true, memberName, "FAILED to set member value");
+        }
+
+        if (getFunct() != testForeignKey)
+        {
+            return formattedAttributeFailureMessage(false, memberName, "FAILED");
+        }
+
+        std::cout <<  std::format("Self test on access functions for {}::{} (Foreign Key) PASSED\n", m_modelName, memberName);
+
+        return TESTPASSED;
+}
+
+/*
+ * TimeStamp attributes are required, but the only way to test if the have a
+ * value is to store it as an optional value. This method tests the access to
+ * TimeStamp attributes.
+ */
+TestStatus ModelDBInterface::testTimeStampAccessorFunctions(std::chrono::system_clock::time_point testValue, std::optional<std::chrono::system_clock::time_point> *member, std::string_view memberName, std::function<void(std::chrono::system_clock::time_point)> setFunct, std::function<std::chrono::system_clock::time_point(void)> getFunct) noexcept
+{
+
+        std::cout << "Running self test on set and get functions for " << m_modelName << "::" << memberName << "\n";
+
+        m_modified = false;
+
+        setFunct(testValue);
+        if (!isModified())
+        {
+            std::cerr << "In self test for: " << m_modelName << " set function for " << memberName << " FAILED to set modified\n";
+            return TESTFAILED;
+        }
+
+        if (!member->has_value() || member->value() != testValue)
+        {
+            std::cerr  << "In self test for: " << m_modelName << "Set function for " << memberName << " FAILED to set member value\n";
+            return TESTFAILED;
+        }
+
+        if (getFunct() != testValue)
+        {
+            std::cerr  << "In self test for: " << m_modelName << "Get function for " << memberName << " FAILED\n";
+            return TESTFAILED;
+        }
+
+        std::cout << "Self test on set and get functions for " << m_modelName << "::" << memberName << " PASSED\n";
+
+        return TESTPASSED;}
+
+#endif // SELFTEST

@@ -2,7 +2,6 @@
 #define MODELDSELFTEST_H_
 
 // Project Header Files
-#include "AttributeSelfTest.h"
 #include "ExceptionSelfTest.h"
 #include "FunctionalSelfTest.h"
 #include "ModelDBInterface.h"
@@ -27,7 +26,6 @@
 template<class Model>
 requires std::is_base_of_v<ModelDBInterface, Model>
 class ModelSelfTest :   public virtual ExceptionSelfTest<Model>,
-                        public virtual AttributeSelfTest<Model>,
                         public virtual FunctionalSelfTest<Model>,
                         public virtual Model
 {
@@ -45,9 +43,9 @@ protected:
  */
     virtual void selfTestResetAllValues() noexcept
     {
-        ModelDBInterface::m_primaryKey = 0;
-        ModelDBInterface::m_modified = false;
-        ModelDBInterface::m_lastModifiedByUser = 0;
+        Model::m_primaryKey = 0;
+        Model::m_modified = false;
+        Model::m_lastModifiedByUser = 0;
 /*****
  * format_opts needs to be reset before any exception test
  */
