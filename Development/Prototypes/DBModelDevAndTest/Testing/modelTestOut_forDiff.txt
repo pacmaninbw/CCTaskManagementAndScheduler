@@ -8,18 +8,18 @@ Running Organization Self Test
 Running Exception Handling Test Cases
 
 
-Running self test on set and get functions for Organization::Primary Key
-Self test on set and get functions for Organization::Primary Key PASSED
+Running self test on set and get functions for Organization::id_organization(Primary Key)
+Self test on access functions for Organization::id_organization (Primary Key) PASSED
 Running self test on set and get functions for Organization::Organization Name
 Self test on set and get functions for Organization::Organization Name PASSED
 Running self test on set and get functions for Organization::Organization Email
 Self test on set and get functions for Organization::Organization Email PASSED
 Running self test on set and get functions for Organization::Organization Phone Number
 Self test on set and get functions for Organization::Organization Phone Number PASSED
-Running self test on set and get functions for Organization::Primary Contact ID
-Self test on set and get functions for Organization::Primary Contact ID PASSED
-Running self test on set and get functions for Organization::Secondary Contact ID
-Self test on set and get functions for Organization::Secondary Contact ID PASSED
+Running self test on set and get functions for Organization::Primary Contact ID(Foreign Key)
+Self test on access functions for Organization::Primary Contact ID (Foreign Key) PASSED
+Running self test on set and get functions for Organization::Secondary Contact ID(Foreign Key)
+Self test on access functions for Organization::Secondary Contact ID (Foreign Key) PASSED
 Running self test on set and get functions for Organization::Address Line 1
 Self test on set and get functions for Organization::Address Line 1 PASSED
 Running self test on set and get functions for Organization::Address Line 2
@@ -39,7 +39,7 @@ Self test on set and get functions for Organization::Creation TimeStamp PASSED
 Running self test on set and get functions for Organization::Last Modified TimeStamp
 Self test on set and get functions for Organization::Last Modified TimeStamp PASSED
 Running self test on set and get functions for Organization::Last Modified by UserId
-Self test on set and get functions for Organization::Last Modified by UserId PASSED
+Self test on access functions for Organization::Last Modified by UserId PASSED
 Test Output: 	Organization ID: 1
 	Organization Name: Any organization name up to 255 characters, Inc.
 	Email Address: Any_organization_email_up_to255-characters@gmail.com
@@ -68,8 +68,8 @@ Running User Self Test
 Running Exception Handling Test Cases
 
 
-Running self test on set and get functions for User::Primary Key
-Self test on set and get functions for User::Primary Key PASSED
+Running self test on set and get functions for User::UserID(Primary Key)
+Self test on access functions for User::UserID (Primary Key) PASSED
 Running self test on set and get functions for User::Last Name
 Self test on set and get functions for User::Last Name PASSED
 Running self test on set and get functions for User::First Name
@@ -95,7 +95,7 @@ Self test on set and get functions for User::End Time Preference PASSED
 Running self test on set and get functions for User::Last Modified TimeStamp
 Self test on set and get functions for User::Last Modified TimeStamp PASSED
 Running self test on set and get functions for User::Last Modified by UserId
-Self test on set and get functions for User::Last Modified by UserId PASSED
+Self test on access functions for User::Last Modified by UserId PASSED
 Running self test on set and get functions for User::Include Priority In Schedule
 Self test on set and get functions for User::Include Priority In Schedule PASSED
 Running self test on set and get functions for User::Include Minor Priority In Schedule
@@ -130,12 +130,12 @@ Caught expected exception from TaskModel::formatInsertStatement(): Forcing Excep
 Caught expected exception from TaskSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 
 
-Running self test on set and get functions for Task::Primary Key
-Self test on set and get functions for Task::Primary Key PASSED
-Running self test on set and get functions for Task::Creator User ID
-Self test on set and get functions for Task::Creator User ID PASSED
-Running self test on set and get functions for Task::Assigned User ID
-Self test on set and get functions for Task::Assigned User ID PASSED
+Running self test on set and get functions for Task::TaskID(Primary Key)
+Self test on access functions for Task::TaskID (Primary Key) PASSED
+Running self test on set and get functions for Task::Creator User ID(Foreign Key)
+Self test on access functions for Task::Creator User ID (Foreign Key) PASSED
+Running self test on set and get functions for Task::Assigned User ID(Foreign Key)
+Self test on access functions for Task::Assigned User ID (Foreign Key) PASSED
 Running self test on set and get functions for Task::Description
 Self test on set and get functions for Task::Description PASSED
 Running self test on set and get functions for TaskSelfTest::status
@@ -171,7 +171,7 @@ Self test on set and get functions for Task::Personal PASSED
 Running self test for TaskSelfTest::markComplete
 Self test for TaskSelfTest::markComplete PASSED
 Running self test on set and get functions for Task::Last Modified by UserId
-Self test on set and get functions for Task::Last Modified by UserId PASSED
+Self test on access functions for Task::Last Modified by UserId PASSED
 Test Output: TaskModel:
 	Task ID: 33
 	Creator ID: 1
@@ -189,7 +189,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-09-27
+	Completed Date: 2026-10-08
 	Deleted : FALSE
 	Last Modified by User ID: 1
 
@@ -206,10 +206,10 @@ Running UserGoalModel Self Test
 Running Exception Handling Test Cases
 
 
-Running self test on set and get functions for UserGoalModel::Primary Key
-Self test on set and get functions for UserGoalModel::Primary Key PASSED
-Running self test on set and get functions for UserGoalModel::User ID
-Self test on set and get functions for UserGoalModel::User ID PASSED
+Running self test on set and get functions for UserGoalModel::idUserGoals(Primary Key)
+Self test on access functions for UserGoalModel::idUserGoals (Primary Key) PASSED
+Running self test on set and get functions for UserGoalModel::User ID(Foreign Key)
+Self test on access functions for UserGoalModel::User ID (Foreign Key) PASSED
 Running self test on set and get functions for UserGoalModel::Content
 Self test on set and get functions for UserGoalModel::Content PASSED
 Running self test on set and get functions for UserGoalModel::Date Added
@@ -221,7 +221,7 @@ Self test on set and get functions for UserGoalModel::Priority PASSED
 Running self test on set and get functions for UserGoalModel::Last Modified Time Stamp
 Self test on set and get functions for UserGoalModel::Last Modified Time Stamp PASSED
 Running self test on set and get functions for UserGoalModel::Last Modified by UserId
-Self test on set and get functions for UserGoalModel::Last Modified by UserId PASSED
+Self test on access functions for UserGoalModel::Last Modified by UserId PASSED
 Test Output: Model Name UserGoalModel
 	Goal ID: 57
 	User ID: 23
@@ -243,10 +243,10 @@ Running Note Self Test
 Running Exception Handling Test Cases
 
 
-Running self test on set and get functions for Note::Primary Key
-Self test on set and get functions for Note::Primary Key PASSED
-Running self test on set and get functions for Note::User ID
-Self test on set and get functions for Note::User ID PASSED
+Running self test on set and get functions for Note::idUserNotes(Primary Key)
+Self test on access functions for Note::idUserNotes (Primary Key) PASSED
+Running self test on set and get functions for Note::User ID(Foreign Key)
+Self test on access functions for Note::User ID (Foreign Key) PASSED
 Running self test on set and get functions for Note::Content
 Self test on set and get functions for Note::Content PASSED
 Running self test on set and get functions for Note::Date Added
@@ -254,7 +254,7 @@ Self test on set and get functions for Note::Date Added PASSED
 Running self test on set and get functions for Note::Last Modified Time Stamp
 Self test on set and get functions for Note::Last Modified Time Stamp PASSED
 Running self test on set and get functions for Note::Last Modified by UserId
-Self test on set and get functions for Note::Last Modified by UserId PASSED
+Self test on access functions for Note::Last Modified by UserId PASSED
 Test Output: 	Note ID: 27
 	User ID: 31
 	Content: Test note content access
@@ -275,10 +275,10 @@ Caught expected exception from ScheduleItemSelfTest::formatInsertStatement(): Fo
 Caught expected exception from ScheduleItemSelfTest::formatUpdateStatement(): Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions
 
 
-Running self test on set and get functions for ScheduleItem::Primary Key
-Self test on set and get functions for ScheduleItem::Primary Key PASSED
-Running self test on set and get functions for ScheduleItem::User ID
-Self test on set and get functions for ScheduleItem::User ID PASSED
+Running self test on set and get functions for ScheduleItem::idUserScheduleItem(Primary Key)
+Self test on access functions for ScheduleItem::idUserScheduleItem (Primary Key) PASSED
+Running self test on set and get functions for ScheduleItem::User ID(Foreign Key)
+Self test on access functions for ScheduleItem::User ID (Foreign Key) PASSED
 Running self test on set and get functions for ScheduleItem::Title
 Self test on set and get functions for ScheduleItem::Title PASSED
 Running self test on set and get functions for ScheduleItem::Schedule Item Start Time
@@ -298,7 +298,7 @@ Self test on set and get functions for ScheduleItem::Location PASSED
 Running self test on set and get functions for ScheduleItem::Personal
 Self test on set and get functions for ScheduleItem::Personal PASSED
 Running self test on set and get functions for ScheduleItem::Last Modified by UserId
-Self test on set and get functions for ScheduleItem::Last Modified by UserId PASSED
+Self test on access functions for ScheduleItem::Last Modified by UserId PASSED
 Test Output: ScheduleItemModel:
 	ScheduleItem ID: 57
 	User ID: 1
@@ -491,7 +491,7 @@ All negative path tests for database insertions and retrievals of ScheduleItem P
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Sun Sep 27 07:25:35 2026
-elapsed time in seconds: 0.903186
+Thu Oct  8 04:58:48 2026
+elapsed time in seconds: 1.31236
 
 
