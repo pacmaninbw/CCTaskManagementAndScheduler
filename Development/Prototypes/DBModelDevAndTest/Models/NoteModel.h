@@ -2,7 +2,6 @@
 #define NOTEMODEL_H_
 
 // Project Header Files
-#include "CommandLineParser.h"
 #include "ModelDBInterface.h"
 
 // Standard C++ Header Files
@@ -59,22 +58,11 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const NoteModel& note)
     {
+        os << note.commonCoreVariablesOutput();
+
         constexpr const char* outFmtStr = "\t{}: {}\n";
-        os << std::format(outFmtStr, "Note ID", note.m_primaryKey);
         os << std::format(outFmtStr, "User ID", note.m_userID);
         os << std::format(outFmtStr, "Content", note.m_content);
-        if (programOptions.showTimeStamps)
-        {
-            if (note.m_createdTimeStamp.has_value())
-            {
-                os << std::format(outFmtStr, "Created", note.m_createdTimeStamp.value());
-            }
-            if (note.m_lastUpdateTimeStamp.has_value())
-            {
-                os << std::format(outFmtStr, "Last Update", note.m_lastUpdateTimeStamp.value());
-            }
-        }
-        os << std::format(outFmtStr, "Last Modified by User ID", note.m_lastModifiedByUser);
 
         return os;
     };

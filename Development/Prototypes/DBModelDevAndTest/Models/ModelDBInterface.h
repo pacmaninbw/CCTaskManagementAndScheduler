@@ -3,9 +3,7 @@
 
 // Project Header Files
 #include "CoreDBInterface.h"
-#ifdef SELFTEST
 #include "TestStatus.h"
-#endif // SELFTEST
 
 // External Libraries
 #include <boost/asio.hpp>
@@ -19,9 +17,14 @@
 #include <string>
 #include <vector>
 
-#ifdef SELFTEST
 using AttributeTestFunction = std::function<TestStatus(void)>;
-#endif // SELFTEST
+
+struct ExceptionTestElement
+{
+    std::function<TestStatus(void)> testExceptionFunction;
+    std::string_view functionUnderTest;
+};
+
 
 class ModelDBInterface : public CoreDBInterface
 {
@@ -50,6 +53,8 @@ public:
     std::chrono::system_clock::time_point getCreatedTSValue() { return m_createdTimeStamp.value(); };
 
 protected:
+    std::string commonCoreVariablesOutput() const;
+    std::string conditionallyOutputCoreTimeStamps() const;
 /*
  * Each model will have 1 or more required fields, the model must specify what those
  * fields are.
@@ -92,7 +97,28 @@ protected:
     };
     std::vector<RequireField> m_missingRequiredFieldsTests;
 
-#ifdef SELFTEST
+/*
+ * Model unit testing (self testing)
+ */
+
+ /*
+ * Common self test functions
+ *
+ * The code selfTestResetAllValues() should be called by any override.
+ * The override should provide resets for any of the model under tests attributes.
+ */
+    virtual void selfTestResetAllValues() noexcept
+    {
+        m_primaryKey = 0;
+        m_modified = false;
+        m_lastModifiedByUser = 0;
+/*****
+ * format_opts needs to be reset before any exception test
+ */
+        m_formatOpts.reset();
+        clearErrorMessages();
+    }
+
 /*
  * Attribute Access Testing.
  */
@@ -112,7 +138,9 @@ protected:
 
     /*
      * Test the attribute access functions for a particular attribute. Used
-     * to test required attributes in a model.
+     * to test data attributes in a model. The set function is expected to
+     * set the value of the attribute value and set the modified flag of the
+     * class.
      */
     template <typename U>
     TestStatus testAccessorFunctions(U testValue, U* member, std::string_view memberName,
@@ -144,9 +172,7 @@ protected:
     }
 
     /*
-     * Test the attribute access functions for a particular optional attribute. Due
-     * to the difference of how optional values are stored the method for required
-     * attributes can't be used here.
+     * Test the attribute access functions for a particular optional data attribute.
      */
     template <typename U>
     TestStatus testOptionalAccessorFunctions(std::optional<U> testValue, std::optional<U>* member, std::string_view memberName,
@@ -187,7 +213,25 @@ protected:
         return TESTPASSED;
     }
 
-#endif // SELFTTEST
+/*
+ * Self tests of functionality, provides unit testing for methods common to all 
+ * models that are not tested by either the attribute testing or the exception
+ * testing. Each model has an equality operator that needs to be tested. Each
+ * model has an output operator ("<<"). The ModelDBInterface provides methods
+ * such as insert(), update() and and retrieve() that are implemented within
+ * each model due to the different attributes and requirements of the model.
+ */
+    virtual TestStatus testAllInsertFailures() { return TESTFAILED; };
+    virtual TestStatus testEqualityOperator() noexcept  { return TESTFAILED; };
+    virtual void testOutput() noexcept  { };
+    virtual TestStatus testSave();
+    TestStatus hasErrorMessage();
+    TestStatus wrongErrorMessage(std::string expectedString);
+    virtual TestStatus testInsertionFailureMessages(std::vector<std::string> expectedErrors);
+    virtual TestStatus testUpdateFailureMessages(std::vector<std::string> expectedErrors);
+    TestStatus testCommonInsertFailurePath();
+    TestStatus testCommonUpdateFailurePath();
+
 };
 
 using AnyModel_shp = std::shared_ptr<ModelDBInterface>;

@@ -102,8 +102,9 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const UserModel& user)
     {
+        os << user.commonCoreVariablesOutput();
         constexpr const char* outFmtStr = "\t{}: {}\n";
-        os << std::format(outFmtStr, "User ID", user.m_primaryKey);
+
         os << std::format(outFmtStr, "Last Name", user.m_lastName);
         os << std::format(outFmtStr, "First Name", user.m_firstName);
         os << std::format(outFmtStr, "Middle Initial", user.m_middleInitial);
@@ -113,16 +114,11 @@ public:
         {
             os << std::format(outFmtStr, "PassWord", user.m_password);
         }
-        if (user.m_createdTimeStamp.has_value())
-        {
-            os << std::format(outFmtStr, "User Added", user.m_createdTimeStamp.value());
-        }
+
         if (user.m_lastLogin.has_value())
         {
             os << std::format(outFmtStr, "Last Login", user.m_lastLogin.value());
         }
-
-        os << std::format(outFmtStr, "Last Modified by User ID", user.m_lastModifiedByUser);
 
         return os;
     };

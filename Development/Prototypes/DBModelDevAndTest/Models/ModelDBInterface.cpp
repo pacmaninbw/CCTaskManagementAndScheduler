@@ -1,4 +1,5 @@
 // Project Header Files
+#include "CommandLineParser.h"
 #include "ModelDBInterface.h"
 
 // External Libraries
@@ -158,6 +159,51 @@ void ModelDBInterface::setCreatedTimeStamp(std::chrono::system_clock::time_point
     m_createdTimeStamp = createdTS;
 }
 
+std::string ModelDBInterface::commonCoreVariablesOutput() const
+{
+    std::string output;
+    constexpr const char* outFmtStr = "\t{}:\t{}\n";
+
+    output.append("Common Core Variables:\n");
+    output.append(std::format(outFmtStr, "Model Name", m_modelName));
+    output.append(std::format(outFmtStr, "Primary Key", m_primaryKey));
+    output.append(std::format(outFmtStr, "Primary Key Name", m_primaryKeyName));
+    output.append(std::format(outFmtStr, "Modified", m_modified? "TRUE" : "FALSE"));
+    output.append(std::format(outFmtStr, "Deleted", m_deleted? "TRUE" : "FALSE"));
+    output.append(std::format(outFmtStr, "Last Modified by User ID", m_lastModifiedByUser));
+
+    output.append(conditionallyOutputCoreTimeStamps());
+    output.append("Model Specific Attributes:\n");
+
+    return output;
+}
+
+std::string ModelDBInterface::conditionallyOutputCoreTimeStamps() const
+{
+    std::string output;
+    auto showTime = [&](const std::string& label, std::optional<std::chrono::system_clock::time_point> timeStamp)
+    {
+        output.append(std::format("\t{}: ", label));
+        if (timeStamp.has_value())
+        {
+            output.append(std::format("{}", timeStamp.value()));
+        }
+        else
+        {
+            output.append("NO TIMESTAMP VALUE");
+        }
+        output.append("\n");
+    };
+
+    if (programOptions.showTimeStamps)
+    {
+        showTime("Created", m_createdTimeStamp);
+        showTime("Last Updated", m_lastUpdateTimeStamp);
+    }
+
+    return output;
+}
+
 std::size_t ModelDBInterface::getPrimaryKeyValue(boost::mysql::results &dbResultSet)
 {
     // If this is self test then we don't actually connect to the database, the code that
@@ -217,7 +263,6 @@ bool ModelDBInterface::preUpdateCheck() noexcept
     return true;
 }
 
-#ifdef SELFTEST
 std::vector<AttributeTestFunction> ModelDBInterface::initAttributeAccessTests() noexcept
 {
     return std::vector<AttributeTestFunction>();
@@ -332,32 +377,184 @@ TestStatus ModelDBInterface::testForeignKeyFields(std::size_t testForeignKey, st
  */
 TestStatus ModelDBInterface::testTimeStampAccessorFunctions(std::chrono::system_clock::time_point testValue, std::optional<std::chrono::system_clock::time_point> *member, std::string_view memberName, std::function<void(std::chrono::system_clock::time_point)> setFunct, std::function<std::chrono::system_clock::time_point(void)> getFunct) noexcept
 {
+    std::cout << "Running self test on set and get functions for " << m_modelName << "::" << memberName << "\n";
 
-        std::cout << "Running self test on set and get functions for " << m_modelName << "::" << memberName << "\n";
+    m_modified = false;
 
-        m_modified = false;
+    setFunct(testValue);
+    if (!isModified())
+    {
+        std::cerr << "In self test for: " << m_modelName << " set function for " << memberName << " FAILED to set modified\n";
+        return TESTFAILED;
+    }
 
-        setFunct(testValue);
-        if (!isModified())
+    if (!member->has_value() || member->value() != testValue)
+    {
+        std::cerr  << "In self test for: " << m_modelName << "Set function for " << memberName << " FAILED to set member value\n";
+        return TESTFAILED;
+    }
+
+    if (getFunct() != testValue)
+    {
+        std::cerr  << "In self test for: " << m_modelName << "Get function for " << memberName << " FAILED\n";
+        return TESTFAILED;
+    }
+
+    std::cout << "Self test on set and get functions for " << m_modelName << "::" << memberName << " PASSED\n";
+
+    return TESTPASSED;
+}
+
+TestStatus ModelDBInterface::testSave()
+{
+    selfTestResetAllValues();
+
+    TestStatus testStatus = TESTPASSED;
+    m_modified = false;
+    m_primaryKey = 0;
+    std::string_view modelName(m_modelName);
+    m_deleted = false;
+
+    if (save())
+    {
+        std::cout << modelName << "::save worked without being modified\n";
+        testStatus = TESTFAILED;
+    }
+    else
+    {
+        if (hasErrorMessage() == TESTFAILED)
         {
-            std::cerr << "In self test for: " << m_modelName << " set function for " << memberName << " FAILED to set modified\n";
+            std::cout << modelName << "::save Missing expected error messages\n";
+            testStatus = TESTFAILED;
+        }
+        else
+        {
+            if (wrongErrorMessage("not modified, no changes to save") != TESTPASSED)
+            {
+                std::cout << modelName << "::save Wrong error message\n";
+                testStatus = TESTFAILED;
+            }
+        }
+    }
+
+    return testStatus;
+}
+
+TestStatus ModelDBInterface::hasErrorMessage()
+{
+    std::string testErrorMessage = CoreDBInterface::getAllErrorMessages();
+    if (testErrorMessage.empty())
+    {
+        std::cerr << "No error message generated! TEST FAILED!\n";
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
+}
+
+TestStatus ModelDBInterface::wrongErrorMessage(std::string expectedString)
+{
+    std::size_t found = CoreDBInterface::m_errorMessages.find(expectedString);
+    if (found == std::string::npos)
+    {
+        std::cerr << "Wrong message generated! TEST FAILED!\n";
+        std::cerr << CoreDBInterface::m_errorMessages << "\n";
+        std::cerr << "Missing expected: " << expectedString << "\n";
+        std::cerr << "Error Messages:" << CoreDBInterface::m_errorMessages << "\n";
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
+}
+
+TestStatus ModelDBInterface::testInsertionFailureMessages(std::vector<std::string> expectedErrors)
+{
+    if (insert())
+    {
+        std::cerr << std::format("Inserted {} missing required fields!  TEST FAILED\n", m_modelName);
+        return TESTFAILED;
+    }
+
+    if (hasErrorMessage() == TESTFAILED)
+    {
+        return TESTFAILED;
+    }
+
+    for (auto expectedError: expectedErrors)
+    {
+        if (wrongErrorMessage(expectedError) == TESTFAILED)
+        {
             return TESTFAILED;
         }
+    }
 
-        if (!member->has_value() || member->value() != testValue)
+    return TESTPASSED;
+}
+
+TestStatus ModelDBInterface::testUpdateFailureMessages(std::vector<std::string> expectedErrors)
+{
+    if (update())
+    {
+        std::cerr << std::format("Update successful with expected errors!  TEST FAILED\n", m_modelName);
+        return TESTFAILED;
+    }
+
+    if (hasErrorMessage() == TESTFAILED)
+    {
+        return TESTFAILED;
+    }
+
+    for (auto expectedError: expectedErrors)
+    {
+        if (wrongErrorMessage(expectedError) == TESTFAILED)
         {
-            std::cerr  << "In self test for: " << m_modelName << "Set function for " << memberName << " FAILED to set member value\n";
             return TESTFAILED;
         }
+    }
 
-        if (getFunct() != testValue)
-        {
-            std::cerr  << "In self test for: " << m_modelName << "Get function for " << memberName << " FAILED\n";
-            return TESTFAILED;
-        }
+    return TESTPASSED;
+}
 
-        std::cout << "Self test on set and get functions for " << m_modelName << "::" << memberName << " PASSED\n";
+TestStatus ModelDBInterface::testCommonInsertFailurePath()
+{
+    selfTestResetAllValues();
 
-        return TESTPASSED;}
+    m_primaryKey = 1;
+    m_modified = true;
 
-#endif // SELFTEST
+    std::vector<std::string> alreadyInDB = {"already in Database"};
+    if (testInsertionFailureMessages(alreadyInDB) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    selfTestResetAllValues();
+
+    std::vector<std::string> notModified = {"not modified!"};
+    if (testInsertionFailureMessages(notModified) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
+}
+
+TestStatus ModelDBInterface::testCommonUpdateFailurePath()
+{
+    selfTestResetAllValues();
+
+    std::vector<std::string> notInDB = {"not in Database"};
+    if (testUpdateFailureMessages(notInDB) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    m_primaryKey = 1;
+    std::vector<std::string> notModified = {"not modified!"};
+    if (testUpdateFailureMessages(notModified) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
+}

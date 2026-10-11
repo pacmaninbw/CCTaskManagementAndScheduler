@@ -2,7 +2,6 @@
 #define SCHEDULEITEMMODEL_H_
 
 // Project Header Files
-#include "CommandLineParser.h"
 #include "ModelDBInterface.h"
 
 // Standard C++ Header Files
@@ -78,9 +77,8 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const ScheduleItemModel& scheduleItem)
     {
+        os << scheduleItem.commonCoreVariablesOutput();
         constexpr const char* outFmtStr = "\t{}: {}\n";
-        os << "ScheduleItemModel:\n";
-        os << std::format(outFmtStr, "ScheduleItem ID", scheduleItem.m_primaryKey);
         os << std::format(outFmtStr, "User ID", scheduleItem.m_userID);
         os << std::format(outFmtStr, "Title", scheduleItem.m_title);
         os << std::format(outFmtStr, "Start Date and Time", scheduleItem.m_startTime.value_or(std::chrono::system_clock::now()));
@@ -89,16 +87,6 @@ public:
         os << std::format(outFmtStr, "location", scheduleItem.getLocation());
 
         os << "Optional Fields\n";
-        if (programOptions.showTimeStamps)
-        {
-            os << std::format(outFmtStr, "Creation Date", scheduleItem.m_createdTimeStamp.value_or(std::chrono::system_clock::now()));
-            if (scheduleItem.m_lastUpdateTimeStamp.has_value())
-            {
-                os << std::format(outFmtStr, "Last Update", scheduleItem.m_lastUpdateTimeStamp.value());
-            }
-        }
-
-        os << std::format(outFmtStr, "Last Modified by User ID", scheduleItem.m_lastModifiedByUser);
 
         return os;
     };

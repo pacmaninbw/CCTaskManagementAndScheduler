@@ -2,7 +2,6 @@
 #define USERGOALMODEL_H_
 
 // Project Header Files
-#include "CommandLineParser.h"
 #include "ModelDBInterface.h"
 
 // Standard C++ Header Files
@@ -69,24 +68,13 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const UserGoalModel& goal)
     {
+        os << goal.commonCoreVariablesOutput();
+
         constexpr const char* outFmtStr = "\t{}: {}\n";
-        os << std::format("Model Name {}\n", goal.m_modelName);
-        os << std::format(outFmtStr, "Goal ID", goal.m_primaryKey);
         os << std::format(outFmtStr, "User ID", goal.m_userID);
         os << std::format(outFmtStr, "Description", goal.m_description);
         os << std::format(outFmtStr, "Priority", goal.getPriority());
         os << std::format(outFmtStr, "Parent ID", goal.getParentId());
-
-        if (programOptions.showTimeStamps)
-            {
-            if (goal.m_createdTimeStamp.has_value())
-            {
-                os << std::format(outFmtStr, "Creation Timestamp", goal.m_createdTimeStamp.value());
-            }
-            os << std::format(outFmtStr, "Last Update Timestamp", goal.m_lastUpdateTimeStamp.value());
-        }
-
-        os << std::format(outFmtStr, "Last Modified by User ID", goal.m_lastModifiedByUser);
 
         return os;
     };

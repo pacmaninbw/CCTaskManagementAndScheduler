@@ -2,7 +2,6 @@
 #define ORGANIZATIONMODEL_H_
 
 // Project Header Files
-#include "CommandLineParser.h"
 #include "ModelDBInterface.h"
 
 // Standard C++ Header Files
@@ -93,8 +92,8 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const OrganizationModel& orgProfile)
     {
+        os << orgProfile.commonCoreVariablesOutput();
         constexpr const char* outFmtStr = "\t{}: {}\n";
-        os << std::format(outFmtStr, "Organization ID", orgProfile.m_primaryKey);
         os << std::format(outFmtStr, "Organization Name", orgProfile.m_organizationName);
         os << std::format(outFmtStr, "Email Address", orgProfile.m_email);
         os << std::format(outFmtStr, "Phone Number", orgProfile.m_phoneNumber);
@@ -111,24 +110,10 @@ public:
         os << std::format(outFmtStr, "Postal Code", orgProfile.m_postalCode.value_or(""));
         os << std::format(outFmtStr, "State or Province", orgProfile.m_stateOrProvince.value_or(""));
         os << std::format(outFmtStr, "Nation", orgProfile.m_nation.value_or(""));
-        os << std::format(outFmtStr, "Last Modified by User ID", orgProfile.m_lastModifiedByUser);
         
         if (orgProfile.m_parentOrganization.has_value())
         {
             os << std::format(outFmtStr, "Parent Organization", orgProfile.m_parentOrganization.value());
-        }
-
-        if (programOptions.showTimeStamps)
-        {
-            if (orgProfile.m_createdTimeStamp.has_value())
-            {
-                os << std::format(outFmtStr, "Date Added", orgProfile.m_createdTimeStamp.value());
-            }
-
-            if (orgProfile.m_lastUpdateTimeStamp.has_value())
-            {
-                os << std::format(outFmtStr, "Last Modified", orgProfile.m_lastUpdateTimeStamp.value());
-            }
         }
 
         return os;

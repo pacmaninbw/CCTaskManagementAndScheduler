@@ -1,6 +1,5 @@
 #ifndef TASKMODEL_H_
 #define TASKMODEL_H_
-#include "CommandLineParser.h"
 
 // Project Header Files
 #include "commonUtilities.h"
@@ -134,17 +133,13 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const TaskModel& task)
     {
+        os << task.commonCoreVariablesOutput();
+
         constexpr const char* outFmtStr = "\t{}: {}\n";
-        os << "TaskModel:\n";
-        os << std::format(outFmtStr, "Task ID", task.m_primaryKey);
         os << std::format(outFmtStr, "Creator ID", task.m_creatorID);
         os << std::format(outFmtStr, "Assigned To ID", task.m_assignToID);
         os << std::format(outFmtStr, "Description", task.m_description);
         os << std::format(outFmtStr, "Status", task.getStatusIntVal());
-        if (programOptions.showTimeStamps)
-        {
-            os << std::format(outFmtStr, "Creation Date", task.m_createdTimeStamp.value_or(std::chrono::system_clock::now()));
-        }
         os << std::format(outFmtStr, "Scheduled Start Date", task.m_planedStart.value_or(common::getTodaysDate()));
         os << std::format(outFmtStr, "Due Date", task.m_dueDate.value_or(common::getTodaysDate()));
         os << std::format(outFmtStr, "Estimated Effort Hours", task.m_estimatedEffort);
@@ -173,10 +168,6 @@ public:
         {
             os << std::format(outFmtStr, "Completed Date", task.m_completed.value());
         }
-
-        os << std::format(outFmtStr, "Deleted ", (task.m_deleted? "TRUE" : "FALSE"));
-
-        os << std::format(outFmtStr, "Last Modified by User ID", task.m_lastModifiedByUser);
 
         return os;
     };
