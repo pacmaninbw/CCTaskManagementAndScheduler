@@ -3,7 +3,6 @@
 
 // Project Header Files
 #include "ExceptionSelfTest.h"
-#include "FunctionalSelfTest.h"
 #include "ModelDBInterface.h"
 #include "commonTestValues.h"
 
@@ -26,7 +25,6 @@
 template<class Model>
 requires std::is_base_of_v<ModelDBInterface, Model>
 class ModelSelfTest :   public virtual ExceptionSelfTest<Model>,
-                        public virtual FunctionalSelfTest<Model>,
                         public virtual Model
 {
 public:
