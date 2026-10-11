@@ -52,7 +52,14 @@ Running self test on set and get functions for Organization::Last Modified TimeS
 Self test on set and get functions for Organization::Last Modified TimeStamp PASSED
 Running self test on set and get functions for Organization::Last Modified by UserId
 Self test on access functions for Organization::Last Modified by UserId PASSED
-Test Output: 	Organization ID: 1
+Test Output: Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	1
+	Primary Key Name:	id_organization
+	Modified:	TRUE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Organization Name: Any organization name up to 255 characters, Inc.
 	Email Address: Any_organization_email_up_to255-characters@gmail.com
 	Phone Number: Any_organization_email_up_to255-characters@gmail.com
@@ -64,11 +71,17 @@ Test Output: 	Organization ID: 1
 	Postal Code: Any postal code up to 31 characters.
 	State or Province: Any state or province up to 255 characters.
 	Nation: Any nation up to 63 characters.
-	Last Modified by User ID: 1
 	Parent Organization: 23
 
 Organization::testAllInsertFailures before successful insert this = 
-	Organization ID: 0
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	0
+	Primary Key Name:	id_organization
+	Modified:	TRUE
+	Deleted:	FALSE
+	Last Modified by User ID:	0
+Model Specific Attributes:
 	Organization Name: teststringvalue
 	Email Address: teststringvalue
 	Phone Number: teststringvalue
@@ -79,7 +92,6 @@ Organization::testAllInsertFailures before successful insert this =
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 0
 	Parent Organization: 23
 
 In Self Test Query is: 
@@ -140,26 +152,37 @@ Running self test on set and get functions for User::Use Letter For Major Priori
 Self test on set and get functions for User::Use Letter For Major Priority Access PASSED
 Running self test on set and get functions for User::Separate Major And Minor With Dot Access
 Self test on set and get functions for User::Separate Major And Minor With Dot Access PASSED
-Test Output: 	User ID: 31
+Test Output: Common Core Variables:
+	Model Name:	User
+	Primary Key:	31
+	Primary Key Name:	UserID
+	Modified:	TRUE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Last Name: AnyLastName
 	First Name: AnyFirstName
 	Middle Initial: A
 	Email: AnyEmail
 	Login Name: AnyLoginName
 	PassWord: AnyPassword
-	User Added: 2024-05-14 08:31:53.000000000
 	Last Login: 2024-05-14 08:31:53.000000000
-	Last Modified by User ID: 1
 
 User::testAllInsertFailures before successful insert this = 
-	User ID: 0
+Common Core Variables:
+	Model Name:	User
+	Primary Key:	0
+	Primary Key Name:	UserID
+	Modified:	TRUE
+	Deleted:	FALSE
+	Last Modified by User ID:	0
+Model Specific Attributes:
 	Last Name: teststringvalue
 	First Name: teststringvalue
 	Middle Initial: 
 	Email: teststringvalue
 	Login Name: teststringvalue
 	PassWord: teststringvalue
-	Last Modified by User ID: 0
 
 In Self Test Query is: 
 	INSERT INTO user_profile(id_organization, last_name, first_name, middle_initial, email_address, user_login, hashed_password, preferences, last_modified_by_user ) VALUES (1, 'teststringvalue', 'teststringvalue', '', 'teststringvalue', 'teststringvalue', 'teststringvalue', '4:30 AM;4:15 PM;1;1;1;1', 1 )
@@ -227,8 +250,14 @@ Running self test for TaskSelfTest::markComplete
 Self test for TaskSelfTest::markComplete PASSED
 Running self test on set and get functions for Task::Last Modified by UserId
 Self test on access functions for Task::Last Modified by UserId PASSED
-Test Output: TaskModel:
-	Task ID: 33
+Test Output: Common Core Variables:
+	Model Name:	Task
+	Primary Key:	33
+	Primary Key Name:	TaskID
+	Modified:	TRUE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 2
 	Description: Test task description access
@@ -244,13 +273,17 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-10-07
-	Deleted : FALSE
-	Last Modified by User ID: 1
+	Completed Date: 2026-10-11
 
 Task::testAllInsertFailures before successful insert this = 
-TaskModel:
-	Task ID: 0
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	0
+	Primary Key Name:	TaskID
+	Modified:	TRUE
+	Deleted:	FALSE
+	Last Modified by User ID:	0
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Test missing required fields: Set Description
@@ -262,8 +295,6 @@ TaskModel:
 	Priority Group: 1
 	Priority: 0
 Optional Fields
-	Deleted : FALSE
-	Last Modified by User ID: 0
 
 In Self Test Query is: 
 	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (1, 1, 'Test missing required fields: Set Description', 0, '2024-05-21', '2024-05-07', NULL, NULL, NULL, 5e+00, 0e+00, 1, 0, 0, 1 )
@@ -303,22 +334,32 @@ Running self test on set and get functions for UserGoalModel::Last Modified Time
 Self test on set and get functions for UserGoalModel::Last Modified Time Stamp PASSED
 Running self test on set and get functions for UserGoalModel::Last Modified by UserId
 Self test on access functions for UserGoalModel::Last Modified by UserId PASSED
-Test Output: Model Name UserGoalModel
-	Goal ID: 57
+Test Output: Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	57
+	Primary Key Name:	idUserGoals
+	Modified:	TRUE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	User ID: 23
 	Description: Test note content access
 	Priority: 1
 	Parent ID: 1
-	Last Modified by User ID: 1
 
 UserGoalModel::testAllInsertFailures before successful insert this = 
-Model Name UserGoalModel
-	Goal ID: 0
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	0
+	Primary Key Name:	idUserGoals
+	Modified:	TRUE
+	Deleted:	FALSE
+	Last Modified by User ID:	0
+Model Specific Attributes:
 	User ID: 51
 	Description: Testing negative note insertion path
 	Priority: 0
 	Parent ID: 0
-	Last Modified by User ID: 0
 
 In Self Test Query is: 
 	INSERT INTO user_goals (user_id, description, priority, parent_goal, deleted, last_modified_by_user ) VALUES (51, 'Testing negative note insertion path', NULL, NULL, 0, 51 )
@@ -354,16 +395,28 @@ Running self test on set and get functions for Note::Last Modified Time Stamp
 Self test on set and get functions for Note::Last Modified Time Stamp PASSED
 Running self test on set and get functions for Note::Last Modified by UserId
 Self test on access functions for Note::Last Modified by UserId PASSED
-Test Output: 	Note ID: 27
+Test Output: Common Core Variables:
+	Model Name:	Note
+	Primary Key:	27
+	Primary Key Name:	idUserNotes
+	Modified:	TRUE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	User ID: 31
 	Content: Test note content access
-	Last Modified by User ID: 1
 
 Note::testAllInsertFailures before successful insert this = 
-	Note ID: 0
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	0
+	Primary Key Name:	idUserNotes
+	Modified:	TRUE
+	Deleted:	FALSE
+	Last Modified by User ID:	0
+Model Specific Attributes:
 	User ID: 27
 	Content: Testing negative note insertion path
-	Last Modified by User ID: 0
 
 In Self Test Query is: 
 	INSERT INTO user_notes(user_id, content, deleted, note_creation, last_modified_by_user ) VALUES (27, 'Testing negative note insertion path', 0, NULL, 27 )
@@ -413,8 +466,14 @@ Running self test on set and get functions for ScheduleItem::Personal
 Self test on set and get functions for ScheduleItem::Personal PASSED
 Running self test on set and get functions for ScheduleItem::Last Modified by UserId
 Self test on access functions for ScheduleItem::Last Modified by UserId PASSED
-Test Output: ScheduleItemModel:
-	ScheduleItem ID: 57
+Test Output: Common Core Variables:
+	Model Name:	ScheduleItem
+	Primary Key:	57
+	Primary Key Name:	idUserScheduleItem
+	Modified:	TRUE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	User ID: 1
 	Title: Testing schedule item Title string access
 	Start Date and Time: 2024-05-14 08:31:53.000000000
@@ -422,11 +481,16 @@ Test Output: ScheduleItemModel:
 	Personal: TRUE
 	location: Home Office
 Optional Fields
-	Last Modified by User ID: 1
 
 ScheduleItem::testAllInsertFailures before successful insert this = 
-ScheduleItemModel:
-	ScheduleItem ID: 0
+Common Core Variables:
+	Model Name:	ScheduleItem
+	Primary Key:	0
+	Primary Key Name:	idUserScheduleItem
+	Modified:	TRUE
+	Deleted:	FALSE
+	Last Modified by User ID:	0
+Model Specific Attributes:
 	User ID: 1
 	Title: Test missing required fields: Set title
 	Start Date and Time: 2024-05-14 08:31:53.000000000
@@ -434,7 +498,6 @@ ScheduleItemModel:
 	Personal: FALSE
 	location: 
 Optional Fields
-	Last Modified by User ID: 0
 
 In Self Test Query is: 
 	INSERT INTO user_schedule_item  (user_id, start_date_time, end_date_time, title, personal, location, deleted, last_modified_by_user ) VALUES (1, '2024-05-14 08:31:53.000000', '2024-05-14 08:31:53.000000', 'Test missing required fields: Set title', 0, NULL, 0, 1 )
@@ -549,7 +612,7 @@ In Self Test Query is:
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-10-14' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-10-18' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 
 Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
 In Self Test Query is: 
@@ -749,7 +812,7 @@ Running:
 	SELECT * FROM user_profile
 TestUserDBInterface::testGetAllUsers PASSED!
 Running: 
-	SELECT * FROM user_profile WHERE user_profile.created_timestamp >= '2026-10-07 00:00:00.000000' AND user_profile.created_timestamp <= '2026-10-07 23:59:59.000000' 
+	SELECT * FROM user_profile WHERE user_profile.created_timestamp >= '2026-10-11 00:00:00.000000' AND user_profile.created_timestamp <= '2026-10-11 23:59:59.000000' 
 TestUserDBInterface::testGetAllUsersAddedOnDate PASSED!
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.id_organization = 1 AND user_profile.deleted <> 1 
@@ -761,7 +824,7 @@ Running:
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.deleted <> 1 
 Running: 
-	SELECT * FROM user_profile WHERE user_profile.last_modified_time_stamp >= '2026-10-07 00:00:00.000000' AND user_profile.last_modified_time_stamp <= '2026-10-07 23:59:59.000000' AND user_profile.deleted = 1
+	SELECT * FROM user_profile WHERE user_profile.last_modified_time_stamp >= '2026-10-11 00:00:00.000000' AND user_profile.last_modified_time_stamp <= '2026-10-11 23:59:59.000000' AND user_profile.deleted = 1
 TestUserDBInterface::testGetAllUsersDeletedOnDate PASSED!
 All positive path tests for database insertions and retrievals of user PASSED!
 Running: 
@@ -799,7 +862,14 @@ Running:
 	SELECT * FROM organization_profile 
 TestOrganizationModel::testPositivePathGetAllOrganizations PASSED!
 Found 5 Organizations
-	Organization ID: 1
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	1
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	0
+Model Specific Attributes:
 	Organization Name: Test Organization Name
 	Email Address: anyemailaddress@anyURL.org
 	Phone Number: (800) 555-1212
@@ -810,9 +880,15 @@ Found 5 Organizations
 	Postal Code: postal code
 	State or Province: Any state
 	Nation: any country
-	Last Modified by User ID: 0
 
-	Organization ID: 2
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	2
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Organization Name: TestOrg1
 	Email Address: TestOrg1@gmail.com
 	Phone Number: (800) 555-1212
@@ -823,9 +899,15 @@ Found 5 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 1
 
-	Organization ID: 3
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	3
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	5
+Model Specific Attributes:
 	Organization Name: AllFieldsFilled
 	Email Address: AllFieldsFilled@gmail.com
 	Phone Number: (800) 555-1313
@@ -837,9 +919,15 @@ Found 5 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 5
 
-	Organization ID: 4
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	4
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Organization Name: NoTimeStampOrg
 	Email Address: NoTimeStampOrg@gmail.com
 	Phone Number: (800) 555-1414
@@ -850,9 +938,15 @@ Found 5 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 1
 
-	Organization ID: 5
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	5
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Organization Name: TestModify
 	Email Address: TestModify@gmail.com
 	Phone Number: (800) 555-1515
@@ -863,12 +957,18 @@ Found 5 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.id_organization = 1 
 TestOrganizationModel::testPositivePathGetOrganizationById PASSED!
-Found 	Organization ID: 1
+Found Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	1
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	0
+Model Specific Attributes:
 	Organization Name: Test Organization Name
 	Email Address: anyemailaddress@anyURL.org
 	Phone Number: (800) 555-1212
@@ -879,13 +979,19 @@ Found 	Organization ID: 1
 	Postal Code: postal code
 	State or Province: Any state
 	Nation: any country
-	Last Modified by User ID: 0
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.organization_name LIKE '%TestOrg1%' AND organization_profile.deleted <> 1
 TestOrganizationModel::testPositivePathFindOrganizationsByName PASSED!
 Found 1 Organizations
-	Organization ID: 2
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	2
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Organization Name: TestOrg1
 	Email Address: TestOrg1@gmail.com
 	Phone Number: (800) 555-1212
@@ -896,13 +1002,19 @@ Found 1 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.primary_contact_user = 4 AND organization_profile.deleted <> 1
 TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryContactID PASSED!
 Found 4 Organizations
-	Organization ID: 2
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	2
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Organization Name: TestOrg1
 	Email Address: TestOrg1@gmail.com
 	Phone Number: (800) 555-1212
@@ -913,9 +1025,15 @@ Found 4 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 1
 
-	Organization ID: 3
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	3
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	5
+Model Specific Attributes:
 	Organization Name: AllFieldsFilled
 	Email Address: AllFieldsFilled@gmail.com
 	Phone Number: (800) 555-1313
@@ -927,9 +1045,15 @@ Found 4 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 5
 
-	Organization ID: 4
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	4
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Organization Name: NoTimeStampOrg
 	Email Address: NoTimeStampOrg@gmail.com
 	Phone Number: (800) 555-1414
@@ -940,9 +1064,15 @@ Found 4 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 1
 
-	Organization ID: 5
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	5
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Organization Name: TestModify
 	Email Address: TestModify@gmail.com
 	Phone Number: (800) 555-1515
@@ -953,7 +1083,6 @@ Found 4 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.last_name = 'One' AND user_profile.first_name = 'User' AND user_profile.middle_initial = 'P'
@@ -961,7 +1090,14 @@ Running:
 	SELECT * FROM organization_profile WHERE organization_profile.primary_contact_user = 4 AND organization_profile.deleted <> 1
 TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryContactName PASSED!
 Found 4 Organizations
-	Organization ID: 2
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	2
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Organization Name: TestOrg1
 	Email Address: TestOrg1@gmail.com
 	Phone Number: (800) 555-1212
@@ -972,9 +1108,15 @@ Found 4 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 1
 
-	Organization ID: 3
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	3
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	5
+Model Specific Attributes:
 	Organization Name: AllFieldsFilled
 	Email Address: AllFieldsFilled@gmail.com
 	Phone Number: (800) 555-1313
@@ -986,9 +1128,15 @@ Found 4 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 5
 
-	Organization ID: 4
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	4
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Organization Name: NoTimeStampOrg
 	Email Address: NoTimeStampOrg@gmail.com
 	Phone Number: (800) 555-1414
@@ -999,9 +1147,15 @@ Found 4 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 1
 
-	Organization ID: 5
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	5
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Organization Name: TestModify
 	Email Address: TestModify@gmail.com
 	Phone Number: (800) 555-1515
@@ -1012,13 +1166,19 @@ Found 4 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.created_timestamp >= '2024-05-07' AND organization_profile.created_timestamp <= '2024-05-21' AND organization_profile.deleted <> 1
 TestOrganizationModel::testPositivePathGetAllOrganizationsAddedBetween PASSED!
 Found 3 Organizations
-	Organization ID: 2
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	2
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Organization Name: TestOrg1
 	Email Address: TestOrg1@gmail.com
 	Phone Number: (800) 555-1212
@@ -1029,9 +1189,15 @@ Found 3 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 1
 
-	Organization ID: 3
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	3
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	5
+Model Specific Attributes:
 	Organization Name: AllFieldsFilled
 	Email Address: AllFieldsFilled@gmail.com
 	Phone Number: (800) 555-1313
@@ -1043,9 +1209,15 @@ Found 3 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 5
 
-	Organization ID: 5
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	5
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Organization Name: TestModify
 	Email Address: TestModify@gmail.com
 	Phone Number: (800) 555-1515
@@ -1056,13 +1228,19 @@ Found 3 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.created_timestamp >= '2024-05-14 00:00:00.000000' AND organization_profile.created_timestamp < '2024-05-15 00:00:00.000000' AND organization_profile.deleted <> 1 ORDER BY organization_profile.created_timestamp ASC
 TestOrganizationModel::testPositivePathGetAnyOrganizationsAddedOnDate PASSED!
 Found 3 Organizations
-	Organization ID: 2
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	2
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Organization Name: TestOrg1
 	Email Address: TestOrg1@gmail.com
 	Phone Number: (800) 555-1212
@@ -1073,9 +1251,15 @@ Found 3 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 1
 
-	Organization ID: 3
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	3
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	5
+Model Specific Attributes:
 	Organization Name: AllFieldsFilled
 	Email Address: AllFieldsFilled@gmail.com
 	Phone Number: (800) 555-1313
@@ -1087,9 +1271,15 @@ Found 3 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 5
 
-	Organization ID: 5
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	5
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Organization Name: TestModify
 	Email Address: TestModify@gmail.com
 	Phone Number: (800) 555-1515
@@ -1100,13 +1290,19 @@ Found 3 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 1
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.last_modified_time_stamp >= '2024-05-14 00:00:00.000000' AND organization_profile.last_modified_time_stamp < '2024-05-15 00:00:00.000000' AND organization_profile.deleted <> 1 ORDER BY organization_profile.last_modified_time_stamp ASC
 TestOrganizationModel::testPositivePathGetAnyOrganizationsModifiedOnDate PASSED!
 Found 2 Organizations
-	Organization ID: 2
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	2
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Organization Name: TestOrg1
 	Email Address: TestOrg1@gmail.com
 	Phone Number: (800) 555-1212
@@ -1117,9 +1313,15 @@ Found 2 Organizations
 	Postal Code: 
 	State or Province: 
 	Nation: 
-	Last Modified by User ID: 1
 
-	Organization ID: 3
+Common Core Variables:
+	Model Name:	Organization
+	Primary Key:	3
+	Primary Key Name:	id_organization
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	5
+Model Specific Attributes:
 	Organization Name: AllFieldsFilled
 	Email Address: AllFieldsFilled@gmail.com
 	Phone Number: (800) 555-1313
@@ -1131,7 +1333,6 @@ Found 2 Organizations
 	Postal Code: 90049
 	State or Province: California
 	Nation: USA
-	Last Modified by User ID: 5
 
 Running: 
 	SELECT * FROM organization_profile WHERE organization_profile.deleted <> 1
@@ -1252,7 +1453,7 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Design UML Diagram for Personal Planner' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-10-07', NULL, 2e+00, 2e+00, 67, 1, 0, 4 )
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-10-11', NULL, 2e+00, 2e+00, 67, 1, 0, 4 )
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 58
 Running: 
@@ -1264,17 +1465,23 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Daily 30 minute walk' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-10-07', NULL, 2e+00, 0e+00, 67, 3, 0, 4 )
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-10-11', NULL, 2e+00, 0e+00, 67, 3, 0, 4 )
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 60
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Clean apartment' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-14' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-18' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Find unstarted tasks for user(4) PASSED!
 User 4 has 9 unstarted tasks
-TaskModel:
-	Task ID: 50
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	50
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	Creator ID: 4
 	Assigned To ID: 4
 	Description: Install a WordPress Archive Plugin
@@ -1289,11 +1496,15 @@ Optional Fields
 	Status: Not Started
 	Parent ID: 47
 	Estimated Completion Date: 2025-05-01
-	Deleted : FALSE
-	Last Modified by User ID: 4
 
-TaskModel:
-	Task ID: 51
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	51
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	Creator ID: 4
 	Assigned To ID: 4
 	Description: Have GoDaddy install PHPMyAdmin
@@ -1308,11 +1519,15 @@ Optional Fields
 	Status: Not Started
 	Parent ID: 47
 	Estimated Completion Date: 2025-05-03
-	Deleted : FALSE
-	Last Modified by User ID: 4
 
-TaskModel:
-	Task ID: 52
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	52
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	Creator ID: 4
 	Assigned To ID: 4
 	Description: Run Archive Plugin
@@ -1327,11 +1542,15 @@ Optional Fields
 	Status: Not Started
 	Parent ID: 47
 	Estimated Completion Date: 2025-05-03
-	Deleted : FALSE
-	Last Modified by User ID: 4
 
-TaskModel:
-	Task ID: 53
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	53
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	Creator ID: 4
 	Assigned To ID: 4
 	Description: Log into PHPMyAdmin and save Database to disk
@@ -1346,11 +1565,15 @@ Optional Fields
 	Status: Not Started
 	Parent ID: 47
 	Estimated Completion Date: 2025-05-04
-	Deleted : FALSE
-	Last Modified by User ID: 4
 
-TaskModel:
-	Task ID: 54
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	54
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	Creator ID: 4
 	Assigned To ID: 4
 	Description: FTP all website files to computer
@@ -1365,11 +1588,15 @@ Optional Fields
 	Status: Not Started
 	Parent ID: 47
 	Estimated Completion Date: 2025-05-05
-	Deleted : FALSE
-	Last Modified by User ID: 4
 
-TaskModel:
-	Task ID: 55
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	55
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	Creator ID: 4
 	Assigned To ID: 4
 	Description: Store all website files on external SSD
@@ -1384,11 +1611,15 @@ Optional Fields
 	Status: Not Started
 	Parent ID: 47
 	Estimated Completion Date: 2025-05-05
-	Deleted : FALSE
-	Last Modified by User ID: 4
 
-TaskModel:
-	Task ID: 58
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	58
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	Creator ID: 4
 	Assigned To ID: 4
 	Description: Grocery Shopping
@@ -1401,12 +1632,16 @@ TaskModel:
 	Priority: 1
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-10-07
-	Deleted : FALSE
-	Last Modified by User ID: 4
+	Estimated Completion Date: 2026-10-11
 
-TaskModel:
-	Task ID: 59
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	59
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	Creator ID: 4
 	Assigned To ID: 4
 	Description: Daily 30 minute walk
@@ -1420,11 +1655,15 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2056-07-07
-	Deleted : FALSE
-	Last Modified by User ID: 4
 
-TaskModel:
-	Task ID: 60
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	60
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	Creator ID: 4
 	Assigned To ID: 4
 	Description: Clean apartment
@@ -1437,9 +1676,7 @@ TaskModel:
 	Priority: 3
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-10-07
-	Deleted : FALSE
-	Last Modified by User ID: 4
+	Estimated Completion Date: 2026-10-11
 
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.last_name = 'Black' AND user_profile.first_name = 'Paul' AND user_profile.middle_initial = 'A'
@@ -1447,8 +1684,14 @@ Running:
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.delivered IS NULL AND tasks.deleted <> 1 AND (tasks.task_status = 3 OR tasks.due_date < '2026-03-22') ORDER BY tasks.priority_category ASC, tasks.priority ASC
 Find default task list for user(1) PASSED!
 User 1 dashboard has 18 tasks
-TaskModel:
-	Task ID: 1
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	1
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Create a personal planner program that allows task mangement using QT and C++.
@@ -1463,11 +1706,15 @@ Optional Fields
 	Status: Work in Progress
 	Actual Start Date: 2026-02-23
 	Estimated Completion Date: 2026-04-30
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
-TaskModel:
-	Task ID: 39
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	39
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Create an Organizational editor
@@ -1482,11 +1729,15 @@ Optional Fields
 	Status: Not Started
 	Parent ID: 1
 	Estimated Completion Date: 2026-03-09
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
-TaskModel:
-	Task ID: 5
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	5
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Connect goal creation and editing to database.
@@ -1501,11 +1752,15 @@ Optional Fields
 	Status: Not Started
 	Parent ID: 1
 	Estimated Completion Date: 2026-03-08
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
-TaskModel:
-	Task ID: 19
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	19
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Add alternate methods of connecting to the database and logging in. Use environment variable and or command line flags.
@@ -1521,11 +1776,15 @@ Optional Fields
 	Parent ID: 1
 	Actual Start Date: 2026-03-06
 	Estimated Completion Date: 2026-03-08
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
-TaskModel:
-	Task ID: 31
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	31
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Prevent duplicate dependent tasks from occurring.
@@ -1540,11 +1799,15 @@ Optional Fields
 	Status: Not Started
 	Parent ID: 1
 	Estimated Completion Date: 2026-03-11
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
-TaskModel:
-	Task ID: 12
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	12
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Finish the ability to edit tasks. Implement select parent task, add dependencies, display of dependencies.
@@ -1560,11 +1823,15 @@ Optional Fields
 	Parent ID: 1
 	Actual Start Date: 2026-03-07
 	Estimated Completion Date: 2026-03-11
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
-TaskModel:
-	Task ID: 10
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	10
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Implement editing of existing tasks
@@ -1580,11 +1847,15 @@ Optional Fields
 	Parent ID: 1
 	Actual Start Date: 2026-02-21
 	Estimated Completion Date: 2026-03-08
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
-TaskModel:
-	Task ID: 37
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	37
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Provide a method to sort the potential parent tasks in the select parent task dialog.
@@ -1599,11 +1870,15 @@ Optional Fields
 	Status: Not Started
 	Parent ID: 1
 	Estimated Completion Date: 2026-03-09
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
-TaskModel:
-	Task ID: 20
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	20
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Add the ability to repeat schedule items on a daily basis.
@@ -1618,11 +1893,15 @@ Optional Fields
 	Status: Not Started
 	Parent ID: 1
 	Estimated Completion Date: 2026-03-06
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
-TaskModel:
-	Task ID: 30
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	30
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Add the ability to move tasks up and down in the todo list.
@@ -1637,11 +1916,15 @@ Optional Fields
 	Status: Not Started
 	Parent ID: 1
 	Estimated Completion Date: 2026-03-06
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
-TaskModel:
-	Task ID: 18
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	18
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Find a Silver Sneakers program   
@@ -1655,11 +1938,15 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-03-06
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
-TaskModel:
-	Task ID: 13
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	13
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Figure out how to use signals and slots to implement table view updates.
@@ -1674,11 +1961,15 @@ Optional Fields
 	Status: Not Started
 	Parent ID: 1
 	Estimated Completion Date: 2026-03-06
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
-TaskModel:
-	Task ID: 17
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	17
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Implement user preferences in planner
@@ -1692,11 +1983,15 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-03-04
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
-TaskModel:
-	Task ID: 21
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	21
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Add the ability to find an old schedule item and add it again to a new schedule
@@ -1710,11 +2005,15 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-02-27
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
-TaskModel:
-	Task ID: 22
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	22
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Add the ability to reuse locations in the schedule.
@@ -1728,11 +2027,15 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-02-27
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
-TaskModel:
-	Task ID: 26
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	26
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Add production test database contents to unit/integration tests.2 
@@ -1747,11 +2050,15 @@ Optional Fields
 	Status: Not Started
 	Parent ID: 1
 	Estimated Completion Date: 2026-03-01
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
-TaskModel:
-	Task ID: 29
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	29
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Find a dentist. Make an appointment
@@ -1765,11 +2072,15 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-03-05
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
-TaskModel:
-	Task ID: 32
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	32
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	Creator ID: 1
 	Assigned To ID: 1
 	Description: Do the laundry
@@ -1783,15 +2094,13 @@ TaskModel:
 Optional Fields
 	Status: Not Started
 	Estimated Completion Date: 2026-03-10
-	Deleted : FALSE
-	Last Modified by User ID: 1
 
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Archive BHHS74Reunion website to external SSD' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-10-07', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 47 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-10-11', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 47 
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
@@ -1799,31 +2108,31 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND task_dependencies.dependent_task = 47 AND tasks.deleted <> 1
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Check with GoDaddy about providing service to archive website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-04-15', tasks.planned_start = '2025-04-15', tasks.actual_start = '2025-04-15', tasks.estimated_delivery = '2025-04-15', tasks.delivered = '2026-10-07', tasks.est_hours_effort = 2e+00, tasks.hours_effort = 1e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 49 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Check with GoDaddy about providing service to archive website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-04-15', tasks.planned_start = '2025-04-15', tasks.actual_start = '2025-04-15', tasks.estimated_delivery = '2025-04-15', tasks.delivered = '2026-10-11', tasks.est_hours_effort = 2e+00, tasks.hours_effort = 1e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 49 
 Running: 
 	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 49
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Install a WordPress Archive Plugin', tasks.task_status = 4, tasks.due_date = '2025-05-01', tasks.planned_start = '2025-05-01', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-01', tasks.delivered = '2026-10-07', tasks.est_hours_effort = 1e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 2, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 50 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Install a WordPress Archive Plugin', tasks.task_status = 4, tasks.due_date = '2025-05-01', tasks.planned_start = '2025-05-01', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-01', tasks.delivered = '2026-10-11', tasks.est_hours_effort = 1e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 2, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 50 
 Running: 
 	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 50
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Have GoDaddy install PHPMyAdmin', tasks.task_status = 4, tasks.due_date = '2025-05-02', tasks.planned_start = '2025-05-02', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-03', tasks.delivered = '2026-10-07', tasks.est_hours_effort = 1e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 3, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 51 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Have GoDaddy install PHPMyAdmin', tasks.task_status = 4, tasks.due_date = '2025-05-02', tasks.planned_start = '2025-05-02', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-03', tasks.delivered = '2026-10-11', tasks.est_hours_effort = 1e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 3, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 51 
 Running: 
 	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 51
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Run Archive Plugin', tasks.task_status = 4, tasks.due_date = '2025-05-03', tasks.planned_start = '2025-05-03', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-03', tasks.delivered = '2026-10-07', tasks.est_hours_effort = 2e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 4, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 52 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Run Archive Plugin', tasks.task_status = 4, tasks.due_date = '2025-05-03', tasks.planned_start = '2025-05-03', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-03', tasks.delivered = '2026-10-11', tasks.est_hours_effort = 2e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 4, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 52 
 Running: 
 	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 52
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Log into PHPMyAdmin and save Database to disk', tasks.task_status = 4, tasks.due_date = '2025-05-04', tasks.planned_start = '2025-05-04', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-04', tasks.delivered = '2026-10-07', tasks.est_hours_effort = 1e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 5, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 53 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Log into PHPMyAdmin and save Database to disk', tasks.task_status = 4, tasks.due_date = '2025-05-04', tasks.planned_start = '2025-05-04', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-04', tasks.delivered = '2026-10-11', tasks.est_hours_effort = 1e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 5, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 53 
 Running: 
 	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 53
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'FTP all website files to computer', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-05-05', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-10-07', tasks.est_hours_effort = 3e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 6, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 54 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'FTP all website files to computer', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-05-05', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-10-11', tasks.est_hours_effort = 3e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 6, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 54 
 Running: 
 	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 54
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Store all website files on external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-05-05', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-10-07', tasks.est_hours_effort = 2e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 7, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 55 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Store all website files on external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-05-05', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-10-11', tasks.est_hours_effort = 2e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 7, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 55 
 Running: 
 	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 55
 Running: 
@@ -1832,8 +2141,14 @@ Running:
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.delivered IS NULL AND (tasks.task_status IS NOT NULL AND tasks.task_status <> 0) AND tasks.deleted <> 1
 Find active tasks for user(4) PASSED!
 User 4 has 3 unstarted tasks
-TaskModel:
-	Task ID: 48
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	48
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	Creator ID: 4
 	Assigned To ID: 4
 	Description: Develop Personal Planning Tool
@@ -1848,11 +2163,15 @@ Optional Fields
 	Status: Work in Progress
 	Actual Start Date: 2025-03-20
 	Estimated Completion Date: 2025-05-15
-	Deleted : FALSE
-	Last Modified by User ID: 4
 
-TaskModel:
-	Task ID: 56
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	56
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	Creator ID: 4
 	Assigned To ID: 4
 	Description: Design Database for Personal Planner
@@ -1868,11 +2187,15 @@ Optional Fields
 	Parent ID: 48
 	Actual Start Date: 2025-03-20
 	Estimated Completion Date: 2025-05-01
-	Deleted : FALSE
-	Last Modified by User ID: 4
 
-TaskModel:
-	Task ID: 57
+Common Core Variables:
+	Model Name:	Task
+	Primary Key:	57
+	Primary Key Name:	TaskID
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	Creator ID: 4
 	Assigned To ID: 4
 	Description: Design UML Diagram for Personal Planner
@@ -1888,15 +2211,13 @@ Optional Fields
 	Parent ID: 48
 	Actual Start Date: 2025-04-08
 	Estimated Completion Date: 2025-04-15
-	Deleted : FALSE
-	Last Modified by User ID: 4
 
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-14' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-18' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Running: 
 	UPDATE tasks SET tasks.deleted = 1, tasks.last_modified_by_user = 4  WHERE tasks.created_by = 4 AND tasks.task_id = 60
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-14' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-18' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Task (60) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of task PASSED!
 Running: 
@@ -2032,271 +2353,431 @@ Running:
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description = 'Get a Job in Software Engineering' AND user_goals.deleted <> 1
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.parent_goal = 1 AND user_goals.deleted <> 1
-Model Name UserGoalModel
-	Goal ID: 1
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	1
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Get a Job in Software Engineering
 	Priority: 1
 	Parent ID: 0
-	Last Modified by User ID: 2
 
 Find all child goals for(1) PASSED!
 Goal 1 has 8 child goals
-Model Name UserGoalModel
-	Goal ID: 2
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	2
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Maintain and improve my software engineering skills
 	Priority: 1
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 3
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	3
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Maintain and improve my C++ programming skills
 	Priority: 1
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 4
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	4
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Maintain and improve my  C programming skills
 	Priority: 2
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 6
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	6
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Maintain and improve my SQL skills
 	Priority: 3
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 7
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	7
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Learn QT graphic system
 	Priority: 4
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 8
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	8
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Improve my Linux Programming skills
 	Priority: 5
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 9
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	9
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Get an embedded programming certificate
 	Priority: 4
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 10
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	10
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Learn open source Linux Core Programming
 	Priority: 4
 	Parent ID: 1
-	Last Modified by User ID: 2
 
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.deleted <> 1
 Find all goals for user (4) PASSED!
 User 4 has 17 goals
-Model Name UserGoalModel
-	Goal ID: 1
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	1
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Get a Job in Software Engineering
 	Priority: 1
 	Parent ID: 0
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 2
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	2
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Maintain and improve my software engineering skills
 	Priority: 1
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 3
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	3
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Maintain and improve my C++ programming skills
 	Priority: 1
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 4
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	4
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Maintain and improve my  C programming skills
 	Priority: 2
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 5
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	5
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Maintain or archive the BHHS 74 Reunion website
 	Priority: 2
 	Parent ID: 0
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 6
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	6
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Maintain and improve my SQL skills
 	Priority: 3
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 7
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	7
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Learn QT graphic system
 	Priority: 4
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 8
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	8
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Improve my Linux Programming skills
 	Priority: 5
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 9
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	9
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Get an embedded programming certificate
 	Priority: 4
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 10
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	10
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Learn open source Linux Core Programming
 	Priority: 4
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 11
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	11
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Maintain my health
 	Priority: 2
 	Parent ID: 0
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 12
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	12
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Eat as healthy as possible
 	Priority: 3
 	Parent ID: 11
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 13
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	13
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Walk 30 minutes a day
 	Priority: 4
 	Parent ID: 11
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 14
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	14
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Track my vital signs
 	Priority: 3
 	Parent ID: 11
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 15
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	15
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Get my weight down to 190 pounds
 	Priority: 4
 	Parent ID: 11
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 16
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	16
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Be more organized
 	Priority: 1
 	Parent ID: 0
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 17
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	17
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Effectively moderate the code review site on stack exchange
 	Priority: 1
 	Parent ID: 0
-	Last Modified by User ID: 2
 
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.description LIKE '%Maintain%' AND user_goals.deleted <> 1
 Find all goals for user (4) containing Maintain PASSED!
 User 4 has 6 goals
-Model Name UserGoalModel
-	Goal ID: 2
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	2
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Maintain and improve my software engineering skills
 	Priority: 1
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 3
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	3
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Maintain and improve my C++ programming skills
 	Priority: 1
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 4
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	4
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Maintain and improve my  C programming skills
 	Priority: 2
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 5
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	5
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Maintain or archive the BHHS 74 Reunion website
 	Priority: 2
 	Parent ID: 0
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 6
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	6
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Maintain and improve my SQL skills
 	Priority: 3
 	Parent ID: 1
-	Last Modified by User ID: 2
 
-Model Name UserGoalModel
-	Goal ID: 11
+Common Core Variables:
+	Model Name:	UserGoalModel
+	Primary Key:	11
+	Primary Key Name:	idUserGoals
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	2
+Model Specific Attributes:
 	User ID: 4
 	Description: Maintain my health
 	Priority: 2
 	Parent ID: 0
-	Last Modified by User ID: 2
 
 Running: 
 	SELECT * FROM user_goals WHERE user_goals.user_id = 4 AND user_goals.deleted <> 1
@@ -2373,400 +2854,850 @@ Running:
 Running: 
 	UPDATE user_notes SET user_notes.content = 'Use a planner / organizer', user_notes.last_modified_by_user = 4 WHERE user_notes.id_user_notes = 42 AND user_notes.user_id = 4
 Update UserNote Passed integration test
-	Note ID: 42
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	42
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Use a planner / organizer
-	Last Modified by User ID: 4
 
 Running: 
 	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.deleted <> 1
 Find all notes for user (4) PASSED!
 User 4 has 17 notes
-	Note ID: 27
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	27
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	User ID: 4
 	Content: Get a Job in Software Engineering
-	Last Modified by User ID: 1
 
-	Note ID: 28
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	28
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my software engineering skills
-	Last Modified by User ID: 4
 
-	Note ID: 29
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	29
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my C++ programming skills
-	Last Modified by User ID: 4
 
-	Note ID: 30
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	30
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my  C programming skills
-	Last Modified by User ID: 4
 
-	Note ID: 31
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	31
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain or archive the BHHS 74 Reunion website
-	Last Modified by User ID: 4
 
-	Note ID: 32
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	32
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my SQL skills
-	Last Modified by User ID: 4
 
-	Note ID: 33
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	33
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Learn QT graphic system
-	Last Modified by User ID: 4
 
-	Note ID: 34
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	34
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Improve my Linux Programming skills
-	Last Modified by User ID: 4
 
-	Note ID: 35
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	35
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Get an embedded programming certificate
-	Last Modified by User ID: 4
 
-	Note ID: 36
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	36
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Learn open source Linux Core Programming
-	Last Modified by User ID: 4
 
-	Note ID: 37
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	37
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain my health
-	Last Modified by User ID: 4
 
-	Note ID: 38
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	38
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Eat as healthy as possible
-	Last Modified by User ID: 4
 
-	Note ID: 39
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	39
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Walk 30 minutes a day
-	Last Modified by User ID: 4
 
-	Note ID: 40
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	40
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Track my vital signs
-	Last Modified by User ID: 4
 
-	Note ID: 41
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	41
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Get my weight down to 190 pounds
-	Last Modified by User ID: 4
 
-	Note ID: 42
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	42
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Use a planner / organizer
-	Last Modified by User ID: 4
 
-	Note ID: 43
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	43
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Effectively moderate the code review site on stack exchange
-	Last Modified by User ID: 4
 
 Running: 
 	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.content LIKE '%Maintain%' AND user_notes.deleted <> 1
 Find all notes for user (4) similar to Maintain PASSED!
 User 4 has 6 notes
-	Note ID: 28
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	28
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my software engineering skills
-	Last Modified by User ID: 4
 
-	Note ID: 29
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	29
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my C++ programming skills
-	Last Modified by User ID: 4
 
-	Note ID: 30
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	30
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my  C programming skills
-	Last Modified by User ID: 4
 
-	Note ID: 31
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	31
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain or archive the BHHS 74 Reunion website
-	Last Modified by User ID: 4
 
-	Note ID: 32
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	32
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my SQL skills
-	Last Modified by User ID: 4
 
-	Note ID: 37
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	37
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain my health
-	Last Modified by User ID: 4
 
 Running: 
 	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.note_creation >= '2024-05-07' AND user_notes.note_creation <= '2024-05-21' AND user_notes.deleted <> 1
 Find all notes for user (4) created in date range PASSED!
 User 4 has 17 notes
-	Note ID: 27
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	27
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	User ID: 4
 	Content: Get a Job in Software Engineering
-	Last Modified by User ID: 1
 
-	Note ID: 28
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	28
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my software engineering skills
-	Last Modified by User ID: 4
 
-	Note ID: 29
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	29
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my C++ programming skills
-	Last Modified by User ID: 4
 
-	Note ID: 30
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	30
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my  C programming skills
-	Last Modified by User ID: 4
 
-	Note ID: 31
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	31
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain or archive the BHHS 74 Reunion website
-	Last Modified by User ID: 4
 
-	Note ID: 32
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	32
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my SQL skills
-	Last Modified by User ID: 4
 
-	Note ID: 33
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	33
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Learn QT graphic system
-	Last Modified by User ID: 4
 
-	Note ID: 34
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	34
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Improve my Linux Programming skills
-	Last Modified by User ID: 4
 
-	Note ID: 35
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	35
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Get an embedded programming certificate
-	Last Modified by User ID: 4
 
-	Note ID: 36
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	36
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Learn open source Linux Core Programming
-	Last Modified by User ID: 4
 
-	Note ID: 37
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	37
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain my health
-	Last Modified by User ID: 4
 
-	Note ID: 38
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	38
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Eat as healthy as possible
-	Last Modified by User ID: 4
 
-	Note ID: 39
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	39
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Walk 30 minutes a day
-	Last Modified by User ID: 4
 
-	Note ID: 40
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	40
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Track my vital signs
-	Last Modified by User ID: 4
 
-	Note ID: 41
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	41
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Get my weight down to 190 pounds
-	Last Modified by User ID: 4
 
-	Note ID: 42
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	42
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Use a planner / organizer
-	Last Modified by User ID: 4
 
-	Note ID: 43
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	43
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Effectively moderate the code review site on stack exchange
-	Last Modified by User ID: 4
 
 Running: 
-	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-09-30' AND user_notes.last_modifed <= '2026-10-14' AND user_notes.deleted <> 1
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-10-04' AND user_notes.last_modifed <= '2026-10-18' AND user_notes.deleted <> 1
 Find all notes for user (4) edited in date range PASSED!
 User 4 has 17 notes
-	Note ID: 27
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	27
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	User ID: 4
 	Content: Get a Job in Software Engineering
-	Last Modified by User ID: 1
 
-	Note ID: 28
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	28
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my software engineering skills
-	Last Modified by User ID: 4
 
-	Note ID: 29
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	29
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my C++ programming skills
-	Last Modified by User ID: 4
 
-	Note ID: 30
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	30
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my  C programming skills
-	Last Modified by User ID: 4
 
-	Note ID: 31
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	31
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain or archive the BHHS 74 Reunion website
-	Last Modified by User ID: 4
 
-	Note ID: 32
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	32
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my SQL skills
-	Last Modified by User ID: 4
 
-	Note ID: 33
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	33
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Learn QT graphic system
-	Last Modified by User ID: 4
 
-	Note ID: 34
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	34
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Improve my Linux Programming skills
-	Last Modified by User ID: 4
 
-	Note ID: 35
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	35
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Get an embedded programming certificate
-	Last Modified by User ID: 4
 
-	Note ID: 36
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	36
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Learn open source Linux Core Programming
-	Last Modified by User ID: 4
 
-	Note ID: 37
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	37
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain my health
-	Last Modified by User ID: 4
 
-	Note ID: 38
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	38
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Eat as healthy as possible
-	Last Modified by User ID: 4
 
-	Note ID: 39
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	39
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Walk 30 minutes a day
-	Last Modified by User ID: 4
 
-	Note ID: 40
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	40
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Track my vital signs
-	Last Modified by User ID: 4
 
-	Note ID: 41
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	41
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Get my weight down to 190 pounds
-	Last Modified by User ID: 4
 
-	Note ID: 42
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	42
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Use a planner / organizer
-	Last Modified by User ID: 4
 
-	Note ID: 43
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	43
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Effectively moderate the code review site on stack exchange
-	Last Modified by User ID: 4
 
 Running: 
 	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.note_creation >= '2024-05-14 00:00:00.000000' AND user_notes.note_creation < '2024-05-15 00:00:00.000000' AND user_notes.deleted <> 1 ORDER BY user_notes.note_creation ASC
 Find all notes for user (4) for a date PASSED!
 User 4 has 17 notes
-	Note ID: 27
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	27
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	1
+Model Specific Attributes:
 	User ID: 4
 	Content: Get a Job in Software Engineering
-	Last Modified by User ID: 1
 
-	Note ID: 28
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	28
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my software engineering skills
-	Last Modified by User ID: 4
 
-	Note ID: 29
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	29
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my C++ programming skills
-	Last Modified by User ID: 4
 
-	Note ID: 30
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	30
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my  C programming skills
-	Last Modified by User ID: 4
 
-	Note ID: 31
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	31
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain or archive the BHHS 74 Reunion website
-	Last Modified by User ID: 4
 
-	Note ID: 32
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	32
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain and improve my SQL skills
-	Last Modified by User ID: 4
 
-	Note ID: 33
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	33
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Learn QT graphic system
-	Last Modified by User ID: 4
 
-	Note ID: 34
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	34
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Improve my Linux Programming skills
-	Last Modified by User ID: 4
 
-	Note ID: 35
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	35
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Get an embedded programming certificate
-	Last Modified by User ID: 4
 
-	Note ID: 36
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	36
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Learn open source Linux Core Programming
-	Last Modified by User ID: 4
 
-	Note ID: 37
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	37
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Maintain my health
-	Last Modified by User ID: 4
 
-	Note ID: 38
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	38
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Eat as healthy as possible
-	Last Modified by User ID: 4
 
-	Note ID: 39
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	39
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Walk 30 minutes a day
-	Last Modified by User ID: 4
 
-	Note ID: 40
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	40
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Track my vital signs
-	Last Modified by User ID: 4
 
-	Note ID: 41
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	41
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Get my weight down to 190 pounds
-	Last Modified by User ID: 4
 
-	Note ID: 42
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	42
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Use a planner / organizer
-	Last Modified by User ID: 4
 
-	Note ID: 43
+Common Core Variables:
+	Model Name:	Note
+	Primary Key:	43
+	Primary Key Name:	idUserNotes
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Content: Effectively moderate the code review site on stack exchange
-	Last Modified by User ID: 4
 
 Running: 
 	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.deleted <> 1
@@ -2824,8 +3755,14 @@ Running:
 	SELECT * FROM user_schedule_item WHERE user_id = 4 AND title LIKE '%birthday%' AND deleted <> 1 AND start_date_time >= '2024-12-01' AND start_date_time <= '2024-12-31'
 Find all schedule items for user (4) similar to birthday PASSED!
 User 4 has 3 schedule items
-ScheduleItemModel:
-	ScheduleItem ID: 813
+Common Core Variables:
+	Model Name:	ScheduleItem
+	Primary Key:	813
+	Primary Key Name:	idUserScheduleItem
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Title: Bill McCandless birthday call
 	Start Date and Time: 2024-12-11 09:00:00.000000000
@@ -2833,10 +3770,15 @@ ScheduleItemModel:
 	Personal: TRUE
 	location: 
 Optional Fields
-	Last Modified by User ID: 4
 
-ScheduleItemModel:
-	ScheduleItem ID: 814
+Common Core Variables:
+	Model Name:	ScheduleItem
+	Primary Key:	814
+	Primary Key Name:	idUserScheduleItem
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Title: Jean Hom birthday call
 	Start Date and Time: 2024-12-13 09:00:00.000000000
@@ -2844,10 +3786,15 @@ ScheduleItemModel:
 	Personal: TRUE
 	location: 
 Optional Fields
-	Last Modified by User ID: 4
 
-ScheduleItemModel:
-	ScheduleItem ID: 816
+Common Core Variables:
+	Model Name:	ScheduleItem
+	Primary Key:	816
+	Primary Key Name:	idUserScheduleItem
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Title: Dina birthday call
 	Start Date and Time: 2024-12-18 09:00:00.000000000
@@ -2855,14 +3802,19 @@ ScheduleItemModel:
 	Personal: TRUE
 	location: 
 Optional Fields
-	Last Modified by User ID: 4
 
 Running: 
 	SELECT * FROM user_schedule_item WHERE user_schedule_item.user_id = 4 AND user_schedule_item.deleted <> 1 AND user_schedule_item.start_date_time >= '2024-12-13 08:00:00.000000' AND user_schedule_item.start_date_time <= '2024-12-14 07:59:59.000000' ORDER BY user_schedule_item.start_date_time ASC
 Find all schedule items for user (4) edited in date range PASSED!
 User 4 has 2 schedule items
-ScheduleItemModel:
-	ScheduleItem ID: 814
+Common Core Variables:
+	Model Name:	ScheduleItem
+	Primary Key:	814
+	Primary Key Name:	idUserScheduleItem
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Title: Jean Hom birthday call
 	Start Date and Time: 2024-12-13 09:00:00.000000000
@@ -2870,10 +3822,15 @@ ScheduleItemModel:
 	Personal: TRUE
 	location: 
 Optional Fields
-	Last Modified by User ID: 4
 
-ScheduleItemModel:
-	ScheduleItem ID: 815
+Common Core Variables:
+	Model Name:	ScheduleItem
+	Primary Key:	815
+	Primary Key Name:	idUserScheduleItem
+	Modified:	FALSE
+	Deleted:	FALSE
+	Last Modified by User ID:	4
+Model Specific Attributes:
 	User ID: 4
 	Title: Dr. David Aftergood
 	Start Date and Time: 2024-12-13 10:00:00.000000000
@@ -2881,7 +3838,6 @@ ScheduleItemModel:
 	Personal: TRUE
 	location: 99 N. La Cienega Blvd.
 Optional Fields
-	Last Modified by User ID: 4
 
 Running: 
 	SELECT * FROM user_schedule_item WHERE user_schedule_item.id_user_schedule_item = 812 AND user_schedule_item.deleted <> 1
@@ -2962,14 +3918,14 @@ All negative path tests for database insertions and retrievals of ScheduleItem P
 All tests for database insertions and retrievals of ScheduleItem PASSED!
 All tests Passed
 finished Unit and Integration testing of all models MySQL database
-Wed Oct  7 05:51:29 2026
-elapsed time in seconds: 26.0368
+Sun Oct 11 06:31:22 2026
+elapsed time in seconds: 26.0797
 
 
 
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
-  total heap usage: 67,630 allocs, 67,630 frees, 9,251,537 bytes allocated
+  total heap usage: 69,122 allocs, 69,122 frees, 9,355,996 bytes allocated
 
 All heap blocks were freed -- no leaks are possible
 
