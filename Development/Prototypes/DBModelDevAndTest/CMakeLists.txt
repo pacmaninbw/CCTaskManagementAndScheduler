@@ -16,23 +16,17 @@ add_executable(protoPersonalPlanner
     Models/CoreDBInterface.cpp
     Models/ModelDBInterface.cpp
     Models/OrganizationModel.cpp
-    Models/OrganizationSelfTest.cpp
     Models/OrganizationQueryProcessor.cpp
     Models/UserModel.cpp
-    Models/UserSelfTest.cpp
     Models/TaskModel.cpp
-    Models/TaskSelfTest.cpp
     Models/QueryProcessor.h
     Models/UserQueryProcessor.cpp
     Models/TaskQueryProcessor.cpp
     Models/NoteModel.cpp
-    Models/NoteSelfTest.cpp
     Models/NoteQueryProcessor.cpp
     Models/ScheduleItemModel.cpp
-    Models/ScheduleItemSelfTest.cpp
     Models/ScheduleItemQueryProcessor.cpp
     Models/UserGoalModel.cpp
-    Models/UserGoalSelfTest.cpp
     Models/GoalQueryProcessor.cpp
     main.cpp
     TestDBConnection.cpp

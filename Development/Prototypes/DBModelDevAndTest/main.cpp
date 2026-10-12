@@ -4,16 +4,12 @@
 #include "GoalQueryProcessor.h"
 #include "OrganizationModel.h"
 #include "OrganizationQueryProcessor.h"
-#include "OrganizationSelfTest.h"
 #include "NoteQueryProcessor.h"
 #include "NoteModel.h"
-#include "NoteSelfTest.h"
 #include "ScheduleItemModel.h"
 #include "ScheduleItemQueryProcessor.h"
-#include "ScheduleItemSelfTest.h"
 #include "TaskModel.h"
 #include "TaskQueryProcessor.h"
-#include "TaskSelfTest.h"
 #include "TestDBConnection.h"
 #include "TestTaskDBInterface.h"
 #include "TestUserDBInterface.h"
@@ -23,9 +19,7 @@
 #include "TestScheduleItemModel.h"
 #include "TestStatus.h"
 #include "UserGoalModel.h"
-#include "UserGoalSelfTest.h"
 #include "UserModel.h"
-#include "UserSelfTest.h"
 #include "UserQueryProcessor.h"
 #include "UtilityTimer.h"
 
@@ -61,71 +55,45 @@ static void separateTestCaseOutput()
     std::cout << std::endl;     // Flush the output
 }
 
-template <class A>
-static TestStatus runUnitTest(ModelSelfTest<A>* unitTest)
-{
-    separateTestCaseOutput();
-
-    TestStatus thisTestStatus = unitTest->runSelfTest();
-    if (thisTestStatus != TESTPASSED)
-    {
-        std::string failMessage = std::format("*** {} FAILED Self Test ***", unitTest->getModelName());
-        std::cerr << failMessage << "\n";
-        if (programOptions.quitFirstFail)
-        {
-            std::runtime_error firstFail(failMessage);
-            throw firstFail;
-        }
-    }
-    else
-    {
-        if (programOptions.verboseOutput)
-        {
-            std::cout << std::format("{} PASSED Self Test\n", unitTest->getModelName());
-        }
-    }
-
-    return thisTestStatus;
-}
-
 static TestStatus runAllUnitTests()
 {
     TestStatus allUnintTestsPassed = TESTPASSED;
 
-    OrganizationSelfTest organizationTest;
-    if (runUnitTest(&organizationTest) == TESTFAILED)
+    auto runUnitTest2 = [&](std::shared_ptr<ModelDBInterface>modelUnderTest)
     {
-        allUnintTestsPassed = TESTFAILED;
-    }
+        separateTestCaseOutput();
 
-    UserSelfTest userTest;
-    if (runUnitTest(&userTest) == TESTFAILED)
-    {
-        allUnintTestsPassed = TESTFAILED;
-    }
-    
-    TaskSelfTest taskTest;
-    if (runUnitTest(&taskTest) == TESTFAILED)
-    {
-        allUnintTestsPassed = TESTFAILED;
-    }
+        if (modelUnderTest->runSelfTest() != TESTPASSED)
+        {
+            std::string failMessage = std::format("*** {} FAILED Self Test ***", modelUnderTest->getModelName());
+            std::cerr << failMessage << "\n";
+            allUnintTestsPassed = TESTFAILED;
+            if (programOptions.quitFirstFail)
+            {
+                std::runtime_error firstFail(failMessage);
+                throw firstFail;
+            }
+        }
+        else
+        {
+            if (programOptions.verboseOutput)
+            {
+                std::cout << std::format("{} PASSED Self Test\n", modelUnderTest->getModelName());
+            }
+        }
+    };
 
-    UserGoalSelfTest goalTest;
-    if (runUnitTest(&goalTest) == TESTFAILED)
-    {
-        allUnintTestsPassed = TESTFAILED;
-    }
+    std::vector<std::shared_ptr<ModelDBInterface>> unitTests;
+    unitTests.push_back(std::make_shared<OrganizationModel>());
+    unitTests.push_back(std::make_shared<UserModel>());
+    unitTests.push_back(std::make_shared<TaskModel>());
+    unitTests.push_back(std::make_shared<UserGoalModel>());
+    unitTests.push_back(std::make_shared<NoteModel>());
+    unitTests.push_back(std::make_shared<ScheduleItemModel>());
 
-    NoteSelfTest noteTest;
-    if (runUnitTest(&noteTest) == TESTFAILED)
+    for (auto unitTest: unitTests)
     {
-        allUnintTestsPassed = TESTFAILED;
-    }
-
-    ScheduleItemSelfTest scheduleItemTest;
-    if (runUnitTest(&scheduleItemTest) == TESTFAILED)
-    {
-        allUnintTestsPassed = TESTFAILED;
+        runUnitTest2(unitTest);
     }
 
     return allUnintTestsPassed;
