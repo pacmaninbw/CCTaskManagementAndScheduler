@@ -126,6 +126,44 @@ private:
     std::string formatDeleteStatement() override;
 
 protected:
+/*
+ * Unit Testing (Self Testing)
+ */
+    virtual void selfTestResetAllValues() noexcept override;
+    virtual TestStatus testAllInsertFailures() override;
+    virtual TestStatus testEqualityOperator() noexcept override;
+    virtual void testOutput() noexcept override;
+
+    virtual std::vector<AttributeTestFunction> initAttributeAccessTests() noexcept override;
+    TestStatus testOrganizationIdAccess() noexcept;
+    TestStatus testOrganizationNameAccess() noexcept;
+    TestStatus testEmailAccess() noexcept;
+    TestStatus testPhoneAccess() noexcept;
+    TestStatus testPrimaryContactAccess() noexcept;
+    TestStatus testSecondaryContactAccess() noexcept;
+    TestStatus testAddressLine1Access() noexcept;
+    TestStatus testAddressLine2Access() noexcept;
+    TestStatus testCityAccess() noexcept;
+    TestStatus testPostalCodeAccess() noexcept;
+    TestStatus testStateOrProvinceAccess() noexcept;
+    TestStatus testNationAccess() noexcept;
+    TestStatus testParentOrganizationAccess() noexcept;
+    TestStatus testCreatedDateAccess() noexcept;
+    TestStatus testLastModifiedDateAccess() noexcept;
+    TestStatus testLastModifiedByUserAccess() noexcept;
+
+    virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
+    virtual TestStatus testExceptionInsert() noexcept override;
+    virtual TestStatus testExceptionUpdate() noexcept override;
+    virtual TestStatus testExceptionHide() noexcept override;
+    void initValidTestValues() noexcept;
+
+    void convertOrganizationModelTo(std::shared_ptr<OrganizationModel> original, OrganizationDbQueryValues& testInput) noexcept;
+    TestStatus testDataBaseToModelConversion() noexcept;
+
+/*
+ * Model Specific Attributes
+ */
     std::string m_organizationName;
     std::string m_email;
     std::string m_phoneNumber;

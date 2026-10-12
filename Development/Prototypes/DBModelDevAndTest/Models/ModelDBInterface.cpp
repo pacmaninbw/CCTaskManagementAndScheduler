@@ -159,6 +159,76 @@ void ModelDBInterface::setCreatedTimeStamp(std::chrono::system_clock::time_point
     m_createdTimeStamp = createdTS;
 }
 
+TestStatus ModelDBInterface::runSelfTest() noexcept
+{
+    m_selfTest = true;
+    TestStatus selfTestStatus = TESTPASSED;
+
+    std::cout << "\nRunning " << getModelName() << " Self Test\n";
+
+    if (testExceptionHandling()!= TESTPASSED)
+    {
+        std::cerr  << getModelName() << "::runSelfTest: Exception handling FAILED!\n";
+        selfTestStatus = TESTFAILED;
+    }
+    
+    if (testSave() == TESTFAILED)
+    {
+        selfTestStatus = TESTFAILED;
+    }
+
+    if (testAttributeAccessFunctions() == TESTFAILED)
+    {
+        std::cerr << getModelName() << "::runSelfTest: One or more get or set functions FAILED!\n";
+        selfTestStatus = TESTFAILED;
+    }
+
+    if (testEqualityOperator() == TESTFAILED)
+    {
+        std::cerr << std::format("Equality Operator Test: Comparing 2 {}s FAILED!\n", getModelName());
+        selfTestStatus = TESTFAILED;
+    }
+
+    testOutput();
+
+    if (testAllInsertFailures() != TESTPASSED)
+    {
+        std::cerr << "Test of all insertion failures FAILED!\n";
+        selfTestStatus = TESTFAILED;
+    }
+
+    if (testCommonInsertFailurePath() != TESTPASSED)
+    {
+        selfTestStatus = TESTFAILED;
+    }
+    else
+    {
+        std::cout << "Common Insertion Failure Test PASSED!\n";
+    }
+
+    if (testCommonUpdateFailurePath() != TESTPASSED)
+    {
+        selfTestStatus = TESTFAILED;
+    }
+    else
+    {
+        std::cout << "Common Update Failure Test PASSED!\n";
+    }
+
+    m_selfTest = false;
+    
+    if (selfTestStatus == TESTPASSED)
+    {
+        std::cout <<  std::format("{} Self Test {}\n", getModelName(), "PASSED");
+    }
+    else
+    {
+        std::cerr <<  std::format("{} Self Test {}\n", getModelName(), "FAILED");
+    }
+
+    return selfTestStatus;
+}
+
 std::string ModelDBInterface::commonCoreVariablesOutput() const
 {
     std::string output;
@@ -261,6 +331,18 @@ bool ModelDBInterface::preUpdateCheck() noexcept
     }
 
     return true;
+}
+
+void ModelDBInterface::selfTestResetAllValues() noexcept
+{
+    m_primaryKey = 0;
+    m_modified = false;
+    m_lastModifiedByUser = 0;
+/*****
+ * format_opts needs to be reset before any exception test
+ */
+    m_formatOpts.reset();
+    clearErrorMessages();
 }
 
 std::vector<AttributeTestFunction> ModelDBInterface::initAttributeAccessTests() noexcept
@@ -557,4 +639,77 @@ TestStatus ModelDBInterface::testCommonUpdateFailurePath()
     }
 
     return TESTPASSED;
+}
+
+std::vector<ExceptionTestElement> ModelDBInterface::initExceptionTests() noexcept
+{
+    return std::vector<ExceptionTestElement>();
+}
+
+TestStatus ModelDBInterface::testExceptionHandling() noexcept
+{
+    std::cout << "\n\nRunning Exception Handling Test Cases\n";
+
+    selfTestResetAllValues();
+
+    bool globalForceException = CoreDBInterface::m_forceException;
+
+    std::vector<ExceptionTestElement> exceptionTests = initExceptionTests();
+
+    TestStatus exceptionHandlingPassed = forceExceptionsLoop(exceptionTests);
+
+    CoreDBInterface::m_forceException = globalForceException;
+
+    std::cout << "\n\n";
+
+    return exceptionHandlingPassed;
+}
+
+TestStatus ModelDBInterface::forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) noexcept
+{
+    TestStatus testAllExceptionHandling = TESTPASSED;
+    std::string_view failFunction;
+    
+    try
+    {
+        for (auto exceptionTest: exceptionTests)
+        {
+            failFunction = exceptionTest.functionUnderTest;
+            if (exceptionTest.testExceptionFunction() == TESTFAILED)
+            {
+                std::cerr << std::format("{}::{} returned true with exception: Exception Test Failed\n",
+                    m_modelName, failFunction);
+                testAllExceptionHandling = TESTFAILED;
+            }
+        }
+    }
+
+    catch (std::exception &uncaughtException)
+    {
+        std::cerr << std::format("{}::{}:: Caught Unhandled Exception!! Test FAILED!\n{}",
+            m_modelName, failFunction, uncaughtException.what());
+        testAllExceptionHandling = TESTFAILED;
+    }
+
+    return testAllExceptionHandling;
+}
+
+TestStatus ModelDBInterface::testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName) noexcept
+{
+    std::string reportFailure = std::format("In {}::{}: ", m_modelName, testExceptionFuncName);
+
+    if (expectSuccess)
+    {
+        reportFailure.append(std::format("expected success returned {} \n", isBool? "false" : "empty string"));
+        reportFailure.append(CoreDBInterface::m_errorMessages);
+        reportFailure.append("\n");
+    }
+    else
+    {
+        reportFailure.append(std::format("expected failure returned {} ", isBool? "true" : "formatted string"));
+    }
+
+    std::cout << reportFailure << "\n";
+
+    return TESTFAILED;
 }

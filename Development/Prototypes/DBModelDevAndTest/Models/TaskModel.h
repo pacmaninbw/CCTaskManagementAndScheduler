@@ -183,6 +183,45 @@ protected:
     void insertDependency();
     void updateDependency();
 
+/*
+ * Unit Testing (Self Testing)
+ */
+    virtual void selfTestResetAllValues() noexcept override;
+    virtual TestStatus testEqualityOperator() noexcept override;
+    virtual TestStatus testAllInsertFailures() override;
+    virtual void testOutput() noexcept override;
+
+    virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
+    virtual TestStatus testExceptionInsert() noexcept override;
+    virtual TestStatus testExceptionUpdate() noexcept override;
+    virtual TestStatus testExceptionHide() noexcept override;
+
+    virtual std::vector<AttributeTestFunction> initAttributeAccessTests() noexcept override;
+    TestStatus testTaskIdAccesss();
+    TestStatus testCreatorIDAccess();
+    TestStatus testAssignToIDAccess();
+    TestStatus testDescriptionAccess();
+    TestStatus testStatusAccess();
+    TestStatus testStatusVerifyValueAndGetStatus(TaskStatus testValue);
+    TestStatus testParentTaskIDAccess();
+    TestStatus testParentTaskIDVerifyValueAndGetParentTaskID(std::size_t testValue);
+    TestStatus testCreationDateAccess();
+    TestStatus testLastUpdateAccess();
+    TestStatus testDueDateAccess();
+    TestStatus testScheduledStartAccess();
+    TestStatus testActualStartDateAccess();
+    TestStatus testEstimatedCompletionAccess();
+    TestStatus testCompletionDateAccess();
+    TestStatus testEstimatedEffortAccess();
+    TestStatus testActualEffortToDateAccess();
+    TestStatus testPriorityGroupAccess();
+    TestStatus testPriorityGroupCAccess();
+    TestStatus testPriorityAccess();
+    TestStatus testPersonalAccess();
+    TestStatus testLastModifiedByUserAccess() noexcept;
+    TestStatus testMarkComplete();
+    TestStatus testAddEffort();
+
     static const std::size_t MinimumDescriptionLength = 10;
 
     std::size_t m_creatorID;

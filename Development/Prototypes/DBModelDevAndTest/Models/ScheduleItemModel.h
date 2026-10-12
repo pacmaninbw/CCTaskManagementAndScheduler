@@ -99,6 +99,36 @@ protected:
     virtual std::string formatDeleteStatement() override;
     void initRequiredFields() override;
 
+/*
+ * Unit testing, self testing.
+ */
+    virtual void selfTestResetAllValues() noexcept override;
+    virtual TestStatus testAllInsertFailures() override;
+    virtual TestStatus testEqualityOperator() noexcept override;
+    virtual void testOutput() noexcept override;
+
+    virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
+    virtual TestStatus testExceptionInsert() noexcept override;
+    virtual TestStatus testExceptionUpdate() noexcept override;
+    virtual TestStatus testExceptionHide() noexcept override;
+
+    virtual std::vector<AttributeTestFunction> initAttributeAccessTests() noexcept override;
+    TestStatus testScheduleItemIDAccess() noexcept;
+    TestStatus testUserIDAccess() noexcept;
+    TestStatus testTitleAccess() noexcept;
+    TestStatus testStartTimeAccess() noexcept;
+    TestStatus testOptionalStartTimeAccess() noexcept;
+    TestStatus testEndTimeAccess() noexcept;
+    TestStatus testOptionalEndTimeAccess() noexcept;
+    TestStatus testCreationTimeStampAccess() noexcept;
+    TestStatus testLastUpDateTimeStampAccess() noexcept;
+    TestStatus testLocationAccess() noexcept;
+    TestStatus testPersonalAccess() noexcept;
+    TestStatus testLastModifiedByUserAccess() noexcept;
+
+/*
+ * Model Specific Attributes
+ */
     std::size_t m_userID;
     std::string m_title;
 /*

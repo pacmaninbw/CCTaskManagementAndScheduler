@@ -1,4 +1,5 @@
 // Project Header Files
+#include "commonTestValues.h"
 #include "ScheduleItemModel.h"
 #include "chronoBoostConversions.h"
 
@@ -153,5 +154,307 @@ void ScheduleItemModel::initRequiredFields()
     m_missingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingTitle, this), "Title"});
     m_missingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingStartTime, this), "Start Time"});
     m_missingRequiredFieldsTests.push_back({std::bind(&ScheduleItemModel::isMissingEndTime, this), "End Time"});
+}
+
+void ScheduleItemModel::selfTestResetAllValues() noexcept
+{
+    ModelDBInterface::selfTestResetAllValues();
+
+    m_userID = 0;
+    m_title.clear();
+    m_startTime.reset();
+    m_endTime.reset();
+    m_personal = false;
+    m_location.reset();
+    m_createdTimeStamp.reset();
+    m_lastUpdateTimeStamp.reset();
+}
+
+TestStatus ScheduleItemModel::testAllInsertFailures()
+{
+
+    selfTestResetAllValues();
+
+    if (testCommonInsertFailurePath() != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    std::vector<std::string> expectedErrors =
+    {
+        "User ID", "Title", "Start Time", "End Time", " missing required values"
+    };
+
+    setScheduleItemID(0);
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+
+    setUserID(1);
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+
+    setTitle("Test missing required fields: Set title");
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+
+    setStartDateAndTime(common::TestTimeStampValue);
+    if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+    expectedErrors.erase(expectedErrors.begin());
+
+    setEndDateAndTime(common::TestTimeStampValue);
+
+    expectedErrors.clear();
+    clearErrorMessages();
+
+    setCreatedTimeStamp(common::TestTimeStampValue);
+
+    if (m_verboseOutput)
+    {
+        std::cout << std::format("{}::{} before successful insert this = \n", getModelName(), __func__) << *this << "\n";
+    }
+
+    if (!insert())
+    {
+        std::cout << "In ScheduleItemModel::testAllInsertFailuresExpected successful insert failed\n" << m_errorMessages << "\n";
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;}
+
+TestStatus ScheduleItemModel::testEqualityOperator() noexcept
+{
+    try
+    {
+        ScheduleItemModel other;
+
+        other.setScheduleItemID(m_primaryKey);
+
+        if (*this == other)
+        {
+            return TESTFAILED;
+        }
+
+        other = *this;
+
+        return (*this == other)? TESTPASSED : TESTFAILED;
+    }
+    catch(std::exception &e)
+    {
+        std::cerr << std::format("ScheduleItemModel::testEqualityOperator:: Caught Exception:: {}\n", e.what());
+        return TESTFAILED;
+    }
+}
+
+void ScheduleItemModel::testOutput() noexcept
+{
+    std::cout << "Test Output: " << *this << "\n";
+}
+
+std::vector<ExceptionTestElement> ScheduleItemModel::initExceptionTests() noexcept
+{
+    std::vector<ExceptionTestElement> exceptionTests;
+    exceptionTests.push_back({std::bind(&ScheduleItemModel::testExceptionInsert, this), "testExceeptionInsert"});
+    exceptionTests.push_back({std::bind(&ScheduleItemModel::testExceptionUpdate, this), "testExceptionUpdate"});
+    exceptionTests.push_back({std::bind(&ScheduleItemModel::testExceptionHide, this), "testExceptionHide"});
+
+    return exceptionTests;
+}
+
+TestStatus ScheduleItemModel::testExceptionInsert() noexcept
+{
+    selfTestResetAllValues();
+    m_forceException = true;
+
+    setUserID(1);
+    setTitle("Testing Exception handling for Schedule Item Insert");
+    setStartDateAndTime(common::TestTimeStampValue);
+    setEndDateAndTime(common::TestTimeStampValue);
+    setCreatedTimeStamp(common::TestTimeStampValue);
+
+    if (testFormatExceptionCatchSuccessNArgs(
+        "ScheduleItemModel::formatInsertStatement", std::bind(&ScheduleItemModel::formatInsertStatement, this)) == TESTFAILED)
+    {
+        std::cerr << "ScheduleItemModel::formatInsertStatement() returned a string in Exception Test, FAILED\n";
+        return TESTFAILED;
+    }
+
+    return testExceptionAndSuccessNArgs("ScheduleItemModel::insert", std::bind(&ScheduleItemModel::insert, this));
+}
+
+TestStatus ScheduleItemModel::testExceptionUpdate() noexcept
+{
+    selfTestResetAllValues();
+
+    setScheduleItemID(57);
+    setUserID(1);
+    setTitle("Testing Exception handling for Schedule Item Update");
+    setStartDateAndTime(common::TestTimeStampValue);
+    setEndDateAndTime(common::TestTimeStampValue);
+    setCreatedTimeStamp(common::TestTimeStampValue);
+    setLastModifiedTimeStamp(common::TestTimeStampValue);
+
+    if (testFormatExceptionCatchSuccessNArgs(
+        "ScheduleItemModel::formatUpdateStatement", std::bind(&ScheduleItemModel::formatUpdateStatement, this)) == TESTFAILED)
+    {
+        std::cerr << "ScheduleItemModel::formatUpdateStatement() returned a string in Exception Test, FAILED\n";
+        return TESTFAILED;
+    }
+
+    return testExceptionAndSuccessNArgs("ScheduleItemModel::update", std::bind(&ScheduleItemModel::update, this));
+}
+
+TestStatus ScheduleItemModel::testExceptionHide() noexcept
+{
+    selfTestResetAllValues();
+    std::size_t testUserId = 1;
+
+    setScheduleItemID(57);
+    setUserID(testUserId);
+    setTitle("Testing Exception handling for Schedule Item Update");
+    setStartDateAndTime(common::TestTimeStampValue);
+    setEndDateAndTime(common::TestTimeStampValue);
+    setCreatedTimeStamp(common::TestTimeStampValue);
+    setLastModifiedTimeStamp(common::TestTimeStampValue);
+
+    return testExceptionAndSuccessNArgs("ScheduleItemModel::hide", std::bind(&ScheduleItemModel::hide, this, std::placeholders::_1), testUserId);
+}
+
+std::vector<AttributeTestFunction> ScheduleItemModel::initAttributeAccessTests() noexcept
+{
+    selfTestResetAllValues();
+
+    std::vector<AttributeTestFunction> attributeAccessTests; 
+    attributeAccessTests.push_back({std::bind(&ScheduleItemModel::testScheduleItemIDAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemModel::testUserIDAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemModel::testTitleAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemModel::testStartTimeAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemModel::testOptionalStartTimeAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemModel::testEndTimeAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemModel::testOptionalEndTimeAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemModel::testCreationTimeStampAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemModel::testLastUpDateTimeStampAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemModel::testLocationAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemModel::testPersonalAccess, this)});
+    attributeAccessTests.push_back({std::bind(&ScheduleItemModel::testLastModifiedByUserAccess, this)});
+
+    return attributeAccessTests;
+}
+
+TestStatus ScheduleItemModel::testScheduleItemIDAccess() noexcept
+{
+    std::size_t testPrimaryKey = 57;
+
+    return testPrimaryKeyAccessFunctions(testPrimaryKey,
+        std::bind(&ScheduleItemModel::setScheduleItemID, this, std::placeholders::_1),
+        std::bind(&ScheduleItemModel::getScheduleItemID, this));
+}
+
+TestStatus ScheduleItemModel::testUserIDAccess() noexcept
+{
+    std::size_t testValue = 1;
+
+    return testForeignKeyFields(testValue, &m_userID, "User ID",
+        std::bind(&ScheduleItemModel::setUserID, this, std::placeholders::_1),
+        std::bind(&ScheduleItemModel::getUserID, this));
+}
+
+TestStatus ScheduleItemModel::testTitleAccess() noexcept
+{
+    std::string testValue("Testing schedule item Title string access");
+
+    return testAccessorFunctions<std::string>(testValue, &m_title, "Title",
+        std::bind(&ScheduleItemModel::setTitle, this, std::placeholders::_1),
+        std::bind(&ScheduleItemModel::getTitle, this));
+}
+
+TestStatus ScheduleItemModel::testStartTimeAccess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
+
+    return testTimeStampAccessorFunctions(testValue, &m_startTime, "Schedule Item Start Time",
+        std::bind(&ScheduleItemModel::setStartDateAndTime, this, std::placeholders::_1),
+        std::bind(&ScheduleItemModel::getStartTime, this));
+}
+
+TestStatus ScheduleItemModel::testOptionalStartTimeAccess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
+
+    return testOptionalAccessorFunctions< std::chrono::system_clock::time_point>(testValue, &m_startTime, "Optional Start Time",
+        std::bind(&ScheduleItemModel::setStartDateAndTime, this, std::placeholders::_1),
+        std::bind(&ScheduleItemModel::getOptionalStartTime, this));
+}
+
+TestStatus ScheduleItemModel::testEndTimeAccess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
+
+    return testTimeStampAccessorFunctions(testValue, &m_endTime, "Schedule Item End Time",
+        std::bind(&ScheduleItemModel::setEndDateAndTime, this, std::placeholders::_1),
+        std::bind(&ScheduleItemModel::getEndTime, this));
+}
+
+TestStatus ScheduleItemModel::testOptionalEndTimeAccess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
+
+    return testOptionalAccessorFunctions< std::chrono::system_clock::time_point>(testValue, &m_startTime, "Optional End Time",
+        std::bind(&ScheduleItemModel::setEndDateAndTime, this, std::placeholders::_1),
+        std::bind(&ScheduleItemModel::getOptionalEndTime, this));
+}
+
+TestStatus ScheduleItemModel::testCreationTimeStampAccess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
+
+    return testTimeStampAccessorFunctions(testValue, &m_createdTimeStamp, "Schedule Item Creation Timestamp",
+        std::bind(&ScheduleItemModel::setCreatedTimeStamp, this, std::placeholders::_1),
+        std::bind(&ScheduleItemModel::getCreatedTSValue, this));
+}
+
+TestStatus ScheduleItemModel::testLastUpDateTimeStampAccess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
+
+    return testTimeStampAccessorFunctions(testValue, &m_lastUpdateTimeStamp, "Schedule Item Last Update Timestamp",
+        std::bind(&ScheduleItemModel::setLastModifiedTimeStamp, this, std::placeholders::_1),
+        std::bind(&ScheduleItemModel::getLastModifiedValue, this));
+}
+
+TestStatus ScheduleItemModel::testPersonalAccess() noexcept
+{
+    bool testValue = true;
+
+    return testAccessorFunctions<bool>(testValue, &m_personal, "Personal",
+        std::bind(&ScheduleItemModel::setPersonal, this, std::placeholders::_1),
+        std::bind(&ScheduleItemModel::isPersonal, this));
+}
+
+TestStatus ScheduleItemModel::testLastModifiedByUserAccess() noexcept
+{
+    std::size_t testUserId = 1;
+
+    return testLastModifiedByAccess(testUserId);
+}
+
+TestStatus ScheduleItemModel::testLocationAccess() noexcept
+{
+    std::string testValue("Home Office");
+
+    return testOptionalAccessorFunctions<std::string>(testValue, &m_location, "Location",
+        std::bind(&ScheduleItemModel::setLocation, this, std::placeholders::_1),
+        std::bind(&ScheduleItemModel::getLocation, this));
 }
 

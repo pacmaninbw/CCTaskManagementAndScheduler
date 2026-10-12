@@ -51,6 +51,7 @@ public:
     void setCreatedTimeStamp(std::chrono::system_clock::time_point createdTS);
     std::optional<std::chrono::system_clock::time_point> getCreatedTimeStamp() { return m_createdTimeStamp; };
     std::chrono::system_clock::time_point getCreatedTSValue() { return m_createdTimeStamp.value(); };
+    virtual TestStatus runSelfTest() noexcept;
 
 protected:
     std::string commonCoreVariablesOutput() const;
@@ -99,28 +100,16 @@ protected:
 
 /*
  * Model unit testing (self testing)
- */
-
- /*
+ *
  * Common self test functions
  *
  * The code selfTestResetAllValues() should be called by any override.
  * The override should provide resets for any of the model under tests attributes.
  */
-    virtual void selfTestResetAllValues() noexcept
-    {
-        m_primaryKey = 0;
-        m_modified = false;
-        m_lastModifiedByUser = 0;
-/*****
- * format_opts needs to be reset before any exception test
- */
-        m_formatOpts.reset();
-        clearErrorMessages();
-    }
+    virtual void selfTestResetAllValues() noexcept;
 
 /*
- * Attribute Access Testing.
+ * Attribute Access Unit Testing.
  */
     virtual std::vector<AttributeTestFunction> initAttributeAccessTests() noexcept;
     TestStatus formattedAttributeFailureMessage(bool isSetter, std::string_view memberName, std::string_view message) noexcept;
@@ -222,7 +211,7 @@ protected:
  * each model due to the different attributes and requirements of the model.
  */
     virtual TestStatus testAllInsertFailures() { return TESTFAILED; };
-    virtual TestStatus testEqualityOperator() noexcept  { return TESTFAILED; };
+    virtual TestStatus testEqualityOperator() noexcept  { std::cerr << "Entered ModelDBInterface::testEqualityOperator()\n"; return TESTFAILED; };
     virtual void testOutput() noexcept  { };
     virtual TestStatus testSave();
     TestStatus hasErrorMessage();
@@ -231,6 +220,79 @@ protected:
     virtual TestStatus testUpdateFailureMessages(std::vector<std::string> expectedErrors);
     TestStatus testCommonInsertFailurePath();
     TestStatus testCommonUpdateFailurePath();
+
+/*
+ * Each of the model classes will be used in application that provides a graphic
+ * user interface. The application needs to be robust and handle exceptions as
+ * they occur in a manor where the application will provide necessary information
+ * to the user if an error occurs. Error messages returned by the libraries in
+ * use may not be meaningful to a user. This class tests the functions in the
+ * model that may receive an exception from the underlying libraries.
+ * 
+ * Exceptions are forced at what be the library level to test the exception
+ * handling capability of the model.
+ * 
+ * An exception test should first test what the function will do if an exception
+ * is thrown and then test to see that the function properly works otherwise.
+ * 
+ * A list of exception tests needs tyo be provided by the class that is testing
+ * the model.
+ */
+    virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept;
+    virtual TestStatus testExceptionInsert() { return TESTFAILED; };     // Should be added to the vector returned by initExceptionTests()
+    virtual TestStatus testExceptionUpdate() { return TESTFAILED; };     // Should be added to the vector returned by initExceptionTests()
+    virtual TestStatus testExceptionHide() { return TESTFAILED; };   // Should be added to the vector returned by initExceptionTests()
+    virtual TestStatus testExceptionHandling() noexcept;
+    virtual TestStatus forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) noexcept;
+    TestStatus testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName) noexcept;
+
+    template <typename F, typename... Ts>
+    requires std::is_invocable_v<F, Ts...>
+    TestStatus testExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
+    {
+        m_forceException = true;
+        if (funcUnderTest(args...))
+        {
+            return testExceptionReportFailure(false, true, funcName);
+        }
+
+        m_forceException = false;
+        if (!funcUnderTest(args...))
+        {
+            return testExceptionReportFailure(true, true, funcName);
+        }
+
+        return TESTPASSED;
+    }
+
+/*
+ * Used to test formatSQL functions that do not contain a try catch block.
+ */
+    template <typename F, typename... Ts>
+    requires std::is_invocable_v<F, Ts...>
+    TestStatus testFormatExceptionCatchSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
+    {
+        std::string formattedQuery;
+
+        try
+        {
+            m_forceException = true;
+            formattedQuery = funcUnderTest(args...);
+            return testExceptionReportFailure(false, false, funcName);    
+        }
+        catch(const std::exception& e)
+        {
+            std::cout << "Caught expected exception from " << funcName << "(): " << e.what() << "\n";
+            m_forceException = false; 
+            formattedQuery = funcUnderTest(args...);
+            if (formattedQuery.empty())
+            {
+                return testExceptionReportFailure(true, false, funcName);
+            }
+        }        
+
+        return TESTPASSED;
+    }
 
 };
 

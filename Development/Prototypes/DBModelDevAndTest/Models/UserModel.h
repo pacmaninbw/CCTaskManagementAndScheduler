@@ -148,6 +148,41 @@ protected:
     std::optional<std::chrono::system_clock::time_point> m_lastLogin;
     std::optional<std::size_t> m_organizationId;
 
+/*
+ * Unit testing, self testing.
+ */
+    virtual void selfTestResetAllValues() noexcept override;
+    virtual TestStatus testEqualityOperator() noexcept override;
+    virtual TestStatus testAllInsertFailures() override;
+    virtual void testOutput() noexcept override
+    {
+        std::cout << "Test Output: " << *this << "\n";
+    };
+    virtual std::vector<AttributeTestFunction> initAttributeAccessTests() noexcept override;
+    TestStatus testUserIdAccesss() noexcept;
+    TestStatus testLastNameAccess() noexcept;
+    TestStatus testFirstNameAccess() noexcept;
+    TestStatus testMiddleInitialAccess() noexcept;
+    TestStatus testLoginNameAccess() noexcept;
+    TestStatus testPassWordAccess() noexcept;
+    TestStatus testCreatedDateAcfcess() noexcept;
+    TestStatus testLastLoginAccess() noexcept;
+    TestStatus testEmailAccess() noexcept;
+    TestStatus testOrganizationAccess() noexcept;
+    TestStatus testStartTimeAccess() noexcept;
+    TestStatus testEndTimeAccesss() noexcept;
+    TestStatus testLastModifiedAccess() noexcept;
+    TestStatus testLastModifiedByUserAccess() noexcept;
+    TestStatus testIncludePriorityInScheduleAccess() noexcept;
+    TestStatus testIncludeMinorPriorityInScheduleAccess() noexcept;
+    TestStatus testUseLetterForMajorPriorityAccess() noexcept;
+    TestStatus testSeparateMajorAndMinorWithDotAccess() noexcept;
+
+    virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
+    virtual TestStatus testExceptionInsert() noexcept override;
+    virtual TestStatus testExceptionUpdate() noexcept override;
+    virtual TestStatus testExceptionHide() noexcept override;
+
 private:
 // Preference subfield indexes
     static const std::size_t PrefDayStartIdx = 0;

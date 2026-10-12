@@ -1,4 +1,6 @@
 // Project Header Files
+#include "commonTestValues.h"
+#include "commonUtilities.h"
 #include "UserModel.h"
 #include "chronoBoostConversions.h"
 
@@ -296,3 +298,308 @@ void UserModel::parsePrefenceText(std::string preferences) noexcept
     clearModified();
 }
 
+TestStatus UserModel::testEqualityOperator() noexcept
+{
+    UserModel other;
+
+    other.setUserID(m_primaryKey);
+    if (*this == other)
+    {
+        return TESTFAILED;
+    }
+
+    other = *this;
+    
+    return (*this == other)? TESTPASSED: TESTFAILED;
+}
+
+TestStatus UserModel::testAllInsertFailures()
+{
+    selfTestResetAllValues();
+
+    if (testCommonInsertFailurePath() != TESTPASSED)
+    {
+        return TESTFAILED;
+    }
+
+    std::vector<std::string> expectedErrors =
+    {
+        "Last Name", "First Name", "Email", "Login Name", "Password", "User is missing required values"
+    };
+
+    setUserID(0);   // Force a modification so that missing fields can be tested.
+
+    std::vector<std::function<void(std::string)>> fieldSettings;
+    fieldSettings.push_back(std::bind(&UserModel::setLastName, this, std::placeholders::_1));
+    fieldSettings.push_back(std::bind(&UserModel::setFirstName, this, std::placeholders::_1));
+    fieldSettings.push_back(std::bind(&UserModel::setEmail, this, std::placeholders::_1));
+    fieldSettings.push_back(std::bind(&UserModel::setLoginName, this, std::placeholders::_1));
+    fieldSettings.push_back(std::bind(&UserModel::setPassword, this, std::placeholders::_1));
+
+    for (auto setField: fieldSettings)
+    {
+        if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
+        {
+            return TESTFAILED;
+        }
+        expectedErrors.erase(expectedErrors.begin());
+        setField("teststringvalue");
+    }
+
+    expectedErrors.clear();
+
+    if (m_verboseOutput)
+    {
+        std::cout << std::format("{}::{} before successful insert this = \n", getModelName(), __func__) << *this << "\n";
+    }
+
+    setCreatedTimeStamp(common::TestTimeStampValue);
+    if (!insert())
+    {
+        std::cout << "In  UserModel::testAllInsertFailures() Expected successful insert failed\n" << m_errorMessages << "\n";
+        return TESTFAILED;
+    }
+
+    return TESTPASSED;
+}
+
+void UserModel::selfTestResetAllValues() noexcept
+{
+    ModelDBInterface::selfTestResetAllValues();
+
+    m_lastName.clear();
+    m_firstName.clear();
+    m_middleInitial.clear();
+    m_email.clear();
+    m_loginName.clear();
+    m_password.clear();
+    m_createdTimeStamp.reset();
+    m_lastLogin.reset();
+}
+
+std::vector<AttributeTestFunction> UserModel::initAttributeAccessTests() noexcept
+{
+    selfTestResetAllValues();
+    std::vector<AttributeTestFunction> attributeAccessTests;
+
+    attributeAccessTests.push_back({std::bind(&UserModel::testUserIdAccesss, this)});
+    attributeAccessTests.push_back({std::bind(&UserModel::testLastNameAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserModel::testFirstNameAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserModel::testMiddleInitialAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserModel::testEmailAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserModel::testOrganizationAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserModel::testLoginNameAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserModel::testPassWordAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserModel::testCreatedDateAcfcess, this)});
+    attributeAccessTests.push_back({std::bind(&UserModel::testLastLoginAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserModel::testStartTimeAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserModel::testEndTimeAccesss, this)});
+    attributeAccessTests.push_back({std::bind(&UserModel::testLastModifiedAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserModel::testLastModifiedByUserAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserModel::testIncludePriorityInScheduleAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserModel::testIncludeMinorPriorityInScheduleAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserModel::testUseLetterForMajorPriorityAccess, this)});
+    attributeAccessTests.push_back({std::bind(&UserModel::testSeparateMajorAndMinorWithDotAccess, this)});
+
+    return attributeAccessTests;
+}
+
+TestStatus UserModel::testUserIdAccesss() noexcept
+{
+    std::size_t testPrimaryKey = 31;
+
+    return testPrimaryKeyAccessFunctions(testPrimaryKey,
+        std::bind(&UserModel::setUserID, this, std::placeholders::_1),
+        std::bind(&UserModel::getUserID, this));
+}
+
+TestStatus UserModel::testLastNameAccess() noexcept
+{
+    std::string testValue("AnyLastName");
+    return testAccessorFunctions<std::string>(testValue, &m_lastName, "Last Name",
+        std::bind(&UserModel::setLastName, this, std::placeholders::_1),
+        std::bind(&UserModel::getLastName, this));
+}
+
+TestStatus UserModel::testFirstNameAccess() noexcept
+{
+    std::string testValue("AnyFirstName");
+    return testAccessorFunctions<std::string>(testValue, &m_firstName, "First Name",
+        std::bind(&UserModel::setFirstName, this, std::placeholders::_1),
+        std::bind(&UserModel::getFirstName, this));
+}
+
+TestStatus UserModel::testMiddleInitialAccess() noexcept
+{
+    std::string testValue("A");
+    return testAccessorFunctions<std::string>(testValue, &m_middleInitial, "Middle Initial",
+        std::bind(&UserModel::setMiddleInitial, this, std::placeholders::_1),
+        std::bind(&UserModel::getMiddleInitial, this));
+}
+
+TestStatus UserModel::testLoginNameAccess() noexcept
+{
+    std::string testValue("AnyLoginName");
+    return testAccessorFunctions<std::string>(testValue, &m_loginName, "LoginName",
+        std::bind(&UserModel::setLoginName, this, std::placeholders::_1),
+        std::bind(&UserModel::getLoginName, this));
+}
+
+TestStatus UserModel::testPassWordAccess() noexcept
+{
+    std::string testValue("AnyPassword");
+    return testAccessorFunctions<std::string>(testValue, &m_password, "Password",
+        std::bind(&UserModel::setPassword, this, std::placeholders::_1),
+        std::bind(&UserModel::getPassword, this));
+}
+
+TestStatus UserModel::testCreatedDateAcfcess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
+    return testTimeStampAccessorFunctions(testValue, &m_createdTimeStamp, "Creation TimeStamp",
+        std::bind(&UserModel::setCreatedTimeStamp, this, std::placeholders::_1),
+        std::bind(&UserModel::getCreatedTSValue, this));
+}
+
+TestStatus UserModel::testLastLoginAccess() noexcept
+{
+    std::optional<std::chrono::system_clock::time_point> testValue = common::TestTimeStampValue;
+    return testOptionalAccessorFunctions<std::chrono::system_clock::time_point>(testValue, &m_lastLogin, "Last Login TimeStamp",
+        std::bind(&UserModel::setLastLogin, this, std::placeholders::_1),
+        std::bind(&UserModel::getLastLogin, this));
+}
+
+TestStatus UserModel::testEmailAccess() noexcept
+{
+    std::string testValue("AnyEmail");
+    return testAccessorFunctions<std::string>(testValue, &m_email, "Email",
+        std::bind(&UserModel::setEmail, this, std::placeholders::_1),
+        std::bind(&UserModel::getEmail, this));
+}
+
+TestStatus UserModel::testOrganizationAccess() noexcept
+{
+    std::size_t testValue = 1;
+    return testOptionalAccessorFunctions<std::size_t>(testValue, &m_organizationId, "Organization ID", 
+        std::bind(&UserModel::setOrganizationID, this, std::placeholders::_1),
+        std::bind(&UserModel::getOrganizationID, this));
+}
+
+
+TestStatus UserModel::testStartTimeAccess() noexcept
+{
+    std::string testValue("4:30 AM");
+    return testAccessorFunctions<std::string>(testValue, &m_preferences.startTime, "Start Time Preference",
+        std::bind(&UserModel::setStartTime, this, std::placeholders::_1),
+        std::bind(&UserModel::getStartTime, this));
+}
+
+TestStatus UserModel::testEndTimeAccesss() noexcept
+{
+    std::string testValue("4:15 PM");
+    return testAccessorFunctions<std::string>(testValue, &m_preferences.endTime, "End Time Preference",
+        std::bind(&UserModel::setEndTime, this, std::placeholders::_1),
+        std::bind(&UserModel::getEndTime, this));
+}
+
+TestStatus UserModel::testLastModifiedAccess() noexcept
+{
+    std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
+    return testTimeStampAccessorFunctions(testValue, &m_lastUpdateTimeStamp, "Last Modified TimeStamp",
+        std::bind(&UserModel::setLastModifiedTimeStamp, this, std::placeholders::_1),
+        std::bind(&UserModel::getLastModifiedValue, this));
+}
+
+TestStatus UserModel::testLastModifiedByUserAccess() noexcept
+{
+    std::size_t testUserId = 1;
+
+    return testLastModifiedByAccess(testUserId);
+}
+
+TestStatus UserModel::testIncludePriorityInScheduleAccess() noexcept
+{
+    bool testValue = true;
+    return testAccessorFunctions<bool>(testValue, &m_preferences.includePriorityInSchedule, "Include Priority In Schedule",
+        std::bind(&UserModel::setPriorityInSchedule, this, std::placeholders::_1),
+        std::bind(&UserModel::isPriorityInSchedule, this));
+}
+
+TestStatus UserModel::testIncludeMinorPriorityInScheduleAccess() noexcept
+{
+    bool testValue = true;
+    return testAccessorFunctions<bool>(testValue, &m_preferences.includeMinorPriorityInSchedule, "Include Minor Priority In Schedule",
+        std::bind(&UserModel::setMinorPriorityInSchedule, this, std::placeholders::_1),
+        std::bind(&UserModel::isMinorPriorityInSchedule, this));
+}
+
+TestStatus UserModel::testUseLetterForMajorPriorityAccess() noexcept
+{
+    bool testValue = true;
+    return testAccessorFunctions<bool>(testValue, &m_preferences.userLetterForMajorPriority, "Use Letter For Major Priority Access",
+        std::bind(&UserModel::setUsingLettersForMaorPriority, this, std::placeholders::_1),
+        std::bind(&UserModel::isUsingLettersForMaorPriority, this));
+}
+
+TestStatus UserModel::testSeparateMajorAndMinorWithDotAccess() noexcept
+{
+    bool testValue = true;
+    return testAccessorFunctions<bool>(testValue, &m_preferences.separateMajorAndMinorWithDot, "Separate Major And Minor With Dot Access",
+        std::bind(&UserModel::setSeparatingPriorityWithDot, this, std::placeholders::_1),
+        std::bind(&UserModel::isSeparatingPriorityWithDot, this));
+}
+
+std::vector<ExceptionTestElement> UserModel::initExceptionTests() noexcept
+{
+    std::vector<ExceptionTestElement> exceptionTests;
+    exceptionTests.push_back({std::bind(&UserModel::testExceptionInsert, this), "testExceptionInsert"});
+    exceptionTests.push_back({std::bind(&UserModel::testExceptionUpdate, this), "testExceptionUpdate"});
+    exceptionTests.push_back({std::bind(&UserModel::testExceptionHide, this), "testExceptionHide"});
+
+    return exceptionTests;
+}
+
+
+TestStatus UserModel::testExceptionInsert() noexcept
+{
+    selfTestResetAllValues();
+
+    std::chrono::system_clock::time_point timeStamp = common::TestTimeStampValue;
+    setLastName("LastName");
+    setFirstName("FirstName");
+    setMiddleInitial("M");
+    setEmail("FirstName.LastName@LastName.com");
+    autoGenerateLoginAndPassword();
+    setCreatedTimeStamp(timeStamp);
+    setLastLogin(timeStamp);
+
+    return testExceptionAndSuccessNArgs("UserModel::insert", std::bind(&UserModel::insert, this));
+}
+
+TestStatus UserModel::testExceptionUpdate() noexcept
+{
+    selfTestResetAllValues();
+
+    std::chrono::system_clock::time_point timeStamp = common::TestTimeStampValue;
+    setUserID(1);
+    setLastName("LastName");
+    setFirstName("FirstName");
+    setMiddleInitial("M");
+    setEmail("FirstName.LastName@LastName.com");
+    autoGenerateLoginAndPassword();
+    setCreatedTimeStamp(timeStamp);
+    setLastLogin(timeStamp);
+
+    return testExceptionAndSuccessNArgs("UserModel::update", std::bind(&UserModel::update, this));
+}
+
+TestStatus UserModel::testExceptionHide() noexcept
+{
+    selfTestResetAllValues();
+
+    std::size_t testUserId = 1;
+
+    setUserID(testUserId);
+
+    return testExceptionAndSuccessNArgs("UserModel::hide", std::bind(&UserModel::hide, this, std::placeholders::_1), testUserId);
+}

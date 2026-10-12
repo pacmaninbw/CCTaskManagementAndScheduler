@@ -72,7 +72,32 @@ protected:
     std::string formatInsertStatement() override;
     std::string formatUpdateStatement() override;
     virtual std::string formatDeleteStatement() override;
-    
+
+/*
+ * Unit Testing (Self Testing)
+ */
+    virtual void selfTestResetAllValues() noexcept override;
+    virtual TestStatus testAllInsertFailures() override;
+    virtual TestStatus testEqualityOperator() noexcept override;
+    virtual void testOutput() noexcept override;
+
+    virtual std::vector<AttributeTestFunction> initAttributeAccessTests() noexcept override;
+
+    virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
+    virtual TestStatus testExceptionInsert() noexcept override;
+    virtual TestStatus testExceptionUpdate() noexcept override;
+    virtual TestStatus testExceptionHide() noexcept override;
+
+    TestStatus testNoteIdAccesss() noexcept;
+    TestStatus testUserIdAccesss() noexcept;
+    TestStatus testContentAccess() noexcept;
+    TestStatus testDateAddedAccess() noexcept;
+    TestStatus testLastUpdateAccess() noexcept;
+    TestStatus testLastModifiedByUserAccess() noexcept;
+
+/*
+ * Model specific attributes
+ */    
     std::size_t m_userID;
     std::string m_content;
 };
