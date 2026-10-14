@@ -1,23 +1,28 @@
+/*
+ * Perform unit tests and integration tests on the database models and the
+ * database queries.
+ */
+
 // Project Header Files
 #include "CommandLineParser.h"
 #include "commonTestValues.h"
 #include "GoalQueryProcessor.h"
-#include "OrganizationModel.h"
-#include "OrganizationQueryProcessor.h"
 #include "NoteQueryProcessor.h"
 #include "NoteModel.h"
+#include "OrganizationModel.h"
+#include "OrganizationQueryProcessor.h"
 #include "ScheduleItemModel.h"
 #include "ScheduleItemQueryProcessor.h"
 #include "TaskModel.h"
 #include "TaskQueryProcessor.h"
 #include "TestDBConnection.h"
-#include "TestTaskDBInterface.h"
-#include "TestUserDBInterface.h"
 #include "TestGoalModel.h"
 #include "TestNoteModel.h"
 #include "TestOrganizationModel.h"
 #include "TestScheduleItemModel.h"
 #include "TestStatus.h"
+#include "TestTaskDBInterface.h"
+#include "TestUserDBInterface.h"
 #include "UserGoalModel.h"
 #include "UserModel.h"
 #include "UserQueryProcessor.h"
@@ -29,6 +34,7 @@
 #include <iostream>
 #include <memory>
 #include <stdexcept>
+#include <variant>
 #include <vector>
 
 /*
@@ -47,7 +53,7 @@ static void printDashes()
     }
 
 }
-static void separateTestCaseOutput()
+static void separateTestCaseOutput() noexcept
 {
     printDashes();
     std::cout << "\n\n";
@@ -55,31 +61,47 @@ static void separateTestCaseOutput()
     std::cout << std::endl;     // Flush the output
 }
 
+static void reportUnitTestStatusExitIfQuitFirstFail(TestStatus result, std::string itemUnderTest)
+{
+    if (result != TESTPASSED)
+    {
+        std::string failMessage = std::format("*** {} FAILED Self Test ***", itemUnderTest);
+        std::cerr << failMessage << "\n";
+        if (programOptions.quitFirstFail)
+        {
+            std::runtime_error firstFail(failMessage);
+            throw firstFail;
+        }
+    }
+    else
+    {
+        if (programOptions.verboseOutput)
+        {
+            std::cout << std::format("{} PASSED Self Test\n", itemUnderTest);
+        }
+    }
+}
+
 static TestStatus runAllUnitTests()
 {
     TestStatus allUnintTestsPassed = TESTPASSED;
 
-    auto runUnitTest2 = [&](std::shared_ptr<ModelDBInterface>modelUnderTest)
+    auto runUnitTest = [&](std::shared_ptr<ModelDBInterface>modelUnderTest)
     {
         separateTestCaseOutput();
 
-        if (modelUnderTest->runSelfTest() != TESTPASSED)
+        if (!modelUnderTest)
         {
-            std::string failMessage = std::format("*** {} FAILED Self Test ***", modelUnderTest->getModelName());
-            std::cerr << failMessage << "\n";
+            std::cerr << "NULL POINTER in runAllUnitTests" << std::endl;
             allUnintTestsPassed = TESTFAILED;
-            if (programOptions.quitFirstFail)
-            {
-                std::runtime_error firstFail(failMessage);
-                throw firstFail;
-            }
+            return;
         }
-        else
+        TestStatus result = modelUnderTest->runSelfTest();
+        reportUnitTestStatusExitIfQuitFirstFail(result,  modelUnderTest->getModelName());
+
+        if (result != TESTPASSED)
         {
-            if (programOptions.verboseOutput)
-            {
-                std::cout << std::format("{} PASSED Self Test\n", modelUnderTest->getModelName());
-            }
+            allUnintTestsPassed = TESTFAILED;
         }
     };
 
@@ -93,163 +115,97 @@ static TestStatus runAllUnitTests()
 
     for (auto unitTest: unitTests)
     {
-        runUnitTest2(unitTest);
+        runUnitTest(unitTest);
     }
 
     return allUnintTestsPassed;
 }
 
-template <class A, class B>
-static TestStatus runListUnitTest(QueryProcessor<A, B>* unitTest)
-{
-    separateTestCaseOutput();
-
-    TestStatus thisTestStatus = unitTest->runSelfTest();
-    if (thisTestStatus != TESTPASSED)
-    {
-        std::string failMessage = std::format("*** {} FAILED Self Test ***", unitTest->getListTypeName());
-        std::cerr << failMessage << "\n";
-        if (programOptions.quitFirstFail)
-        {
-            std::runtime_error firstFail(failMessage);
-            throw firstFail;
-        }
-    }
-    else
-    {
-        if (programOptions.verboseOutput)
-        {
-            std::cout << std::format("{} PASSED Self Test\n", unitTest->getListTypeName());
-        }
-    }
-
-    return thisTestStatus;
-}
-
-static TestStatus runAllListUnitTests()
+/*
+ * Run the Query generator self tests to internally check the queries. This will
+ * not execute actual queries bu will go through all the code in each query
+ * prior to database execution.
+ */
+static TestStatus runAllQueryUnitTests()
 {
     TestStatus allUnintTestsPassed = TESTPASSED;
 
-    OrganizationQueryProcessor OrganizationQueryProcessorTest;
-    if (runListUnitTest(&OrganizationQueryProcessorTest) == TESTFAILED)
+    using VQP = std::variant<
+        OrganizationQueryProcessor,
+        UserQueryProcessor,
+        TaskQueryProcessor,
+        GoalQueryProcessor,
+        NoteQueryProcessor,
+        ScheduleItemQueryProcessor>;
+
+    auto runListUnitTest = [&](std::shared_ptr<VQP> queryProcessorTest)
     {
-        allUnintTestsPassed = TESTFAILED;
+        separateTestCaseOutput();
+
+        if (!queryProcessorTest)
+        {
+            std::cerr << "NULL POINTER in runListUnitTest" << std::endl;
+            allUnintTestsPassed = TESTFAILED;
+            return;
+        }
+        TestStatus thisTestStatus = TESTPASSED;
+        std::string listTypeName;
+        std::visit([&](auto &&vqp) { listTypeName = vqp.getListTypeName(); }, *queryProcessorTest);
+        std::visit([&](auto &&vqp ) { thisTestStatus = vqp.runSelfTest(); }, *queryProcessorTest);
+        if (thisTestStatus != TESTPASSED)
+        {
+            allUnintTestsPassed = TESTFAILED;
+        }
+        reportUnitTestStatusExitIfQuitFirstFail(thisTestStatus,  listTypeName);
+    };
+
+    std::vector<std::shared_ptr<VQP>> QueryProcessorTests;
+    QueryProcessorTests.push_back(std::make_shared<VQP>(OrganizationQueryProcessor{}));
+    QueryProcessorTests.push_back(std::make_shared<VQP>(UserQueryProcessor{}));
+    QueryProcessorTests.push_back(std::make_shared<VQP>(TaskQueryProcessor{}));
+    QueryProcessorTests.push_back(std::make_shared<VQP>(GoalQueryProcessor{}));
+    QueryProcessorTests.push_back(std::make_shared<VQP>(NoteQueryProcessor{}));
+    QueryProcessorTests.push_back(std::make_shared<VQP>(ScheduleItemQueryProcessor{1}));
+
+    for (auto queryTest: QueryProcessorTests)
+    {
+        runListUnitTest(queryTest);
     }
 
-    UserQueryProcessor UserQueryProcessorTest;
-    if (runListUnitTest(&UserQueryProcessorTest) == TESTFAILED)
-    {
-        allUnintTestsPassed = TESTFAILED;
-    }
-
-    TaskQueryProcessor TaskQueryProcessorTest;
-    if (runListUnitTest(&TaskQueryProcessorTest) == TESTFAILED)
-    {
-        allUnintTestsPassed = TESTFAILED;
-    }
-
-    GoalQueryProcessor goalListTest;
-    if (runListUnitTest(&goalListTest) == TESTFAILED)
-    {
-        allUnintTestsPassed = TESTFAILED;
-    }
-
-    NoteQueryProcessor NoteQueryProcessorTest;
-    if (runListUnitTest(&NoteQueryProcessorTest) == TESTFAILED)
-    {
-        allUnintTestsPassed = TESTFAILED;
-    }
-
-    ScheduleItemQueryProcessor ScheduleItemQueryProcessor(1);
-    if (runListUnitTest(&ScheduleItemQueryProcessor) == TESTFAILED)
-    {
-        allUnintTestsPassed = TESTFAILED;
-    }
-    
     return allUnintTestsPassed;
 }
 
+/*
+ * The integration tests perform actual database insertions and queries.
+ */
 static TestStatus runAllIntegrationTests() noexcept
 {
-    separateTestCaseOutput();
     TestStatus allInitgrationTests = TESTPASSED;
     std::string_view modelBeingTested;
 
+    std::vector<std::shared_ptr<TestDBInterfaceCore>> integrationTests;
+    integrationTests.push_back(std::make_shared<TestUserDBInterface>(programOptions.userTestDataFile));
+    integrationTests.push_back(std::make_shared<TestOrganizationModel>());
+    integrationTests.push_back(std::make_shared<TestTaskDBInterface>(programOptions.taskTestDataFile));
+    integrationTests.push_back(std::make_shared<TestGoalModel>());
+    integrationTests.push_back(std::make_shared<TestNoteModel>());
+    integrationTests.push_back(std::make_shared<TestScheduleItemModel>());
+
     try {
-        TestUserDBInterface userTests(programOptions.userTestDataFile);
-        modelBeingTested = userTests.getModelName();
-        if (userTests.runAllTests() != TESTPASSED)
+        for (auto integrationTest: integrationTests)
         {
-            allInitgrationTests = TESTFAILED;
+            separateTestCaseOutput();
 
-            if (programOptions.quitFirstFail)
+            modelBeingTested = integrationTest->getModelName();
+            
+            if (integrationTest->runAllTests() != TESTPASSED)
             {
-                return TESTFAILED;
-            }
-        }
+                allInitgrationTests = TESTFAILED;
 
-        separateTestCaseOutput();
-        TestOrganizationModel organizationTests;
-        modelBeingTested = userTests.getModelName();
-        if (organizationTests.runAllTests() != TESTPASSED)
-        {
-            allInitgrationTests = TESTFAILED;
-
-            if (programOptions.quitFirstFail)
-            {
-                return TESTFAILED;
-            }
-        }
-
-        separateTestCaseOutput();
-        TestTaskDBInterface tasktests(programOptions.taskTestDataFile);
-        modelBeingTested = tasktests.getModelName();
-        if (tasktests.runAllTests() != TESTPASSED)
-        {
-            allInitgrationTests = TESTFAILED;
-
-            if (programOptions.quitFirstFail)
-            {
-                return TESTFAILED;
-            }
-        }
-
-        separateTestCaseOutput();
-        TestGoalModel goalTests;
-        modelBeingTested = goalTests.getModelName();
-        if (goalTests.runAllTests() != TESTPASSED)
-        {
-            allInitgrationTests = TESTFAILED;
-
-            if (programOptions.quitFirstFail)
-            {
-                return TESTFAILED;
-            }
-        }
-
-        separateTestCaseOutput();
-        TestNoteModel noteTests;
-        modelBeingTested = noteTests.getModelName();
-        if (noteTests.runAllTests() != TESTPASSED)
-        {
-            allInitgrationTests = TESTFAILED;
-
-            if (programOptions.quitFirstFail)
-            {
-                return TESTFAILED;
-            }
-        }
-
-        separateTestCaseOutput();
-        TestScheduleItemModel scheduleItemTests;
-        modelBeingTested = scheduleItemTests.getModelName();
-        if (scheduleItemTests.runAllTests() != TESTPASSED)
-        {
-            allInitgrationTests = TESTFAILED;
-
-            if (programOptions.quitFirstFail)
-            {
-                return TESTFAILED;
+                if (programOptions.quitFirstFail)
+                {
+                    return TESTFAILED;
+                }
             }
         }
     }
@@ -262,8 +218,19 @@ static TestStatus runAllIntegrationTests() noexcept
     return allInitgrationTests;
 }
 
+/*
+ * First check to see that the database connection can be established, if not 
+ * there will be only errors and no tests will pass.
+ * 
+ * Run the model unit tests first, since the query unit tests depend on the models
+ * working as expected. Finally run the integration tests after all the unit tests
+ * have been performed.
+ */
 int main(int argc, char* argv[])
 {
+    bool allTestsPassed = true;
+    std::vector<std::function<TestStatus()>> tests = {runAllUnitTests, runAllQueryUnitTests, runAllIntegrationTests};
+
     try {
 		if (const auto progOptions = parseCommandLine(argc, argv); progOptions.has_value())
 		{
@@ -275,35 +242,31 @@ int main(int argc, char* argv[])
             TestDBConnection dbConnectionTest;
             if (dbConnectionTest.runTestConnect() == TESTFAILED)
             {
+                // Prevent cascading failures
                 return EXIT_FAILURE;
             }
 
-            if (runAllUnitTests() == TESTFAILED)
+            for (auto test: tests)
             {
-                if (programOptions.quitFirstFail)
+                if (test() == TESTFAILED)
                 {
-                    return EXIT_FAILURE;
+                    allTestsPassed = false;
+                    if (programOptions.quitFirstFail)
+                    {
+                        return EXIT_FAILURE;
+                    }
                 }
             }
-
-            if (runAllListUnitTests() == TESTFAILED)
-            {
-                if (programOptions.quitFirstFail)
-                {
-                    return EXIT_FAILURE;
-                }
-            }
-
-            if (runAllIntegrationTests() == TESTFAILED)
-            {
-                return EXIT_FAILURE;
-            }
-
-            std::cout << "All tests Passed\n";
-			if (programOptions.enableExecutionTime)
+	
+            if (programOptions.enableExecutionTime)
 			{
                 stopWatch.stopTimerAndReport("Unit and Integration testing of all models MySQL database\n");
 			}
+
+            if (!allTestsPassed)
+            {
+                return EXIT_FAILURE;
+            }
         }
         else
 		{
@@ -317,6 +280,8 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
+    std::cout << "All tests Passed\n";
+     
     return EXIT_SUCCESS;
 }
 
