@@ -47,12 +47,20 @@ TestScheduleItemModel::TestScheduleItemModel()
     m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testnegativePathNotModified, this));
     m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestScheduleItemModel::testNegativePathAlreadyInDataBase, this));
 
+}
+
+bool TestScheduleItemModel::databaseObjectInitAfterConstructor()
+{
     UserQueryProcessor userQueryProcessor;
     m_userOne = userQueryProcessor.getUserByFullName("One", "User", "P");
+
     if (m_userOne == nullptr || !m_userOne->isInDataBase())
     {
         std::cerr << std::format("TestScheduleItemModel.{}: {} {} FAILED\n", __func__, "userOne not found in database", userQueryProcessor.getAllErrorMessages());
+        return false;
     }
+
+    return true;
 }
 
 TestStatus TestScheduleItemModel::testInsertScheduleItem(TestScheduleItemInput testScheduleItem)

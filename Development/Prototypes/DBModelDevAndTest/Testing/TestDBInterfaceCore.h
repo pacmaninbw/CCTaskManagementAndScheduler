@@ -24,6 +24,7 @@ public:
     std::string_view getModelName() const { return m_modelUnderTest; };
 
 protected:
+    virtual bool databaseObjectInitAfterConstructor() { return false; }
     TestStatus wrongErrorMessage(std::string expectedString, ModelDBInterface* modelUnderTest);
     bool hasErrorMessage(ModelDBInterface* modelUnderTest);
     TestStatus testInsertionFailureMessages(

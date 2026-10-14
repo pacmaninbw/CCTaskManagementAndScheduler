@@ -52,13 +52,20 @@ TestGoalModel::TestGoalModel()
     m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::negativePathMissingRequiredFields, this));
     m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testnegativePathNotModified, this));
     m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestGoalModel::testNegativePathAlreadyInDataBase, this));
+}
 
+bool TestGoalModel::databaseObjectInitAfterConstructor()
+{
     UserQueryProcessor userQueryProcessor;
     m_userOne = userQueryProcessor.getUserByFullName("One", "User", "P");
+
     if (!m_userOne)
     {
         std::cerr << std::format("Failed to find userOne!:{}", userQueryProcessor.getAllErrorMessages());
+        return false;
     }
+
+    return true;
 }
 
 TestStatus TestGoalModel::testInsertAndGetParent(TestGoalInput testGoal)

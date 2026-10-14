@@ -24,6 +24,12 @@ TestStatus TestDBInterfaceCore::runAllTests()
     std::string failReason("");
     
     try {
+        if (!databaseObjectInitAfterConstructor())
+        {
+            std::cerr << "Post Constructor object initialization failed!!" << std::endl;
+            return TESTFAILED;
+        }
+        
         TestStatus positivePathPassed = runPositivePathTests();
         TestStatus negativePathPassed = runNegativePathTests();
         

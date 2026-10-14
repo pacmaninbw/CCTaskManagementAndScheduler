@@ -24,6 +24,7 @@ public:
     ~TestNoteModel() = default;
 
 private:
+    virtual bool databaseObjectInitAfterConstructor() override;
     TestStatus testInsertNote(TestNoteInput testNote);
     TestStatus testPositivePathNoteInsertions();
     TestStatus testPositivePathNoteUpdate();

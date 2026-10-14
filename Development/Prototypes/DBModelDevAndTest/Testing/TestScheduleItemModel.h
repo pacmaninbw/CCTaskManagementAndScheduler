@@ -29,6 +29,7 @@ public:
     ~TestScheduleItemModel() = default;
 
 private:
+    virtual bool databaseObjectInitAfterConstructor() override;
     TestStatus testInsertScheduleItem(TestScheduleItemInput testScheduleItem);
     TestStatus testPositivePathScheduleItemInsertions();
     TestStatus testPositivePathGetScheduleItemsForUserWithSimilarTitleDateRange();

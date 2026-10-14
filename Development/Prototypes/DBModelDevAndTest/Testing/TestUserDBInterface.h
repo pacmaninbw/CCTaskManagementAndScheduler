@@ -19,6 +19,7 @@ public:
     virtual TestStatus runPositivePathTests() override;
 
 private:
+    virtual bool databaseObjectInitAfterConstructor() override { return true; };
     bool testGetUserByLoginName(UserModel_shp insertedUser);
     bool testGetUserByLoginAndPassword(UserModel_shp insertedUser);
     bool testGetUserByFullName(UserModel_shp insertedUser);

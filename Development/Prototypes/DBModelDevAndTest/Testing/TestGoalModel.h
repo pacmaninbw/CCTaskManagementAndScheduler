@@ -27,6 +27,7 @@ public:
     ~TestGoalModel() = default;
 
 private:
+    virtual bool databaseObjectInitAfterConstructor() override;
     TestStatus testInsertAndGetParent(TestGoalInput testGoal);
     TestStatus testPositivePathGoalInsertions();
     TestStatus testPositivePathGetListofChildrenFromParent();

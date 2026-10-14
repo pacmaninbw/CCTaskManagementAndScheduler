@@ -55,13 +55,19 @@ TestNoteModel::TestNoteModel()
     m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::negativePathMissingRequiredFields, this));
     m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testnegativePathNotModified, this));
     m_negativePathTestFuncsNoArgs.push_back(std::bind(&TestNoteModel::testNegativePathAlreadyInDataBase, this));
+}
 
+bool TestNoteModel::databaseObjectInitAfterConstructor()
+{
     UserQueryProcessor userQueryProcessor;
     m_userOne = userQueryProcessor.getUserByFullName("One", "User", "P");
     if (m_userOne == nullptr || !m_userOne->isInDataBase())
     {
         std::cerr << std::format("Failed to find userOne in DB! : {}\n", userQueryProcessor.getAllErrorMessages());
+        return false;
     }
+
+    return true;
 }
 
 TestStatus TestNoteModel::testInsertNote(TestNoteInput testNote)
