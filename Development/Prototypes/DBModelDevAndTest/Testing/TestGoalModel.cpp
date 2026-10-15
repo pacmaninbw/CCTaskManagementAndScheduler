@@ -1,10 +1,8 @@
 // Project Header Files
-#include "commonUtilities.h"
+#include "GoalQueryProcessor.h"
 #include "TestGoalModel.h"
 #include "TestDBInterfaceCore.h"
-#include "GoalQueryProcessor.h"
 #include "UserGoalModel.h"
-#include "UserModel.h"
 #include "UserQueryProcessor.h"
 
 // Standard C++ Header Files
@@ -211,7 +209,6 @@ TestStatus TestGoalModel::testPositivePathDeleteGoal() const
 {
     std::string funcUnderTest("Delete Goal");
 
-    std::chrono::year_month_day testDate(common::constantStringToChronoDate("2026-03-08"));
     GoalQueryProcessor goalListTestInterface;
     UserGoalList testGoalList = goalListTestInterface.getAllGoalsForUser(m_userOne->getUserID());
     if (testGoalList.empty())
