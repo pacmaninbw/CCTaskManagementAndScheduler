@@ -1,15 +1,13 @@
 // Project Header Files
-#include "commonUtilities.h"
-#include "NoteQueryProcessor.h"
-#include "NoteModel.h"
 #include "chronoBoostConversions.h"
+#include "commonUtilities.h"
+#include "NoteModel.h"
+#include "NoteQueryProcessor.h"
 
 // Standard C++ Header Files
 #include <chrono>
 #include <exception>
 #include <format>
-#include <iostream>
-#include <optional>
 #include <string>
 #include <vector>
 
