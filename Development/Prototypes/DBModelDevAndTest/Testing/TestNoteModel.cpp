@@ -38,7 +38,7 @@ TestNoteModel::TestNoteModel()
         {"Effectively moderate the code review site on stack exchange"}
     };
 
-    for (auto testNote: testNoteInput)
+    for (const auto& testNote: testNoteInput)
     {
         m_testInput.push_back(testNote);
     }
@@ -70,7 +70,7 @@ bool TestNoteModel::databaseObjectInitAfterConstructor()
     return true;
 }
 
-TestStatus TestNoteModel::testInsertNote(TestNoteInput testNote)
+TestStatus TestNoteModel::testInsertNote(TestNoteInput testNote) const
 {
     static bool firstTime = true;
     NoteModel newNote;
@@ -95,11 +95,11 @@ TestStatus TestNoteModel::testInsertNote(TestNoteInput testNote)
     return TESTPASSED;
 }
 
-TestStatus TestNoteModel::testPositivePathNoteInsertions()
+TestStatus TestNoteModel::testPositivePathNoteInsertions() const
 {
     TestStatus testStatus = TESTPASSED;
 
-    for (auto testNote: m_testInput)
+    for (const auto& testNote: m_testInput)
     {
         TestStatus currentResult = testInsertNote(testNote);
         if (testStatus == TESTPASSED)
@@ -116,7 +116,7 @@ TestStatus TestNoteModel::testPositivePathNoteInsertions()
     return testStatus;
 }
 
-TestStatus TestNoteModel::testPositivePathNoteUpdate()
+TestStatus TestNoteModel::testPositivePathNoteUpdate() const
 {
     std::string searchString("Be more organized");
     NoteQueryProcessor NoteQueryProcessorTestInterface;
@@ -147,7 +147,7 @@ TestStatus TestNoteModel::testPositivePathNoteUpdate()
     return TESTPASSED;
 }
 
-TestStatus TestNoteModel::testPositivePathGetAllNotesForUser()
+TestStatus TestNoteModel::testPositivePathGetAllNotesForUser() const
 {
     NoteQueryProcessor NoteQueryProcessorTestInterface;
     NoteList allUserNotes = NoteQueryProcessorTestInterface.getAllNotesForUser(m_userOne->getUserID());
@@ -163,7 +163,7 @@ TestStatus TestNoteModel::testPositivePathGetAllNotesForUser()
     {
         std::cout << std::format("Find all notes for user ({}) PASSED!\n", m_userOne->getUserID());
         std::cout << std::format("User {} has {} notes\n", m_userOne->getUserID(), allUserNotes.size());
-        for (auto note: allUserNotes)
+        for (const auto& note: allUserNotes)
         {
             std::cout << *note << "\n";
         }
@@ -172,7 +172,7 @@ TestStatus TestNoteModel::testPositivePathGetAllNotesForUser()
     return TESTPASSED;
 }
 
-TestStatus TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent()
+TestStatus TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent() const
 {
     std::string searchString("Maintain");
     NoteQueryProcessor NoteQueryProcessorTestInterface;
@@ -189,7 +189,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent()
     {
         std::cout << std::format("Find all notes for user ({}) similar to {} PASSED!\n", m_userOne->getUserID(), searchString);
         std::cout << std::format("User {} has {} notes\n", m_userOne->getUserID(), allSimilarUserNotes.size());
-        for (auto note: allSimilarUserNotes)
+        for (const auto& note: allSimilarUserNotes)
         {
             std::cout << *note << "\n";
         }
@@ -198,7 +198,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserWithSimilarContent()
     return TESTPASSED;
 }
 
-TestStatus TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange()
+TestStatus TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange() const
 {
     std::chrono::year_month_day startDate = common::TestDateRangeStartValue;
     std::chrono::year_month_day endDate = common::TestDateRangeEndValue;
@@ -217,7 +217,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange()
     {
         std::cout << std::format("Find all notes for user ({}) created in date range PASSED!\n", m_userOne->getUserID());
         std::cout << std::format("User {} has {} notes\n", m_userOne->getUserID(), allNotesInRange.size());
-        for (auto note: allNotesInRange)
+        for (const auto& note: allNotesInRange)
         {
             std::cout << *note << "\n";
         }
@@ -226,7 +226,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserCreatedDateRange()
     return TESTPASSED;
 }
 
-TestStatus TestNoteModel::testPositivePathGetNotesForUserEditedDateRange()
+TestStatus TestNoteModel::testPositivePathGetNotesForUserEditedDateRange() const
 {
     std::chrono::year_month_day startDate = common::getTodaysDateMinus(common::OneWeek);
     std::chrono::year_month_day endDate = common::getTodaysDatePlus(common::OneWeek);
@@ -245,7 +245,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserEditedDateRange()
     {
         std::cout << std::format("Find all notes for user ({}) edited in date range PASSED!\n", m_userOne->getUserID());
         std::cout << std::format("User {} has {} notes\n", m_userOne->getUserID(), allNotesInRange.size());
-        for (auto note: allNotesInRange)
+        for (const auto& note: allNotesInRange)
         {
             std::cout << *note << "\n";
         }
@@ -254,7 +254,7 @@ TestStatus TestNoteModel::testPositivePathGetNotesForUserEditedDateRange()
     return TESTPASSED;
 }
 
-TestStatus TestNoteModel::testPositivePathGetDashboardNoteTable()
+TestStatus TestNoteModel::testPositivePathGetDashboardNoteTable() const
 {
     std::chrono::year_month_day searchDate = common::TestDateValue;
 
@@ -272,7 +272,7 @@ TestStatus TestNoteModel::testPositivePathGetDashboardNoteTable()
     {
         std::cout << std::format("Find all notes for user ({}) for a date PASSED!\n", m_userOne->getUserID());
         std::cout << std::format("User {} has {} notes\n", m_userOne->getUserID(), allNotesInRange.size());
-        for (auto note: allNotesInRange)
+        for (const auto& note: allNotesInRange)
         {
             std::cout << *note << "\n";
         }
@@ -281,7 +281,7 @@ TestStatus TestNoteModel::testPositivePathGetDashboardNoteTable()
     return TESTPASSED;
 }
 
-TestStatus TestNoteModel::testPositivePathDeleteNote()
+TestStatus TestNoteModel::testPositivePathDeleteNote() const
 {
     std::string funcUnderTest("Delete Note");
 
@@ -333,7 +333,7 @@ TestStatus TestNoteModel::testPositivePathDeleteNote()
     return TESTPASSED;
 }
 
-TestStatus TestNoteModel::testNegativePathAlreadyInDataBase()
+TestStatus TestNoteModel::testNegativePathAlreadyInDataBase() const
 {
     NoteQueryProcessor noteQueryProcessorr;
     NoteModel_shp noteAlreadyInDB = noteQueryProcessorr.getNoteById(1);
@@ -347,7 +347,7 @@ TestStatus TestNoteModel::testNegativePathAlreadyInDataBase()
     return testInsertionFailureMessages(noteAlreadyInDB, expectedErrors);
 }
 
-TestStatus TestNoteModel::testnegativePathNotModified()
+TestStatus TestNoteModel::testnegativePathNotModified() const
 {
     NoteQueryProcessor noteQueryProcessorr;
     NoteModel_shp noteNotModified = noteQueryProcessorr.getNoteById(1);
@@ -363,7 +363,7 @@ TestStatus TestNoteModel::testnegativePathNotModified()
     return testInsertionFailureMessages(noteNotModified, expectedErrors);
 }
 
-TestStatus TestNoteModel::negativePathMissingRequiredFields()
+TestStatus TestNoteModel::negativePathMissingRequiredFields() const
 {
     TestStatus testStatus = TESTPASSED;
 
@@ -381,7 +381,7 @@ TestStatus TestNoteModel::negativePathMissingRequiredFields()
         {std::bind(&TestNoteModel::testMissingRequiredFieldsAddContent, this, std::placeholders::_1, std::placeholders::_2)},
     };
 
-    for (auto fieldTest: fieldTestUpdate)
+    for (const auto& fieldTest: fieldTestUpdate)
     {
         TestStatus thisTestStatus = fieldTest(testNote, expectedErrors);
         if (testStatus == TESTPASSED)
@@ -408,7 +408,8 @@ TestStatus TestNoteModel::negativePathMissingRequiredFields()
 }
 
 TestStatus TestNoteModel::testMissingRequiredFieldsAddUserID(
-    NoteModel &testNote, std::vector<std::string>& expectedErrors)
+    NoteModel &testNote, std::vector<std::string>& expectedErrors
+) const
 {
     TestStatus testStatus =
         testInsertionFailureMessages(&testNote, expectedErrors);
@@ -420,7 +421,8 @@ TestStatus TestNoteModel::testMissingRequiredFieldsAddUserID(
 }
 
 TestStatus TestNoteModel::testMissingRequiredFieldsAddContent(
-    NoteModel &testNote, std::vector<std::string>& expectedErrors)
+    NoteModel &testNote, std::vector<std::string>& expectedErrors
+) const
 {
     TestStatus testStatus =
         testInsertionFailureMessages(&testNote, expectedErrors);

@@ -215,7 +215,7 @@ TestStatus TestOrganizationModel::testPositivePathUpdates()
     return TESTPASSED;
 }
 
-TestStatus TestOrganizationModel::testPositivePathGetAllOrganizations()
+TestStatus TestOrganizationModel::testPositivePathGetAllOrganizations() const
 {
     OrganizationQueryProcessor organizationQueryProcessor;
     OrganizationList allOrganizations = organizationQueryProcessor.getAllOrganizations();
@@ -231,7 +231,7 @@ TestStatus TestOrganizationModel::testPositivePathGetAllOrganizations()
     {
         std::cout << std::format("TestOrganizationModel::{} PASSED!\n", __func__);
         std::cout << "Found " << allOrganizations.size() << " Organizations\n";
-        for (auto organization: allOrganizations)
+        for (const auto& organization: allOrganizations)
         {
             std::cout << *organization << "\n";
         }
@@ -240,7 +240,7 @@ TestStatus TestOrganizationModel::testPositivePathGetAllOrganizations()
     return TESTPASSED;
 }
 
-TestStatus TestOrganizationModel::testPositivePathGetOrganizationById()
+TestStatus TestOrganizationModel::testPositivePathGetOrganizationById() const
 {
     OrganizationQueryProcessor organizationQueryProcessor;
     OrganizationModel_shp firstOrganization = organizationQueryProcessor.getOrganizationById(1);
@@ -261,7 +261,7 @@ TestStatus TestOrganizationModel::testPositivePathGetOrganizationById()
     return TESTPASSED;
 }
 
-TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByName()
+TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByName() const
 {
     std::string searchName("TestOrg1");
     OrganizationQueryProcessor organizationQueryProcessor;
@@ -278,7 +278,7 @@ TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByName()
     {
         std::cout << std::format("TestOrganizationModel::{} PASSED!\n", __func__);
         std::cout << "Found " << firstOrganization.size() << " Organizations\n";
-        for (auto organization: firstOrganization)
+        for (const auto& organization: firstOrganization)
         {
             std::cout << *organization << "\n";
         }
@@ -287,7 +287,7 @@ TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByName()
     return TESTPASSED;
 }
 
-TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryContactID()
+TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryContactID() const
 {
     OrganizationQueryProcessor organizationQueryProcessor;
     OrganizationList orgList = organizationQueryProcessor.findOrganizationsByPrimaryContactID(m_userOne->getUserID());
@@ -303,7 +303,7 @@ TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryCont
     {
         std::cout << std::format("TestOrganizationModel::{} PASSED!\n", __func__);
         std::cout << "Found " << orgList.size() << " Organizations\n";
-        for (auto organization: orgList)
+        for (const auto& organization: orgList)
         {
             std::cout << *organization << "\n";
         }
@@ -312,7 +312,7 @@ TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryCont
     return TESTPASSED;
 }
 
-TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryContactName()
+TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryContactName() const
 {
     OrganizationQueryProcessor organizationQueryProcessor;
     OrganizationList orgList = organizationQueryProcessor.findOrganizationsByPrimaryContactName(
@@ -329,7 +329,7 @@ TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryCont
     {
         std::cout << std::format("TestOrganizationModel::{} PASSED!\n", __func__);
         std::cout << "Found " << orgList.size() << " Organizations\n";
-        for (auto organization: orgList)
+        for (const auto& organization: orgList)
         {
             std::cout << *organization << "\n";
         }
@@ -338,7 +338,7 @@ TestStatus TestOrganizationModel::testPositivePathFindOrganizationsByPrimaryCont
     return TESTPASSED;
 }
 
-TestStatus TestOrganizationModel::testPositivePathGetAllOrganizationsAddedBetween()
+TestStatus TestOrganizationModel::testPositivePathGetAllOrganizationsAddedBetween() const
 {
     OrganizationQueryProcessor organizationQueryProcessor;
     OrganizationList orgList = organizationQueryProcessor.getAllOrganizationsAddedBetween(common::TestDateRangeStartValue, common::TestDateRangeEndValue);
@@ -354,7 +354,7 @@ TestStatus TestOrganizationModel::testPositivePathGetAllOrganizationsAddedBetwee
     {
         std::cout << std::format("TestOrganizationModel::{} PASSED!\n", __func__);
         std::cout << "Found " << orgList.size() << " Organizations\n";
-        for (auto organization: orgList)
+        for (const auto& organization: orgList)
         {
             std::cout << *organization << "\n";
         }
@@ -363,7 +363,7 @@ TestStatus TestOrganizationModel::testPositivePathGetAllOrganizationsAddedBetwee
     return TESTPASSED;
 }
 
-TestStatus TestOrganizationModel::testPositivePathGetAnyOrganizationsAddedOnDate()
+TestStatus TestOrganizationModel::testPositivePathGetAnyOrganizationsAddedOnDate() const
 {
     OrganizationQueryProcessor organizationQueryProcessor;
     OrganizationList orgList = organizationQueryProcessor.getAnyOrganizationsAddedOnDate(common::TestDateValue);
@@ -379,7 +379,7 @@ TestStatus TestOrganizationModel::testPositivePathGetAnyOrganizationsAddedOnDate
     {
         std::cout << std::format("TestOrganizationModel::{} PASSED!\n", __func__);
         std::cout << "Found " << orgList.size() << " Organizations\n";
-        for (auto organization: orgList)
+        for (const auto& organization: orgList)
         {
             std::cout << *organization << "\n";
         }
@@ -388,7 +388,7 @@ TestStatus TestOrganizationModel::testPositivePathGetAnyOrganizationsAddedOnDate
     return TESTPASSED;
 }
 
-TestStatus TestOrganizationModel::testPositivePathGetAnyOrganizationsModifiedOnDate()
+TestStatus TestOrganizationModel::testPositivePathGetAnyOrganizationsModifiedOnDate() const
 {
     OrganizationQueryProcessor organizationQueryProcessor;
     OrganizationList orgList = organizationQueryProcessor.getAnyOrganizationsModifiedOnDate(common::TestDateValue);
@@ -404,7 +404,7 @@ TestStatus TestOrganizationModel::testPositivePathGetAnyOrganizationsModifiedOnD
     {
         std::cout << std::format("TestOrganizationModel::{} PASSED!\n", __func__);
         std::cout << "Found " << orgList.size() << " Organizations\n";
-        for (auto organization: orgList)
+        for (const auto& organization: orgList)
         {
             std::cout << *organization << "\n";
         }
@@ -413,7 +413,7 @@ TestStatus TestOrganizationModel::testPositivePathGetAnyOrganizationsModifiedOnD
     return TESTPASSED;
 }
 
-TestStatus TestOrganizationModel::testPositivePathDeleteOrganization()
+TestStatus TestOrganizationModel::testPositivePathDeleteOrganization() const
 {
     std::string testFuncName("Delete Organization");
 
@@ -478,7 +478,7 @@ TestStatus TestOrganizationModel::testPositivePathDeleteOrganization()
     return TESTPASSED;
 }
 
-TestStatus TestOrganizationModel::testPositivePathSetParentOrganization()
+TestStatus TestOrganizationModel::testPositivePathSetParentOrganization() const
 {
     OrganizationQueryProcessor source;
     OrganizationModel_shp parentTrap = source.getOrganizationById(2);
@@ -508,7 +508,7 @@ TestStatus TestOrganizationModel::testPositivePathSetParentOrganization()
     return TESTPASSED;
 }
 
-TestStatus TestOrganizationModel::testNegativePathSetParentOrganization()
+TestStatus TestOrganizationModel::testNegativePathSetParentOrganization() const
 {
     try {
         OrganizationQueryProcessor source;
@@ -527,7 +527,7 @@ TestStatus TestOrganizationModel::testNegativePathSetParentOrganization()
     return TESTFAILED;
 }
 
-TestStatus TestOrganizationModel::testNegativePathAlreadyInDataBase()
+TestStatus TestOrganizationModel::testNegativePathAlreadyInDataBase() const
 {
     OrganizationQueryProcessor organizationQueryProcessor;
     OrganizationModel_shp alreadyInDatabase = organizationQueryProcessor.getOrganizationById(2);
@@ -542,7 +542,7 @@ TestStatus TestOrganizationModel::testNegativePathAlreadyInDataBase()
     return testInsertionFailureMessages(alreadyInDatabase, expectedErrors);
 }
 
-TestStatus TestOrganizationModel::testnegativePathNotModified()
+TestStatus TestOrganizationModel::testnegativePathNotModified() const
 {
     OrganizationQueryProcessor organizationQueryProcessor;
     OrganizationModel_shp OrgNotModified = organizationQueryProcessor.getOrganizationById(1);

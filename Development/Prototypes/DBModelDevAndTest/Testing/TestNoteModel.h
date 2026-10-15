@@ -25,22 +25,22 @@ public:
 
 private:
     virtual bool databaseObjectInitAfterConstructor() override;
-    TestStatus testInsertNote(TestNoteInput testNote);
-    TestStatus testPositivePathNoteInsertions();
-    TestStatus testPositivePathNoteUpdate();
-    TestStatus testPositivePathGetAllNotesForUser();
-    TestStatus testPositivePathGetNotesForUserWithSimilarContent();
-    TestStatus testPositivePathGetNotesForUserCreatedDateRange();
-    TestStatus testPositivePathGetNotesForUserEditedDateRange();
-    TestStatus testPositivePathGetDashboardNoteTable();
-    TestStatus testPositivePathDeleteNote();
-    TestStatus testNegativePathAlreadyInDataBase();
-    TestStatus testnegativePathNotModified();
-    TestStatus negativePathMissingRequiredFields();
+    TestStatus testInsertNote(TestNoteInput testNote) const;
+    TestStatus testPositivePathNoteInsertions() const;
+    TestStatus testPositivePathNoteUpdate() const;
+    TestStatus testPositivePathGetAllNotesForUser() const;
+    TestStatus testPositivePathGetNotesForUserWithSimilarContent() const;
+    TestStatus testPositivePathGetNotesForUserCreatedDateRange() const;
+    TestStatus testPositivePathGetNotesForUserEditedDateRange() const;
+    TestStatus testPositivePathGetDashboardNoteTable() const;
+    TestStatus testPositivePathDeleteNote() const;
+    TestStatus testNegativePathAlreadyInDataBase() const;
+    TestStatus testnegativePathNotModified() const;
+    TestStatus negativePathMissingRequiredFields() const;
     TestStatus testMissingRequiredFieldsAddUserID(
-        NoteModel& testNote, std::vector<std::string>& expectedErrors);
+        NoteModel& testNote, std::vector<std::string>& expectedErrors) const;
     TestStatus testMissingRequiredFieldsAddContent(
-        NoteModel& testNote, std::vector<std::string>& expectedErrors);
+        NoteModel& testNote, std::vector<std::string>& expectedErrors) const;
 
     std::vector<TestNoteInput> m_testInput;
     std::shared_ptr<UserModel> m_userOne;

@@ -72,7 +72,7 @@ TestStatus TestTaskDBInterface::runAllTests()
     return allTestsStatus;
 }
 
-bool TestTaskDBInterface::testGetTaskByDescription(TaskModel_shp insertedTask)
+bool TestTaskDBInterface::testGetTaskByDescription(TaskModel_shp insertedTask) const
 {
     TaskQueryProcessor taskQueryProcessor;
     TaskList retrievedTasks = taskQueryProcessor.getTaskByDescriptionAndAssignedUser(insertedTask->getDescription(), m_userOne->getUserID());
@@ -101,7 +101,7 @@ bool TestTaskDBInterface::testGetTaskByDescription(TaskModel_shp insertedTask)
     }
 }
 
-bool TestTaskDBInterface::testGetTaskByID(TaskModel_shp insertedTask)
+bool TestTaskDBInterface::testGetTaskByID(TaskModel_shp insertedTask) const
 {
     if (!insertedTask || !insertedTask->isInDataBase())
     {
@@ -143,7 +143,7 @@ TaskList TestTaskDBInterface::loadTasksFromDataFile() noexcept
     try {
         std::ifstream taskDataFile(m_dataFileName);
         
-        for (auto row: CSVRange(taskDataFile))
+        for (const auto& row: CSVRange(taskDataFile))
         {
             // Try both constructors on an alternating basis.
             TaskModel_shp testTask = (lCount & 0x000001)? creatOddTask(row) : creatEvenTask(row);
@@ -223,7 +223,7 @@ TaskModel_shp TestTaskDBInterface::creatEvenTask(CSVRow taskData)
     return newTask;
 }
 
-TestStatus TestTaskDBInterface::testGetUnstartedTasks()
+TestStatus TestTaskDBInterface::testGetUnstartedTasks() const
 {
     TaskQueryProcessor taskDBInteface;
     TaskList notStartedList = taskDBInteface.getUnstartedDueForStartForAssignedUser(m_userOne->getUserID());
@@ -234,7 +234,7 @@ TestStatus TestTaskDBInterface::testGetUnstartedTasks()
             std::cout << std::format("Find unstarted tasks for user({}) PASSED!\n", m_userOne->getUserID());
             std::cout << std::format("User {} has {} unstarted tasks\n",
                 m_userOne->getUserID(), notStartedList.size());
-            for (auto task: notStartedList)
+            for (const auto& task: notStartedList)
             {
                 std::cout << *task << "\n";
             }
@@ -248,7 +248,7 @@ TestStatus TestTaskDBInterface::testGetUnstartedTasks()
     return TESTFAILED;
 }
 
-TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskList()
+TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskList() const
 {
     TaskQueryProcessor taskDBInteface;
     UserQueryProcessor userQueryProcessor;
@@ -268,7 +268,7 @@ TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskList()
         {
             std::cout << std::format("Find default task list for user({}) PASSED!\n", realUser->getUserID());
             std::cout << std::format("User {} dashboard has {} tasks\n", realUser->getUserID(), defaultTaskQueryProcessor.size());
-            for (auto task: defaultTaskQueryProcessor)
+            for (const auto& task: defaultTaskQueryProcessor)
             {
                 std::cout << *task << "\n";
             }
@@ -283,7 +283,7 @@ TestStatus TestTaskDBInterface::testGetDefaultDashboardTaskList()
 }
 
 
-TestStatus TestTaskDBInterface::testGetActiveTasks()
+TestStatus TestTaskDBInterface::testGetActiveTasks() const
 {
     TaskQueryProcessor taskDBInteface;
     TaskList activeTasks = taskDBInteface.getActiveTasksForAssignedUser(m_userOne->getUserID());
@@ -294,7 +294,7 @@ TestStatus TestTaskDBInterface::testGetActiveTasks()
             std::cout << std::format("Find active tasks for user({}) PASSED!\n", m_userOne->getUserID());
             std::cout << std::format("User {} has {} unstarted tasks\n",
                 m_userOne->getUserID(), activeTasks.size());
-            for (auto task: activeTasks)
+            for (const auto& task: activeTasks)
             {
                 std::cout << *task << "\n";
             }
@@ -335,7 +335,7 @@ TestStatus TestTaskDBInterface::testTaskUpdates()
     return TESTPASSED;
 }
 
-TestStatus TestTaskDBInterface::testHideUnstartedTask()
+TestStatus TestTaskDBInterface::testHideUnstartedTask() const
 {
     TaskQueryProcessor taskDBInteface;
     std::size_t userIdForTaskDeletion = m_userOne->getUserID();
@@ -383,7 +383,7 @@ TestStatus TestTaskDBInterface::testHideUnstartedTask()
     return TESTFAILED;
 }
 
-bool TestTaskDBInterface::testTaskUpdate(TaskModel_shp changedTask)
+bool TestTaskDBInterface::testTaskUpdate(TaskModel_shp changedTask) const
 {
     TaskQueryProcessor taskQueryProcessor;
     bool testPassed = true;
@@ -432,7 +432,7 @@ bool TestTaskDBInterface::testGetCompletedList()
         std::cout << std::format("In testGetCompletedList getTasksByAssignedIDandParentID Failed: \n{}\n", taskSearch.getAllErrorMessages());
         return false;
     }
-    for (auto task: tasksToMarkComplete)
+    for (const auto& task: tasksToMarkComplete)
     {
         task->setCompletionDate(completedDate);
         task->setStatus(newStatus);
@@ -478,7 +478,7 @@ std::chrono::year_month_day TestTaskDBInterface::stringToDate(std::string dateSt
     };
 
     ss.imbue(usEnglish);
-    for (auto legalFormat: legalFormats)
+    for (const auto& legalFormat: legalFormats)
     {
         ss >> std::chrono::parse(legalFormat, dateValue);
         if (!ss.fail())
@@ -490,7 +490,7 @@ std::chrono::year_month_day TestTaskDBInterface::stringToDate(std::string dateSt
     return dateValue;
 }
 
-TestStatus TestTaskDBInterface::testnegativePathNotModified()
+TestStatus TestTaskDBInterface::testnegativePathNotModified() const
 {
     TaskQueryProcessor taskQueryProcessor;
     TaskModel_shp taskNotModified = taskQueryProcessor.getTaskByTaskID(1);
@@ -506,7 +506,7 @@ TestStatus TestTaskDBInterface::testnegativePathNotModified()
     return testInsertionFailureMessages(taskNotModified, expectedErrors);
 }
 
-TestStatus TestTaskDBInterface::testNegativePathAlreadyInDataBase()
+TestStatus TestTaskDBInterface::testNegativePathAlreadyInDataBase() const
 {
     TaskQueryProcessor taskQueryProcessor;
     TaskModel_shp taskAlreadyInDB = taskQueryProcessor.getTaskByTaskID(1);
@@ -520,7 +520,7 @@ TestStatus TestTaskDBInterface::testNegativePathAlreadyInDataBase()
     return testInsertionFailureMessages(taskAlreadyInDB, expectedErrors);
 }
 
-TestStatus TestTaskDBInterface::testMissingReuqiredField(TaskModel taskMissingFields)
+TestStatus TestTaskDBInterface::testMissingReuqiredField(TaskModel taskMissingFields) const
 {
     std::vector<std::string> expectedErrors = {"missing required values!"};
     return testInsertionFailureMessages(&taskMissingFields, expectedErrors);
@@ -570,7 +570,7 @@ TestStatus TestTaskDBInterface::testTasksFromDataFile()
     TestStatus allTestsPassed = TESTPASSED;
     TaskList userTaskTestData = loadTasksFromDataFile();
 
-    for (auto testTask: userTaskTestData)
+    for (const auto& testTask: userTaskTestData)
     {
 /*
  * When this code was originally written the only tasks in the database were the
@@ -585,7 +585,7 @@ TestStatus TestTaskDBInterface::testTasksFromDataFile()
         }
         if (insertShouldPass(testTask) == TESTPASSED)
         {
-            for (auto test: m_positiveTestFuncs)
+            for (const auto& test: m_positiveTestFuncs)
             {
                 if (!test(testTask))
                 {

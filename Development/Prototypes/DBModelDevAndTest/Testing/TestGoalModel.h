@@ -28,19 +28,19 @@ public:
 
 private:
     virtual bool databaseObjectInitAfterConstructor() override;
-    TestStatus testInsertAndGetParent(TestGoalInput testGoal);
-    TestStatus testPositivePathGoalInsertions();
-    TestStatus testPositivePathGetListofChildrenFromParent();
-    TestStatus testPositivePathGetAllGoalsForUser();
-    TestStatus testPositivePathFindGoalsWithSimilarDescription();
-    TestStatus testPositivePathDeleteGoal();
-    TestStatus testNegativePathAlreadyInDataBase();
-    TestStatus testnegativePathNotModified();
-    TestStatus negativePathMissingRequiredFields();
+    TestStatus testInsertAndGetParent(TestGoalInput testGoal) const;
+    TestStatus testPositivePathGoalInsertions() const;
+    TestStatus testPositivePathGetListofChildrenFromParent() const;
+    TestStatus testPositivePathGetAllGoalsForUser() const;
+    TestStatus testPositivePathFindGoalsWithSimilarDescription() const;
+    TestStatus testPositivePathDeleteGoal() const;
+    TestStatus testNegativePathAlreadyInDataBase() const;
+    TestStatus testnegativePathNotModified() const;
+    TestStatus negativePathMissingRequiredFields() const;
     TestStatus testMissingRequiredFieldsAddUserID(
-        UserGoalModel& testGoal, std::vector<std::string>& expectedErrors);
+        UserGoalModel& testGoal, std::vector<std::string>& expectedErrors) const;
     TestStatus testMissingRequiredFieldsAddDescription(
-        UserGoalModel& testGoal, std::vector<std::string>& expectedErrors);
+        UserGoalModel& testGoal, std::vector<std::string>& expectedErrors) const;
 
     std::vector<TestGoalInput> m_testInput;
     std::shared_ptr<UserModel> m_userOne;

@@ -38,7 +38,7 @@ TestGoalModel::TestGoalModel()
         {"Effectively moderate the code review site on stack exchange", 1, ""}
     };
 
-    for (auto testGoal: testGoalInput)
+    for (const auto& testGoal: testGoalInput)
     {
         m_testInput.push_back(testGoal);
     }
@@ -68,7 +68,7 @@ bool TestGoalModel::databaseObjectInitAfterConstructor()
     return true;
 }
 
-TestStatus TestGoalModel::testInsertAndGetParent(TestGoalInput testGoal)
+TestStatus TestGoalModel::testInsertAndGetParent(TestGoalInput testGoal) const
 {
     UserGoalModel newGoal;
     newGoal.setUserId(m_userOne->getUserID());
@@ -99,11 +99,11 @@ TestStatus TestGoalModel::testInsertAndGetParent(TestGoalInput testGoal)
     return TESTPASSED;
 }
 
-TestStatus TestGoalModel::testPositivePathGoalInsertions()
+TestStatus TestGoalModel::testPositivePathGoalInsertions() const
 {
     TestStatus testStatus = TESTPASSED;
 
-    for (auto testGoal: m_testInput)
+    for (const auto& testGoal: m_testInput)
     {
         TestStatus currentResult = testInsertAndGetParent(testGoal);
         if (testStatus == TESTPASSED)
@@ -120,7 +120,7 @@ TestStatus TestGoalModel::testPositivePathGoalInsertions()
     return testStatus;
 }
 
-TestStatus TestGoalModel::testPositivePathGetListofChildrenFromParent()
+TestStatus TestGoalModel::testPositivePathGetListofChildrenFromParent() const
 {
     GoalQueryProcessor goalQueryProcessor;
     UserGoalModel_shp parentGoal = goalQueryProcessor.findGoalByUserIdAndExactDescription(m_userOne->getUserID(), "Get a Job in Software Engineering");
@@ -146,7 +146,7 @@ TestStatus TestGoalModel::testPositivePathGetListofChildrenFromParent()
         std::cout << *parentGoal << "\n";
         std::cout << std::format("Find all child goals for({}) PASSED!\n", parentGoal->getGoalId());
         std::cout << std::format("Goal {} has {} child goals\n", parentGoal->getGoalId(), jobRelatedgoals.size());
-        for (auto goal: jobRelatedgoals)
+        for (const auto& goal: jobRelatedgoals)
         {
             std::cout << *goal << "\n";
         }
@@ -155,7 +155,7 @@ TestStatus TestGoalModel::testPositivePathGetListofChildrenFromParent()
     return TESTPASSED;
 }
 
-TestStatus TestGoalModel::testPositivePathGetAllGoalsForUser()
+TestStatus TestGoalModel::testPositivePathGetAllGoalsForUser() const
 {
     GoalQueryProcessor goalListTestInterface;
     UserGoalList allUserGoals = goalListTestInterface.getAllGoalsForUser(m_userOne->getUserID());
@@ -171,7 +171,7 @@ TestStatus TestGoalModel::testPositivePathGetAllGoalsForUser()
     {
         std::cout << std::format("Find all goals for user ({}) PASSED!\n", m_userOne->getUserID());
         std::cout << std::format("User {} has {} goals\n", m_userOne->getUserID(), allUserGoals.size());
-        for (auto goal: allUserGoals)
+        for (const auto& goal: allUserGoals)
         {
             std::cout << *goal << "\n";
         }
@@ -180,7 +180,7 @@ TestStatus TestGoalModel::testPositivePathGetAllGoalsForUser()
     return TESTPASSED;
 }
 
-TestStatus TestGoalModel::testPositivePathFindGoalsWithSimilarDescription()
+TestStatus TestGoalModel::testPositivePathFindGoalsWithSimilarDescription() const
 {
     GoalQueryProcessor goalListTestInterface;
     std::string searchString("Maintain");
@@ -198,7 +198,7 @@ TestStatus TestGoalModel::testPositivePathFindGoalsWithSimilarDescription()
     {
         std::cout << std::format("Find all goals for user ({}) containing {} PASSED!\n", userId, searchString);
         std::cout << std::format("User {} has {} goals\n", m_userOne->getUserID(), goalsWithSimilarDescription.size());
-        for (auto goal: goalsWithSimilarDescription)
+        for (const auto& goal: goalsWithSimilarDescription)
         {
             std::cout << *goal << "\n";
         }
@@ -207,7 +207,7 @@ TestStatus TestGoalModel::testPositivePathFindGoalsWithSimilarDescription()
     return TESTPASSED;
 }
 
-TestStatus TestGoalModel::testPositivePathDeleteGoal()
+TestStatus TestGoalModel::testPositivePathDeleteGoal() const
 {
     std::string funcUnderTest("Delete Goal");
 
@@ -260,7 +260,7 @@ TestStatus TestGoalModel::testPositivePathDeleteGoal()
     return TESTPASSED;
 }
 
-TestStatus TestGoalModel::testNegativePathAlreadyInDataBase()
+TestStatus TestGoalModel::testNegativePathAlreadyInDataBase() const
 {
     GoalQueryProcessor goalQueryProcessor;
     UserGoalModel_shp goalAlreadyInDB = goalQueryProcessor.getGoalById(1);
@@ -274,7 +274,7 @@ TestStatus TestGoalModel::testNegativePathAlreadyInDataBase()
     return testInsertionFailureMessages(goalAlreadyInDB, expectedErrors);
 }
 
-TestStatus TestGoalModel::testnegativePathNotModified()
+TestStatus TestGoalModel::testnegativePathNotModified() const
 {
     GoalQueryProcessor goalQueryProcessor;
     UserGoalModel_shp goalNotModified = goalQueryProcessor.getGoalById(1);
@@ -290,7 +290,7 @@ TestStatus TestGoalModel::testnegativePathNotModified()
     return testInsertionFailureMessages(goalNotModified, expectedErrors);
 }
 
-TestStatus TestGoalModel::negativePathMissingRequiredFields()
+TestStatus TestGoalModel::negativePathMissingRequiredFields() const
 {
     TestStatus testStatus = TESTPASSED;
 
@@ -308,7 +308,7 @@ TestStatus TestGoalModel::negativePathMissingRequiredFields()
         {std::bind(&TestGoalModel::testMissingRequiredFieldsAddDescription, this, std::placeholders::_1, std::placeholders::_2)},
     };
 
-    for (auto fieldTest: fieldTestUpdate)
+    for (const auto& fieldTest: fieldTestUpdate)
     {
         TestStatus thisTestStatus = fieldTest(testGoal, expectedErrors);
         if (testStatus == TESTPASSED)
@@ -334,7 +334,8 @@ TestStatus TestGoalModel::negativePathMissingRequiredFields()
 }
 
 TestStatus TestGoalModel::testMissingRequiredFieldsAddUserID(
-    UserGoalModel &testGoal, std::vector<std::string>& expectedErrors)
+    UserGoalModel &testGoal, std::vector<std::string>& expectedErrors
+) const
 {
     TestStatus testStatus =
         testInsertionFailureMessages(&testGoal, expectedErrors);
@@ -346,7 +347,8 @@ TestStatus TestGoalModel::testMissingRequiredFieldsAddUserID(
 }
 
 TestStatus TestGoalModel::testMissingRequiredFieldsAddDescription(
-    UserGoalModel &testGoal, std::vector<std::string>& expectedErrors)
+    UserGoalModel &testGoal, std::vector<std::string>& expectedErrors
+) const
 {
     TestStatus testStatus =
         testInsertionFailureMessages(&testGoal, expectedErrors);

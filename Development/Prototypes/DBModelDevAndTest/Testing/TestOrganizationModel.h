@@ -36,19 +36,19 @@ private:
 
     TestStatus testPositivePathInsertions();
     TestStatus testPositivePathUpdates();
-    TestStatus testPositivePathGetAllOrganizations();
-    TestStatus testPositivePathGetOrganizationById();
-    TestStatus testPositivePathFindOrganizationsByName();
-    TestStatus testPositivePathFindOrganizationsByPrimaryContactID();
-    TestStatus testPositivePathFindOrganizationsByPrimaryContactName();
-    TestStatus testPositivePathGetAllOrganizationsAddedBetween();
-    TestStatus testPositivePathGetAnyOrganizationsAddedOnDate();
-    TestStatus testPositivePathGetAnyOrganizationsModifiedOnDate();
-    TestStatus testPositivePathDeleteOrganization();
-    TestStatus testPositivePathSetParentOrganization();
-    TestStatus testNegativePathSetParentOrganization();
-    TestStatus testNegativePathAlreadyInDataBase();
-    TestStatus testnegativePathNotModified();
+    TestStatus testPositivePathGetAllOrganizations() const;
+    TestStatus testPositivePathGetOrganizationById() const;
+    TestStatus testPositivePathFindOrganizationsByName() const;
+    TestStatus testPositivePathFindOrganizationsByPrimaryContactID() const;
+    TestStatus testPositivePathFindOrganizationsByPrimaryContactName() const;
+    TestStatus testPositivePathGetAllOrganizationsAddedBetween() const;
+    TestStatus testPositivePathGetAnyOrganizationsAddedOnDate() const;
+    TestStatus testPositivePathGetAnyOrganizationsModifiedOnDate() const;
+    TestStatus testPositivePathDeleteOrganization() const;
+    TestStatus testPositivePathSetParentOrganization() const;
+    TestStatus testNegativePathSetParentOrganization() const;
+    TestStatus testNegativePathAlreadyInDataBase() const;
+    TestStatus testnegativePathNotModified() const;
     
 
     std::shared_ptr<UserModel> m_userOne;

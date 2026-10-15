@@ -25,16 +25,17 @@ public:
 
 protected:
     virtual bool databaseObjectInitAfterConstructor() { return false; }
-    TestStatus wrongErrorMessage(std::string expectedString, ModelDBInterface* modelUnderTest);
-    bool hasErrorMessage(ModelDBInterface* modelUnderTest);
+    TestStatus wrongErrorMessage(std::string expectedString, ModelDBInterface* modelUnderTest) const;
+    bool hasErrorMessage(ModelDBInterface* modelUnderTest) const;
     TestStatus testInsertionFailureMessages(
-        ModelDBInterface* modelUnderTest, std::vector<std::string> expectedErrors);
+        ModelDBInterface* modelUnderTest, std::vector<std::string> expectedErrors) const;
     TestStatus testInsertionFailureMessages(
-        std::shared_ptr<ModelDBInterface>modelUnderTest, std::vector<std::string> expectedErrors) {
+        std::shared_ptr<ModelDBInterface>modelUnderTest, std::vector<std::string> expectedErrors) const
+        {
             ModelDBInterface* ptr = modelUnderTest.get();
             return testInsertionFailureMessages(ptr, expectedErrors);
         };
-    void reportTestStatus(TestStatus status, std::string_view path);
+    void reportTestStatus(TestStatus status, std::string_view path) const;
 
     bool m_verboseOutput;
     std::string_view m_modelUnderTest;

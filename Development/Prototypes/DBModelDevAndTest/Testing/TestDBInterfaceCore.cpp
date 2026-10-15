@@ -53,7 +53,7 @@ TestStatus TestDBInterfaceCore::runNegativePathTests()
 {
     TestStatus allTestPassed = TESTPASSED;
 
-    for (auto test: m_negativePathTestFuncsNoArgs)
+    for (const auto& test: m_negativePathTestFuncsNoArgs)
     {
         TestStatus testResult = test();
         if (allTestPassed == TESTPASSED)
@@ -71,7 +71,7 @@ TestStatus TestDBInterfaceCore::runPositivePathTests()
 {
     TestStatus allTestPassed = TESTPASSED;
 
-    for (auto test: m_positiviePathTestFuncsNoArgs)
+    for (const auto& test: m_positiviePathTestFuncsNoArgs)
     {
         TestStatus testResult = test();
         if (allTestPassed == TESTPASSED)
@@ -88,7 +88,7 @@ TestStatus TestDBInterfaceCore::runPositivePathTests()
 /*
  * Protected methods.
  */
-TestStatus TestDBInterfaceCore::wrongErrorMessage(std::string expectedString, ModelDBInterface* modelUnderTest)
+TestStatus TestDBInterfaceCore::wrongErrorMessage(std::string expectedString, ModelDBInterface* modelUnderTest) const
 {
     std::string errorMessage = modelUnderTest->getAllErrorMessages();
     std::size_t found = errorMessage.find(expectedString);
@@ -103,7 +103,7 @@ TestStatus TestDBInterfaceCore::wrongErrorMessage(std::string expectedString, Mo
     return TESTPASSED;
 }
 
-bool TestDBInterfaceCore::hasErrorMessage(ModelDBInterface* modelUnderTest)
+bool TestDBInterfaceCore::hasErrorMessage(ModelDBInterface* modelUnderTest) const
 {
     std::string errorMessage = modelUnderTest->getAllErrorMessages();
 
@@ -121,7 +121,7 @@ bool TestDBInterfaceCore::hasErrorMessage(ModelDBInterface* modelUnderTest)
     return true;
 }
 
-TestStatus TestDBInterfaceCore::testInsertionFailureMessages(ModelDBInterface* modelUnderTest, std::vector<std::string> expectedErrors)
+TestStatus TestDBInterfaceCore::testInsertionFailureMessages(ModelDBInterface* modelUnderTest, std::vector<std::string> expectedErrors) const
 {
     if (modelUnderTest->insert())
     {
@@ -134,7 +134,7 @@ TestStatus TestDBInterfaceCore::testInsertionFailureMessages(ModelDBInterface* m
         return TESTFAILED;
     }
 
-    for (auto expectedError: expectedErrors)
+    for (const auto& expectedError: expectedErrors)
     {
         if (wrongErrorMessage(expectedError, modelUnderTest) == TESTFAILED)
         {
@@ -145,7 +145,7 @@ TestStatus TestDBInterfaceCore::testInsertionFailureMessages(ModelDBInterface* m
     return TESTPASSED;
 }
 
-void TestDBInterfaceCore::reportTestStatus(TestStatus status, std::string_view path)
+void TestDBInterfaceCore::reportTestStatus(TestStatus status, std::string_view path) const
 {
     std::string_view statusStr = status == TESTPASSED? "PASSED" : "FAILED";
     

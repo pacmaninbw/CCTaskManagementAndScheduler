@@ -45,7 +45,7 @@ TestStatus TestUserDBInterface::runPositivePathTests()
 
     bool allTestsPassed = true;
 
-    for (auto user: m_userProfileTestData)
+    for (const auto& user: m_userProfileTestData)
     {
         // Exclude real data from production testing in user integration testing.
         // The real data is know to work and inserting it again causes errors.
@@ -62,7 +62,7 @@ TestStatus TestUserDBInterface::runPositivePathTests()
             // if adding the user was successful, perform other tests with the data.
             if (user->isInDataBase())
             {
-                for (auto test: m_positiveTestFuncs)
+                for (const auto& test: m_positiveTestFuncs)
                 {
                     if (!test(user))
                     {
@@ -91,7 +91,7 @@ TestStatus TestUserDBInterface::runPositivePathTests()
     return allTestsPassed? TESTPASSED : TESTFAILED;
 }
 
-bool TestUserDBInterface::testGetUserByLoginName(UserModel_shp insertedUser)
+bool TestUserDBInterface::testGetUserByLoginName(UserModel_shp insertedUser) const
 {
     UserQueryProcessor userQueryProcessor;
     UserModel_shp retrievedUser = userQueryProcessor.getUserByLoginName(insertedUser->getLoginName());
@@ -116,7 +116,7 @@ bool TestUserDBInterface::testGetUserByLoginName(UserModel_shp insertedUser)
     }
 }
 
-bool TestUserDBInterface::testGetUserByLoginAndPassword(UserModel_shp insertedUser)
+bool TestUserDBInterface::testGetUserByLoginAndPassword(UserModel_shp insertedUser) const
 {
     std::string testName = insertedUser->getLoginName();
     std::string testPassword = insertedUser->getPassword();
@@ -151,7 +151,7 @@ bool TestUserDBInterface::testGetUserByLoginAndPassword(UserModel_shp insertedUs
     return true;
 }
 
-bool TestUserDBInterface::testGetUserByFullName(UserModel_shp insertedUser)
+bool TestUserDBInterface::testGetUserByFullName(UserModel_shp insertedUser) const
 {
     UserQueryProcessor userQueryProcessor;
     UserModel_shp retrievedUser = userQueryProcessor.getUserByFullName(insertedUser->getLastName(), insertedUser->getFirstName(),
@@ -177,7 +177,7 @@ bool TestUserDBInterface::testGetUserByFullName(UserModel_shp insertedUser)
     }
 }
 
-bool TestUserDBInterface::testGetUserByEmail(UserModel_shp insertedUser)
+bool TestUserDBInterface::testGetUserByEmail(UserModel_shp insertedUser) const
 {
     UserQueryProcessor userQueryProcessor;
     UserModel_shp retrievedUser = userQueryProcessor.getUserByEmail(insertedUser->getEmail());
@@ -203,7 +203,7 @@ bool TestUserDBInterface::testGetUserByEmail(UserModel_shp insertedUser)
 }
 
 
-bool TestUserDBInterface::testUpdateUserPassword(UserModel_shp insertedUser)
+bool TestUserDBInterface::testUpdateUserPassword(UserModel_shp insertedUser) const
 {
     bool testPassed = true;
     UserModel oldUserValues = *insertedUser;
@@ -246,7 +246,7 @@ bool TestUserDBInterface::loadTestUsersFromFile()
         return false;
     }
     
-    for (auto row: CSVRange(userData))
+    for (const auto& row: CSVRange(userData))
     {
         UserModel_shp userIn = std::make_shared<UserModel>(UserModel());
         userIn->setLastName(row[0]);
@@ -418,7 +418,7 @@ bool TestUserDBInterface::runPositivePathListQueries() noexcept
     // since this test modifies m_userProfileTestData by deleting existing items.
     postivePathListQeryTests.push_back(std::bind(&TestUserDBInterface::testGetAllUsersDeletedOnDate, this));
 
-    for (auto test: postivePathListQeryTests)
+    for (const auto& test: postivePathListQeryTests)
     {
         if (!test())
         {
@@ -429,7 +429,7 @@ bool TestUserDBInterface::runPositivePathListQueries() noexcept
     return allTestsPassed;
 }
 
-TestStatus TestUserDBInterface::testnegativePathNotModified()
+TestStatus TestUserDBInterface::testnegativePathNotModified()  const
 {
     UserQueryProcessor userQueryProcessor;
     UserModel_shp userNotModified = userQueryProcessor.getUserByID(1);
@@ -445,7 +445,7 @@ TestStatus TestUserDBInterface::testnegativePathNotModified()
     return testInsertionFailureMessages(userNotModified, expectedErrors);
 }
 
-TestStatus TestUserDBInterface::testNegativePathAlreadyInDataBase()
+TestStatus TestUserDBInterface::testNegativePathAlreadyInDataBase() const
 {
     UserQueryProcessor userQueryProcessor;
     UserModel_shp userAlreadyInDB = userQueryProcessor.getUserByID(1);

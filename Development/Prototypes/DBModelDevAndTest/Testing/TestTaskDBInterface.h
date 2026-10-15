@@ -21,23 +21,23 @@ public:
     virtual TestStatus runAllTests() override;
 
 private:
-    bool testGetTaskByDescription(TaskModel_shp task);
-    bool testGetTaskByID(TaskModel_shp task);
+    bool testGetTaskByDescription(TaskModel_shp task) const;
+    bool testGetTaskByID(TaskModel_shp task) const;
     TaskList loadTasksFromDataFile() noexcept;
     void commonTaskInit(TaskModel_shp newTask, CSVRow taskData);
     TaskModel_shp creatOddTask(CSVRow taskData);
     TaskModel_shp creatEvenTask(CSVRow taskData);
-    TestStatus testGetUnstartedTasks();
-    TestStatus testGetDefaultDashboardTaskList();
-    TestStatus testGetActiveTasks();
+    TestStatus testGetUnstartedTasks() const;
+    TestStatus testGetDefaultDashboardTaskList() const;
+    TestStatus testGetActiveTasks() const;
     TestStatus testTaskUpdates();
-    TestStatus testHideUnstartedTask();
-    bool testTaskUpdate(TaskModel_shp changedTask);
+    TestStatus testHideUnstartedTask() const;
+    bool testTaskUpdate(TaskModel_shp changedTask) const;
     bool testGetCompletedList();
     std::chrono::year_month_day stringToDate(std::string dateString);
-    TestStatus testnegativePathNotModified();
-    TestStatus testNegativePathAlreadyInDataBase();
-    TestStatus testMissingReuqiredField(TaskModel taskMissingFields);
+    TestStatus testnegativePathNotModified() const;
+    TestStatus testNegativePathAlreadyInDataBase() const;
+    TestStatus testMissingReuqiredField(TaskModel taskMissingFields) const;
     TestStatus testNegativePathMissingRequiredFields();
     TestStatus testTasksFromDataFile();
     TestStatus testSharedPointerInteraction();

@@ -20,11 +20,11 @@ public:
 
 private:
     virtual bool databaseObjectInitAfterConstructor() override { return true; };
-    bool testGetUserByLoginName(UserModel_shp insertedUser);
-    bool testGetUserByLoginAndPassword(UserModel_shp insertedUser);
-    bool testGetUserByFullName(UserModel_shp insertedUser);
-    bool testGetUserByEmail(UserModel_shp insertedUser);
-    bool testUpdateUserPassword(UserModel_shp insertedUser);
+    bool testGetUserByLoginName(UserModel_shp insertedUser) const;
+    bool testGetUserByLoginAndPassword(UserModel_shp insertedUser) const;
+    bool testGetUserByFullName(UserModel_shp insertedUser) const;
+    bool testGetUserByEmail(UserModel_shp insertedUser) const;
+    bool testUpdateUserPassword(UserModel_shp insertedUser) const;
     bool loadTestUsersFromFile();
     bool testGetAllUsers();
     bool testGetAllUsersAddedOnDate() noexcept;
@@ -32,8 +32,8 @@ private:
     bool testGetAllUsersFrom() noexcept;
     bool compareListReturnedToUserProfileTestData(UserModelList testData, std::string funcName) noexcept;
     bool runPositivePathListQueries() noexcept ;
-    TestStatus testnegativePathNotModified();
-    TestStatus testNegativePathAlreadyInDataBase();
+    TestStatus testnegativePathNotModified() const;
+    TestStatus testNegativePathAlreadyInDataBase() const;
     void deleteSomeUsers();
 
     std::string m_dataFileName;
