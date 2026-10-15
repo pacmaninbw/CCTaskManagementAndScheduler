@@ -8,7 +8,6 @@
 // Standard C++ Header Files
 #include <chrono>
 #include <format>
-#include <iostream>
 
 ScheduleItemQueryProcessor::ScheduleItemQueryProcessor(std::size_t userId)
 : QueryProcessor<ScheduleItemModel, ScheduleItemDbQueryValues>("ScheduleItem")

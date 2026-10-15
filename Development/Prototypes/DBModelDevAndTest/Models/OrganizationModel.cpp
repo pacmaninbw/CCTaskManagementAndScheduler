@@ -308,7 +308,7 @@ TestStatus OrganizationModel::testAllInsertFailures()
     fieldSettings.push_back(std::bind(&OrganizationModel::setEmailAddress, this, std::placeholders::_1));
     fieldSettings.push_back(std::bind(&OrganizationModel::setPhoneNumber, this, std::placeholders::_1));
 
-    for (auto setField: fieldSettings)
+    for (const auto& setField: fieldSettings)
     {
         if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
         {

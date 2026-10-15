@@ -112,7 +112,7 @@ protected:
  * Attribute Access Unit Testing.
  */
     virtual std::vector<AttributeTestFunction> initAttributeAccessTests() noexcept;
-    TestStatus formattedAttributeFailureMessage(bool isSetter, std::string_view memberName, std::string_view message) noexcept;
+    TestStatus formattedAttributeFailureMessage(bool isSetter, std::string_view memberName, std::string_view message) const noexcept;
     virtual TestStatus testAttributeAccessFunctions() noexcept;
     TestStatus testPrimaryKeyAccessFunctions(std::size_t testPrimaryKey, std::function<void(std::size_t)>setFunct,
         std::function<std::size_t(void)>getFunct) noexcept;
@@ -214,8 +214,8 @@ protected:
     virtual TestStatus testEqualityOperator() noexcept  { std::cerr << "Entered ModelDBInterface::testEqualityOperator()\n"; return TESTFAILED; };
     virtual void testOutput() noexcept  { };
     virtual TestStatus testSave();
-    TestStatus hasErrorMessage();
-    TestStatus wrongErrorMessage(std::string expectedString);
+    TestStatus hasErrorMessage() const;
+    TestStatus wrongErrorMessage(std::string expectedString) const;
     virtual TestStatus testInsertionFailureMessages(std::vector<std::string> expectedErrors);
     virtual TestStatus testUpdateFailureMessages(std::vector<std::string> expectedErrors);
     TestStatus testCommonInsertFailurePath();
@@ -243,8 +243,8 @@ protected:
     virtual TestStatus testExceptionUpdate() { return TESTFAILED; };     // Should be added to the vector returned by initExceptionTests()
     virtual TestStatus testExceptionHide() { return TESTFAILED; };   // Should be added to the vector returned by initExceptionTests()
     virtual TestStatus testExceptionHandling() noexcept;
-    virtual TestStatus forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) noexcept;
-    TestStatus testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName) noexcept;
+    virtual TestStatus forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) const noexcept;
+    TestStatus testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName) const noexcept;
 
     template <typename F, typename... Ts>
     requires std::is_invocable_v<F, Ts...>

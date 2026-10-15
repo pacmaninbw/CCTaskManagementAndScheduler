@@ -7,7 +7,6 @@
 // Standard C++ Header Files
 #include <chrono>
 #include <format>
-#include <iostream>
 
 TaskQueryProcessor::TaskQueryProcessor()
 : QueryProcessor<TaskModel, TaskDbQueryValues>("Task")

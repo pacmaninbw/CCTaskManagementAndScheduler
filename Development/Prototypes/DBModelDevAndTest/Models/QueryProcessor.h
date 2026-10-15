@@ -2,8 +2,8 @@
 #define QUERYPROCESSOR_H_
 
 // Project Header Files
-#include "ModelDBInterface.h"
 #include "commonTestValues.h"
+#include "ModelDBInterface.h"
 
 // External Libraries
 #include <boost/asio.hpp>
@@ -218,7 +218,7 @@ protected:
         
         try
         {
-            for (auto exceptionTest: exceptionTests)
+            for (const auto& exceptionTest: exceptionTests)
             {
                 failFunction = exceptionTest.functionUnderTest;
                 if (exceptionTest.testExceptionFunction() == TESTFAILED)

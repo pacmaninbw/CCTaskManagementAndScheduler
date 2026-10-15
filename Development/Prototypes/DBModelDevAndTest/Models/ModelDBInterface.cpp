@@ -115,7 +115,7 @@ bool ModelDBInterface::hide([[maybe_unused]]std::size_t userRequestingDelete) no
 bool ModelDBInterface::hasRequiredValues()
 {
     initRequiredFields();
-    for (auto fieldTest: m_missingRequiredFieldsTests)
+    for (const auto& fieldTest: m_missingRequiredFieldsTests)
     {
         if (fieldTest.errorCondition())
         {
@@ -132,7 +132,7 @@ bool ModelDBInterface::hasRequiredValues()
  */
 void ModelDBInterface::reportMissingFields() noexcept
 {
-    for (auto testAndReport: m_missingRequiredFieldsTests)
+    for (const auto& testAndReport: m_missingRequiredFieldsTests)
     {
         if (testAndReport.errorCondition())
         {
@@ -350,7 +350,7 @@ std::vector<AttributeTestFunction> ModelDBInterface::initAttributeAccessTests() 
     return std::vector<AttributeTestFunction>();
 }
 
-TestStatus ModelDBInterface::formattedAttributeFailureMessage(bool isSetter, std::string_view memberName, std::string_view message) noexcept
+TestStatus ModelDBInterface::formattedAttributeFailureMessage(bool isSetter, std::string_view memberName, std::string_view message) const noexcept
 {
         std::string_view setOrGet = isSetter? "Set" : "Get";
 
@@ -364,7 +364,7 @@ TestStatus ModelDBInterface::testAttributeAccessFunctions() noexcept
     TestStatus testStatus = TESTPASSED;
     std::vector<AttributeTestFunction> attributeAccessTests = initAttributeAccessTests();
 
-    for (auto attributeAccessTest: attributeAccessTests)
+    for (const auto& attributeAccessTest: attributeAccessTests)
     {
         if (attributeAccessTest() == TESTFAILED)
         {
@@ -522,7 +522,7 @@ TestStatus ModelDBInterface::testSave()
     return testStatus;
 }
 
-TestStatus ModelDBInterface::hasErrorMessage()
+TestStatus ModelDBInterface::hasErrorMessage() const
 {
     std::string testErrorMessage = CoreDBInterface::getAllErrorMessages();
     if (testErrorMessage.empty())
@@ -534,7 +534,7 @@ TestStatus ModelDBInterface::hasErrorMessage()
     return TESTPASSED;
 }
 
-TestStatus ModelDBInterface::wrongErrorMessage(std::string expectedString)
+TestStatus ModelDBInterface::wrongErrorMessage(std::string expectedString) const
 {
     std::size_t found = CoreDBInterface::m_errorMessages.find(expectedString);
     if (found == std::string::npos)
@@ -562,7 +562,7 @@ TestStatus ModelDBInterface::testInsertionFailureMessages(std::vector<std::strin
         return TESTFAILED;
     }
 
-    for (auto expectedError: expectedErrors)
+    for (const auto& expectedError: expectedErrors)
     {
         if (wrongErrorMessage(expectedError) == TESTFAILED)
         {
@@ -586,7 +586,7 @@ TestStatus ModelDBInterface::testUpdateFailureMessages(std::vector<std::string> 
         return TESTFAILED;
     }
 
-    for (auto expectedError: expectedErrors)
+    for (const auto& expectedError: expectedErrors)
     {
         if (wrongErrorMessage(expectedError) == TESTFAILED)
         {
@@ -665,14 +665,14 @@ TestStatus ModelDBInterface::testExceptionHandling() noexcept
     return exceptionHandlingPassed;
 }
 
-TestStatus ModelDBInterface::forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) noexcept
+TestStatus ModelDBInterface::forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) const noexcept
 {
     TestStatus testAllExceptionHandling = TESTPASSED;
     std::string_view failFunction;
     
     try
     {
-        for (auto exceptionTest: exceptionTests)
+        for (const auto& exceptionTest: exceptionTests)
         {
             failFunction = exceptionTest.functionUnderTest;
             if (exceptionTest.testExceptionFunction() == TESTFAILED)
@@ -694,7 +694,7 @@ TestStatus ModelDBInterface::forceExceptionsLoop(std::vector<ExceptionTestElemen
     return testAllExceptionHandling;
 }
 
-TestStatus ModelDBInterface::testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName) noexcept
+TestStatus ModelDBInterface::testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName) const noexcept
 {
     std::string reportFailure = std::format("In {}::{}: ", m_modelName, testExceptionFuncName);
 
