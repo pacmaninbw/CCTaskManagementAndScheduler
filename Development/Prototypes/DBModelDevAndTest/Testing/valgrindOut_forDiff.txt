@@ -273,7 +273,7 @@ Optional Fields
 	Parent ID: 42
 	Actual Start Date: 2024-05-14
 	Estimated Completion Date: 2024-05-14
-	Completed Date: 2026-10-14
+	Completed Date: 2026-10-15
 
 Task::testAllInsertFailures before successful insert this = 
 Common Core Variables:
@@ -612,7 +612,7 @@ In Self Test Query is:
 
 Exception Test for TaskQueryProcessor::testExceptionGetUnstartedDueForStartForAssignedUser()
 In Self Test Query is: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-10-21' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 1 AND tasks.planned_start < '2026-10-22' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 
 Exception Test for TaskQueryProcessor::testExceptionGetTasksCompletedByAssignedAfterDate()
 In Self Test Query is: 
@@ -812,7 +812,7 @@ Running:
 	SELECT * FROM user_profile
 TestUserDBInterface::testGetAllUsers PASSED!
 Running: 
-	SELECT * FROM user_profile WHERE user_profile.created_timestamp >= '2026-10-14 00:00:00.000000' AND user_profile.created_timestamp <= '2026-10-14 23:59:59.000000' 
+	SELECT * FROM user_profile WHERE user_profile.created_timestamp >= '2026-10-15 00:00:00.000000' AND user_profile.created_timestamp <= '2026-10-15 23:59:59.000000' 
 TestUserDBInterface::testGetAllUsersAddedOnDate PASSED!
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.id_organization = 1 AND user_profile.deleted <> 1 
@@ -824,7 +824,7 @@ Running:
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.deleted <> 1 
 Running: 
-	SELECT * FROM user_profile WHERE user_profile.last_modified_time_stamp >= '2026-10-14 00:00:00.000000' AND user_profile.last_modified_time_stamp <= '2026-10-14 23:59:59.000000' AND user_profile.deleted = 1
+	SELECT * FROM user_profile WHERE user_profile.last_modified_time_stamp >= '2026-10-15 00:00:00.000000' AND user_profile.last_modified_time_stamp <= '2026-10-15 23:59:59.000000' AND user_profile.deleted = 1
 TestUserDBInterface::testGetAllUsersDeletedOnDate PASSED!
 All positive path tests for database insertions and retrievals of user PASSED!
 Running: 
@@ -1453,7 +1453,7 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Design UML Diagram for Personal Planner' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-10-14', NULL, 2e+00, 2e+00, 67, 1, 0, 4 )
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Grocery Shopping', 0, '2025-04-12', '2025-04-11', NULL, '2026-10-15', NULL, 2e+00, 2e+00, 67, 1, 0, 4 )
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 58
 Running: 
@@ -1465,13 +1465,13 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Daily 30 minute walk' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-10-14', NULL, 2e+00, 0e+00, 67, 3, 0, 4 )
+	INSERT INTO tasks (created_by, assigned_to, description, task_status, due_date, planned_start, actual_start, estimated_delivery, delivered, est_hours_effort, hours_effort, priority_category, priority, personal, last_modified_by_user ) VALUES (4, 4, 'Clean apartment', 0, '2025-04-12', '2025-04-12', NULL, '2026-10-15', NULL, 2e+00, 0e+00, 67, 3, 0, 4 )
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 60
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.description = 'Clean apartment' AND tasks.assigned_to = 4 AND tasks.deleted <> 1
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-21' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-22' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Find unstarted tasks for user(4) PASSED!
 User 4 has 9 unstarted tasks
 Common Core Variables:
@@ -1632,7 +1632,7 @@ Model Specific Attributes:
 	Priority: 1
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-10-14
+	Estimated Completion Date: 2026-10-15
 
 Common Core Variables:
 	Model Name:	Task
@@ -1676,7 +1676,7 @@ Model Specific Attributes:
 	Priority: 3
 Optional Fields
 	Status: Not Started
-	Estimated Completion Date: 2026-10-14
+	Estimated Completion Date: 2026-10-15
 
 Running: 
 	SELECT * FROM user_profile WHERE user_profile.last_name = 'Black' AND user_profile.first_name = 'Paul' AND user_profile.middle_initial = 'A'
@@ -2100,7 +2100,7 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-10-14', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 47 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Archive BHHS74Reunion website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-04-08', tasks.actual_start = '2025-04-08', tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-10-15', tasks.est_hours_effort = 1.2e+01, tasks.hours_effort = 6e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 47 
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.task_id = 47
 Running: 
@@ -2108,31 +2108,31 @@ Running:
 Running: 
 	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND task_dependencies.dependent_task = 47 AND tasks.deleted <> 1
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Check with GoDaddy about providing service to archive website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-04-15', tasks.planned_start = '2025-04-15', tasks.actual_start = '2025-04-15', tasks.estimated_delivery = '2025-04-15', tasks.delivered = '2026-10-14', tasks.est_hours_effort = 2e+00, tasks.hours_effort = 1e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 49 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Check with GoDaddy about providing service to archive website to external SSD', tasks.task_status = 4, tasks.due_date = '2025-04-15', tasks.planned_start = '2025-04-15', tasks.actual_start = '2025-04-15', tasks.estimated_delivery = '2025-04-15', tasks.delivered = '2026-10-15', tasks.est_hours_effort = 2e+00, tasks.hours_effort = 1e+00, tasks.priority_category = 65, tasks.priority = 1, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 49 
 Running: 
 	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 49
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Install a WordPress Archive Plugin', tasks.task_status = 4, tasks.due_date = '2025-05-01', tasks.planned_start = '2025-05-01', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-01', tasks.delivered = '2026-10-14', tasks.est_hours_effort = 1e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 2, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 50 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Install a WordPress Archive Plugin', tasks.task_status = 4, tasks.due_date = '2025-05-01', tasks.planned_start = '2025-05-01', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-01', tasks.delivered = '2026-10-15', tasks.est_hours_effort = 1e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 2, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 50 
 Running: 
 	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 50
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Have GoDaddy install PHPMyAdmin', tasks.task_status = 4, tasks.due_date = '2025-05-02', tasks.planned_start = '2025-05-02', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-03', tasks.delivered = '2026-10-14', tasks.est_hours_effort = 1e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 3, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 51 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Have GoDaddy install PHPMyAdmin', tasks.task_status = 4, tasks.due_date = '2025-05-02', tasks.planned_start = '2025-05-02', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-03', tasks.delivered = '2026-10-15', tasks.est_hours_effort = 1e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 3, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 51 
 Running: 
 	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 51
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Run Archive Plugin', tasks.task_status = 4, tasks.due_date = '2025-05-03', tasks.planned_start = '2025-05-03', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-03', tasks.delivered = '2026-10-14', tasks.est_hours_effort = 2e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 4, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 52 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Run Archive Plugin', tasks.task_status = 4, tasks.due_date = '2025-05-03', tasks.planned_start = '2025-05-03', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-03', tasks.delivered = '2026-10-15', tasks.est_hours_effort = 2e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 4, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 52 
 Running: 
 	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 52
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Log into PHPMyAdmin and save Database to disk', tasks.task_status = 4, tasks.due_date = '2025-05-04', tasks.planned_start = '2025-05-04', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-04', tasks.delivered = '2026-10-14', tasks.est_hours_effort = 1e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 5, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 53 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Log into PHPMyAdmin and save Database to disk', tasks.task_status = 4, tasks.due_date = '2025-05-04', tasks.planned_start = '2025-05-04', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-04', tasks.delivered = '2026-10-15', tasks.est_hours_effort = 1e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 5, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 53 
 Running: 
 	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 53
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'FTP all website files to computer', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-05-05', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-10-14', tasks.est_hours_effort = 3e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 6, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 54 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'FTP all website files to computer', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-05-05', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-10-15', tasks.est_hours_effort = 3e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 6, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 54 
 Running: 
 	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 54
 Running: 
-	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Store all website files on external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-05-05', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-10-14', tasks.est_hours_effort = 2e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 7, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 55 
+	UPDATE tasks SET tasks.created_by = 4, tasks.assigned_to = 4, tasks.description = 'Store all website files on external SSD', tasks.task_status = 4, tasks.due_date = '2025-05-05', tasks.planned_start = '2025-05-05', tasks.actual_start = NULL, tasks.estimated_delivery = '2025-05-05', tasks.delivered = '2026-10-15', tasks.est_hours_effort = 2e+00, tasks.hours_effort = 0e+00, tasks.priority_category = 66, tasks.priority = 7, tasks.personal = 0, tasks.deleted = 0, tasks.last_modified_by_user = 4 WHERE tasks.task_id = 55 
 Running: 
 	UPDATE task_dependencies SET task_dependencies.dependent_task = 47 WHERE task_dependencies.dependency = 55
 Running: 
@@ -2213,11 +2213,11 @@ Optional Fields
 	Estimated Completion Date: 2025-04-15
 
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-21' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-22' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Running: 
 	UPDATE tasks SET tasks.deleted = 1, tasks.last_modified_by_user = 4  WHERE tasks.created_by = 4 AND tasks.task_id = 60
 Running: 
-	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-21' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
+	SELECT tasks.*, task_dependencies.dependent_task FROM tasks LEFT JOIN task_dependencies ON tasks.task_id = task_dependencies.dependency WHERE tasks.assigned_to = 4 AND tasks.planned_start < '2026-10-22' AND (tasks.task_status IS NULL OR tasks.task_status = 0) AND tasks.deleted <> 1
 Task (60) for user (4) marked Deleted. TEST PASSED
 All positive path tests for database insertions and retrievals of task PASSED!
 Running: 
@@ -3318,7 +3318,7 @@ Model Specific Attributes:
 	Content: Effectively moderate the code review site on stack exchange
 
 Running: 
-	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-10-07' AND user_notes.last_modifed <= '2026-10-21' AND user_notes.deleted <> 1
+	SELECT * FROM user_notes WHERE user_notes.user_id = 4 AND user_notes.last_modifed >= '2026-10-08' AND user_notes.last_modifed <= '2026-10-22' AND user_notes.deleted <> 1
 Find all notes for user (4) edited in date range PASSED!
 User 4 has 17 notes
 Common Core Variables:
