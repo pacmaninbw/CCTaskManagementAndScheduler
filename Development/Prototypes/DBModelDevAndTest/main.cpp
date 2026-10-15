@@ -43,22 +43,23 @@
  */
 ProgramOptions programOptions;
 
-static constexpr std::size_t lineWidth = 80;
-
-static void printDashes()
-{
-    for (std::size_t i = 0; i <= lineWidth; ++i)
-    {
-        std::cout << '-';
-    }
-
-}
 static void separateTestCaseOutput() noexcept
 {
-    printDashes();
-    std::cout << "\n\n";
-    printDashes();
-    std::cout << std::endl;     // Flush the output
+    constexpr std::size_t lineWidth = 80;
+    static std::string testCaseSeparator;
+
+    if (testCaseSeparator.empty())
+    {
+        std::string horizontalLine;
+        for (std::size_t i = 0; i <= lineWidth; ++i)
+        {
+            horizontalLine.append("-");
+        }
+
+        testCaseSeparator = std::format("{}\n\n{}", horizontalLine, horizontalLine);
+    }
+
+    std::cout << testCaseSeparator << std::endl;
 }
 
 static void reportUnitTestStatusExitIfQuitFirstFail(TestStatus result, std::string itemUnderTest)
@@ -86,25 +87,6 @@ static TestStatus runAllUnitTests()
 {
     TestStatus allUnintTestsPassed = TESTPASSED;
 
-    auto runUnitTest = [&](std::shared_ptr<ModelDBInterface>modelUnderTest)
-    {
-        separateTestCaseOutput();
-
-        if (!modelUnderTest)
-        {
-            std::cerr << "NULL POINTER in runAllUnitTests" << std::endl;
-            allUnintTestsPassed = TESTFAILED;
-            return;
-        }
-        TestStatus result = modelUnderTest->runSelfTest();
-        reportUnitTestStatusExitIfQuitFirstFail(result,  modelUnderTest->getModelName());
-
-        if (result != TESTPASSED)
-        {
-            allUnintTestsPassed = TESTFAILED;
-        }
-    };
-
     std::vector<std::shared_ptr<ModelDBInterface>> unitTests;
     unitTests.push_back(std::make_shared<OrganizationModel>());
     unitTests.push_back(std::make_shared<UserModel>());
@@ -113,9 +95,24 @@ static TestStatus runAllUnitTests()
     unitTests.push_back(std::make_shared<NoteModel>());
     unitTests.push_back(std::make_shared<ScheduleItemModel>());
 
-    for (auto unitTest: unitTests)
+    for (const auto& unitTest: unitTests)
     {
-        runUnitTest(unitTest);
+        separateTestCaseOutput();
+
+        if (!unitTest)
+        {
+            std::cerr << "NULL POINTER in runAllUnitTests" << std::endl;
+            allUnintTestsPassed = TESTFAILED;
+            continue;
+        }
+
+        TestStatus result = unitTest->runSelfTest();
+        reportUnitTestStatusExitIfQuitFirstFail(result,  unitTest->getModelName());
+
+        if (result != TESTPASSED)
+        {
+            allUnintTestsPassed = TESTFAILED;
+        }
     }
 
     return allUnintTestsPassed;
@@ -138,27 +135,6 @@ static TestStatus runAllQueryUnitTests()
         NoteQueryProcessor,
         ScheduleItemQueryProcessor>;
 
-    auto runListUnitTest = [&](std::shared_ptr<VQP> queryProcessorTest)
-    {
-        separateTestCaseOutput();
-
-        if (!queryProcessorTest)
-        {
-            std::cerr << "NULL POINTER in runListUnitTest" << std::endl;
-            allUnintTestsPassed = TESTFAILED;
-            return;
-        }
-        TestStatus thisTestStatus = TESTPASSED;
-        std::string listTypeName;
-        std::visit([&](auto &&vqp) { listTypeName = vqp.getListTypeName(); }, *queryProcessorTest);
-        std::visit([&](auto &&vqp ) { thisTestStatus = vqp.runSelfTest(); }, *queryProcessorTest);
-        if (thisTestStatus != TESTPASSED)
-        {
-            allUnintTestsPassed = TESTFAILED;
-        }
-        reportUnitTestStatusExitIfQuitFirstFail(thisTestStatus,  listTypeName);
-    };
-
     std::vector<std::shared_ptr<VQP>> QueryProcessorTests;
     QueryProcessorTests.push_back(std::make_shared<VQP>(OrganizationQueryProcessor{}));
     QueryProcessorTests.push_back(std::make_shared<VQP>(UserQueryProcessor{}));
@@ -167,9 +143,25 @@ static TestStatus runAllQueryUnitTests()
     QueryProcessorTests.push_back(std::make_shared<VQP>(NoteQueryProcessor{}));
     QueryProcessorTests.push_back(std::make_shared<VQP>(ScheduleItemQueryProcessor{1}));
 
-    for (auto queryTest: QueryProcessorTests)
+    for (const auto& queryTest: QueryProcessorTests)
     {
-        runListUnitTest(queryTest);
+        separateTestCaseOutput();
+
+        if (!queryTest)
+        {
+            std::cerr << "NULL POINTER in runListUnitTest" << std::endl;
+            allUnintTestsPassed = TESTFAILED;
+            continue;
+        }
+        TestStatus thisTestStatus = TESTPASSED;
+        std::string listTypeName;
+        std::visit([&](auto &&vqp) { listTypeName = vqp.getListTypeName(); }, *queryTest);
+        std::visit([&](auto &&vqp ) { thisTestStatus = vqp.runSelfTest(); }, *queryTest);
+        if (thisTestStatus != TESTPASSED)
+        {
+            allUnintTestsPassed = TESTFAILED;
+        }
+        reportUnitTestStatusExitIfQuitFirstFail(thisTestStatus,  listTypeName);
     }
 
     return allUnintTestsPassed;
@@ -192,7 +184,7 @@ static TestStatus runAllIntegrationTests() noexcept
     integrationTests.push_back(std::make_shared<TestScheduleItemModel>());
 
     try {
-        for (auto integrationTest: integrationTests)
+        for (const auto& integrationTest: integrationTests)
         {
             separateTestCaseOutput();
 
@@ -226,10 +218,36 @@ static TestStatus runAllIntegrationTests() noexcept
  * working as expected. Finally run the integration tests after all the unit tests
  * have been performed.
  */
-int main(int argc, char* argv[])
+static bool runAllTests()
 {
     bool allTestsPassed = true;
     std::vector<std::function<TestStatus()>> tests = {runAllUnitTests, runAllQueryUnitTests, runAllIntegrationTests};
+
+    TestDBConnection dbConnectionTest;
+    if (dbConnectionTest.runTestConnect() == TESTFAILED)
+    {
+        // Prevent cascading failures
+        return false;
+    }
+
+    for (const auto& test: tests)
+    {
+        if (test() == TESTFAILED)
+        {
+            allTestsPassed = false;
+            if (programOptions.quitFirstFail)
+            {
+                return allTestsPassed;
+            }
+        }
+    }
+
+    return allTestsPassed;
+}
+
+int main(int argc, char* argv[])
+{
+    bool allTestsPassed = true;
 
     try {
 		if (const auto progOptions = parseCommandLine(argc, argv); progOptions.has_value())
@@ -237,26 +255,11 @@ int main(int argc, char* argv[])
 			programOptions = *progOptions;
             UtilityTimer stopWatch;
 
+            // User a common date to reduce the differences in the regression test
+            // output. The date chosen is the date development started.
             common::initCommonTestValues("2024-05-14 08:31:53");
 
-            TestDBConnection dbConnectionTest;
-            if (dbConnectionTest.runTestConnect() == TESTFAILED)
-            {
-                // Prevent cascading failures
-                return EXIT_FAILURE;
-            }
-
-            for (auto test: tests)
-            {
-                if (test() == TESTFAILED)
-                {
-                    allTestsPassed = false;
-                    if (programOptions.quitFirstFail)
-                    {
-                        return EXIT_FAILURE;
-                    }
-                }
-            }
+            allTestsPassed = runAllTests();
 	
             if (programOptions.enableExecutionTime)
 			{
