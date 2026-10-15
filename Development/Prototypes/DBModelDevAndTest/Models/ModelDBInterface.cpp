@@ -219,7 +219,7 @@ TestStatus ModelDBInterface::runSelfTest() noexcept
     
     if (selfTestStatus == TESTPASSED)
     {
-        std::cout <<  std::format("{} Self Test {}\n", getModelName(), "PASSED");
+        std::cout <<  std::format("{} Self Test {}", getModelName(), "PASSED") << std::endl;
     }
     else
     {
