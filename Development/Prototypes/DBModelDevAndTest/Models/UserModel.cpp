@@ -336,7 +336,7 @@ TestStatus UserModel::testAllInsertFailures()
     fieldSettings.push_back(std::bind(&UserModel::setLoginName, this, std::placeholders::_1));
     fieldSettings.push_back(std::bind(&UserModel::setPassword, this, std::placeholders::_1));
 
-    for (auto setField: fieldSettings)
+    for (const auto& setField: fieldSettings)
     {
         if (testInsertionFailureMessages(expectedErrors) != TESTPASSED)
         {
