@@ -36,7 +36,7 @@ protected:
 /*
  * for MySQL pattern match of string
  */
-    std::string wrapSearchContentSQLPatternMatch(std::string searchString) noexcept;
+    std::string wrapSearchContentSQLPatternMatch(std::string searchString) const noexcept;
 
 /*
  * All calls to runQueryAsync, staticRunQueryAsync and getConnectionFormatOptsAsync

@@ -35,7 +35,7 @@ void CoreDBInterface::debugShowVariables(std::string functionName) const noexcep
     std::cout << std::endl;
 }
 
-std::string CoreDBInterface::wrapSearchContentSQLPatternMatch(std::string searchString) noexcept
+std::string CoreDBInterface::wrapSearchContentSQLPatternMatch(std::string searchString) const noexcept
 {
     std::string patternMatchString("%");
     patternMatchString.append(searchString);
