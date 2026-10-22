@@ -324,12 +324,6 @@ void TaskModel::setPersonal(bool personal)
     m_personal = personal;
 }
 
-void TaskModel::setTaskID(std::size_t taskID)
-{
-    m_modified = true;
-    m_primaryKey = taskID;
-}
-
 std::string TaskModel::taskStatusString(TaskModel::TaskStatus inVal) const
 {
     auto statusName = taskStatusConversionTable.lookupName(inVal);

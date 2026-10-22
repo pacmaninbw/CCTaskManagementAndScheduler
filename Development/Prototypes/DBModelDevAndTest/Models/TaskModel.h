@@ -67,7 +67,7 @@ public:
         setCompletionDate(common::getTodaysDate());
         setStatus(TaskModel::TaskStatus::Complete);
     }
-    std::size_t getTaskID() const { return m_primaryKey; };
+    std::size_t getTaskID() const { return getPrimaryKey(); };
     std::size_t getCreatorID() const { return m_creatorID; };
     std::size_t getAssignToID() const { return m_assignToID; };
     std::string getDescription() const { return m_description; };
@@ -107,7 +107,7 @@ public:
     void setPriorityGroupC(const char priorityGroup);
     void setPriority(unsigned int priority);
     void setPersonal(bool personalIn);
-    void setTaskID(std::size_t taskID);
+    void setTaskID(std::size_t taskID) noexcept { setPrimaryKey(taskID, true); };
     std::string taskStatusString(TaskModel::TaskStatus status) const;
     TaskModel::TaskStatus stringToStatus(std::string statusName) const;
 

@@ -31,12 +31,6 @@ UserGoalModel::UserGoalModel(const GoalDbQueryValues &databaseValues)
 }
 
 
-void UserGoalModel::setGoalId(std::size_t userGoalId)
-{
-    m_modified = true;
-    m_primaryKey = userGoalId;
-}
-
 void UserGoalModel::setUserId(std::size_t userId)
 {
     m_modified = true;

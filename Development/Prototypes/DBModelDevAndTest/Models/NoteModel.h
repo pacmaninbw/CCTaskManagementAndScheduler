@@ -41,7 +41,7 @@ public:
     std::size_t getUserId() const { return m_userID; };
     std::string getContent() const { return m_content; };
 
-    void setNoteId(std::size_t noteId);
+    void setNoteId(std::size_t noteId) noexcept {setPrimaryKey(noteId, true); };
     void setUserId(std::size_t userId);
     void setContent(std::string content);
 /*

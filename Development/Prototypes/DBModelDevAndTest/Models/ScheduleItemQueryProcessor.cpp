@@ -168,7 +168,7 @@ std::vector<std::string> ScheduleItemQueryProcessor::findEventsForRepeatCompleti
 
         if (runStringOnlyQuery(std::move(fctx).get().value()))
         {
-            matchingEvents = stringOnlyResults;
+            matchingEvents = m_stringOnlyResults;
         }
 
         clearErrorMessages();
@@ -198,7 +198,7 @@ std::vector<std::string> ScheduleItemQueryProcessor::findLocationsForRepeatCompl
 
         if (runStringOnlyQuery(std::move(fctx).get().value()))
         {
-            matchingLocations = stringOnlyResults;
+            matchingLocations = m_stringOnlyResults;
         }
 
         clearErrorMessages();

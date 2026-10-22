@@ -69,12 +69,6 @@ void ScheduleItemModel::setLocation(std::string location)
     m_location = location;
 }
 
-void ScheduleItemModel::setScheduleItemID(std::size_t eventId)
-{
-    m_modified = true;
-    m_primaryKey = eventId;
-}
-
 bool ScheduleItemModel::diffScheduleItem(ScheduleItemModel &other)
 {
     std::chrono::system_clock::time_point localStartTime = m_startTime.value_or(std::chrono::system_clock::now());

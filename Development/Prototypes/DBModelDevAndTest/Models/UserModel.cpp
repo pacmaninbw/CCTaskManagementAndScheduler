@@ -134,12 +134,6 @@ void UserModel::setSeparatingPriorityWithDot(bool separate) noexcept
     m_preferences.separateMajorAndMinorWithDot = separate;
 }
 
-void UserModel::setUserID(std::size_t UserID) noexcept
-{
-    m_modified = true;
-    m_primaryKey = UserID;
-}
-
 void UserModel::setLastLogin(std::chrono::system_clock::time_point dateAndTime) noexcept
 {
     m_modified = true;

@@ -40,7 +40,7 @@ public:
     ScheduleItemModel(const ScheduleItemDbQueryValues& databaseValues);
     virtual ~ScheduleItemModel() = default;
 
-    std::size_t getScheduleItemID() const { return m_primaryKey; };
+    std::size_t getScheduleItemID() const { return getPrimaryKey(); };
     std::size_t getUserID() const { return m_userID; };
     std::string getTitle() const { return m_title; };
     std::chrono::system_clock::time_point getStartTime() const { return m_startTime.value(); };
@@ -56,7 +56,7 @@ public:
     void setEndDateAndTime(std::chrono::system_clock::time_point endTime);
     void setPersonal(bool personal);
     void setLocation(std::string location);
-    void setScheduleItemID(std::size_t eventID);
+    void setScheduleItemID(std::size_t eventID) noexcept { setPrimaryKey(eventID, true); };
 
 /*
  * Required fields.

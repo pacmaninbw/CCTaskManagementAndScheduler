@@ -82,7 +82,7 @@ public:
     void setMinorPriorityInSchedule(bool inSchedule) noexcept;
     void setUsingLettersForMaorPriority(bool usingLetters) noexcept;
     void setSeparatingPriorityWithDot(bool separate) noexcept;
-    void setUserID(std::size_t UserID) noexcept;
+    void setUserID(std::size_t UserID) noexcept { setPrimaryKey(UserID, true); };
     void setLastLogin(std::chrono::system_clock::time_point dateAndTime) noexcept;
     void setOrganizationID(std::size_t organizationId) noexcept;
 /*

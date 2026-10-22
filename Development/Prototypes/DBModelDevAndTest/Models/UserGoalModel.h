@@ -40,14 +40,14 @@ public:
     ~UserGoalModel() = default;
 
 // get access methods
-    std::size_t getGoalId() const noexcept { return m_primaryKey; };
+    std::size_t getGoalId() const noexcept { return getPrimaryKey(); };
     std::size_t getUserId() const noexcept { return m_userID; };
     std::string getDescription() const noexcept { return m_description; };
     unsigned int getPriority() const noexcept { return m_priority.value_or(0); };
     std::size_t getParentId() const noexcept { return m_parentID.value_or(0); };
 
 // set access methods
-    void setGoalId(std::size_t userGoalId);
+    void setGoalId(std::size_t userGoalId) noexcept { setPrimaryKey(userGoalId, true); };
     void setUserId(std::size_t userId);
     void setDescription(std::string newDescription);
     void setPriority(unsigned int newPriority);

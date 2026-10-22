@@ -43,8 +43,8 @@ public:
 /*
  * Access member functions
  */
-    void setOrganizationId(std::size_t orgId) noexcept;
-    std::size_t getOrganizationId() const noexcept { return m_primaryKey; };
+    void setOrganizationId(std::size_t orgId) noexcept { setPrimaryKey(orgId, true); };
+    std::size_t getOrganizationId() const noexcept { return getPrimaryKey(); };
     void setOrganizationName(std::string organizationName) noexcept;
     std::string getOrganizationName() const noexcept { return m_organizationName; };
     void setEmailAddress(std::string emailAddress) noexcept;

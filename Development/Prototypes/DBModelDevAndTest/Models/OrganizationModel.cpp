@@ -39,12 +39,6 @@ OrganizationModel::OrganizationModel(const OrganizationDbQueryValues &databaseVa
     m_lastModifiedByUser = databaseValues.last_modified_by_user.value_or(0);
 }
 
-void OrganizationModel::setOrganizationId(std::size_t orgId) noexcept
-{
-    m_modified = true;
-    m_primaryKey = orgId;
-}
-
 void OrganizationModel::setOrganizationName(std::string organizationName) noexcept
 {
     m_modified = true;
@@ -359,7 +353,10 @@ TestStatus OrganizationModel::testEqualityOperator() noexcept
         return TESTFAILED;
     }
 
-    other = *this;
+    if (!m_forceError)
+    {
+        other = *this;
+    }
     
     return (*this == other)? TESTPASSED: TESTFAILED;
 }

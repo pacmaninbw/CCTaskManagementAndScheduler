@@ -1,5 +1,6 @@
 // Project Header Files
 #include "CommandLineParser.h"
+#include "commonTestValues.h"
 #include "ModelDBInterface.h"
 
 // External Libraries
@@ -8,6 +9,7 @@
 
 // Standard C++ Header Files
 #include <exception>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -141,6 +143,15 @@ void ModelDBInterface::reportMissingFields() noexcept
     }
 }
 
+void ModelDBInterface::setPrimaryKey(std::size_t primaryKey, bool setModified)
+{
+    m_modified = setModified;
+    if (!m_forceError)
+    {
+        m_primaryKey = primaryKey;
+    }
+}
+
 void ModelDBInterface::setLastModifiedBy(std::size_t userId)
 {
     m_modified = true;
@@ -165,6 +176,34 @@ TestStatus ModelDBInterface::runSelfTest() noexcept
     TestStatus selfTestStatus = TESTPASSED;
 
     std::cout << "\nRunning " << getModelName() << " Self Test\n";
+
+    m_forceError = true;
+    common::separateTestCaseOutput("*");
+    std::cerr << "Forcing Errors" << std::endl;
+    selfTestStatus = selfTestSinglePass();
+
+    common::separateTestCaseOutput("*");
+    std::cerr << "NO Errors Forced" << std::endl;
+    m_forceError = false;
+    selfTestStatus = selfTestSinglePass();
+
+    m_selfTest = false;
+    
+    if (selfTestStatus == TESTPASSED)
+    {
+        std::cout <<  std::format("{} Self Test {}", getModelName(), "PASSED") << std::endl;
+    }
+    else
+    {
+        std::cerr <<  std::format("{} Self Test {}\n", getModelName(), "FAILED");
+    }
+
+    return selfTestStatus;
+}
+
+TestStatus ModelDBInterface::selfTestSinglePass() noexcept
+{
+    TestStatus selfTestStatus = TESTPASSED;
 
     if (testExceptionHandling()!= TESTPASSED)
     {
@@ -215,17 +254,6 @@ TestStatus ModelDBInterface::runSelfTest() noexcept
         std::cout << "Common Update Failure Test PASSED!\n";
     }
 
-    m_selfTest = false;
-    
-    if (selfTestStatus == TESTPASSED)
-    {
-        std::cout <<  std::format("{} Self Test {}", getModelName(), "PASSED") << std::endl;
-    }
-    else
-    {
-        std::cerr <<  std::format("{} Self Test {}\n", getModelName(), "FAILED");
-    }
-
     return selfTestStatus;
 }
 
@@ -265,7 +293,7 @@ std::string ModelDBInterface::conditionallyOutputCoreTimeStamps() const
         output.append("\n");
     };
 
-    if (programOptions.showTimeStamps)
+    if (m_showTimeStamps || m_forceError)
     {
         showTime("Created", m_createdTimeStamp);
         showTime("Last Updated", m_lastUpdateTimeStamp);
@@ -378,16 +406,18 @@ TestStatus ModelDBInterface::testAttributeAccessFunctions() noexcept
 TestStatus ModelDBInterface::testPrimaryKeyAccessFunctions(std::size_t testPrimaryKey, std::function<void(std::size_t)> setFunct, std::function<std::size_t(void)> getFunct) noexcept
 {
         std::cout << "Running self test on set and get functions for " << m_modelName << "::" << m_primaryKeyName << "(Primary Key)\n";
+
         m_modified = false;
+
         setFunct(testPrimaryKey);
-        if (!m_modified)
+        if (!isModified())
         {
             return formattedAttributeFailureMessage(true, m_primaryKeyName, "FAILED to set modified");
         }
 
         if (m_primaryKey != testPrimaryKey)
         {
-            return formattedAttributeFailureMessage(true, m_primaryKeyName, "FAILED to set member value");
+            return formattedAttributeFailureMessage(true, m_primaryKeyName, "FAILED to set primary key value");
         }
 
         if (getFunct() != testPrimaryKey)
@@ -405,7 +435,9 @@ TestStatus ModelDBInterface::testLastModifiedByAccess(std::size_t testUserIdFK) 
     std::string_view memberName("Last Modified by UserId");
 
     std::cout << "Running self test on set and get functions for " << m_modelName << "::" << memberName << "\n";
+
     m_modified = false;
+
     setLastModifiedBy(testUserIdFK);
     if (!isModified())
     {
@@ -430,7 +462,9 @@ TestStatus ModelDBInterface::testLastModifiedByAccess(std::size_t testUserIdFK) 
 TestStatus ModelDBInterface::testForeignKeyFields(std::size_t testForeignKey, std::size_t *member, std::string_view memberName, std::function<void(std::size_t)> setFunct, std::function<std::size_t(void)> getFunct) noexcept
 {
         std::cout << "Running self test on set and get functions for " << m_modelName << "::" << memberName << "(Foreign Key)\n";
+
         m_modified = false;
+
         setFunct(testForeignKey);
         if (!isModified())
         {
@@ -492,7 +526,9 @@ TestStatus ModelDBInterface::testSave()
     selfTestResetAllValues();
 
     TestStatus testStatus = TESTPASSED;
+
     m_modified = false;
+
     m_primaryKey = 0;
     std::string_view modelName(m_modelName);
     m_deleted = false;
@@ -524,7 +560,7 @@ TestStatus ModelDBInterface::testSave()
 
 TestStatus ModelDBInterface::hasErrorMessage() const
 {
-    std::string testErrorMessage = CoreDBInterface::getAllErrorMessages();
+    std::string testErrorMessage = getAllErrorMessages();
     if (testErrorMessage.empty())
     {
         std::cerr << "No error message generated! TEST FAILED!\n";
@@ -536,13 +572,13 @@ TestStatus ModelDBInterface::hasErrorMessage() const
 
 TestStatus ModelDBInterface::wrongErrorMessage(std::string expectedString) const
 {
-    std::size_t found = CoreDBInterface::m_errorMessages.find(expectedString);
+    std::size_t found = m_errorMessages.find(expectedString);
     if (found == std::string::npos)
     {
         std::cerr << "Wrong message generated! TEST FAILED!\n";
-        std::cerr << CoreDBInterface::m_errorMessages << "\n";
+        std::cerr << m_errorMessages << "\n";
         std::cerr << "Missing expected: " << expectedString << "\n";
-        std::cerr << "Error Messages:" << CoreDBInterface::m_errorMessages << "\n";
+        std::cerr << "Error Messages:" << m_errorMessages << "\n";
         return TESTFAILED;
     }
 
@@ -652,13 +688,13 @@ TestStatus ModelDBInterface::testExceptionHandling() noexcept
 
     selfTestResetAllValues();
 
-    bool globalForceException = CoreDBInterface::m_forceException;
+    bool globalForceException = m_forceException;
 
     std::vector<ExceptionTestElement> exceptionTests = initExceptionTests();
 
     TestStatus exceptionHandlingPassed = forceExceptionsLoop(exceptionTests);
 
-    CoreDBInterface::m_forceException = globalForceException;
+    m_forceException = globalForceException;
 
     std::cout << "\n\n";
 
@@ -701,7 +737,7 @@ TestStatus ModelDBInterface::testExceptionReportFailure(bool expectSuccess, bool
     if (expectSuccess)
     {
         reportFailure.append(std::format("expected success returned {} \n", isBool? "false" : "empty string"));
-        reportFailure.append(CoreDBInterface::m_errorMessages);
+        reportFailure.append(m_errorMessages);
         reportFailure.append("\n");
     }
     else

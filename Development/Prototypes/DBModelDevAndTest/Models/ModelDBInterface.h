@@ -35,13 +35,14 @@ public:
     virtual bool insert() noexcept;
     virtual bool update() noexcept;
     virtual bool hide(std::size_t userRequestingDelete) noexcept;
-    bool isInDataBase() const noexcept { return (m_primaryKey > 0); };
-    bool isModified() const noexcept { return m_modified; };
+    bool isInDataBase() const noexcept { return !m_forceError? (m_primaryKey > 0) : false; };
+    bool isModified() const noexcept { return !m_forceError? m_modified: false; };
     void clearModified() { m_modified = false; };
     bool hasRequiredValues();
     void reportMissingFields() noexcept;
     std::string getModelName() { return m_modelName; };
     bool isDeleted() const noexcept { return m_deleted; };
+    void setPrimaryKey(std::size_t primaryKey, bool setModified);
     std::size_t getPrimaryKey() const noexcept { return m_primaryKey; };
     std::size_t getLastModifiedBy() const { return m_lastModifiedByUser; };   
     void setLastModifiedBy(std::size_t userId); 
@@ -54,6 +55,7 @@ public:
     virtual TestStatus runSelfTest() noexcept;
 
 protected:
+    virtual TestStatus selfTestSinglePass() noexcept;
     std::string commonCoreVariablesOutput() const;
     std::string conditionallyOutputCoreTimeStamps() const;
 /*
@@ -137,8 +139,6 @@ protected:
     {
         std::cout << "Running self test on set and get functions for " << m_modelName << "::" << memberName << "\n";
 
-        m_modified = false;
-
         setFunct(testValue);
         if (!isModified())
         {
@@ -168,8 +168,6 @@ protected:
         std::function<void(U)>setFunct, std::function<std::optional<U>(void)>getFunct) noexcept
     {
         std::cout << "Running self test on set and get functions for " << m_modelName << "::" << memberName << "\n";
-
-        m_modified = false;
 
         setFunct(testValue.value());
         if (!isModified())
@@ -257,9 +255,19 @@ protected:
         }
 
         m_forceException = false;
-        if (!funcUnderTest(args...))
+        if (m_forceError)
         {
-            return testExceptionReportFailure(true, true, funcName);
+            if (funcUnderTest(args...))
+            {
+                return testExceptionReportFailure(false, true, funcName);
+            }
+        }
+        else
+        {
+            if (!funcUnderTest(args...))
+            {
+                return testExceptionReportFailure(true, true, funcName);
+            }
         }
 
         return TESTPASSED;

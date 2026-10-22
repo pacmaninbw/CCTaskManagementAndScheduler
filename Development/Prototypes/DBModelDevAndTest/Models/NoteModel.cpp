@@ -27,12 +27,6 @@ NoteModel::NoteModel(const NoteDbQueryValues &dbTranslator)
     m_lastModifiedByUser = dbTranslator.last_modified_by_user;
 }
 
-void NoteModel::setNoteId(std::size_t noteId)
-{
-    m_modified = true;
-    m_primaryKey = noteId;
-}
-
 void NoteModel::setUserId(std::size_t userId)
 {
     m_modified = true;
