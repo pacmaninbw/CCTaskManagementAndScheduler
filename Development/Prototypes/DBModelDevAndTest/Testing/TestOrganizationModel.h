@@ -50,7 +50,7 @@ private:
     TestStatus testNegativePathAlreadyInDataBase() const;
     TestStatus testnegativePathNotModified() const;
     
-
+    std::size_t m_ordIdInDatabase = 0;
     std::shared_ptr<UserModel> m_userOne;
     std::shared_ptr<UserModel> m_userTwo;
     std::vector<OrganizationModel_shp> m_testData;

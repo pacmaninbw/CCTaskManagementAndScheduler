@@ -146,6 +146,7 @@ TestStatus TestOrganizationModel::testPositivePathInsertions()
         std::cerr << newOrganization->getAllErrorMessages() << "\n";
         return TESTFAILED;
     }
+    m_ordIdInDatabase = newOrganization->getOrganizationId();
 
     // Test the maximum number of fields allowed
     OrganizationModel_shp allFieldsFilled = organizationFactory(
@@ -481,7 +482,14 @@ TestStatus TestOrganizationModel::testPositivePathDeleteOrganization() const
 TestStatus TestOrganizationModel::testPositivePathSetParentOrganization() const
 {
     OrganizationQueryProcessor source;
-    OrganizationModel_shp parentTrap = source.getOrganizationById(2);
+    OrganizationModel_shp parentTrap = source.getOrganizationById(m_ordIdInDatabase);
+
+    if (!parentTrap)
+    {
+        std::cerr << std::format("In TestOrganizationModel::{}: OrganizationQueryProcessor::getOrganizationById({}) FAILED",
+            __func__, m_ordIdInDatabase) << std::endl;
+        return TESTFAILED;
+    }
 
     if (!parentTrap->parentOrganizationHasValue())
     {
@@ -530,11 +538,11 @@ TestStatus TestOrganizationModel::testNegativePathSetParentOrganization() const
 TestStatus TestOrganizationModel::testNegativePathAlreadyInDataBase() const
 {
     OrganizationQueryProcessor organizationQueryProcessor;
-    OrganizationModel_shp alreadyInDatabase = organizationQueryProcessor.getOrganizationById(2);
+    OrganizationModel_shp alreadyInDatabase = organizationQueryProcessor.getOrganizationById(m_ordIdInDatabase);
 
-    if (!alreadyInDatabase->isInDataBase())
+    if (!alreadyInDatabase || !alreadyInDatabase->isInDataBase())
     {
-        std::cerr << std::format("TestOrganizationModel::{} Organization 1 not found in database!!\n", __func__);
+        std::cerr << std::format("TestOrganizationModel::{} Organization 2 not found in database!!\n", __func__);
         return TESTFAILED;
     }
 
@@ -546,7 +554,7 @@ TestStatus TestOrganizationModel::testnegativePathNotModified() const
 {
     OrganizationQueryProcessor organizationQueryProcessor;
     OrganizationModel_shp OrgNotModified = organizationQueryProcessor.getOrganizationById(1);
-    if (!OrgNotModified->isInDataBase())
+    if (!OrgNotModified || !OrgNotModified->isInDataBase())
     {
         std::cerr << "Organization 1 not found in database!! FAILED!\n";
         return TESTFAILED;
