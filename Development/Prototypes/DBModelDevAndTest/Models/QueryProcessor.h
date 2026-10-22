@@ -47,14 +47,14 @@ public:
         /*
          * The listTypeName variable is used during testing and debugging.
          */
-        modelName = modelname;
+        m_QPmodelName = modelname;
         std::string tempListType(modelname);
         tempListType.append("QueryProcessor");
-        listTypeName = tempListType;
+        m_listTypeName = tempListType;
     }
     virtual ~QueryProcessor() = default;
 
-    std::string getListTypeName() const noexcept { return listTypeName; };
+    std::string getListTypeName() const noexcept { return m_listTypeName; };
     
     bool runStringOnlyQuery(std::string queryString)
     {
@@ -62,14 +62,14 @@ public:
 
         try
         {
-            stringOnlyResults.clear();
+            m_stringOnlyResults.clear();
             boost::mysql::results localResult = runQueryAsync(queryString);
             return processStringOnlyResults(localResult);
         }
 
         catch(const std::exception& e)
         {
-            appendErrorMessage(std::format("In {}List.runStringOnlyQuery() : {}", listTypeName, e.what()));
+            appendErrorMessage(std::format("In {}QueryProcessor.runStringOnlyQuery() : {}", m_listTypeName, e.what()));
             return false;
         }
     }
@@ -78,7 +78,7 @@ public:
     {
         selfTestResetAllValues();
 
-        std::cout << "\nRunning " << listTypeName << " Self Test\n";
+        std::cout << "\nRunning " << m_listTypeName << " Self Test\n";
 
         return testListExceptionHandling();
     };
@@ -136,7 +136,7 @@ protected:
 
         if (shouldHaveOnlyOne.empty())
         {
-            std::string emsg(modelName);
+            std::string emsg(m_QPmodelName);
             emsg.append(" not found!");
             appendErrorMessage(emsg);
             return found;
@@ -145,7 +145,7 @@ protected:
         if (shouldHaveOnlyOne.size() > 1)
         {
             std::string emsg("Too many ");
-            emsg.append(modelName);
+            emsg.append(m_QPmodelName);
             emsg.append("s found to process!");
             appendErrorMessage(emsg);
             return found;
@@ -160,7 +160,7 @@ protected:
     {
         if (m_selfTest)
         {
-            stringOnlyResults.push_back("Test String");
+            m_stringOnlyResults.push_back("Test String");
             return true;
         }
 
@@ -175,7 +175,7 @@ protected:
             if (fieldView.kind() == boost::mysql::field_kind::string)
             {
                 std::string returnedValue = fieldView.as_string();
-                stringOnlyResults.push_back(returnedValue);
+                m_stringOnlyResults.push_back(returnedValue);
             }
     
         }
@@ -194,17 +194,17 @@ protected:
 
     virtual TestStatus testListExceptionHandling() noexcept
     {
-        std::cout << "\n\nRunning Exception Handling Test Cases " << listTypeName << "\n";
+        std::cout << "\n\nRunning Exception Handling Test Cases " << m_listTypeName << "\n";
 
         selfTestResetAllValues();
 
-        bool globalForceException = CoreDBInterface::m_forceException;
+        bool globalForceException = m_forceException;
 
         std::vector<ListExceptionTestElement> exceptionTests = initListExceptionTests();
 
         TestStatus exceptionHandlingPassed = forceListExceptionsLoop(exceptionTests);
 
-        CoreDBInterface::m_forceException = globalForceException;
+        m_forceException = globalForceException;
 
         std::cout << "\n\n";
 
@@ -224,7 +224,7 @@ protected:
                 if (exceptionTest.testExceptionFunction() == TESTFAILED)
                 {
                     std::cerr << std::format("{}::{}: Exception Test FAILED\n",
-                        listTypeName, failFunction);
+                        m_listTypeName, failFunction);
                     testAllExceptionHandling = TESTFAILED;
                 }
             }
@@ -233,7 +233,7 @@ protected:
         catch (std::exception &uncaughtException)
         {
             std::cerr << std::format("{}::{}:: Caught Unhandled Exception!! Test FAILED!\n{}",
-                listTypeName, failFunction, uncaughtException.what());
+                m_listTypeName, failFunction, uncaughtException.what());
             testAllExceptionHandling = TESTFAILED;
         }
 
@@ -245,12 +245,12 @@ protected:
      */
     TestStatus testListExceptionReportFailure(bool expectSuccess, bool isBool, const char* testExceptionFuncName) noexcept
     {
-        std::string reportFailure = std::format("In {}::{}: ", listTypeName, testExceptionFuncName);
+        std::string reportFailure = std::format("In {}::{}: ", m_listTypeName, testExceptionFuncName);
 
         if (expectSuccess)
         {
             reportFailure.append(std::format("expected success returned {} \n", isBool? "false" : "empty vector"));
-            reportFailure.append(CoreDBInterface::m_errorMessages);
+            reportFailure.append(m_errorMessages);
             reportFailure.append("\n");
         }
         else
@@ -301,13 +301,13 @@ protected:
     requires std::is_invocable_v<F, Ts...>
     TestStatus testExceptionAndSuccessNArgs(const char* funcName, F funcUnderTest, Ts... args) noexcept
     {
-        CoreDBInterface::m_forceException = true;
+        m_forceException = true;
         if (funcUnderTest(args...))
         {
             return testListExceptionReportFailure(false, true, funcName);
         }
 
-        CoreDBInterface::m_forceException = false;
+        m_forceException = false;
         if (!funcUnderTest(args...))
         {
             return testListExceptionReportFailure(true, true, funcName);
@@ -317,9 +317,9 @@ protected:
     }
 
 
-    std::string listTypeName;
-    std::string modelName;
-    std::vector<std::string> stringOnlyResults;
+    std::string m_listTypeName;
+    std::string m_QPmodelName;
+    std::vector<std::string> m_stringOnlyResults;
 };
 
 #endif // QUERYPROCESSOR_H_
