@@ -1,3 +1,9 @@
+/*
+ * The CoreDBInterface provides a low level interface for input and output to 
+ * the database. It also provides access to the program options to the models.
+ * Knowledge of the program options struct and variables is limited to the
+ * CoreDBInterface class to reduce external dependencies.
+ */
 // Project Header Files
 #include "CommandLineParser.h"
 #include "CoreDBInterface.h"
@@ -18,21 +24,13 @@ CoreDBInterface::CoreDBInterface()
     m_verboseOutput{programOptions.verboseOutput},
     m_forceError{programOptions.forceErrors},
     m_forceException{programOptions.forceExceptions},
-    m_selfTest{false}
+    m_selfTest{false},
+    m_showTimeStamps{programOptions.showTimeStamps}
 {
     m_dbConnection.server_address.emplace_host_and_port(programOptions.mySqlUrl, programOptions.mySqlPort);
     m_dbConnection.username = programOptions.mySqlUser;
     m_dbConnection.password = programOptions.mySqlPassword;
     m_dbConnection.database = programOptions.mySqlDBName;
-}
-
-void CoreDBInterface::debugShowVariables(std::string functionName) const noexcept
-{
-    std::cout << "In " << functionName << ":\n";
-    std::cout << "\tformat_opts: " << (m_formatOpts.has_value()? "TRUE" : "FALSE") << "\n";
-    std::cout << "\tinSelfTest: " << (m_selfTest? "TRUE" : "FALSE") << "\n";
-    std::cout << "\tforceException: " << (m_forceException? "TRUE" : "FALSE") << "\n";
-    std::cout << std::endl;
 }
 
 std::string CoreDBInterface::wrapSearchContentSQLPatternMatch(std::string searchString) const noexcept
@@ -146,7 +144,6 @@ boost::asio::awaitable<boost::mysql::format_options> CoreDBInterface::coRoutineG
 
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
     conn.set_meta_mode(boost::mysql::metadata_mode::full);
-
 
     co_await conn.async_connect(m_dbConnection);
 

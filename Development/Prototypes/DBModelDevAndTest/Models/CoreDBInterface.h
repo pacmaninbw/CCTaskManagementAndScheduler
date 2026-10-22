@@ -1,3 +1,10 @@
+/*
+ * The CoreDBInterface provides a low level interface for input and output to 
+ * the database. It also provides access to the program options to the models.
+ * Knowledge of the program options struct and variables is limited to the
+ * CoreDBInterface class to reduce external dependencies.
+ */
+
 #ifndef COREDBINTERFACECORE_H_
 #define COREDBINTERFACECORE_H_
 
@@ -9,7 +16,6 @@
 #include <boost/mysql/pfr.hpp>
 
 // Standard C++ Header Files
-#include <chrono>
 #include <iostream>
 #include <optional>
 #include <string>
@@ -24,7 +30,18 @@ public:
     void setForceExceptions(bool forceIt) { m_forceException = forceIt; };
     void setSelfTest(bool isSelfTest) { m_selfTest = isSelfTest; };
     void testResetFormatOpts() { m_formatOpts.reset(); };
-    void debugShowVariables(std::string functionName) const noexcept;
+
+#ifdef SHOW_DEBUG_VARIABLES
+    void debugShowVariables(std::string functionName) const noexcept
+    {
+        std::cout << "In " << functionName << ":\n";
+        std::cout << "\tformat_opts: " << (m_formatOpts.has_value()? "TRUE" : "FALSE") << "\n";
+        std::cout << "\tinSelfTest: " << (m_selfTest? "TRUE" : "FALSE") << "\n";
+        std::cout << "\tforceException: " << (m_forceException? "TRUE" : "FALSE") << "\n";
+        std::cout << "\tforceError: " << (m_forceError? "TRUE" : "FALSE") << "\n";
+        std::cout << std::endl;
+    }
+#endif 
 
 protected:
     void initFormatOptions();
@@ -107,12 +124,13 @@ protected:
     };
 
 
-    std::string m_errorMessages;
+    std::string m_errorMessages;// Provides database access error messsages to the application and for unit testing
     boost::mysql::connect_params m_dbConnection;
-    bool m_verboseOutput;
-    bool m_forceError;
-    bool m_forceException;
-    bool m_selfTest;
+    bool m_verboseOutput;       // Used in unit testing and debugging
+    bool m_forceError;          // Used in unit testing
+    bool m_forceException;      // User in uint testing
+    bool m_selfTest;            // used in unit testing
+    bool m_showTimeStamps;      // Used in unit testing and debugging
     std::optional<boost::mysql::format_options> m_formatOpts;
 };
 
