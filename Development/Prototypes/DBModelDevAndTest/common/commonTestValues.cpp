@@ -4,6 +4,8 @@
 
 // Standard C++ Header Files
 #include <chrono>
+#include <format>
+#include <iostream>
 #include <string>
 
 namespace common
@@ -39,4 +41,19 @@ namespace common
         
     }
 
+    void separateTestCaseOutput(std::string separatorString) noexcept
+    {
+        constexpr std::size_t lineWidth = 80;
+        std::string testCaseSeparator;
+
+        std::string horizontalLine;
+        for (std::size_t i = 0; i <= lineWidth; ++i)
+        {
+            horizontalLine.append(separatorString);
+        }
+
+        testCaseSeparator = std::format("{}\n\n{}", horizontalLine, horizontalLine);
+
+        std::cout << testCaseSeparator << std::endl;
+    }
 }

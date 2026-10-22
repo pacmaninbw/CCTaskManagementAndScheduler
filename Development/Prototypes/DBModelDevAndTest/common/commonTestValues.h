@@ -16,6 +16,7 @@ namespace common {
     extern std::chrono::year_month_day ProductionTestDataAddedDate;
 
     extern void initCommonTestValues(std::string testTimeStampStr);
+    extern void separateTestCaseOutput(std::string separatorString) noexcept;
 }
 
 #endif	// COMMONTESTVALUE_H_

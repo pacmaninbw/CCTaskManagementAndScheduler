@@ -43,25 +43,6 @@
  */
 ProgramOptions programOptions;
 
-static void separateTestCaseOutput() noexcept
-{
-    constexpr std::size_t lineWidth = 80;
-    static std::string testCaseSeparator;
-
-    if (testCaseSeparator.empty())
-    {
-        std::string horizontalLine;
-        for (std::size_t i = 0; i <= lineWidth; ++i)
-        {
-            horizontalLine.append("-");
-        }
-
-        testCaseSeparator = std::format("{}\n\n{}", horizontalLine, horizontalLine);
-    }
-
-    std::cout << testCaseSeparator << std::endl;
-}
-
 static void reportUnitTestStatusExitIfQuitFirstFail(TestStatus result, std::string itemUnderTest)
 {
     if (result != TESTPASSED)
@@ -97,7 +78,7 @@ static TestStatus runAllUnitTests()
 
     for (const auto& unitTest: unitTests)
     {
-        separateTestCaseOutput();
+        common::separateTestCaseOutput("-");
 
         if (!unitTest)
         {
@@ -145,7 +126,7 @@ static TestStatus runAllQueryUnitTests()
 
     for (const auto& queryTest: QueryProcessorTests)
     {
-        separateTestCaseOutput();
+        common::separateTestCaseOutput("-");
 
         if (!queryTest)
         {
@@ -186,7 +167,7 @@ static TestStatus runAllIntegrationTests() noexcept
     try {
         for (const auto& integrationTest: integrationTests)
         {
-            separateTestCaseOutput();
+        common::separateTestCaseOutput("-");
 
             modelBeingTested = integrationTest->getModelName();
             
