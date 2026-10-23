@@ -30,3 +30,15 @@ valgrind --track-origins=yes protoPersonalPlanner -u "$sqluser" -p "$sqlpassword
 echo "valgrind Diff"
 diff -w Testing/valgrindOut.txt Testing/valgrindOut_forDiff.txt > valgrindTestDiffOut.txt || true
 
+mkdir TestCoverage
+echo "copy Gcov data"
+# Using ln -s creates broken links and moving the files forces a rebuild to regenerate 
+# files built at compile time.
+find . -type f -name "*.gc*" -exec cp -t TestCoverage {} +
+
+echo "Running Lcov"
+lcov --directory . --capture --output-file TestCoverage/protoPersonalPlanner_Total.info --ignore-errors gcov,mismatch 2>&1 > TestCoverage/lcovOut.txt
+echo "Removing Library Coverage" 
+lcov --remove TestCoverage/protoPersonalPlanner_Total.info '/usr/include/*' '*/boost/*' -o TestCoverage/protoPersonalPlanner_filtered.info 2>&1 >> TestCoverage/lcovOut.txt
+echo "Generating test coverage report"
+genhtml TestCoverage/protoPersonalPlanner_filtered.info --output-directory TestCoverage 2>&1 > TestCoverage/genhtmlOut.txt
