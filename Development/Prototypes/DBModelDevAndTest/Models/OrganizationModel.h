@@ -158,9 +158,6 @@ protected:
     virtual TestStatus testExceptionHide() noexcept override;
     void initValidTestValues() noexcept;
 
-    void convertOrganizationModelTo(std::shared_ptr<OrganizationModel> original, OrganizationDbQueryValues& testInput) noexcept;
-    TestStatus testDataBaseToModelConversion() noexcept;
-
 /*
  * Model Specific Attributes
  */
