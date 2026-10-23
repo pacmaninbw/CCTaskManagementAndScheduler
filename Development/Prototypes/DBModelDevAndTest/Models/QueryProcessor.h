@@ -60,18 +60,10 @@ public:
     {
         clearErrorMessages();
 
-        try
-        {
-            m_stringOnlyResults.clear();
-            boost::mysql::results localResult = runQueryAsync(queryString);
-            return processStringOnlyResults(localResult);
-        }
-
-        catch(const std::exception& e)
-        {
-            appendErrorMessage(std::format("In {}QueryProcessor.runStringOnlyQuery() : {}", m_listTypeName, e.what()));
-            return false;
-        }
+        m_stringOnlyResults.clear();
+        // Exceptions are handled at a higher level
+        boost::mysql::results localResult = runQueryAsync(queryString);
+        return processStringOnlyResults(localResult);
     }
 
     virtual TestStatus runSelfTest() noexcept
@@ -95,12 +87,8 @@ protected:
         queryResultValues.clear();
         if (m_selfTest)
         {
-            // In self test if we are not forcing an exception, the function must return
+            // In self test if we are not forcing errors, the function must return
             // something.
-            if (m_forceException)
-            {
-                throw std::out_of_range("Forced exception");
-            }
             if (m_forceError)
             {
                 return queryResultValues;
@@ -136,18 +124,13 @@ protected:
 
         if (shouldHaveOnlyOne.empty())
         {
-            std::string emsg(m_QPmodelName);
-            emsg.append(" not found!");
-            appendErrorMessage(emsg);
+            appendErrorMessage(std::format("{} not found!", m_QPmodelName));
             return found;
         }
 
         if (shouldHaveOnlyOne.size() > 1)
         {
-            std::string emsg("Too many ");
-            emsg.append(m_QPmodelName);
-            emsg.append("s found to process!");
-            appendErrorMessage(emsg);
+            appendErrorMessage(std::format("Too many {}s found to process", m_QPmodelName));
             return found;
         }
 
@@ -160,6 +143,10 @@ protected:
     {
         if (m_selfTest)
         {
+            if (m_forceError)
+            {
+                return false;
+            }
             m_stringOnlyResults.push_back("Test String");
             return true;
         }
@@ -199,11 +186,23 @@ protected:
         selfTestResetAllValues();
 
         bool globalForceException = m_forceException;
+        bool globalForceErrors = m_forceError;
 
         std::vector<ListExceptionTestElement> exceptionTests = initListExceptionTests();
 
+        common::separateTestCaseOutput("*");
+        std::cerr << "No Errors" << std::endl;
         TestStatus exceptionHandlingPassed = forceListExceptionsLoop(exceptionTests);
 
+        common::separateTestCaseOutput("*");
+        std::cerr << "Forcing Errors" << std::endl;
+        m_forceError = true;
+        if (forceListExceptionsLoop(exceptionTests) == TESTPASSED)
+        {
+            exceptionHandlingPassed = TESTFAILED;
+        }
+
+        m_forceError = globalForceErrors;
         m_forceException = globalForceException;
 
         std::cout << "\n\n";
