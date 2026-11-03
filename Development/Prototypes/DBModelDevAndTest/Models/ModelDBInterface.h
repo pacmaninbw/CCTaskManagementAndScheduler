@@ -35,23 +35,22 @@ public:
     virtual bool insert() noexcept;
     virtual bool update() noexcept;
     virtual bool hide(std::size_t userRequestingDelete) noexcept;
-    bool isInDataBase() const noexcept { return !m_forceError? (m_primaryKey > 0) : false; };
-    bool isModified() const noexcept { return !m_forceError? m_modified: false; };
+    bool isInDataBase() const noexcept;
+    bool isModified() const noexcept;
+    void setModified() noexcept;
     void clearModified() { m_modified = false; };
     bool hasRequiredValues();
     void reportMissingFields() noexcept;
     std::string getModelName() { return m_modelName; };
     bool isDeleted() const noexcept { return m_deleted; };
     void setPrimaryKey(std::size_t primaryKey, bool setModified);
-    std::size_t getPrimaryKey() const noexcept { return m_primaryKey; };
-    std::size_t getLastModifiedBy() const { return m_lastModifiedByUser; };   
-    void setLastModifiedBy(std::size_t userId); 
+    std::size_t getPrimaryKey() const noexcept;
+    std::size_t getLastModifiedBy() const;
+    void setLastModifiedBy(std::size_t userId) noexcept; 
     void setLastModifiedTimeStamp(std::chrono::system_clock::time_point lastModifiedTS);
-    std::optional<std::chrono::system_clock::time_point> getLastModifiedTimeStamp() { return m_lastUpdateTimeStamp; };
-    std::chrono::system_clock::time_point getLastModifiedValue() { return m_lastUpdateTimeStamp.value(); };
+    std::chrono::system_clock::time_point getLastModifiedValue();
     void setCreatedTimeStamp(std::chrono::system_clock::time_point createdTS);
-    std::optional<std::chrono::system_clock::time_point> getCreatedTimeStamp() { return m_createdTimeStamp; };
-    std::chrono::system_clock::time_point getCreatedTSValue() { return m_createdTimeStamp.value(); };
+    std::chrono::system_clock::time_point getCreatedTSValue();
     virtual TestStatus runSelfTest() noexcept;
 
 protected:
@@ -109,13 +108,38 @@ protected:
  * The override should provide resets for any of the model under tests attributes.
  */
     virtual void selfTestResetAllValues() noexcept;
+/*
+ * To ensure that the negative paths are also working as expected and to improve
+ * test coverage we need to the negative paths in the self test functions provided
+ * by the ModelDBInterface. Successful tests basically only test the positive
+ * path through the test functions.
+ */
+
+    enum class ForceAttributeErrors {ForceNotModified, ForceValueNotSet, ForceGetValueError, ForceExceptionOptionGetValue, NoForceError};
+    ForceAttributeErrors m_attributeForceErrorTestIndex = ForceAttributeErrors::NoForceError;
+    std::size_t m_testTheTestSize_t;
+    std::optional<std::size_t> m_testTheOptionalTestSize;
+    TestStatus testNegativePathInCoreTests() noexcept;
+    TestStatus testNegativePathAttributeTesting() noexcept;
+    TestStatus testTestPrimaryKeyAttribute() noexcept;
+    TestStatus testTestLastModifiedByUser() noexcept;
+    TestStatus testTestForeignKeyFields() noexcept;
+    TestStatus testTestOptionalAccessorFunctions() noexcept;
+    void foreignKeySetForNegativeTest(std::size_t testValue) noexcept;
+    std::size_t foreignKeyGetForNegativeTest() const noexcept;
+    void negativePathSetprimaryKey(std::size_t testValue) { setPrimaryKey(testValue, true); };
+    void negativePathSetOptionalSize_t(std::size_t testValue) noexcept;
+    std::size_t negativePatGetOptionalSize_t();
+
+    bool isForcingAttributeError(ForceAttributeErrors currentError) const;
+    void modifyTimeStampForNegativePathTest(std::optional<std::chrono::system_clock::time_point>& timeStamp);
 
 /*
  * Attribute Access Unit Testing.
  */
     virtual std::vector<AttributeTestFunction> initAttributeAccessTests() noexcept;
     TestStatus formattedAttributeFailureMessage(bool isSetter, std::string_view memberName, std::string_view message) const noexcept;
-    virtual TestStatus testAttributeAccessFunctions() noexcept;
+    TestStatus testAttributeAccessFunctions() noexcept;
     TestStatus testPrimaryKeyAccessFunctions(std::size_t testPrimaryKey, std::function<void(std::size_t)>setFunct,
         std::function<std::size_t(void)>getFunct) noexcept;
     TestStatus testLastModifiedByAccess(std::size_t testUserIdFK) noexcept;
@@ -124,9 +148,10 @@ protected:
     TestStatus testTimeStampAccessorFunctions(std::chrono::system_clock::time_point testValue,
         std::optional<std::chrono::system_clock::time_point>* member, std::string_view memberName,
         std::function<void(std::chrono::system_clock::time_point)>setFunct,
-        std::function<std::chrono::system_clock::time_point(void)>getFunct
+        std::function<std::chrono::system_clock::time_point(void)>getValueFunct
     ) noexcept;
-
+    TestStatus testCreatedTimeStampAccess() noexcept;
+    TestStatus testLastModifiedTimeStampAccess() noexcept;
     /*
      * Test the attribute access functions for a particular attribute. Used
      * to test data attributes in a model. The set function is expected to
@@ -137,7 +162,7 @@ protected:
     TestStatus testAccessorFunctions(U testValue, U* member, std::string_view memberName,
          std::function<void(U)>setFunct, std::function<U(void)>getFunct) noexcept
     {
-        std::cout << "Running self test on set and get functions for " << m_modelName << "::" << memberName << "\n";
+        std::cout << "Running self test on access functions for " << m_modelName << "::" << memberName << "\n";
 
         setFunct(testValue);
         if (!isModified())
@@ -155,7 +180,7 @@ protected:
             return formattedAttributeFailureMessage(false, memberName, "FAILED");
         }
 
-        std::cout << "Self test on set and get functions for " << m_modelName << "::" << memberName << " PASSED\n";
+        std::cout << "Self test on access functions for " << m_modelName << "::" << memberName << " PASSED\n";
 
         return TESTPASSED;
     }
@@ -164,12 +189,12 @@ protected:
      * Test the attribute access functions for a particular optional data attribute.
      */
     template <typename U>
-    TestStatus testOptionalAccessorFunctions(std::optional<U> testValue, std::optional<U>* member, std::string_view memberName,
+    TestStatus testOptionalAccessorFunctions(U testValue, std::optional<U>* member, std::string_view memberName,
         std::function<void(U)>setFunct, std::function<std::optional<U>(void)>getFunct) noexcept
     {
-        std::cout << "Running self test on set and get functions for " << m_modelName << "::" << memberName << "\n";
+        std::cout << "Running self test on access functions for " << m_modelName << "::" << memberName << "\n";
 
-        setFunct(testValue.value());
+        setFunct(testValue);
         if (!isModified())
         {
             return formattedAttributeFailureMessage(true, memberName, "FAILED to set modified");
@@ -180,10 +205,11 @@ protected:
             if (!member->has_value())
             {
                 std::cerr  << "In self test for: " << m_modelName << "Set function for " << memberName << " FAILED to set member value\n";
+                return TESTFAILED;
             }
-            if (member->value() != testValue.value())
+            if (member->value() != testValue)
             {
-                std::cerr  << "In self test for: " << m_modelName << " expected value: " << testValue.value()
+                std::cerr  << "In self test for: " << m_modelName << " expected value: " << testValue
                          << "actual value: " << member->value() << " FAILED to set member value\n";
             }
             return TESTFAILED;
@@ -195,7 +221,7 @@ protected:
             return formattedAttributeFailureMessage(false, memberName, "FAILED");
         }
 
-        std::cout << "Self test on set and get functions for " << m_modelName << "::" << memberName << " PASSED\n";
+        std::cout << "Self test on access get functions for " << m_modelName << "::" << memberName << " PASSED\n";
 
         return TESTPASSED;
     }
@@ -240,8 +266,8 @@ protected:
     virtual TestStatus testExceptionInsert() { return TESTFAILED; };     // Should be added to the vector returned by initExceptionTests()
     virtual TestStatus testExceptionUpdate() { return TESTFAILED; };     // Should be added to the vector returned by initExceptionTests()
     virtual TestStatus testExceptionHide() { return TESTFAILED; };   // Should be added to the vector returned by initExceptionTests()
-    virtual TestStatus testExceptionHandling() noexcept;
-    virtual TestStatus forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) const noexcept;
+    TestStatus testExceptionHandling() noexcept;
+    TestStatus forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) const noexcept;
     TestStatus testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName) const noexcept;
 
     template <typename F, typename... Ts>
@@ -301,6 +327,41 @@ protected:
 
         return TESTPASSED;
     }
+
+#ifdef DEBUG_FORCE_ATTRIBUTE_ERRORS
+    void debugShowForceErrorType(ForceAttributeErrors currentError) const
+    {
+        std::string_view outputString;
+        switch (currentError)
+        {
+            case ForceAttributeErrors::ForceNotModified:
+                outputString = "Forcing Not Modified Error";
+                break;
+            
+            case ForceAttributeErrors::ForceValueNotSet:
+                outputString = "Forcing Value Not Set Error";
+                break;
+
+            case ForceAttributeErrors::ForceGetValueError:
+                outputString = "Forcing Get Value Error";
+                break;
+
+            case ForceAttributeErrors::ForceExceptionOptionGetValue:
+                outputString = "Forceing Exceptions on Get Optional Value";
+                break;
+
+            case ForceAttributeErrors::NoForceError:
+                outputString = "Not Forcing any Errors";
+                break;
+
+            default:
+                outputString = "Unknown force attribute error type";
+                break;
+        }
+
+        std::cerr << std::format("Forcing error m_forceError {} attribute error type {}\n", m_forceError? "TRUE" : "FALSE", outputString);
+    }
+#endif
 
 };
 
