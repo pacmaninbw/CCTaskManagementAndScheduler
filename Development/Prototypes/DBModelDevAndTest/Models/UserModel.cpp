@@ -64,85 +64,85 @@ void UserModel::createLoginBasedOnUserName(
 
 void UserModel::setLastName(const std::string &lastName) noexcept
 {
-    m_modified = true;
+    setModified();
     m_lastName = lastName;
 }
 
 void UserModel::setFirstName(const std::string &firstName) noexcept
 {
-    m_modified = true;
+    setModified();
     m_firstName = firstName;
 }
 
 void UserModel::setMiddleInitial(const std::string &middleinit) noexcept
 {
-    m_modified = true;
+    setModified();
     m_middleInitial = middleinit;
 }
 
 void UserModel::setEmail(const std::string &email) noexcept
 {
-    m_modified = true;
+    setModified();
     m_email = email;
 }
 
 void UserModel::setLoginName(const std::string &loginName) noexcept
 {
-    m_modified = true;
+    setModified();
     m_loginName = loginName;
 }
 
 void UserModel::setPassword(const std::string &password) noexcept
 {
-    m_modified = true;
+    setModified();
     m_password = password;
 }
 
 void UserModel::setStartTime(const std::string &startTime) noexcept
 {
-    m_modified = true;
+    setModified();
     m_preferences.startTime = startTime;
 }
 
 void UserModel::setEndTime(const std::string &endTime) noexcept
 {
-    m_modified = true;
+    setModified();
     m_preferences.endTime = endTime;
 }
 
 void UserModel::setPriorityInSchedule(bool inSchedule) noexcept
 {
-    m_modified = true;
+    setModified();
     m_preferences.includePriorityInSchedule = inSchedule;
 }
 
 void UserModel::setMinorPriorityInSchedule(bool inSchedule) noexcept
 {
-    m_modified = true;
+    setModified();
     m_preferences.includeMinorPriorityInSchedule = inSchedule;
 }
 
 void UserModel::setUsingLettersForMaorPriority(bool usingLetters) noexcept
 {
-    m_modified = true;
+    setModified();
     m_preferences.userLetterForMajorPriority = usingLetters;
 }
 
 void UserModel::setSeparatingPriorityWithDot(bool separate) noexcept
 {
-    m_modified = true;
+    setModified();
     m_preferences.separateMajorAndMinorWithDot = separate;
 }
 
 void UserModel::setLastLogin(std::chrono::system_clock::time_point dateAndTime) noexcept
 {
-    m_modified = true;
+    setModified();
     m_lastLogin = dateAndTime;
 }
 
 void UserModel::setOrganizationID(std::size_t organizationId) noexcept
 {
-    m_modified = true;
+    setModified();
     m_organizationId = organizationId;
 }
 
@@ -294,6 +294,12 @@ void UserModel::parsePrefenceText(std::string preferences) noexcept
 
 TestStatus UserModel::testEqualityOperator() noexcept
 {
+    selfTestResetAllValues();
+
+    initValidTestValues();
+    
+    setUserID(31);
+
     UserModel other;
 
     other.setUserID(m_primaryKey);
@@ -303,6 +309,10 @@ TestStatus UserModel::testEqualityOperator() noexcept
     }
 
     other = *this;
+    if (m_forceError)
+    {
+        setUserID(1);
+    }
     
     return (*this == other)? TESTPASSED: TESTFAILED;
 }
@@ -367,7 +377,6 @@ void UserModel::selfTestResetAllValues() noexcept
     m_email.clear();
     m_loginName.clear();
     m_password.clear();
-    m_createdTimeStamp.reset();
     m_lastLogin.reset();
 }
 
@@ -457,7 +466,7 @@ TestStatus UserModel::testCreatedDateAcfcess() noexcept
 
 TestStatus UserModel::testLastLoginAccess() noexcept
 {
-    std::optional<std::chrono::system_clock::time_point> testValue = common::TestTimeStampValue;
+    std::chrono::system_clock::time_point testValue = common::TestTimeStampValue;
     return testOptionalAccessorFunctions<std::chrono::system_clock::time_point>(testValue, &m_lastLogin, "Last Login TimeStamp",
         std::bind(&UserModel::setLastLogin, this, std::placeholders::_1),
         std::bind(&UserModel::getLastLogin, this));
@@ -558,14 +567,7 @@ TestStatus UserModel::testExceptionInsert() noexcept
 {
     selfTestResetAllValues();
 
-    std::chrono::system_clock::time_point timeStamp = common::TestTimeStampValue;
-    setLastName("LastName");
-    setFirstName("FirstName");
-    setMiddleInitial("M");
-    setEmail("FirstName.LastName@LastName.com");
-    autoGenerateLoginAndPassword();
-    setCreatedTimeStamp(timeStamp);
-    setLastLogin(timeStamp);
+    initValidTestValues();
 
     return testExceptionAndSuccessNArgs("UserModel::insert", std::bind(&UserModel::insert, this));
 }
@@ -574,15 +576,9 @@ TestStatus UserModel::testExceptionUpdate() noexcept
 {
     selfTestResetAllValues();
 
-    std::chrono::system_clock::time_point timeStamp = common::TestTimeStampValue;
+    initValidTestValues();
+
     setUserID(1);
-    setLastName("LastName");
-    setFirstName("FirstName");
-    setMiddleInitial("M");
-    setEmail("FirstName.LastName@LastName.com");
-    autoGenerateLoginAndPassword();
-    setCreatedTimeStamp(timeStamp);
-    setLastLogin(timeStamp);
 
     return testExceptionAndSuccessNArgs("UserModel::update", std::bind(&UserModel::update, this));
 }
@@ -596,4 +592,18 @@ TestStatus UserModel::testExceptionHide() noexcept
     setUserID(testUserId);
 
     return testExceptionAndSuccessNArgs("UserModel::hide", std::bind(&UserModel::hide, this, std::placeholders::_1), testUserId);
+}
+
+void UserModel::initValidTestValues() noexcept
+{
+    setLastName("AnyLastName");
+    setFirstName("AnyFirstName");
+    setMiddleInitial("A");
+    setEmail("AnyEmail@AnyDomain.dom");
+    setPassword("AnyPassword");
+    setLoginName("AnyLoginName");
+    setLastModifiedBy(1);
+    setLastLogin(common::TestTimeStampValue);
+    setCreatedTimeStamp(common::TestTimeStampValue);
+    setLastModifiedTimeStamp(common::TestTimeStampValue);
 }

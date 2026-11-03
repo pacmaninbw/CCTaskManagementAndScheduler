@@ -29,13 +29,13 @@ NoteModel::NoteModel(const NoteDbQueryValues &dbTranslator)
 
 void NoteModel::setUserId(std::size_t userId)
 {
-    m_modified = true;
+    setModified();
     m_userID = userId;
 }
 
 void NoteModel::setContent(std::string content)
 {
-    m_modified = true;
+    setModified();
     m_content = content;
 }
 
@@ -104,8 +104,6 @@ void NoteModel::selfTestResetAllValues() noexcept
 
     m_userID = 0;
     m_content.clear();
-    m_createdTimeStamp.reset();
-    m_lastUpdateTimeStamp.reset();
 }
 
 TestStatus NoteModel::testAllInsertFailures()
@@ -156,6 +154,15 @@ TestStatus NoteModel::testAllInsertFailures()
 
 TestStatus NoteModel::testEqualityOperator() noexcept
 {
+    selfTestResetAllValues();
+
+    setNoteId(27);
+    setUserId(31);
+    setContent("Test note content access");
+    setCreatedTimeStamp(common::TestTimeStampValue);
+    setLastModifiedTimeStamp(common::TestTimeStampValue);
+    setLastModifiedBy(1);
+
     NoteModel other;
 
     other.setNoteId(m_primaryKey);
@@ -164,7 +171,10 @@ TestStatus NoteModel::testEqualityOperator() noexcept
         return TESTFAILED;
     }
 
-    other = *this;
+    if (!m_forceError)
+    {
+        other = *this;
+    }
 
     return (*this == other)? TESTPASSED : TESTFAILED;
 }

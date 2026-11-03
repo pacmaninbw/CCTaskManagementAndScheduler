@@ -41,67 +41,67 @@ OrganizationModel::OrganizationModel(const OrganizationDbQueryValues &databaseVa
 
 void OrganizationModel::setOrganizationName(std::string organizationName) noexcept
 {
-    m_modified = true;
+    setModified();
     m_organizationName = organizationName;
 }
 
 void OrganizationModel::setEmailAddress(std::string emailAddress) noexcept
 {
-    m_modified = true;
+    setModified();
     m_email = emailAddress;
 }
 
 void OrganizationModel::setPhoneNumber(std::string phoneNumber) noexcept
 {
-    m_modified = true;
+    setModified();
     m_phoneNumber = phoneNumber;
 }
 
 void OrganizationModel::setPrimaryContactUserId(std::size_t userId) noexcept
 {
-    m_modified = true;
+    setModified();
     m_primaryContactUser = userId;
 }
 
 void OrganizationModel::setSecondaryContactUserId(std::size_t userId) noexcept
 {
-    m_modified = true;
+    setModified();
     m_secondaryContactUser = userId;
 }
 
 void OrganizationModel::setAddressLine1(std::string streetAddress) noexcept
 {
-    m_modified = true;
+    setModified();
     m_addressLine1 = streetAddress;
 }
 
 void OrganizationModel::setAddressLine2(std::string streetAddress) noexcept
 {
-    m_modified = true;
+    setModified();
     m_addressLine2 = streetAddress;
 }
 
 void OrganizationModel::setCity(std::string city) noexcept
 {
-    m_modified = true;
+    setModified();
     m_city = city;
 }
 
 void OrganizationModel::setPostalCode(std::string postalCode) noexcept
 {
-    m_modified = true;
+    setModified();
     m_postalCode = postalCode;
 }
 
 void OrganizationModel::setStateOrProvince(std::string stateOrProvince) noexcept
 {
-    m_modified = true;
+    setModified();
     m_stateOrProvince = stateOrProvince;
 }
 
 void OrganizationModel::setNation(std::string nation) noexcept
 {
-    m_modified = true;
+    setModified();
     m_nation = nation;
 }
 
@@ -116,12 +116,12 @@ void OrganizationModel::setParentOrganization(std::size_t parentID)
     // Can be zero to allow movement from parent organization.
     if (parentID > 0)
     {
-        m_modified = true;
+        setModified();
         m_parentOrganization = parentID;
     }
     else if (parentID == 0 && m_parentOrganization.has_value())
     {
-        m_modified = true;
+        setModified();
         m_parentOrganization.reset();
     }
 }
@@ -160,9 +160,8 @@ void OrganizationModel::initRequiredFields() noexcept
     m_missingRequiredFieldsTests.push_back({std::bind(&OrganizationModel::isMissingPhoneNumber, this), "Phone Number"});
 }
 
-bool OrganizationModel::diffOrganization(OrganizationModel &other) const noexcept
+bool OrganizationModel::diffOrganization(OrganizationModel &other) noexcept
 {
-
     return (m_primaryKey == other.m_primaryKey &&
         m_organizationName == other.m_organizationName &&
         m_email == other.m_email &&
@@ -264,6 +263,9 @@ std::string OrganizationModel::formatDeleteStatement()
     return (std::move(fctx).get().value());
 }
 
+/*
+ * Begin self / unit test code
+ */
 void OrganizationModel::selfTestResetAllValues() noexcept
 {
     ModelDBInterface::selfTestResetAllValues();
@@ -345,24 +347,37 @@ TestStatus OrganizationModel::testAllInsertFailures()
 
 TestStatus OrganizationModel::testEqualityOperator() noexcept
 {
-    OrganizationModel other;
+    selfTestResetAllValues();
 
+    initValidTestValues();
+
+    setOrganizationId(1);
+
+    OrganizationModel other;
     other.setOrganizationId(m_primaryKey);
     if (*this == other)
     {
         return TESTFAILED;
     }
 
-    if (!m_forceError)
+    other = *this;
+
+    if (m_forceError)
     {
-        other = *this;
+        other.setOrganizationId(15);
     }
-    
+
     return (*this == other)? TESTPASSED: TESTFAILED;
 }
 
 void OrganizationModel::testOutput() noexcept
 {
+    selfTestResetAllValues();
+
+    initValidTestValues();
+
+    setOrganizationId(1);
+
     std::cout << "Test Output: " << *this << "\n";
 }
 
@@ -564,17 +579,19 @@ void OrganizationModel::initValidTestValues() noexcept
 {
     std::chrono::system_clock::time_point timeStamp = common::TestTimeStampValue;
 
-    setOrganizationName("Any Organization .Inc");
-    setEmailAddress("AnyEmailAddress@gmail.com");
-    setPhoneNumber("800-555-1212");
+    setOrganizationName("Any organization name up to 255 characters, Inc.");
+    setEmailAddress("Any_organization_email_up_to255-characters@gmail.com");
+    setPhoneNumber("Any_organization_email_up_to255-characters@gmail.com");
     setPrimaryContactUserId(1);
-    setSecondaryContactUserId(2);
-    setAddressLine1("11111 First Street");
-    setAddressLine2("Suite 101");
-    setCity("Home Town");
-    setStateOrProvince("California");
-    setPostalCode("90001");
-    setNation("United States");
+    setSecondaryContactUserId(1);
+    setAddressLine1("Any street address up to 255 characters.");
+    setAddressLine2("Any additional street address up to 255 characters.");
+    setCity("Any city name up to 127 characters.");
+    setPostalCode("Any postal code up to 31 characters.");
+    setStateOrProvince("Any state or province up to 255 characters.");
+    setNation("Any nation up to 63 characters.");
+    setParentOrganization(23);
+    setLastModifiedBy(1);
     setCreatedTimeStamp(timeStamp);
     setLastModifiedTimeStamp(timeStamp);
 }

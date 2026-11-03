@@ -35,37 +35,37 @@ ScheduleItemModel::ScheduleItemModel(const ScheduleItemDbQueryValues &databaseVa
 
 void ScheduleItemModel::setUserID(std::size_t userId)
 {
-    m_modified = true;
+    setModified();
     m_userID = userId;
 }
 
 void ScheduleItemModel::setTitle(std::string title)
 {
-    m_modified = true;
+    setModified();
     m_title = title;
 }
 
 void ScheduleItemModel::setStartDateAndTime(std::chrono::system_clock::time_point startTime)
 {
-    m_modified = true;
+    setModified();
     m_startTime = startTime;
 }
 
 void ScheduleItemModel::setEndDateAndTime(std::chrono::system_clock::time_point endTime)
 {
-    m_modified = true;
+    setModified();
     m_endTime = endTime;
 }
 
 void ScheduleItemModel::setPersonal(bool personal)
 {
-    m_modified = true;
+    setModified();
     m_personal = personal;
 }
 
 void ScheduleItemModel::setLocation(std::string location)
 {
-    m_modified = true;
+    setModified();
     m_location = location;
 }
 
@@ -160,13 +160,10 @@ void ScheduleItemModel::selfTestResetAllValues() noexcept
     m_endTime.reset();
     m_personal = false;
     m_location.reset();
-    m_createdTimeStamp.reset();
-    m_lastUpdateTimeStamp.reset();
 }
 
 TestStatus ScheduleItemModel::testAllInsertFailures()
 {
-
     selfTestResetAllValues();
 
     if (testCommonInsertFailurePath() != TESTPASSED)
@@ -231,6 +228,19 @@ TestStatus ScheduleItemModel::testEqualityOperator() noexcept
 {
     try
     {
+        selfTestResetAllValues();
+
+        setScheduleItemID(57);
+        setUserID(1);
+        setTitle("Testing schedule item Title string access");
+        setStartDateAndTime(common::TestTimeStampValue);
+        setEndDateAndTime(common::TestTimeStampValue);
+        setCreatedTimeStamp(common::TestTimeStampValue);
+        setLastModifiedTimeStamp(common::TestTimeStampValue);
+        setLocation("Home Office");
+        setLastModifiedBy(1);
+        setPersonal(true);
+
         ScheduleItemModel other;
 
         other.setScheduleItemID(m_primaryKey);
@@ -240,7 +250,10 @@ TestStatus ScheduleItemModel::testEqualityOperator() noexcept
             return TESTFAILED;
         }
 
-        other = *this;
+        if (!m_forceError)
+        {
+            other = *this;
+        }
 
         return (*this == other)? TESTPASSED : TESTFAILED;
     }

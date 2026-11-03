@@ -183,6 +183,8 @@ protected:
     virtual TestStatus testExceptionUpdate() noexcept override;
     virtual TestStatus testExceptionHide() noexcept override;
 
+    void initValidTestValues() noexcept;
+
 private:
 // Preference subfield indexes
     static const std::size_t PrefDayStartIdx = 0;

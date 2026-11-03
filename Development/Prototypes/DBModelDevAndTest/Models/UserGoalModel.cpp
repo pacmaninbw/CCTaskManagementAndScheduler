@@ -33,25 +33,25 @@ UserGoalModel::UserGoalModel(const GoalDbQueryValues &databaseValues)
 
 void UserGoalModel::setUserId(std::size_t userId)
 {
-    m_modified = true;
+    setModified();
     m_userID = userId;
 }
 
 void UserGoalModel::setDescription(std::string newDescription)
 {
-    m_modified = true;
+    setModified();
     m_description = newDescription;
 }
 
 void UserGoalModel::setPriority(unsigned int newPriority)
 {
-    m_modified = true;
+    setModified();
     m_priority = newPriority;
 }
 
 void UserGoalModel::setParentID(std::size_t newParentID)
 {
-    m_modified = true;
+    setModified();
     m_parentID = newParentID;
 }
 
@@ -129,8 +129,6 @@ void UserGoalModel::selfTestResetAllValues() noexcept
     m_description.clear();;
     m_priority.reset();
     m_parentID.reset();
-    m_createdTimeStamp.reset();
-    m_lastUpdateTimeStamp.reset();
 }
 
 TestStatus UserGoalModel::testAllInsertFailures()
@@ -183,6 +181,15 @@ TestStatus UserGoalModel::testAllInsertFailures()
 
 TestStatus UserGoalModel::testEqualityOperator() noexcept
 {
+    selfTestResetAllValues();
+    setGoalId(57);
+    setUserId(23);
+    setDescription("Test goal content access");
+    setCreatedTimeStamp(common::TestTimeStampValue);
+    setLastModifiedTimeStamp(common::TestTimeStampValue);
+    setParentID(1);
+    setPriority(1);
+
     UserGoalModel other;
 
     other.setGoalId(m_primaryKey);
@@ -191,7 +198,10 @@ TestStatus UserGoalModel::testEqualityOperator() noexcept
         return TESTFAILED;
     }
 
-    other = *this;
+    if (!m_forceError)
+    {
+        other = *this;
+    }
 
     return (*this == other)? TESTPASSED : TESTFAILED;
 }

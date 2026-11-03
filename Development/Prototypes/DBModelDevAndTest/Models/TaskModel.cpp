@@ -100,7 +100,7 @@ bool TaskModel::insert() noexcept
             }
         }
 
-        m_modified = false;
+        clearModified();
 
         return true;
     }
@@ -128,7 +128,7 @@ bool TaskModel::update() noexcept
             updateDependency();
         }
 
-        m_modified = false;
+        clearModified();
             
         return true;
     }
@@ -205,25 +205,25 @@ std::chrono::year_month_day TaskModel::getCompletionDate() const
 
 void TaskModel::setCreatorID(std::size_t creatorID)
 {
-    m_modified = true;
+    setModified();
     m_creatorID = creatorID;
 }
 
 void TaskModel::setAssignToID(std::size_t assignedID)
 {
-    m_modified = true;
+    setModified();
     m_assignToID = assignedID;
 }
 
 void TaskModel::setDescription(std::string description)
 {
-    m_modified = true;
+    setModified();
     m_description = description;
 }
 
 void TaskModel::setStatus(TaskModel::TaskStatus status)
 {
-    m_modified = true;
+    setModified();
     m_status = status;
 
     if (m_status == TaskModel::TaskStatus::Work_in_Progress)
@@ -254,55 +254,55 @@ void TaskModel::setParentTaskID(std::size_t parentTaskID)
         throw std::out_of_range("Parent Task ID can't be same as current Task id");
     }
 
-    m_modified = true;
+    setModified();
     m_parentTaskID = parentTaskID;
 }
 
 void TaskModel::setDueDate(std::chrono::year_month_day dueDate)
 {
-    m_modified = true;
+    setModified();
     m_dueDate = dueDate;
 }
 
 void TaskModel::setScheduledStart(std::chrono::year_month_day startDate)
 {
-    m_modified = true;
+    setModified();
     m_planedStart = startDate;
 }
 
 void TaskModel::setactualStartDate(std::chrono::year_month_day startDate)
 {
-    m_modified = true;
+    setModified();
     m_actualStart = startDate;
 }
 
 void TaskModel::setEstimatedCompletion(std::chrono::year_month_day completionDate)
 {
-    m_modified = true;
+    setModified();
     m_estimatedCompletion = completionDate;
 }
 
 void TaskModel::setCompletionDate(std::chrono::year_month_day completionDate)
 {
-    m_modified = true;
+    setModified();
     m_completed = completionDate;
 }
 
 void TaskModel::setEstimatedEffort(double estimatedHours)
 {
-    m_modified = true;
+    setModified();
     m_estimatedEffort = estimatedHours;
 }
 
 void TaskModel::setActualEffortToDate(double effortHoursYTD)
 {
-    m_modified = true;
+    setModified();
     m_actualEffort = effortHoursYTD;
 }
 
 void TaskModel::setPriorityGroup(unsigned int category)
 {
-    m_modified = true;
+    setModified();
     m_priorityCategory = category;
 }
 
@@ -314,13 +314,13 @@ void TaskModel::setPriorityGroupC(const char category)
 
 void TaskModel::setPriority(unsigned int priority)
 {
-    m_modified = true;
+    setModified();
     m_priority = priority;
 }
 
 void TaskModel::setPersonal(bool personal)
 {
-    m_modified = true;
+    setModified();
     m_personal = personal;
 }
 
@@ -470,7 +470,6 @@ void TaskModel::selfTestResetAllValues() noexcept
     m_description.clear();
     m_status.reset();
     m_parentTaskID.reset();
-    m_createdTimeStamp.reset();
     m_dueDate.reset();
     m_planedStart.reset();
     m_actualStart.reset();
@@ -481,15 +480,33 @@ void TaskModel::selfTestResetAllValues() noexcept
     m_priorityCategory = 0;
     m_priority = 0;
     m_personal = false;
-    m_lastUpdateTimeStamp.reset();
 }
 
 TestStatus TaskModel::testEqualityOperator() noexcept
 {
+    selfTestResetAllValues();
+
+    setTaskID(33);
+    setCreatorID(1);
+    setAssignToID(2);
+    setDescription("Test task description access");
+    markComplete();
+    setParentTaskID(42);
+    setCreatedTimeStamp(common::TestTimeStampValue);
+    setLastModifiedTimeStamp(common::TestTimeStampValue);
+    setDueDate(common::TestDateValue);
+    setScheduledStart(common::TestDateRangeStartValue);
+    setactualStartDate(common::TestDateValue);
+    setEstimatedCompletion(common::TestDateValue);
+    setEstimatedEffort(10.24);
+    setActualEffortToDate(760);
+    setPriorityGroup(2);
+    setPriority(5);
+    setLastModifiedBy(1);
+
     TaskModel other;
 
     other.setTaskID(m_primaryKey);
-
     if (*this == other)
     {
         return TESTFAILED;
@@ -747,14 +764,14 @@ TestStatus TaskModel::testStatusAccess()
 
     std::cout << "Running self test on set and get functions for TaskModel::status\n";
 
-    m_modified = false;
+    clearModified();
     setStatus(testValue);
     if (testStatusVerifyValueAndGetStatus(testValue) == TESTFAILED)
     {
         testStatus = TESTFAILED;
     }
 
-    m_modified = false;
+    clearModified();
     testValue = TaskModel::TaskStatus::Complete;
     std::string statusName = taskStatusString(testValue);
     setStatus(statusName);
@@ -814,7 +831,7 @@ TestStatus TaskModel::testParentTaskIDAccess()
 
     std::cout << "Running self test on set and get functions for TaskModel::parentTaskID\n";
 
-    m_modified = false;
+    clearModified();
     setParentTaskID(testValue);
     if (testParentTaskIDVerifyValueAndGetParentTaskID(testValue) == TESTFAILED)
     {
@@ -824,7 +841,7 @@ TestStatus TaskModel::testParentTaskIDAccess()
     testValue = 42;
     TaskModel_shp parent = std::make_shared<TaskModel>(TaskModel());
     parent->setTaskID(testValue);
-    m_modified = false;
+    clearModified();
     setParentTaskID(parent);
     if (testParentTaskIDVerifyValueAndGetParentTaskID(testValue) == TESTFAILED)
     {
@@ -971,7 +988,7 @@ TestStatus TaskModel::testPriorityGroupCAccess()
 
     std::cout << "Running self test on set and get functions for " << getModelName() << "::" << memberName << "\n";
 
-    m_modified = false;
+    clearModified();
 
     setPriorityGroupC(testValue);
     if (!isModified())
@@ -1031,7 +1048,7 @@ TestStatus TaskModel::testMarkComplete()
 {
     std::cout << "Running self test for TaskModel::markComplete\n";
 
-    m_modified = false;
+    clearModified();
     m_status.reset();
     m_completed.reset();
 
@@ -1067,7 +1084,7 @@ TestStatus TaskModel::testAddEffort()
     double addedHours = 7.25;
     double expectedHours = m_actualEffort + addedHours;
 
-    m_modified = false;
+    clearModified();
     addEffortHours(addedHours);
 
     if (!isModified())

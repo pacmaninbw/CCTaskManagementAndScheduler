@@ -81,14 +81,7 @@ public:
     bool isMissingPhoneNumber() const noexcept;
     void initRequiredFields() noexcept override;
 
-    bool operator==(OrganizationModel& other)
-    {
-        return diffOrganization(other);
-    };
-
-
-
-    bool operator==(OrganizationModel& other) const { return diffOrganization(other); };
+    bool operator==(OrganizationModel& other) { return diffOrganization(other); };
 
     friend std::ostream& operator<<(std::ostream& os, const OrganizationModel& orgProfile)
     {
@@ -120,7 +113,7 @@ public:
     };
 
 private:
-    bool diffOrganization(OrganizationModel& other) const noexcept;
+    bool diffOrganization(OrganizationModel& other) noexcept;
     std::string formatInsertStatement() override;
     std::string formatUpdateStatement() override;
     std::string formatDeleteStatement() override;
