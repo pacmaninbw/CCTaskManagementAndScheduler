@@ -94,7 +94,6 @@ boost::asio::awaitable<boost::mysql::results> CoreDBInterface::coRoutineExecuteS
     }
 
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
-    conn.set_meta_mode(boost::mysql::metadata_mode::full);
 
     co_await conn.async_connect(m_dbConnection);
     
@@ -143,7 +142,6 @@ boost::asio::awaitable<boost::mysql::format_options> CoreDBInterface::coRoutineG
     }
 
     boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
-    conn.set_meta_mode(boost::mysql::metadata_mode::full);
 
     co_await conn.async_connect(m_dbConnection);
 
