@@ -65,39 +65,46 @@ protected:
     boost::asio::awaitable<boost::mysql::format_options> coRoutineGetFormatOptions();
     template <typename T>
     boost::asio::awaitable<boost::mysql::static_results<boost::mysql::pfr_by_name<T>>>
-        coRoutineExecuteSqlStatement(const std::string& query)
+        coRoutineExecuteSqlQuery(const std::string& query)
     {
-        boost::mysql::static_results<boost::mysql::pfr_by_name<T>> staticResults;
-        if (m_forceException)
-        {
-            std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineExecuteSqlStatement");
-            std::domain_error forcedException(forcingException);
-            throw forcedException;
-        }
+        try {
+            boost::mysql::static_results<boost::mysql::pfr_by_name<T>> staticResults;
+//            conn.execute("SELECT ...", staticResults);
+            if (m_forceException)
+            {
+                std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineExecuteSqlQuery");
+                std::domain_error forcedException(forcingException);
+                throw forcedException;
+            }
 
-        if (m_selfTest)
-        {
+            if (m_selfTest)
+            {
+                if (m_verboseOutput)
+                {
+                    std::cout << "In Self Test Query is: \n\t" << query << std::endl;
+                }
+                co_return staticResults;
+            }
+
+            boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+
+            co_await conn.async_connect(m_dbConnection);
+            
             if (m_verboseOutput)
             {
-                std::cout << "In Self Test Query is: \n\t" << query << std::endl;
+                std::cout << "Running: \n\t" << query << std::endl;
             }
+
+            co_await conn.async_execute(query, staticResults);
+
+            co_await conn.async_close();
+
             co_return staticResults;
+            }
+        catch (const boost::mysql::error_with_diagnostics& ex) {
+            std::cerr << "Error: " << ex.what() << '\n';
+            std::cerr << "Diagnostics: " << ex.get_diagnostics().server_message() << '\n';
         }
-
-        boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
-
-        co_await conn.async_connect(m_dbConnection);
-        
-        if (m_verboseOutput)
-        {
-            std::cout << "Running: \n\t" << query << std::endl;
-        }
-
-        co_await conn.async_execute(query, staticResults);
-
-        co_await conn.async_close();
-
-        co_return staticResults;
     };
 
     template <typename T>
@@ -106,7 +113,7 @@ protected:
         boost::mysql::static_results<boost::mysql::pfr_by_name<T>> staticResults;
         boost::asio::io_context ctx;
 
-        boost::asio::co_spawn(ctx, coRoutineExecuteSqlStatement<T>(query),
+        boost::asio::co_spawn(ctx, coRoutineExecuteSqlQuery<T>(query),
             [&staticResults, this](std::exception_ptr ptr,
                 boost::mysql::static_results<boost::mysql::pfr_by_name<T>> result)
             {
