@@ -189,15 +189,26 @@ protected:
         bool globalForceErrors = m_forceError;
 
         std::vector<ListExceptionTestElement> exceptionTests = initListExceptionTests();
+        TestStatus exceptionHandlingPassed = TESTPASSED;
 
-        common::separateTestCaseOutput("*");
-        std::cerr << "No Errors" << std::endl;
-        TestStatus exceptionHandlingPassed = forceListExceptionsLoop(exceptionTests);
-
+        /*
+         * First force errors to ensure that all negative paths are executed.
+         */
         common::separateTestCaseOutput("*");
         std::cerr << "Forcing Errors" << std::endl;
         m_forceError = true;
         if (forceListExceptionsLoop(exceptionTests) == TESTPASSED)
+        {
+            exceptionHandlingPassed = TESTFAILED;
+        }
+
+        /*
+         * All tests should pass or there is a problem in the positive path.
+         */
+        common::separateTestCaseOutput("*");
+        m_forceError = false;
+        std::cerr << "No Errors" << std::endl;
+        if (forceListExceptionsLoop(exceptionTests) != TESTPASSED)
         {
             exceptionHandlingPassed = TESTFAILED;
         }
@@ -215,25 +226,16 @@ protected:
         TestStatus testAllExceptionHandling = TESTPASSED;
         const char* failFunction;
         
-        try
+        for (const auto& exceptionTest: exceptionTests)
         {
-            for (const auto& exceptionTest: exceptionTests)
+            failFunction = exceptionTest.functionUnderTest;
+            bool testPassed = true;
+            if (exceptionTest.testExceptionFunction() == TESTFAILED)
             {
-                failFunction = exceptionTest.functionUnderTest;
-                if (exceptionTest.testExceptionFunction() == TESTFAILED)
-                {
-                    std::cerr << std::format("{}::{}: Exception Test FAILED\n",
-                        m_listTypeName, failFunction);
-                    testAllExceptionHandling = TESTFAILED;
-                }
+                testAllExceptionHandling = TESTFAILED;
+                testPassed = false;
             }
-        }
-
-        catch (std::exception &uncaughtException)
-        {
-            std::cerr << std::format("{}::{}:: Caught Unhandled Exception!! Test FAILED!\n{}",
-                m_listTypeName, failFunction, uncaughtException.what());
-            testAllExceptionHandling = TESTFAILED;
+            std::cerr << std::format("{}::{}: Exception Test {}\n", m_listTypeName, failFunction, testPassed? "PASSED" : "FAILED");
         }
 
         return testAllExceptionHandling;
@@ -264,7 +266,7 @@ protected:
     }
 
     /*
-     * Preform an exception test on any function that returns a vector of shared
+     * Perform an exception test on any function that returns a vector of shared
      * pointers of a model. Used to exercise as many paths through a function as
      * possible for unit testing (self testing).
      */
@@ -292,7 +294,7 @@ protected:
     }
 
     /*
-     * Preform an exception test on any function that returns a single shared
+     * Perform an exception test on any function that returns a single shared
      * pointer of a model. Used to exercise as many paths through a function as
      * possible for unit testing (self testing).
      */
