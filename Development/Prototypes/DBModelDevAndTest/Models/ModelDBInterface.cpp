@@ -135,6 +135,14 @@ void ModelDBInterface::setModified() noexcept
     m_modified = true;
 }
 
+void ModelDBInterface::clearModified()
+{
+    if (!(m_selfTest && m_forceError))
+    {
+        m_modified = false;
+    }
+}
+
 bool ModelDBInterface::hasRequiredValues()
 {
     initRequiredFields();
@@ -255,23 +263,24 @@ TestStatus ModelDBInterface::runSelfTest() noexcept
     std::cerr << "Running Core Error Check" << std::endl;
     selfTestStatus = testNegativePathInCoreTests();
 
-#if 0
 /*
  * To improve test coverage and to ensure that the negative path through each
  * function is tested, force errors. Then test the positive path through the
  * functions.
  */
     m_forceError = true;
+    m_attributeForceErrorTestIndex = ForceAttributeErrors::ForceNotModified;
     common::separateTestCaseOutput("*");
     std::cerr << "Forcing Errors" << std::endl;
     if (selfTestSinglePass() == TESTPASSED)
     {
         selfTestStatus = TESTFAILED;
     }
-#endif 
+
     common::separateTestCaseOutput("*");
     std::cerr << "NO Errors Forced" << std::endl;
     m_forceError = false;
+    m_attributeForceErrorTestIndex = ForceAttributeErrors::NoForceError;
     if (selfTestSinglePass() != TESTPASSED)
     {
         selfTestStatus = TESTFAILED;
@@ -471,6 +480,7 @@ TestStatus ModelDBInterface::testNegativePathInCoreTests() noexcept
 
     std::vector<std::function<TestStatus(void)>> negativePathTestFunctions;
     negativePathTestFunctions.push_back({std::bind(&ModelDBInterface::testNegativePathAttributeTesting, this)});
+    negativePathTestFunctions.push_back({std::bind(&ModelDBInterface::testCoreExceptionHandling, this)});
 
     for (auto negativeTest: negativePathTestFunctions)
     {
@@ -598,7 +608,7 @@ void ModelDBInterface::negativePathSetOptionalSize_t(std::size_t testValue) noex
     }
     if (isForcingAttributeError(ForceAttributeErrors::ForceGetValueError))
     {
-        m_testTheOptionalTestSize = ~testValue;
+        m_testTheOptionalTestSize = testValue -1;
     }
     if (isForcingAttributeError(ForceAttributeErrors::ForceExceptionOptionGetValue))
     {
@@ -612,7 +622,7 @@ std::size_t ModelDBInterface::negativePatGetOptionalSize_t()
     {
         if (m_testTheOptionalTestSize.has_value())
         {
-            m_testTheOptionalTestSize = ~m_testTheOptionalTestSize.value();
+            m_testTheOptionalTestSize = m_testTheOptionalTestSize.value() - 1;
         }
     }
 
@@ -1007,4 +1017,80 @@ TestStatus ModelDBInterface::testExceptionReportFailure(bool expectSuccess, bool
     std::cout << reportFailure << "\n";
 
     return TESTFAILED;
+}
+
+TestStatus ModelDBInterface::testCoreExceptionHandling() noexcept
+{
+    TestStatus coreExceptionTestsStatus = TESTPASSED;
+    bool globalForceException = m_forceException;
+    bool globalForceError = m_forceError;
+
+    std::cout << "\n\nRunning CORE Exception Handling Test Cases\n";
+
+    try
+    {
+        for (std::size_t i = 0; i < 4; ++i)
+        {
+            m_testTheTestSize_t = 0;
+            m_forceException = i < 2 ? true : false;
+            m_forceError = (i & 0x0001)? true : false;
+            std::cerr << std::format("m_forceException = {} m_forceError = {}\n", m_forceException? "TRUE" : "FALSE", m_forceError? "TRUE" : "FALSE");
+            if (testNegativePathExceptionHandling() == TESTFAILED)
+            {
+                std::cerr << std::format("{}::{} returned true with exception: Exception Test Failed\n",
+                    "ModelDBInterface", __func__);
+                coreExceptionTestsStatus = TESTFAILED;
+            }
+            std::cerr << "\n";
+        }
+    }
+
+    catch (std::exception &uncaughtException)
+    {
+        std::cerr << std::format("{}::{}:: Caught Unhandled Exception!! Test FAILED!\n{}",
+            m_modelName, __func__, uncaughtException.what());
+        coreExceptionTestsStatus = TESTFAILED;
+    }
+
+    m_forceError = globalForceError;
+    m_forceException = globalForceException;
+    return coreExceptionTestsStatus;
+}
+
+TestStatus ModelDBInterface::testNegativePathExceptionHandling() noexcept
+{
+
+    if (testFormatExceptionCatchSuccessNArgs(
+        "Core Exception Test MockStringFunction", std::bind(&ModelDBInterface::mockStringFunctionForExceptionTesting, this)) == TESTFAILED)
+    {
+        std::cerr << "ModelDBInterface::mockStringFunctionForExceptionTesting() returned a string in Exception Test, FAILED\n";
+        return TESTFAILED;
+    }
+
+    return testExceptionAndSuccessNArgs("Core Exception Test MockBoolFunction", std::bind(&ModelDBInterface::mockBoolFunctionForExceptionTesting, this));
+}
+
+bool ModelDBInterface::mockBoolFunctionForExceptionTesting()
+{
+    try
+    {
+        boost::mysql::results localResult = runQueryAsync(mockStringFunctionForExceptionTesting());
+        m_testTheTestSize_t =  getPrimaryKeyValue(localResult);
+
+        return true;
+    }
+    catch(const std::exception& e)
+    {
+        appendErrorMessage(std::format("In ModelDBInterface::{} : {}", __func__, e.what()));
+        return false;
+    }
+}
+
+std::string ModelDBInterface::mockStringFunctionForExceptionTesting()
+{
+    boost::mysql::format_context fctx(getFormatOptions());
+
+    boost::mysql::format_sql_to(fctx, "IN MOCK FormatStatement");
+
+    return (std::move(fctx).get().value());
 }
