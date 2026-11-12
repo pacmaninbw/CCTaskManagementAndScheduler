@@ -69,7 +69,6 @@ protected:
     {
         try {
             boost::mysql::static_results<boost::mysql::pfr_by_name<T>> staticResults;
-//            conn.execute("SELECT ...", staticResults);
             if (m_forceException)
             {
                 std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineExecuteSqlQuery");
