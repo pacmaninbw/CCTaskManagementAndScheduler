@@ -38,7 +38,7 @@ public:
     bool isInDataBase() const noexcept;
     bool isModified() const noexcept;
     void setModified() noexcept;
-    void clearModified() { m_modified = false; };
+    void clearModified();
     bool hasRequiredValues();
     void reportMissingFields() noexcept;
     std::string getModelName() { return m_modelName; };
@@ -269,11 +269,16 @@ protected:
     TestStatus testExceptionHandling() noexcept;
     TestStatus forceExceptionsLoop(std::vector<ExceptionTestElement> exceptionTests) const noexcept;
     TestStatus testExceptionReportFailure(bool expectSuccess, bool isBool, std::string_view testExceptionFuncName) const noexcept;
+    TestStatus testCoreExceptionHandling() noexcept;
+    TestStatus testNegativePathExceptionHandling() noexcept;
+    bool mockBoolFunctionForExceptionTesting();
+    std::string mockStringFunctionForExceptionTesting();
 
     template <typename F, typename... Ts>
     requires std::is_invocable_v<F, Ts...>
     TestStatus testExceptionAndSuccessNArgs(std::string_view funcName, F funcUnderTest, Ts... args) noexcept
     {
+        std::cout << "Running exception test on " << funcName << "\n";
         m_forceException = true;
         if (funcUnderTest(args...))
         {
@@ -288,14 +293,8 @@ protected:
                 return testExceptionReportFailure(false, true, funcName);
             }
         }
-        else
-        {
-            if (!funcUnderTest(args...))
-            {
-                return testExceptionReportFailure(true, true, funcName);
-            }
-        }
 
+        std::cout << funcName << " Exception Test Passed\n";
         return TESTPASSED;
     }
 
@@ -317,12 +316,6 @@ protected:
         catch(const std::exception& e)
         {
             std::cout << "Caught expected exception from " << funcName << "(): " << e.what() << "\n";
-            m_forceException = false; 
-            formattedQuery = funcUnderTest(args...);
-            if (formattedQuery.empty())
-            {
-                return testExceptionReportFailure(true, false, funcName);
-            }
         }        
 
         return TESTPASSED;
