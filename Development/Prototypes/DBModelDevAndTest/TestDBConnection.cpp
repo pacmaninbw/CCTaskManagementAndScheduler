@@ -13,7 +13,6 @@
 #include <memory>
 #include <optional>
 #include <stdexcept>
-#include <vector>
 
 TestDBConnection::TestDBConnection()
 :   m_errorMessages{""},

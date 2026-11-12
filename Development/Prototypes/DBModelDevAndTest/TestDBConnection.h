@@ -10,13 +10,10 @@
 #include <boost/mysql.hpp>
 
 // Standard C++ Header Files
-#include <exception>
 #include <format>
 #include <iostream>
 #include <memory>
 #include <optional>
-#include <stdexcept>
-#include <vector>
 
 class TestDBConnection
 {
