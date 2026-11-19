@@ -5,7 +5,6 @@
 #include <boost/program_options.hpp>
 
 // Standard C++ Header Files
-#include <algorithm>
 #include <expected>
 #include <filesystem>
 #include <iostream>
@@ -32,8 +31,8 @@ static po::options_description addOptions()
 	po::options_description options("Options and arguments");
 	options.add_options()
 		("help,h", "Show this help message")
-		("mysql-user,u", po::value<std::string>()->required(), "Existing MySQL user with sufficient privilege to insert and query")
-		("mysql-password,p", po::value<std::string>()->required(), "password for the MySQL user")
+		("mysql-user,u", po::value<std::string>(), "Existing MySQL user with sufficient privilege to insert and query")
+		("mysql-password,p", po::value<std::string>(), "password for the MySQL user")
 		("mysql-URL", po::value<std::string>()->default_value("127.0.0.1"), "IP address for the MySQL server")
 		("mysql-port", po::value<unsigned int>(), "The port value for the MySQL server. A default of 3306 is provided.")
 		("mysql-dbname", po::value<std::string>()->default_value("test_ptsdb"), "The name of the database that contains the tables")
@@ -150,7 +149,7 @@ static auto processProgramOptions(po::variables_map& inputOptions,
 	}
 
 	programOptions.mySqlPort = (inputOptions.count("mysql-port")) ?
-			inputOptions["scale-factor"].as<unsigned int>() : 3306;
+			inputOptions["mysql-port"].as<unsigned int>() : 3306;
 
 	if (inputOptions.count("time-tests")) {
 		programOptions.enableExecutionTime = true;
@@ -181,6 +180,18 @@ static auto processProgramOptions(po::variables_map& inputOptions,
 	}
 
 	return programOptions;
+}
+
+static void checkEnvironmentVariables(po::options_description& options, po::variables_map& optionMemory)
+{
+	auto env_mapper = [](const std::string& env_var) -> std::string {
+        if (env_var == "CHERNICKSW_PLANNERORGANIZER_DBPASSWORD") return "mysql-password";
+        if (env_var == "CHERNICKSW_PLANNERORGANIZER_DBUSERNAME") return "mysql-user";
+        return ""; // Ignore all other environment variables
+    };
+
+	po::store(po::parse_environment(options, env_mapper), optionMemory);
+    po::notify(optionMemory);
 }
 
 static const int MinArgCount = 3;
@@ -222,17 +233,12 @@ auto parseCommandLine(int argc, char* argv[]) ->
 	std::string progName = simplifyName(argv[0]);
 	po::options_description options = addOptions();
 
-	if (argc < MinArgCount)
-	{
-		return std::unexpected(usage(progName, options,
-			"Missing MySql User Name and Password"));
-	}
-
 	po::variables_map optionMemory;        
 	try
 	{
 		po::store(po::parse_command_line(argc, argv, options), optionMemory);
-		po::notify(optionMemory);    
+		po::notify(optionMemory);
+		checkEnvironmentVariables(options, optionMemory);
 	}
 	/*
 	 * Handle any exceptions thrown by boost::program_options.
