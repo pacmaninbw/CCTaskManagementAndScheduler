@@ -1,5 +1,6 @@
 # cmake files and directories
 build
+build/*
 Debug
 Release
 CMakeLists.txt.user
@@ -11,27 +12,16 @@ cmake_install.cmake
 install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
-_deps
 CMakeUserPresets.json
 cmake.db
-v17
 CMake Overview
 FileContentIndex
-PrivateData
-Oshit.txt
+DataBase
+DataBase/*
 launch.json
-FixPlannerUI
 .cache
 clangd
 TablePorter
-
-# Old files that shouldn't be used
-ZOldNotUsed
-
-# Generated Code
-performanceTest.h
-UIFilesForCopy
-*.ui
 
 # Prerequisites
 *.d
@@ -51,10 +41,6 @@ UIFilesForCopy
 *.dylib
 *.dll
 
-# Fortran module files
-*.mod
-*.smod
-
 # Compiled Static libraries
 *.lai
 *.la
@@ -73,7 +59,6 @@ TestTableMap
 *.gcno
 *Out.txt
 *TestDiff.txt
-*.jpg
 TestCoverage
 
 # Non-sql database files and models.
