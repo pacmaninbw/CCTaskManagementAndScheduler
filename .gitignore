@@ -3,6 +3,8 @@ build
 build/*
 Debug
 Release
+Development
+Development/*
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
@@ -66,10 +68,8 @@ TestCoverage
 database/Models
 TablePorter/*
 
-# dbConnectionParameters.h contains information that is not public, a public version has been created that should not be overwritten in git
-dbConnectionParameters.h
-
 # Stackexchange Code Review Questions
 quest*.txt
 CodeReview
 NotReadyForUpload
+Development
