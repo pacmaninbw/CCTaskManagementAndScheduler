@@ -5,11 +5,9 @@
 #include "ModelDBInterface.h"
 
 // Standard C++ Header Files
-#include <chrono>
 #include <format>
 #include <iostream>
 #include <memory>
-#include <optional>
 #include <string>
 
 /*
@@ -47,7 +45,7 @@ public:
 /*
  * Required fields.
  */
-    bool isMissingUserID()  { return m_userID == 0; };;
+    bool isMissingUserID()  { return m_userID == 0; };
     bool isMissingContent() { return (m_content.empty() || m_content.size() < 10); };
     void initRequiredFields() override;
 
