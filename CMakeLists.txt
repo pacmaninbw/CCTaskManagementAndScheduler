@@ -55,46 +55,13 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/qtgui/Dialogs>
 )
 
-# target_include_directories(${PROJECT_NAME} PRIVATE
-#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common>
-#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Models>
-#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Testing>
-#    ${DOCTEST_INCLUDE_DIR}
-#)
-
-# target_compile_options(protoPersonalPlanner PRIVATE -Wall -Wextra -pedantic -Werror -pg -fprofile-arcs -ftest-coverage -lgcov)
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic -Werror -fprofile-arcs -ftest-coverage -lgcov)
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
 
-# target_link_options(protoPersonalPlanner PRIVATE -pg)
-
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${Boost_LIBRARIES} ssl crypto gcov)
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
-
-
-# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
-# If you are developing for iOS or macOS you should consider setting an
-# explicit, fixed bundle identifier manually though.
-#if(${QT_VERSION} VERSION_LESS 6.1.0)
-#  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.${PROJECT_NAME})
-#endif()
-#set_target_properties(${PROJECT_NAME} PROPERTIES
-#    ${BUNDLE_ID_OPTION}
-#    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-#    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-#    MACOSX_BUNDLE TRUE
-#    WIN32_EXECUTABLE TRUE
-#)
-#
-#include(GNUInstallDirs)
-#install(TARGETS ${PROJECT_NAME}
-#    BUNDLE DESTINATION .
-#    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-#)
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(${PROJECT_NAME})
