@@ -4,6 +4,7 @@
 #include "PlannerInitializer.h"
 #include "UserDashboard.h"
 #include "UserModel.h"
+#include "version.h"
 
 // QT Header Files
 #include <QApplication>
