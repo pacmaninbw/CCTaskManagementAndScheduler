@@ -1,4 +1,6 @@
 
-add_subdirectory(DBModelDevAndTest)
+add_subdirectory(common)
 
-add_subdirectory(MyDayPlanner)
+add_subdirectory(dbmodels)
+
+add_subdirectory(qtgui)

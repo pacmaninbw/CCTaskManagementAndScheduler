@@ -1,4 +1,4 @@
 
-add_subdirectory(UnitTests)
+add_subdirectory(unittests)
 
-add_subdirectory(IntegrationTests)
+add_subdirectory(integrationtests)
