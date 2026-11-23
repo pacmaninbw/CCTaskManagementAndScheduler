@@ -25,25 +25,23 @@ endif()
 
 find_package(Boost 1.87.0 REQUIRED COMPONENTS system charconv program_options)
 
-#include(ExternalProject)
-#find_package(Git REQUIRED)
-#
-#ExternalProject_Add(
-#    doctest
-#    PREFIX ${CMAKE_BINARY_DIR}/doctest
-#    GIT_REPOSITORY https://github.com/doctest/doctest.git
-#    TIMEOUT 10
-#    UPDATE_COMMAND ${GIT_EXECUTABLE} pull
-#    CONFIGURE_COMMAND ""
-#    BUILD_COMMAND ""
-#    INSTALL_COMMAND ""
-#    LOG_DOWNLOAD ON
-#)
+include(FetchContent)
+set(DOCTEST_VERSION v2.4.11)
+FetchContent_Declare(doctest
+    URL  https://raw.githubusercontent.com/doctest/doctest/${DOCTEST_VERSION}/doctest/doctest.h
+    DOWNLOAD_NO_EXTRACT TRUE
+)
+FetchContent_MakeAvailable(doctest)
 
-# Expose required variable (DOCTEST_INCLUDE_DIR) to parent scope
-#ExternalProject_Get_Property(doctest source_dir)
-#set(DOCTEST_INCLUDE_DIR ${source_dir}/doctest CACHE INTERNAL "Path to include folder for doctest")
+set(DOCTEST_INCLUDE_DIR ${doctest_SOURCE_DIR})
+# Include doctest_discover_tests(<target>) function
+#include("${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake")
 
+# Use doctest in a target
+#target_link_libraries(my_target PUBLIC doctest::doctest)
+
+# Or use it globally
+#link_libraries(doctest::doctest)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE QT_NO_KEYWORDS)
 
