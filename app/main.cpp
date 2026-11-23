@@ -10,7 +10,6 @@
 #include <QApplication>
 
 // Standard C++ Header Files
-#include <memory>
 
 /*
  * All of the DBInterface classes need access to the programOptions global variable for the
