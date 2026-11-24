@@ -24,30 +24,17 @@ endif()
 
 find_package(Boost 1.87.0 REQUIRED COMPONENTS system charconv program_options)
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE QT_NO_KEYWORDS)
-
-target_include_directories(${PROJECT_NAME} PRIVATE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/app>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/common>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/dbmodels>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/qtgui>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/qtgui/SubWindows>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/qtgui/Dialogs>
-)
-
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic -Werror -fprofile-arcs -ftest-coverage -lgcov)
-
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${Boost_LIBRARIES} ssl crypto gcov)
-
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(${PROJECT_NAME})
 endif()
 
+enable_testing()
+
+add_executable(unit_tests)
+
 add_subdirectory(src)
 
 add_subdirectory(app)
+
+add_subdirectory(tests)
