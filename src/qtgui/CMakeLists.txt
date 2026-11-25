@@ -54,4 +54,11 @@ target_sources(${PROJECT_NAME} PRIVATE
     SubWindows/BaseUserTable.h SubWindows/BaseUserTable.cpp
 )
 
+target_include_directories(${PROJECT_NAME} PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/SubWindows
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/Dialogs
+)
+
+
 

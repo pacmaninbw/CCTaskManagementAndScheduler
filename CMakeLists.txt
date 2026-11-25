@@ -14,6 +14,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(${PROJECT_NAME})
 
+enable_testing()
+
+add_executable(unit_tests)
+
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Core)
 
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core)
@@ -29,12 +33,17 @@ if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(${PROJECT_NAME})
 endif()
 
-enable_testing()
 
-add_executable(unit_tests)
+set(SHARED_SOURCE_TARGETS
+    ${PROJECT_NAME}
+    unit_tests
+)
+
 
 add_subdirectory(src)
 
 add_subdirectory(app)
 
 add_subdirectory(tests)
+
+
