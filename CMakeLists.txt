@@ -33,11 +33,17 @@ set(DOCTEST_INCLUDE_DIR ${doctest_SOURCE_DIR})
 # Or use it globally
 #link_libraries(doctest::doctest)
 
+# The library and the unit tests for the library do not depend on Qt
+# This is an optimization of the build process and disc space. The library
+# and the unit tests do depend on doctest and the boost libraries.
+
 add_subdirectory(libdbmodels)
 
 enable_testing()
 
 add_executable(unit_tests)
+
+add_subdirectory(tests)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -46,21 +52,7 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Core)
 
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core)
 
-add_executable(${PROJECT_NAME})
-
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(${PROJECT_NAME})
-endif()
-
-
-set(SHARED_SOURCE_TARGETS
-    ${PROJECT_NAME}
-    unit_tests
-)
-
+qt_add_executable(${PROJECT_NAME})
 
 add_subdirectory(app)
-
-add_subdirectory(tests)
-
 
