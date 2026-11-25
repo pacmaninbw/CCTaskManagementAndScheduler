@@ -1,6 +1,5 @@
 
-
-set (DBMODEL_SOURCES
+target_sources(libdbmodels PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/CoreDBInterface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CoreDBInterface.h
     ${CMAKE_CURRENT_SOURCE_DIR}/GoalQueryProcessor.cpp
@@ -31,8 +30,3 @@ set (DBMODEL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/UserQueryProcessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UserQueryProcessor.h
 )
-
-foreach(target IN LISTS SHARED_SOURCE_TARGETS)
-    target_sources(${target} PRIVATE ${DBMODEL_SOURCES})
-    target_include_directories(${target} PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
-endforeach()

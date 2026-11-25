@@ -6,21 +6,8 @@ project(MyDayPlanner
 	LANGUAGES CXX
 )
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-add_executable(${PROJECT_NAME})
-
-enable_testing()
-
-add_executable(unit_tests)
-
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Core)
-
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core)
 
 if(POLICY CMP0167)
     cmake_policy(SET CMP0167 NEW)
@@ -28,6 +15,38 @@ endif()
 
 find_package(Boost 1.87.0 REQUIRED COMPONENTS system charconv program_options)
 
+include(FetchContent)
+set(DOCTEST_VERSION v2.4.11)
+FetchContent_Declare(doctest
+    URL  https://raw.githubusercontent.com/doctest/doctest/${DOCTEST_VERSION}/doctest/doctest.h
+    DOWNLOAD_NO_EXTRACT TRUE
+)
+FetchContent_MakeAvailable(doctest)
+
+set(DOCTEST_INCLUDE_DIR ${doctest_SOURCE_DIR})
+# Include doctest_discover_tests(<target>) function
+#include("${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake")
+
+# Use doctest in a target
+#target_link_libraries(my_target PUBLIC doctest::doctest)
+
+# Or use it globally
+#link_libraries(doctest::doctest)
+
+add_subdirectory(libdbmodels)
+
+enable_testing()
+
+add_executable(unit_tests)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Core)
+
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core)
+
+add_executable(${PROJECT_NAME})
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(${PROJECT_NAME})
@@ -39,8 +58,6 @@ set(SHARED_SOURCE_TARGETS
     unit_tests
 )
 
-
-add_subdirectory(src)
 
 add_subdirectory(app)
 
