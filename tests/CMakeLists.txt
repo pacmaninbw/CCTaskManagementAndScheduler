@@ -16,11 +16,11 @@ file(
     COPY "${CMAKE_SOURCE_DIR}/libdbmodels/sqlscripts/test_ptsdb.sql"
     DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
 )
+
 file(
     COPY "${CMAKE_SOURCE_DIR}/libdbmodels/sqlscripts/AdditionalFunctionalTestData.sql"
     DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
 )
-
 
 add_test(
     NAME setup_test_env

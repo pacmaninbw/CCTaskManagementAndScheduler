@@ -203,6 +203,7 @@ int main(int argc, char* argv[])
 
             if (!allTestsPassed)
             {
+                std::cerr << "Some tests FAILED!!!";
                 return EXIT_FAILURE;
             }
         }
