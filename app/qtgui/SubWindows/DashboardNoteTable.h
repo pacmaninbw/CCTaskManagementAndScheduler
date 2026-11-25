@@ -1,0 +1,49 @@
+#ifndef DASHBOARDNOTETABLE_H_
+#define DASHBOARDNOTETABLE_H_
+
+class NoteModel;
+class UserModel;
+
+// Project Header Files
+
+// QT Header Files
+#include <QAbstractTableModel>
+#include <QDateTime>
+#include <QObject>
+#include <QString>
+
+// Standard C++ Header Files
+#include <memory>
+#include <vector>
+
+
+class DashboardNoteTable : public QAbstractTableModel
+{
+    Q_OBJECT
+
+public:
+    explicit DashboardNoteTable(std::size_t userID, QDate searchDate, QObject *parent = nullptr);
+    void setUserRefillTable(std::size_t userID);
+    void fillTable();
+    void append(std::shared_ptr<NoteModel> noteData);
+    void clearData();
+    std::shared_ptr<NoteModel> getDatabaseObject(const QModelIndex& index); 
+
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole) override;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
+
+private:
+    std::size_t m_userID;
+    std::vector<std::shared_ptr<NoteModel>> m_data;
+    QDate m_searchDate;
+};
+
+#endif // DASHBOARDNOTETABLE_H_
