@@ -39,6 +39,8 @@ set(DOCTEST_INCLUDE_DIR ${doctest_SOURCE_DIR})
 
 add_subdirectory(libdbmodels)
 
+include(CTest)
+
 enable_testing()
 
 add_subdirectory(tests)
