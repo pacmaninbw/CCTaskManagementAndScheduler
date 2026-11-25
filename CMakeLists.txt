@@ -41,8 +41,6 @@ add_subdirectory(libdbmodels)
 
 enable_testing()
 
-add_executable(unit_tests)
-
 add_subdirectory(tests)
 
 set(CMAKE_AUTOMOC ON)
