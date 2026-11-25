@@ -1,0 +1,154 @@
+/*
+ * The CoreDBInterface provides a low level interface for input and output to 
+ * the database. It also provides access to the program options to the models.
+ * Knowledge of the program options struct and variables is limited to the
+ * CoreDBInterface class to reduce external dependencies.
+ */
+// Project Header Files
+#include "CommandLineParser.h"
+#include "CoreDBInterface.h"
+
+// External Libraries
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
+// Standard C++ Header Files
+#include <exception>
+#include <iostream>
+#include <stdexcept>
+#include <string>
+#include <utility>
+
+CoreDBInterface::CoreDBInterface()
+:   m_errorMessages{""},
+    m_verboseOutput{programOptions.verboseOutput},
+    m_forceError{programOptions.forceErrors},
+    m_forceException{programOptions.forceExceptions},
+    m_selfTest{false},
+    m_showTimeStamps{programOptions.showTimeStamps}
+{
+    m_dbConnection.server_address.emplace_host_and_port(programOptions.mySqlUrl, programOptions.mySqlPort);
+    m_dbConnection.username = programOptions.mySqlUser;
+    m_dbConnection.password = programOptions.mySqlPassword;
+    m_dbConnection.database = programOptions.mySqlDBName;
+}
+
+std::string CoreDBInterface::wrapSearchContentSQLPatternMatch(std::string searchString) const noexcept
+{
+    std::string patternMatchString("%");
+    patternMatchString.append(searchString);
+    patternMatchString.append("%");
+
+    return patternMatchString;
+}
+
+void CoreDBInterface::initFormatOptions()
+{
+    if (!m_formatOpts.has_value())
+    {
+        m_formatOpts = getConnectionFormatOptsAsync();
+    }
+}
+
+/*
+ * All calls to runQueryAsync should be implemented within try blocks.
+ */
+boost::mysql::results CoreDBInterface::runQueryAsync(const std::string& query)
+{
+    boost::mysql::results localResult;
+    boost::asio::io_context ctx;
+
+    boost::asio::co_spawn(ctx, coRoutineExecuteSqlStatement(query),
+        [&localResult, this](std::exception_ptr ptr, boost::mysql::results result)
+        {
+            if (ptr)
+            {
+                std::rethrow_exception(ptr);
+            }
+            localResult = std::move(result);
+        }
+    );
+
+    ctx.run();
+
+    return localResult;
+}
+
+boost::asio::awaitable<boost::mysql::results> CoreDBInterface::coRoutineExecuteSqlStatement(const std::string& query)
+{
+    if (m_forceException)
+    {
+        std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineExecuteSqlStatement");
+        std::domain_error forcedException(forcingException);
+        throw forcedException;
+    }
+
+    if (m_selfTest)
+    {
+        if (m_verboseOutput)
+        {
+            std::cout << "In Self Test Query is: \n\t" << query << std::endl;
+        }
+        boost::mysql::results selectResult;
+        co_return selectResult;
+    }
+
+    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+
+    co_await conn.async_connect(m_dbConnection);
+    
+    boost::mysql::results selectResult;
+
+    if (m_verboseOutput)
+    {
+        std::cout << "Running: \n\t" << query << std::endl;
+    }
+
+    co_await conn.async_execute(query, selectResult);
+
+    co_await conn.async_close();
+
+    co_return selectResult;
+}
+
+boost::mysql::format_options CoreDBInterface::getConnectionFormatOptsAsync()
+{
+    boost::mysql::format_options options;
+    boost::asio::io_context ctx;
+
+    boost::asio::co_spawn(ctx, coRoutineGetFormatOptions(),
+        [&options, this](std::exception_ptr getFormatOptsExceptionPtr, boost::mysql::format_options result)
+        {
+            if (getFormatOptsExceptionPtr)
+            {
+                std::rethrow_exception(getFormatOptsExceptionPtr);
+            }
+            options = std::move(result);
+        }
+    );
+
+    ctx.run();
+
+    return options;
+}
+
+boost::asio::awaitable<boost::mysql::format_options> CoreDBInterface::coRoutineGetFormatOptions()
+{
+    if (m_forceException)
+    {
+        std::string forcingException("Forcing Exception in CoreDBInterface::coRoutineGetFormatOptions");
+        std::domain_error forcedException(forcingException);
+        throw forcedException;
+    }
+
+    boost::mysql::any_connection conn(co_await boost::asio::this_coro::executor);
+
+    co_await conn.async_connect(m_dbConnection);
+
+    boost::mysql::format_options options = conn.format_opts().value();
+
+    co_await conn.async_close();
+
+    co_return options;
+}
+

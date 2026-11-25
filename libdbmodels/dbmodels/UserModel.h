@@ -1,0 +1,200 @@
+#ifndef USERMODEL_H_
+#define USERMODEL_H_
+
+// Project Header Files
+#include "ModelDBInterface.h"
+
+// Standard C++ Header Files
+#include <chrono>
+#include <format>
+#include <iostream>
+#include <memory>
+#include <optional>
+#include <string>
+
+/*
+ * Used to retrieve values from the database by the boost library. The names
+ * of the variables in the struct must match the names of the columns in
+ * the user goal table in the database because the boost reflection library is 
+ * used to retrieve them.
+ */
+struct UserDbQueryValues
+{
+    std::int64_t user_id;
+    std::optional<std::uint64_t> id_organization;
+    std::string last_name;
+    std::string first_name;
+    std::optional<std::string> middle_initial;
+    std::string email_address;
+    std::string user_login;
+    std::string hashed_password;
+    boost::mysql::datetime created_timestamp;
+    boost::mysql::datetime last_modified_time_stamp;
+    std::optional<boost::mysql::datetime> last_login;
+    std::string preferences;
+    std::int64_t deleted;
+    std::int64_t last_modified_by_user;
+};
+
+class UserModel : public ModelDBInterface
+{
+public:
+    struct UserPreferences
+    {
+        std::string startTime;
+        std::string endTime;
+        bool includePriorityInSchedule;
+        bool includeMinorPriorityInSchedule;
+        bool userLetterForMajorPriority;
+        bool separateMajorAndMinorWithDot;
+    };
+
+    UserModel();
+    UserModel(const UserDbQueryValues& databaseValues);
+    ~UserModel() = default;
+
+    void autoGenerateLoginAndPassword() noexcept;
+    std::string getLastName() const noexcept { return m_lastName;};
+    std::string getFirstName() const noexcept { return m_firstName; };
+    std::string getMiddleInitial() const noexcept { return m_middleInitial; };
+    std::string getEmail() const noexcept { return m_email; };
+    std::string getLoginName() const noexcept { return m_loginName; };
+    std::string getPassword() const noexcept { return m_password; };
+    std::string getStartTime() const noexcept { return m_preferences.startTime; };
+    std::string getEndTime() const noexcept { return m_preferences.endTime; };
+    std::size_t getUserID() const noexcept { return m_primaryKey; };
+    std::optional<std::chrono::system_clock::time_point> getLastLogin() const noexcept { return m_lastLogin; };
+    std::size_t getOrganizationID() const { return m_organizationId.value_or(0); };
+    bool isPriorityInSchedule() const noexcept { return m_preferences.includePriorityInSchedule; };
+    bool isMinorPriorityInSchedule() const noexcept { return m_preferences.includeMinorPriorityInSchedule; };
+    bool isUsingLettersForMaorPriority() const noexcept { return m_preferences.userLetterForMajorPriority; };
+    bool isSeparatingPriorityWithDot() const noexcept { return m_preferences.separateMajorAndMinorWithDot; };
+
+    void setLastName(const std::string& lastName) noexcept;
+    void setFirstName(const std::string& firstName) noexcept;
+    void setMiddleInitial(const std::string& middleinit) noexcept;
+    void setEmail(const std::string& email) noexcept;
+    void setLoginName(const std::string& loginName) noexcept;
+    void setPassword(const std::string& password) noexcept;
+    void setStartTime(const std::string& startTime) noexcept;
+    void setEndTime(const std::string& endTime) noexcept;
+    void setPriorityInSchedule(bool inSchedule) noexcept;
+    void setMinorPriorityInSchedule(bool inSchedule) noexcept;
+    void setUsingLettersForMaorPriority(bool usingLetters) noexcept;
+    void setSeparatingPriorityWithDot(bool separate) noexcept;
+    void setUserID(std::size_t UserID) noexcept { setPrimaryKey(UserID, true); };
+    void setLastLogin(std::chrono::system_clock::time_point dateAndTime) noexcept;
+    void setOrganizationID(std::size_t organizationId) noexcept;
+/*
+ * Required fields.
+ */
+    bool isMissingLastName() const noexcept;
+    bool isMissingFirstName() const noexcept;
+    bool isMissingLoginName() const noexcept;
+    bool isMissingPassword() const noexcept;
+    bool isMissingEmail() const noexcept;
+    void initRequiredFields() noexcept override;
+
+    bool operator==(UserModel& other)
+    {
+        return diffUser(other);
+    };
+
+    friend std::ostream& operator<<(std::ostream& os, const UserModel& user)
+    {
+        os << user.commonCoreVariablesOutput();
+        constexpr const char* outFmtStr = "\t{}: {}\n";
+
+        os << std::format(outFmtStr, "Last Name", user.m_lastName);
+        os << std::format(outFmtStr, "First Name", user.m_firstName);
+        os << std::format(outFmtStr, "Middle Initial", user.m_middleInitial);
+        os << std::format(outFmtStr, "Email", user.m_email);
+        os << std::format(outFmtStr, "Login Name", user.m_loginName);
+        if (user.m_selfTest)
+        {
+            os << std::format(outFmtStr, "PassWord", user.m_password);
+        }
+
+        if (user.m_lastLogin.has_value())
+        {
+            os << std::format(outFmtStr, "Last Login", user.m_lastLogin.value());
+        }
+
+        return os;
+    };
+
+protected:
+    void createLoginBasedOnUserName(const std::string& lastName,
+        const std::string& firstName,const std::string& middleInitial) noexcept;
+    bool diffUser(UserModel& other) const noexcept;
+    std::string formatInsertStatement() override;
+    std::string formatUpdateStatement() override;
+    std::string formatDeleteStatement() override;
+
+    std::string buildPreferenceText() noexcept;
+    void parsePrefenceText(std::string preferences) noexcept;
+    
+    static const std::size_t minNameLenght = 2;
+    static const std::size_t minPasswordLenght = 8;
+    static const std::size_t minEmailLength = 10;
+
+    std::string m_lastName;
+    std::string m_firstName;
+    std::string m_middleInitial;
+    std::string m_email;
+    std::string m_loginName;
+    std::string m_password;
+    UserPreferences m_preferences;
+    std::optional<std::chrono::system_clock::time_point> m_lastLogin;
+    std::optional<std::size_t> m_organizationId;
+
+/*
+ * Unit testing, self testing.
+ */
+    virtual void selfTestResetAllValues() noexcept override;
+    virtual TestStatus testEqualityOperator() noexcept override;
+    virtual TestStatus testAllInsertFailures() override;
+    virtual void testOutput() noexcept override
+    {
+        std::cout << "Test Output: " << *this << "\n";
+    };
+    virtual std::vector<AttributeTestFunction> initAttributeAccessTests() noexcept override;
+    TestStatus testUserIdAccesss() noexcept;
+    TestStatus testLastNameAccess() noexcept;
+    TestStatus testFirstNameAccess() noexcept;
+    TestStatus testMiddleInitialAccess() noexcept;
+    TestStatus testLoginNameAccess() noexcept;
+    TestStatus testPassWordAccess() noexcept;
+    TestStatus testCreatedDateAcfcess() noexcept;
+    TestStatus testLastLoginAccess() noexcept;
+    TestStatus testEmailAccess() noexcept;
+    TestStatus testOrganizationAccess() noexcept;
+    TestStatus testStartTimeAccess() noexcept;
+    TestStatus testEndTimeAccesss() noexcept;
+    TestStatus testLastModifiedAccess() noexcept;
+    TestStatus testLastModifiedByUserAccess() noexcept;
+    TestStatus testIncludePriorityInScheduleAccess() noexcept;
+    TestStatus testIncludeMinorPriorityInScheduleAccess() noexcept;
+    TestStatus testUseLetterForMajorPriorityAccess() noexcept;
+    TestStatus testSeparateMajorAndMinorWithDotAccess() noexcept;
+
+    virtual std::vector<ExceptionTestElement> initExceptionTests() noexcept override;
+    virtual TestStatus testExceptionInsert() noexcept override;
+    virtual TestStatus testExceptionUpdate() noexcept override;
+    virtual TestStatus testExceptionHide() noexcept override;
+
+    void initValidTestValues() noexcept;
+
+private:
+// Preference subfield indexes
+    static const std::size_t PrefDayStartIdx = 0;
+    static const std::size_t PrefDayEndIdx = 1;
+    static const std::size_t PrefMajorPriorityIdx = 2;
+    static const std::size_t PrefMinorPriorityIdx = 3;
+    static const std::size_t PrefUsingLetterIdx = 4;
+    static const std::size_t PrefUsingDotIdx = 5;
+};
+
+using UserModel_shp = std::shared_ptr<UserModel>;
+
+#endif // USERMODEL_H_
