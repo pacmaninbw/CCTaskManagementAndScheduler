@@ -1,3 +1,12 @@
+#
+# Build and test the MyDayPlanner application
+#
+# Each subdirectory contains a CMakeLists.txt file that adds the necessary files
+# to the proper target and adds that directory to the target include files.
+#
+# Failed unit tests or failed integration tests should stop the build for the
+# application
+
 cmake_minimum_required(VERSION 4.5)
 
 project(MyDayPlanner
