@@ -12,6 +12,9 @@ target_sources(unit_tests PRIVATE
 
 add_subdirectory(unittests)
 
+# Since the shell command runs in the current binary directory we need to copy
+# the test database source file to this directory.
+
 file(
     COPY "${CMAKE_SOURCE_DIR}/libdbmodels/sqlscripts/test_ptsdb.sql"
     DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
@@ -24,7 +27,7 @@ file(
 
 add_test(
     NAME setup_test_env
-    COMMAND bash ${CMAKE_SOURCE_DIR}/libdbmodels/sqlscripts/createTestDataBase.sh
+    COMMAND sh ${CMAKE_SOURCE_DIR}/libdbmodels/sqlscripts/createTestDataBase.sh
 )
 
 add_test(
