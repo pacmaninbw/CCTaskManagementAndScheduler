@@ -1,6 +1,5 @@
 
-add_library(libdbmodels STATIC)
-add_library(${PROJECT_NAME}::libdbmodels ALIAS libdbmodels)
+
 add_subdirectory(common)
 
 add_subdirectory(dbmodels)
@@ -10,6 +9,8 @@ target_include_directories(libdbmodels PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/common
     ${CMAKE_CURRENT_SOURCE_DIR}/dbmodels
 )
+
+target_include_directories(unit_tests PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
 target_compile_definitions(libdbmodels PRIVATE TESTCOMMANDLINEENABLED=1)
 

@@ -1,7 +1,5 @@
 
 
-add_executable(unit_tests)
-
 target_include_directories(unit_tests PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
 target_sources(unit_tests PRIVATE
@@ -32,7 +30,7 @@ add_test(
 
 add_test(
     NAME run_unit_tests
-    COMMAND $<TARGET_FILE:unit_tests>
+    COMMAND $<TARGET_FILE:unit_tests>  --verbose --time-tests 
 )
 
 set_tests_properties(setup_test_env PROPERTIES
@@ -44,3 +42,5 @@ set_tests_properties(run_unit_tests PROPERTIES
 )
 
 add_subdirectory(integrationtests)
+
+

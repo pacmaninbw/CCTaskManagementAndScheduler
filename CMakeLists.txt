@@ -24,35 +24,23 @@ endif()
 
 find_package(Boost 1.87.0 REQUIRED COMPONENTS system charconv program_options)
 
-include(FetchContent)
-set(DOCTEST_VERSION v2.4.11)
-FetchContent_Declare(doctest
-    URL  https://raw.githubusercontent.com/doctest/doctest/${DOCTEST_VERSION}/doctest/doctest.h
-    DOWNLOAD_NO_EXTRACT TRUE
-)
-FetchContent_MakeAvailable(doctest)
-
-set(DOCTEST_INCLUDE_DIR ${doctest_SOURCE_DIR})
-# Include doctest_discover_tests(<target>) function
-#include("${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake")
-
-# Use doctest in a target
-#target_link_libraries(my_target PUBLIC doctest::doctest)
-
-# Or use it globally
-#link_libraries(doctest::doctest)
-
 # The library and the unit tests for the library do not depend on Qt
 # This is an optimization of the build process and disc space. The library
 # and the unit tests do depend on doctest and the boost libraries.
 
-add_subdirectory(libdbmodels)
 
 include(CTest)
-
 enable_testing()
 
+add_executable(unit_tests)
+
 add_subdirectory(tests)
+
+add_library(libdbmodels STATIC)
+add_library(${PROJECT_NAME}::libdbmodels ALIAS libdbmodels)
+
+add_subdirectory(libdbmodels)
+
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
