@@ -9,6 +9,9 @@
 #define COREDBINTERFACECORE_H_
 
 // Project Header Files
+#ifdef BUILD_FOR_TESTING
+#include "doctest.h"
+#endif
 
 // External Libraries
 #include <boost/asio.hpp>
