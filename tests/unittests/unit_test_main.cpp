@@ -1,5 +1,5 @@
-//#define DOCTEST_CONFIG_IMPLEMENT
-//#include "doctest.h"
+#define DOCTEST_CONFIG_IMPLEMENT
+#include "doctest.h"
 
 /*
  * Perform unit tests and integration tests on the database models and the
@@ -9,6 +9,7 @@
 // Project Header Files
 #include "CommandLineParser.h"
 #include "commonTestValues.h"
+#if 0
 #include "GoalQueryProcessor.h"
 #include "NoteQueryProcessor.h"
 #include "NoteModel.h"
@@ -24,6 +25,20 @@
 #include "UserModel.h"
 #include "UserQueryProcessor.h"
 #include "UtilityTimer.h"
+#endif
+
+#include "unit_test_GoalQueryProcessor.h"
+#include "unit_test_NoteModel.h"
+#include "unit_test_NoteQueryProcessor.h"
+#include "unit_test_OrganizationModel.h"
+#include "unit_test_OrganizationQueryProcessor.h"
+#include "unit_test_ScheduleItemModel.h"
+//#include "unit_test_ScheduleItemQueryProcessor.h"
+#include "unit_test_TaskModel.h"
+#include "unit_test_TaskQueryProcessor.h"
+#include "unit_test_UserGoalModel.h"
+#include "unit_test_UserModel.h"
+#include "unit_test_UserQueryProcessor.h"
 
 // Standard C++ Header Files
 #include <exception>
@@ -40,6 +55,7 @@
  */
 ProgramOptions programOptions;
 
+#if 0
 static void reportUnitTestStatusExitIfQuitFirstFail(TestStatus result, std::string itemUnderTest)
 {
     if (result != TESTPASSED)
@@ -179,15 +195,20 @@ static bool runAllTests()
 
     return allTestsPassed;
 }
+#endif
 
 int main(int argc, char* argv[])
 {
-    bool allTestsPassed = true;
+//    bool allTestsPassed = true;
+
+    int res;
+    doctest::Context context;
 
     try {
 		if (const auto progOptions = parseCommandLine(argc, argv); progOptions.has_value())
 		{
 			programOptions = *progOptions;
+#if 0
             UtilityTimer stopWatch;
 
             // User a common date to reduce the differences in the regression test
@@ -207,6 +228,13 @@ int main(int argc, char* argv[])
                 return EXIT_FAILURE;
             }
         }
+#endif
+            context.setOption("order-by", "name");
+
+            context.applyCommandLine(argc, argv);
+
+            res = context.run(); // run
+        }
         else
 		{
 			if (progOptions.error() != CommandLineStatus::HelpRequested)
@@ -214,13 +242,15 @@ int main(int argc, char* argv[])
 				return EXIT_FAILURE;
 			}
 		}
+
+
     } catch (const std::exception& err) {
         std::cerr << "Error: Test Program terminated abnormally!" << err.what() << std::endl;
         return EXIT_FAILURE;
     }
 
-    std::cout << "All tests Passed\n";
+//    std::cout << "All tests Passed\n";
      
-    return EXIT_SUCCESS;
+    return res;
 }
 
